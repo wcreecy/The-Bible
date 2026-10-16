@@ -1,0 +1,255 @@
+{
+  "Job": {
+    "author": "Anonymous; the historical setting of Job and the date of composition are uncertain.",
+    "audience": "Wisdom readers wrestling with suffering, justice, and the limits of human understanding.",
+    "purpose": "To explore why righteous people suffer and to challenge simplistic explanations that equate suffering directly with personal sin.",
+    "theme": "Human beings do not possess God's full perspective; faithful trust is necessary when suffering cannot be neatly explained.",
+    "summary": "Job loses family, wealth, and health. His friends insist suffering must prove guilt, but God ultimately exposes the limits of their explanations and confronts Job with the vastness of divine wisdom.",
+    "keyVerse": "Job 19:25",
+    "movements": [
+      {
+        "title": "Job's Catastrophic Losses",
+        "description": "Job loses possessions, children, and health yet continues wrestling with faith.",
+        "passages": [
+          "Job 1-2"
+        ]
+      },
+      {
+        "title": "Debates with Friends",
+        "description": "Job and his three friends argue over suffering, justice, innocence, and God's ways; a younger speaker, Elihu, then adds his own response.",
+        "passages": [
+          "Job 3-37"
+        ]
+      },
+      {
+        "title": "God Answers and Job Responds",
+        "description": "God speaks from the whirlwind, emphasizing divine wisdom and human limitation; Job responds in humility.",
+        "passages": [
+          "Job 38-42"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Job",
+        "description": "A blameless man from Uz who loses everything and wrestles with God over his suffering."
+      },
+      {
+        "name": "The Accuser (Satan)",
+        "description": "A heavenly figure who questions Job's integrity and is permitted to test him."
+      },
+      {
+        "name": "Job's wife",
+        "description": "Urges Job, in his despair, to curse God and die."
+      },
+      {
+        "name": "Eliphaz, Bildad, and Zophar",
+        "description": "Job's three friends, who insist his suffering must result from sin and are later rebuked by God."
+      },
+      {
+        "name": "Elihu",
+        "description": "A younger speaker who responds to both Job and his friends before God speaks."
+      }
+    ]
+  },
+  "Psalms": {
+    "author": "A collection by multiple authors, prominently David, but also Asaph, the sons of Korah, Solomon, Moses, and anonymous writers.",
+    "audience": "Israel's worshiping community, later used widely in Jewish and Christian prayer and worship.",
+    "purpose": "To provide songs and prayers for worship, lament, thanksgiving, wisdom, kingship, confession, and hope.",
+    "theme": "Every part of human life can be brought honestly before God in worship and trust.",
+    "summary": "Psalms is a five-book collection of 150 prayers and songs ranging from deep grief to exuberant praise. It teaches God's people to pray honestly while grounding hope in God's character and kingship.",
+    "keyVerse": "Psalms 23:1",
+    "movements": [
+      {
+        "title": "Lament and Trust",
+        "description": "Many psalms bring fear, injustice, guilt, and grief before God while moving toward trust.",
+        "passages": [
+          "Psalms 3; 13; 22; 42-43"
+        ]
+      },
+      {
+        "title": "Kingship and Messianic Hope",
+        "description": "Royal psalms celebrate God's rule and the Davidic king, later read by Christians in relation to Christ.",
+        "passages": [
+          "Psalms 2; 45; 72; 110"
+        ]
+      },
+      {
+        "title": "Praise and Thanksgiving",
+        "description": "The collection repeatedly calls individuals and communities to praise God for creation, rescue, and covenant faithfulness.",
+        "passages": [
+          "Psalms 103; 107; 145-150"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "David",
+        "description": "The psalmist most often named in the superscriptions, associated with seventy-three psalms in the Hebrew text."
+      },
+      {
+        "name": "Asaph",
+        "description": "A Levitical worship leader linked with twelve psalms (Psalm 50 and 73-83)."
+      },
+      {
+        "name": "The Sons of Korah",
+        "description": "A Levitical guild of singers associated with eleven psalms, including Psalms 42 and 84."
+      },
+      {
+        "name": "Solomon",
+        "description": "Named in the superscriptions of Psalms 72 and 127."
+      },
+      {
+        "name": "Moses",
+        "description": "Named as the author of Psalm 90, traditionally the oldest psalm in the collection."
+      },
+      {
+        "name": "Heman and Ethan",
+        "description": "Ezrahite sages credited with Psalms 88 and 89."
+      }
+    ]
+  },
+  "Proverbs": {
+    "author": "A wisdom collection associated especially with Solomon, with material also linked to other sages such as Agur and Lemuel.",
+    "audience": "Israel and anyone seeking practical wisdom for faithful living.",
+    "purpose": "To train readers in skillful, God-centered living across speech, work, money, relationships, sexuality, justice, and self-control.",
+    "theme": "The fear of the LORD is the beginning of wisdom, and wise living normally produces patterns of life aligned with God's order.",
+    "summary": "Proverbs combines extended teaching with short sayings that contrast wisdom and folly. Its sayings are general principles, not unconditional guarantees about every circumstance.",
+    "keyVerse": "Proverbs 3:5",
+    "movements": [
+      {
+        "title": "Call to Wisdom",
+        "description": "Early chapters personify wisdom and warn against destructive choices.",
+        "passages": [
+          "Proverbs 1-9"
+        ]
+      },
+      {
+        "title": "Solomonic Proverbs",
+        "description": "Short sayings address everyday conduct, speech, diligence, justice, and relationships.",
+        "passages": [
+          "Proverbs 10-29"
+        ]
+      },
+      {
+        "title": "Final Collections",
+        "description": "Sayings of Agur and Lemuel conclude the book, including the portrait of the capable woman.",
+        "passages": [
+          "Proverbs 30-31"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Solomon",
+        "description": "King of Israel credited with the main collections of proverbs."
+      },
+      {
+        "name": "Hezekiah's men",
+        "description": "Scribes in King Hezekiah's court who copied a further collection of Solomon's proverbs (chapters 25-29)."
+      },
+      {
+        "name": "Agur son of Jakeh",
+        "description": "A sage whose humble and numerical sayings appear in chapter 30."
+      },
+      {
+        "name": "King Lemuel and his mother",
+        "description": "Lemuel records his mother's counsel on just rule and the portrait of the capable woman (chapter 31)."
+      },
+      {
+        "name": "Lady Wisdom and Woman Folly",
+        "description": "Personified figures in chapters 1-9 who call out to the simple, inviting them to life or to death."
+      }
+    ]
+  },
+  "Ecclesiastes": {
+    "author": "Attributed to 'Qoheleth' or 'the Teacher,' traditionally identified with Solomon; many scholars debate that identification.",
+    "audience": "Readers confronting life's brevity, frustration, and apparent unpredictability.",
+    "purpose": "To expose the limits of life pursued 'under the sun' and to direct readers toward humble enjoyment of God's gifts and reverence for God.",
+    "theme": "Life is fleeting and often puzzling; receive God's gifts gratefully, live wisely, and fear God.",
+    "summary": "Ecclesiastes tests pleasure, achievement, wealth, and wisdom and finds that none can defeat death or guarantee lasting control. It counsels realistic joy and reverence before God.",
+    "keyVerse": "Ecclesiastes 3:1",
+    "movements": [
+      {
+        "title": "The Teacher's Search",
+        "description": "The Teacher examines wisdom, pleasure, work, and achievement and finds them unable to provide ultimate permanence.",
+        "passages": [
+          "Ecclesiastes 1-2"
+        ]
+      },
+      {
+        "title": "Reflections on Time and Injustice",
+        "description": "The book considers seasons of life, oppression, wealth, and the unpredictability of outcomes.",
+        "passages": [
+          "Ecclesiastes 3-8"
+        ]
+      },
+      {
+        "title": "Final Counsel",
+        "description": "Readers are urged to enjoy life responsibly, remember their Creator, and fear God.",
+        "passages": [
+          "Ecclesiastes 9-12"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Qoheleth (the Teacher)",
+        "description": "The main speaker, described as a son of David and king in Jerusalem, who searches for meaning 'under the sun.'"
+      },
+      {
+        "name": "The frame narrator",
+        "description": "The voice that introduces the Teacher and closes the book with the call to fear God and keep His commandments."
+      }
+    ]
+  },
+  "Song of Solomon": {
+    "author": "Traditionally associated with Solomon; the collection may include multiple poetic voices.",
+    "audience": "Israel and later Jewish and Christian readers reflecting on love, desire, and marriage.",
+    "purpose": "To celebrate romantic love, mutual desire, beauty, and committed affection.",
+    "theme": "Human romantic love is powerful, beautiful, and worthy of honor when expressed with mutuality and commitment.",
+    "summary": "Song of Solomon is a collection of poems celebrating attraction, longing, delight, separation, reunion, and the strength of love.",
+    "keyVerse": "Song of Solomon 2:10",
+    "movements": [
+      {
+        "title": "Courtship and Desire",
+        "description": "The lovers praise one another and express longing for closeness.",
+        "passages": [
+          "Song of Solomon 1-2"
+        ]
+      },
+      {
+        "title": "Separation and Search",
+        "description": "Several poems portray absence, searching, and renewed encounter.",
+        "passages": [
+          "Song of Solomon 3-6"
+        ]
+      },
+      {
+        "title": "Love's Strength Celebrated",
+        "description": "The book culminates in a declaration that love is powerful and cannot simply be bought.",
+        "passages": [
+          "Song of Solomon 7-8"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "The woman (the Shulammite)",
+        "description": "The beloved woman, the main voice of the poems, who expresses longing and delight."
+      },
+      {
+        "name": "The man (the beloved)",
+        "description": "Her lover, who praises her beauty and returns her affection."
+      },
+      {
+        "name": "Solomon",
+        "description": "Named in the title and in scenes such as the royal procession; interpreters differ on whether he is the lover or a contrasting figure."
+      },
+      {
+        "name": "The daughters of Jerusalem",
+        "description": "A chorus of women whom the woman addresses, including the repeated charge not to awaken love before its time."
+      }
+    ]
+  }
+}

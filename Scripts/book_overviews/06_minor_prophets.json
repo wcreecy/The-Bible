@@ -1,0 +1,574 @@
+{
+  "Hosea": {
+    "author": "Hosea son of Beeri.",
+    "audience": "The northern kingdom of Israel, with implications for Judah.",
+    "purpose": "To expose Israel's covenant unfaithfulness and proclaim God's persistent love, judgment, and desire for restoration.",
+    "theme": "Israel's spiritual adultery brings judgment, yet God's covenant love continues to call His people back.",
+    "summary": "Hosea's troubled marriage becomes a living sign of Israel's unfaithfulness. The prophet condemns idolatry and injustice while repeatedly expressing God's grief, love, and hope for return.",
+    "keyVerse": "Hosea 6:6",
+    "movements": [
+      {
+        "title": "Hosea's Marriage as a Sign",
+        "description": "Hosea's family life symbolizes Israel's unfaithfulness and the painful covenant relationship.",
+        "passages": [
+          "Hosea 1-3"
+        ]
+      },
+      {
+        "title": "Charges against Israel",
+        "description": "The prophet condemns idolatry, political alliances, corruption, and lack of true knowledge of God.",
+        "passages": [
+          "Hosea 4-10"
+        ]
+      },
+      {
+        "title": "Love and Restoration",
+        "description": "God's parental and covenant love remains visible even in judgment, ending with a call to return.",
+        "passages": [
+          "Hosea 11-14"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Hosea",
+        "description": "Prophet to the northern kingdom whose marriage becomes a sign of Israel's unfaithfulness."
+      },
+      {
+        "name": "Gomer",
+        "description": "Hosea's wife, whose unfaithfulness mirrors Israel's spiritual adultery."
+      },
+      {
+        "name": "Jezreel, Lo-ruhamah, and Lo-ammi",
+        "description": "Hosea's children, whose names announce judgment and are later reversed in promises of restoration."
+      },
+      {
+        "name": "Jeroboam II",
+        "description": "King of Israel during Hosea's ministry."
+      }
+    ]
+  },
+  "Joel": {
+    "author": "Joel son of Pethuel.",
+    "audience": "Judah and Jerusalem.",
+    "purpose": "To interpret a devastating locust plague as a call to repentance and to point toward the coming day of the LORD, restoration, and outpouring of God's Spirit.",
+    "theme": "Present crisis calls for wholehearted repentance, while the day of the LORD brings both judgment and salvation.",
+    "summary": "Joel begins with a locust disaster and summons the whole community to repentance. It then expands to the day of the LORD, promising restoration and the outpouring of God's Spirit.",
+    "keyVerse": "Joel 2:13",
+    "movements": [
+      {
+        "title": "Locust Plague",
+        "description": "A devastating swarm destroys crops and disrupts normal worship and economy.",
+        "passages": [
+          "Joel 1"
+        ]
+      },
+      {
+        "title": "Call to Repentance",
+        "description": "Priests and people are summoned to fast, gather, and return to God with their whole hearts.",
+        "passages": [
+          "Joel 2:1-17"
+        ]
+      },
+      {
+        "title": "Restoration and Spirit",
+        "description": "God promises renewed abundance, the outpouring of the Spirit, and final judgment among the nations.",
+        "passages": [
+          "Joel 2:18-3:21"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Joel",
+        "description": "The prophet son of Pethuel, who calls Judah to repentance after a locust plague."
+      },
+      {
+        "name": "The priests",
+        "description": "The 'ministers of the altar,' summoned to lead the people in fasting and prayer."
+      }
+    ]
+  },
+  "Amos": {
+    "author": "Amos, a shepherd and cultivator from Tekoa in Judah.",
+    "audience": "Primarily the northern kingdom of Israel.",
+    "purpose": "To announce judgment on Israel for injustice, exploitation, false worship, and complacency while affirming God's moral rule over all nations.",
+    "theme": "Religious activity without justice and covenant faithfulness is unacceptable to God.",
+    "summary": "Amos confronts a prosperous society in which the wealthy exploit the vulnerable while maintaining impressive religious observance. He announces coming judgment and ends with a promise of restoration.",
+    "keyVerse": "Amos 5:24",
+    "movements": [
+      {
+        "title": "Judgments on the Nations",
+        "description": "Amos begins by announcing God's judgment on neighboring nations and then turns sharply toward Israel.",
+        "passages": [
+          "Amos 1-2"
+        ]
+      },
+      {
+        "title": "Condemnation of Injustice and Empty Worship",
+        "description": "Israel's luxury, oppression, and religious hypocrisy are exposed.",
+        "passages": [
+          "Amos 3-6"
+        ]
+      },
+      {
+        "title": "Visions of Judgment and Restoration",
+        "description": "A series of visions culminates in judgment, followed by a closing promise of restoration.",
+        "passages": [
+          "Amos 7-9"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Amos",
+        "description": "A shepherd and fig farmer from Tekoa in Judah sent to prophesy against the northern kingdom."
+      },
+      {
+        "name": "Amaziah",
+        "description": "The priest of Bethel who accuses Amos of conspiracy and orders him to leave."
+      },
+      {
+        "name": "Jeroboam II",
+        "description": "King of Israel during a time of prosperity and injustice."
+      },
+      {
+        "name": "Uzziah",
+        "description": "King of Judah during Amos' ministry."
+      }
+    ]
+  },
+  "Obadiah": {
+    "author": "Obadiah; little else is known about the prophet.",
+    "audience": "Judah and surrounding peoples in the context of Edom's hostility.",
+    "purpose": "To announce judgment on Edom for pride and violence against Judah and to affirm the LORD's ultimate rule.",
+    "theme": "Pride and violence against others invite judgment; the LORD's kingdom will ultimately prevail.",
+    "summary": "Obadiah is the shortest Old Testament book. It condemns Edom for gloating over Judah's fall and promises that unjust power will not have the final word.",
+    "keyVerse": "Obadiah 1:15",
+    "movements": [
+      {
+        "title": "Edom's Pride Exposed",
+        "description": "Edom trusts in its mountain strongholds and political security.",
+        "passages": [
+          "Obadiah 1:1-9"
+        ]
+      },
+      {
+        "title": "Violence against Judah Condemned",
+        "description": "Edom is accused of standing aloof, gloating, looting, and helping trap survivors during Jerusalem's disaster.",
+        "passages": [
+          "Obadiah 1:10-14"
+        ]
+      },
+      {
+        "title": "Day of the LORD",
+        "description": "Edom's fate is placed within a wider vision of judgment and the LORD's kingdom.",
+        "passages": [
+          "Obadiah 1:15-21"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Obadiah",
+        "description": "The prophet, about whom almost nothing else is known."
+      },
+      {
+        "name": "Edom (Esau)",
+        "description": "The nation descended from Esau, condemned for pride and violence against Judah."
+      },
+      {
+        "name": "The house of Jacob",
+        "description": "God's people, promised deliverance and restored possession of their land."
+      }
+    ]
+  },
+  "Jonah": {
+    "author": "The narrative centers on Jonah son of Amittai; the book itself is anonymous as a literary work.",
+    "audience": "Israel and later readers wrestling with God's mercy toward outsiders.",
+    "purpose": "To confront narrow nationalism and show God's compassion even toward a violent foreign city when people repent.",
+    "theme": "God's mercy extends beyond Israel, and His servants must learn to value the people He is willing to forgive.",
+    "summary": "Jonah flees from God's call to preach in Nineveh, is rescued through the great fish, reluctantly preaches, and becomes angry when the city repents and is spared.",
+    "keyVerse": "Jonah 2:2",
+    "movements": [
+      {
+        "title": "Jonah Flees",
+        "description": "Jonah runs from God's commission, leading to a storm and his being thrown into the sea.",
+        "passages": [
+          "Jonah 1"
+        ]
+      },
+      {
+        "title": "Jonah Rescued and Sent Again",
+        "description": "Jonah prays from the fish and then receives the commission a second time.",
+        "passages": [
+          "Jonah 2-3:2"
+        ]
+      },
+      {
+        "title": "Nineveh Repents and Jonah Resents Mercy",
+        "description": "The city responds to warning, God relents from announced disaster, and Jonah struggles with God's compassion.",
+        "passages": [
+          "Jonah 3:3-4:11"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jonah",
+        "description": "A prophet son of Amittai who flees God's call to Nineveh and later resents God's mercy."
+      },
+      {
+        "name": "The sailors",
+        "description": "Pagan mariners who fear the LORD after the storm is calmed."
+      },
+      {
+        "name": "The king of Nineveh",
+        "description": "Leads his city in fasting and repentance after Jonah's warning."
+      },
+      {
+        "name": "The people of Nineveh",
+        "description": "The Assyrian city's inhabitants, who believe God and are spared."
+      }
+    ]
+  },
+  "Micah": {
+    "author": "Micah of Moresheth.",
+    "audience": "Judah and Israel, especially Jerusalem and Samaria.",
+    "purpose": "To denounce injustice, idolatry, corrupt leadership, and false security while promising restoration and a future ruler.",
+    "theme": "God requires justice, faithful love, and humble walking with Him; judgment is real, but restoration is promised.",
+    "summary": "Micah alternates between judgment and hope. He condemns abusive leaders and empty confidence in religious institutions while promising a future ruler from Bethlehem and renewed peace.",
+    "keyVerse": "Micah 6:8",
+    "movements": [
+      {
+        "title": "Judgment on Samaria and Jerusalem",
+        "description": "Micah announces judgment on both capitals for idolatry and corruption.",
+        "passages": [
+          "Micah 1-3"
+        ]
+      },
+      {
+        "title": "Future Peace and Ruler",
+        "description": "The prophet envisions restored Zion and a ruler from Bethlehem.",
+        "passages": [
+          "Micah 4-5"
+        ]
+      },
+      {
+        "title": "Covenant Lawsuit and Hope",
+        "description": "God's case against His people culminates in the call to do justice, love mercy, and walk humbly, followed by hope in divine forgiveness.",
+        "passages": [
+          "Micah 6-7"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Micah",
+        "description": "A prophet from the small town of Moresheth who confronts injustice in Jerusalem and Samaria."
+      },
+      {
+        "name": "Jotham, Ahaz, and Hezekiah",
+        "description": "The kings of Judah during whose reigns Micah prophesies."
+      },
+      {
+        "name": "Corrupt leaders, priests, and prophets",
+        "description": "Those Micah condemns for exploiting the people and teaching for money."
+      },
+      {
+        "name": "The ruler from Bethlehem",
+        "description": "A promised shepherd-king whose origins are from of old; Matthew connects this with Jesus."
+      }
+    ]
+  },
+  "Nahum": {
+    "author": "Nahum of Elkosh.",
+    "audience": "Judah, with Nineveh and Assyria as the subject of judgment.",
+    "purpose": "To announce the fall of Nineveh and reassure Judah that Assyrian oppression would not last forever.",
+    "theme": "God's justice will bring down violent empires, and oppressors do not rule forever.",
+    "summary": "Nahum is an oracle celebrating the coming collapse of Nineveh, capital of the Assyrian Empire, whose brutality had devastated many nations.",
+    "keyVerse": "Nahum 1:7",
+    "movements": [
+      {
+        "title": "The LORD as Judge and Refuge",
+        "description": "An opening poem presents God as patient yet just, powerful yet a refuge for those who trust Him.",
+        "passages": [
+          "Nahum 1"
+        ]
+      },
+      {
+        "title": "Nineveh's Fall Described",
+        "description": "Vivid battle imagery portrays the city's coming defeat.",
+        "passages": [
+          "Nahum 2"
+        ]
+      },
+      {
+        "title": "Reasons for Judgment",
+        "description": "Nineveh's violence, exploitation, and arrogance are named as reasons for its downfall.",
+        "passages": [
+          "Nahum 3"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Nahum",
+        "description": "The prophet from Elkosh who announces Nineveh's fall."
+      },
+      {
+        "name": "The king of Assyria",
+        "description": "Addressed at the end of the book as his shepherds slumber and his people are scattered."
+      }
+    ]
+  },
+  "Habakkuk": {
+    "author": "Habakkuk the prophet.",
+    "audience": "Judah during the rise of Babylon.",
+    "purpose": "To wrestle honestly with injustice and explain that God will use Babylon as judgment yet will also judge Babylon, calling the righteous to live by faithfulness.",
+    "theme": "Faith trusts God's justice and character even when His timing and methods are difficult to understand.",
+    "summary": "Habakkuk complains about violence in Judah, is shocked that God will use Babylon as judgment, and finally moves from questioning to worshipful trust.",
+    "keyVerse": "Habakkuk 2:4",
+    "movements": [
+      {
+        "title": "First Complaint: Judah's Violence",
+        "description": "Habakkuk asks why God seems to tolerate injustice among His people.",
+        "passages": [
+          "Habakkuk 1:1-11"
+        ]
+      },
+      {
+        "title": "Second Complaint and God's Answer",
+        "description": "Habakkuk questions Babylon's role, and God declares that proud empires will also face judgment.",
+        "passages": [
+          "Habakkuk 1:12-2:20"
+        ]
+      },
+      {
+        "title": "Prayer of Trust",
+        "description": "The prophet ends with a poetic prayer that rejoices in God even if crops and herds fail.",
+        "passages": [
+          "Habakkuk 3"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Habakkuk",
+        "description": "A prophet who brings honest complaints to God and ends in trusting praise."
+      },
+      {
+        "name": "The Chaldeans (Babylonians)",
+        "description": "The fierce nation God raises up to judge Judah, and who will themselves be judged."
+      }
+    ]
+  },
+  "Zephaniah": {
+    "author": "Zephaniah son of Cushi.",
+    "audience": "Judah and Jerusalem during the reign of Josiah.",
+    "purpose": "To warn of the coming day of the LORD, call for repentance, and promise purification and restoration for a humble remnant.",
+    "theme": "The day of the LORD exposes sin but also leads to purification, humility, and restored joy.",
+    "summary": "Zephaniah announces sweeping judgment on Judah and the nations, urges the humble to seek the LORD, and closes with a tender vision of God rejoicing over a restored people.",
+    "keyVerse": "Zephaniah 3:17",
+    "movements": [
+      {
+        "title": "Judgment on Judah",
+        "description": "Idolatry, complacency, and injustice in Jerusalem are condemned.",
+        "passages": [
+          "Zephaniah 1"
+        ]
+      },
+      {
+        "title": "Judgment on Nations",
+        "description": "Neighboring nations and major powers are included under God's judgment.",
+        "passages": [
+          "Zephaniah 2-3:8"
+        ]
+      },
+      {
+        "title": "Purified and Restored People",
+        "description": "The book ends with promises of humble worship, restored fortunes, and divine joy over His people.",
+        "passages": [
+          "Zephaniah 3:9-20"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Zephaniah",
+        "description": "The prophet son of Cushi, whose genealogy traces back to a Hezekiah, possibly the king."
+      },
+      {
+        "name": "Josiah",
+        "description": "King of Judah during whose reign Zephaniah prophesies."
+      },
+      {
+        "name": "The humble remnant",
+        "description": "Those who seek the LORD and are promised refuge and restoration."
+      }
+    ]
+  },
+  "Haggai": {
+    "author": "Haggai the prophet.",
+    "audience": "The returned Jewish community in Judah, especially leaders Zerubbabel and Joshua.",
+    "purpose": "To urge the post-exilic community to rebuild the temple and reorder priorities around covenant worship.",
+    "theme": "God's people must put His priorities ahead of complacent self-interest; renewed obedience brings courage and hope.",
+    "summary": "Haggai delivers four dated messages challenging returned exiles to rebuild the temple. He connects economic frustration with misplaced priorities and promises God's presence with the work.",
+    "keyVerse": "Haggai 2:9",
+    "movements": [
+      {
+        "title": "Call to Rebuild",
+        "description": "Haggai confronts the people for living in finished houses while the temple remains in ruins.",
+        "passages": [
+          "Haggai 1"
+        ]
+      },
+      {
+        "title": "Encouragement amid Discouragement",
+        "description": "Those who remember the former temple are encouraged that God's presence remains with them.",
+        "passages": [
+          "Haggai 2:1-9"
+        ]
+      },
+      {
+        "title": "Promises of Cleansing and Future Hope",
+        "description": "Haggai links renewed obedience with blessing and gives Zerubbabel a sign of future covenant significance.",
+        "passages": [
+          "Haggai 2:10-23"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Haggai",
+        "description": "A prophet who urges the returned exiles to rebuild the temple."
+      },
+      {
+        "name": "Zerubbabel",
+        "description": "Governor of Judah and descendant of David, called God's 'signet ring.'"
+      },
+      {
+        "name": "Joshua son of Jehozadak",
+        "description": "The high priest, who leads the people in resuming the work."
+      },
+      {
+        "name": "Darius",
+        "description": "The Persian king by whose reign Haggai's messages are dated."
+      }
+    ]
+  },
+  "Zechariah": {
+    "author": "Zechariah son of Berechiah, with scholarly debate over the composition of chapters 9-14.",
+    "audience": "The post-exilic community in Judah.",
+    "purpose": "To encourage temple rebuilding, call for repentance, and expand hope toward future purification, kingship, and God's universal reign.",
+    "theme": "God has not abandoned His people; present restoration points toward a larger future work of cleansing, kingship, and worldwide rule.",
+    "summary": "Zechariah combines symbolic night visions with prophetic messages about rebuilding, priestly cleansing, a coming king, future conflict, and the LORD's final reign.",
+    "keyVerse": "Zechariah 4:6",
+    "movements": [
+      {
+        "title": "Night Visions",
+        "description": "A series of symbolic visions reassures the community that God remembers Jerusalem and will deal with opposition and sin.",
+        "passages": [
+          "Zechariah 1-6"
+        ]
+      },
+      {
+        "title": "Temple and True Obedience",
+        "description": "Questions about fasting lead to calls for justice, mercy, and sincere covenant life.",
+        "passages": [
+          "Zechariah 7-8"
+        ]
+      },
+      {
+        "title": "Coming King and Future Day",
+        "description": "Later oracles portray a humble king, a pierced figure, purification, conflict, and the LORD reigning over all.",
+        "passages": [
+          "Zechariah 9-14"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Zechariah",
+        "description": "A prophet and priest who receives night visions and encourages temple rebuilding."
+      },
+      {
+        "name": "Joshua the high priest",
+        "description": "Pictured in a vision being cleansed and reclothed, and later symbolically crowned."
+      },
+      {
+        "name": "Zerubbabel",
+        "description": "The governor promised that the temple will be finished 'not by might, nor by power, but by my Spirit.'"
+      },
+      {
+        "name": "The Accuser (Satan)",
+        "description": "Stands to accuse Joshua in the vision and is rebuked by the LORD."
+      },
+      {
+        "name": "The interpreting angel",
+        "description": "Explains the meaning of Zechariah's visions."
+      },
+      {
+        "name": "The humble king",
+        "description": "A coming king who enters Jerusalem on a donkey; the Gospels apply this to Jesus' entry into Jerusalem."
+      },
+      {
+        "name": "The pierced one",
+        "description": "A figure whom the people look upon and mourn, which John's Gospel connects with Jesus' crucifixion."
+      }
+    ]
+  },
+  "Malachi": {
+    "author": "Traditionally understood as Malachi; the Hebrew name can also mean 'my messenger,' so some scholars consider whether it functions as a title.",
+    "audience": "The post-exilic Jewish community in Judah.",
+    "purpose": "To confront spiritual apathy, corrupt worship, covenant unfaithfulness, and doubts about God's justice while calling the people back to faithful worship and obedience.",
+    "theme": "God remains faithful to His covenant and calls His people to return to sincere worship and faithful obedience while awaiting His coming judgment and restoration.",
+    "summary": "Malachi addresses a community that has returned from exile but become cynical and careless. Priests offer unacceptable sacrifices, relationships are unfaithful, giving is neglected, and people question whether serving God matters. The book closes with a coming messenger and the day of the LORD.",
+    "keyVerse": "Malachi 3:10",
+    "movements": [
+      {
+        "title": "Corrupt Worship Confronted",
+        "description": "God affirms His love for Israel, then rebukes the priests for offering defective sacrifices and dishonoring His name.",
+        "passages": [
+          "Malachi 1"
+        ]
+      },
+      {
+        "title": "Covenant Unfaithfulness Rebuked",
+        "description": "The people are confronted over broken faith in worship, marriage, and community life.",
+        "passages": [
+          "Malachi 2:1-17"
+        ]
+      },
+      {
+        "title": "Coming Messenger and Return to God",
+        "description": "God promises a messenger, calls the people to return in faithfulness, and points toward the day of the LORD.",
+        "passages": [
+          "Malachi 3:1-4:6"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Malachi",
+        "description": "The prophet ('my messenger') who confronts the post-exilic community."
+      },
+      {
+        "name": "The priests",
+        "description": "Rebuked for offering blemished sacrifices and failing to teach faithfully."
+      },
+      {
+        "name": "Jacob and Esau",
+        "description": "Recalled to illustrate God's covenant love for Israel."
+      },
+      {
+        "name": "The messenger",
+        "description": "One who will prepare the way before the LORD; the Gospels identify him with John the Baptist."
+      },
+      {
+        "name": "Elijah",
+        "description": "The prophet promised to come before the great day of the LORD to turn hearts."
+      }
+    ]
+  }
+}

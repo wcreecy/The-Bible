@@ -7,10 +7,8 @@ struct BibleBookOverview: Equatable, Sendable {
     let traditionalAuthorOrAttribution: String
     let originalAudience: String
     let purpose: String
-    let historicalContext: String
     let overallTheme: String
     let plainEnglishSummary: String
-    let interpretiveNotes: String
     let keyScripture: BibleKeyScripture
     let movements: [BibleBookMovement]
     let keyFigures: [BibleBookKeyFigure]
@@ -115,9 +113,8 @@ actor BibleBookOverviewRepository {
         withDatabase { database in
             let query = """
             SELECT id, name, testament, traditional_author_or_attribution,
-                   original_audience, purpose, historical_context, overall_theme,
-                   plain_english_summary, interpretive_notes, key_scripture_reference,
-                   key_scripture_text
+                   original_audience, purpose, overall_theme,
+                   plain_english_summary, key_scripture_reference, key_scripture_text
             FROM book_overviews
             WHERE name = ?
             LIMIT 1;
@@ -140,13 +137,11 @@ actor BibleBookOverviewRepository {
                 traditionalAuthorOrAttribution: Self.columnText(statement, at: 3),
                 originalAudience: Self.columnText(statement, at: 4),
                 purpose: Self.columnText(statement, at: 5),
-                historicalContext: Self.columnText(statement, at: 6),
-                overallTheme: Self.columnText(statement, at: 7),
-                plainEnglishSummary: Self.columnText(statement, at: 8),
-                interpretiveNotes: Self.columnText(statement, at: 9),
+                overallTheme: Self.columnText(statement, at: 6),
+                plainEnglishSummary: Self.columnText(statement, at: 7),
                 keyScripture: BibleKeyScripture(
-                    reference: Self.columnText(statement, at: 10),
-                    text: Self.columnText(statement, at: 11)
+                    reference: Self.columnText(statement, at: 8),
+                    text: Self.columnText(statement, at: 9)
                 ),
                 movements: loadMovements(forBookNamed: bookName, database: database),
                 keyFigures: loadKeyFigures(forBookNamed: bookName, database: database),

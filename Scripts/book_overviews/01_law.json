@@ -1,0 +1,291 @@
+{
+  "Genesis": {
+    "author": "Traditionally associated with Moses as part of the Pentateuch; many modern scholars understand the Pentateuch as having a complex compositional history.",
+    "audience": "Israel, especially as a people seeking to understand its origins and covenant identity.",
+    "purpose": "To explain beginnings—creation, humanity, sin, nations, and Israel's patriarchal family—and to establish the covenant story that shapes the rest of Scripture.",
+    "theme": "God creates, humanity rebels, and God continues His plan of blessing and restoration through covenant.",
+    "summary": "Genesis begins with creation, shows the spread of sin, and then narrows to one family through whom God promises blessing. The book ends with Jacob's family in Egypt because Joseph's rise to power preserves them during famine.",
+    "keyVerse": "Genesis 1:1",
+    "movements": [
+      {
+        "title": "Creation and the Fall",
+        "description": "God creates the world and humanity; Adam and Eve disobey, bringing sin and its consequences into the human story.",
+        "passages": [
+          "Genesis 1-3"
+        ]
+      },
+      {
+        "title": "The Flood and Noah",
+        "description": "Human violence and corruption lead to judgment by flood, while Noah's family is preserved and receives a covenant sign.",
+        "passages": [
+          "Genesis 6-9"
+        ]
+      },
+      {
+        "title": "The Patriarchs and Joseph",
+        "description": "God calls Abraham and continues covenant promises through Isaac and Jacob; Joseph eventually rises in Egypt and preserves the family during famine.",
+        "passages": [
+          "Genesis 12-50"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Adam and Eve",
+        "description": "The first humans, created in God's image, whose disobedience brings sin and death into the world."
+      },
+      {
+        "name": "Noah",
+        "description": "A righteous man preserved with his family through the flood, with whom God makes a covenant."
+      },
+      {
+        "name": "Abraham",
+        "description": "Called by God to leave Ur and Haran; receives the covenant promises of land, offspring, and blessing to the nations."
+      },
+      {
+        "name": "Sarah",
+        "description": "Abraham's wife, who bears Isaac in her old age as the child of promise."
+      },
+      {
+        "name": "Isaac",
+        "description": "The son of promise, nearly offered as a sacrifice; father of Jacob and Esau."
+      },
+      {
+        "name": "Jacob (Israel)",
+        "description": "Isaac's son, renamed Israel after wrestling with God; his twelve sons become the tribes of Israel."
+      },
+      {
+        "name": "Esau",
+        "description": "Jacob's twin brother, who trades away his birthright; ancestor of the Edomites."
+      },
+      {
+        "name": "Joseph",
+        "description": "Jacob's favored son, sold into slavery by his brothers, who rises to power in Egypt and saves his family from famine."
+      }
+    ]
+  },
+  "Exodus": {
+    "author": "Traditionally associated with Moses.",
+    "audience": "Israel, especially the generation formed through deliverance from Egypt and covenant at Sinai.",
+    "purpose": "To recount God's deliverance of Israel from slavery, the covenant at Sinai, and the establishment of worship centered on God's presence.",
+    "theme": "God redeems His people, forms them into a covenant community, and dwells among them.",
+    "summary": "Exodus tells how God rescues Israel from Egyptian slavery, leads them through the sea, gives His law at Sinai, and instructs them to build the tabernacle so His presence may dwell among them.",
+    "keyVerse": "Exodus 20:3",
+    "movements": [
+      {
+        "title": "Moses and the Exodus",
+        "description": "God calls Moses, confronts Pharaoh through plagues, and leads Israel out of Egypt.",
+        "passages": [
+          "Exodus 1-15"
+        ]
+      },
+      {
+        "title": "Covenant at Sinai",
+        "description": "Israel receives the Ten Commandments and enters covenant with God.",
+        "passages": [
+          "Exodus 19-24"
+        ]
+      },
+      {
+        "title": "Tabernacle and God's Presence",
+        "description": "God gives instructions for the tabernacle; after the golden calf crisis and covenant renewal, the tabernacle is built and God's glory fills it.",
+        "passages": [
+          "Exodus 25-40"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Moses",
+        "description": "Israel's deliverer and lawgiver, called at the burning bush to lead the people out of Egypt."
+      },
+      {
+        "name": "Aaron",
+        "description": "Moses' brother and spokesman, later appointed as Israel's first high priest."
+      },
+      {
+        "name": "Pharaoh",
+        "description": "The unnamed king of Egypt who enslaves Israel and resists God's demand to let the people go."
+      },
+      {
+        "name": "Miriam",
+        "description": "Moses' sister, a prophetess who leads the women in song after the crossing of the sea."
+      },
+      {
+        "name": "Jethro",
+        "description": "Moses' father-in-law, a priest of Midian, who advises him to appoint judges to share the work."
+      },
+      {
+        "name": "Joshua",
+        "description": "Moses' assistant, who leads Israel in battle against the Amalekites."
+      },
+      {
+        "name": "Bezalel",
+        "description": "A craftsman filled with God's Spirit to oversee building the tabernacle and its furnishings."
+      }
+    ]
+  },
+  "Leviticus": {
+    "author": "Traditionally associated with Moses.",
+    "audience": "Israel, especially priests and the covenant community worshiping at the tabernacle.",
+    "purpose": "To teach Israel how a holy God can dwell among a sinful people through sacrifice, priesthood, purity, and holy living.",
+    "theme": "God is holy, and His people are called to approach Him rightly and reflect His holiness in worship and life.",
+    "summary": "Leviticus explains sacrifices, priestly duties, clean and unclean categories, the Day of Atonement, and covenant holiness. It connects worship with ethical living.",
+    "keyVerse": "Leviticus 19:18",
+    "movements": [
+      {
+        "title": "Sacrificial Instructions",
+        "description": "The book opens with regulations for offerings that structure Israel's worship.",
+        "passages": [
+          "Leviticus 1-7"
+        ]
+      },
+      {
+        "title": "Priesthood Established",
+        "description": "Aaron and his sons are ordained; Nadab and Abihu die after offering unauthorized fire.",
+        "passages": [
+          "Leviticus 8-10"
+        ]
+      },
+      {
+        "title": "Day of Atonement and Holiness",
+        "description": "The annual Day of Atonement is prescribed, followed by laws calling Israel to holy living.",
+        "passages": [
+          "Leviticus 16-26"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Moses",
+        "description": "Receives God's instructions at the tent of meeting and conveys them to the people and priests."
+      },
+      {
+        "name": "Aaron",
+        "description": "Ordained as high priest; offers sacrifices and leads the Day of Atonement ritual."
+      },
+      {
+        "name": "Nadab and Abihu",
+        "description": "Aaron's sons, who die after offering unauthorized fire before the LORD."
+      },
+      {
+        "name": "Eleazar and Ithamar",
+        "description": "Aaron's surviving sons, who continue the priestly service."
+      }
+    ]
+  },
+  "Numbers": {
+    "author": "Traditionally associated with Moses.",
+    "audience": "Israel during the wilderness period.",
+    "purpose": "To recount Israel's journey from Sinai toward Canaan, exposing repeated unbelief while showing God's continuing faithfulness.",
+    "theme": "Human unbelief brings consequences, yet God remains faithful to His covenant purposes.",
+    "summary": "Numbers follows Israel from preparation at Sinai through rebellion and wilderness wandering to a new generation ready to enter Canaan.",
+    "keyVerse": "Numbers 6:24",
+    "movements": [
+      {
+        "title": "Departure from Sinai",
+        "description": "Israel is counted, organized, and begins the journey toward the promised land.",
+        "passages": [
+          "Numbers 1-10"
+        ]
+      },
+      {
+        "title": "The Spies and Wilderness Judgment",
+        "description": "Most spies discourage the people, and Israel refuses to enter Canaan; that generation is sentenced to wander.",
+        "passages": [
+          "Numbers 13-14"
+        ]
+      },
+      {
+        "title": "New Generation on the Plains of Moab",
+        "description": "After further rebellions and victories, a second census marks the generation preparing to enter the land.",
+        "passages": [
+          "Numbers 20-36"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Moses",
+        "description": "Leads Israel through the wilderness and intercedes for the people after repeated rebellions."
+      },
+      {
+        "name": "Aaron",
+        "description": "High priest whose authority is confirmed by his budding staff; dies on Mount Hor."
+      },
+      {
+        "name": "Miriam",
+        "description": "Moses' sister, who opposes his leadership and is struck with a skin disease; dies at Kadesh."
+      },
+      {
+        "name": "Joshua and Caleb",
+        "description": "The two spies who urge Israel to trust God and enter Canaan, and the only adults of their generation allowed to enter."
+      },
+      {
+        "name": "Korah",
+        "description": "A Levite who leads a rebellion against Moses and Aaron and is judged when the earth swallows the rebels."
+      },
+      {
+        "name": "Balak",
+        "description": "King of Moab who hires Balaam to curse Israel."
+      },
+      {
+        "name": "Balaam",
+        "description": "A foreign seer who is prevented from cursing Israel and instead pronounces blessings, including the oracle of a rising star."
+      },
+      {
+        "name": "Phinehas",
+        "description": "Aaron's grandson, whose zeal stops a plague after Israel's idolatry at Peor."
+      }
+    ]
+  },
+  "Deuteronomy": {
+    "author": "Traditionally associated with Moses, with the closing account of his death understood as added by a later hand.",
+    "audience": "The new generation of Israel preparing to enter Canaan.",
+    "purpose": "To renew the covenant, restate God's law for a new generation, and call Israel to love and obey God in the land.",
+    "theme": "Covenant faithfulness means loving God wholeheartedly and living in obedient loyalty to Him.",
+    "summary": "Moses reviews Israel's history, restates the law, explains covenant blessings and curses, commissions Joshua, and dies before Israel enters Canaan.",
+    "keyVerse": "Deuteronomy 6:5",
+    "movements": [
+      {
+        "title": "Moses Reviews Israel's Journey",
+        "description": "Moses retells key events from Sinai to Moab, emphasizing lessons from unbelief.",
+        "passages": [
+          "Deuteronomy 1-4"
+        ]
+      },
+      {
+        "title": "Covenant Law Restated",
+        "description": "The Ten Commandments and wider covenant instructions are given to the new generation.",
+        "passages": [
+          "Deuteronomy 5-26"
+        ]
+      },
+      {
+        "title": "Covenant Renewal and Moses' Death",
+        "description": "Blessings, curses, final songs and blessings, Joshua's commissioning, and Moses' death close the book.",
+        "passages": [
+          "Deuteronomy 27-34"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Moses",
+        "description": "Delivers his final addresses on the plains of Moab, renewing the covenant before his death on Mount Nebo."
+      },
+      {
+        "name": "Joshua",
+        "description": "Commissioned as Moses' successor to lead Israel into the land."
+      },
+      {
+        "name": "Caleb",
+        "description": "Remembered for wholeheartedly following the LORD when the other spies discouraged Israel."
+      },
+      {
+        "name": "Sihon and Og",
+        "description": "Amorite kings whose defeat is recalled as evidence of God's power to give Israel victory."
+      }
+    ]
+  }
+}

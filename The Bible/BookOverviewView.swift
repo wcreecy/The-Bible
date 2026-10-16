@@ -67,11 +67,8 @@ struct BookOverviewView: View {
         .scripturePassagePreviews()
     }
 
-    /// Falls back to the short historical-context note for any book without a When & Where section.
     private func settingRows(_ overview: BibleBookOverview) -> [LabeledRowsSection.Row] {
-        guard let whenAndWhere = overview.whenAndWhere else {
-            return [.init(title: "Historical Context", icon: "calendar", content: overview.historicalContext)]
-        }
+        guard let whenAndWhere = overview.whenAndWhere else { return [] }
         return [
             .init(title: "When It Happened", icon: "calendar", content: whenAndWhere.whenItHappened),
             .init(title: "How It Was Written", icon: "scroll", content: whenAndWhere.whenItWasWritten),

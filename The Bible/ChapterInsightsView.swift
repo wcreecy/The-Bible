@@ -115,10 +115,6 @@ struct ChapterInsightsView: View {
                     }
                 }
 
-                if let connections = context?.scriptureConnections, !connections.isEmpty {
-                    ChapterScriptureConnectionsCard(connections: connections)
-                }
-
                 if !insights.relatedVerses.isEmpty {
                     ChapterCrossReferencesPreview(
                         bookName: bookName,
@@ -209,9 +205,8 @@ struct ChapterLocation: Hashable {
     }
 }
 
-/// Much of the imported reading context repeats other fields word for word (the summary,
-/// "why it matters", the customs note). This keeps only text the page doesn't already show,
-/// so genuinely chapter-specific content appears automatically once it is written.
+/// Some imported text repeats another field word for word (the summary, "why it matters").
+/// This keeps only text the page doesn't already show, so each piece appears once.
 private struct ChapterContentFilter {
     let narrativePlacement: String
     let whyItMatters: String
@@ -226,20 +221,13 @@ private struct ChapterContentFilter {
         }
 
         _ = claim(insights.overallSummary)
-
-        let placement = context?.narrativePlacement ?? insights.connectionToChapter
-        narrativePlacement = claim(placement)
-        // The imported placement joins two older fields; neither should appear again.
-        for part in [insights.whatWasHappening, insights.connectionToChapter]
-        where Self.normalized(placement).contains(Self.normalized(part)) {
-            _ = claim(part)
-        }
+        narrativePlacement = claim(context?.narrativePlacement ?? "")
 
         // Reserved for the reflection card, which is where it is most useful.
         whyItMatters = claim(insights.whyItMatters)
 
         var rows: [ChapterBackgroundSection.Row] = []
-        let moment = claim(context?.firstCenturyMoment ?? insights.historicalSetting)
+        let moment = claim(context?.firstCenturyMoment ?? "")
         if !moment.isEmpty {
             rows.append(.init(title: "The Historical Moment", icon: "calendar", content: moment))
         }
@@ -247,19 +235,10 @@ private struct ChapterContentFilter {
         if !audience.isEmpty {
             rows.append(.init(title: "The Original Audience", icon: "person.3.fill", content: audience))
         }
-        let lenses = context?.culturalLenses ?? [
-            .init(title: "", reference: "", then: insights.customsAndTraditions, whyItMatters: "")
-        ]
-        for lens in lenses {
-            let paragraphs = [claim(lens.then), claim(lens.whyItMatters)].filter { !$0.isEmpty }
-            guard !paragraphs.isEmpty else { continue }
-            let isGeneric = lens.title.isEmpty || lens.title.hasPrefix("Customs and traditions")
-            rows.append(.init(
-                title: isGeneric ? "Customs & Daily Life" : lens.title,
-                icon: "scroll",
-                reference: isGeneric ? "" : lens.reference,
-                content: paragraphs.joined(separator: "\n")
-            ))
+        for lens in context?.culturalLenses ?? [] {
+            let text = claim(lens.then)
+            guard !text.isEmpty else { continue }
+            rows.append(.init(title: lens.title, icon: "scroll", reference: lens.reference, content: text))
         }
         backgroundRows = rows
     }

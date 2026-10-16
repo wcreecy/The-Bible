@@ -1,0 +1,395 @@
+{
+  "Matthew": {
+    "author": "Traditionally attributed to Matthew, the tax collector and apostle; the Gospel itself is formally anonymous.",
+    "audience": "A largely Jewish-Christian audience, while addressing the wider mission to all nations.",
+    "purpose": "To present Jesus as Messiah, Son of David, new-Moses-like teacher, and fulfillment of Israel's Scriptures, culminating in the mission to make disciples of all nations.",
+    "theme": "Jesus is Israel's Messiah and authoritative King who fulfills Scripture and forms a disciple community for all nations.",
+    "summary": "Matthew traces Jesus from Abraham and David through His teaching, miracles, conflict, death, and resurrection, emphasizing fulfillment of Scripture and the demands of discipleship.",
+    "keyVerse": "Matthew 6:33",
+    "movements": [
+      {
+        "title": "Birth and Early Ministry",
+        "description": "Jesus' genealogy, birth, baptism, temptation, and beginning ministry establish His messianic identity.",
+        "passages": [
+          "Matthew 1-4"
+        ]
+      },
+      {
+        "title": "Teaching and Kingdom Ministry",
+        "description": "The Sermon on the Mount and later teaching blocks explain kingdom life while miracles display Jesus' authority.",
+        "passages": [
+          "Matthew 5-25"
+        ]
+      },
+      {
+        "title": "Death, Resurrection, and Great Commission",
+        "description": "Jesus is crucified, raised, and commissions disciples to make disciples of all nations.",
+        "passages": [
+          "Matthew 26-28"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "description": "The Messiah, Son of David and Son of God, whose teaching, death, and resurrection are the center of the Gospel."
+      },
+      {
+        "name": "Mary",
+        "description": "The mother of Jesus, who conceives by the Holy Spirit."
+      },
+      {
+        "name": "Joseph",
+        "description": "Mary's husband, a descendant of David, guided by dreams to protect the child."
+      },
+      {
+        "name": "The magi",
+        "description": "Wise men from the east who follow a star to worship the newborn king."
+      },
+      {
+        "name": "Herod the Great",
+        "description": "King of Judea who tries to kill the infant Jesus."
+      },
+      {
+        "name": "John the Baptist",
+        "description": "The prophet who prepares the way for Jesus and baptizes Him."
+      },
+      {
+        "name": "Peter",
+        "description": "Leader among the twelve disciples, who confesses Jesus as the Messiah but later denies Him."
+      },
+      {
+        "name": "Judas Iscariot",
+        "description": "The disciple who betrays Jesus for thirty pieces of silver."
+      },
+      {
+        "name": "Caiaphas",
+        "description": "The high priest who presides at Jesus' trial before the council."
+      },
+      {
+        "name": "Pontius Pilate",
+        "description": "The Roman governor who sentences Jesus to crucifixion."
+      },
+      {
+        "name": "Mary Magdalene",
+        "description": "A follower of Jesus who witnesses His death and the empty tomb."
+      }
+    ]
+  },
+  "Mark": {
+    "author": "Traditionally attributed to John Mark, associated with Peter; the Gospel itself is anonymous.",
+    "audience": "Likely Gentile Christians, often associated by tradition with Rome.",
+    "purpose": "To present Jesus as the powerful yet suffering Son of God and to define discipleship through the cross.",
+    "theme": "Jesus' identity is revealed through authority, suffering, death, and resurrection; His followers are called to costly discipleship.",
+    "summary": "Mark moves quickly through Jesus' ministry, repeatedly asking who He really is. The turning point comes when Jesus explains that Messiahship leads through suffering and the cross.",
+    "keyVerse": "Mark 10:27",
+    "movements": [
+      {
+        "title": "Authority in Galilee",
+        "description": "Jesus teaches, heals, exorcises, and gathers disciples with striking authority.",
+        "passages": [
+          "Mark 1-8:26"
+        ]
+      },
+      {
+        "title": "Confession and Way of the Cross",
+        "description": "Peter confesses Jesus as Messiah, after which Jesus repeatedly teaches about suffering and discipleship.",
+        "passages": [
+          "Mark 8:27-10:52"
+        ]
+      },
+      {
+        "title": "Jerusalem, Crucifixion, and Resurrection",
+        "description": "Jesus enters Jerusalem, confronts leaders, is crucified, and the tomb is found empty.",
+        "passages": [
+          "Mark 11-16"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "description": "The Son of God and suffering Messiah, whose authority and self-giving death drive the Gospel."
+      },
+      {
+        "name": "John the Baptist",
+        "description": "The forerunner who prepares the way and is later executed by Herod Antipas."
+      },
+      {
+        "name": "Peter",
+        "description": "A leading disciple who confesses Jesus as the Christ but denies Him during the trial."
+      },
+      {
+        "name": "James and John",
+        "description": "The sons of Zebedee, part of Jesus' inner circle, who ask for places of honor."
+      },
+      {
+        "name": "Herod Antipas",
+        "description": "Ruler of Galilee who has John the Baptist beheaded."
+      },
+      {
+        "name": "Bartimaeus",
+        "description": "A blind beggar near Jericho who receives his sight and follows Jesus."
+      },
+      {
+        "name": "Judas Iscariot",
+        "description": "The disciple who betrays Jesus to the chief priests."
+      },
+      {
+        "name": "Pontius Pilate",
+        "description": "The Roman governor who hands Jesus over to be crucified."
+      },
+      {
+        "name": "Joseph of Arimathea",
+        "description": "A council member who boldly asks for Jesus' body and buries Him."
+      },
+      {
+        "name": "Mary Magdalene",
+        "description": "Among the women who witness the crucifixion and find the tomb empty."
+      }
+    ]
+  },
+  "Luke": {
+    "author": "Traditionally attributed to Luke, a physician and companion of Paul; the Gospel itself is anonymous but is paired with Acts by the same author.",
+    "audience": "Theophilus and a broader Gentile-Christian audience.",
+    "purpose": "To provide an orderly account of Jesus' life and show God's salvation extending to the marginalized and ultimately to all nations.",
+    "theme": "In Jesus, God's promised salvation comes for Israel and reaches outward to all peoples, especially the overlooked and excluded.",
+    "summary": "Luke presents Jesus as Spirit-anointed Savior, teacher, prophet, and Son of Man. It highlights prayer, the Holy Spirit, women, the poor, outsiders, and the journey toward Jerusalem.",
+    "keyVerse": "Luke 2:11",
+    "movements": [
+      {
+        "title": "Birth Narratives and Preparation",
+        "description": "The births of John the Baptist and Jesus are announced and connected to Israel's hopes; Jesus is baptized, tempted, and announces His mission in Nazareth.",
+        "passages": [
+          "Luke 1-4"
+        ]
+      },
+      {
+        "title": "Ministry and Journey to Jerusalem",
+        "description": "Jesus teaches, heals, welcomes outsiders, and tells distinctive parables while moving toward Jerusalem.",
+        "passages": [
+          "Luke 5-19"
+        ]
+      },
+      {
+        "title": "Death, Resurrection, and Ascension",
+        "description": "Jesus is crucified, raised, appears to disciples, and ascends, preparing for the continuation in Acts.",
+        "passages": [
+          "Luke 20-24"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "description": "The Spirit-anointed Savior who seeks and saves the lost and brings good news to the poor."
+      },
+      {
+        "name": "Theophilus",
+        "description": "The person to whom Luke addresses his orderly account."
+      },
+      {
+        "name": "Zechariah and Elizabeth",
+        "description": "An elderly priestly couple who become the parents of John the Baptist."
+      },
+      {
+        "name": "Mary",
+        "description": "The mother of Jesus, who receives Gabriel's announcement and sings the Magnificat."
+      },
+      {
+        "name": "John the Baptist",
+        "description": "The prophet who calls Israel to repentance and prepares the way for Jesus."
+      },
+      {
+        "name": "Simeon and Anna",
+        "description": "Devout elders who recognize the infant Jesus in the temple."
+      },
+      {
+        "name": "Peter",
+        "description": "A fisherman called to follow Jesus, who later denies Him and is restored."
+      },
+      {
+        "name": "Mary and Martha",
+        "description": "Sisters who welcome Jesus into their home."
+      },
+      {
+        "name": "Zacchaeus",
+        "description": "A chief tax collector in Jericho transformed by Jesus' visit."
+      },
+      {
+        "name": "Pontius Pilate and Herod Antipas",
+        "description": "The Roman governor and the ruler of Galilee who examine Jesus at His trial."
+      },
+      {
+        "name": "Cleopas",
+        "description": "One of two disciples who meet the risen Jesus on the road to Emmaus."
+      }
+    ]
+  },
+  "John": {
+    "author": "Traditionally attributed to John the apostle; the Gospel refers to the 'beloved disciple' and likely reflects testimony preserved within a Johannine community.",
+    "audience": "A broad Christian audience, including readers facing questions about Jesus' identity and faith.",
+    "purpose": "To lead readers to believe that Jesus is the Messiah, the Son of God, and to have life in His name.",
+    "theme": "Jesus is the eternal Word made flesh who reveals the Father and gives eternal life to those who believe.",
+    "summary": "John opens with Jesus as the eternal Word and structures much of the story around signs and 'I am' sayings. The Gospel climaxes in Jesus' death and resurrection as the decisive revelation of divine glory and life.",
+    "keyVerse": "John 3:16",
+    "movements": [
+      {
+        "title": "Signs and Public Ministry",
+        "description": "Jesus performs signs such as turning water to wine, healing, feeding the multitude, and raising Lazarus.",
+        "passages": [
+          "John 1-12"
+        ]
+      },
+      {
+        "title": "Farewell Teaching",
+        "description": "Jesus prepares His disciples for His departure, promising the Holy Spirit and calling them to love and abide in Him.",
+        "passages": [
+          "John 13-17"
+        ]
+      },
+      {
+        "title": "Passion and Resurrection",
+        "description": "Jesus is crucified, buried, raised, and appears to disciples including Thomas and Peter.",
+        "passages": [
+          "John 18-21"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "description": "The eternal Word made flesh, who reveals the Father through signs, 'I am' sayings, death, and resurrection."
+      },
+      {
+        "name": "John the Baptist",
+        "description": "Testifies that Jesus is the Lamb of God."
+      },
+      {
+        "name": "Nicodemus",
+        "description": "A Pharisee who comes to Jesus at night and later helps bury Him."
+      },
+      {
+        "name": "The Samaritan woman",
+        "description": "Meets Jesus at a well and brings her town to hear Him."
+      },
+      {
+        "name": "Lazarus, Martha, and Mary",
+        "description": "Siblings from Bethany; Jesus raises Lazarus from the dead."
+      },
+      {
+        "name": "Peter",
+        "description": "Leading disciple who denies Jesus and is restored by Him after the resurrection."
+      },
+      {
+        "name": "The beloved disciple",
+        "description": "The disciple whom Jesus loved, whose testimony stands behind the Gospel."
+      },
+      {
+        "name": "Thomas",
+        "description": "The disciple who doubts the resurrection until he sees Jesus and confesses, 'My Lord and my God.'"
+      },
+      {
+        "name": "Caiaphas",
+        "description": "The high priest who says it is better for one man to die for the people."
+      },
+      {
+        "name": "Pontius Pilate",
+        "description": "The Roman governor who asks 'What is truth?' and hands Jesus over to be crucified."
+      },
+      {
+        "name": "Mary Magdalene",
+        "description": "The first to meet the risen Jesus at the tomb."
+      }
+    ]
+  },
+  "Acts": {
+    "author": "Traditionally attributed to Luke, author of the Gospel of Luke.",
+    "audience": "Theophilus and the wider church.",
+    "purpose": "To show how the risen Jesus continues His mission through the Holy Spirit as the gospel moves from Jerusalem to Judea, Samaria, and the wider Roman world.",
+    "theme": "The Holy Spirit empowers the church to bear witness to Jesus across ethnic, geographic, and social boundaries.",
+    "summary": "Acts begins with Jesus' ascension and Pentecost, follows the Jerusalem church and persecution, then shifts toward Paul's missionary journeys and eventual arrival in Rome.",
+    "keyVerse": "Acts 1:8",
+    "movements": [
+      {
+        "title": "Pentecost and Jerusalem Church",
+        "description": "The Holy Spirit is poured out, Peter preaches, and a new community forms.",
+        "passages": [
+          "Acts 1-7"
+        ]
+      },
+      {
+        "title": "Gospel Expands Beyond Jerusalem",
+        "description": "Persecution scatters believers, Samaritans receive the message, Saul is converted, and Peter is sent to the Gentile Cornelius.",
+        "passages": [
+          "Acts 8-12"
+        ]
+      },
+      {
+        "title": "Paul's Missions and Journey to Rome",
+        "description": "Paul carries the gospel across the eastern Mediterranean and eventually reaches Rome as a prisoner.",
+        "passages": [
+          "Acts 13-28"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "description": "The risen Lord who ascends and continues His work through the Spirit and His witnesses."
+      },
+      {
+        "name": "Theophilus",
+        "description": "The person to whom Luke addresses the book."
+      },
+      {
+        "name": "Peter",
+        "description": "Preaches at Pentecost, leads the Jerusalem church, and brings the gospel to Cornelius."
+      },
+      {
+        "name": "John",
+        "description": "Peter's companion in early ministry and before the council."
+      },
+      {
+        "name": "Stephen",
+        "description": "One of the seven, who becomes the first Christian martyr."
+      },
+      {
+        "name": "Philip",
+        "description": "One of the seven, who preaches in Samaria and baptizes the Ethiopian official."
+      },
+      {
+        "name": "Paul (Saul)",
+        "description": "A persecutor converted on the road to Damascus, who becomes the great missionary to the Gentiles."
+      },
+      {
+        "name": "Barnabas",
+        "description": "An encourager who sponsors Paul and joins him on the first missionary journey."
+      },
+      {
+        "name": "Cornelius",
+        "description": "A God-fearing Roman centurion whose household receives the Spirit."
+      },
+      {
+        "name": "James",
+        "description": "The brother of Jesus and a leader of the Jerusalem church at the council in Acts 15."
+      },
+      {
+        "name": "Silas, Timothy, and Luke",
+        "description": "Paul's coworkers on later journeys; Luke appears in the 'we' passages."
+      },
+      {
+        "name": "Lydia",
+        "description": "A merchant in Philippi who becomes the first recorded convert in Europe."
+      },
+      {
+        "name": "Priscilla and Aquila",
+        "description": "A married couple who work with Paul and instruct Apollos."
+      },
+      {
+        "name": "Felix, Festus, and Agrippa",
+        "description": "Roman officials and a Jewish king before whom Paul defends himself."
+      }
+    ]
+  }
+}

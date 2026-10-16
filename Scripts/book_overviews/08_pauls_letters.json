@@ -1,0 +1,687 @@
+{
+  "Romans": {
+    "author": "Paul the apostle.",
+    "audience": "Christians in Rome, including both Jewish and Gentile believers.",
+    "purpose": "To explain the gospel, address tensions between Jewish and Gentile believers, and prepare for Paul's hoped-for mission farther west.",
+    "theme": "God's righteousness is revealed in the gospel: all have sinned, justification is by faith, new life comes through the Spirit, and Jews and Gentiles are united in God's saving plan.",
+    "summary": "Romans gives Paul's fullest sustained explanation of the gospel, moving from universal sin to justification, new life, Israel's place in God's purposes, and practical life in a diverse church.",
+    "keyVerse": "Romans 8:28",
+    "movements": [
+      {
+        "title": "Human Sin and Justification",
+        "description": "Paul argues that both Gentiles and Jews are under sin and that justification comes through faith apart from works of the law.",
+        "passages": [
+          "Romans 1-5"
+        ]
+      },
+      {
+        "title": "New Life in Christ and the Spirit",
+        "description": "Believers are united with Christ, freed from sin's dominion, and empowered by the Spirit.",
+        "passages": [
+          "Romans 6-8"
+        ]
+      },
+      {
+        "title": "Israel, Church Unity, and Christian Practice",
+        "description": "Paul wrestles with Israel's place in God's plan and calls the Roman church to humble, unified, sacrificial living.",
+        "passages": [
+          "Romans 9-16"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "The apostle writing to a church he has not yet visited."
+      },
+      {
+        "name": "Abraham",
+        "description": "Presented as the father of all who believe, justified by faith before circumcision."
+      },
+      {
+        "name": "Adam",
+        "description": "Contrasted with Christ: through Adam came sin and death, through Christ grace and life."
+      },
+      {
+        "name": "Phoebe",
+        "description": "A servant (or deacon) of the church at Cenchreae, likely the letter's carrier."
+      },
+      {
+        "name": "Priscilla and Aquila",
+        "description": "Coworkers of Paul who risked their lives for him and host a church."
+      },
+      {
+        "name": "Tertius",
+        "description": "The scribe who wrote down the letter."
+      }
+    ]
+  },
+  "1 Corinthians": {
+    "author": "Paul the apostle.",
+    "audience": "The church in Corinth.",
+    "purpose": "To correct divisions, immorality, lawsuits, disorderly worship, and confusion about marriage, spiritual gifts, the Lord's Supper, and resurrection.",
+    "theme": "The cross reshapes Christian identity, relationships, worship, freedom, and hope.",
+    "summary": "Paul responds to reports and questions from a gifted but divided church. He repeatedly redirects believers from status and self-interest toward holiness, love, mutual edification, and resurrection hope.",
+    "keyVerse": "1 Corinthians 13:13",
+    "movements": [
+      {
+        "title": "Divisions and Moral Problems Addressed",
+        "description": "Paul confronts factions, pride, sexual immorality, and lawsuits.",
+        "passages": [
+          "1 Corinthians 1-6"
+        ]
+      },
+      {
+        "title": "Questions about Christian Life and Worship",
+        "description": "Marriage, food offered to idols, the Lord's Supper, head coverings, and spiritual gifts are discussed.",
+        "passages": [
+          "1 Corinthians 7-14"
+        ]
+      },
+      {
+        "title": "Resurrection Defended",
+        "description": "Paul insists that bodily resurrection is central to the gospel and Christian hope.",
+        "passages": [
+          "1 Corinthians 15"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "The church's founder, writing to correct and instruct it."
+      },
+      {
+        "name": "Sosthenes",
+        "description": "Named as co-sender of the letter."
+      },
+      {
+        "name": "Apollos",
+        "description": "A gifted teacher whom some in Corinth set up as a rival to Paul."
+      },
+      {
+        "name": "Cephas (Peter)",
+        "description": "Another leader around whom a faction forms."
+      },
+      {
+        "name": "Chloe's people",
+        "description": "Members of a household who report the church's quarrels to Paul."
+      },
+      {
+        "name": "Timothy",
+        "description": "Paul's coworker, sent to remind the church of Paul's ways."
+      },
+      {
+        "name": "Stephanas, Fortunatus, and Achaicus",
+        "description": "Corinthian believers who visit Paul and refresh his spirit."
+      }
+    ]
+  },
+  "2 Corinthians": {
+    "author": "Paul the apostle.",
+    "audience": "The church in Corinth.",
+    "purpose": "To defend Paul's apostolic ministry, explain the character of Christian ministry, encourage reconciliation, and complete a collection for believers in Jerusalem.",
+    "theme": "God's power is displayed through weakness, suffering, integrity, generosity, and reconciliation.",
+    "summary": "Paul speaks with unusual personal openness about suffering, ministry, reconciliation, generosity, and his contested relationship with the Corinthians.",
+    "keyVerse": "2 Corinthians 5:17",
+    "movements": [
+      {
+        "title": "Ministry through Weakness",
+        "description": "Paul explains affliction, comfort, integrity, and the treasure of the gospel in fragile human vessels.",
+        "passages": [
+          "2 Corinthians 1-7"
+        ]
+      },
+      {
+        "title": "Collection for Jerusalem",
+        "description": "Paul urges generous, willing participation in relief for needy believers.",
+        "passages": [
+          "2 Corinthians 8-9"
+        ]
+      },
+      {
+        "title": "Defense of Apostleship",
+        "description": "Paul confronts rival claims and argues that true apostolic authority is marked by suffering, weakness, and dependence on Christ.",
+        "passages": [
+          "2 Corinthians 10-13"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Defends his ministry and expresses deep affection for the church."
+      },
+      {
+        "name": "Timothy",
+        "description": "Named as co-sender."
+      },
+      {
+        "name": "Titus",
+        "description": "Paul's coworker who brings encouraging news from Corinth and helps organize the collection."
+      },
+      {
+        "name": "The 'super-apostles'",
+        "description": "Rival teachers who boast in credentials and undermine Paul."
+      },
+      {
+        "name": "The offender",
+        "description": "An unnamed person disciplined by the church whom Paul now urges them to forgive."
+      }
+    ]
+  },
+  "Galatians": {
+    "author": "Paul the apostle.",
+    "audience": "Churches in Galatia; the exact geographic identification is debated.",
+    "purpose": "To oppose pressure on Gentile believers to adopt circumcision and law observance as necessary for covenant inclusion and to defend justification by faith in Christ.",
+    "theme": "In Christ, people are justified by faith and live by the Spirit rather than relying on works of the law for covenant status.",
+    "summary": "Paul strongly defends the gospel he preached, argues from Abraham and Scripture, and calls believers to use freedom not for self-indulgence but for Spirit-shaped love.",
+    "keyVerse": "Galatians 2:20",
+    "movements": [
+      {
+        "title": "Paul Defends His Gospel",
+        "description": "Paul recounts his calling and confrontations over Gentile inclusion.",
+        "passages": [
+          "Galatians 1-2"
+        ]
+      },
+      {
+        "title": "Faith, Promise, and Law",
+        "description": "Paul argues that God's promise to Abraham precedes the law and that justification comes through faith.",
+        "passages": [
+          "Galatians 3-4"
+        ]
+      },
+      {
+        "title": "Freedom and Life in the Spirit",
+        "description": "Believers are called to stand firm in freedom and bear the fruit of the Spirit through love.",
+        "passages": [
+          "Galatians 5-6"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Defends the gospel of grace and his apostolic calling."
+      },
+      {
+        "name": "Peter (Cephas)",
+        "description": "Confronted by Paul at Antioch for withdrawing from table fellowship with Gentiles."
+      },
+      {
+        "name": "James",
+        "description": "The Lord's brother and a pillar of the Jerusalem church."
+      },
+      {
+        "name": "Barnabas",
+        "description": "Paul's companion, who is briefly drawn into the withdrawal at Antioch."
+      },
+      {
+        "name": "Titus",
+        "description": "A Gentile believer who was not compelled to be circumcised."
+      },
+      {
+        "name": "Abraham",
+        "description": "Paul's chief example of justification by faith and the recipient of the promise."
+      },
+      {
+        "name": "Hagar and Sarah",
+        "description": "Used in an allegory contrasting slavery and freedom."
+      }
+    ]
+  },
+  "Ephesians": {
+    "author": "Traditionally attributed to Paul; some modern scholars debate Pauline authorship.",
+    "audience": "Christians in and around Ephesus, possibly intended as a circular letter for multiple churches.",
+    "purpose": "To describe God's cosmic plan in Christ and call the church to live in unity, holiness, love, and spiritual strength.",
+    "theme": "God unites all things in Christ and creates one new people who should live in unity, holiness, love, and spiritual maturity.",
+    "summary": "Ephesians moves from what God has done in Christ—election, redemption, grace, reconciliation—to how believers should live as one body, one family, and one people equipped for spiritual conflict.",
+    "keyVerse": "Ephesians 2:8",
+    "movements": [
+      {
+        "title": "Spiritual Blessings in Christ",
+        "description": "Paul praises God's saving purpose and grace in Christ.",
+        "passages": [
+          "Ephesians 1:1-2:10"
+        ]
+      },
+      {
+        "title": "Jew and Gentile United",
+        "description": "Christ's work creates one new humanity and one household of God.",
+        "passages": [
+          "Ephesians 2:11-3:21"
+        ]
+      },
+      {
+        "title": "Walk Worthy and Stand Firm",
+        "description": "The church is called to unity, holiness, transformed relationships, and spiritual armor.",
+        "passages": [
+          "Ephesians 4-6"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes as a prisoner for the Lord."
+      },
+      {
+        "name": "Tychicus",
+        "description": "A faithful minister sent to carry the letter and report on Paul."
+      }
+    ]
+  },
+  "Philippians": {
+    "author": "Paul the apostle, writing with Timothy named in the greeting.",
+    "audience": "The church in Philippi.",
+    "purpose": "To thank the Philippians for support, encourage unity and joy amid suffering, and present Christ's humility as the pattern for Christian life.",
+    "theme": "Joy and faithful unity are possible in suffering when believers center life on Christ's humility, resurrection, and coming victory.",
+    "summary": "Philippians is a warm letter of gratitude and encouragement. Paul discusses imprisonment, Christ's self-emptying humility, warnings against false confidence, and contentment in every circumstance.",
+    "keyVerse": "Philippians 4:13",
+    "movements": [
+      {
+        "title": "Gospel Advances through Imprisonment",
+        "description": "Paul explains that his confinement has unexpectedly helped spread the gospel.",
+        "passages": [
+          "Philippians 1"
+        ]
+      },
+      {
+        "title": "Christ's Humility as the Model",
+        "description": "The famous Christ hymn calls believers to self-giving unity and obedience.",
+        "passages": [
+          "Philippians 2"
+        ]
+      },
+      {
+        "title": "Pressing On and Learning Contentment",
+        "description": "Paul rejects confidence in status, pursues Christ, and explains contentment in plenty or need.",
+        "passages": [
+          "Philippians 3-4"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes from imprisonment with joy and gratitude."
+      },
+      {
+        "name": "Timothy",
+        "description": "Co-sender, commended for genuine concern for the church."
+      },
+      {
+        "name": "Epaphroditus",
+        "description": "The Philippians' messenger to Paul, who nearly died in service."
+      },
+      {
+        "name": "Euodia and Syntyche",
+        "description": "Two women who labored with Paul and are urged to agree in the Lord."
+      }
+    ]
+  },
+  "Colossians": {
+    "author": "Traditionally attributed to Paul, with Timothy named in the greeting; some modern scholars debate Pauline authorship.",
+    "audience": "The church in Colossae.",
+    "purpose": "To affirm the supremacy and sufficiency of Christ and warn against teachings that diminish His centrality.",
+    "theme": "Christ is supreme over creation and the church, and believers are complete in Him.",
+    "summary": "Colossians presents an exalted picture of Christ, warns against spiritual systems that promise fullness elsewhere, and calls believers to put off the old life and put on a Christlike one.",
+    "keyVerse": "Colossians 3:23",
+    "movements": [
+      {
+        "title": "Supremacy of Christ",
+        "description": "A major hymn presents Christ as image of the invisible God, creator, sustainer, and head of the church.",
+        "passages": [
+          "Colossians 1"
+        ]
+      },
+      {
+        "title": "Warnings against Rival Spiritual Claims",
+        "description": "Believers are told not to be captured by teachings centered on regulations, asceticism, or angelic powers.",
+        "passages": [
+          "Colossians 2"
+        ]
+      },
+      {
+        "title": "New Life in Christ",
+        "description": "Practical exhortations address character, relationships, households, prayer, and witness.",
+        "passages": [
+          "Colossians 3-4"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes from prison to a church he has not visited."
+      },
+      {
+        "name": "Timothy",
+        "description": "Named as co-sender."
+      },
+      {
+        "name": "Epaphras",
+        "description": "Founder of the Colossian church, who prays earnestly for them."
+      },
+      {
+        "name": "Tychicus and Onesimus",
+        "description": "Sent to deliver the letter and report on Paul."
+      },
+      {
+        "name": "Aristarchus, Mark, Luke, and Demas",
+        "description": "Companions of Paul who send greetings."
+      },
+      {
+        "name": "Archippus",
+        "description": "Encouraged to complete the ministry he has received."
+      }
+    ]
+  },
+  "1 Thessalonians": {
+    "author": "Paul the apostle, with Silvanus and Timothy named in the greeting.",
+    "audience": "The church in Thessalonica.",
+    "purpose": "To encourage a young persecuted church, affirm their faith, call for holy living, and clarify hope concerning believers who had died before Christ's return.",
+    "theme": "Faithful Christian life combines hope in Christ's return, holiness, mutual love, and perseverance under pressure.",
+    "summary": "Paul warmly remembers the Thessalonians' conversion, encourages sexual holiness and brotherly love, and reassures them that deceased believers will share fully in Christ's return.",
+    "keyVerse": "1 Thessalonians 5:17",
+    "movements": [
+      {
+        "title": "Conversion and Perseverance Remembered",
+        "description": "Paul recalls the church's turning from idols and endurance under persecution.",
+        "passages": [
+          "1 Thessalonians 1-3"
+        ]
+      },
+      {
+        "title": "Holy Living Encouraged",
+        "description": "Believers are called to sexual holiness, brotherly love, and responsible work.",
+        "passages": [
+          "1 Thessalonians 4:1-12"
+        ]
+      },
+      {
+        "title": "Hope in Christ's Return",
+        "description": "Paul comforts the church regarding deceased believers and urges readiness for the day of the Lord.",
+        "passages": [
+          "1 Thessalonians 4:13-5:28"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes with deep affection to a young church he had to leave abruptly."
+      },
+      {
+        "name": "Silvanus (Silas)",
+        "description": "Paul's coworker in founding the church; named as co-sender."
+      },
+      {
+        "name": "Timothy",
+        "description": "Sent back to strengthen the church; returns with a good report of their faith and love."
+      }
+    ]
+  },
+  "2 Thessalonians": {
+    "author": "Traditionally attributed to Paul, with Silvanus and Timothy named in the greeting; authorship is debated by some modern scholars.",
+    "audience": "The church in Thessalonica.",
+    "purpose": "To encourage persecuted believers, correct confusion about the day of the Lord, and address idleness within the community.",
+    "theme": "Persevere faithfully, do not be deceived about the end, and continue responsible Christian living.",
+    "summary": "2 Thessalonians reassures suffering believers that God will judge evil, warns that certain events must precede the day of the Lord, and commands disorderly members to work quietly.",
+    "keyVerse": "2 Thessalonians 3:3",
+    "movements": [
+      {
+        "title": "Perseverance under Persecution",
+        "description": "Paul praises endurance and points toward God's righteous judgment.",
+        "passages": [
+          "2 Thessalonians 1"
+        ]
+      },
+      {
+        "title": "Correction about the Day of the Lord",
+        "description": "The church is told not to panic and is given difficult teaching about rebellion and the 'man of lawlessness.'",
+        "passages": [
+          "2 Thessalonians 2"
+        ]
+      },
+      {
+        "title": "Work and Discipline",
+        "description": "Paul addresses those who have become idle and disruptive.",
+        "passages": [
+          "2 Thessalonians 3"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes to correct confusion about the day of the Lord."
+      },
+      {
+        "name": "Silvanus and Timothy",
+        "description": "Named as co-senders."
+      },
+      {
+        "name": "The man of lawlessness",
+        "description": "A figure of rebellion who must be revealed before the day of the Lord."
+      }
+    ]
+  },
+  "1 Timothy": {
+    "author": "Traditionally attributed to Paul and addressed to Timothy; some modern scholars debate Pauline authorship.",
+    "audience": "Timothy in Ephesus and the churches under his care.",
+    "purpose": "To guide church order, sound teaching, leadership qualifications, worship, care for vulnerable members, and faithful ministry.",
+    "theme": "Healthy churches require sound teaching, godly leadership, disciplined care, and lives that match the gospel.",
+    "summary": "1 Timothy combines pastoral guidance with instructions about doctrine, prayer, leadership, widows, elders, money, and Timothy's own conduct.",
+    "keyVerse": "1 Timothy 6:12",
+    "movements": [
+      {
+        "title": "False Teaching Confronted",
+        "description": "Timothy is urged to resist speculative teaching and preserve the gospel's aim of love and good conscience.",
+        "passages": [
+          "1 Timothy 1"
+        ]
+      },
+      {
+        "title": "Worship and Leadership Ordered",
+        "description": "Instructions address prayer, men and women in worship, overseers, and deacons.",
+        "passages": [
+          "1 Timothy 2-3"
+        ]
+      },
+      {
+        "title": "Pastoral Care and Godly Conduct",
+        "description": "The letter covers widows, elders, wealth, discipline, and Timothy's example.",
+        "passages": [
+          "1 Timothy 4-6"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes to instruct his coworker on church life and leadership."
+      },
+      {
+        "name": "Timothy",
+        "description": "Paul's 'true child in the faith,' left in Ephesus to confront false teaching."
+      },
+      {
+        "name": "Hymenaeus and Alexander",
+        "description": "Men who have shipwrecked their faith and been disciplined."
+      }
+    ]
+  },
+  "2 Timothy": {
+    "author": "Traditionally attributed to Paul and addressed to Timothy; some modern scholars debate Pauline authorship.",
+    "audience": "Timothy, with wider relevance for church leaders and believers.",
+    "purpose": "To strengthen Timothy for faithful ministry amid suffering, false teaching, and Paul's approaching death.",
+    "theme": "Guard the gospel, endure suffering, handle Scripture faithfully, and finish the race with perseverance.",
+    "summary": "2 Timothy is personal and urgent. Paul calls Timothy to courage, disciplined endurance, faithful teaching, Scripture-shaped ministry, and confidence that the gospel cannot be imprisoned.",
+    "keyVerse": "2 Timothy 3:16",
+    "movements": [
+      {
+        "title": "Guard the Gospel",
+        "description": "Timothy is urged not to be ashamed and to entrust sound teaching to reliable people.",
+        "passages": [
+          "2 Timothy 1-2"
+        ]
+      },
+      {
+        "title": "Difficult Times and Scripture",
+        "description": "Paul warns about corrupt teachers and highlights the usefulness of God-breathed Scripture.",
+        "passages": [
+          "2 Timothy 3"
+        ]
+      },
+      {
+        "title": "Final Charge and Farewell",
+        "description": "Timothy is told to preach the word; Paul reflects that he has fought the good fight and finished the race.",
+        "passages": [
+          "2 Timothy 4"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes from prison, expecting his death, with a final charge."
+      },
+      {
+        "name": "Timothy",
+        "description": "Urged to guard the gospel and endure suffering."
+      },
+      {
+        "name": "Lois and Eunice",
+        "description": "Timothy's grandmother and mother, known for their sincere faith."
+      },
+      {
+        "name": "Onesiphorus",
+        "description": "Searched for Paul in Rome and was not ashamed of his chains."
+      },
+      {
+        "name": "Hymenaeus and Philetus",
+        "description": "Teachers who claim the resurrection has already happened."
+      },
+      {
+        "name": "Demas",
+        "description": "A coworker who deserts Paul because he loves this present world."
+      },
+      {
+        "name": "Luke and Mark",
+        "description": "Luke alone remains with Paul; Mark is requested as useful for ministry."
+      },
+      {
+        "name": "Alexander the coppersmith",
+        "description": "A man who did Paul great harm and opposed his message."
+      }
+    ]
+  },
+  "Titus": {
+    "author": "Traditionally attributed to Paul and addressed to Titus; some modern scholars debate Pauline authorship.",
+    "audience": "Titus and churches in Crete.",
+    "purpose": "To organize churches with qualified leaders, oppose false teaching, and connect sound doctrine with good works.",
+    "theme": "Grace trains God's people to live self-controlled, upright, productive lives that make the gospel attractive.",
+    "summary": "Titus instructs the appointment of elders, correction of false teachers, practical teaching for different groups, and a strong emphasis on good works flowing from grace.",
+    "keyVerse": "Titus 3:5",
+    "movements": [
+      {
+        "title": "Elders Appointed",
+        "description": "Titus is instructed to establish qualified leadership in Cretan churches.",
+        "passages": [
+          "Titus 1"
+        ]
+      },
+      {
+        "title": "Sound Doctrine Produces Godly Living",
+        "description": "Different age and social groups are taught conduct consistent with grace.",
+        "passages": [
+          "Titus 2"
+        ]
+      },
+      {
+        "title": "Grace and Good Works",
+        "description": "Believers are reminded that salvation comes by God's mercy and should result in lives devoted to doing good.",
+        "passages": [
+          "Titus 3"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes to guide the organization of churches in Crete."
+      },
+      {
+        "name": "Titus",
+        "description": "Paul's coworker, left in Crete to appoint elders and teach sound doctrine."
+      },
+      {
+        "name": "Zenas and Apollos",
+        "description": "A lawyer and a teacher whom Titus is asked to help on their journey."
+      },
+      {
+        "name": "Artemas and Tychicus",
+        "description": "Coworkers, one of whom Paul plans to send so Titus can join him at Nicopolis."
+      }
+    ]
+  },
+  "Philemon": {
+    "author": "Paul the apostle, with Timothy named in the greeting.",
+    "audience": "Philemon, Apphia, Archippus, and the church meeting in Philemon's house.",
+    "purpose": "To appeal for Onesimus, asking Philemon to receive him not merely as a slave but as a beloved brother in Christ.",
+    "theme": "The gospel transforms relationships by creating a new family identity in Christ that challenges status and demands costly reconciliation.",
+    "summary": "Paul sends Onesimus back to Philemon with a personal appeal grounded in love rather than coercion. He asks Philemon to receive Onesimus as he would receive Paul himself.",
+    "keyVerse": "Philemon 1:6",
+    "movements": [
+      {
+        "title": "Paul Gives Thanks for Philemon",
+        "description": "The letter opens by praising Philemon's love and faith.",
+        "passages": [
+          "Philemon 1:1-7"
+        ]
+      },
+      {
+        "title": "Appeal for Onesimus",
+        "description": "Paul pleads for Onesimus, now described as useful and beloved in the Lord.",
+        "passages": [
+          "Philemon 1:8-16"
+        ]
+      },
+      {
+        "title": "Receive Him as You Would Me",
+        "description": "Paul offers to cover any debt and appeals for reconciled fellowship.",
+        "passages": [
+          "Philemon 1:17-25"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Paul",
+        "description": "Writes from prison with a personal appeal."
+      },
+      {
+        "name": "Philemon",
+        "description": "A believer who hosts a church in his house and is Onesimus' master."
+      },
+      {
+        "name": "Onesimus",
+        "description": "An enslaved man who has become a believer and whom Paul sends back as a brother."
+      },
+      {
+        "name": "Apphia and Archippus",
+        "description": "Members of Philemon's household church, greeted in the opening."
+      },
+      {
+        "name": "Timothy",
+        "description": "Named as co-sender."
+      },
+      {
+        "name": "Epaphras, Mark, Aristarchus, Demas, and Luke",
+        "description": "Paul's companions who send greetings."
+      }
+    ]
+  }
+}

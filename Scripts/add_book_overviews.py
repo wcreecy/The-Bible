@@ -49,7 +49,7 @@ def key_verse_text(reference, chapters_by_book):
     """The verse text as the app shows it: no translators' notes, supplied-word braces, or red-letter markers."""
     book, chapter, first, last = KEY_VERSE.match(reference).groups()
     verses = chapters_by_book[book][int(chapter) - 1][int(first) - 1:int(last or first)]
-    text = " ".join(verses).replace("", "").replace("", "")
+    text = " ".join(verses).replace("\ue000", "").replace("\ue001", "")
     text = re.sub(r"\s*\{[^{}]*:[^{}]*\}", "", text)
     text = re.sub(r"[{}]", "", text)
     return re.sub(r"\s{2,}", " ", text).strip()

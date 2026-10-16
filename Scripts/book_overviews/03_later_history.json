@@ -1,0 +1,315 @@
+{
+  "1 Chronicles": {
+    "author": "Anonymous; traditionally associated with Ezra, though the book itself does not name an author.",
+    "audience": "The post-exilic Jewish community.",
+    "purpose": "To retell Israel's history with special emphasis on David, temple worship, priesthood, and continuity with God's covenant promises.",
+    "theme": "God's people find identity and hope through covenant continuity, faithful worship, and the Davidic promise.",
+    "summary": "After extensive genealogies, 1 Chronicles focuses on David's reign, especially his preparation for the temple and organization of worship.",
+    "keyVerse": "1 Chronicles 16:11",
+    "movements": [
+      {
+        "title": "Genealogies and Israel's Identity",
+        "description": "Long genealogies connect the post-exilic community with Israel's ancestral story.",
+        "passages": [
+          "1 Chronicles 1-9"
+        ]
+      },
+      {
+        "title": "David's Reign",
+        "description": "David unites Israel, brings the ark to Jerusalem, and receives covenant promises.",
+        "passages": [
+          "1 Chronicles 10-17"
+        ]
+      },
+      {
+        "title": "Preparation for the Temple",
+        "description": "David gathers materials and organizes Levites, priests, musicians, and leaders for future temple worship.",
+        "passages": [
+          "1 Chronicles 22-29"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "David",
+        "description": "The central figure, presented as Israel's model king who organizes worship and prepares for the temple."
+      },
+      {
+        "name": "Saul",
+        "description": "Israel's first king, whose death in battle opens the way for David's reign."
+      },
+      {
+        "name": "Solomon",
+        "description": "David's son, chosen by God to build the temple."
+      },
+      {
+        "name": "Nathan",
+        "description": "The prophet who delivers God's covenant promise to David."
+      },
+      {
+        "name": "Jabez",
+        "description": "A man named in the genealogies who prays for God's blessing and protection."
+      },
+      {
+        "name": "Asaph",
+        "description": "A Levite appointed by David to lead music and praise before the ark."
+      },
+      {
+        "name": "Ornan the Jebusite",
+        "description": "Owner of the threshing floor that David purchases, which becomes the site of the temple."
+      }
+    ]
+  },
+  "2 Chronicles": {
+    "author": "Anonymous; traditionally associated with Ezra.",
+    "audience": "The post-exilic Jewish community.",
+    "purpose": "To retell the history of Judah with emphasis on temple worship, reform, repentance, and the consequences of covenant faithfulness or rebellion.",
+    "theme": "Seeking God brings renewal, while persistent unfaithfulness brings judgment; restoration remains possible through repentance.",
+    "summary": "2 Chronicles begins with Solomon's temple, follows Judah's kings with special attention to reforms, and ends with exile and Cyrus's decree permitting return.",
+    "keyVerse": "2 Chronicles 7:14",
+    "movements": [
+      {
+        "title": "Solomon Builds the Temple",
+        "description": "The temple is constructed, dedicated, and filled with God's glory.",
+        "passages": [
+          "2 Chronicles 1-7"
+        ]
+      },
+      {
+        "title": "Reform and Apostasy among Judah's Kings",
+        "description": "Kings such as Asa, Jehoshaphat, Hezekiah, and Josiah pursue reforms, while others lead Judah into sin.",
+        "passages": [
+          "2 Chronicles 10-35"
+        ]
+      },
+      {
+        "title": "Exile and Cyrus's Decree",
+        "description": "Jerusalem falls to Babylon, but the book ends with permission for the exiles to return and rebuild.",
+        "passages": [
+          "2 Chronicles 36"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Solomon",
+        "description": "Builds and dedicates the temple, which God's glory fills."
+      },
+      {
+        "name": "The Queen of Sheba",
+        "description": "Visits Solomon and marvels at his wisdom."
+      },
+      {
+        "name": "Rehoboam",
+        "description": "Solomon's son, during whose reign the kingdom divides."
+      },
+      {
+        "name": "Asa",
+        "description": "A king of Judah who leads early reforms but later relies on foreign alliances."
+      },
+      {
+        "name": "Jehoshaphat",
+        "description": "A king who sends teachers of the law and trusts God in battle."
+      },
+      {
+        "name": "Joash",
+        "description": "Crowned as a child after Athaliah's usurpation; restores the temple but later turns away."
+      },
+      {
+        "name": "Uzziah",
+        "description": "A strong king struck with a skin disease after pridefully burning incense in the temple."
+      },
+      {
+        "name": "Hezekiah",
+        "description": "A king who reopens the temple, celebrates Passover, and trusts God against Assyria."
+      },
+      {
+        "name": "Manasseh",
+        "description": "An idolatrous king who, uniquely in Chronicles, repents while in captivity."
+      },
+      {
+        "name": "Josiah",
+        "description": "The last great reforming king, who renews the covenant and celebrates a great Passover."
+      },
+      {
+        "name": "Cyrus",
+        "description": "King of Persia whose decree permits the exiles to return."
+      }
+    ]
+  },
+  "Ezra": {
+    "author": "Traditionally associated with Ezra; likely uses memoirs, lists, letters, and other records.",
+    "audience": "The returned Jewish community in Judah.",
+    "purpose": "To recount the return from exile, rebuilding of the temple, and Ezra's efforts to restore covenant faithfulness.",
+    "theme": "God restores His people, and restoration includes both rebuilt worship and renewed obedience.",
+    "summary": "Ezra recounts two major returns from exile: one connected with Zerubbabel and the temple, and a later one led by Ezra to address covenant faithfulness.",
+    "keyVerse": "Ezra 7:10",
+    "movements": [
+      {
+        "title": "Return and Altar Rebuilt",
+        "description": "A group returns under Persian authorization and restores sacrificial worship.",
+        "passages": [
+          "Ezra 1-3"
+        ]
+      },
+      {
+        "title": "Temple Rebuilt",
+        "description": "After opposition and delay, the second temple is completed.",
+        "passages": [
+          "Ezra 4-6"
+        ]
+      },
+      {
+        "title": "Ezra's Reform",
+        "description": "Ezra arrives with another group and addresses serious covenant concerns within the community.",
+        "passages": [
+          "Ezra 7-10"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Cyrus",
+        "description": "King of Persia who issues the decree allowing the exiles to return and rebuild the temple."
+      },
+      {
+        "name": "Zerubbabel",
+        "description": "A descendant of David who leads the first return and the rebuilding of the temple."
+      },
+      {
+        "name": "Jeshua",
+        "description": "The high priest who works with Zerubbabel to restore the altar and temple."
+      },
+      {
+        "name": "Haggai and Zechariah",
+        "description": "Prophets who encourage the people to resume temple construction."
+      },
+      {
+        "name": "Darius",
+        "description": "Persian king who confirms Cyrus' decree and supports the completion of the temple."
+      },
+      {
+        "name": "Artaxerxes",
+        "description": "Persian king who commissions Ezra to lead a later group and teach the law."
+      },
+      {
+        "name": "Ezra",
+        "description": "A priest and scribe skilled in the law of Moses, who leads reforms in Jerusalem."
+      }
+    ]
+  },
+  "Nehemiah": {
+    "author": "Largely based on Nehemiah's memoirs, with editorial shaping in its final form.",
+    "audience": "The Jewish community in Jerusalem after exile.",
+    "purpose": "To recount the rebuilding of Jerusalem's walls and the community's renewed commitment to covenant life.",
+    "theme": "God's work includes both rebuilding a city and reforming a covenant community.",
+    "summary": "Nehemiah leads a rapid rebuilding of Jerusalem's walls despite opposition, then joins Ezra in public Scripture reading and covenant renewal before addressing ongoing social and religious problems.",
+    "keyVerse": "Nehemiah 8:10",
+    "movements": [
+      {
+        "title": "Walls Rebuilt",
+        "description": "Nehemiah organizes the people to rebuild Jerusalem's walls despite threats and opposition.",
+        "passages": [
+          "Nehemiah 1-7"
+        ]
+      },
+      {
+        "title": "Scripture Read and Covenant Renewed",
+        "description": "Ezra reads the law publicly, leading to confession, worship, and covenant commitment.",
+        "passages": [
+          "Nehemiah 8-10"
+        ]
+      },
+      {
+        "title": "Community Reforms",
+        "description": "Nehemiah addresses Sabbath observance, temple support, exploitation, and intermarriage concerns.",
+        "passages": [
+          "Nehemiah 11-13"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Nehemiah",
+        "description": "Cupbearer to the Persian king, who becomes governor and leads the rebuilding of Jerusalem's walls."
+      },
+      {
+        "name": "Artaxerxes",
+        "description": "The Persian king who grants Nehemiah permission and resources to rebuild."
+      },
+      {
+        "name": "Ezra",
+        "description": "The priest and scribe who reads the law publicly to the people."
+      },
+      {
+        "name": "Sanballat",
+        "description": "A regional official who leads opposition to the rebuilding."
+      },
+      {
+        "name": "Tobiah",
+        "description": "An Ammonite official who opposes Nehemiah and is later expelled from a temple storeroom."
+      },
+      {
+        "name": "Geshem the Arab",
+        "description": "Joins Sanballat and Tobiah in mocking and opposing the work."
+      },
+      {
+        "name": "Eliashib",
+        "description": "The high priest, who helps rebuild the wall but later gives Tobiah a room in the temple."
+      }
+    ]
+  },
+  "Esther": {
+    "author": "Anonymous.",
+    "audience": "Jews living in the Persian Empire and later Jewish communities commemorating Purim.",
+    "purpose": "To explain the deliverance of the Jewish people from a planned massacre and the origin of the feast of Purim.",
+    "theme": "Providence can preserve God's people even when God is not explicitly named.",
+    "summary": "Esther, a Jewish woman who becomes queen, risks her life to expose Haman's plot against the Jews. The threatened destruction is reversed, and Purim commemorates the deliverance.",
+    "keyVerse": "Esther 4:14",
+    "movements": [
+      {
+        "title": "Esther Becomes Queen",
+        "description": "Esther becomes queen of Persia while concealing her Jewish identity.",
+        "passages": [
+          "Esther 1-2"
+        ]
+      },
+      {
+        "title": "Haman's Plot",
+        "description": "Haman gains authority and secures a decree to destroy the Jews after conflict with Mordecai.",
+        "passages": [
+          "Esther 3-4"
+        ]
+      },
+      {
+        "title": "Reversal and Deliverance",
+        "description": "Esther exposes Haman, the Jews are allowed to defend themselves, and Purim is established.",
+        "passages": [
+          "Esther 5-10"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Esther",
+        "description": "A Jewish orphan, also named Hadassah, who becomes queen and risks her life to save her people."
+      },
+      {
+        "name": "Mordecai",
+        "description": "Esther's cousin and guardian, whose refusal to bow to Haman triggers the conflict."
+      },
+      {
+        "name": "Ahasuerus",
+        "description": "The Persian king, commonly identified with Xerxes I, who chooses Esther as queen."
+      },
+      {
+        "name": "Haman",
+        "description": "An Agagite official who plots to destroy the Jews and is executed on his own gallows."
+      },
+      {
+        "name": "Vashti",
+        "description": "The queen deposed for refusing the king's summons, opening the way for Esther."
+      }
+    ]
+  }
+}

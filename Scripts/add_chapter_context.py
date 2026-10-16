@@ -127,7 +127,7 @@ def write_context(database, chapters):
         )
         database.executemany(
             "INSERT INTO chapter_cultural_lenses (book_name, chapter_number, sequence, title, scripture_reference,"
-            " then_text, why_it_matters) VALUES (?, ?, ?, ?, ?, ?, '')",
+            " then_text) VALUES (?, ?, ?, ?, ?, ?)",
             [(book, int(chapter), i, item["title"], item["reference"], item["text"]) for i, item in enumerate(entry["culture"])],
         )
 

@@ -16,8 +16,10 @@ Rebuild the app afterwards to include the new database.
 
 | Source | What it holds | Loaded by |
 | --- | --- | --- |
+| `book_overviews/*.json` | Each book's author, audience, purpose, theme, summary, key verse, movements, and key figures | `add_book_overviews.py` |
 | `book_content/*.md` | Each book's When & Where section and story | `add_book_content.py` |
 | `book_guides/*.json` | Book reading tips and connections | `add_book_guides.py` |
+| `chapter_insights/*.json` | Each chapter's summary, "why it matters", Where We Are text, key figures, key themes, and explained cross references | `add_chapter_insights.py` |
 | `chapter_context/*.json` | Chapter original audience and cultural background | `add_chapter_context.py` |
 | `historical_moments/*.json` | Chapter "Historical Moment" text | `add_chapter_context.py` |
 | `data/openbible_cross_references.zip` | OpenBible.info cross-reference dataset (CC-BY; see `data/README.md`) | `add_strict_cross_references.py` |
@@ -32,14 +34,10 @@ Each step can also be run on its own; they all write to the database `insights_c
 names. Every content file is checked against `The Bible/kjv.json`: references must exist and
 double-quoted text must match the KJV wording.
 
-### Tables without source files yet
-
-The book overviews, book movements, book and chapter key figures, chapter key themes,
-chapter summaries, the "Where We Are" text, and the older explained cross references exist
-only in the database. Don't hand-edit them in the database; they're next to be exported to
-source files.
-
-If the book stories or history are ever changed directly in the database,
+Every table in the database is built from these files, so the database is purely a build
+output: don't edit it directly, because the next build replaces it. A key verse's text is
+copied from the KJV at build time, so only its reference is in `book_overviews/`. If the book
+stories or history are ever changed directly in the database,
 `python3 Scripts/export_book_content.py` writes them back to `book_content/*.md`.
 
 ## Other generated files

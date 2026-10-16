@@ -1,0 +1,1800 @@
+{
+  "Luke 1": {
+    "summary": "Luke addresses Theophilus and states that he has investigated traditions about Jesus to write an orderly account (Luke 1:1–4). During Herod's reign, Gabriel announces to the priest Zechariah that Elizabeth will bear John, who will prepare people for the Lord; Zechariah doubts and cannot speak (Luke 1:5–25). Gabriel then tells Mary that she will bear Jesus, the promised Davidic king, and Mary responds in trust (Luke 1:26–38). Mary visits Elizabeth, and her song praises God's mercy and reversal of human power (Luke 1:39–56). John is born and named; Zechariah's speech returns and he prophesies about God's deliverance and John's preparatory role (Luke 1:57–80). The opening places Jesus and John within Israel's hopes and depicts God working through people of modest standing.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 1, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Birth announcements and praise songs belong to Luke’s narrative of the period before Jesus’ ministry. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Herod the Great ruled Judea as a Roman client king before 4 BCE. Luke describes priestly temple service and priestly family identity; the precise dates of Gabriel's announcements cannot be independently established. Mary's song draws on Israel's scriptural language, notably Hannah's prayer (1 Samuel 2).",
+    "keyFigures": [
+      {
+        "name": "Theophilus",
+        "role": "recipient of the orderly account. Recipient of the orderly account; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      },
+      {
+        "name": "Zechariah",
+        "role": "priest and John's father Priest and John's father; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      },
+      {
+        "name": "Elizabeth",
+        "role": "mother of John Mother of John; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      },
+      {
+        "name": "Gabriel",
+        "role": "angelic messenger Angelic messenger; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      },
+      {
+        "name": "Mary",
+        "role": "mother of Jesus Mother of Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      },
+      {
+        "name": "John",
+        "role": "child promised to prepare the way Child promised to prepare the way; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      },
+      {
+        "name": "Jesus",
+        "role": "promised Davidic ruler named by Gabriel Promised Davidic ruler named by Gabriel; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      },
+      {
+        "name": "Herod",
+        "role": "king used to date the narrative King used to date the narrative; the figure or group contributes to the events, dialogue, or teaching of Luke 1."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "God's promises and preparation",
+        "explanation": "",
+        "references": [
+          "Luke 1:5–17",
+          "Luke 1:67–79"
+        ]
+      },
+      {
+        "theme": "Humble trust and questioning",
+        "explanation": "",
+        "references": [
+          "Luke 1:18–20",
+          "Luke 1:34–38"
+        ]
+      },
+      {
+        "theme": "Reversal and mercy",
+        "explanation": "",
+        "references": [
+          "Luke 1:46–55"
+        ]
+      },
+      {
+        "theme": "Witness and praise",
+        "explanation": "",
+        "references": [
+          "Luke 1:57–66",
+          "Luke 1:76–80"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 2": {
+    "summary": "Luke reports that an imperial registration brought Joseph and the pregnant Mary from Nazareth to Bethlehem, where Jesus was born and placed in a manger (Luke 2:1–7). Angels announce the birth to shepherds, who visit and spread the news (Luke 2:8–20). Jesus is circumcised and named on the eighth day, and later presented at the Jerusalem temple; Simeon and Anna praise God and speak about the child (Luke 2:21–40). When Jesus is twelve, he stays in the temple among teachers during Passover and speaks of his Father's affairs before returning with his parents (Luke 2:41–52). The chapter connects the infant and growing Jesus with Israel's worship and expectations.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 2, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Luke situates Jesus’ birth in an imperial registration, followed by his family’s Jewish observances. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Roman rule frames the birth narrative. The registration linked to Quirinius (2:1–2) is historically disputed because the independently documented census of Quirinius occurred in 6 CE, after Herod's death; proposed reconciliations remain debated. Circumcision, purification and pilgrimage reflect Jewish legal and family practice.",
+    "keyFigures": [
+      {
+        "name": "Augustus",
+        "role": "Roman emperor named in the registration account Roman emperor named in the registration account; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      },
+      {
+        "name": "Quirinius",
+        "role": "Syrian governor mentioned with the registration Syrian governor mentioned with the registration; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      },
+      {
+        "name": "Joseph",
+        "role": "Mary's husband who travels to Bethlehem Mary's husband who travels to Bethlehem; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      },
+      {
+        "name": "Mary",
+        "role": "Jesus' mother Jesus' mother; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      },
+      {
+        "name": "Jesus",
+        "role": "newborn and later twelve-year-old boy Newborn and later twelve-year-old boy; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      },
+      {
+        "name": "Shepherds",
+        "role": "recipients and witnesses of the angelic announcement. Recipients and witnesses of the angelic announcement; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      },
+      {
+        "name": "Simeon",
+        "role": "devout Jerusalem man who praises God Devout Jerusalem man who praises God; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      },
+      {
+        "name": "Anna",
+        "role": "prophetess who speaks about the child Prophetess who speaks about the child; the figure or group contributes to the events, dialogue, or teaching of Luke 2."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Good news for the lowly",
+        "explanation": "",
+        "references": [
+          "Luke 2:8–20"
+        ]
+      },
+      {
+        "theme": "Faithful observance",
+        "explanation": "",
+        "references": [
+          "Luke 2:21–24",
+          "Luke 2:39–42"
+        ]
+      },
+      {
+        "theme": "Hope extending to the nations",
+        "explanation": "",
+        "references": [
+          "Luke 2:25–35"
+        ]
+      },
+      {
+        "theme": "Growing in wisdom",
+        "explanation": "",
+        "references": [
+          "Luke 2:46–52"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 1,
+        "reference": "Matthew 2:1",
+        "explanation": "Same event: Both identify Bethlehem as the place of Jesus' birth."
+      },
+      {
+        "verse": 23,
+        "reference": "Exodus 13:2",
+        "explanation": "Luke quotes the law consecrating every firstborn male to the Lord."
+      }
+    ]
+  },
+  "Luke 3": {
+    "summary": "Luke situates John's ministry among named Roman and local rulers, then depicts him preaching repentance and the forgiveness of sins in the Jordan region (Luke 3:1–6). John urges crowds to share, tax collectors to avoid overcharging, and soldiers to refuse extortion (Luke 3:7–14). He denies being the Messiah and announces one mightier than himself; Herod later imprisons him (Luke 3:15–20). Luke then describes Jesus' baptism, the descent of the Spirit, and a heavenly declaration (Luke 3:21–22), before giving a genealogy tracing Jesus' ancestry back to Adam (Luke 3:23–38). The chapter introduces Jesus' public role against a call for concrete moral change.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 3, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "John prepares people for the coming one while Luke names rulers who administered the region. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. The named rulers place John's activity around the late 20s CE, though the precise calculation is debated. Tax collection and military presence were ordinary features of Roman-era administration. Luke's genealogy differs from Matthew's; explanations for those differences vary.",
+    "keyFigures": [
+      {
+        "name": "John the Baptist",
+        "role": "preacher of repentance Preacher of repentance; the figure or group contributes to the events, dialogue, or teaching of Luke 3."
+      },
+      {
+        "name": "Jesus",
+        "role": "baptized figure introduced as God's Son Baptized figure introduced as God's Son; the figure or group contributes to the events, dialogue, or teaching of Luke 3."
+      },
+      {
+        "name": "Herod Antipas",
+        "role": "ruler who imprisons John Ruler who imprisons John; the figure or group contributes to the events, dialogue, or teaching of Luke 3."
+      },
+      {
+        "name": "Herodias",
+        "role": "woman implicated in John's rebuke Woman implicated in John's rebuke; the figure or group contributes to the events, dialogue, or teaching of Luke 3."
+      },
+      {
+        "name": "Crowds, tax collectors and soldiers",
+        "role": "hearers given practical instructions Hearers given practical instructions; the figure or group contributes to the events, dialogue, or teaching of Luke 3."
+      },
+      {
+        "name": "Tiberius Caesar",
+        "role": "emperor in the dating notice Emperor in the dating notice; the figure or group contributes to the events, dialogue, or teaching of Luke 3."
+      },
+      {
+        "name": "Pilate",
+        "role": "Roman prefect named in chronological setting Roman prefect named in chronological setting; the figure or group contributes to the events, dialogue, or teaching of Luke 3."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Repentance has practical fruit",
+        "explanation": "",
+        "references": [
+          "Luke 3:7–14"
+        ]
+      },
+      {
+        "theme": "Messianic expectation",
+        "explanation": "",
+        "references": [
+          "Luke 3:15–18"
+        ]
+      },
+      {
+        "theme": "Jesus' baptism and identity",
+        "explanation": "",
+        "references": [
+          "Luke 3:21–22"
+        ]
+      },
+      {
+        "theme": "Human solidarity in the genealogy",
+        "explanation": "",
+        "references": [
+          "Luke 3:23–38"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 4,
+        "reference": "Isaiah 40:3",
+        "explanation": "Luke quotes Isaiah's voice in the wilderness preparing the Lord's way."
+      },
+      {
+        "verse": 4,
+        "reference": "Isaiah 40:3-5",
+        "explanation": "Luke quotes Isaiah's description of the prepared way and all flesh seeing God's salvation."
+      },
+      {
+        "verse": 21,
+        "reference": "Matthew 3:13-17",
+        "explanation": "Same event: Jesus' baptism and the heavenly voice."
+      }
+    ]
+  },
+  "Luke 4": {
+    "summary": "Filled with the Spirit, Jesus faces the devil's temptations in the wilderness and responds with Scripture (Luke 4:1–13). He teaches in Galilee and reads Isaiah at Nazareth, announcing good news to the poor, release and the Lord's favor; the congregation first marvels and then grows hostile when he recalls God's mercy beyond Israel (Luke 4:14–30). At Capernaum Jesus teaches with authority, expels a demon, heals Simon's mother-in-law and many others, and insists on bringing the kingdom message to other towns (Luke 4:31–44). Luke portrays a Spirit-led mission defined by proclamation, healing, and controversy.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 4, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Public teaching and healing begin amid mixed reactions in Galilean communities. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Galilean synagogue teaching and Sabbath gatherings provide the immediate Jewish setting; Luke's scroll-reading episode reflects synagogue practices, though precise local ritual details vary. Elijah and Elisha traditions frame the challenge to local privilege; the narrative does not establish the precise chronology of this Nazareth visit.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "Spirit-led teacher and healer Spirit-led teacher and healer; the figure or group contributes to the events, dialogue, or teaching of Luke 4."
+      },
+      {
+        "name": "The devil",
+        "role": "tempter in the wilderness Tempter in the wilderness; the figure or group contributes to the events, dialogue, or teaching of Luke 4."
+      },
+      {
+        "name": "Nazareth synagogue hearers",
+        "role": "initially attentive, then hostile. Initially attentive, then hostile; the figure or group contributes to the events, dialogue, or teaching of Luke 4."
+      },
+      {
+        "name": "Elijah and Elisha",
+        "role": "earlier prophets cited by Jesus. Earlier prophets cited by Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 4."
+      },
+      {
+        "name": "Simon",
+        "role": "disciple whose mother-in-law is healed Disciple whose mother-in-law is healed; the figure or group contributes to the events, dialogue, or teaching of Luke 4."
+      },
+      {
+        "name": "Demons",
+        "role": "spiritual beings confronted by Jesus Spiritual beings confronted by Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 4."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Testing and faithfulness",
+        "explanation": "",
+        "references": [
+          "Luke 4:1–13"
+        ]
+      },
+      {
+        "theme": "Good news and reversal",
+        "explanation": "",
+        "references": [
+          "Luke 4:16–21"
+        ]
+      },
+      {
+        "theme": "Prophetic rejection",
+        "explanation": "",
+        "references": [
+          "Luke 4:22–30"
+        ]
+      },
+      {
+        "theme": "Authority with compassion",
+        "explanation": "",
+        "references": [
+          "Luke 4:31–44"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 1,
+        "reference": "Matthew 4:1-11",
+        "explanation": "Same event: The temptation of Jesus in the wilderness, with different ordering."
+      },
+      {
+        "verse": 4,
+        "reference": "Deuteronomy 8:3",
+        "explanation": "Jesus quotes the teaching about not living by bread alone."
+      },
+      {
+        "verse": 8,
+        "reference": "Deuteronomy 6:13",
+        "explanation": "Jesus quotes the requirement to worship and serve the Lord alone."
+      },
+      {
+        "verse": 10,
+        "reference": "Psalms 91:11-12",
+        "explanation": "The tempter quotes the psalm about angels providing protection."
+      },
+      {
+        "verse": 12,
+        "reference": "Deuteronomy 6:16",
+        "explanation": "Jesus quotes the command not to put the Lord to the test."
+      },
+      {
+        "verse": 18,
+        "reference": "Isaiah 61:1",
+        "explanation": "Jesus reads from Isaiah's passage concerning the anointed one bringing good news and liberation; the wording is not identical."
+      },
+      {
+        "verse": 18,
+        "reference": "Isaiah 61:1-2",
+        "explanation": "Jesus reads this passage in the synagogue at Nazareth."
+      },
+      {
+        "verse": 19,
+        "reference": "Isaiah 61:2",
+        "explanation": "Jesus reads Isaiah's proclamation of the acceptable year of the Lord; he does not quote the entire verse."
+      }
+    ]
+  },
+  "Luke 5": {
+    "summary": "Jesus directs Simon to a remarkable catch of fish and calls Simon, James and John to catch people; they leave their boats to follow him (Luke 5:1–11). Jesus cleanses a man with a serious skin condition and sends him to a priest, while crowds gather and Jesus withdraws to pray (Luke 5:12–16). He forgives and heals a paralyzed man amid objections from scribes and Pharisees (Luke 5:17–26). Jesus calls the tax collector Levi, eats with tax collectors and others, and answers questions about fasting with wedding and new-wine images (Luke 5:27–39). The chapter joins Jesus' call to discipleship with his authority to heal, forgive, and welcome outsiders.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 5, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Jesus’ public activity includes fishermen, sick people, religious experts and tax collectors. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Fishing livelihoods supported households around the Sea of Galilee, while tax collection could carry social stigma. Priestly examination after skin disease reflects (Leviticus 14). Shared meals signified association; Luke's discussion of fasting is grounded in Jewish devotion, not the absence of fasting from Jesus' teaching.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher calling followers and healing Teacher calling followers and healing; the figure or group contributes to the events, dialogue, or teaching of Luke 5."
+      },
+      {
+        "name": "Simon Peter",
+        "role": "fisherman called to follow Fisherman called to follow; the figure or group contributes to the events, dialogue, or teaching of Luke 5."
+      },
+      {
+        "name": "James and John",
+        "role": "Simon's fishing partners Simon's fishing partners; the figure or group contributes to the events, dialogue, or teaching of Luke 5."
+      },
+      {
+        "name": "Levi",
+        "role": "tax collector invited to follow Tax collector invited to follow; the figure or group contributes to the events, dialogue, or teaching of Luke 5."
+      },
+      {
+        "name": "Paralyzed man and friends",
+        "role": "recipients and agents of seeking help. Recipients and agents of seeking help; the figure or group contributes to the events, dialogue, or teaching of Luke 5."
+      },
+      {
+        "name": "Scribes and Pharisees",
+        "role": "religious observers disputing Jesus' actions Religious observers disputing Jesus' actions; the figure or group contributes to the events, dialogue, or teaching of Luke 5."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Discipleship and response",
+        "explanation": "",
+        "references": [
+          "Luke 5:1–11",
+          "Luke 5:27–28"
+        ]
+      },
+      {
+        "theme": "Healing and forgiveness",
+        "explanation": "",
+        "references": [
+          "Luke 5:12–26"
+        ]
+      },
+      {
+        "theme": "Fellowship with outsiders",
+        "explanation": "",
+        "references": [
+          "Luke 5:29–32"
+        ]
+      },
+      {
+        "theme": "Newness and old patterns",
+        "explanation": "",
+        "references": [
+          "Luke 5:33–39"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 6": {
+    "summary": "Disputes arise when Jesus' disciples pluck grain on the Sabbath and Jesus heals a man with a withered hand; Jesus speaks of his authority over the Sabbath and the value of doing good (Luke 6:1–11). After praying, he chooses twelve apostles (Luke 6:12–16). He addresses disciples and crowds with blessings for the poor and hungry, warnings to the rich and satisfied, love for enemies, mercy, nonjudgmental self-examination, good fruit, and obedience shown through action (Luke 6:17–49). The chapter presents an ethic of the kingdom that challenges ordinary ideas of status and retaliation.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 6, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Sabbath controversies and Jesus’ ethical discourse address competing understandings of faithful life. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Second Temple Jewish Sabbath debates concerned interpreting holiness and permitted actions, not whether Sabbath mattered. Luke locates Jesus' teaching amid disciples and crowds under Roman-era social inequalities. The Twelve evoke Israel's twelve tribes, although this precise symbolism is interpretive rather than explicit in every verse.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher and chooser of the Twelve Teacher and chooser of the Twelve; the figure or group contributes to the events, dialogue, or teaching of Luke 6."
+      },
+      {
+        "name": "The twelve apostles",
+        "role": "disciples commissioned by name Disciples commissioned by name; the figure or group contributes to the events, dialogue, or teaching of Luke 6."
+      },
+      {
+        "name": "Scribes and Pharisees",
+        "role": "observers of Sabbath controversy Observers of Sabbath controversy; the figure or group contributes to the events, dialogue, or teaching of Luke 6."
+      },
+      {
+        "name": "Man with a withered hand",
+        "role": "recipient of Sabbath healing. Recipient of Sabbath healing; the figure or group contributes to the events, dialogue, or teaching of Luke 6."
+      },
+      {
+        "name": "Disciples and crowds",
+        "role": "audience for blessings and instruction Audience for blessings and instruction; the figure or group contributes to the events, dialogue, or teaching of Luke 6."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Sabbath and doing good",
+        "explanation": "",
+        "references": [
+          "Luke 6:1–11"
+        ]
+      },
+      {
+        "theme": "Kingdom reversal",
+        "explanation": "",
+        "references": [
+          "Luke 6:20–26"
+        ]
+      },
+      {
+        "theme": "Love of enemies",
+        "explanation": "",
+        "references": [
+          "Luke 6:27–36"
+        ]
+      },
+      {
+        "theme": "Hearing and doing",
+        "explanation": "",
+        "references": [
+          "Luke 6:43–49"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 3,
+        "reference": "1 Samuel 21:6",
+        "explanation": "Jesus retells the incident of David eating the consecrated bread."
+      }
+    ]
+  },
+  "Luke 7": {
+    "summary": "Jesus heals a centurion's valued servant after Jewish elders and friends relay the officer's appeal; Jesus marvels at his faith (Luke 7:1–10). At Nain he raises a widow's only son, prompting awe and prophetic comparisons (Luke 7:11–17). John sends messengers asking whether Jesus is the expected one; Jesus points to works of restoration and praises John's prophetic role (Luke 7:18–35). At a Pharisee's meal, a woman known as a sinner washes Jesus' feet with tears and anoints them. Jesus tells a parable about forgiven debts and contrasts the woman's love with the host's limited hospitality (Luke 7:36–50). Faith, mercy, and varied responses to Jesus run through the chapter.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 7, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Healings, questions from John and disputed table fellowship reveal contrasting responses. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Roman military officers could have significant influence in provincial communities; widows faced economic vulnerability. Meals followed conventions of honor, hospitality, and social boundaries. Luke does not name the woman at Simon's meal or identify her with Mary Magdalene.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "healer and teacher Healer and teacher; the figure or group contributes to the events, dialogue, or teaching of Luke 7."
+      },
+      {
+        "name": "Centurion",
+        "role": "Roman-associated officer asking for his servant Roman-associated officer asking for his servant; the figure or group contributes to the events, dialogue, or teaching of Luke 7."
+      },
+      {
+        "name": "Widow of Nain",
+        "role": "mother whose son is raised Mother whose son is raised; the figure or group contributes to the events, dialogue, or teaching of Luke 7."
+      },
+      {
+        "name": "John the Baptist",
+        "role": "imprisoned prophet who sends questions Imprisoned prophet who sends questions; the figure or group contributes to the events, dialogue, or teaching of Luke 7."
+      },
+      {
+        "name": "John's messengers",
+        "role": "bring and receive messages. Bring and receive messages; the figure or group contributes to the events, dialogue, or teaching of Luke 7."
+      },
+      {
+        "name": "Simon the Pharisee",
+        "role": "host questioning Jesus Host questioning Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 7."
+      },
+      {
+        "name": "Woman known as a sinner",
+        "role": "shows hospitality and devotion. Shows hospitality and devotion; the figure or group contributes to the events, dialogue, or teaching of Luke 7."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Faith and authority",
+        "explanation": "",
+        "references": [
+          "Luke 7:1–10"
+        ]
+      },
+      {
+        "theme": "Compassion for the vulnerable",
+        "explanation": "",
+        "references": [
+          "Luke 7:11–17"
+        ]
+      },
+      {
+        "theme": "Recognizing God's work",
+        "explanation": "",
+        "references": [
+          "Luke 7:18–35"
+        ]
+      },
+      {
+        "theme": "Forgiveness and love",
+        "explanation": "",
+        "references": [
+          "Luke 7:36–50"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 27,
+        "reference": "Malachi 3:1",
+        "explanation": "Jesus and Mark quote the prophecy about sending a messenger to prepare the way."
+      }
+    ]
+  },
+  "Luke 8": {
+    "summary": "Jesus travels preaching the kingdom accompanied by the Twelve and women who support the group, including Mary Magdalene, Joanna, and Susanna (Luke 8:1–3). He teaches the sower parable and explains receptive hearing, then defines his family through those who hear and do God's word (Luke 8:4–21). He calms a storm on the lake (Luke 8:22–25), frees a man tormented by demons in the region of the Gerasenes (Luke 8:26–39), and heals a woman with prolonged bleeding while going to Jairus's house, where he raises Jairus's daughter (Luke 8:40–56). The chapter links hearing with faith and depicts authority over threatening forces.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 8, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Jesus and his supporters travel around Galilee and encounter threatening circumstances. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Women could act as patrons and supporters of travelling teachers, as Luke explicitly describes. Synagogue leadership and purity concerns provide context for Jairus and the woman with bleeding. The precise site of the Gerasene incident is textually/geographically debated across manuscripts.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "travelling preacher and healer Travelling preacher and healer; the figure or group contributes to the events, dialogue, or teaching of Luke 8."
+      },
+      {
+        "name": "The Twelve",
+        "role": "his close disciples. His close disciples; the figure or group contributes to the events, dialogue, or teaching of Luke 8."
+      },
+      {
+        "name": "Mary Magdalene, Joanna and Susanna",
+        "role": "women supporting the ministry Women supporting the ministry; the figure or group contributes to the events, dialogue, or teaching of Luke 8."
+      },
+      {
+        "name": "The possessed man",
+        "role": "restored in the Gerasene region Restored in the Gerasene region; the figure or group contributes to the events, dialogue, or teaching of Luke 8."
+      },
+      {
+        "name": "Jairus",
+        "role": "synagogue leader seeking help for his daughter Synagogue leader seeking help for his daughter; the figure or group contributes to the events, dialogue, or teaching of Luke 8."
+      },
+      {
+        "name": "Woman with bleeding",
+        "role": "seeks healing by touching Jesus Seeks healing by touching Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 8."
+      },
+      {
+        "name": "Jairus's daughter",
+        "role": "child restored to life Child restored to life; the figure or group contributes to the events, dialogue, or teaching of Luke 8."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Hearing that bears fruit",
+        "explanation": "",
+        "references": [
+          "Luke 8:4–18"
+        ]
+      },
+      {
+        "theme": "New family defined by obedience",
+        "explanation": "",
+        "references": [
+          "Luke 8:19–21"
+        ]
+      },
+      {
+        "theme": "Faith amid fear",
+        "explanation": "",
+        "references": [
+          "Luke 8:22–25",
+          "Luke 8:40–56"
+        ]
+      },
+      {
+        "theme": "Restoration and witness",
+        "explanation": "",
+        "references": [
+          "Luke 8:26–39"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 22,
+        "reference": "Matthew 8:23-27",
+        "explanation": "Same event: Jesus calming the storm on the lake."
+      },
+      {
+        "verse": 40,
+        "reference": "Mark 5:21-43",
+        "explanation": "Same event: Jesus raising Jairus' daughter and healing the woman with a flow of blood."
+      },
+      {
+        "verse": 40,
+        "reference": "Matthew 9:18-26",
+        "explanation": "Same event: The woman healed of bleeding and Jairus's daughter raised."
+      }
+    ]
+  },
+  "Luke 9": {
+    "summary": "Jesus commissions the Twelve to proclaim God's kingdom and heal, and Herod wonders about Jesus' identity (Luke 9:1–9). Jesus feeds a large crowd, then receives Peter's confession that he is God's Messiah; he predicts suffering and calls followers to take up their cross (Luke 9:10–27). At the transfiguration Moses and Elijah appear with Jesus, and a voice tells the disciples to listen to him (Luke 9:28–36). Jesus heals a boy, predicts his betrayal, teaches greatness through welcoming a child, and corrects exclusionary attitudes (Luke 9:37–50). As he sets his face toward Jerusalem, he refuses retaliatory violence and emphasizes the cost of following (Luke 9:51–62).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 9, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "The narrative moves from Galilean ministry toward Jerusalem and its anticipated conflict. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Galilee and the route toward Jerusalem frame the transition in Luke's narrative. Samaritans and Jews had historically distinct religious communities; the episode should not be generalized to every Samaritan. Crucifixion was a recognizable Roman instrument of execution, lending force to the cross saying.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "commissioner and teacher Commissioner and teacher; the figure or group contributes to the events, dialogue, or teaching of Luke 9."
+      },
+      {
+        "name": "The Twelve",
+        "role": "sent to proclaim and heal. Sent to proclaim and heal; the figure or group contributes to the events, dialogue, or teaching of Luke 9."
+      },
+      {
+        "name": "Herod Antipas",
+        "role": "ruler asking about Jesus Ruler asking about Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 9."
+      },
+      {
+        "name": "Peter",
+        "role": "confesses Jesus as Messiah Confesses Jesus as Messiah; the figure or group contributes to the events, dialogue, or teaching of Luke 9."
+      },
+      {
+        "name": "Moses and Elijah",
+        "role": "appear in the transfiguration. Appear in the transfiguration; the figure or group contributes to the events, dialogue, or teaching of Luke 9."
+      },
+      {
+        "name": "James and John",
+        "role": "disciples who suggest judgment on a Samaritan village Disciples who suggest judgment on a Samaritan village; the figure or group contributes to the events, dialogue, or teaching of Luke 9."
+      },
+      {
+        "name": "Boy and father",
+        "role": "seek deliverance. Seek deliverance; the figure or group contributes to the events, dialogue, or teaching of Luke 9."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Mission and dependence",
+        "explanation": "",
+        "references": [
+          "Luke 9:1–6"
+        ]
+      },
+      {
+        "theme": "Messiahship and suffering",
+        "explanation": "",
+        "references": [
+          "Luke 9:18–27"
+        ]
+      },
+      {
+        "theme": "Listen to Jesus",
+        "explanation": "",
+        "references": [
+          "Luke 9:28–36"
+        ]
+      },
+      {
+        "theme": "Discipleship without rivalry",
+        "explanation": "",
+        "references": [
+          "Luke 9:46–56"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 10,
+        "reference": "Mark 6:30-44",
+        "explanation": "Same event: Jesus feeding about five thousand with five loaves and two fish."
+      },
+      {
+        "verse": 10,
+        "reference": "Matthew 14:13-21",
+        "explanation": "Same event: The feeding of the five thousand."
+      },
+      {
+        "verse": 18,
+        "reference": "Matthew 16:13-20",
+        "explanation": "Same event: Peter's confession of Jesus' identity."
+      },
+      {
+        "verse": 28,
+        "reference": "Matthew 17:1-8",
+        "explanation": "Same event: The transfiguration and the appearance of Moses and Elijah."
+      }
+    ]
+  },
+  "Luke 10": {
+    "summary": "Jesus appoints seventy or seventy-two others (depending on manuscript tradition) and sends them ahead in pairs, warning of rejection and instructing them to announce God's kingdom (Luke 10:1–24). A legal expert asks about eternal life, and Jesus uses the story of a compassionate Samaritan to define neighborly action, even across hostile boundaries (Luke 10:25–37). At the home of Martha, Mary listens at Jesus' feet while Martha is distracted by serving; Jesus says Mary has chosen the better portion (Luke 10:38–42). Mission, mercy, and attentive listening characterize the chapter.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 10, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Jesus prepares envoys and teaches mercy and welcome in villages and homes. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Jewish-Samaritan differences make the parable's hero socially striking. Travelling teachers relied on household hospitality. Manuscripts differ between seventy and seventy-two commissioned disciples, and neither figure is a justification to insist on a single reconstruction.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "sender and teacher Sender and teacher; the figure or group contributes to the events, dialogue, or teaching of Luke 10."
+      },
+      {
+        "name": "Seventy or seventy-two disciples",
+        "role": "messengers sent in pairs Messengers sent in pairs; the figure or group contributes to the events, dialogue, or teaching of Luke 10."
+      },
+      {
+        "name": "Legal expert",
+        "role": "asks about eternal life and the neighbor. Asks about eternal life and the neighbor; the figure or group contributes to the events, dialogue, or teaching of Luke 10."
+      },
+      {
+        "name": "Samaritan",
+        "role": "compassionate traveler in Jesus' parable, not a recorded historical individual Compassionate traveler in Jesus' parable, not a recorded historical individual; the figure or group contributes to the events, dialogue, or teaching of Luke 10."
+      },
+      {
+        "name": "Martha",
+        "role": "host who is busy serving Host who is busy serving; the figure or group contributes to the events, dialogue, or teaching of Luke 10."
+      },
+      {
+        "name": "Mary",
+        "role": "Martha's sister who listens to Jesus Martha's sister who listens to Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 10."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Mission and hospitality",
+        "explanation": "",
+        "references": [
+          "Luke 10:1–12"
+        ]
+      },
+      {
+        "theme": "Joy with proper focus",
+        "explanation": "",
+        "references": [
+          "Luke 10:17–24"
+        ]
+      },
+      {
+        "theme": "Neighbor-love across boundaries",
+        "explanation": "",
+        "references": [
+          "Luke 10:25–37"
+        ]
+      },
+      {
+        "theme": "Listening and service",
+        "explanation": "",
+        "references": [
+          "Luke 10:38–42"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 27,
+        "reference": "Deuteronomy 6:5",
+        "explanation": "The lawyer quotes the command to love God with heart, soul, strength and mind."
+      },
+      {
+        "verse": 27,
+        "reference": "Leviticus 19:18",
+        "explanation": "The command to love one's neighbor as oneself is directly quoted."
+      }
+    ]
+  },
+  "Luke 11": {
+    "summary": "Jesus teaches a prayer centered on God's name, kingdom, daily provision, forgiveness, and deliverance; he illustrates persistence in asking and God's willingness to give good gifts (Luke 11:1–13). After an exorcism, opponents accuse him of acting by Beelzebul, and Jesus answers that a divided kingdom cannot stand and calls hearers to respond rightly to his message (Luke 11:14–32). He speaks about a healthy eye and inner light (Luke 11:33–36). At a Pharisee's meal, he denounces outward religious display that neglects justice and love, and rebukes legal experts for burdens and obstacles they place on others (Luke 11:37–54).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 11, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Prayer and controversy over Jesus’ actions sharpen calls to discernment. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Jewish household purification practices and debates about interpretation lie behind the meal conflict. Luke portrays disputes among Jewish participants, not a rejection of Judaism as a whole. Beelzebul was a hostile designation linked to demonic power; the exact linguistic history is debated.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher and exorcist Teacher and exorcist; the figure or group contributes to the events, dialogue, or teaching of Luke 11."
+      },
+      {
+        "name": "Disciples",
+        "role": "ask for instruction on prayer. Ask for instruction on prayer; the figure or group contributes to the events, dialogue, or teaching of Luke 11."
+      },
+      {
+        "name": "Accusers in the crowd",
+        "role": "attribute exorcism to Beelzebul Attribute exorcism to Beelzebul; the figure or group contributes to the events, dialogue, or teaching of Luke 11."
+      },
+      {
+        "name": "Pharisee host",
+        "role": "questions Jesus' washing practice Questions Jesus' washing practice; the figure or group contributes to the events, dialogue, or teaching of Luke 11."
+      },
+      {
+        "name": "Pharisees and legal experts",
+        "role": "receive Jesus' warnings Receive Jesus' warnings; the figure or group contributes to the events, dialogue, or teaching of Luke 11."
+      },
+      {
+        "name": "Jonah and queen of the South",
+        "role": "figures invoked in Jesus' comparisons. Figures invoked in Jesus' comparisons; the figure or group contributes to the events, dialogue, or teaching of Luke 11."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Prayer and reliance",
+        "explanation": "",
+        "references": [
+          "Luke 11:1–13"
+        ]
+      },
+      {
+        "theme": "Responding to revelation",
+        "explanation": "",
+        "references": [
+          "Luke 11:14–32"
+        ]
+      },
+      {
+        "theme": "Integrity inside and out",
+        "explanation": "",
+        "references": [
+          "Luke 11:33–44"
+        ]
+      },
+      {
+        "theme": "Responsible teaching",
+        "explanation": "",
+        "references": [
+          "Luke 11:45–54"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 12": {
+    "summary": "Jesus warns disciples about hypocrisy, urges fearless witness, and assures them of God's care (Luke 12:1–12). A dispute over inheritance prompts the rich fool parable, challenging wealth accumulation without regard for God (Luke 12:13–21). Jesus teaches against anxiety, encourages generosity and heavenly treasure, and calls followers to readiness like alert servants awaiting their master (Luke 12:22–48). He speaks of the division his mission will bring and urges discernment of the times and reconciliation (Luke 12:49–59). The chapter tests what people trust and whether that trust shapes how they live.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 12, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Concerns about possessions, security and responsibility motivate extended teachings. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Land inheritance and grain storage were familiar concerns in agrarian Judea and Galilee. Household stewards could manage significant resources on behalf of an owner. Jesus' sayings address economic insecurity and stewardship without supplying modern investment rules.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher addressing disciples and crowds Teacher addressing disciples and crowds; the figure or group contributes to the events, dialogue, or teaching of Luke 12."
+      },
+      {
+        "name": "Disciples",
+        "role": "primary hearers of warnings and encouragement Primary hearers of warnings and encouragement; the figure or group contributes to the events, dialogue, or teaching of Luke 12."
+      },
+      {
+        "name": "Man requesting inheritance division",
+        "role": "initiates the teaching on greed Initiates the teaching on greed; the figure or group contributes to the events, dialogue, or teaching of Luke 12."
+      },
+      {
+        "name": "Rich fool",
+        "role": "fictional farmer in Jesus' parable. Fictional farmer in Jesus' parable; the figure or group contributes to the events, dialogue, or teaching of Luke 12."
+      },
+      {
+        "name": "Servants and master",
+        "role": "figures in readiness parables. Figures in readiness parables; the figure or group contributes to the events, dialogue, or teaching of Luke 12."
+      },
+      {
+        "name": "Crowds",
+        "role": "hear the call to discern the times. Hear the call to discern the times; the figure or group contributes to the events, dialogue, or teaching of Luke 12."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Against hypocrisy",
+        "explanation": "",
+        "references": [
+          "Luke 12:1–12"
+        ]
+      },
+      {
+        "theme": "Wealth and mortality",
+        "explanation": "",
+        "references": [
+          "Luke 12:13–21"
+        ]
+      },
+      {
+        "theme": "Trust and generosity",
+        "explanation": "",
+        "references": [
+          "Luke 12:22–34"
+        ]
+      },
+      {
+        "theme": "Readiness and responsibility",
+        "explanation": "",
+        "references": [
+          "Luke 12:35–48"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 13": {
+    "summary": "Jesus rejects the assumption that victims of Pilate's violence or a falling tower were worse sinners than others and calls everyone to repent (Luke 13:1–5). A barren fig tree parable warns that time for change should not be presumed unlimited (Luke 13:6–9). He heals a bent woman on the Sabbath despite a synagogue leader's objection, then compares the kingdom to mustard seed and leaven (Luke 13:10–21). On the journey to Jerusalem, Jesus urges entering through the narrow door and laments Jerusalem's resistance to prophetic appeals (Luke 13:22–35).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 13, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Jesus addresses both distressing deaths and the urgency of his message. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Luke's mention of Pilate and Siloam gives geographically recognizable references, but the two particular episodes are not independently detailed in surviving sources. Sabbath synagogue life and pilgrimage to Jerusalem explain the disputes and journey framework.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher and healer Teacher and healer; the figure or group contributes to the events, dialogue, or teaching of Luke 13."
+      },
+      {
+        "name": "Pilate",
+        "role": "Roman governor mentioned in a reported killing Roman governor mentioned in a reported killing; the figure or group contributes to the events, dialogue, or teaching of Luke 13."
+      },
+      {
+        "name": "Galileans and Siloam victims",
+        "role": "people invoked in discussion of suffering. People invoked in discussion of suffering; the figure or group contributes to the events, dialogue, or teaching of Luke 13."
+      },
+      {
+        "name": "Woman bent for eighteen years",
+        "role": "healed on the Sabbath Healed on the Sabbath; the figure or group contributes to the events, dialogue, or teaching of Luke 13."
+      },
+      {
+        "name": "Synagogue leader",
+        "role": "objects to the timing of healing. Objects to the timing of healing; the figure or group contributes to the events, dialogue, or teaching of Luke 13."
+      },
+      {
+        "name": "Herod",
+        "role": "threatening ruler named in the closing exchange Threatening ruler named in the closing exchange; the figure or group contributes to the events, dialogue, or teaching of Luke 13."
+      },
+      {
+        "name": "Jerusalem",
+        "role": "city addressed in a prophetic lament City addressed in a prophetic lament; the figure or group contributes to the events, dialogue, or teaching of Luke 13."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Suffering is not a simple moral score",
+        "explanation": "",
+        "references": [
+          "Luke 13:1–5"
+        ]
+      },
+      {
+        "theme": "Urgency of repentance",
+        "explanation": "",
+        "references": [
+          "Luke 13:6–9"
+        ]
+      },
+      {
+        "theme": "Healing and Sabbath dignity",
+        "explanation": "",
+        "references": [
+          "Luke 13:10–17"
+        ]
+      },
+      {
+        "theme": "Kingdom growth and response",
+        "explanation": "",
+        "references": [
+          "Luke 13:18–30"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 14": {
+    "summary": "At a Sabbath meal in a Pharisee leader's home, Jesus heals a man with swelling and challenges objections to healing (Luke 14:1–6). Noticing guests seek honored seats, he teaches humility and asks hosts to invite people who cannot repay them (Luke 14:7–14). He tells the great banquet parable, in which invited guests make excuses and others are welcomed (Luke 14:15–24). Turning to crowds, he warns that following him requires decisive allegiance, self-denial, and counting the cost, illustrated by a builder and a king assessing their resources (Luke 14:25–35).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 14, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "A Sabbath dinner becomes a setting for teaching about status and discipleship. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Formal banquets displayed rank through seating positions and reciprocal invitations. Sabbath meals and honor conventions give the parables their force. 'Hate' in 14:26 is debated in nuance and often understood as Semitic comparative or stark rhetorical language, not permission for mistreating family.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher and healer Teacher and healer; the figure or group contributes to the events, dialogue, or teaching of Luke 14."
+      },
+      {
+        "name": "Pharisee leader",
+        "role": "host of the Sabbath meal Host of the Sabbath meal; the figure or group contributes to the events, dialogue, or teaching of Luke 14."
+      },
+      {
+        "name": "Man with dropsy/swelling",
+        "role": "recipient of healing. Recipient of healing; the figure or group contributes to the events, dialogue, or teaching of Luke 14."
+      },
+      {
+        "name": "Guests and host",
+        "role": "hear teaching on honor and hospitality. Hear teaching on honor and hospitality; the figure or group contributes to the events, dialogue, or teaching of Luke 14."
+      },
+      {
+        "name": "Invited guests and host in the banquet",
+        "role": "fictional figures in a parable. Fictional figures in a parable; the figure or group contributes to the events, dialogue, or teaching of Luke 14."
+      },
+      {
+        "name": "Crowds",
+        "role": "hear teaching about costly discipleship. Hear teaching about costly discipleship; the figure or group contributes to the events, dialogue, or teaching of Luke 14."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Mercy above status disputes",
+        "explanation": "",
+        "references": [
+          "Luke 14:1–6"
+        ]
+      },
+      {
+        "theme": "Humility at the table",
+        "explanation": "",
+        "references": [
+          "Luke 14:7–11"
+        ]
+      },
+      {
+        "theme": "Hospitality without repayment",
+        "explanation": "",
+        "references": [
+          "Luke 14:12–24"
+        ]
+      },
+      {
+        "theme": "Counting the cost",
+        "explanation": "",
+        "references": [
+          "Luke 14:25–35"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 15": {
+    "summary": "Religious critics complain that Jesus welcomes sinners and eats with them (Luke 15:1–2). He answers with three stories: a shepherd searches for one lost sheep, a woman searches for one lost coin, and a father welcomes a lost son while an older son resents the celebration (Luke 15:3–32). Each story turns on loss, recovery, and joy, while the final parable exposes bitterness toward mercy. The chapter urges readers to consider both those needing restoration and those unwilling to rejoice when others return.",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 15, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Complaints about shared meals prompt parables describing joy over restoration. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Household inheritance, shepherding, and coinage supply familiar everyday settings. The younger son's demand for property is socially jarring, and the father's public welcome reverses expected shame. These are parables, not externally attested historical events.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teller of the three parables Teller of the three parables; the figure or group contributes to the events, dialogue, or teaching of Luke 15."
+      },
+      {
+        "name": "Tax collectors and sinners",
+        "role": "people approaching Jesus. People approaching Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 15."
+      },
+      {
+        "name": "Pharisees and scribes",
+        "role": "critics of his fellowship Critics of his fellowship; the figure or group contributes to the events, dialogue, or teaching of Luke 15."
+      },
+      {
+        "name": "Shepherd and woman",
+        "role": "fictional searchers in parables. Fictional searchers in parables; the figure or group contributes to the events, dialogue, or teaching of Luke 15."
+      },
+      {
+        "name": "Father, younger son, older son",
+        "role": "fictional family embodying return and resentment. Fictional family embodying return and resentment; the figure or group contributes to the events, dialogue, or teaching of Luke 15."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Seeking the lost",
+        "explanation": "",
+        "references": [
+          "Luke 15:3–10"
+        ]
+      },
+      {
+        "theme": "Repentance and celebration",
+        "explanation": "",
+        "references": [
+          "Luke 15:7–10"
+        ]
+      },
+      {
+        "theme": "Compassion and reconciliation",
+        "explanation": "",
+        "references": [
+          "Luke 15:11–24"
+        ]
+      },
+      {
+        "theme": "Resentment at grace",
+        "explanation": "",
+        "references": [
+          "Luke 15:25–32"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 16": {
+    "summary": "Jesus tells the parable of a manager facing dismissal who reduces debts to secure future hospitality; he uses it to teach shrewdness and faithfulness in handling money, not to endorse dishonesty (Luke 16:1–13). Addressing money-loving Pharisees, he says people cannot serve both God and wealth and speaks about the Law, the kingdom, and divorce (Luke 16:14–18). He then contrasts a rich man living in luxury with Lazarus, a suffering poor man at his gate; after death their situations are reversed, and Abraham insists that Moses and the prophets provide sufficient warning (Luke 16:19–31).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 16, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Economic relationships become the setting for warnings about money and neglected suffering. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Household debt administration and patron-client relationships help explain the manager's strategy. The rich man and Lazarus narrative uses afterlife imagery; Christian interpreters debate how literally its spatial detail should be mapped. Jewish Law and Prophets frame its ethical conclusion.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teller of the teachings and parables Teller of the teachings and parables; the figure or group contributes to the events, dialogue, or teaching of Luke 16."
+      },
+      {
+        "name": "Manager and rich employer",
+        "role": "fictional figures in the steward parable. Fictional figures in the steward parable; the figure or group contributes to the events, dialogue, or teaching of Luke 16."
+      },
+      {
+        "name": "Pharisees",
+        "role": "hear and ridicule the teaching about wealth. Hear and ridicule the teaching about wealth; the figure or group contributes to the events, dialogue, or teaching of Luke 16."
+      },
+      {
+        "name": "Rich man and Lazarus",
+        "role": "figures in the illustrative account. Figures in the illustrative account; the figure or group contributes to the events, dialogue, or teaching of Luke 16."
+      },
+      {
+        "name": "Abraham",
+        "role": "ancestral figure who speaks in the rich man and Lazarus account Ancestral figure who speaks in the rich man and Lazarus account; the figure or group contributes to the events, dialogue, or teaching of Luke 16."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Wise stewardship",
+        "explanation": "",
+        "references": [
+          "Luke 16:1–13"
+        ]
+      },
+      {
+        "theme": "God and money",
+        "explanation": "",
+        "references": [
+          "Luke 16:10–15"
+        ]
+      },
+      {
+        "theme": "Attention to neglected neighbors",
+        "explanation": "",
+        "references": [
+          "Luke 16:19–26"
+        ]
+      },
+      {
+        "theme": "Responding to Scripture",
+        "explanation": "",
+        "references": [
+          "Luke 16:27–31"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 17": {
+    "summary": "Jesus warns against causing others to stumble and commands repeated forgiveness of a repentant person (Luke 17:1–4). He speaks about faith like a mustard seed and a servant's unpretentious duty (Luke 17:5–10). Traveling near Samaria and Galilee, Jesus cleanses ten people with skin disease; only one, identified as a Samaritan, returns to thank him (Luke 17:11–19). When questioned about the kingdom's arrival, Jesus describes its presence and warns disciples not to chase sensational claims, using images of sudden judgment from Noah and Lot (Luke 17:20–37).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 17, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Healing, gratitude and questions about the kingdom arise during the journey. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. The route near Samaria evokes strained Jewish-Samaritan relations. People with certain skin diseases faced regulated separation and priestly examination under Leviticus 13–14; 'leprosy' in older translations need not mean modern Hansen's disease. Apocalyptic comparisons use earlier scriptural narratives.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher and healer Teacher and healer; the figure or group contributes to the events, dialogue, or teaching of Luke 17."
+      },
+      {
+        "name": "Apostles",
+        "role": "ask for increased faith. Ask for increased faith; the figure or group contributes to the events, dialogue, or teaching of Luke 17."
+      },
+      {
+        "name": "Ten people with skin disease",
+        "role": "receive cleansing. Receive cleansing; the figure or group contributes to the events, dialogue, or teaching of Luke 17."
+      },
+      {
+        "name": "Samaritan man",
+        "role": "only one to return and express thanks Only one to return and express thanks; the figure or group contributes to the events, dialogue, or teaching of Luke 17."
+      },
+      {
+        "name": "Pharisees",
+        "role": "ask about the kingdom's arrival. Ask about the kingdom's arrival; the figure or group contributes to the events, dialogue, or teaching of Luke 17."
+      },
+      {
+        "name": "Noah and Lot",
+        "role": "figures invoked as comparisons for sudden disruption. Figures invoked as comparisons for sudden disruption; the figure or group contributes to the events, dialogue, or teaching of Luke 17."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Forgiveness and care",
+        "explanation": "",
+        "references": [
+          "Luke 17:1–4"
+        ]
+      },
+      {
+        "theme": "Faith without self-congratulation",
+        "explanation": "",
+        "references": [
+          "Luke 17:5–10"
+        ]
+      },
+      {
+        "theme": "Gratitude across boundaries",
+        "explanation": "",
+        "references": [
+          "Luke 17:11–19"
+        ]
+      },
+      {
+        "theme": "Discernment and readiness",
+        "explanation": "",
+        "references": [
+          "Luke 17:20–37"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 18": {
+    "summary": "Jesus tells a story about a widow seeking justice from an unjust judge to teach persistence in prayer (Luke 18:1–8). He contrasts a self-confident Pharisee's prayer with a tax collector's plea for mercy, then welcomes children whom disciples would turn away (Luke 18:9–17). A wealthy ruler asks about eternal life but grieves when told to sell his possessions and follow; Jesus discusses the difficulty of wealth and the reward of discipleship (Luke 18:18–30). He predicts his suffering and resurrection, though the disciples do not understand, and restores the sight of a blind beggar near Jericho (Luke 18:31–43).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 18, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Prayer, wealth, healing and approaching suffering inform Jesus’ teaching. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Widows had limited leverage in many ancient legal systems, giving urgency to the justice parable. Social status distinctions help explain the tax collector and Pharisee comparison, but the story cannot be generalized to every member of either group. Jericho lay on pilgrimage routes toward Jerusalem.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher and healer Teacher and healer; the figure or group contributes to the events, dialogue, or teaching of Luke 18."
+      },
+      {
+        "name": "Widow and unjust judge",
+        "role": "fictional characters in a prayer parable. Fictional characters in a prayer parable; the figure or group contributes to the events, dialogue, or teaching of Luke 18."
+      },
+      {
+        "name": "Pharisee and tax collector",
+        "role": "fictional worshippers in a comparison. Fictional worshippers in a comparison; the figure or group contributes to the events, dialogue, or teaching of Luke 18."
+      },
+      {
+        "name": "Children and caregivers",
+        "role": "welcomed by Jesus Welcomed by Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 18."
+      },
+      {
+        "name": "Wealthy ruler",
+        "role": "asks about eternal life. Asks about eternal life; the figure or group contributes to the events, dialogue, or teaching of Luke 18."
+      },
+      {
+        "name": "Blind beggar near Jericho",
+        "role": "asks Jesus for sight Asks Jesus for sight; the figure or group contributes to the events, dialogue, or teaching of Luke 18."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Persist in prayer and justice",
+        "explanation": "",
+        "references": [
+          "Luke 18:1–8"
+        ]
+      },
+      {
+        "theme": "Humility before God",
+        "explanation": "",
+        "references": [
+          "Luke 18:9–14"
+        ]
+      },
+      {
+        "theme": "Receiving the kingdom",
+        "explanation": "",
+        "references": [
+          "Luke 18:15–17"
+        ]
+      },
+      {
+        "theme": "Possessions and discipleship",
+        "explanation": "",
+        "references": [
+          "Luke 18:18–30"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 18,
+        "reference": "Matthew 19:16-22",
+        "explanation": "Same event: The encounter with a wealthy ruler."
+      },
+      {
+        "verse": 20,
+        "reference": "Exodus 20:12",
+        "explanation": "Jesus repeats the command to honor father and mother."
+      },
+      {
+        "verse": 20,
+        "reference": "Exodus 20:13",
+        "explanation": "The command against murder is explicitly repeated."
+      },
+      {
+        "verse": 20,
+        "reference": "Exodus 20:14",
+        "explanation": "The command against adultery is explicitly repeated."
+      },
+      {
+        "verse": 20,
+        "reference": "Exodus 20:15",
+        "explanation": "The command against stealing is explicitly repeated."
+      },
+      {
+        "verse": 20,
+        "reference": "Exodus 20:16",
+        "explanation": "The command against false witness is explicitly repeated."
+      },
+      {
+        "verse": 35,
+        "reference": "Mark 10:46-52",
+        "explanation": "Same event: Jesus healing a blind man near Jericho, but chronology/location differs slightly."
+      }
+    ]
+  },
+  "Luke 19": {
+    "summary": "At Jericho, Jesus calls the tax collector Zacchaeus down from a tree and accepts hospitality at his home. Zacchaeus declares restitution and generosity; Jesus speaks of salvation reaching the household (Luke 19:1–10). Near Jerusalem Jesus tells the parable of a nobleman entrusting money to servants before receiving kingship, warning about accountability while also depicting violent royal power (Luke 19:11–27). Jesus enters Jerusalem amid praise, weeps over its coming devastation, and drives sellers from the temple, where he teaches despite opposition (Luke 19:28–48).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 19, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Jericho gives way to Jerusalem, where Jesus confronts expectations and temple activity. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Jericho was a significant urban center, and tax collection operated amid Roman and local revenue systems. The nobleman parable may evoke remembered struggles over client kingship, but exact historical allusions are debated. The temple was central to pilgrimage, sacrifice, commerce and Jewish communal identity.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher entering Jerusalem Teacher entering Jerusalem; the figure or group contributes to the events, dialogue, or teaching of Luke 19."
+      },
+      {
+        "name": "Zacchaeus",
+        "role": "chief tax collector who responds with restitution Chief tax collector who responds with restitution; the figure or group contributes to the events, dialogue, or teaching of Luke 19."
+      },
+      {
+        "name": "Crowd",
+        "role": "reacts to Jesus' welcome and entry Reacts to Jesus' welcome and entry; the figure or group contributes to the events, dialogue, or teaching of Luke 19."
+      },
+      {
+        "name": "Nobleman, servants and citizens",
+        "role": "characters in a parable Characters in a parable; the figure or group contributes to the events, dialogue, or teaching of Luke 19."
+      },
+      {
+        "name": "Disciples",
+        "role": "praise Jesus during his approach Praise Jesus during his approach; the figure or group contributes to the events, dialogue, or teaching of Luke 19."
+      },
+      {
+        "name": "Temple merchants",
+        "role": "expelled by Jesus Expelled by Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 19."
+      },
+      {
+        "name": "Religious leaders",
+        "role": "seek to destroy Jesus. Seek to destroy Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 19."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Restoration and restitution",
+        "explanation": "",
+        "references": [
+          "Luke 19:1–10"
+        ]
+      },
+      {
+        "theme": "Accountability in entrusted matters",
+        "explanation": "",
+        "references": [
+          "Luke 19:11–27"
+        ]
+      },
+      {
+        "theme": "Peace and missed opportunity",
+        "explanation": "",
+        "references": [
+          "Luke 19:28–44"
+        ]
+      },
+      {
+        "theme": "Temple purpose and protest",
+        "explanation": "",
+        "references": [
+          "Luke 19:45–48"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 28,
+        "reference": "Matthew 21:1-11",
+        "explanation": "Same event: The entry into Jerusalem and the people's praise."
+      },
+      {
+        "verse": 38,
+        "reference": "Psalms 118:26",
+        "explanation": "The declaration blessing the one who comes in the Lord's name is repeated."
+      },
+      {
+        "verse": 46,
+        "reference": "Isaiah 56:7",
+        "explanation": "Jesus quotes God's designation of his house as a house of prayer."
+      },
+      {
+        "verse": 46,
+        "reference": "Jeremiah 7:11",
+        "explanation": "Jesus quotes Jeremiah's phrase describing the temple as a den of thieves."
+      }
+    ]
+  },
+  "Luke 20": {
+    "summary": "Religious authorities challenge Jesus' right to teach in the temple; he asks about John's baptism, and they decline to answer (Luke 20:1–8). He tells the tenants parable, in which renters abuse messengers and kill the owner's son, drawing opposition from leaders (Luke 20:9–19). Jesus answers a trap about Roman taxes by distinguishing Caesar's claims from God's, then disputes with Sadducees over resurrection and marriage (Luke 20:20–40). He asks how the Messiah is David's son and Lord, and warns against scribes who seek honor while exploiting widows (Luke 20:41–47).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 20, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Opponents challenge Jesus in temple debates involving prophecy, taxes and resurrection. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Temple courts were venues for teaching and public debate. Roman taxation was a politically charged issue in Judea. Sadducees and other Jewish groups had differing views of resurrection; the dispute is intra-Jewish, not evidence that all Jewish people held the same position.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher challenged at the temple Teacher challenged at the temple; the figure or group contributes to the events, dialogue, or teaching of Luke 20."
+      },
+      {
+        "name": "Chief priests, scribes and elders",
+        "role": "question his authority Question his authority; the figure or group contributes to the events, dialogue, or teaching of Luke 20."
+      },
+      {
+        "name": "Tenant farmers, owner and son",
+        "role": "figures in a parable. Figures in a parable; the figure or group contributes to the events, dialogue, or teaching of Luke 20."
+      },
+      {
+        "name": "Spies",
+        "role": "question payment of taxes Question payment of taxes; the figure or group contributes to the events, dialogue, or teaching of Luke 20."
+      },
+      {
+        "name": "Sadducees",
+        "role": "challenge resurrection belief. Challenge resurrection belief; the figure or group contributes to the events, dialogue, or teaching of Luke 20."
+      },
+      {
+        "name": "David",
+        "role": "scriptural king quoted in Jesus' argument Scriptural king quoted in Jesus' argument; the figure or group contributes to the events, dialogue, or teaching of Luke 20."
+      },
+      {
+        "name": "Widows",
+        "role": "vulnerable people harmed by exploitative conduct Vulnerable people harmed by exploitative conduct; the figure or group contributes to the events, dialogue, or teaching of Luke 20."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Authority and accountability",
+        "explanation": "",
+        "references": [
+          "Luke 20:1–19"
+        ]
+      },
+      {
+        "theme": "Civil power and divine claims",
+        "explanation": "",
+        "references": [
+          "Luke 20:20–26"
+        ]
+      },
+      {
+        "theme": "Hope of resurrection",
+        "explanation": "",
+        "references": [
+          "Luke 20:27–40"
+        ]
+      },
+      {
+        "theme": "Warning about exploitation",
+        "explanation": "",
+        "references": [
+          "Luke 20:45–47"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 17,
+        "reference": "Psalms 118:22",
+        "explanation": "The rejected stone becoming the cornerstone is directly quoted."
+      },
+      {
+        "verse": 28,
+        "reference": "Deuteronomy 25:5",
+        "explanation": "The questioners explicitly cite Moses' rule requiring a brother to marry his deceased brother's widow."
+      },
+      {
+        "verse": 37,
+        "reference": "Exodus 3:6",
+        "explanation": "Jesus references the burning-bush declaration naming the patriarchs."
+      },
+      {
+        "verse": 42,
+        "reference": "Psalms 110:1",
+        "explanation": "Same event: These passages explicitly quote David's statement about sitting at the Lord's right hand."
+      }
+    ]
+  },
+  "Luke 21": {
+    "summary": "Jesus notices a poor widow offering two small coins and contrasts her gift with larger contributions of wealthier people (Luke 21:1–4). As others admire the temple, he predicts its destruction and warns of upheaval, persecution, and misleading claims (Luke 21:5–19). He speaks of Jerusalem surrounded by armies, distress, and the times of the Gentiles, then uses cosmic imagery and the fig tree to urge vigilance and hope (Luke 21:20–36). Luke closes by noting Jesus' daily teaching at the temple and nights on the Mount of Olives (Luke 21:37–38).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 21, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Jesus speaks about suffering, Jerusalem and vigilance near the temple. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Jerusalem's Second Temple, expanded under Herod, stood at the center of Jewish worship and was destroyed by Roman forces in 70 CE, a well-documented event. How Luke's discourse relates to 70 CE and future consummation is debated. Apocalyptic cosmic language draws on Israel's prophets.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "teacher giving warnings Teacher giving warnings; the figure or group contributes to the events, dialogue, or teaching of Luke 21."
+      },
+      {
+        "name": "Poor widow",
+        "role": "offers two small coins. Offers two small coins; the figure or group contributes to the events, dialogue, or teaching of Luke 21."
+      },
+      {
+        "name": "Disciples and hearers",
+        "role": "ask about the temple's future. Ask about the temple's future; the figure or group contributes to the events, dialogue, or teaching of Luke 21."
+      },
+      {
+        "name": "False claimants",
+        "role": "warned against in Jesus' discourse. Warned against in Jesus' discourse; the figure or group contributes to the events, dialogue, or teaching of Luke 21."
+      },
+      {
+        "name": "Jerusalem's inhabitants",
+        "role": "people described as facing siege and distress. People described as facing siege and distress; the figure or group contributes to the events, dialogue, or teaching of Luke 21."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Generosity and vulnerability",
+        "explanation": "",
+        "references": [
+          "Luke 21:1–4"
+        ]
+      },
+      {
+        "theme": "Temple's impermanence",
+        "explanation": "",
+        "references": [
+          "Luke 21:5–11"
+        ]
+      },
+      {
+        "theme": "Perseverance under pressure",
+        "explanation": "",
+        "references": [
+          "Luke 21:12–19"
+        ]
+      },
+      {
+        "theme": "Watchful hope",
+        "explanation": "",
+        "references": [
+          "Luke 21:20–36"
+        ]
+      }
+    ],
+    "explainedReferences": []
+  },
+  "Luke 22": {
+    "summary": "As Passover approaches, Judas arranges to betray Jesus (Luke 22:1–6). Jesus shares a final meal with the apostles, speaks of bread and cup in relation to his body and covenant, and teaches service rather than rivalry over status (Luke 22:7–38). On the Mount of Olives he prays in distress; Judas arrives with a crowd, Jesus is arrested, and Peter denies knowing him three times (Luke 22:39–62). Jesus is mocked and questioned before the council, where his claims about the Son of Man and Son of God become central (Luke 22:63–71).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 22, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Luke recounts the final meal, arrest, denial and council hearing. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Passover recalled Israel's exodus and drew pilgrims to Jerusalem. Reclining at a festive meal, household preparation, and priestly authorities reflect late Second Temple practices. Some manuscripts vary in the wording/extent of 22:19b–20 and of the angel-and-sweat scene in 22:43–44; the textual questions merit acknowledgment.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "central speaker at the meal, prayer and hearing. Central speaker at the meal, prayer and hearing; the figure or group contributes to the events, dialogue, or teaching of Luke 22."
+      },
+      {
+        "name": "Judas Iscariot",
+        "role": "member of the Twelve who arranges betrayal Member of the Twelve who arranges betrayal; the figure or group contributes to the events, dialogue, or teaching of Luke 22."
+      },
+      {
+        "name": "Peter",
+        "role": "disciple who denies Jesus Disciple who denies Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 22."
+      },
+      {
+        "name": "The apostles",
+        "role": "share the Passover meal and dispute status. Share the Passover meal and dispute status; the figure or group contributes to the events, dialogue, or teaching of Luke 22."
+      },
+      {
+        "name": "High priest's servant",
+        "role": "injured during the arrest and healed Injured during the arrest and healed; the figure or group contributes to the events, dialogue, or teaching of Luke 22."
+      },
+      {
+        "name": "Chief priests and elders",
+        "role": "participants in Jesus' arrest and questioning. Participants in Jesus' arrest and questioning; the figure or group contributes to the events, dialogue, or teaching of Luke 22."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Covenant and remembrance",
+        "explanation": "",
+        "references": [
+          "Luke 22:14–20"
+        ]
+      },
+      {
+        "theme": "Greatness through service",
+        "explanation": "",
+        "references": [
+          "Luke 22:24–30"
+        ]
+      },
+      {
+        "theme": "Prayer amid trial",
+        "explanation": "",
+        "references": [
+          "Luke 22:39–46"
+        ]
+      },
+      {
+        "theme": "Human failure and mercy",
+        "explanation": "",
+        "references": [
+          "Luke 22:54–62"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 37,
+        "reference": "Isaiah 53:12",
+        "explanation": "Jesus quotes Isaiah about being counted among transgressors."
+      },
+      {
+        "verse": 39,
+        "reference": "Matthew 26:36-46",
+        "explanation": "Same event: Jesus praying on the Mount of Olives before his arrest."
+      },
+      {
+        "verse": 47,
+        "reference": "Matthew 26:47-56",
+        "explanation": "Same event: Judas' arrival with a crowd and Jesus' arrest."
+      },
+      {
+        "verse": 54,
+        "reference": "John 18:15-27",
+        "explanation": "Same event: Peter denying Jesus three times during Jesus' arrest and hearing."
+      },
+      {
+        "verse": 54,
+        "reference": "Matthew 26:69-75",
+        "explanation": "Same event: Peter denying Jesus three times and later weeping."
+      }
+    ]
+  },
+  "Luke 23": {
+    "summary": "Jesus is brought before Pilate, who questions him and then sends him to Herod Antipas. Both officials become part of the proceedings, while the crowd demands Barabbas's release and Jesus' crucifixion (Luke 23:1–25). On the way to execution Jesus addresses mourning women, and at the place of crucifixion he is mocked, while one condemned criminal appeals to him (Luke 23:26–43). Darkness and the tearing of the temple veil accompany his death; a centurion responds, and acquaintances and women watch (Luke 23:44–49). Joseph of Arimathea places Jesus' body in a tomb before the Sabbath, observed by women who prepare spices (Luke 23:50–56).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 23, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Luke recounts Roman sentencing, crucifixion and burial before the Sabbath. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Crucifixion was a Roman form of public execution associated with shame and coercive rule. Pilate governed Judea under Rome; Herod Antipas ruled Galilee and Perea. Burial before the Sabbath reflects Jewish observance. The precise reconstruction of the trials and crowd dynamics is debated across Gospel accounts.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "defendant who is crucified Defendant who is crucified; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      },
+      {
+        "name": "Pilate",
+        "role": "Roman prefect overseeing sentence Roman prefect overseeing sentence; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      },
+      {
+        "name": "Herod Antipas",
+        "role": "ruler who questions Jesus Ruler who questions Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      },
+      {
+        "name": "Barabbas",
+        "role": "prisoner released instead of Jesus Prisoner released instead of Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      },
+      {
+        "name": "Simon of Cyrene",
+        "role": "forced to carry the cross behind Jesus Forced to carry the cross behind Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      },
+      {
+        "name": "Two condemned criminals",
+        "role": "crucified beside Jesus Crucified beside Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      },
+      {
+        "name": "Joseph of Arimathea",
+        "role": "council member who buries Jesus Council member who buries Jesus; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      },
+      {
+        "name": "Women from Galilee",
+        "role": "witness the death and burial Witness the death and burial; the figure or group contributes to the events, dialogue, or teaching of Luke 23."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Injustice and political pressure",
+        "explanation": "",
+        "references": [
+          "Luke 23:1–25"
+        ]
+      },
+      {
+        "theme": "Compassion amid suffering",
+        "explanation": "",
+        "references": [
+          "Luke 23:26–43"
+        ]
+      },
+      {
+        "theme": "Jesus' death and witnesses",
+        "explanation": "",
+        "references": [
+          "Luke 23:44–49"
+        ]
+      },
+      {
+        "theme": "Careful burial and preparation",
+        "explanation": "",
+        "references": [
+          "Luke 23:50–56"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 26,
+        "reference": "Matthew 27:32-44",
+        "explanation": "Same event: Jesus being led to crucifixion and crucified."
+      },
+      {
+        "verse": 30,
+        "reference": "Hosea 10:8",
+        "explanation": "Jesus repeats the words calling on mountains and hills to cover the people."
+      },
+      {
+        "verse": 46,
+        "reference": "Psalms 31:5",
+        "explanation": "Jesus speaks the psalm's words commending his spirit into God's hands."
+      },
+      {
+        "verse": 50,
+        "reference": "Matthew 27:57-61",
+        "explanation": "Same event: Joseph of Arimathea placing Jesus' body in a tomb."
+      }
+    ]
+  },
+  "Luke 24": {
+    "summary": "Women who visit Jesus' tomb at dawn find the stone rolled away and the body absent; two men in dazzling garments announce that he has risen. The apostles initially dismiss their report, while Peter inspects the tomb (Luke 24:1–12). Jesus accompanies two disciples on the road to Emmaus, interprets Scripture about the Messiah's suffering, and is recognized in the breaking of bread (Luke 24:13–35). He appears to gathered followers, shows his hands and feet, eats fish, and explains the Scriptures concerning suffering, resurrection, repentance and forgiveness (Luke 24:36–49). Luke ends with Jesus' departure, the disciples' worship, and their return to Jerusalem in joy (Luke 24:50–53).",
+    "whyItMatters": "This context clarifies the significance of the chapter’s language and actions without treating its theological interpretation as independent historical verification. In Luke 24, readers should distinguish what Luke explicitly reports, known social practices, and conclusions debated by scholars.",
+    "whereWeAre": "Luke narrates the empty tomb, appearances and the commissioning of witnesses. The episode or discourse is preserved in Luke; specific miracles, conversations and private interactions generally lack independent contemporary confirmation. Jewish burial customs and the post-Sabbath visit provide the setting for the empty-tomb account. Luke 24 and Acts 1 narrate the departure/ascension with different narrative pacing, and scholars debate how to coordinate the timelines. The resurrection appearances are reported by Christian sources; they are not independently documentable by contemporary non-Christian records.",
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "role": "risen central figure in Luke's account Risen central figure in Luke's account; the figure or group contributes to the events, dialogue, or teaching of Luke 24."
+      },
+      {
+        "name": "Women at the tomb",
+        "role": "include Mary Magdalene, Joanna, Mary mother of James, and others Include Mary Magdalene, Joanna, Mary mother of James, and others; the figure or group contributes to the events, dialogue, or teaching of Luke 24."
+      },
+      {
+        "name": "Peter",
+        "role": "inspects the tomb Inspects the tomb; the figure or group contributes to the events, dialogue, or teaching of Luke 24."
+      },
+      {
+        "name": "Cleopas",
+        "role": "one of the two Emmaus travelers One of the two Emmaus travelers; the figure or group contributes to the events, dialogue, or teaching of Luke 24."
+      },
+      {
+        "name": "Unnamed companion",
+        "role": "travels with Cleopas Travels with Cleopas; the figure or group contributes to the events, dialogue, or teaching of Luke 24."
+      },
+      {
+        "name": "The Eleven and companions",
+        "role": "receive reports and Jesus' appearance. Receive reports and Jesus' appearance; the figure or group contributes to the events, dialogue, or teaching of Luke 24."
+      },
+      {
+        "name": "Two radiant men",
+        "role": "announce the resurrection at the tomb Announce the resurrection at the tomb; the figure or group contributes to the events, dialogue, or teaching of Luke 24."
+      }
+    ],
+    "keyThemes": [
+      {
+        "theme": "Witness and initial doubt",
+        "explanation": "",
+        "references": [
+          "Luke 24:1–12"
+        ]
+      },
+      {
+        "theme": "Scripture and recognition",
+        "explanation": "",
+        "references": [
+          "Luke 24:13–35"
+        ]
+      },
+      {
+        "theme": "Resurrection and commission",
+        "explanation": "",
+        "references": [
+          "Luke 24:36–49"
+        ]
+      },
+      {
+        "theme": "Worship and hope",
+        "explanation": "",
+        "references": [
+          "Luke 24:50–53"
+        ]
+      }
+    ],
+    "explainedReferences": [
+      {
+        "verse": 1,
+        "reference": "John 20:1-10",
+        "explanation": "Same event: The discovery of the empty tomb, with different witnesses and details."
+      },
+      {
+        "verse": 36,
+        "reference": "John 20:19-23",
+        "explanation": "Same event: The risen Jesus appearing to assembled disciples."
+      }
+    ]
+  }
+}

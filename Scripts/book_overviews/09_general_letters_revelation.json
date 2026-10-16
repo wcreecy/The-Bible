@@ -1,0 +1,471 @@
+{
+  "Hebrews": {
+    "author": "Anonymous; early Christians proposed various authors, but the text does not identify its writer.",
+    "audience": "Christians under pressure who appear tempted to drift from their confession.",
+    "purpose": "To show the supremacy of Christ, the sufficiency of His priesthood and sacrifice, and the need for persevering faith.",
+    "theme": "Jesus is the definitive Son, high priest, and sacrifice; therefore believers must hold fast in faith and draw near to God.",
+    "summary": "Hebrews compares Jesus with angels, Moses, priests, and sacrifices, arguing that He fulfills and surpasses them all. Strong warnings against drifting are paired with encouragement to endure by faith.",
+    "keyVerse": "Hebrews 11:1",
+    "movements": [
+      {
+        "title": "The Son Is Supreme",
+        "description": "Jesus is presented as greater than angels and Moses and as the faithful Son over God's house.",
+        "passages": [
+          "Hebrews 1-4"
+        ]
+      },
+      {
+        "title": "Superior High Priest and Sacrifice",
+        "description": "Jesus' priesthood is associated with Melchizedek, and His once-for-all sacrifice inaugurates the new covenant.",
+        "passages": [
+          "Hebrews 5-10"
+        ]
+      },
+      {
+        "title": "Perseverance by Faith",
+        "description": "Examples of faith and a call to run the race encourage readers to endure.",
+        "passages": [
+          "Hebrews 11-13"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "description": "The Son and great high priest, shown to be superior to angels, Moses, and the Levitical priesthood."
+      },
+      {
+        "name": "Moses",
+        "description": "Faithful as a servant in God's house, contrasted with Christ as the Son over it."
+      },
+      {
+        "name": "Melchizedek",
+        "description": "The priest-king of Salem, whose priesthood foreshadows Christ's."
+      },
+      {
+        "name": "Abraham",
+        "description": "An example of faith and patient endurance in receiving God's promise."
+      },
+      {
+        "name": "The heroes of faith",
+        "description": "Abel, Enoch, Noah, Sarah, Moses, Rahab, and others listed in chapter 11."
+      },
+      {
+        "name": "Timothy",
+        "description": "Mentioned at the close as recently released."
+      }
+    ]
+  },
+  "James": {
+    "author": "Traditionally attributed to James, the brother of Jesus and leader in the Jerusalem church.",
+    "audience": "The 'twelve tribes in the Dispersion,' understood as Jewish Christians scattered outside their homeland.",
+    "purpose": "To call believers to mature, practical faith expressed through endurance, controlled speech, impartiality, generosity, wisdom, and prayer.",
+    "theme": "Genuine faith becomes visible in practical obedience, wisdom, mercy, and perseverance.",
+    "summary": "James is direct and practical. It urges believers to endure trials, do the word rather than merely hear it, avoid favoritism, control the tongue, reject selfish ambition, and pray faithfully.",
+    "keyVerse": "James 1:5",
+    "movements": [
+      {
+        "title": "Trials and Doing the Word",
+        "description": "James connects testing with maturity and warns against hearing Scripture without obeying it.",
+        "passages": [
+          "James 1"
+        ]
+      },
+      {
+        "title": "Faith, Works, and Impartiality",
+        "description": "Favoritism is condemned and living faith is distinguished from empty profession.",
+        "passages": [
+          "James 2"
+        ]
+      },
+      {
+        "title": "Speech, Wisdom, Patience, and Prayer",
+        "description": "Later chapters address the tongue, conflict, wealth, patient endurance, confession, and prayer.",
+        "passages": [
+          "James 3-5"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "James",
+        "description": "The author, traditionally the brother of Jesus and a leader of the Jerusalem church."
+      },
+      {
+        "name": "Abraham",
+        "description": "Shows faith completed by works when he offers Isaac."
+      },
+      {
+        "name": "Rahab",
+        "description": "Commended for faith shown in welcoming the spies."
+      },
+      {
+        "name": "Job",
+        "description": "An example of steadfast endurance."
+      },
+      {
+        "name": "Elijah",
+        "description": "An example of a person whose prayer was powerful and effective."
+      }
+    ]
+  },
+  "1 Peter": {
+    "author": "Traditionally attributed to Peter the apostle; some modern scholars debate authorship.",
+    "audience": "Christians scattered across provinces of Asia Minor.",
+    "purpose": "To encourage believers facing social hostility and suffering to live holy, hopeful, honorable lives because of their new identity in Christ.",
+    "theme": "Christians are a holy, pilgrim people whose hope in Christ enables faithful witness through suffering.",
+    "summary": "1 Peter reminds believers of new birth and living hope, describes them as God's chosen people, and repeatedly connects Christ's suffering with patient, holy endurance.",
+    "keyVerse": "1 Peter 5:7",
+    "movements": [
+      {
+        "title": "Living Hope and Holy Identity",
+        "description": "Believers are reminded of new birth, future inheritance, and their calling as a holy people.",
+        "passages": [
+          "1 Peter 1:1-2:10"
+        ]
+      },
+      {
+        "title": "Faithful Conduct amid Hostility",
+        "description": "Instructions address public life, households, suffering, and doing good.",
+        "passages": [
+          "1 Peter 2:11-4:19"
+        ]
+      },
+      {
+        "title": "Shepherding and Endurance",
+        "description": "Elders are instructed to shepherd humbly, and the church is called to resist the devil and stand firm.",
+        "passages": [
+          "1 Peter 5"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Peter",
+        "description": "The apostle writing to scattered believers facing suffering."
+      },
+      {
+        "name": "Silvanus",
+        "description": "The faithful brother through whom Peter writes."
+      },
+      {
+        "name": "Mark",
+        "description": "Called Peter's 'son,' sending greetings."
+      },
+      {
+        "name": "Sarah",
+        "description": "Presented as an example of hope in God."
+      },
+      {
+        "name": "Noah",
+        "description": "His family's rescue through water is compared with baptism."
+      }
+    ]
+  },
+  "2 Peter": {
+    "author": "Traditionally attributed to Peter the apostle; authorship is widely debated in modern scholarship.",
+    "audience": "Christians threatened by false teaching and skepticism about Christ's return.",
+    "purpose": "To urge growth in godliness, oppose corrupt teachers, and reaffirm the certainty of the day of the Lord.",
+    "theme": "God's apparent delay is patience, not failure; believers should grow in holiness while awaiting final judgment and renewal.",
+    "summary": "2 Peter urges believers to grow in virtue, recalls the apostolic witness to Christ's glory, warns strongly against false teachers, and responds to scoffers who deny coming judgment.",
+    "keyVerse": "2 Peter 3:9",
+    "movements": [
+      {
+        "title": "Grow in Godliness",
+        "description": "Believers are told to add virtue, knowledge, self-control, perseverance, godliness, affection, and love to faith.",
+        "passages": [
+          "2 Peter 1"
+        ]
+      },
+      {
+        "title": "False Teachers Condemned",
+        "description": "Corrupt teachers are described as greedy, sensual, and headed for judgment.",
+        "passages": [
+          "2 Peter 2"
+        ]
+      },
+      {
+        "title": "The Day of the Lord Reaffirmed",
+        "description": "Scoffers are answered with an appeal to God's patience and a vision of future judgment and renewal.",
+        "passages": [
+          "2 Peter 3"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Peter",
+        "description": "Writes as an eyewitness of Christ's glory at the transfiguration, aware his death is near."
+      },
+      {
+        "name": "Paul",
+        "description": "Called 'our beloved brother,' whose letters some twist."
+      },
+      {
+        "name": "Noah and Lot",
+        "description": "Examples of the righteous whom God rescues amid judgment."
+      },
+      {
+        "name": "Balaam",
+        "description": "An example of false teachers who love gain from wrongdoing."
+      }
+    ]
+  },
+  "1 John": {
+    "author": "Traditionally associated with John the apostle and the Johannine community; the letter itself is anonymous.",
+    "audience": "Churches troubled by secession, false teaching, and uncertainty about genuine faith.",
+    "purpose": "To give assurance of eternal life, defend the true confession of Jesus Christ, and emphasize obedience and love as marks of authentic Christian life.",
+    "theme": "True knowledge of God is shown by right belief about Jesus, obedience, and love for fellow believers.",
+    "summary": "1 John repeatedly gives tests of authentic faith: confession of Jesus, walking in the light, obedience, love, and confidence in God's promise of eternal life.",
+    "keyVerse": "1 John 4:8",
+    "movements": [
+      {
+        "title": "Walking in the Light",
+        "description": "God is light, sin must be confessed, and Christ is presented as advocate and atoning sacrifice.",
+        "passages": [
+          "1 John 1-2"
+        ]
+      },
+      {
+        "title": "Children of God Love One Another",
+        "description": "The letter contrasts God's children with patterns of sin and hatred.",
+        "passages": [
+          "1 John 3-4"
+        ]
+      },
+      {
+        "title": "Assurance of Eternal Life",
+        "description": "Believers are given confidence grounded in faith in the Son and God's testimony.",
+        "passages": [
+          "1 John 5"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "John (traditional author)",
+        "description": "Writes as one of the eyewitnesses who heard, saw, and touched the Word of life."
+      },
+      {
+        "name": "The antichrists",
+        "description": "Those who have left the community and deny that Jesus is the Christ come in the flesh."
+      },
+      {
+        "name": "Cain",
+        "description": "An example of hatred, contrasted with love for one another."
+      }
+    ]
+  },
+  "2 John": {
+    "author": "Written by 'the elder,' traditionally associated with John the apostle.",
+    "audience": "The 'elect lady and her children,' possibly an individual household or a local church.",
+    "purpose": "To encourage truth and love while warning against supporting teachers who deny the true incarnation of Christ.",
+    "theme": "Christian love must remain joined to truth about Jesus Christ.",
+    "summary": "2 John urges believers to continue in love and obedience but not to provide support to deceivers who deny that Jesus Christ came in the flesh.",
+    "keyVerse": "2 John 1:6",
+    "movements": [
+      {
+        "title": "Walk in Truth and Love",
+        "description": "The elder rejoices that some are walking in truth and repeats the command to love one another.",
+        "passages": [
+          "2 John 1:1-6"
+        ]
+      },
+      {
+        "title": "Warning about Deceivers",
+        "description": "False teachers who deny Jesus Christ coming in the flesh are identified as dangerous.",
+        "passages": [
+          "2 John 1:7-9"
+        ]
+      },
+      {
+        "title": "Hospitality with Discernment",
+        "description": "Believers are warned not to materially assist teachers who undermine the apostolic message.",
+        "passages": [
+          "2 John 1:10-13"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "The elder",
+        "description": "The writer, traditionally identified with John the apostle."
+      },
+      {
+        "name": "The elect lady and her children",
+        "description": "The recipients, possibly a woman and her household or a local church."
+      },
+      {
+        "name": "The deceivers",
+        "description": "Teachers who deny Jesus Christ coming in the flesh."
+      }
+    ]
+  },
+  "3 John": {
+    "author": "Written by 'the elder,' traditionally associated with John the apostle.",
+    "audience": "Gaius, a Christian believer known for hospitality.",
+    "purpose": "To commend faithful hospitality, criticize Diotrephes' controlling behavior, and recommend Demetrius.",
+    "theme": "Faithful Christian leadership is hospitable, truthful, and humble rather than controlling or self-promoting.",
+    "summary": "3 John praises Gaius for supporting Christian workers, condemns Diotrephes for rejecting authority and hospitality, and commends Demetrius as trustworthy.",
+    "keyVerse": "3 John 1:4",
+    "movements": [
+      {
+        "title": "Gaius Commended",
+        "description": "Gaius is praised for walking in truth and supporting traveling believers.",
+        "passages": [
+          "3 John 1:1-8"
+        ]
+      },
+      {
+        "title": "Diotrephes Rebuked",
+        "description": "A local leader is criticized for loving prominence, rejecting the elder's authority, and blocking hospitality.",
+        "passages": [
+          "3 John 1:9-10"
+        ]
+      },
+      {
+        "title": "Demetrius Recommended",
+        "description": "Demetrius receives a strong recommendation as someone with a good testimony.",
+        "passages": [
+          "3 John 1:11-14"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "The elder",
+        "description": "The writer, traditionally identified with John the apostle."
+      },
+      {
+        "name": "Gaius",
+        "description": "A beloved believer commended for faithful hospitality."
+      },
+      {
+        "name": "Diotrephes",
+        "description": "A church leader who loves to be first and refuses to welcome others."
+      },
+      {
+        "name": "Demetrius",
+        "description": "Recommended as someone well spoken of by everyone."
+      }
+    ]
+  },
+  "Jude": {
+    "author": "Jude identifies himself as a servant of Jesus Christ and brother of James; traditionally understood as a brother of Jesus.",
+    "audience": "Christians threatened by corrupt teachers within the community.",
+    "purpose": "To urge believers to contend for the faith against teachers who distort grace into moral license and reject rightful authority.",
+    "theme": "God's people must defend the apostolic faith, resist corrupt teaching, and persevere in God's love while showing mercy wisely.",
+    "summary": "Jude changes from an intended letter about shared salvation to an urgent warning about infiltrating teachers. It combines severe judgment examples with practical instructions for perseverance and mercy.",
+    "keyVerse": "Jude 1:24",
+    "movements": [
+      {
+        "title": "Call to Contend for the Faith",
+        "description": "Jude urges believers to defend the faith because corrupt teachers have entered the community.",
+        "passages": [
+          "Jude 1:1-4"
+        ]
+      },
+      {
+        "title": "Examples of Judgment",
+        "description": "Israel in the wilderness, rebellious angels, Sodom and Gomorrah, Cain, Balaam, and Korah are invoked as warnings.",
+        "passages": [
+          "Jude 1:5-16"
+        ]
+      },
+      {
+        "title": "Persevere and Show Mercy",
+        "description": "Believers are told to build themselves up, pray, remain in God's love, and rescue others with discernment.",
+        "passages": [
+          "Jude 1:17-25"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jude",
+        "description": "A servant of Jesus Christ and brother of James."
+      },
+      {
+        "name": "Michael the archangel",
+        "description": "Cited as one who would not slander even the devil, leaving judgment to the Lord."
+      },
+      {
+        "name": "Enoch",
+        "description": "Quoted as prophesying the Lord's coming judgment on the ungodly."
+      },
+      {
+        "name": "Cain, Balaam, and Korah",
+        "description": "Examples of rebellion and greed that the false teachers follow."
+      }
+    ]
+  },
+  "Revelation": {
+    "author": "John, exiled on Patmos; traditionally identified as John the apostle, though the precise identity is debated.",
+    "audience": "Seven churches in the Roman province of Asia, with a wider message for the church.",
+    "purpose": "To reveal Jesus Christ as sovereign Lord, strengthen believers under pressure, warn compromised churches, and promise God's final victory over evil.",
+    "theme": "Jesus reigns, evil will be judged, faithful witness matters, and God will ultimately renew creation and dwell with His people.",
+    "summary": "Revelation uses vivid apocalyptic symbols, letters, visions, hymns, judgments, and final renewal imagery. It calls churches to faithful witness while assuring them that God, not empire or evil, has the final word.",
+    "keyVerse": "Revelation 21:4",
+    "movements": [
+      {
+        "title": "Messages to the Seven Churches",
+        "description": "Jesus commends, warns, and calls seven churches to perseverance and repentance.",
+        "passages": [
+          "Revelation 1-3"
+        ]
+      },
+      {
+        "title": "Conflict, Judgment, and Faithful Witness",
+        "description": "Heavenly worship, seals, trumpets, beasts, Babylon, and bowls portray the cosmic conflict between God's kingdom and rebellious powers.",
+        "passages": [
+          "Revelation 4-18"
+        ]
+      },
+      {
+        "title": "Final Victory and New Creation",
+        "description": "Christ triumphs, evil is judged, and a new heaven and new earth culminate in God's dwelling with humanity.",
+        "passages": [
+          "Revelation 19-22"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Jesus",
+        "description": "The risen Christ, the Lamb who was slain, the faithful witness, and the King of kings."
+      },
+      {
+        "name": "John",
+        "description": "Receives the revelation while exiled on the island of Patmos."
+      },
+      {
+        "name": "Antipas",
+        "description": "A faithful witness put to death in Pergamum."
+      },
+      {
+        "name": "'Jezebel'",
+        "description": "A self-proclaimed prophetess in Thyatira who leads believers into compromise."
+      },
+      {
+        "name": "The two witnesses",
+        "description": "Prophetic figures who testify, are killed, and are raised by God."
+      },
+      {
+        "name": "The woman and the dragon",
+        "description": "A woman clothed with the sun gives birth to a male child; the dragon, Satan, wages war against her and her offspring."
+      },
+      {
+        "name": "The beast and the false prophet",
+        "description": "Symbolic powers that demand worship and deceive the earth."
+      },
+      {
+        "name": "Babylon the great",
+        "description": "A symbolic city portrayed as a prostitute, representing corrupt worldly power."
+      },
+      {
+        "name": "The Bride of the Lamb",
+        "description": "God's people, pictured as the New Jerusalem coming down from heaven."
+      }
+    ]
+  }
+}

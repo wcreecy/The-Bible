@@ -8,16 +8,20 @@ Every step runs against a working copy of the database in a temporary folder. Th
 database is replaced only if every step and every check passes, so a failed build leaves
 it untouched. Steps, in order (see Scripts/README.md for each source):
 
- 1. add_book_content.py         book_content/*.md      → book history and stories
- 2. add_book_guides.py          book_guides/*.json     → reading tips and connections
- 3. add_chapter_context.py      chapter_context/*.json, historical_moments/*.json
+ 1. add_book_overviews.py       book_overviews/*.json  → book overviews, movements, key figures
+ 2. add_book_content.py         book_content/*.md      → book history and stories
+ 3. add_book_guides.py          book_guides/*.json     → reading tips and connections
+ 4. add_chapter_insights.py     chapter_insights/*.json
+                                                       → summaries, Where We Are, key figures and
+                                                         themes, explained cross references
+ 5. add_chapter_context.py      chapter_context/*.json, historical_moments/*.json
                                                        → audience, background, historical moment
- 4. add_strict_cross_references.py --rebuild           OpenBible dataset + curated_cross_references.json
+ 6. add_strict_cross_references.py --rebuild           OpenBible dataset + curated_cross_references.json
                                                        → cross references
- 5. collapse_repeated_cross_references.py              one card per parallel passage
- 6. repair_bible_insight_references.py                 fixes known reference defects; every reference
+ 7. collapse_repeated_cross_references.py              one card per parallel passage
+ 8. repair_bible_insight_references.py                 fixes known reference defects; every reference
                                                        in every table must exist in the KJV
- 7. export_book_content.py --check                     book_content/*.md matches the database
+ 9. export_book_content.py --check                     book_content/*.md matches the database
 
 Then the build checks database integrity and foreign keys and lists, table by table, how
 many rows were added or removed compared with the bundled database.
@@ -44,8 +48,10 @@ def book_names():
 
 
 STEPS = [
+    ["add_book_overviews.py"],
     ["add_book_content.py"],
     ["add_book_guides.py"],
+    ["add_chapter_insights.py"],
     ["add_chapter_context.py"],
     ["add_strict_cross_references.py", "--rebuild", *book_names()],
     ["collapse_repeated_cross_references.py"],

@@ -2,13 +2,8 @@ import Foundation
 import SQLite3
 
 struct ChapterInsights: Equatable, Sendable {
-    let reference: String
     let overallSummary: String
     let readingContext: ChapterReadingContext?
-    let historicalSetting: String
-    let whatWasHappening: String
-    let connectionToChapter: String
-    let customsAndTraditions: String
     let whyItMatters: String
     let keyFigures: [ChapterKeyFigure]
     let keyThemes: [ChapterKeyTheme]
@@ -44,8 +39,7 @@ actor ChapterInsightsRepository {
     func insights(forBookNamed bookName: String, chapterNumber: Int) -> ChapterInsights? {
         withDatabase { database in
             let query = """
-            SELECT reference, overall_summary, historical_setting, what_was_happening,
-                   connection_to_chapter, customs_and_traditions, why_it_matters
+            SELECT overall_summary, why_it_matters
             FROM chapter_insights
             WHERE book_name = ? AND chapter_number = ?
             LIMIT 1;
@@ -64,18 +58,13 @@ actor ChapterInsightsRepository {
             guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
 
             return ChapterInsights(
-                reference: Self.columnText(statement, at: 0),
-                overallSummary: Self.columnText(statement, at: 1),
+                overallSummary: Self.columnText(statement, at: 0),
                 readingContext: loadReadingContext(
                     forBookNamed: bookName,
                     chapterNumber: chapterNumber,
                     database: database
                 ),
-                historicalSetting: Self.columnText(statement, at: 2),
-                whatWasHappening: Self.columnText(statement, at: 3),
-                connectionToChapter: Self.columnText(statement, at: 4),
-                customsAndTraditions: Self.columnText(statement, at: 5),
-                whyItMatters: Self.columnText(statement, at: 6),
+                whyItMatters: Self.columnText(statement, at: 1),
                 keyFigures: loadKeyFigures(
                     forBookNamed: bookName,
                     chapterNumber: chapterNumber,
@@ -152,8 +141,7 @@ actor ChapterInsightsRepository {
                 forBookNamed: bookName,
                 chapterNumber: chapterNumber,
                 database: database
-            ),
-            scriptureConnections: []
+            )
         )
     }
 
@@ -163,7 +151,7 @@ actor ChapterInsightsRepository {
         database: OpaquePointer
     ) -> [ChapterReadingContext.CulturalLens] {
         let query = """
-        SELECT title, scripture_reference, then_text, why_it_matters
+        SELECT title, scripture_reference, then_text
         FROM chapter_cultural_lenses
         WHERE book_name = ? AND chapter_number = ?
         ORDER BY sequence;
@@ -184,8 +172,7 @@ actor ChapterInsightsRepository {
                 ChapterReadingContext.CulturalLens(
                     title: Self.columnText(statement, at: 0),
                     reference: Self.columnText(statement, at: 1),
-                    then: Self.columnText(statement, at: 2),
-                    whyItMatters: Self.columnText(statement, at: 3)
+                    then: Self.columnText(statement, at: 2)
                 )
             )
         }

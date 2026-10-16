@@ -1,0 +1,457 @@
+{
+  "Joshua": {
+    "author": "Traditionally associated with Joshua, though the book likely includes later editorial material.",
+    "audience": "Israel after Moses, entering and settling Canaan.",
+    "purpose": "To recount Israel's entrance into the promised land, the distribution of territory, and the call to covenant faithfulness.",
+    "theme": "God is faithful to His promises, and His people are called to courageous, exclusive covenant loyalty.",
+    "summary": "Joshua leads Israel across the Jordan, through major campaigns, into tribal allotments, and finally calls the nation to choose faithful service to the LORD.",
+    "keyVerse": "Joshua 24:15",
+    "movements": [
+      {
+        "title": "Crossing the Jordan and Jericho",
+        "description": "Israel enters Canaan and captures Jericho after crossing the Jordan.",
+        "passages": [
+          "Joshua 1-6"
+        ]
+      },
+      {
+        "title": "Conquest Campaigns",
+        "description": "Israel experiences both failure at Ai and later victories as major opposition is subdued.",
+        "passages": [
+          "Joshua 7-12"
+        ]
+      },
+      {
+        "title": "Land Allotment and Covenant Renewal",
+        "description": "The land is apportioned among tribes, and Joshua renews the covenant at Shechem.",
+        "passages": [
+          "Joshua 13-24"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Joshua",
+        "description": "Moses' successor, who leads Israel across the Jordan, through the conquest, and in covenant renewal at Shechem."
+      },
+      {
+        "name": "Rahab",
+        "description": "A Canaanite woman of Jericho who hides the Israelite spies and is spared with her family."
+      },
+      {
+        "name": "Achan",
+        "description": "Takes devoted plunder from Jericho, causing Israel's defeat at Ai."
+      },
+      {
+        "name": "Caleb",
+        "description": "One of the faithful spies, who at eighty-five claims Hebron as his inheritance."
+      },
+      {
+        "name": "The Gibeonites",
+        "description": "A Canaanite people who deceive Israel into making a peace treaty."
+      },
+      {
+        "name": "Adoni-zedek",
+        "description": "King of Jerusalem who leads a coalition of kings against Gibeon and Israel."
+      },
+      {
+        "name": "Eleazar",
+        "description": "The high priest who helps Joshua distribute the land among the tribes."
+      }
+    ]
+  },
+  "Judges": {
+    "author": "Anonymous; Jewish tradition has sometimes associated it with Samuel.",
+    "audience": "Israel during the period between Joshua and the monarchy.",
+    "purpose": "To explain Israel's recurring cycle of apostasy, oppression, crying out, and deliverance, while showing the need for faithful leadership.",
+    "theme": "When God's people abandon covenant faithfulness, disorder deepens; God repeatedly shows mercy through deliverers.",
+    "summary": "Judges tells a downward spiral: Israel turns from God, suffers oppression, cries out, and is rescued by judges. The book becomes increasingly dark and ends with social and moral chaos.",
+    "keyVerse": "Judges 21:25",
+    "movements": [
+      {
+        "title": "Early Cycles of the Judges",
+        "description": "Figures such as Othniel, Ehud, and Deborah deliver Israel from oppressors.",
+        "passages": [
+          "Judges 3-5"
+        ]
+      },
+      {
+        "title": "Gideon and Jephthah",
+        "description": "Later judges show both God's deliverance and the growing flaws of Israel's leaders.",
+        "passages": [
+          "Judges 6-12"
+        ]
+      },
+      {
+        "title": "Samson and National Disorder",
+        "description": "Samson's troubled judgeship is followed by stories of idolatry, violence, and civil war.",
+        "passages": [
+          "Judges 13-21"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Othniel",
+        "description": "Caleb's nephew and the first judge, who delivers Israel from a Mesopotamian king."
+      },
+      {
+        "name": "Ehud",
+        "description": "A left-handed Benjaminite who assassinates Eglon, king of Moab."
+      },
+      {
+        "name": "Deborah",
+        "description": "A prophetess and judge who summons Barak to lead Israel against the Canaanite army."
+      },
+      {
+        "name": "Barak",
+        "description": "The military leader who defeats Sisera's forces alongside Deborah."
+      },
+      {
+        "name": "Jael",
+        "description": "A Kenite woman who kills the fleeing commander Sisera."
+      },
+      {
+        "name": "Gideon",
+        "description": "Called while hiding from the Midianites, he defeats them with only three hundred men."
+      },
+      {
+        "name": "Abimelech",
+        "description": "Gideon's son, who seizes power by murdering his brothers and dies violently."
+      },
+      {
+        "name": "Jephthah",
+        "description": "A rejected son who delivers Israel from the Ammonites but makes a tragic vow."
+      },
+      {
+        "name": "Samson",
+        "description": "A Nazirite of great strength whose personal failings, including with Delilah, end in his capture and death among the Philistines."
+      }
+    ]
+  },
+  "Ruth": {
+    "author": "Anonymous; Jewish tradition has sometimes associated it with Samuel.",
+    "audience": "Israel, likely with special interest in David's ancestry and covenant faithfulness.",
+    "purpose": "To show God's providence, loyal love, and the inclusion of a Moabite woman in the family line that leads to David.",
+    "theme": "God works through ordinary faithfulness, kindness, and providence to bring redemption.",
+    "summary": "Ruth follows Naomi and her Moabite daughter-in-law Ruth from grief and poverty to restoration. Ruth's loyalty leads to marriage with Boaz, and their family line becomes part of David's ancestry.",
+    "keyVerse": "Ruth 1:16",
+    "movements": [
+      {
+        "title": "Ruth Chooses Naomi and Israel's God",
+        "description": "After the deaths of their husbands, Ruth refuses to abandon Naomi and returns with her to Bethlehem.",
+        "passages": [
+          "Ruth 1"
+        ]
+      },
+      {
+        "title": "Ruth Meets Boaz",
+        "description": "Ruth gleans in Boaz's field and receives protection and kindness.",
+        "passages": [
+          "Ruth 2"
+        ]
+      },
+      {
+        "title": "Redemption and Family Restoration",
+        "description": "Boaz acts as kinsman-redeemer, marries Ruth, and their son Obed becomes grandfather of David.",
+        "passages": [
+          "Ruth 3-4"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Naomi",
+        "description": "An Israelite widow who returns from Moab to Bethlehem in bitterness and is restored."
+      },
+      {
+        "name": "Ruth",
+        "description": "Naomi's Moabite daughter-in-law, whose loyalty leads her to Bethlehem and into David's ancestry."
+      },
+      {
+        "name": "Boaz",
+        "description": "A worthy relative of Naomi's family who acts as kinsman-redeemer and marries Ruth."
+      },
+      {
+        "name": "Elimelech",
+        "description": "Naomi's husband, who moves the family to Moab during a famine and dies there."
+      },
+      {
+        "name": "Orpah",
+        "description": "Naomi's other daughter-in-law, who returns to her own people in Moab."
+      },
+      {
+        "name": "Obed",
+        "description": "The son of Ruth and Boaz; father of Jesse and grandfather of David."
+      }
+    ]
+  },
+  "1 Samuel": {
+    "author": "Anonymous; traditions connect material with Samuel, Nathan, and Gad, but the final form is later than Samuel's lifetime.",
+    "audience": "Israel during the transition from judges to monarchy.",
+    "purpose": "To recount the rise of the monarchy, the failure of Saul, and the emergence of David as God's chosen king.",
+    "theme": "God looks at the heart, resists proud leadership, and advances His purposes through faithful obedience.",
+    "summary": "1 Samuel moves from Samuel's birth and prophetic ministry to Saul's rise and fall, then to David's anointing and long conflict with Saul.",
+    "keyVerse": "1 Samuel 16:7",
+    "movements": [
+      {
+        "title": "Samuel's Rise",
+        "description": "Samuel is born, called by God, and becomes a prophet and judge during a period of priestly corruption.",
+        "passages": [
+          "1 Samuel 1-7"
+        ]
+      },
+      {
+        "title": "Saul Becomes King and Fails",
+        "description": "Israel asks for a king; Saul is chosen but repeatedly disobeys God's commands.",
+        "passages": [
+          "1 Samuel 8-15"
+        ]
+      },
+      {
+        "title": "David's Rise",
+        "description": "David is anointed, defeats Goliath, and becomes Saul's rival while refusing to seize the throne by force.",
+        "passages": [
+          "1 Samuel 16-31"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Hannah",
+        "description": "A barren woman who prays for a son, dedicates Samuel to the LORD, and sings a song of praise."
+      },
+      {
+        "name": "Eli",
+        "description": "Priest at Shiloh, whose corrupt sons Hophni and Phinehas bring judgment on his household."
+      },
+      {
+        "name": "Samuel",
+        "description": "Prophet, priest, and last judge of Israel, who anoints both Saul and David."
+      },
+      {
+        "name": "Saul",
+        "description": "Israel's first king, who begins well but is rejected by God for disobedience."
+      },
+      {
+        "name": "Jonathan",
+        "description": "Saul's son, a brave warrior and loyal friend to David."
+      },
+      {
+        "name": "David",
+        "description": "A shepherd anointed as future king, who defeats Goliath and flees from Saul's jealousy."
+      },
+      {
+        "name": "Goliath",
+        "description": "The Philistine champion from Gath defeated by David."
+      },
+      {
+        "name": "Abigail",
+        "description": "A wise woman who prevents David from taking revenge on her foolish husband Nabal, and later becomes David's wife."
+      }
+    ]
+  },
+  "2 Samuel": {
+    "author": "Anonymous; built from royal and prophetic traditions.",
+    "audience": "Israel under David's reign and later readers reflecting on the Davidic monarchy.",
+    "purpose": "To narrate David's reign, God's covenant promise to his house, and the serious consequences of David's sin.",
+    "theme": "God establishes David's dynasty, yet even the chosen king is accountable for sin and its consequences.",
+    "summary": "David becomes king over all Israel, captures Jerusalem, receives God's covenant promise, and experiences both great victories and deep family turmoil after his sin with Bathsheba.",
+    "keyVerse": "2 Samuel 7:16",
+    "movements": [
+      {
+        "title": "David Becomes King",
+        "description": "David is first king over Judah and then over all Israel; Jerusalem becomes his capital.",
+        "passages": [
+          "2 Samuel 1-6"
+        ]
+      },
+      {
+        "title": "The Davidic Covenant",
+        "description": "God promises David an enduring dynasty and future royal line.",
+        "passages": [
+          "2 Samuel 7"
+        ]
+      },
+      {
+        "title": "David's Sin and Family Crisis",
+        "description": "David's adultery and arranged killing are followed by conflict, rebellion, and grief within his household.",
+        "passages": [
+          "2 Samuel 11-20"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "David",
+        "description": "Becomes king over Judah and then all Israel, receives God's covenant promise, but sins grievously with Bathsheba."
+      },
+      {
+        "name": "Ish-bosheth",
+        "description": "Saul's son, set up as a rival king over Israel before his assassination."
+      },
+      {
+        "name": "Joab",
+        "description": "Commander of David's army, effective but often ruthless."
+      },
+      {
+        "name": "Mephibosheth",
+        "description": "Jonathan's disabled son, to whom David shows covenant kindness."
+      },
+      {
+        "name": "Bathsheba",
+        "description": "Wife of Uriah, taken by David; later mother of Solomon."
+      },
+      {
+        "name": "Uriah the Hittite",
+        "description": "A loyal soldier whom David arranges to have killed in battle."
+      },
+      {
+        "name": "Nathan",
+        "description": "The prophet who delivers the Davidic covenant and later confronts David's sin with a parable."
+      },
+      {
+        "name": "Absalom",
+        "description": "David's son, who kills his brother Amnon and later leads a rebellion against his father."
+      }
+    ]
+  },
+  "1 Kings": {
+    "author": "Anonymous; often understood as part of a larger historical work compiled from earlier royal records and prophetic sources.",
+    "audience": "Judah and Israel, especially readers reflecting on the monarchy and exile.",
+    "purpose": "To explain the history of the united and divided kingdoms in light of covenant faithfulness and failure.",
+    "theme": "The health of the kingdom is measured by loyalty to the LORD; idolatry and disobedience lead toward judgment.",
+    "summary": "Solomon builds the temple but later compromises through idolatry. After his death the kingdom divides, and prophetic voices such as Elijah confront royal unfaithfulness.",
+    "keyVerse": "1 Kings 18:39",
+    "movements": [
+      {
+        "title": "Solomon's Reign and Temple",
+        "description": "Solomon receives wisdom, builds the temple, and reaches great prosperity.",
+        "passages": [
+          "1 Kings 1-10"
+        ]
+      },
+      {
+        "title": "Kingdom Divides",
+        "description": "Solomon's later idolatry is followed by the split between Israel in the north and Judah in the south.",
+        "passages": [
+          "1 Kings 11-14"
+        ]
+      },
+      {
+        "title": "Elijah Confronts Ahab",
+        "description": "Elijah challenges Baal worship and the policies of Ahab and Jezebel.",
+        "passages": [
+          "1 Kings 17-22"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Solomon",
+        "description": "David's son and successor, renowned for wisdom, who builds the temple but later turns to idolatry."
+      },
+      {
+        "name": "Adonijah",
+        "description": "David's son, who attempts to seize the throne before Solomon is crowned."
+      },
+      {
+        "name": "The Queen of Sheba",
+        "description": "A foreign ruler who visits Solomon to test his wisdom and praises Israel's God."
+      },
+      {
+        "name": "Rehoboam",
+        "description": "Solomon's son, whose harsh policy prompts the northern tribes to break away."
+      },
+      {
+        "name": "Jeroboam",
+        "description": "First king of the northern kingdom, who sets up golden calves at Bethel and Dan."
+      },
+      {
+        "name": "Ahab",
+        "description": "King of Israel who promotes Baal worship and opposes Elijah."
+      },
+      {
+        "name": "Jezebel",
+        "description": "Ahab's Phoenician wife, who persecutes the LORD's prophets and arranges Naboth's murder."
+      },
+      {
+        "name": "Elijah",
+        "description": "The prophet who confronts Ahab, defeats the prophets of Baal on Mount Carmel, and hears God's quiet voice at Horeb."
+      }
+    ]
+  },
+  "2 Kings": {
+    "author": "Anonymous; likely compiled from royal, prophetic, and historical sources.",
+    "audience": "Judah and Israel, especially communities seeking to understand why both kingdoms fell.",
+    "purpose": "To trace the decline and exile of Israel and Judah as the result of persistent covenant rebellion, while preserving signs of God's prophetic faithfulness.",
+    "theme": "Persistent idolatry and injustice bring covenant judgment, yet God's word continues to prove reliable.",
+    "summary": "2 Kings records prophetic ministries, royal reforms, repeated rebellion, the fall of Samaria, and finally the fall of Jerusalem and exile to Babylon.",
+    "keyVerse": "2 Kings 6:16",
+    "movements": [
+      {
+        "title": "Elijah's Departure and Elisha's Ministry",
+        "description": "Elijah is taken up, and Elisha carries on a powerful prophetic ministry.",
+        "passages": [
+          "2 Kings 1-8"
+        ]
+      },
+      {
+        "title": "Fall of the Northern Kingdom",
+        "description": "After generations of idolatry, Assyria captures Samaria and exiles Israel.",
+        "passages": [
+          "2 Kings 17"
+        ]
+      },
+      {
+        "title": "Judah's Last Kings and Exile",
+        "description": "Despite reforms under Hezekiah and Josiah, Judah eventually falls to Babylon and Jerusalem is destroyed.",
+        "passages": [
+          "2 Kings 18-25"
+        ]
+      }
+    ],
+    "keyFigures": [
+      {
+        "name": "Elijah",
+        "description": "Taken up to heaven in a whirlwind, passing his ministry to Elisha."
+      },
+      {
+        "name": "Elisha",
+        "description": "Elijah's successor, whose ministry is marked by many miracles."
+      },
+      {
+        "name": "Naaman",
+        "description": "An Aramean army commander healed of a skin disease after washing in the Jordan."
+      },
+      {
+        "name": "Jehu",
+        "description": "Anointed king of Israel, who destroys Ahab's dynasty and Baal worship."
+      },
+      {
+        "name": "Hezekiah",
+        "description": "A reforming king of Judah who trusts God when Assyria besieges Jerusalem."
+      },
+      {
+        "name": "Isaiah",
+        "description": "The prophet who counsels Hezekiah during the Assyrian crisis and his illness."
+      },
+      {
+        "name": "Sennacherib",
+        "description": "King of Assyria, whose army threatens Jerusalem but is struck down."
+      },
+      {
+        "name": "Manasseh",
+        "description": "Hezekiah's son, whose long and idolatrous reign is blamed for Judah's coming judgment."
+      },
+      {
+        "name": "Josiah",
+        "description": "A king who leads sweeping reforms after the Book of the Law is found in the temple."
+      },
+      {
+        "name": "Nebuchadnezzar",
+        "description": "King of Babylon, who conquers Judah, destroys Jerusalem, and carries the people into exile."
+      }
+    ]
+  }
+}

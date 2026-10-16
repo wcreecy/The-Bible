@@ -45,29 +45,6 @@ def repair(database: sqlite3.Connection) -> int:
     )
     changes += cursor.rowcount
 
-    # The app uses KJV chapter numbering, where these verses are Malachi 4.
-    cursor = database.execute(
-        """
-        UPDATE chapter_insights
-        SET customs_and_traditions = replace(
-            customs_and_traditions, 'Malachi 3:19–24', 'Malachi 4:1–6'
-        )
-        WHERE customs_and_traditions LIKE '%Malachi 3:19–24%'
-        """
-    )
-    changes += cursor.rowcount
-
-    # This is an external (non-canonical) work; retain it as a clear citation.
-    cursor = database.execute(
-        """
-        UPDATE chapter_insights
-        SET customs_and_traditions = replace(
-            customs_and_traditions, '4 (Ezra 7:28-29)', '4 Ezra 7:28–29'
-        )
-        WHERE customs_and_traditions LIKE '%4 (Ezra 7:28-29)%'
-        """
-    )
-    changes += cursor.rowcount
     return changes + repair_all_text(database)
 
 
