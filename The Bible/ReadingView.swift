@@ -533,32 +533,39 @@ struct ReadingView: View {
         seenVerseLocation = "\(bookName):\(chapterNumber)"
     }
 
+    /// A highlight on a single verse wins over one spanning several verses.
     private func highlightColor(for verseNumber: Int) -> Color? {
-        verseNotes.first {
-            $0.bookName == viewModel.currentBook.name &&
-            $0.chapterNumber == viewModel.currentChapter.number &&
-            $0.verseNumber == verseNumber
-        }
-        .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
+        notes(covering: verseNumber)
+            .first { !$0.highlightColor.isEmpty }
+            .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
     }
 
+    /// The note to edit from this verse: one starting here, else one spanning it.
     private func note(for verseNumber: Int) -> VerseNote? {
-        verseNotes.first {
-            $0.bookName == viewModel.currentBook.name &&
-            $0.chapterNumber == viewModel.currentChapter.number &&
-            $0.verseNumber == verseNumber
-        }
+        notes(covering: verseNumber).first
+    }
+
+    /// Notes covering the verse, those starting at it first, then the shortest span.
+    private func notes(covering verseNumber: Int) -> [VerseNote] {
+        verseNotes
+            .filter {
+                $0.covers(
+                    bookName: viewModel.currentBook.name,
+                    chapterNumber: viewModel.currentChapter.number,
+                    verseNumber: verseNumber
+                )
+            }
+            .sorted {
+                ($0.verseNumber == verseNumber ? 0 : 1, $0.lastVerseNumber - $0.verseNumber) <
+                    ($1.verseNumber == verseNumber ? 0 : 1, $1.lastVerseNumber - $1.verseNumber)
+            }
     }
 
     private func hasNote(for verseNumber: Int) -> Bool {
-        verseNotes.contains {
-            guard $0.bookName == viewModel.currentBook.name,
-                  $0.chapterNumber == viewModel.currentChapter.number,
-                  $0.verseNumber == verseNumber else { return false }
-
+        notes(covering: verseNumber).contains {
             let title = $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
             let content = $0.content.trimmingCharacters(in: .whitespacesAndNewlines)
-            let seededReference = "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)"
+            let seededReference = $0.reference
             return !title.isEmpty || (!content.isEmpty && content != seededReference)
         }
     }

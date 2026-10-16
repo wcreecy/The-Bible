@@ -214,7 +214,7 @@ enum NotesMarkdownExporter {
                 details.append(date.formatted(date: .abbreviated, time: .omitted))
             }
             if !item.highlightColor.isEmpty, let color = VerseHighlightColor(rawValue: item.highlightColor) {
-                details.append(String(localized: "\(String(localized: color.title)) highlight"))
+                details.append(String(localized: "\(String(localized: color.name)) highlight"))
             }
             lines.append("*\(details.joined(separator: " · "))*")
             switch item {

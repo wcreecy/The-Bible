@@ -13,14 +13,15 @@ struct NotesKeyboardCommandResponder: UIViewRepresentable {
     func updateUIView(_ view: KeyCommandView, context: Context) {
         view.moveSelection = moveSelection
         view.requestDeletion = requestDeletion
-        view.isCommandHandlingEnabled = isEnabled
 
-        DispatchQueue.main.async {
-            if isEnabled {
-                view.becomeFirstResponder()
-            } else if view.isFirstResponder {
-                view.resignFirstResponder()
-            }
+        // Claim focus only when commands turn on (a sheet closed or search ended), not on every
+        // update, so typing in the search field or an editor never loses its keyboard.
+        let wasEnabled = view.isCommandHandlingEnabled
+        view.isCommandHandlingEnabled = isEnabled
+        if isEnabled, !wasEnabled {
+            view.claimFocusIfIdle()
+        } else if !isEnabled, view.isFirstResponder {
+            view.resignFirstResponder()
         }
     }
 
@@ -28,10 +29,24 @@ struct NotesKeyboardCommandResponder: UIViewRepresentable {
     final class KeyCommandView: UIView {
         var moveSelection: ((Int) -> Void)?
         var requestDeletion: (() -> Void)?
-        var isCommandHandlingEnabled = true
+        var isCommandHandlingEnabled = false
 
         override var canBecomeFirstResponder: Bool {
             isCommandHandlingEnabled
+        }
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            if window != nil { claimFocusIfIdle() }
+        }
+
+        /// Becomes first responder on the next run loop unless a text field or view is being edited.
+        func claimFocusIfIdle() {
+            Task { @MainActor [weak self] in
+                guard let self, self.isCommandHandlingEnabled, self.window != nil, !self.isFirstResponder,
+                      !(FirstResponderFinder.current() is UITextInput) else { return }
+                self.becomeFirstResponder()
+            }
         }
 
         override var keyCommands: [UIKeyCommand]? {
@@ -82,5 +97,23 @@ struct NotesKeyboardCommandResponder: UIViewRepresentable {
         @objc private func deleteSelectedNote() {
             requestDeletion?()
         }
+    }
+}
+
+/// Finds the current first responder by sending an action up the responder chain.
+@MainActor
+private enum FirstResponderFinder {
+    static weak var found: UIResponder?
+
+    static func current() -> UIResponder? {
+        found = nil
+        UIApplication.shared.sendAction(#selector(UIResponder.notesCaptureFirstResponder(_:)), to: nil, from: nil, for: nil)
+        return found
+    }
+}
+
+private extension UIResponder {
+    @objc func notesCaptureFirstResponder(_ sender: Any?) {
+        FirstResponderFinder.found = self
     }
 }

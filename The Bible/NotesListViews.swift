@@ -1,171 +1,168 @@
 import SwiftData
 import SwiftUI
 
-struct NotesCategoryStrip: View {
-    @Binding var selection: NotesFilter
-    @Binding var highlightFilter: NotesHighlightFilter
-    @Binding var selectedCustomTag: String?
+/// The Notes page's filters in one row: type, highlight color, and custom tags. Tags open
+/// a second row listing each tag with how many notes use it.
+struct NotesFilterBar: View {
+    @Binding var filters: NotesFilters
 
-    let customTags: [String]
+    let tags: [NotesLibrary.TagCount]
+    let manageTagsAction: () -> Void
 
-    @State private var isShowingCustomTags = false
+    @State private var isShowingTags = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
-                    if highlightFilter != .all {
-                        activeHighlightChip
-                    }
-
                     ForEach(NotesFilter.allCases) { filter in
-                        Button {
-                            withAnimation(.snappy) {
-                                selection = filter
-                            }
+                        FilterChip(isSelected: filters.category == filter) {
+                            update { $0.category = filter }
                         } label: {
-                            Label(filter.title, systemImage: filter.systemImage)
-                                .font(.subheadline.weight(.semibold))
-                                .padding(.horizontal, 14)
-                                .frame(minHeight: 40)
-                                .foregroundStyle(selection == filter ? Color.white : Color.primary)
-                                .background(
-                                    selection == filter ? Color.accentColor : Color.primary.opacity(0.07),
-                                    in: Capsule()
-                                )
+                            Label { Text(filter.title) } icon: { Image(systemName: filter.systemImage) }
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(selection == filter ? .isSelected : [])
                     }
 
-                    if !customTags.isEmpty {
-                        Button {
-                            withAnimation(.snappy) {
-                                isShowingCustomTags.toggle()
-                            }
+                    colorChip
+
+                    if !tags.isEmpty || filters.tag != nil {
+                        FilterChip(isSelected: isShowingTags || filters.tag != nil) {
+                            withAnimation(.snappy) { isShowingTags.toggle() }
                         } label: {
-                            Text("#Custom")
-                                .font(.subheadline.weight(.semibold))
-                                .padding(.horizontal, 14)
-                                .frame(minHeight: 40)
-                                .foregroundStyle(
-                                    isShowingCustomTags || selectedCustomTag != nil ? Color.white : Color.primary
-                                )
-                                .background(
-                                    isShowingCustomTags || selectedCustomTag != nil
-                                        ? Color.accentColor
-                                        : Color.primary.opacity(0.07),
-                                    in: Capsule()
-                                )
+                            HStack(spacing: 4) {
+                                Text(filters.tag.map { "#\($0)" } ?? String(localized: "#Tags"))
+                                Image(systemName: isShowingTags ? "chevron.up" : "chevron.down")
+                                    .font(.caption2.weight(.bold))
+                            }
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(
-                            isShowingCustomTags || selectedCustomTag != nil ? .isSelected : []
-                        )
-                        .accessibilityHint("Shows your custom note tags")
+                        .accessibilityLabel("Custom tags")
+                        .accessibilityValue(Text(filters.tag.map { "#\($0)" } ?? String(localized: "All")))
+                        .accessibilityHint(isShowingTags ? "Hides your custom note tags" : "Shows your custom note tags")
                     }
                 }
                 .padding(.horizontal, 2)
             }
             .scrollIndicators(.hidden)
 
-            if isShowingCustomTags {
-                CustomNoteTagsStrip(tags: customTags, selection: $selectedCustomTag)
+            if isShowingTags {
+                tagRow
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
     }
 
-    /// Makes an active highlight filter visible and removable with one tap.
-    private var activeHighlightChip: some View {
-        Button {
-            withAnimation(.snappy) {
-                highlightFilter = .all
-            }
-        } label: {
-            HStack(spacing: 6) {
-                if let color = highlightFilter.highlightColor?.color {
-                    Circle()
-                        .fill(color)
-                        .frame(width: 12, height: 12)
-                } else {
-                    Image(systemName: "circle.slash")
+    /// Picks a highlight color; shows the chosen color and clears with one tap from the menu.
+    private var colorChip: some View {
+        Menu {
+            Picker("Highlight Color", selection: binding(\.highlight)) {
+                ForEach(NotesHighlightFilter.allCases) { option in
+                    Text(option.title).tag(option)
                 }
-                Text(highlightFilter.title)
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundStyle(.secondary)
             }
-            .font(.subheadline.weight(.semibold))
-            .padding(.horizontal, 14)
-            .frame(minHeight: 40)
-            .foregroundStyle(.primary)
-            .background(Color.accentColor.opacity(0.15), in: Capsule())
-            .overlay {
-                Capsule().strokeBorder(Color.accentColor.opacity(0.5))
+            .pickerStyle(.inline)
+        } label: {
+            FilterChipLabel(isSelected: filters.highlight != .all) {
+                HStack(spacing: 6) {
+                    if let color = filters.highlight.highlightColor?.color {
+                        Circle().fill(color).frame(width: 12, height: 12)
+                    } else {
+                        Image(systemName: filters.highlight == .none ? "circle.slash" : "highlighter")
+                    }
+                    Text(filters.highlight == .all ? "Color" : filters.highlight.title)
+                    Image(systemName: "chevron.down")
+                        .font(.caption2.weight(.bold))
+                }
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Highlight filter")
-        .accessibilityValue(Text(highlightFilter.title))
-        .accessibilityHint("Removes the highlight color filter")
+        .accessibilityLabel("Highlight color")
+        .accessibilityValue(Text(filters.highlight.title))
     }
-}
 
-private struct CustomNoteTagsStrip: View {
-    let tags: [String]
-    @Binding var selection: String?
-
-    var body: some View {
+    private var tagRow: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 8) {
-                Button {
-                    withAnimation(.snappy) {
-                        selection = nil
-                    }
+                FilterChip(isSelected: filters.tag == nil) {
+                    update { $0.tag = nil }
                 } label: {
-                    Label("All Custom", systemImage: "tag")
-                        .font(.subheadline.weight(.semibold))
-                        .padding(.horizontal, 14)
-                        .frame(minHeight: 40)
-                        .foregroundStyle(selection == nil ? Color.white : Color.primary)
-                        .background(
-                            selection == nil ? Color.accentColor : Color.primary.opacity(0.07),
-                            in: Capsule()
-                        )
+                    Label("All Tags", systemImage: "tag")
                 }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(selection == nil ? .isSelected : [])
 
-                ForEach(tags, id: \.self) { tag in
-                    Button {
-                        withAnimation(.snappy) {
-                            selection = tag
-                        }
+                ForEach(tags) { tag in
+                    FilterChip(isSelected: filters.tag == tag.tag) {
+                        update { $0.tag = $0.tag == tag.tag ? nil : tag.tag }
                     } label: {
-                        Text("#\(tag)")
-                            .font(.subheadline.weight(.semibold))
-                            .padding(.horizontal, 14)
-                            .frame(minHeight: 40)
-                            .foregroundStyle(selection == tag ? Color.white : Color.primary)
-                            .background(
-                                selection == tag ? Color.accentColor : Color.primary.opacity(0.07),
-                                in: Capsule()
-                            )
+                        HStack(spacing: 5) {
+                            Text(verbatim: "#\(tag.tag)")
+                            Text(tag.count, format: .number)
+                                .font(.caption.weight(.semibold))
+                                .opacity(0.65)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selection == tag ? .isSelected : [])
+                    .accessibilityLabel(Text(verbatim: "#\(tag.tag)"))
+                    .accessibilityValue(Text("\(tag.count) notes"))
                 }
+
+                Button("Manage", systemImage: "slider.horizontal.3", action: manageTagsAction)
+                    .font(.subheadline.weight(.semibold))
+                    .buttonStyle(.bordered)
+                    .clipShape(Capsule())
+                    .accessibilityLabel("Manage tags")
             }
             .padding(.horizontal, 2)
         }
         .scrollIndicators(.hidden)
         .accessibilityLabel("Custom note tags")
     }
+
+    private func update(_ change: (inout NotesFilters) -> Void) {
+        withAnimation(.snappy) { change(&filters) }
+    }
+
+    private func binding<Value>(_ keyPath: WritableKeyPath<NotesFilters, Value>) -> Binding<Value> {
+        Binding(
+            get: { filters[keyPath: keyPath] },
+            set: { newValue in withAnimation(.snappy) { filters[keyPath: keyPath] = newValue } }
+        )
+    }
+}
+
+/// A capsule-shaped toggle used across the Notes filter row.
+struct FilterChip<Content: View>: View {
+    let isSelected: Bool
+    let action: () -> Void
+    @ViewBuilder let label: () -> Content
+
+    var body: some View {
+        Button(action: action) {
+            FilterChipLabel(isSelected: isSelected, content: label)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+/// The chip's appearance, shared with menus that look like chips.
+struct FilterChipLabel<Content: View>: View {
+    let isSelected: Bool
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        content()
+            .font(.subheadline.weight(.semibold))
+            .padding(.horizontal, 14)
+            .frame(minHeight: 40)
+            .foregroundStyle(isSelected ? Color.white : Color.primary)
+            .background(isSelected ? Color.accentColor : Color.primary.opacity(0.07), in: Capsule())
+            .contentShape(Capsule())
+    }
 }
 
 struct NotesListCard: View {
     let notes: [NotesListItem]
     let selectedID: NotesListItem.ID?
-    let filter: NotesFilter
+    /// Names the active filters and the count, so the list always says what it's showing.
+    let summaryTitle: String
     let hasAnyNotes: Bool
     let showsClearFiltersAction: Bool
     let clearFiltersAction: () -> Void
@@ -225,9 +222,10 @@ struct NotesListCard: View {
 
     private var summaryHeader: some View {
         HStack(spacing: 8) {
-            Text(filter.libraryTitle(noteCount: notes.count))
+            Text(summaryTitle)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+                .lineLimit(2)
 
             Spacer(minLength: 8)
 
@@ -339,8 +337,8 @@ struct NotesListRow: View {
         NotesTitleButton(
             title: item.title,
             preview: item.preview,
-            reference: item.reference,
-            tag: NoteCategory(rawValue: item.categoryRawValue)?.title,
+            reference: item.passage,
+            tag: item.category?.shortTitle,
             highlight: VerseHighlightColor(rawValue: item.highlightColor),
             isFavorite: item.isFavorite,
             updatedAt: item.updatedAt ?? item.createdAt,
@@ -363,7 +361,7 @@ struct NotesListRow: View {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
 
-            if item.reference != nil {
+            if item.bibleLocation != nil {
                 Button("Open in Bible", systemImage: "book.closed") {
                     item.openInBible()
                 }
@@ -377,9 +375,7 @@ struct NotesListRow: View {
 
     private var favoriteButton: some View {
         Button {
-            item.toggleFavorite()
-            modelContext.saveLoggingErrors()
-            Haptics.selection()
+            item.toggleFavorite(in: modelContext)
         } label: {
             Label(
                 item.isFavorite ? "Unfavorite" : "Favorite",
@@ -399,11 +395,14 @@ struct NotesListRow: View {
     }
 }
 
-/// Combines sorting and the highlight color filter into a single toolbar menu.
+/// Sorting, what to show, tag management, and export in one toolbar menu.
 struct NotesViewOptionsMenu: View {
     @Binding var sortField: NotesTabSort
     @Binding var sortAscending: Bool
-    @Binding var highlightFilter: NotesHighlightFilter
+    @Binding var contentFilter: NotesContentFilter
+    let hasTags: Bool
+    let manageTagsAction: () -> Void
+    let exportAction: () -> Void
 
     var body: some View {
         Menu {
@@ -425,30 +424,37 @@ struct NotesViewOptionsMenu: View {
                 .pickerStyle(.inline)
             }
 
-            Section("Filter") {
-                Picker(selection: $highlightFilter) {
-                    ForEach(NotesHighlightFilter.allCases) { option in
-                        Text(option.title).tag(option)
+            Section {
+                Picker(selection: $contentFilter) {
+                    ForEach(NotesContentFilter.allCases) { option in
+                        Label(option.title, systemImage: option.systemImage).tag(option)
                     }
                 } label: {
-                    Label("Highlight Color", systemImage: "highlighter")
-                    Text(highlightFilter.title)
+                    Label("Show", systemImage: "eye")
+                    Text(contentFilter.title)
                 }
                 .pickerStyle(.menu)
             }
+
+            Section {
+                if hasTags {
+                    Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
+                }
+                Button("Export All Notes…", systemImage: "square.and.arrow.up", action: exportAction)
+            }
         } label: {
             Image(
-                systemName: highlightFilter == .all
+                systemName: contentFilter == .all
                     ? "line.3.horizontal.decrease"
                     : "line.3.horizontal.decrease.circle.fill"
             )
             .foregroundStyle(
-                highlightFilter == .all
+                contentFilter == .all
                     ? AnyShapeStyle(.primary)
                     : AnyShapeStyle(.tint)
             )
         }
-        .accessibilityLabel("Sort and filter notes")
+        .accessibilityLabel("Sort, show, and export notes")
         .accessibilityValue(Text(sortField.title))
     }
 }

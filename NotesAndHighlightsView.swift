@@ -5,63 +5,65 @@ import SwiftUI
 struct NotesAndHighlightsView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \VerseNote.updatedAt, order: .reverse) private var scriptureNotes: [VerseNote]
-    @Query(sort: \UserNote.updatedAt, order: .reverse) private var userNotes: [UserNote]
+    // Unsorted: NotesLibrary applies the chosen sort, so the store doesn't need to.
+    @Query private var scriptureNotes: [VerseNote]
+    @Query private var userNotes: [UserNote]
 
     @AppStorage("notesTabSortField") private var sortFieldRawValue = NotesTabSort.modified.rawValue
     @AppStorage("notesTabSortAscending") private var sortAscending = NotesTabSort.modified.defaultAscending
+    @AppStorage("notesTabListColumnFraction") private var listColumnFraction = 0.4
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
-    @State private var selectedFilter = NotesFilter.all
-    @State private var highlightFilter = NotesHighlightFilter.all
-    @State private var selectedCustomTag: String?
-    @State private var searchText = ""
+    @State private var filters = NotesFilters()
     @State private var isSearchPresented = false
-    @State private var selectedScriptureNote: VerseNote?
-    @State private var selectedUserNote: UserNote?
+    @State private var selectedID: NotesListItem.ID?
     @State private var isCreatingNote = false
     @State private var isEditingSelection = false
     @State private var isShowingCompactDetail = false
+    @State private var isManagingTags = false
+    @State private var exportDocument: NotesMarkdownDocument?
     @State private var deletedNoteSnapshot: DeletedNoteSnapshot?
     @State private var isShowingDeleteUndo = false
     @State private var deleteUndoText = ""
 
     var body: some View {
-        Group {
+        let library = library
+        let selectedItem = library.item(withID: selectedID)
+
+        return Group {
             if horizontalSizeClass == .compact {
-                compactContent
+                compactContent(library)
             } else {
-                regularContent
+                regularContent(library, selectedItem: selectedItem)
+                    .modifier(NoteEditorCover(isPresented: $isEditingSelection, item: selectedItem))
             }
         }
         .background(AppBackgroundView(tab: .notes))
         .navigationTitle("Notes")
         .navigationDestination(isPresented: $isShowingCompactDetail) {
-            NoteDetailCard(
-                scriptureNote: selectedScriptureNote,
-                userNote: selectedUserNote,
-                editAction: {
-                    isShowingCompactDetail = false
-                    DispatchQueue.main.async {
-                        isEditingSelection = true
-                    }
-                }
-            )
-            .padding()
-            .background(AppBackgroundView(tab: .notes))
-            .navigationTitle("Note")
-            .navigationBarTitleDisplayMode(.inline)
+            // The editor opens over the detail page, so closing it returns here without a pop.
+            NoteDetailCard(item: selectedItem, editAction: { isEditingSelection = true })
+                .padding()
+                .background(AppBackgroundView(tab: .notes))
+                .navigationTitle("Note")
+                .navigationBarTitleDisplayMode(.inline)
+                .modifier(NoteEditorCover(isPresented: $isEditingSelection, item: selectedItem))
         }
         .searchable(
-            text: $searchText,
+            text: $filters.search,
             isPresented: $isSearchPresented,
-            prompt: "Search all notes"
+            prompt: "Search notes, verses, or #tags"
         )
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 NotesViewOptionsMenu(
                     sortField: sortFieldBinding,
                     sortAscending: $sortAscending,
-                    highlightFilter: $highlightFilter
+                    contentFilter: $filters.content,
+                    hasTags: !library.tags.isEmpty,
+                    manageTagsAction: { isManagingTags = true },
+                    exportAction: {
+                        exportDocument = NotesMarkdownDocument(text: NotesMarkdownExporter.markdown(for: library.allItems))
+                    }
                 )
 
                 Button {
@@ -77,33 +79,29 @@ struct NotesAndHighlightsView: View {
             NavigationStack {
                 UserNoteEditorView(
                     existingNote: nil,
-                    defaultCategory: selectedFilter.noteCategory ?? .personal
+                    defaultCategory: filters.category.noteCategory ?? .personal
                 )
             }
         }
-        .fullScreenCover(isPresented: $isEditingSelection) {
+        .sheet(isPresented: $isManagingTags) {
             NavigationStack {
-                if let selectedScriptureNote {
-                    VerseNoteEditorView(
-                        verse: VerseActionReference(
-                            bookName: selectedScriptureNote.bookName,
-                            chapterNumber: selectedScriptureNote.chapterNumber,
-                            verseNumber: selectedScriptureNote.verseNumber,
-                            verseText: selectedScriptureNote.verseText
-                        ),
-                        existingNote: selectedScriptureNote,
-                        preservesHighlightWhenRemovingNote: true
-                    )
-                } else if let selectedUserNote {
-                    UserNoteEditorView(existingNote: selectedUserNote)
-                }
+                NotesTagManagerView()
             }
+        }
+        .fileExporter(
+            isPresented: Binding(get: { exportDocument != nil }, set: { if !$0 { exportDocument = nil } }),
+            document: exportDocument,
+            contentType: NotesMarkdownDocument.markdownType,
+            defaultFilename: String(localized: "Bible Notes")
+        ) { result in
+            if case .success = result { Haptics.success() }
+            exportDocument = nil
         }
         .background {
             ZStack {
-                keyboardShortcutControls
+                keyboardShortcutControls(hasSelection: selectedItem != nil)
                 NotesKeyboardCommandResponder(
-                    isEnabled: !isSearchPresented && !isCreatingNote && !isEditingSelection,
+                    isEnabled: !isSearchPresented && !isCreatingNote && !isEditingSelection && !isManagingTags,
                     moveSelection: moveSelection,
                     requestDeletion: requestSelectedNoteDeletion
                 )
@@ -118,20 +116,34 @@ struct NotesAndHighlightsView: View {
             action: undoLastDeletion
         )
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
-        .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
-        .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
-        .onChange(of: selectedCustomTag) { _, _ in selectFirstVisibleNoteIfNeeded() }
-        .onChange(of: customTags) { _, newTags in
-            if let selectedCustomTag, !newTags.contains(selectedCustomTag) {
-                self.selectedCustomTag = nil
+        .onChange(of: filters) { _, _ in selectFirstVisibleNoteIfNeeded() }
+        .onChange(of: library.tags.map(\.tag)) { _, newTags in
+            // A renamed or removed tag can't stay selected.
+            if let tag = filters.tag, !newTags.contains(tag) {
+                filters.tag = nil
             }
+        }
+        .onChange(of: selectedItem == nil) { _, isMissing in
+            // The open note was deleted (from its editor or another device).
+            guard isMissing else { return }
+            isShowingCompactDetail = false
+            selectFirstVisibleNoteIfNeeded()
         }
         .onChange(of: sortFieldRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: sortAscending) { _, _ in selectFirstVisibleNoteIfNeeded() }
-        .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
     }
 
-    private var keyboardShortcutControls: some View {
+    private var library: NotesLibrary {
+        NotesLibrary(
+            scriptureNotes: scriptureNotes,
+            userNotes: userNotes,
+            filters: filters,
+            sort: sortField,
+            ascending: sortAscending
+        )
+    }
+
+    private func keyboardShortcutControls(hasSelection: Bool) -> some View {
         Group {
             Button("Search Notes") {
                 isSearchPresented = true
@@ -142,27 +154,31 @@ struct NotesAndHighlightsView: View {
                 editSelectedNote()
             }
             .keyboardShortcut("e", modifiers: .command)
-            .disabled(selectedScriptureNote == nil && selectedUserNote == nil)
+            .disabled(!hasSelection)
         }
         .frame(width: 0, height: 0)
         .opacity(0)
         .accessibilityHidden(true)
     }
 
-    private var compactContent: some View {
+    private func filterBar(_ library: NotesLibrary) -> some View {
+        NotesFilterBar(
+            filters: $filters,
+            tags: library.tags,
+            manageTagsAction: { isManagingTags = true }
+        )
+    }
+
+    private func compactContent(_ library: NotesLibrary) -> some View {
         VStack(spacing: 12) {
-            NotesCategoryStrip(
-                selection: $selectedFilter,
-                highlightFilter: $highlightFilter,
-                selectedCustomTag: $selectedCustomTag,
-                customTags: customTags
-            )
+            filterBar(library)
             contextualTip
 
             notesList(
+                library,
                 newNoteAction: nil,
                 selectAction: { item in
-                    select(item)
+                    selectedID = item.id
                     isShowingCompactDetail = true
                 }
             )
@@ -171,26 +187,22 @@ struct NotesAndHighlightsView: View {
         .padding(.bottom)
     }
 
-    private var regularContent: some View {
+    private func regularContent(_ library: NotesLibrary, selectedItem: NotesListItem?) -> some View {
         VStack(spacing: 12) {
-            NotesCategoryStrip(
-                selection: $selectedFilter,
-                highlightFilter: $highlightFilter,
-                selectedCustomTag: $selectedCustomTag,
-                customTags: customTags
-            )
+            filterBar(library)
             contextualTip
 
-            ResizableNotesColumns {
+            ResizableNotesColumns(listColumnFraction: $listColumnFraction) {
                 notesList(
+                    library,
                     newNoteAction: { isCreatingNote = true },
-                    selectAction: select
+                    selectAction: { selectedID = $0.id }
                 )
                 .padding(.horizontal, 2)
                 .padding(.vertical, 12)
             } detail: {
                 VStack(spacing: 12) {
-                    if selectedNoteIsExcludedFromVisibleNotes {
+                    if selectedItem != nil, !library.isVisible(selectedID) {
                         Label(
                             "This note isn’t included in the active filter or search.",
                             systemImage: "line.3.horizontal.decrease.circle"
@@ -207,12 +219,8 @@ struct NotesAndHighlightsView: View {
                         .accessibilityLabel("The open note is not included in the active filter or search.")
                     }
 
-                    NoteDetailCard(
-                        scriptureNote: selectedScriptureNote,
-                        userNote: selectedUserNote,
-                        editAction: { isEditingSelection = true }
-                    )
-                    .frame(maxWidth: .infinity)
+                    NoteDetailCard(item: selectedItem, editAction: { isEditingSelection = true })
+                        .frame(maxWidth: .infinity)
                 }
             }
         }
@@ -226,52 +234,33 @@ struct NotesAndHighlightsView: View {
             ContextualTipView(
                 id: "notes.quickActions",
                 title: "Browse and manage notes",
-                message: "Tap #Custom to reveal custom tags, or filter by category and highlight color. Select a note to follow links without editing, or swipe or press and hold it for quick actions.",
+                message: "Filter by type or color, or tap #Tags to filter by your own tags. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
                 systemImage: "hand.point.up.left"
             )
         }
     }
 
     private func notesList(
+        _ library: NotesLibrary,
         newNoteAction: (() -> Void)?,
         selectAction: @escaping (NotesListItem) -> Void
     ) -> some View {
         NotesListCard(
-            notes: visibleNotes,
-            selectedID: selectedItem?.id,
-            filter: selectedFilter,
-            hasAnyNotes: !scriptureNotes.isEmpty || !userNotes.isEmpty,
-            showsClearFiltersAction: hasActiveFilters,
+            notes: library.visibleItems,
+            selectedID: selectedID,
+            summaryTitle: library.summaryTitle,
+            hasAnyNotes: !library.allItems.isEmpty,
+            showsClearFiltersAction: filters.isActive,
             clearFiltersAction: clearFilters,
             newNoteAction: newNoteAction,
             createFirstNoteAction: { isCreatingNote = true },
             selectAction: selectAction,
             editAction: { item in
-                select(item)
+                selectedID = item.id
                 isEditingSelection = true
             },
             deleteAction: delete
         )
-    }
-
-    private var customTags: [String] {
-        let allNoteText = scriptureNotes.map(\.content) + userNotes.map(\.content)
-        return Array(Set(allNoteText.flatMap { NoteCustomTags.tags(in: $0) })).sorted {
-            $0.localizedStandardCompare($1) == .orderedAscending
-        }
-    }
-
-    /// Notes matching the active category, custom tag, highlight filter, and search. Favorites are
-    /// pinned above the rest but are still subject to every filter.
-    private var visibleNotes: [NotesListItem] {
-        let allNotes = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
-        let matchingNotes = allNotes.filter { note in
-            matchesSelectedCategory(note.categoryRawValue) &&
-                matchesCustomTag(note) &&
-                matchesHighlight(note.highlightColor) &&
-                note.matchesSearch(searchText)
-        }
-        return sort(matchingNotes.filter(\.isFavorite)) + sort(matchingNotes.filter { !$0.isFavorite })
     }
 
     private var sortField: NotesTabSort {
@@ -290,137 +279,40 @@ struct NotesAndHighlightsView: View {
         )
     }
 
-    private var hasActiveFilters: Bool {
-        selectedFilter != .all ||
-            highlightFilter != .all ||
-            selectedCustomTag != nil ||
-            !searchText.isEmpty
-    }
-
     private func clearFilters() {
         withAnimation(.snappy) {
-            selectedFilter = .all
-            highlightFilter = .all
-            selectedCustomTag = nil
-            searchText = ""
+            filters = NotesFilters()
         }
     }
 
-    private func matchesSelectedCategory(_ rawValue: String) -> Bool {
-        selectedFilter == .all || rawValue == selectedFilter.rawValue
-    }
-
-    private func matchesCustomTag(_ note: NotesListItem) -> Bool {
-        guard let selectedCustomTag else { return true }
-        return note.customTags.contains(selectedCustomTag)
-    }
-
-    private func matchesHighlight(_ rawValue: String) -> Bool {
-        switch highlightFilter {
-        case .all: true
-        case .none: rawValue.isEmpty
-        default: rawValue == highlightFilter.rawValue
-        }
-    }
-
-    private func sort(_ notes: [NotesListItem]) -> [NotesListItem] {
-        let field = sortField
-        let ascending = sortAscending
-        return notes.sorted { lhs, rhs in
-            let order = Self.compare(lhs, rhs, by: field)
-            if order != .orderedSame {
-                return order == (ascending ? .orderedAscending : .orderedDescending)
-            }
-            // Ties always fall back to title A–Z so the order is stable and predictable.
-            return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
-        }
-    }
-
-    private static func compare(
-        _ lhs: NotesListItem,
-        _ rhs: NotesListItem,
-        by field: NotesTabSort
-    ) -> ComparisonResult {
-        switch field {
-        case .modified:
-            return (lhs.updatedAt ?? .distantPast).compare(rhs.updatedAt ?? .distantPast)
-        case .created:
-            return (lhs.createdAt ?? .distantPast).compare(rhs.createdAt ?? .distantPast)
-        case .title:
-            return lhs.title.localizedStandardCompare(rhs.title)
-        case .tag:
-            return lhs.categoryRawValue.localizedStandardCompare(rhs.categoryRawValue)
-        case .color:
-            // Follow the highlight picker's color order; notes without a highlight sort last.
-            let left = colorPosition(lhs.highlightColor)
-            let right = colorPosition(rhs.highlightColor)
-            return left == right ? .orderedSame : (left < right ? .orderedAscending : .orderedDescending)
-        }
-    }
-
-    private static func colorPosition(_ rawValue: String) -> Int {
-        VerseHighlightColor.allCases.firstIndex { $0.rawValue == rawValue } ?? VerseHighlightColor.allCases.count
-    }
-
-    private var selectedNoteIsExcludedFromVisibleNotes: Bool {
-        if let selectedScriptureNote {
-            return !visibleNotes.contains {
-                if case .scripture(let note) = $0 { return note === selectedScriptureNote }
-                return false
-            }
-        }
-
-        if let selectedUserNote {
-            return !visibleNotes.contains {
-                if case .user(let note) = $0 { return note === selectedUserNote }
-                return false
-            }
-        }
-
-        return false
-    }
-
+    /// Keeps a note open in the detail column: the first visible one when nothing (or a deleted
+    /// note) is selected.
     private func selectFirstVisibleNoteIfNeeded() {
-        guard selectedScriptureNote == nil, selectedUserNote == nil else { return }
-        selectFirstVisibleNote()
+        let library = library
+        guard library.item(withID: selectedID) == nil else { return }
+        selectedID = library.visibleItems.first?.id
     }
 
     private func moveSelection(by offset: Int) {
+        let visibleNotes = library.visibleItems
         guard !visibleNotes.isEmpty else { return }
 
-        let selectedID: NotesListItem.ID? = if let selectedScriptureNote {
-            .scripture(selectedScriptureNote.persistentModelID)
-        } else if let selectedUserNote {
-            .user(selectedUserNote.persistentModelID)
-        } else {
-            nil
-        }
         let currentIndex = selectedID.flatMap { id in
             visibleNotes.firstIndex { $0.id == id }
         }
         let proposedIndex = (currentIndex ?? (offset > 0 ? -1 : visibleNotes.count)) + offset
         let destinationIndex = min(max(proposedIndex, 0), visibleNotes.count - 1)
-        select(visibleNotes[destinationIndex])
+        selectedID = visibleNotes[destinationIndex].id
     }
 
     private func editSelectedNote() {
-        guard selectedScriptureNote != nil || selectedUserNote != nil else { return }
+        guard library.item(withID: selectedID) != nil else { return }
         isEditingSelection = true
     }
 
     private func requestSelectedNoteDeletion() {
-        guard let selectedItem else { return }
+        guard let selectedItem = library.item(withID: selectedID) else { return }
         delete(selectedItem)
-    }
-
-    private var selectedItem: NotesListItem? {
-        if let selectedScriptureNote {
-            return .scripture(selectedScriptureNote)
-        }
-        if let selectedUserNote {
-            return .user(selectedUserNote)
-        }
-        return nil
     }
 
     private func delete(_ item: NotesListItem) {
@@ -436,29 +328,24 @@ struct NotesAndHighlightsView: View {
             return
         }
 
-        let notesBeforeDeletion = visibleNotes
+        let notesBeforeDeletion = library.visibleItems
         let deletedIndex = notesBeforeDeletion.firstIndex { $0.id == item.id }
-        let wasSelected: Bool
+        let wasSelected = item.id == selectedID
 
         switch item {
         case .scripture(let note):
-            wasSelected = selectedScriptureNote === note
             deletedNoteSnapshot = .scripture(VerseNoteSnapshot(note: note), wasSelected: wasSelected)
             modelContext.delete(note)
         case .user(let note):
-            wasSelected = selectedUserNote === note
             deletedNoteSnapshot = .user(UserNoteSnapshot(note: note), wasSelected: wasSelected)
             modelContext.delete(note)
         }
         modelContext.saveLoggingErrors()
 
         if wasSelected {
-            selectedScriptureNote = nil
-            selectedUserNote = nil
+            // Select the note that took the deleted one's place.
             let remainingNotes = notesBeforeDeletion.filter { $0.id != item.id }
-            if !remainingNotes.isEmpty {
-                select(remainingNotes[min(deletedIndex ?? 0, remainingNotes.count - 1)])
-            }
+            selectedID = remainingNotes.isEmpty ? nil : remainingNotes[min(deletedIndex ?? 0, remainingNotes.count - 1)].id
         }
 
         showDeleteUndo(item.hasNoteText ? "Note deleted" : "Highlight removed")
@@ -478,64 +365,59 @@ struct NotesAndHighlightsView: View {
     private func undoLastDeletion() {
         guard let deletedNoteSnapshot else { return }
 
+        // Save before reading the restored note's ID, since inserting gives it a temporary one.
+        var restoredID: NotesListItem.ID?
         switch deletedNoteSnapshot {
         case .scriptureText(let note, let snapshot):
             snapshot.restoreText(to: note)
+            modelContext.saveLoggingErrors()
         case .scripture(let snapshot, let wasSelected):
             let note = snapshot.makeNote()
             modelContext.insert(note)
-            if wasSelected {
-                select(.scripture(note))
-            }
+            modelContext.saveLoggingErrors()
+            if wasSelected { restoredID = .scripture(note.persistentModelID) }
         case .user(let snapshot, let wasSelected):
             let note = snapshot.makeNote()
             modelContext.insert(note)
-            if wasSelected {
-                select(.user(note))
-            }
+            modelContext.saveLoggingErrors()
+            if wasSelected { restoredID = .user(note.persistentModelID) }
         }
 
-        modelContext.saveLoggingErrors()
+        if let restoredID { selectedID = restoredID }
         self.deletedNoteSnapshot = nil
     }
+}
 
-    private func select(_ item: NotesListItem) {
-        switch item {
-        case .scripture(let note):
-            selectedScriptureNote = note
-            selectedUserNote = nil
-        case .user(let note):
-            selectedScriptureNote = nil
-            selectedUserNote = note
-        }
-    }
+/// Presents the editor for the selected note.
+private struct NoteEditorCover: ViewModifier {
+    @Binding var isPresented: Bool
+    let item: NotesListItem?
 
-    private func selectFirstVisibleNote() {
-        switch visibleNotes.first {
-        case .scripture(let note):
-            selectedScriptureNote = note
-            selectedUserNote = nil
-        case .user(let note):
-            selectedScriptureNote = nil
-            selectedUserNote = note
-        case nil:
-            selectedScriptureNote = nil
-            selectedUserNote = nil
+    func body(content: Content) -> some View {
+        content.fullScreenCover(isPresented: $isPresented) {
+            NavigationStack {
+                if let item {
+                    NoteEditorView(item: item)
+                }
+            }
         }
     }
 }
 
 private struct ResizableNotesColumns<ListContent: View, DetailContent: View>: View {
-    @State private var listColumnFraction: CGFloat = 0.4
+    /// The list's share of the width, kept between launches.
+    @Binding var listColumnFraction: Double
     @GestureState private var dragTranslation: CGFloat = 0
 
     let listContent: ListContent
     let detailContent: DetailContent
 
     init(
+        listColumnFraction: Binding<Double>,
         @ViewBuilder listContent: () -> ListContent,
         @ViewBuilder detail: () -> DetailContent
     ) {
+        _listColumnFraction = listColumnFraction
         self.listContent = listContent()
         self.detailContent = detail()
     }
@@ -548,7 +430,7 @@ private struct ResizableNotesColumns<ListContent: View, DetailContent: View>: Vi
             let minimumDetailWidth = min(360, availableWidth - minimumListWidth)
             let minimumFraction = minimumListWidth / availableWidth
             let maximumFraction = (availableWidth - minimumDetailWidth) / availableWidth
-            let committedFraction = min(max(listColumnFraction, minimumFraction), maximumFraction)
+            let committedFraction = min(max(CGFloat(listColumnFraction), minimumFraction), maximumFraction)
             let previewFraction = min(
                 max(
                     committedFraction + (dragTranslation / availableWidth),
@@ -584,13 +466,13 @@ private struct ResizableNotesColumns<ListContent: View, DetailContent: View>: Vi
                                 translation = value.translation.width
                             }
                             .onEnded { value in
-                                listColumnFraction = min(
+                                listColumnFraction = Double(min(
                                     max(
                                         committedFraction + (value.translation.width / availableWidth),
                                         minimumFraction
                                     ),
                                     maximumFraction
-                                )
+                                ))
                             }
                     )
                     .accessibilityElement()
@@ -598,10 +480,10 @@ private struct ResizableNotesColumns<ListContent: View, DetailContent: View>: Vi
                     .accessibilityValue("\(Int(previewFraction * 100)) percent")
                     .accessibilityAdjustableAction { direction in
                         let adjustment: CGFloat = direction == .increment ? 0.05 : -0.05
-                        listColumnFraction = min(
+                        listColumnFraction = Double(min(
                             max(committedFraction + adjustment, minimumFraction),
                             maximumFraction
-                        )
+                        ))
                     }
             }
         }

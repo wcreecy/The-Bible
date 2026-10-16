@@ -14,7 +14,8 @@ struct NoteDraft: Codable, Equatable {
     var sermonSpeaker: String = ""
     var sermonLocation: String = ""
     var sermonDate: Date?
-    var savedAt = Date()
+    /// Set when the draft is written, so drafts built from the same edits compare equal.
+    var savedAt = Date.distantPast
 
     var bodyText: AttributedString {
         NoteFormattedContent.decode(body, fallback: "")
@@ -198,7 +199,8 @@ private struct NoteEditorShell: ViewModifier {
     }
 
     private func writeDraft(_ newDraft: NoteDraft?) {
-        if let newDraft {
+        if var newDraft {
+            newDraft.savedAt = Date()
             NoteDraftStore.save(newDraft, for: draftKey)
         } else {
             NoteDraftStore.clear(draftKey)

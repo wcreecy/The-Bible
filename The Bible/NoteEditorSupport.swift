@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 import UIKit
 
@@ -149,7 +150,7 @@ struct CustomNoteTagsTip: View {
         ContextualTipView(
             id: "notes.customTags",
             title: "Organize with custom tags",
-            message: "Type a tag such as #prayer in the note body. In Notes, tap #Custom to reveal and filter by your tags.",
+            message: "Type a tag such as #prayer in the note. Your existing tags are suggested as you type, and in Notes you can filter by tag.",
             systemImage: "number"
         )
     }
@@ -160,17 +161,17 @@ struct NoteCategoryMenu: View {
 
     var body: some View {
         Menu {
-            Picker("Tag", selection: $category) {
+            Picker("Type", selection: $category) {
                 ForEach(NoteCategory.allCases) { option in
                     Text(option.title).tag(option)
                 }
             }
         } label: {
-            Label(category.title, systemImage: "tag.fill")
+            Label(category.title, systemImage: "square.stack.fill")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.tint)
         }
-        .accessibilityLabel("Note tag")
+        .accessibilityLabel("Note type")
         .accessibilityValue(Text(category.title))
     }
 }
@@ -415,9 +416,15 @@ extension View {
     func richNoteEditing(
         text: Binding<AttributedString>,
         selection: Binding<AttributedTextSelection>,
-        formattingBarPadding: CGFloat = 16
+        formattingBarPadding: CGFloat = 16,
+        onFormattingChange: @escaping () -> Void = {}
     ) -> some View {
-        modifier(RichNoteEditing(text: text, selection: selection, formattingBarPadding: formattingBarPadding))
+        modifier(RichNoteEditing(
+            text: text,
+            selection: selection,
+            formattingBarPadding: formattingBarPadding,
+            onFormattingChange: onFormattingChange
+        ))
     }
 }
 
@@ -438,6 +445,7 @@ private struct RichNoteEditing: ViewModifier {
     @Binding var text: AttributedString
     @Binding var selection: AttributedTextSelection
     let formattingBarPadding: CGFloat
+    let onFormattingChange: () -> Void
 
     func body(content: Content) -> some View {
         content
@@ -449,21 +457,14 @@ private struct RichNoteEditing: ViewModifier {
                 return .handled
             })
             .safeAreaInset(edge: .bottom) {
-                NoteFormattingBar(
-                    toggleBold: { toggleFontTrait(\.isBold) },
-                    toggleUnderline: toggleUnderline,
-                    toggleItalic: { toggleFontTrait(\.isItalic) },
-                    toggleStrikethrough: toggleStrikethrough,
-                    insertBullet: { text.replaceSelection(&selection, withCharacters: "• ") },
-                    insertNumberedItem: { text.replaceSelection(&selection, withCharacters: "1. ") },
-                    increaseIndent: increaseIndent,
-                    decreaseIndent: decreaseIndent,
-                    decreaseTextSize: { textSizeStep = max(NoteEditorTextSize.minimumStep, textSizeStep - 1) },
-                    increaseTextSize: { textSizeStep = min(NoteEditorTextSize.maximumStep, textSizeStep + 1) },
-                    canDecreaseTextSize: textSizeStep > NoteEditorTextSize.minimumStep,
-                    canIncreaseTextSize: textSizeStep < NoteEditorTextSize.maximumStep,
-                    horizontalPadding: formattingBarPadding
-                )
+                VStack(spacing: 6) {
+                    if let partialTag {
+                        NoteTagSuggestionBar(prefix: partialTag.prefix, horizontalPadding: formattingBarPadding) {
+                            completeTag($0, replacing: partialTag.range)
+                        }
+                    }
+                    formattingBar
+                }
             }
             .onAppear {
                 tabKeyAction.handler = handleTabKey
@@ -490,6 +491,49 @@ private struct RichNoteEditing: ViewModifier {
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
+    }
+
+    private var formattingBar: some View {
+        NoteFormattingBar(
+            toggleBold: { formatting { toggleFontTrait(\.isBold) } },
+            toggleUnderline: { formatting(toggleUnderline) },
+            toggleItalic: { formatting { toggleFontTrait(\.isItalic) } },
+            toggleStrikethrough: { formatting(toggleStrikethrough) },
+            insertBullet: { text.replaceSelection(&selection, withCharacters: "• ") },
+            insertNumberedItem: { text.replaceSelection(&selection, withCharacters: "1. ") },
+            increaseIndent: increaseIndent,
+            decreaseIndent: decreaseIndent,
+            decreaseTextSize: { textSizeStep = max(NoteEditorTextSize.minimumStep, textSizeStep - 1) },
+            increaseTextSize: { textSizeStep = min(NoteEditorTextSize.maximumStep, textSizeStep + 1) },
+            canDecreaseTextSize: textSizeStep > NoteEditorTextSize.minimumStep,
+            canIncreaseTextSize: textSizeStep < NoteEditorTextSize.maximumStep,
+            horizontalPadding: formattingBarPadding
+        )
+    }
+
+    /// Applies a formatting change and reports it, since it doesn't change the note's characters.
+    private func formatting(_ change: () -> Void) {
+        change()
+        onFormattingChange()
+    }
+
+    // MARK: - Tag suggestions
+
+    /// The tag being typed at the caret, if any.
+    private var partialTag: (range: Range<String.Index>, prefix: String)? {
+        guard case let .insertionPoint(caret) = selection.indices(in: text) else { return nil }
+        return NoteCustomTags.partialTag(in: String(text.characters), endingAt: offset(of: caret))
+    }
+
+    /// Replaces the partial tag with the chosen one and a trailing space.
+    private func completeTag(_ tag: String, replacing range: Range<String.Index>) {
+        let plain = String(text.characters)
+        let startOffset = plain.distance(from: plain.startIndex, to: range.lowerBound)
+        let endOffset = plain.distance(from: plain.startIndex, to: range.upperBound)
+        let replacement = "#\(tag) "
+        text.replaceSubrange(index(atOffset: startOffset)..<index(atOffset: endOffset), with: AttributedString(replacement))
+        selection = AttributedTextSelection(insertionPoint: index(atOffset: startOffset + replacement.count))
+        styleCustomTags()
     }
 
     // MARK: - Scripture links
@@ -821,5 +865,50 @@ struct NoteListMarker: Equatable {
     static func outdentLength(of line: String) -> Int {
         if line.first == "\t" { return 1 }
         return line.prefix(indentUnit.count).prefix { $0 == " " }.count
+    }
+}
+
+/// Existing custom tags matching the one being typed, most-used first; tapping one completes it.
+private struct NoteTagSuggestionBar: View {
+    @Query private var verseNotes: [VerseNote]
+    @Query private var userNotes: [UserNote]
+
+    let prefix: String
+    let horizontalPadding: CGFloat
+    let choose: (String) -> Void
+
+    var body: some View {
+        let suggestions = matchingTags
+        if !suggestions.isEmpty {
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    ForEach(suggestions, id: \.self) { tag in
+                        Button("#\(tag)") { choose(tag) }
+                            .font(.subheadline.weight(.semibold))
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                    }
+                }
+                .padding(.horizontal, 12)
+            }
+            .scrollIndicators(.hidden)
+            .padding(.vertical, 6)
+            .glassEffect(.regular, in: .rect(cornerRadius: 14))
+            .padding(.horizontal, horizontalPadding)
+            .accessibilityLabel("Tag suggestions")
+        }
+    }
+
+    private var matchingTags: [String] {
+        var counts: [String: Int] = [:]
+        let texts = verseNotes.flatMap { [$0.title, $0.content] } + userNotes.flatMap { [$0.title, $0.content] }
+        for text in texts {
+            for tag in NoteCustomTags.tags(in: text) { counts[tag, default: 0] += 1 }
+        }
+        return counts
+            .filter { $0.key.hasPrefix(prefix) && $0.key != prefix }
+            .sorted { $0.value != $1.value ? $0.value > $1.value : $0.key < $1.key }
+            .prefix(8)
+            .map(\.key)
     }
 }

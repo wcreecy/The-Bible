@@ -4,56 +4,32 @@ import SwiftUI
 struct NoteDetailCard: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedScriptureReference: ScriptureRef?
+    @State private var isShowingChapterInsights = false
 
-    let scriptureNote: VerseNote?
-    let userNote: UserNote?
+    let item: NotesListItem?
     let editAction: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if let scriptureNote {
+            if let item {
                 NoteDetailHeader(
-                    title: scriptureNote.title.isEmpty ? "Scripture Note" : scriptureNote.title,
-                    subtitle: "\(scriptureNote.bookName) \(scriptureNote.chapterNumber):\(scriptureNote.verseNumber)",
-                    isFavorite: scriptureNote.isFavorite,
-                    shareText: NotesListItem.scripture(scriptureNote).shareText,
-                    favoriteAction: { toggleFavorite(scriptureNote) },
-                    openBibleAction: { NotesListItem.scripture(scriptureNote).openInBible() },
-                    editAction: editAction
-                )
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 22) {
-                        ScriptureNoteQuotation(
-                            reference: "\(scriptureNote.bookName) \(scriptureNote.chapterNumber):\(scriptureNote.verseNumber)",
-                            verseText: scriptureNote.verseText,
-                            highlight: VerseHighlightColor(rawValue: scriptureNote.highlightColor)
-                        )
-                        Text(formattedContent(data: scriptureNote.formattedContent, fallback: scriptureNote.content))
-                            .font(.body)
-                            .lineSpacing(5)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        NoteTimestampView(createdAt: scriptureNote.createdAt, updatedAt: scriptureNote.updatedAt)
-                    }
-                    .frame(maxWidth: 760, alignment: .leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            } else if let userNote {
-                NoteDetailHeader(
-                    title: userNote.title.isEmpty ? "Untitled Note" : userNote.title,
-                    subtitle: nil,
-                    isFavorite: userNote.isFavorite,
-                    shareText: NotesListItem.user(userNote).shareText,
-                    favoriteAction: { toggleFavorite(userNote) },
-                    openBibleAction: nil,
+                    title: item.title,
+                    subtitle: subtitle(for: item),
+                    isFavorite: item.isFavorite,
+                    shareText: item.shareText,
+                    favoriteAction: { item.toggleFavorite(in: modelContext) },
+                    openBibleAction: item.bibleLocation == nil ? nil : { item.openInBible() },
+                    chapterInsightsAction: hasSourceChapter(item) ? { isShowingChapterInsights = true } : nil,
                     editAction: editAction
                 )
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        Text(formattedContent(data: userNote.formattedContent, fallback: userNote.content))
+                        details(for: item)
+                        Text(BibleReferenceLinker.linkify(NoteFormattedContent.decode(item.formattedContent, fallback: item.content)))
                             .font(.body)
                             .lineSpacing(5)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        NoteTimestampView(createdAt: userNote.createdAt, updatedAt: userNote.updatedAt)
+                        NoteTimestampView(createdAt: item.createdAt, updatedAt: item.updatedAt)
                     }
                     .frame(maxWidth: 760, alignment: .leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -80,24 +56,66 @@ struct NoteDetailCard: View {
         .sheet(item: $selectedScriptureReference) { reference in
             ScriptureReferencePreview(reference: reference)
         }
+        .sheet(isPresented: $isShowingChapterInsights) {
+            if case .user(let note) = item, note.hasSourceChapter {
+                NavigationStack {
+                    ChapterInsightsView(bookName: note.sourceBookName, chapterNumber: note.sourceChapterNumber)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") { isShowingChapterInsights = false }
+                            }
+                        }
+                }
+            }
+        }
     }
 
-    private func formattedContent(data: Data?, fallback: String) -> AttributedString {
-        BibleReferenceLinker.linkify(NoteFormattedContent.decode(data, fallback: fallback))
+    /// The type, plus the passage for a personal note (a Scripture note shows its verses below).
+    private func subtitle(for item: NotesListItem) -> String? {
+        var parts: [String] = []
+        if let category = item.category { parts.append(String(localized: category.title)) }
+        if case .user(let note) = item, note.hasSourceChapter {
+            parts.append("\(note.sourceBookName) \(note.sourceChapterNumber)")
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 
-    private func toggleFavorite(_ note: VerseNote) {
-        note.isFavorite.toggle()
-        modelContext.saveLoggingErrors()
-        Haptics.selection()
+    private func hasSourceChapter(_ item: NotesListItem) -> Bool {
+        if case .user(let note) = item { return note.hasSourceChapter }
+        return false
     }
 
-    private func toggleFavorite(_ note: UserNote) {
-        note.isFavorite.toggle()
-        modelContext.saveLoggingErrors()
-        Haptics.selection()
+    @ViewBuilder
+    private func details(for item: NotesListItem) -> some View {
+        switch item {
+        case .scripture(let note):
+            ScriptureNoteQuotation(
+                reference: note.reference,
+                verseText: note.verseText,
+                highlight: VerseHighlightColor(rawValue: note.highlightColor)
+            )
+        case .user(let note):
+            let sermonLines = item.sermonDetailLines(for: note)
+            if !sermonLines.isEmpty || !note.passageReference.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(sermonLines, id: \.self) { line in
+                        Label(line, systemImage: line == sermonLines.first ? "person.wave.2" : "calendar")
+                    }
+                    if !note.passageReference.isEmpty {
+                        // Linked so a tap previews the passage, like references in the note body.
+                        Label {
+                            Text(BibleReferenceLinker.linkify(note.passageReference))
+                        } icon: {
+                            Image(systemName: "book.closed")
+                        }
+                    }
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
-
 }
 
 struct ScriptureNoteQuotation: View {
@@ -135,6 +153,7 @@ struct NoteDetailHeader: View {
     let shareText: String
     let favoriteAction: () -> Void
     let openBibleAction: (() -> Void)?
+    var chapterInsightsAction: (() -> Void)?
     let editAction: () -> Void
 
     var body: some View {
@@ -155,6 +174,13 @@ struct NoteDetailHeader: View {
                         Image(systemName: "book.closed")
                     }
                     .accessibilityLabel("Open in Bible")
+                }
+
+                if let chapterInsightsAction {
+                    Button(action: chapterInsightsAction) {
+                        Image(systemName: "text.book.closed")
+                    }
+                    .accessibilityLabel("Open Chapter Insights")
                 }
 
                 Button(action: favoriteAction) {

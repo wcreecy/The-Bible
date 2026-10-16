@@ -25,6 +25,8 @@ struct UserNoteEditorView: View {
 
     /// The note as last saved, to tell whether anything has changed.
     private let saved: NoteDraft
+    /// The date the picker opened with, which may be a default when the note has none saved.
+    private let initialSermonDate: Date
     private let draftKey: String
 
     init(existingNote: UserNote?, defaultCategory: NoteCategory = .personal) {
@@ -55,7 +57,9 @@ struct UserNoteEditorView: View {
         _passage = State(initialValue: start.passageReference)
         _speaker = State(initialValue: start.sermonSpeaker)
         _location = State(initialValue: start.sermonLocation)
-        _sermonDate = State(initialValue: start.sermonDate ?? existingNote?.createdAt ?? Date())
+        let initialSermonDate = saved.sermonDate ?? existingNote?.createdAt ?? Date()
+        self.initialSermonDate = initialSermonDate
+        _sermonDate = State(initialValue: start.sermonDate ?? initialSermonDate)
         _isShowingSermonDetails = State(initialValue: existingNote == nil || draft != nil)
     }
 
@@ -185,8 +189,11 @@ struct UserNoteEditorView: View {
             String(noteText.characters) != String(saved.bodyText.characters) ||
             selectedCategory.rawValue != saved.category ||
             trimmedPassage != saved.passageReference ||
-            (isSermon && (speaker != saved.sermonSpeaker || location != saved.sermonLocation ||
-                (saved.sermonDate.map { !Calendar.current.isDate($0, inSameDayAs: sermonDate) } ?? existingNote != nil)))
+            (isSermon && (speaker != saved.sermonSpeaker || location != saved.sermonLocation || sermonDateChanged))
+    }
+
+    private var sermonDateChanged: Bool {
+        !Calendar.current.isDate(initialSermonDate, inSameDayAs: sermonDate)
     }
 
     private func currentDraft() -> NoteDraft {
@@ -208,7 +215,7 @@ struct UserNoteEditorView: View {
         passage = saved.passageReference
         speaker = saved.sermonSpeaker
         location = saved.sermonLocation
-        sermonDate = saved.sermonDate ?? existingNote?.createdAt ?? Date()
+        sermonDate = initialSermonDate
         formattingChanged = false
     }
 

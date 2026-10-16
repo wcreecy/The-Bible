@@ -69,10 +69,12 @@ struct VerseActionMenu: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @Query private var notes: [VerseNote]
+    @Query private var userNotes: [UserNote]
     @Query private var bookmarks: [Bookmark]
     @State private var pinnedStore = PinnedVerseStore()
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isShowingNoteEditor = false
+    @State private var isShowingMentions = false
 
     let verse: VerseActionReference
     var presentation: VerseActionPresentation = .menu
@@ -104,12 +106,18 @@ struct VerseActionMenu: View {
         )
     }
 
+    /// The note on this verse; a note on several verses counts for each of them. A note
+    /// starting at this verse wins over one that only spans it.
     private var existingNote: VerseNote? {
-        notes.first {
-            $0.bookName == verse.bookName &&
-            $0.chapterNumber == verse.chapterNumber &&
-            $0.verseNumber == verse.verseNumber
+        let covering = notes.filter {
+            $0.covers(bookName: verse.bookName, chapterNumber: verse.chapterNumber, verseNumber: verse.verseNumber)
         }
+        return covering.first { $0.verseNumber == verse.verseNumber } ?? covering.first
+    }
+
+    /// How many other notes mention this verse in their text or passage.
+    private var mentionCount: Int {
+        NoteMentions.items(mentioning: verse, scriptureNotes: notes, userNotes: userNotes).count
     }
 
     var body: some View {
@@ -121,6 +129,11 @@ struct VerseActionMenu: View {
             .sheet(isPresented: $isShowingNoteEditor) {
                 NavigationStack {
                     VerseNoteEditorView(verse: verse, existingNote: existingNote)
+                }
+            }
+            .sheet(isPresented: $isShowingMentions) {
+                NavigationStack {
+                    NoteMentionsView(verse: verse)
                 }
             }
     }
@@ -135,6 +148,16 @@ struct VerseActionMenu: View {
                         .foregroundStyle(existingNote == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
                 }
                 .accessibilityLabel(existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight")
+
+                let mentions = mentionCount
+                if mentions > 0 {
+                    Button(action: { isShowingMentions = true }) {
+                        Image(systemName: "link")
+                            .foregroundStyle(Color.accentColor)
+                    }
+                    .accessibilityLabel("Notes Mentioning This Verse")
+                    .accessibilityValue(Text("\(mentions)"))
+                }
 
                 Button(action: toggleFavorite) {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
@@ -184,6 +207,7 @@ struct VerseActionMenu: View {
                             systemImage: "highlighter"
                         )
                     }
+                    mentionsButton
 
                     Button(action: bookmark) {
                         Label(
@@ -223,6 +247,7 @@ struct VerseActionMenu: View {
                         systemImage: "highlighter"
                     )
                 }
+                mentionsButton
 
                 Button(action: toggleFavorite) {
                     Label(
@@ -257,6 +282,16 @@ struct VerseActionMenu: View {
                     .font(.title3)
             }
             .accessibilityLabel("Verse actions")
+        }
+    }
+
+    @ViewBuilder
+    private var mentionsButton: some View {
+        let mentions = mentionCount
+        if mentions > 0 {
+            Button(action: { isShowingMentions = true }) {
+                Label("Notes Mentioning This Verse (\(mentions))", systemImage: "link")
+            }
         }
     }
 
