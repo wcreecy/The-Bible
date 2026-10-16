@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// Adds or edits the note and highlight attached to a verse.
+/// Adds or edits the note and highlight attached to a verse or a run of verses.
 @MainActor
 struct VerseNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
@@ -9,36 +9,62 @@ struct VerseNoteEditorView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
-    let verse: VerseActionReference
     let existingNote: VerseNote?
     let preservesHighlightWhenRemovingNote: Bool
+    /// The first verse of the note: an existing note's start, or the verse it's being added to.
+    private let start: VerseActionReference
 
     @State private var title: String
     @State private var noteText: AttributedString
     @State private var noteSelection = AttributedTextSelection()
     @State private var selectedColor: VerseHighlightColor?
     @State private var selectedCategory: NoteCategory
+    @State private var endVerse: Int
+    @State private var formattingChanged = false
+    @State private var restoredDraftDate: Date?
     @State private var persistenceFailure: PersistenceFailure?
+
+    private let saved: NoteDraft
+    private let draftKey: String
 
     init(
         verse: VerseActionReference,
         existingNote: VerseNote?,
         preservesHighlightWhenRemovingNote: Bool = false
     ) {
-        self.verse = verse
         self.existingNote = existingNote
         self.preservesHighlightWhenRemovingNote = preservesHighlightWhenRemovingNote
-        _title = State(initialValue: existingNote?.title ?? "")
-        _noteText = State(initialValue: NoteFormattedContent.decode(
+        start = existingNote.map {
+            VerseActionReference(
+                bookName: $0.bookName,
+                chapterNumber: $0.chapterNumber,
+                verseNumber: $0.verseNumber,
+                verseText: VerseRangeText.text(book: $0.bookName, chapter: $0.chapterNumber, from: $0.verseNumber, through: $0.verseNumber)
+                    ?? $0.verseText
+            )
+        } ?? verse
+
+        let saved = NoteDraft(
+            title: existingNote?.title ?? "",
+            body: existingNote?.formattedContent ?? (try? JSONEncoder().encode(AttributedString(existingNote?.content ?? ""))) ?? Data(),
+            category: existingNote?.categoryRawValue ?? NoteCategory.scripture.rawValue,
+            highlightColor: existingNote?.highlightColor ?? "",
+            endVerseNumber: existingNote?.lastVerseNumber ?? verse.verseNumber
+        )
+        self.saved = saved
+        draftKey = NoteDraftStore.key(forVerse: start.bookName, chapter: start.chapterNumber, verse: start.verseNumber)
+
+        let draft = NoteDraftStore.load(draftKey)
+        let initial = draft ?? saved
+        _restoredDraftDate = State(initialValue: draft?.savedAt)
+        _title = State(initialValue: initial.title)
+        _noteText = State(initialValue: draft?.bodyText ?? NoteFormattedContent.decode(
             existingNote?.formattedContent,
             fallback: existingNote?.content ?? ""
         ))
-        _selectedColor = State(
-            initialValue: existingNote.flatMap { VerseHighlightColor(rawValue: $0.highlightColor) }
-        )
-        _selectedCategory = State(
-            initialValue: existingNote.flatMap { NoteCategory(rawValue: $0.categoryRawValue) } ?? .scripture
-        )
+        _selectedColor = State(initialValue: VerseHighlightColor(rawValue: initial.highlightColor))
+        _selectedCategory = State(initialValue: NoteCategory(rawValue: initial.category) ?? .scripture)
+        _endVerse = State(initialValue: max(initial.endVerseNumber, start.verseNumber))
     }
 
     var body: some View {
@@ -52,8 +78,11 @@ struct VerseNoteEditorView: View {
                 }
 
                 ScriptureEditorReferenceCard(
-                    reference: "\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)",
-                    verseText: verse.verseText
+                    reference: reference,
+                    verseText: rangeText,
+                    startVerse: start.verseNumber,
+                    lastVerseInChapter: lastVerseInChapter,
+                    endVerse: $endVerse
                 )
 
                 VerseNoteOptionsBar(
@@ -74,34 +103,72 @@ struct VerseNoteEditorView: View {
         .richNoteEditing(
             text: $noteText,
             selection: $noteSelection,
-            formattingBarPadding: editorHorizontalPadding
+            formattingBarPadding: editorHorizontalPadding,
+            onFormattingChange: { formattingChanged = true }
         )
         .navigationTitle(editorTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save", action: save)
-                    .disabled(existingNote == nil && trimmedNote.isEmpty && selectedColor == nil)
-            }
-            if existingNote != nil {
-                ToolbarItem(placement: .secondaryAction) {
-                    Button(
-                        preservesHighlightWhenRemovingNote ? "Remove Note" : "Remove Note & Highlight",
-                        systemImage: "trash",
-                        role: .destructive,
-                        action: deleteEntry
-                    )
-                }
-            }
-        }
+        .noteEditorShell(
+            hasChanges: hasChanges,
+            canSave: existingNote != nil || !trimmedNote.isEmpty || selectedColor != nil,
+            draftKey: draftKey,
+            draft: currentDraft,
+            restoredDraftDate: $restoredDraftDate,
+            discardRestoredDraft: resetToSaved,
+            deleteTitle: existingNote == nil ? nil : deleteTitle,
+            deleteMessage: deleteMessage,
+            save: save,
+            delete: deleteEntry
+        )
         .persistenceFailureAlert(failure: $persistenceFailure)
     }
 
+    // MARK: State
+
     private var trimmedNote: String {
         String(noteText.characters).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var reference: String {
+        let first = "\(start.bookName) \(start.chapterNumber):\(start.verseNumber)"
+        return endVerse > start.verseNumber ? "\(first)–\(endVerse)" : first
+    }
+
+    private var rangeText: String {
+        VerseRangeText.text(book: start.bookName, chapter: start.chapterNumber, from: start.verseNumber, through: endVerse)
+            ?? start.verseText
+    }
+
+    private var lastVerseInChapter: Int {
+        VerseRangeText.verseCount(book: start.bookName, chapter: start.chapterNumber) ?? start.verseNumber
+    }
+
+    private var hasChanges: Bool {
+        formattingChanged ||
+            title != saved.title ||
+            String(noteText.characters) != String(saved.bodyText.characters) ||
+            selectedCategory.rawValue != saved.category ||
+            (selectedColor?.rawValue ?? "") != saved.highlightColor ||
+            endVerse != saved.endVerseNumber
+    }
+
+    private func currentDraft() -> NoteDraft {
+        NoteDraft(
+            title: title,
+            body: (try? JSONEncoder().encode(noteText)) ?? Data(),
+            category: selectedCategory.rawValue,
+            highlightColor: selectedColor?.rawValue ?? "",
+            endVerseNumber: endVerse
+        )
+    }
+
+    private func resetToSaved() {
+        title = saved.title
+        noteText = saved.bodyText
+        selectedCategory = NoteCategory(rawValue: saved.category) ?? .scripture
+        selectedColor = VerseHighlightColor(rawValue: saved.highlightColor)
+        endVerse = max(saved.endVerseNumber, start.verseNumber)
+        formattingChanged = false
     }
 
     private var editorTitle: LocalizedStringResource {
@@ -112,9 +179,25 @@ struct VerseNoteEditorView: View {
         }
     }
 
+    private var keepsHighlightOnDelete: Bool {
+        preservesHighlightWhenRemovingNote && !(existingNote?.highlightColor.isEmpty ?? true)
+    }
+
+    private var deleteTitle: LocalizedStringResource {
+        keepsHighlightOnDelete ? "Remove Note" : "Remove Note & Highlight"
+    }
+
+    private var deleteMessage: LocalizedStringResource {
+        keepsHighlightOnDelete
+            ? "The written note will be removed. The verse highlight stays."
+            : "The note and its highlight will be removed from all your devices."
+    }
+
     private var editorHorizontalPadding: CGFloat {
         horizontalSizeClass == .compact ? 24 : 16
     }
+
+    // MARK: Saving
 
     private func save() {
         ModelContextPersistence.perform(
@@ -127,16 +210,18 @@ struct VerseNoteEditorView: View {
                 }
 
                 let note = existingNote ?? VerseNote(
-                    bookName: verse.bookName,
-                    chapterNumber: verse.chapterNumber,
-                    verseNumber: verse.verseNumber,
-                    verseText: verse.verseText
+                    bookName: start.bookName,
+                    chapterNumber: start.chapterNumber,
+                    verseNumber: start.verseNumber,
+                    verseText: rangeText
                 )
                 note.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
                 note.content = trimmedNote
                 note.formattedContent = try JSONEncoder().encode(noteText)
                 note.highlightColor = selectedColor?.rawValue ?? ""
                 note.categoryRawValue = selectedCategory.rawValue
+                note.endVerseNumber = endVerse > start.verseNumber ? endVerse : 0
+                note.verseText = rangeText
                 note.updatedAt = Date()
                 if existingNote == nil {
                     modelContext.insert(note)
@@ -144,6 +229,7 @@ struct VerseNoteEditorView: View {
                 try modelContext.save()
             },
             onSuccess: {
+                NoteDraftStore.clear(draftKey)
                 Haptics.success()
                 dismiss()
             },
@@ -156,7 +242,7 @@ struct VerseNoteEditorView: View {
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
-                if preservesHighlightWhenRemovingNote, !existingNote.highlightColor.isEmpty {
+                if keepsHighlightOnDelete {
                     existingNote.title = ""
                     existingNote.content = ""
                     existingNote.formattedContent = nil
@@ -175,15 +261,53 @@ struct VerseNoteEditorView: View {
     }
 }
 
+/// Verse text for a run of verses in the loaded Bible.
+@MainActor
+enum VerseRangeText {
+    static func text(book: String, chapter: Int, from first: Int, through last: Int) -> String? {
+        guard let verses = verses(book: book, chapter: chapter) else { return nil }
+        let selected = verses.filter { (first...max(first, last)).contains($0.number) }
+        return selected.isEmpty ? nil : selected.map(\.text).joined(separator: " ")
+    }
+
+    static func verseCount(book: String, chapter: Int) -> Int? {
+        verses(book: book, chapter: chapter)?.last?.number
+    }
+
+    private static func verses(book: String, chapter: Int) -> [Verse]? {
+        BibleData.books.first { $0.name == book }?.chapters.first { $0.number == chapter }?.verses
+    }
+}
+
 private struct ScriptureEditorReferenceCard: View {
     let reference: String
     let verseText: String
+    let startVerse: Int
+    let lastVerseInChapter: Int
+    @Binding var endVerse: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label(reference, systemImage: "book.closed.fill")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.tint)
+            HStack {
+                Label(reference, systemImage: "book.closed.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tint)
+                Spacer()
+                if lastVerseInChapter > startVerse {
+                    Menu {
+                        Picker("Through Verse", selection: $endVerse) {
+                            ForEach(startVerse...lastVerseInChapter, id: \.self) { verse in
+                                Text(verse == startVerse ? "This verse only" : "Through verse \(verse)").tag(verse)
+                            }
+                        }
+                    } label: {
+                        Label(endVerse > startVerse ? "Verses \(startVerse)–\(endVerse)" : "Add verses", systemImage: "text.append")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .accessibilityLabel("Verses covered")
+                    .accessibilityValue(Text(reference))
+                }
+            }
             Text(verseText)
                 .font(.body)
                 .foregroundStyle(.secondary)
@@ -221,7 +345,6 @@ private struct VerseNoteOptionsBar: View {
         .padding(.vertical, 8)
         .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
-
 }
 
 private struct ScriptureHighlightPicker: View {

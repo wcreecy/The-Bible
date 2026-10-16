@@ -1,8 +1,8 @@
 import SwiftData
 import SwiftUI
 
-/// Parses custom tags from note body text. Tags begin with # and may contain
-/// letters, numbers, or underscores; matching is case-insensitive.
+/// Parses custom tags from note text. Tags begin with # and may contain letters,
+/// numbers, or underscores; matching is case-insensitive.
 nonisolated enum NoteCustomTags {
     static func tags(in text: String) -> [String] {
         Set(ranges(in: text).map { range in
@@ -13,6 +13,7 @@ nonisolated enum NoteCustomTags {
         }
     }
 
+    /// The range of each tag in `text`, including its leading "#".
     static func ranges(in text: String) -> [Range<String.Index>] {
         var tagRanges: [Range<String.Index>] = []
         var index = text.startIndex
@@ -58,7 +59,64 @@ nonisolated enum NoteCustomTags {
         return String(tag).lowercased()
     }
 
-    private static func isTagCharacter(_ character: Character) -> Bool {
+    /// A tag name as typed, lowercased without its "#", or nil when it isn't a valid tag.
+    static func normalizedTag(_ name: String) -> String? {
+        var trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.first == "#" { trimmed.removeFirst() }
+        guard !trimmed.isEmpty, trimmed.allSatisfy(isTagCharacter) else { return nil }
+        return trimmed.lowercased()
+    }
+
+    /// The partial tag being typed just before `offset`, without its "#" (possibly empty),
+    /// or nil when the caret isn't in a tag.
+    static func partialTag(in text: String, endingAt offset: Int) -> (range: Range<String.Index>, prefix: String)? {
+        guard offset > 0, offset <= text.count else { return nil }
+        let end = text.index(text.startIndex, offsetBy: offset)
+        var start = end
+        while start > text.startIndex, isTagCharacter(text[text.index(before: start)]) {
+            start = text.index(before: start)
+        }
+        guard start > text.startIndex else { return nil }
+        let hash = text.index(before: start)
+        guard text[hash] == "#" else { return nil }
+        if hash > text.startIndex, isTagCharacter(text[text.index(before: hash)]) { return nil }
+        if end < text.endIndex, isTagCharacter(text[end]) { return nil }
+        return (hash..<end, String(text[start..<end]).lowercased())
+    }
+
+    /// Replaces every occurrence of `tag` with `#replacement`, or with the bare word when
+    /// `replacement` is nil (removing the tag but keeping the word).
+    static func renaming(_ tag: String, to replacement: String?, in text: String) -> String {
+        var result = text
+        for range in ranges(in: text).reversed() where isTag(range, in: text, named: tag) {
+            let word = text[text.index(after: range.lowerBound)..<range.upperBound]
+            result.replaceSubrange(range, with: replacement.map { "#\($0)" } ?? String(word))
+        }
+        return result
+    }
+
+    /// The same change as `renaming(_:to:in:)`, keeping the rest of the formatting.
+    static func renaming(_ tag: String, to replacement: String?, in text: AttributedString) -> AttributedString {
+        let plain = String(text.characters)
+        var result = text
+        for range in ranges(in: plain).reversed() where isTag(range, in: plain, named: tag) {
+            let word = plain[plain.index(after: range.lowerBound)..<range.upperBound]
+            guard let lower = AttributedString.Index(range.lowerBound, within: result),
+                  let upper = AttributedString.Index(range.upperBound, within: result) else { continue }
+            let attributes = result[lower..<upper].runs.first?.attributes ?? AttributeContainer()
+            result.replaceSubrange(
+                lower..<upper,
+                with: AttributedString(replacement.map { "#\($0)" } ?? String(word), attributes: attributes)
+            )
+        }
+        return result
+    }
+
+    private static func isTag(_ range: Range<String.Index>, in text: String, named tag: String) -> Bool {
+        text[text.index(after: range.lowerBound)..<range.upperBound].lowercased() == tag
+    }
+
+    static func isTagCharacter(_ character: Character) -> Bool {
         !character.unicodeScalars.isEmpty &&
             character.unicodeScalars.allSatisfy {
                 CharacterSet.alphanumerics.contains($0) || $0.value == 95
@@ -70,6 +128,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     case modified
     case created
     case title
+    /// Sorts by the note's type. The raw value stays "tag" so saved preferences carry over.
     case tag
     case color
 
@@ -80,7 +139,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .modified: "Date Modified"
         case .created: "Date Created"
         case .title: "Title"
-        case .tag: "Tag"
+        case .tag: "Type"
         case .color: "Highlight Color"
         }
     }
@@ -90,7 +149,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .modified: "pencil"
         case .created: "calendar"
         case .title: "textformat"
-        case .tag: "tag"
+        case .tag: "square.stack"
         case .color: "highlighter"
         }
     }
@@ -107,11 +166,12 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         switch self {
         case .modified, .created: ascending ? "Oldest First" : "Newest First"
         case .title, .tag: ascending ? "A–Z" : "Z–A"
-        case .color: ascending ? "Ascending" : "Descending"
+        case .color: ascending ? "Picker Order" : "Reverse Picker Order"
         }
     }
 }
 
+/// Filters notes by their type (category).
 enum NotesFilter: String, CaseIterable, Identifiable {
     case all
     case sermon
@@ -122,26 +182,105 @@ enum NotesFilter: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var title: LocalizedStringResource {
+        noteCategory?.shortTitle ?? "All"
+    }
+
+    /// The list heading for this filter: "All Notes" or the type's full name.
+    var libraryTitle: LocalizedStringResource {
+        noteCategory?.title ?? "All Notes"
+    }
+
+    var systemImage: String {
         switch self {
-        case .all: "All"
-        case .sermon: "Sermon"
-        case .personal: "Personal"
-        case .scripture: "Scripture"
-        case .chapterInsights: "Chapter Insights"
+        case .all: "square.grid.2x2"
+        case .sermon: "person.wave.2"
+        case .personal: "person.crop.circle"
+        case .scripture: "book.closed"
+        case .chapterInsights: "text.book.closed"
         }
     }
 
-    func libraryTitle(noteCount: Int) -> LocalizedStringKey {
+    var noteCategory: NoteCategory? {
         switch self {
-        case .all: "All Notes (\(noteCount))"
-        case .sermon: "Sermon Notes (\(noteCount))"
-        case .personal: "Personal Notes (\(noteCount))"
-        case .scripture: "Scripture Notes (\(noteCount))"
-        case .chapterInsights: "Chapter Insights (\(noteCount))"
+        case .all: nil
+        case .sermon: .sermon
+        case .personal: .personal
+        case .scripture: .scripture
+        case .chapterInsights: .chapterInsights
         }
     }
 }
 
+/// Separates written notes from highlight-only verse entries.
+enum NotesContentFilter: String, CaseIterable, Identifiable {
+    case all
+    case written
+    case highlightsOnly
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .all: "Notes & Highlights"
+        case .written: "Written Notes"
+        case .highlightsOnly: "Highlights Only"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .all: "square.stack"
+        case .written: "note.text"
+        case .highlightsOnly: "highlighter"
+        }
+    }
+
+    func matches(_ item: NotesListItem) -> Bool {
+        switch self {
+        case .all: true
+        case .written: item.hasNoteText
+        case .highlightsOnly: !item.hasNoteText
+        }
+    }
+}
+
+enum NotesHighlightFilter: String, CaseIterable, Identifiable {
+    case all
+    case none
+    case yellow
+    case green
+    case blue
+    case pink
+    case purple
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .all: "All Colors"
+        case .none: "No Highlight"
+        case .yellow: "Yellow"
+        case .green: "Green"
+        case .blue: "Blue"
+        case .pink: "Pink"
+        case .purple: "Purple"
+        }
+    }
+
+    var highlightColor: VerseHighlightColor? {
+        VerseHighlightColor(rawValue: rawValue)
+    }
+
+    func matches(_ rawValue: String) -> Bool {
+        switch self {
+        case .all: true
+        case .none: rawValue.isEmpty
+        default: rawValue == self.rawValue
+        }
+    }
+}
+
+/// One entry on the Notes page: a verse note (or highlight) or a personal note.
 enum NotesListItem: Identifiable {
     enum ID: Hashable {
         case scripture(PersistentIdentifier)
@@ -161,10 +300,14 @@ enum NotesListItem: Identifiable {
     var title: String {
         switch self {
         case .scripture(let note):
-            note.title.isEmpty ? "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)" : note.title
+            note.title.isEmpty ? note.reference : note.title
         case .user(let note):
-            note.title.isEmpty ? "Untitled Note" : note.title
+            note.title.isEmpty ? String(localized: "Untitled Note") : note.title
         }
+    }
+
+    var category: NoteCategory? {
+        NoteCategory(rawValue: categoryRawValue)
     }
 
     var categoryRawValue: String {
@@ -174,20 +317,32 @@ enum NotesListItem: Identifiable {
         }
     }
 
-    var customTags: [String] {
+    var content: String {
         switch self {
-        case .scripture(let note): NoteCustomTags.tags(in: note.content)
-        case .user(let note): NoteCustomTags.tags(in: note.content)
+        case .scripture(let note): note.content
+        case .user(let note): note.content
         }
     }
 
-    var preview: String {
-        let content: String
+    var formattedContent: Data? {
         switch self {
-        case .scripture(let note): content = note.content
-        case .user(let note): content = note.content
+        case .scripture(let note): note.formattedContent
+        case .user(let note): note.formattedContent
         }
-        return content
+    }
+
+    /// Custom tags written in the title or body.
+    var customTags: [String] {
+        let rawTitle: String
+        switch self {
+        case .scripture(let note): rawTitle = note.title
+        case .user(let note): rawTitle = note.title
+        }
+        return Array(Set(NoteCustomTags.tags(in: rawTitle) + NoteCustomTags.tags(in: content))).sorted()
+    }
+
+    var preview: String {
+        content
             .components(separatedBy: .newlines)
             .lazy
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -201,12 +356,34 @@ enum NotesListItem: Identifiable {
         }
     }
 
+    /// The verse or verses a Scripture note is attached to.
     var reference: String? {
         switch self {
+        case .scripture(let note): note.reference
+        case .user: nil
+        }
+    }
+
+    /// The passage shown with the note: a Scripture note's verses or a personal note's passage.
+    var passage: String? {
+        switch self {
+        case .scripture(let note): note.reference
+        case .user(let note): note.passageReference.isEmpty ? nil : note.passageReference
+        }
+    }
+
+    /// Where "Open in Bible" goes: the note's verse, or the start of a personal note's passage.
+    var bibleLocation: ScriptureRef? {
+        switch self {
         case .scripture(let note):
-            "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)"
-        case .user:
-            nil
+            ScriptureRef(
+                bookName: note.bookName,
+                chapter: note.chapterNumber,
+                startVerse: note.verseNumber,
+                endVerse: note.lastVerseNumber > note.verseNumber ? note.lastVerseNumber : nil
+            )
+        case .user(let note):
+            BibleReferenceLinker.parse(note.passageReference)
         }
     }
 
@@ -249,98 +426,71 @@ enum NotesListItem: Identifiable {
     var shareText: String {
         switch self {
         case .scripture(let note):
-            let title = note.title.isEmpty ? "Scripture Note" : note.title
-            return "\(title)\n\(note.bookName) \(note.chapterNumber):\(note.verseNumber)\n\n\(note.verseText)\n\n\(note.content)"
+            let title = note.title.isEmpty ? String(localized: "Scripture Note") : note.title
+            return "\(title)\n\(note.reference)\n\n\(note.verseText)\n\n\(note.content)"
         case .user(let note):
-            let title = note.title.isEmpty ? "Untitled Note" : note.title
-            return "\(title)\n\n\(note.content)"
+            var lines = [title]
+            lines += sermonDetailLines(for: note)
+            if !note.passageReference.isEmpty { lines.append(note.passageReference) }
+            return lines.joined(separator: "\n") + "\n\n" + note.content
         }
     }
 
-    func toggleFavorite() {
+    /// Sermon speaker, location, and date as display lines.
+    func sermonDetailLines(for note: UserNote) -> [String] {
+        guard note.categoryRawValue == NoteCategory.sermon.rawValue else { return [] }
+        var lines: [String] = []
+        let speakerAndPlace = [note.sermonSpeaker, note.sermonLocation].filter { !$0.isEmpty }
+        if !speakerAndPlace.isEmpty { lines.append(speakerAndPlace.joined(separator: " · ")) }
+        if let date = note.sermonDate { lines.append(date.formatted(date: .long, time: .omitted)) }
+        return lines
+    }
+
+    /// Toggles the favorite and saves, with selection feedback.
+    func toggleFavorite(in context: ModelContext) {
         switch self {
         case .scripture(let note): note.isFavorite.toggle()
         case .user(let note): note.isFavorite.toggle()
         }
+        context.saveLoggingErrors()
+        Haptics.selection()
     }
 
     func openInBible() {
-        guard case .scripture(let note) = self else { return }
-        AppRouter.shared.openBibleReference(
-            book: note.bookName,
-            chapter: note.chapterNumber,
-            verse: note.verseNumber
-        )
+        guard let location = bibleLocation else { return }
+        AppRouter.shared.openBibleReference(book: location.bookName, chapter: location.chapter, verse: location.startVerse)
     }
 
-    func matchesSearch(_ searchText: String) -> Bool {
-        guard !searchText.isEmpty else { return true }
-        if let searchTag = NoteCustomTags.normalizedSearchTag(from: searchText) {
-            return customTags.contains(searchTag)
+    /// Search text: matches title, body, verse text, reference, passage, and sermon details. A
+    /// search that is a reference ("John 3:16", "Jn 3:16") also finds notes covering that verse,
+    /// and a search that is a tag ("#prayer") matches only that tag.
+    func matchesSearch(_ searchText: String, tags: [String]) -> Bool {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return true }
+        if let searchTag = NoteCustomTags.normalizedSearchTag(from: query) {
+            return tags.contains(searchTag)
         }
+        if let searched = BibleReferenceLinker.parse(query), covers(searched) {
+            return true
+        }
+
+        var fields = [title, content]
         switch self {
         case .scripture(let note):
-            return title.localizedCaseInsensitiveContains(searchText) ||
-                note.bookName.localizedCaseInsensitiveContains(searchText) ||
-                note.verseText.localizedCaseInsensitiveContains(searchText) ||
-                note.content.localizedCaseInsensitiveContains(searchText) ||
-                "\(note.chapterNumber):\(note.verseNumber)".localizedCaseInsensitiveContains(searchText)
+            fields += [note.reference, note.verseText]
         case .user(let note):
-            return title.localizedCaseInsensitiveContains(searchText) ||
-                note.content.localizedCaseInsensitiveContains(searchText)
+            fields += [note.passageReference, note.sermonSpeaker, note.sermonLocation]
         }
-    }
-}
-
-enum NotesHighlightFilter: String, CaseIterable, Identifiable {
-    case all
-    case none
-    case yellow
-    case green
-    case blue
-    case pink
-    case purple
-
-    var id: String { rawValue }
-
-    var title: LocalizedStringResource {
-        switch self {
-        case .all: "All Highlight Colors"
-        case .none: "No Highlight"
-        case .yellow: "Yellow"
-        case .green: "Green"
-        case .blue: "Blue"
-        case .pink: "Pink"
-        case .purple: "Purple"
-        }
+        return fields.contains { $0.localizedCaseInsensitiveContains(query) }
     }
 
-    var highlightColor: VerseHighlightColor? {
-        VerseHighlightColor(rawValue: rawValue)
-    }
-}
-
-extension NotesFilter {
-    var systemImage: String {
-        switch self {
-        case .all: "square.grid.2x2"
-        case .sermon: "person.wave.2"
-        case .personal: "person.crop.circle"
-        case .scripture: "book.closed"
-        case .chapterInsights: "text.book.closed"
-        }
-    }
-}
-
-extension NotesFilter {
-    var noteCategory: NoteCategory? {
-        switch self {
-        case .all: nil
-        case .sermon: .sermon
-        case .personal: .personal
-        case .scripture: .scripture
-        case .chapterInsights: .chapterInsights
-        }
+    /// Whether the note's verses or passage include the start of `reference`.
+    private func covers(_ reference: ScriptureRef) -> Bool {
+        guard let location = bibleLocation,
+              location.bookName.caseInsensitiveCompare(reference.bookName) == .orderedSame,
+              location.chapter == reference.chapter else { return false }
+        let last = location.endVerse ?? location.startVerse
+        return (location.startVerse...last).contains(reference.startVerse)
     }
 }
 
@@ -356,6 +506,7 @@ struct VerseNoteSnapshot {
     let bookName: String
     let chapterNumber: Int
     let verseNumber: Int
+    let endVerseNumber: Int
     let verseText: String
     let content: String
     let formattedContent: Data?
@@ -370,6 +521,7 @@ struct VerseNoteSnapshot {
         bookName = note.bookName
         chapterNumber = note.chapterNumber
         verseNumber = note.verseNumber
+        endVerseNumber = note.endVerseNumber
         verseText = note.verseText
         content = note.content
         formattedContent = note.formattedContent
@@ -386,6 +538,7 @@ struct VerseNoteSnapshot {
         note.bookName = bookName
         note.chapterNumber = chapterNumber
         note.verseNumber = verseNumber
+        note.endVerseNumber = endVerseNumber
         note.verseText = verseText
         note.content = content
         note.formattedContent = formattedContent
@@ -410,6 +563,12 @@ struct UserNoteSnapshot {
     let content: String
     let formattedContent: Data?
     let categoryRawValue: String
+    let sourceBookName: String
+    let sourceChapterNumber: Int
+    let passageReference: String
+    let sermonSpeaker: String
+    let sermonLocation: String
+    let sermonDate: Date?
     let isFavorite: Bool
     let createdAt: Date?
     let updatedAt: Date?
@@ -419,6 +578,12 @@ struct UserNoteSnapshot {
         content = note.content
         formattedContent = note.formattedContent
         categoryRawValue = note.categoryRawValue
+        sourceBookName = note.sourceBookName
+        sourceChapterNumber = note.sourceChapterNumber
+        passageReference = note.passageReference
+        sermonSpeaker = note.sermonSpeaker
+        sermonLocation = note.sermonLocation
+        sermonDate = note.sermonDate
         isFavorite = note.isFavorite
         createdAt = note.createdAt
         updatedAt = note.updatedAt
@@ -430,6 +595,12 @@ struct UserNoteSnapshot {
         note.content = content
         note.formattedContent = formattedContent
         note.categoryRawValue = categoryRawValue
+        note.sourceBookName = sourceBookName
+        note.sourceChapterNumber = sourceChapterNumber
+        note.passageReference = passageReference
+        note.sermonSpeaker = sermonSpeaker
+        note.sermonLocation = sermonLocation
+        note.sermonDate = sermonDate
         note.isFavorite = isFavorite
         note.createdAt = createdAt
         note.updatedAt = updatedAt
