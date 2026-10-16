@@ -161,8 +161,6 @@ struct FilterChipLabel<Content: View>: View {
 struct NotesListCard: View {
     let sections: [NotesListSection]
     let selectedID: NotesListItem.ID?
-    /// Whether rows mark their type; off when a type filter or the type headings already say it.
-    let showsTypeOnRows: Bool
     /// Names the active filters and the count, so the list always says what it's showing.
     let summaryTitle: String
     let hasAnyNotes: Bool
@@ -175,7 +173,7 @@ struct NotesListCard: View {
     let editAction: (NotesListItem) -> Void
     let deleteAction: (NotesListItem) -> Void
 
-    /// Each heading is its own card, sized to its notes, with the heading's name at the top.
+    /// Each heading sits above its own card, which is sized to its notes.
     var body: some View {
         List {
             Section {
@@ -193,26 +191,37 @@ struct NotesListCard: View {
 
             ForEach(sections) { section in
                 Section {
+                    rows(for: section.items)
+                } header: {
                     if let title = section.title {
                         groupHeader(section, title: title)
                     }
-                    rows(for: section.items)
                 }
             }
         }
         .listStyle(.insetGrouped)
-        .listSectionSpacing(14)
+        .listSectionSpacing(20)
         .scrollContentBackground(.hidden)
         .contentMargins(.horizontal, 0, for: .scrollContent)
         .contentMargins(.top, 0, for: .scrollContent)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    /// The card surface behind each row, tinted for the open note.
-    private func rowBackground(isSelected: Bool) -> some View {
-        Rectangle()
+    /// The card surface behind each row, tinted for the open note. The first and last rows
+    /// round the card's corners; the list doesn't round them itself without side margins,
+    /// which are left out so cards line up with the page.
+    private func rowBackground(isSelected: Bool, isFirst: Bool, isLast: Bool) -> some View {
+        let radius = AppDesignMetrics.cardCornerRadius
+        let shape = UnevenRoundedRectangle(
+            topLeadingRadius: isFirst ? radius : 0,
+            bottomLeadingRadius: isLast ? radius : 0,
+            bottomTrailingRadius: isLast ? radius : 0,
+            topTrailingRadius: isFirst ? radius : 0,
+            style: .continuous
+        )
+        return shape
             .fill(.regularMaterial)
-            .overlay(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
+            .overlay(isSelected ? Color.accentColor.opacity(0.15) : Color.clear, in: shape)
     }
 
     private var summaryHeader: some View {
@@ -271,19 +280,12 @@ struct NotesListCard: View {
                 .foregroundStyle(.secondary)
                 .accessibilityLabel("\(section.items.count) notes")
         }
+        // Keeps the heading's own capitalization and lines it up with the card's edges.
+        .textCase(nil)
+        .padding(.horizontal, 4)
+        .padding(.bottom, 2)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isHeader)
-        .listRowBackground(rowBackground(isSelected: false))
-        .listRowSeparator(.hidden, edges: .top)
-        .listRowSeparatorTint(Color.primary.opacity(0.12))
-        .listRowInsets(
-            EdgeInsets(
-                top: 14,
-                leading: AppDesignMetrics.cardPadding,
-                bottom: 10,
-                trailing: AppDesignMetrics.cardPadding
-            )
-        )
     }
 
     @ViewBuilder
@@ -318,12 +320,18 @@ struct NotesListCard: View {
             NotesListRow(
                 item: item,
                 isSelected: item.id == selectedID,
-                showsType: showsTypeOnRows,
                 selectAction: { selectAction(item) },
                 editAction: { editAction(item) },
                 deleteAction: { deleteAction(item) }
             )
-            .listRowBackground(rowBackground(isSelected: item.id == selectedID))
+            .listRowBackground(rowBackground(
+                isSelected: item.id == selectedID,
+                isFirst: item.id == items.first?.id,
+                isLast: item.id == items.last?.id
+            ))
+            // Lines only between notes; the rounded card already marks its top and bottom.
+            .listRowSeparator(item.id == items.first?.id ? .hidden : .automatic, edges: .top)
+            .listRowSeparator(item.id == items.last?.id ? .hidden : .automatic, edges: .bottom)
             .listRowSeparatorTint(Color.primary.opacity(0.09))
             .listRowInsets(EdgeInsets())
         }
@@ -337,7 +345,6 @@ struct NotesListRow: View {
 
     let item: NotesListItem
     let isSelected: Bool
-    var showsType = true
     let selectAction: () -> Void
     let editAction: () -> Void
     let deleteAction: () -> Void
@@ -349,7 +356,6 @@ struct NotesListRow: View {
                     title: item.title,
                     preview: item.preview,
                     reference: item.rowPassage,
-                    type: showsType ? item.category : nil,
                     isFavorite: item.isFavorite,
                     updatedAt: item.updatedAt ?? item.createdAt,
                     isSelected: isSelected,
@@ -480,15 +486,13 @@ struct NotesViewOptionsMenu: View {
     }
 }
 
-/// A written note's row: the title and date, a line of preview, then its type and passage.
+/// A written note's row: the title and date, a line of preview, then its passage.
 struct NotesTitleButton: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let title: String
     let preview: String
     let reference: String?
-    /// Nil when the list's headings or filter already show the type.
-    let type: NoteCategory?
     let isFavorite: Bool
     let updatedAt: Date?
     let isSelected: Bool
@@ -520,20 +524,11 @@ struct NotesTitleButton: View {
                             .lineLimit(horizontalSizeClass == .compact ? 2 : 1)
                     }
 
-                    if type != nil || reference != nil {
-                        HStack(spacing: 6) {
-                            if let type {
-                                Image(systemName: NotesFilter(rawValue: type.rawValue)?.systemImage ?? "note.text")
-                                    .foregroundStyle(.tint)
-                                    .accessibilityLabel(Text(type.shortTitle))
-                            }
-                            if let reference {
-                                Text(reference)
-                                    .lineLimit(1)
-                            }
-                        }
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                    if let reference {
+                        Text(reference)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
                     }
                 }
                 .padding(.leading, 12)
