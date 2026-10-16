@@ -258,13 +258,12 @@ final class TodayChallengeStore {
     }
 
     private func loadOrCreateForToday() {
-        let today = dayKey(for: Date())
-
+        let now = Date()
         let localSnapshot = snapshot(from: UserDefaults.standard.data(forKey: storageKey))
         let cloudSnapshot = snapshot(from: cloudStore.data(forKey: cloudStorageKey))
 
         if let cloudSnapshot,
-           cloudSnapshot.dayKey == today,
+           !Self.needsNewChallenges(snapshotDayKey: cloudSnapshot.dayKey, on: now),
            cloudSnapshot.challenges.count == 3 {
             let cloudChallenges = cloudSnapshot.challenges.map(repairedChallenge)
             challenges = cloudChallenges
@@ -274,7 +273,7 @@ final class TodayChallengeStore {
                 save()
             }
         } else if let localSnapshot,
-                  localSnapshot.dayKey == today,
+                  !Self.needsNewChallenges(snapshotDayKey: localSnapshot.dayKey, on: now),
                   localSnapshot.challenges.count == 3 {
             challenges = localSnapshot.challenges.map(repairedChallenge)
             if challenges != localSnapshot.challenges {
@@ -290,6 +289,10 @@ final class TodayChallengeStore {
             challenges = makeChallenges()
             save()
         }
+    }
+
+    static func needsNewChallenges(snapshotDayKey: String, on date: Date) -> Bool {
+        snapshotDayKey != GameStats.localDayKey(for: date)
     }
 
     private func createChallengesWhenCorpusLoads() {
@@ -628,11 +631,38 @@ struct HomeTodayCard: View {
         .onAppear {
             store.refresh()
         }
+        .task {
+            await refreshAtNextDayBoundary()
+        }
         .onNotification(.bibleStatsExternallyUpdated) {
             store.refresh()
         }
         // Only the default key-value store posts this, so no object filter is needed.
         .onNotification(NSUbiquitousKeyValueStore.didChangeExternallyNotification) {
+            store.refresh()
+        }
+    }
+
+    /// Refreshes the card at each local calendar-day boundary while it remains visible.
+    private func refreshAtNextDayBoundary() async {
+        let calendar = Calendar.autoupdatingCurrent
+
+        while !Task.isCancelled {
+            let now = Date()
+            let startOfTomorrow = calendar.date(
+                byAdding: .day,
+                value: 1,
+                to: calendar.startOfDay(for: now)
+            ) ?? now.addingTimeInterval(86_400)
+            let interval = max(1, startOfTomorrow.timeIntervalSince(now))
+
+            do {
+                try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+            } catch {
+                return
+            }
+
+            guard !Task.isCancelled else { return }
             store.refresh()
         }
     }

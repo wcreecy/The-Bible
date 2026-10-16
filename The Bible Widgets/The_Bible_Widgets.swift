@@ -87,6 +87,9 @@ private enum VerseWidgetBackgroundStyle: String {
     case sunset
     case blackToGray
     case blueToPurple
+    case riverstone
+    case oliveGold
+    case amethyst
     case parchment
 }
 
@@ -136,6 +139,24 @@ private struct VerseWidgetBackground: View {
         case .blueToPurple:
             LinearGradient(
                 colors: [.blue, .purple],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .riverstone:
+            LinearGradient(
+                colors: [Color(red: 0.02, green: 0.23, blue: 0.25), Color(red: 0.12, green: 0.31, blue: 0.37)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .oliveGold:
+            LinearGradient(
+                colors: [Color(red: 0.20, green: 0.27, blue: 0.16), Color(red: 0.54, green: 0.42, blue: 0.17)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .amethyst:
+            LinearGradient(
+                colors: [Color(red: 0.21, green: 0.07, blue: 0.31), Color(red: 0.44, green: 0.27, blue: 0.65)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

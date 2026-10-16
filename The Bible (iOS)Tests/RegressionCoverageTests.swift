@@ -87,6 +87,61 @@ struct RegressionCoverageTests {
     }
 
     @Test
+    func verseOfDayScheduleIsMirroredToTheWidgetAppGroup() throws {
+        let keys = [
+            "votdRefreshFrequency",
+            "votdRefresh1Hour",
+            "votdRefresh1Minute",
+            "votdRefresh2Hour",
+            "votdRefresh2Minute"
+        ]
+        let standardDefaults = UserDefaults.standard
+        let sharedDefaults = try #require(UserDefaults(suiteName: "group.bible.app"))
+        let originalStandardValues = Dictionary(uniqueKeysWithValues: keys.map { ($0, standardDefaults.object(forKey: $0)) })
+        let originalSharedValues = Dictionary(uniqueKeysWithValues: keys.map { ($0, sharedDefaults.object(forKey: $0)) })
+        defer {
+            for key in keys {
+                if let value = originalStandardValues[key] {
+                    standardDefaults.set(value, forKey: key)
+                } else {
+                    standardDefaults.removeObject(forKey: key)
+                }
+                if let value = originalSharedValues[key] {
+                    sharedDefaults.set(value, forKey: key)
+                } else {
+                    sharedDefaults.removeObject(forKey: key)
+                }
+            }
+        }
+
+        standardDefaults.set("daily", forKey: "votdRefreshFrequency")
+        standardDefaults.set(9, forKey: "votdRefresh1Hour")
+        standardDefaults.set(30, forKey: "votdRefresh1Minute")
+        standardDefaults.set(21, forKey: "votdRefresh2Hour")
+        standardDefaults.set(45, forKey: "votdRefresh2Minute")
+
+        let viewModel = VerseOfDayViewModel()
+        viewModel.refreshScheduleChanged()
+
+        #expect(sharedDefaults.string(forKey: "votdRefreshFrequency") == "daily")
+        #expect(sharedDefaults.integer(forKey: "votdRefresh1Hour") == 9)
+        #expect(sharedDefaults.integer(forKey: "votdRefresh1Minute") == 30)
+        #expect(sharedDefaults.integer(forKey: "votdRefresh2Hour") == 21)
+        #expect(sharedDefaults.integer(forKey: "votdRefresh2Minute") == 45)
+    }
+
+    @Test
+    func todayChallengesRequireReplacementOnTheNextLocalDay() throws {
+        let calendar = Calendar.autoupdatingCurrent
+        let today = calendar.startOfDay(for: Date())
+        let tomorrow = try #require(calendar.date(byAdding: .day, value: 1, to: today))
+        let todayKey = GameStats.localDayKey(for: today)
+
+        #expect(!TodayChallengeStore.needsNewChallenges(snapshotDayKey: todayKey, on: today))
+        #expect(TodayChallengeStore.needsNewChallenges(snapshotDayKey: todayKey, on: tomorrow))
+    }
+
+    @Test
     func homeLayoutBaselineIncludesEveryCardExactlyOnce() {
         let order = HomeLayoutStore.baselineOrder
         #expect(Set(order) == Set(HomeCardID.allCases))

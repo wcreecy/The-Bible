@@ -44,31 +44,64 @@ final class The_Bible__iOS_UITests: XCTestCase {
         XCTAssertTrue(widgetsSettings.waitForExistence(timeout: 5))
         widgetsSettings.tap()
 
-        selectParchmentBackground(
+        selectBackground(
+            named: "Parchment",
             pickerIdentifier: "verseWidgetBackgroundPicker",
             widgetName: "Verse of the Day"
         )
-        selectParchmentBackground(
+        selectBackground(
+            named: "Parchment",
             pickerIdentifier: "lastReadWidgetBackgroundPicker",
             widgetName: "Last Read"
         )
-        selectParchmentBackground(
+        selectBackground(
+            named: "Parchment",
             pickerIdentifier: "pinnedVerseWidgetBackgroundPicker",
             widgetName: "Pinned Verse"
         )
     }
 
     @MainActor
-    private func selectParchmentBackground(pickerIdentifier: String, widgetName: String) {
+    func testNewWidgetBackgroundsCanBeSelectedForEachWidget() throws {
+        app.launch()
+
+        tapFloatingTab(named: "More")
+        let settings = app.buttons["Settings"].firstMatch
+        XCTAssertTrue(settings.waitForExistence(timeout: 5))
+        settings.tap()
+
+        let widgetsSettings = app.descendants(matching: .any)["widgetsSettingsLink"].firstMatch
+        XCTAssertTrue(widgetsSettings.waitForExistence(timeout: 5))
+        widgetsSettings.tap()
+
+        let widgets = [
+            (pickerIdentifier: "verseWidgetBackgroundPicker", name: "Verse of the Day"),
+            (pickerIdentifier: "lastReadWidgetBackgroundPicker", name: "Last Read"),
+            (pickerIdentifier: "pinnedVerseWidgetBackgroundPicker", name: "Pinned Verse")
+        ]
+
+        for background in ["Riverstone", "Olive & Gold", "Amethyst"] {
+            for widget in widgets {
+                selectBackground(
+                    named: background,
+                    pickerIdentifier: widget.pickerIdentifier,
+                    widgetName: widget.name
+                )
+            }
+        }
+    }
+
+    @MainActor
+    private func selectBackground(named name: String, pickerIdentifier: String, widgetName: String) {
         let picker = app.buttons[pickerIdentifier].firstMatch
         XCTAssertTrue(picker.waitForExistence(timeout: 5), "Expected the \(widgetName) background picker to exist")
         picker.tap()
 
-        let parchment = app.descendants(matching: .any)["Parchment"].firstMatch
-        XCTAssertTrue(parchment.waitForExistence(timeout: 5), "Expected Parchment to be available for \(widgetName)")
-        parchment.tap()
+        let option = app.descendants(matching: .any)[name].firstMatch
+        XCTAssertTrue(option.waitForExistence(timeout: 5), "Expected \(name) to be available for \(widgetName)")
+        option.tap()
 
-        XCTAssertEqual(picker.value as? String, "Parchment", "Expected \(widgetName) to retain the selected background")
+        XCTAssertEqual(picker.value as? String, name, "Expected \(widgetName) to retain the selected background")
     }
 
     @MainActor

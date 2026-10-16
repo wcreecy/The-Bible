@@ -11,6 +11,9 @@ enum WidgetBackgroundOption: String, AppEnum {
     case sunset
     case blackToGray
     case blueToPurple
+    case riverstone
+    case oliveGold
+    case amethyst
     case parchment
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
@@ -28,6 +31,9 @@ enum WidgetBackgroundOption: String, AppEnum {
             .sunset: "Sunset",
             .blackToGray: "Graphite",
             .blueToPurple: "Aurora",
+            .riverstone: "Riverstone",
+            .oliveGold: "Olive & Gold",
+            .amethyst: "Amethyst",
             .parchment: "Parchment"
         ]
     }
