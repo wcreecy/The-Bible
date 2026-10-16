@@ -246,8 +246,10 @@ struct NotesAndHighlightsView: View {
         selectAction: @escaping (NotesListItem) -> Void
     ) -> some View {
         NotesListCard(
-            notes: library.visibleItems,
+            sections: library.sections,
             selectedID: selectedID,
+            // The type filter or the type headings already show each note's type.
+            showsTypeOnRows: filters.category == .all && sortField != .tag,
             summaryTitle: library.summaryTitle,
             hasAnyNotes: !library.allItems.isEmpty,
             showsClearFiltersAction: filters.isActive,

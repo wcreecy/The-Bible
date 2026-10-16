@@ -116,11 +116,13 @@ struct NotesListSectionTests {
             sort: .color
         )
         #expect(headings(byColor) == ["Yellow", "Blue", "No Highlight"])
-        #expect(byColor.sections.first?.highlight == .yellow)
     }
 
     @Test
-    func bibleOrderGroupsByBookInCanonicalOrder() {
+    func bibleOrderGroupsByBookInCanonicalOrder() async {
+        // Reading a personal note's passage matches book names against the loaded text.
+        _ = await BibleRepository.shared.loadAllBooks()
+
         let ordered = library(
             [
                 verseNote("John", 3, 16, content: "a"),

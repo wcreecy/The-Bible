@@ -131,6 +131,8 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     /// Sorts by the note's type. The raw value stays "tag" so saved preferences carry over.
     case tag
     case color
+    /// By the note's passage, Genesis to Revelation, then chapter and verse.
+    case bibleOrder
 
     var id: String { rawValue }
 
@@ -141,6 +143,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .title: "Title"
         case .tag: "Type"
         case .color: "Highlight Color"
+        case .bibleOrder: "Bible Order"
         }
     }
 
@@ -151,6 +154,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .title: "textformat"
         case .tag: "square.stack"
         case .color: "highlighter"
+        case .bibleOrder: "book"
         }
     }
 
@@ -158,7 +162,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     var defaultAscending: Bool {
         switch self {
         case .modified, .created: false
-        case .title, .tag, .color: true
+        case .title, .tag, .color, .bibleOrder: true
         }
     }
 
@@ -167,6 +171,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .modified, .created: ascending ? "Oldest First" : "Newest First"
         case .title, .tag: ascending ? "A–Z" : "Z–A"
         case .color: ascending ? "Picker Order" : "Reverse Picker Order"
+        case .bibleOrder: ascending ? "Genesis to Revelation" : "Revelation to Genesis"
         }
     }
 }
@@ -369,6 +374,20 @@ enum NotesListItem: Identifiable {
         switch self {
         case .scripture(let note): note.reference
         case .user(let note): note.passageReference.isEmpty ? nil : note.passageReference
+        }
+    }
+
+    /// The passage for a list row, left out when the title already is the passage (an
+    /// untitled Scripture note is titled with its reference).
+    var rowPassage: String? {
+        passage == title ? nil : passage
+    }
+
+    /// The highlighted verse text, for highlight-only rows.
+    var verseText: String {
+        switch self {
+        case .scripture(let note): note.verseText
+        case .user: ""
         }
     }
 

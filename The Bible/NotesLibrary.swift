@@ -14,6 +14,15 @@ struct NotesFilters: Equatable {
     }
 }
 
+/// A heading and its notes in the Notes list.
+struct NotesListSection: Identifiable {
+    let id: String
+    /// Nil for a list with no headings, such as one sorted by title.
+    let title: String?
+    var systemImage: String?
+    var items: [NotesListItem]
+}
+
 /// Filters, sorts, and summarizes notes in one pass, so the page computes them once per update.
 /// Favorites come first, but every filter still applies to them.
 @MainActor
@@ -30,6 +39,8 @@ struct NotesLibrary {
     let visibleItems: [NotesListItem]
     /// Every custom tag across all notes, A–Z, with how many notes use it.
     let tags: [TagCount]
+    /// `visibleItems` under headings: Favorites, then groups that follow the sort.
+    let sections: [NotesListSection]
 
     private let filters: NotesFilters
 
@@ -38,7 +49,9 @@ struct NotesLibrary {
         userNotes: [UserNote],
         filters: NotesFilters,
         sort: NotesTabSort,
-        ascending: Bool
+        ascending: Bool,
+        now: Date = .now,
+        calendar: Calendar = .current
     ) {
         self.filters = filters
         let items = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
@@ -63,7 +76,111 @@ struct NotesLibrary {
                 item.matchesSearch(filters.search, tags: itemTags)
         }
         let ordered = Self.sorted(matching, by: sort, ascending: ascending)
-        visibleItems = ordered.filter(\.isFavorite) + ordered.filter { !$0.isFavorite }
+        let favorites = ordered.filter(\.isFavorite)
+        let others = ordered.filter { !$0.isFavorite }
+        visibleItems = favorites + others
+
+        var sections: [NotesListSection] = []
+        if !favorites.isEmpty {
+            sections.append(NotesListSection(id: "favorites", title: String(localized: "Favorites"), systemImage: "star.fill", items: favorites))
+        }
+        var groups = Self.grouped(others, by: sort, now: now, calendar: calendar)
+        // A list with no groupings still needs a heading under Favorites.
+        if !favorites.isEmpty, groups.count == 1, groups[0].title == nil {
+            groups[0] = NotesListSection(id: "notes", title: String(localized: "Notes"), systemImage: "note.text", items: groups[0].items)
+        }
+        self.sections = sections + groups
+    }
+
+    // MARK: Grouping
+
+    /// Groups sorted notes under headings that match the sort, keeping the sorted order.
+    /// Title order has no headings.
+    static func grouped(
+        _ items: [NotesListItem],
+        by sort: NotesTabSort,
+        now: Date = .now,
+        calendar: Calendar = .current
+    ) -> [NotesListSection] {
+        guard !items.isEmpty else { return [] }
+        guard sort != .title else {
+            return [NotesListSection(id: "all", title: nil, items: items)]
+        }
+
+        var sections: [NotesListSection] = []
+        var indexByID: [String: Int] = [:]
+        for item in items {
+            let heading = section(for: item, by: sort, now: now, calendar: calendar)
+            if let index = indexByID[heading.id] {
+                sections[index].items.append(item)
+            } else {
+                indexByID[heading.id] = sections.count
+                var section = heading
+                section.items = [item]
+                sections.append(section)
+            }
+        }
+        return sections
+    }
+
+    private static func section(
+        for item: NotesListItem,
+        by sort: NotesTabSort,
+        now: Date,
+        calendar: Calendar
+    ) -> NotesListSection {
+        switch sort {
+        case .modified:
+            return dateSection(for: item.updatedAt, now: now, calendar: calendar)
+        case .created:
+            return dateSection(for: item.createdAt, now: now, calendar: calendar)
+        case .tag:
+            let filter = NotesFilter(rawValue: item.categoryRawValue)
+            let title = item.category.map { String(localized: $0.title) } ?? String(localized: "Other")
+            return NotesListSection(id: "type.\(item.categoryRawValue)", title: title, systemImage: filter?.systemImage, items: [])
+        case .color:
+            guard let color = VerseHighlightColor(rawValue: item.highlightColor) else {
+                return NotesListSection(id: "color.none", title: String(localized: "No Highlight"), systemImage: "circle.slash", items: [])
+            }
+            return NotesListSection(id: "color.\(color.rawValue)", title: String(localized: color.name), items: [])
+        case .bibleOrder:
+            guard let book = item.bibleLocation?.bookName else {
+                return NotesListSection(id: "book.none", title: String(localized: "No Passage"), systemImage: "note.text", items: [])
+            }
+            return NotesListSection(id: "book.\(book)", title: book, systemImage: "book.closed", items: [])
+        case .title:
+            return NotesListSection(id: "all", title: nil, items: [])
+        }
+    }
+
+    /// Today, This Week, This Month, then each earlier month ("September", or "September
+    /// 2025" before this year). Each is a continuous span of time, so sorted notes stay
+    /// in order; a date in the future counts as today.
+    private static func dateSection(for date: Date?, now: Date, calendar: Calendar) -> NotesListSection {
+        guard let date else {
+            return NotesListSection(id: "date.none", title: String(localized: "No Date"), items: [])
+        }
+        let day = min(date, now)
+        if calendar.isDate(day, inSameDayAs: now) {
+            return NotesListSection(id: "date.today", title: String(localized: "Today"), items: [])
+        }
+        if calendar.isDate(day, equalTo: now, toGranularity: .weekOfYear) {
+            return NotesListSection(id: "date.week", title: String(localized: "This Week"), items: [])
+        }
+        if calendar.isDate(day, equalTo: now, toGranularity: .month) {
+            return NotesListSection(id: "date.month", title: String(localized: "This Month"), items: [])
+        }
+        let month = calendar.dateComponents([.year, .month], from: day)
+        let isThisYear = calendar.isDate(day, equalTo: now, toGranularity: .year)
+        var style = Date.FormatStyle.dateTime.month(.wide)
+        if !isThisYear { style = style.year() }
+        style.calendar = calendar
+        style.timeZone = calendar.timeZone
+        return NotesListSection(
+            id: "date.\(month.year ?? 0)-\(month.month ?? 0)",
+            title: day.formatted(style),
+            items: []
+        )
     }
 
     func item(withID id: NotesListItem.ID?) -> NotesListItem? {
@@ -92,8 +209,26 @@ struct NotesLibrary {
     // MARK: Sorting
 
     static func sorted(_ items: [NotesListItem], by field: NotesTabSort, ascending: Bool) -> [NotesListItem] {
-        items.sorted { lhs, rhs in
-            let order = compare(lhs, rhs, by: field)
+        // Reading a personal note's passage means parsing it, so do it once per note.
+        let positions = field == .bibleOrder
+            ? Dictionary(uniqueKeysWithValues: items.map { ($0.id, biblePosition(of: $0)) })
+            : [:]
+        return items.sorted { lhs, rhs in
+            let order: ComparisonResult
+            if field == .bibleOrder {
+                // Notes without a passage come last in either direction.
+                let left = positions[lhs.id] ?? nil
+                let right = positions[rhs.id] ?? nil
+                switch (left, right) {
+                case let (left?, right?) where left != right:
+                    return (left < right) == ascending
+                case (nil, _?): return false
+                case (_?, nil): return true
+                default: order = .orderedSame
+                }
+            } else {
+                order = compare(lhs, rhs, by: field)
+            }
             if order != .orderedSame {
                 return order == (ascending ? .orderedAscending : .orderedDescending)
             }
@@ -102,8 +237,22 @@ struct NotesLibrary {
         }
     }
 
+    private static let canonIndex = Dictionary(
+        uniqueKeysWithValues: BibleCanon.fallbackCanon.enumerated().map { ($1, $0) }
+    )
+
+    /// Book, chapter, and verse as one comparable number; nil without a passage. Books
+    /// outside the canon list sort after Revelation.
+    private static func biblePosition(of item: NotesListItem) -> Int? {
+        guard let location = item.bibleLocation else { return nil }
+        let book = canonIndex[location.bookName] ?? canonIndex.count
+        return (book * 1_000 + location.chapter) * 1_000 + location.startVerse
+    }
+
     private static func compare(_ lhs: NotesListItem, _ rhs: NotesListItem, by field: NotesTabSort) -> ComparisonResult {
         switch field {
+        case .bibleOrder:
+            return .orderedSame
         case .modified:
             return (lhs.updatedAt ?? .distantPast).compare(rhs.updatedAt ?? .distantPast)
         case .created:

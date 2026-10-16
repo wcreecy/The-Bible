@@ -159,8 +159,10 @@ struct FilterChipLabel<Content: View>: View {
 }
 
 struct NotesListCard: View {
-    let notes: [NotesListItem]
+    let sections: [NotesListSection]
     let selectedID: NotesListItem.ID?
+    /// Whether rows mark their type; off when a type filter or the type headings already say it.
+    let showsTypeOnRows: Bool
     /// Names the active filters and the count, so the list always says what it's showing.
     let summaryTitle: String
     let hasAnyNotes: Bool
@@ -173,51 +175,44 @@ struct NotesListCard: View {
     let editAction: (NotesListItem) -> Void
     let deleteAction: (NotesListItem) -> Void
 
+    /// Each heading is its own card, sized to its notes, with the heading's name at the top.
     var body: some View {
         List {
-            summaryHeader
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(
-                    EdgeInsets(
-                        top: AppDesignMetrics.cardPadding,
-                        leading: AppDesignMetrics.cardPadding,
-                        bottom: 4,
-                        trailing: AppDesignMetrics.cardPadding
-                    )
-                )
-
-            if notes.isEmpty {
-                emptyState
-                    .padding(.vertical, 40)
+            Section {
+                summaryHeader
                     .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-            } else if favoriteNotes.isEmpty {
-                rows(for: otherNotes)
-            } else {
-                groupHeader("Favorites", systemImage: "star.fill")
-                rows(for: favoriteNotes)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
 
-                if !otherNotes.isEmpty {
-                    groupHeader("Notes", systemImage: "note.text")
-                    rows(for: otherNotes)
+                if sections.isEmpty {
+                    emptyState
+                        .padding(.vertical, 40)
+                        .listRowBackground(Color.clear)
+                }
+            }
+            .listRowSeparator(.hidden)
+
+            ForEach(sections) { section in
+                Section {
+                    if let title = section.title {
+                        groupHeader(section, title: title)
+                    }
+                    rows(for: section.items)
                 }
             }
         }
-        .listStyle(.plain)
+        .listStyle(.insetGrouped)
+        .listSectionSpacing(14)
         .scrollContentBackground(.hidden)
-        .contentMargins(.vertical, 0, for: .scrollContent)
-        .clipShape(.rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
-        .heroCardSurface()
+        .contentMargins(.horizontal, 0, for: .scrollContent)
+        .contentMargins(.top, 0, for: .scrollContent)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private var favoriteNotes: [NotesListItem] {
-        notes.filter(\.isFavorite)
-    }
-
-    private var otherNotes: [NotesListItem] {
-        notes.filter { !$0.isFavorite }
+    /// The card surface behind each row, tinted for the open note.
+    private func rowBackground(isSelected: Bool) -> some View {
+        Rectangle()
+            .fill(.regularMaterial)
+            .overlay(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
     }
 
     private var summaryHeader: some View {
@@ -258,22 +253,37 @@ struct NotesListCard: View {
         .accessibilityLabel("Clear all filters")
     }
 
-    private func groupHeader(_ title: LocalizedStringKey, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .textCase(.uppercase)
-            .accessibilityAddTraits(.isHeader)
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
-            .listRowInsets(
-                EdgeInsets(
-                    top: 12,
-                    leading: AppDesignMetrics.cardPadding,
-                    bottom: 4,
-                    trailing: AppDesignMetrics.cardPadding
-                )
+    private func groupHeader(_ section: NotesListSection, title: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            if let systemImage = section.systemImage {
+                Image(systemName: systemImage)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(section.id == "favorites" ? AnyShapeStyle(Color.yellow) : AnyShapeStyle(.tint))
+                    .accessibilityHidden(true)
+            }
+            Text(verbatim: title)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.primary)
+            Spacer(minLength: 8)
+            Text(section.items.count, format: .number)
+                .font(.subheadline.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("\(section.items.count) notes")
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
+        .listRowBackground(rowBackground(isSelected: false))
+        .listRowSeparator(.hidden, edges: .top)
+        .listRowSeparatorTint(Color.primary.opacity(0.12))
+        .listRowInsets(
+            EdgeInsets(
+                top: 14,
+                leading: AppDesignMetrics.cardPadding,
+                bottom: 10,
+                trailing: AppDesignMetrics.cardPadding
             )
+        )
     }
 
     @ViewBuilder
@@ -308,14 +318,12 @@ struct NotesListCard: View {
             NotesListRow(
                 item: item,
                 isSelected: item.id == selectedID,
+                showsType: showsTypeOnRows,
                 selectAction: { selectAction(item) },
                 editAction: { editAction(item) },
                 deleteAction: { deleteAction(item) }
             )
-            .listRowBackground(
-                item.id == selectedID ? Color.accentColor.opacity(0.13) : Color.clear
-            )
-            .listRowSeparator(item.id == items.last?.id ? .hidden : .visible)
+            .listRowBackground(rowBackground(isSelected: item.id == selectedID))
             .listRowSeparatorTint(Color.primary.opacity(0.09))
             .listRowInsets(EdgeInsets())
         }
@@ -329,22 +337,35 @@ struct NotesListRow: View {
 
     let item: NotesListItem
     let isSelected: Bool
+    var showsType = true
     let selectAction: () -> Void
     let editAction: () -> Void
     let deleteAction: () -> Void
 
     var body: some View {
-        NotesTitleButton(
-            title: item.title,
-            preview: item.preview,
-            reference: item.passage,
-            tag: item.category?.shortTitle,
-            highlight: VerseHighlightColor(rawValue: item.highlightColor),
-            isFavorite: item.isFavorite,
-            updatedAt: item.updatedAt ?? item.createdAt,
-            isSelected: isSelected,
-            action: selectAction
-        )
+        Group {
+            if item.hasNoteText {
+                NotesTitleButton(
+                    title: item.title,
+                    preview: item.preview,
+                    reference: item.rowPassage,
+                    type: showsType ? item.category : nil,
+                    isFavorite: item.isFavorite,
+                    updatedAt: item.updatedAt ?? item.createdAt,
+                    isSelected: isSelected,
+                    action: selectAction
+                )
+            } else {
+                HighlightOnlyRow(
+                    reference: item.title,
+                    verseText: item.verseText,
+                    isFavorite: item.isFavorite,
+                    updatedAt: item.updatedAt ?? item.createdAt,
+                    isSelected: isSelected,
+                    action: selectAction
+                )
+            }
+        }
         .swipeActions(edge: .leading) {
             favoriteButton
                 .tint(.yellow)
@@ -459,14 +480,15 @@ struct NotesViewOptionsMenu: View {
     }
 }
 
+/// A written note's row: the title and date, a line of preview, then its type and passage.
 struct NotesTitleButton: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let title: String
     let preview: String
     let reference: String?
-    let tag: LocalizedStringResource?
-    let highlight: VerseHighlightColor?
+    /// Nil when the list's headings or filter already show the type.
+    let type: NoteCategory?
     let isFavorite: Bool
     let updatedAt: Date?
     let isSelected: Bool
@@ -475,27 +497,19 @@ struct NotesTitleButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 0) {
-                if let highlight {
-                    Capsule()
-                        .fill(highlight.color)
-                        .frame(width: 3)
-                        .padding(.vertical, 5)
-                }
-
-                VStack(alignment: .leading, spacing: 7) {
+                VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text(title)
-                            .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                            .font(.subheadline.weight(isSelected ? .semibold : .medium))
                             .foregroundStyle(.primary)
                             .lineLimit(2)
 
                         Spacer(minLength: 4)
 
-                        if isFavorite {
-                            Image(systemName: "star.fill")
-                                .font(.caption)
-                                .foregroundStyle(.yellow)
-                                .accessibilityLabel("Favorite")
+                        if let updatedAt {
+                            Text(updatedAt, format: NotesRowDate.format(for: updatedAt))
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
                         }
                     }
 
@@ -506,36 +520,81 @@ struct NotesTitleButton: View {
                             .lineLimit(horizontalSizeClass == .compact ? 2 : 1)
                     }
 
-                    HStack(spacing: 6) {
-                        if let tag {
-                            Text(tag)
-                                .font(.caption2.weight(.medium))
-                                .foregroundStyle(.tint)
+                    if type != nil || reference != nil {
+                        HStack(spacing: 6) {
+                            if let type {
+                                Image(systemName: NotesFilter(rawValue: type.rawValue)?.systemImage ?? "note.text")
+                                    .foregroundStyle(.tint)
+                                    .accessibilityLabel(Text(type.shortTitle))
+                            }
+                            if let reference {
+                                Text(reference)
+                                    .lineLimit(1)
+                            }
                         }
-                        if let reference {
-                            Label(reference, systemImage: "book.closed")
-                                .lineLimit(1)
-                        }
-                        Spacer(minLength: 0)
-                        if let updatedAt {
-                            Text(updatedAt, format: rowDateFormat(for: updatedAt))
-                        }
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                     }
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
                 }
                 .padding(.leading, 12)
             }
-            .frame(minHeight: 76, alignment: .leading)
+            .frame(minHeight: 60, alignment: .leading)
             .padding(.horizontal, 16)
-            .padding(.vertical, 7)
+            .padding(.vertical, 8)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .accessibilityValue(isFavorite ? Text("Favorite") : Text(""))
     }
+}
 
+/// A verse that's highlighted without a note: one compact line with the reference and the
+/// start of the verse, so highlights don't read as empty notes. The color shows in the note.
+private struct HighlightOnlyRow: View {
+    let reference: String
+    let verseText: String
+    let isFavorite: Bool
+    let updatedAt: Date?
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Text(reference)
+                    .font(.subheadline.weight(isSelected ? .semibold : .medium))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .layoutPriority(1)
+
+                Text(verseText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                Spacer(minLength: 4)
+
+                if let updatedAt {
+                    Text(updatedAt, format: NotesRowDate.format(for: updatedAt))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(minHeight: 44, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("\(reference), highlight"))
+        .accessibilityValue(isFavorite ? Text("Favorite") : Text(""))
+    }
+}
+
+enum NotesRowDate {
     /// Omits the year for this year's notes so older notes aren't mistaken for recent ones.
-    private func rowDateFormat(for date: Date) -> Date.FormatStyle {
+    static func format(for date: Date) -> Date.FormatStyle {
         let style = Date.FormatStyle.dateTime.month(.abbreviated).day()
         return Calendar.current.isDate(date, equalTo: .now, toGranularity: .year) ? style : style.year()
     }
