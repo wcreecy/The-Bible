@@ -75,7 +75,30 @@ struct HomeView: View {
     private var savedVersesHomeCardData: SavedVersesHomeCardData {
         let favoriteCount = savedVerseCount(for: Favorite.self)
         let highlightCount = savedVerseCount(for: VerseNote.self)
-        guard favoriteCount + highlightCount > 1 else {
+        let savedVerseCount = favoriteCount + highlightCount
+        guard savedVerseCount > 0 else {
+            return SavedVersesHomeCardData(
+                preview: nil,
+                favoriteCount: favoriteCount,
+                highlightCount: highlightCount
+            )
+        }
+
+        if savedVerseCount == 1 {
+            if let favorite = favorite(at: 0) {
+                return SavedVersesHomeCardData(
+                    preview: savedVersePreview(from: favorite),
+                    favoriteCount: favoriteCount,
+                    highlightCount: highlightCount
+                )
+            }
+            if let highlight = highlight(at: 0) {
+                return SavedVersesHomeCardData(
+                    preview: savedVersePreview(from: highlight),
+                    favoriteCount: favoriteCount,
+                    highlightCount: highlightCount
+                )
+            }
             return SavedVersesHomeCardData(
                 preview: nil,
                 favoriteCount: favoriteCount,
@@ -151,7 +174,14 @@ struct HomeView: View {
 
     private func favorite(at offset: Int) -> Favorite? {
         guard offset >= 0 else { return nil }
-        var descriptor = FetchDescriptor<Favorite>(sortBy: [SortDescriptor(\Favorite.createdAt)])
+        var descriptor = FetchDescriptor<Favorite>(
+            sortBy: [
+                SortDescriptor(\Favorite.createdAt),
+                SortDescriptor(\Favorite.bookName),
+                SortDescriptor(\Favorite.chapterNumber),
+                SortDescriptor(\Favorite.verseNumber)
+            ]
+        )
         descriptor.fetchLimit = 1
         descriptor.fetchOffset = offset
         return try? modelContext.fetch(descriptor).first
@@ -161,7 +191,12 @@ struct HomeView: View {
         guard offset >= 0 else { return nil }
         var descriptor = FetchDescriptor<VerseNote>(
             predicate: #Predicate { $0.highlightColor != "" },
-            sortBy: [SortDescriptor(\VerseNote.updatedAt)]
+            sortBy: [
+                SortDescriptor(\VerseNote.updatedAt),
+                SortDescriptor(\VerseNote.bookName),
+                SortDescriptor(\VerseNote.chapterNumber),
+                SortDescriptor(\VerseNote.verseNumber)
+            ]
         )
         descriptor.fetchLimit = 1
         descriptor.fetchOffset = offset

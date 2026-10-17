@@ -23,12 +23,19 @@ struct SavedVerseHomePreview: Equatable {
     let verseNumber: Int
     let highlightColor: VerseHighlightColor?
 
-    /// Chooses a stable older saved verse for the local day.
-    /// The most recently saved item is intentionally omitted so this card encourages rediscovery.
+    /// A shared day boundary keeps the normal rotation consistent across synced devices.
+    static var synchronizedRotationCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
+        return calendar
+    }
+
+    /// Chooses a stable saved verse for the local day.
+    /// The most recently saved item is omitted when another saved verse is available.
     static func dailyPreview(
         from previews: [SavedVerseHomePreview],
         on date: Date = .now,
-        calendar: Calendar = .autoupdatingCurrent,
+        calendar: Calendar = synchronizedRotationCalendar,
         rotationOffset: Int = 0
     ) -> SavedVerseHomePreview? {
         let sortedPreviews = previews.sorted { lhs, rhs in
@@ -41,11 +48,11 @@ struct SavedVerseHomePreview: Equatable {
             return lhs.kind.sortOrder < rhs.kind.sortOrder
         }
 
-        // A single saved item is necessarily the most recent one, so wait until there is
-        // an older verse to revisit.
-        let olderPreviews = Array(sortedPreviews.dropLast())
+        let eligiblePreviews = sortedPreviews.count > 1
+            ? Array(sortedPreviews.dropLast())
+            : sortedPreviews
         guard let index = dailyIndex(
-            itemCount: olderPreviews.count,
+            itemCount: eligiblePreviews.count,
             on: date,
             calendar: calendar,
             rotationOffset: rotationOffset
@@ -53,14 +60,14 @@ struct SavedVerseHomePreview: Equatable {
             return nil
         }
 
-        return olderPreviews[index]
+        return eligiblePreviews[index]
     }
 
     /// Returns a stable position in a collection for the local day.
     static func dailyIndex(
         itemCount: Int,
         on date: Date = .now,
-        calendar: Calendar = .autoupdatingCurrent,
+        calendar: Calendar = synchronizedRotationCalendar,
         rotationOffset: Int = 0
     ) -> Int? {
         guard itemCount > 0 else { return nil }
@@ -77,6 +84,18 @@ struct SavedVerseHomePreview: Equatable {
     }
 }
 
+enum SavedVersesHomeCardSubtitle {
+    static func text(favoriteCount: Int, highlightCount: Int) -> String {
+        let favorites = favoriteCount == 1
+            ? String(localized: "\(favoriteCount) favorite")
+            : String(localized: "\(favoriteCount) favorites")
+        let highlights = highlightCount == 1
+            ? String(localized: "\(highlightCount) highlight")
+            : String(localized: "\(highlightCount) highlights")
+        return String(localized: "\(favorites) · \(highlights)")
+    }
+}
+
 struct SavedVersesHomeCard: View {
     let preview: SavedVerseHomePreview?
     let favoriteCount: Int
@@ -86,7 +105,10 @@ struct SavedVersesHomeCard: View {
     let onOpenVerse: (SavedVerseHomePreview) -> Void
 
     private var subtitle: String {
-        String(localized: "\(favoriteCount) favorites · \(highlightCount) highlights")
+        SavedVersesHomeCardSubtitle.text(
+            favoriteCount: favoriteCount,
+            highlightCount: highlightCount
+        )
     }
 
     var body: some View {
