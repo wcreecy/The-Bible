@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SavedVerseHomePreview: Equatable {
-    enum Kind: Equatable {
+    enum Kind: String, Equatable {
         case favorite
         case highlight
 
@@ -11,7 +11,13 @@ struct SavedVerseHomePreview: Equatable {
             case .highlight: 1
             }
         }
+    }
 
+    /// The verse chosen for a given day, saved so the card doesn't change when
+    /// verses are added or removed later that day.
+    struct DailyPin: Equatable {
+        let id: String
+        let day: Int
     }
 
     let reference: String
@@ -23,21 +29,27 @@ struct SavedVerseHomePreview: Equatable {
     let verseNumber: Int
     let highlightColor: VerseHighlightColor?
 
-    /// A shared day boundary keeps the normal rotation consistent across synced devices.
-    static var synchronizedRotationCalendar: Calendar {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
-        return calendar
+    /// Identifies the saved item; a verse can be both a favorite and a highlight.
+    var pinID: String {
+        "\(kind.rawValue)|\(bookName)|\(chapterNumber)|\(verseNumber)"
     }
 
     /// Chooses a stable saved verse for the local day.
-    /// The most recently saved item is omitted when another saved verse is available.
+    /// Today's pinned verse wins while it's still saved. Otherwise the most recently
+    /// saved item is skipped when another saved verse is available.
     static func dailyPreview(
         from previews: [SavedVerseHomePreview],
         on date: Date = .now,
-        calendar: Calendar = synchronizedRotationCalendar,
-        rotationOffset: Int = 0
+        calendar: Calendar = .current,
+        rotationOffset: Int = 0,
+        pinned: DailyPin? = nil
     ) -> SavedVerseHomePreview? {
+        if let pinned,
+           pinned.day == dayIndex(for: date, calendar: calendar),
+           let pinnedPreview = previews.first(where: { $0.pinID == pinned.id }) {
+            return pinnedPreview
+        }
+
         let sortedPreviews = previews.sorted { lhs, rhs in
             if lhs.date != rhs.date {
                 return lhs.date < rhs.date
@@ -67,32 +79,41 @@ struct SavedVerseHomePreview: Equatable {
     static func dailyIndex(
         itemCount: Int,
         on date: Date = .now,
-        calendar: Calendar = synchronizedRotationCalendar,
+        calendar: Calendar = .current,
         rotationOffset: Int = 0
     ) -> Int? {
         guard itemCount > 0 else { return nil }
 
-        // Count local calendar days from a fixed date. This avoids UTC-based day changes.
+        let dayIndex = dayIndex(for: date, calendar: calendar)
+        return (dayIndex % itemCount + rotationOffset % itemCount + itemCount) % itemCount
+    }
+
+    /// Counts calendar days from a fixed date, so the day changes at local midnight.
+    static func dayIndex(for date: Date, calendar: Calendar = .current) -> Int {
         let referenceDate = calendar.date(from: DateComponents(year: 2001, month: 1, day: 1)) ?? .distantPast
-        let dayIndex = calendar.dateComponents(
+        return calendar.dateComponents(
             [.day],
             from: calendar.startOfDay(for: referenceDate),
             to: calendar.startOfDay(for: date)
         ).day ?? 0
-
-        return (dayIndex % itemCount + rotationOffset % itemCount + itemCount) % itemCount
     }
 }
 
 enum SavedVersesHomeCardSubtitle {
-    static func text(favoriteCount: Int, highlightCount: Int) -> String {
-        let favorites = favoriteCount == 1
-            ? String(localized: "\(favoriteCount) favorite")
-            : String(localized: "\(favoriteCount) favorites")
-        let highlights = highlightCount == 1
-            ? String(localized: "\(highlightCount) highlight")
-            : String(localized: "\(highlightCount) highlights")
-        return String(localized: "\(favorites) · \(highlights)")
+    /// Lists only the non-zero counts, or nil when nothing is saved yet.
+    static func text(favoriteCount: Int, highlightCount: Int) -> String? {
+        var parts: [String] = []
+        if favoriteCount > 0 {
+            parts.append(inflected(AttributedString(localized: "^[\(favoriteCount) favorite](inflect: true)")))
+        }
+        if highlightCount > 0 {
+            parts.append(inflected(AttributedString(localized: "^[\(highlightCount) highlight](inflect: true)")))
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
+    private static func inflected(_ string: AttributedString) -> String {
+        String(string.characters)
     }
 }
 
@@ -104,7 +125,7 @@ struct SavedVersesHomeCard: View {
     let onRefresh: () -> Void
     let onOpenVerse: (SavedVerseHomePreview) -> Void
 
-    private var subtitle: String {
+    private var subtitle: String? {
         SavedVersesHomeCardSubtitle.text(
             favoriteCount: favoriteCount,
             highlightCount: highlightCount
@@ -130,7 +151,7 @@ struct SavedVersesHomeCard: View {
                     Button("View All", action: onOpenSavedVerses)
                         .font(.caption.weight(.semibold))
                         .buttonStyle(.bordered)
-                        .accessibilityLabel("View all saved verses.")
+                        .accessibilityLabel("View all saved verses")
                 }
             }
         ) {
@@ -165,7 +186,7 @@ private struct SavedVersesHomeCardContent: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                         } else {
-                            Text("From your favorites")
+                            Text("From your Favorites")
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                         }
@@ -181,6 +202,8 @@ private struct SavedVersesHomeCardContent: View {
                             .multilineTextAlignment(.leading)
                     }
                     .padding(.leading, preview.highlightColor == nil ? 0 : 14)
+                    .padding(.trailing, preview.highlightColor == nil ? 0 : 10)
+                    .padding(.vertical, preview.highlightColor == nil ? 0 : 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
