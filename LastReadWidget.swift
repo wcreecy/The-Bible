@@ -30,7 +30,7 @@ struct LastReadWidgetEntryView: View {
                     .font(isExtraLarge ? .title2 : (isLarge ? .headline : (isMedium ? .subheadline : .caption2)))
                     .symbolRenderingMode(.monochrome)
                     .foregroundStyle(Color.blue)
-                Text("Last Read")
+                Text("Bookmark")
                     .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : (isMedium ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))))
                     .foregroundStyle(secondaryTextColor)
                     .lineLimit(1)
@@ -59,7 +59,7 @@ struct LastReadWidgetEntryView: View {
         .widgetURL(deepLinkURL(book: entry.book, chapter: entry.chapter, verse: entry.verse))
         .applyWidgetBackground(style: backgroundStyle)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Last Read widget")
+        .accessibilityLabel("Bookmark widget")
     }
 
     private func deepLinkURL(book: String, chapter: Int, verse: Int) -> URL? {

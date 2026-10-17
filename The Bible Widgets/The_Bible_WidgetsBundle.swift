@@ -36,8 +36,8 @@ struct LastReadWidget: Widget {
         ) { (entry: LastReadEntry) in
             LastReadWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Last Read")
-        .description("Shows where you stopped reading.")
+        .configurationDisplayName("Bookmark")
+        .description("Shows your bookmarked verse.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     }
 }

@@ -746,7 +746,7 @@ struct SettingsAppearanceDetailView: View {
     }
 }
 
-private struct SettingsWidgetAppearanceDetailView: View {
+struct SettingsWidgetAppearanceDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "Widgets") {
             SettingsWidgetAppearanceSection()
@@ -776,7 +776,7 @@ private struct SettingsWidgetAppearanceSection: View {
             )
 
             backgroundPicker(
-                title: "Last Read",
+                title: "Bookmark",
                 systemImage: "bookmark.fill",
                 selection: $lastReadBackgroundRaw,
                 accessibilityIdentifier: "lastReadWidgetBackgroundPicker"
@@ -791,7 +791,7 @@ private struct SettingsWidgetAppearanceSection: View {
         } header: {
             Text("Widget Backgrounds")
         } footer: {
-            Text("Your choices apply to every Verse of the Day, Last Read, and Pinned Verse widget. The system may adapt colors when widgets are tinted.")
+            Text("Your choices apply to every Verse of the Day, Bookmark, and Pinned Verse widget. The system may adapt colors when widgets are tinted.")
         }
         .onChange(of: verseBackgroundRaw) { _, _ in
             WidgetCenter.shared.reloadTimelines(ofKind: "VerseWidget")

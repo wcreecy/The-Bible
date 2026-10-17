@@ -188,10 +188,10 @@ struct LastReadProvider: AppIntentTimelineProvider {
         let shared = UserDefaults(suiteName: "group.bible.app")
         return Entry(
             date: date,
-            text: shared?.string(forKey: "lastReadText") ?? "",
-            book: shared?.string(forKey: "lastReadBook") ?? "",
-            chapter: shared?.integer(forKey: "lastReadChapter") ?? 0,
-            verse: shared?.integer(forKey: "lastReadVerse") ?? 0,
+            text: shared?.string(forKey: "bookmarkText") ?? "",
+            book: shared?.string(forKey: "bookmarkBook") ?? "",
+            chapter: shared?.integer(forKey: "bookmarkChapter") ?? 0,
+            verse: shared?.integer(forKey: "bookmarkVerse") ?? 0,
             backgroundStyleRaw: backgroundStyleRaw
         )
     }

@@ -31,5 +31,51 @@ extension Bookmark {
         bookmark.verseText = verseText
         bookmark.createdAt = Date()
         context.insert(bookmark)
+        mirrorToWidget(
+            bookName: bookName,
+            chapter: chapter,
+            verse: verse,
+            verseText: verseText
+        )
+    }
+
+    /// Keeps the Bookmark widget independent from the reader's automatic last-read position.
+    static func mirrorToWidget(in context: ModelContext) {
+        let descriptor = FetchDescriptor<Bookmark>(
+            sortBy: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]
+        )
+        guard let bookmark = try? context.fetch(descriptor).first else {
+            clearWidget()
+            return
+        }
+
+        mirrorToWidget(
+            bookName: bookmark.bookName,
+            chapter: bookmark.chapterNumber,
+            verse: bookmark.verseNumber,
+            verseText: bookmark.verseText
+        )
+    }
+
+    static func clearWidget() {
+        let shared = UserDefaults(suiteName: "group.bible.app") ?? .standard
+        ["bookmarkBook", "bookmarkChapter", "bookmarkVerse", "bookmarkText"].forEach {
+            shared.removeObject(forKey: $0)
+        }
+        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+    }
+
+    private static func mirrorToWidget(
+        bookName: String,
+        chapter: Int,
+        verse: Int,
+        verseText: String
+    ) {
+        let shared = UserDefaults(suiteName: "group.bible.app") ?? .standard
+        shared.set(bookName, forKey: "bookmarkBook")
+        shared.set(chapter, forKey: "bookmarkChapter")
+        shared.set(verse, forKey: "bookmarkVerse")
+        shared.set(verseText, forKey: "bookmarkText")
+        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 }

@@ -344,9 +344,16 @@ struct VerseActionMenu: View {
             },
             onSuccess: {
                 if existing.isEmpty {
+                    ReadingPositionStore.shared.record(
+                        bookName: verse.bookName,
+                        chapter: verse.chapterNumber,
+                        verse: verse.verseNumber
+                    )
+                    ReadingPositionStore.shared.flush()
                     Haptics.success()
                     onFeedback(.bookmarked)
                 } else {
+                    Bookmark.clearWidget()
                     Haptics.selection()
                     onFeedback(.removedBookmark)
                 }

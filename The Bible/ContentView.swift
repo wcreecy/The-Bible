@@ -179,6 +179,7 @@ struct ContentView: View {
         bibleStore.ensureLoaded()
         // Seeds the single reading position from the records it replaced (runs once).
         ReadingPositionStore.shared.migrateIfNeeded(modelContext: modelContext)
+        Bookmark.mirrorToWidget(in: modelContext)
         openBibleReaderAtLaunchIfNeeded()
         SwiftDataDeduplicator.run(in: modelContext)
         // Repairing saved verse numbers needs the Bible text, which may still be loading.

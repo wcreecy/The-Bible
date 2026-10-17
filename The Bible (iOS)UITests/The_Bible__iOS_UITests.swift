@@ -45,7 +45,7 @@ final class The_Bible__iOS_UITests: XCTestCase {
 
         let widgets = [
             (pickerIdentifier: "verseWidgetBackgroundPicker", name: "Verse of the Day"),
-            (pickerIdentifier: "lastReadWidgetBackgroundPicker", name: "Last Read"),
+            (pickerIdentifier: "lastReadWidgetBackgroundPicker", name: "Bookmark"),
             (pickerIdentifier: "pinnedVerseWidgetBackgroundPicker", name: "Pinned Verse")
         ]
 

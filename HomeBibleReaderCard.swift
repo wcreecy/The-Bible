@@ -551,6 +551,12 @@ struct HomeBibleReaderCard: View {
                 try modelContext.save()
             },
             onSuccess: {
+                ReadingPositionStore.shared.record(
+                    bookName: book.name,
+                    chapter: chapter.number,
+                    verse: verseNumber
+                )
+                ReadingPositionStore.shared.flush()
                 Haptics.success()
                 onVerseAction(.bookmarked)
             },
