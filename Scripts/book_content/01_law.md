@@ -6,119 +6,157 @@ The world at the time: Powerful cities rose in Mesopotamia and Egypt was ruled b
 
 **Creation and the First Command (Genesis 1:1–2:25)** — God creates the heavens, the earth, every living thing, and the first man and woman, giving them a good world and a clear command.
 
-In the beginning, God created the heavens and the earth. He brought light out of darkness, separated the waters from the dry land, filled the earth with plants and animals, and set the sun, moon, and stars in the heavens. God made human beings in His image, male and female, and gave them authority over the living creatures. He blessed the seventh day and rested from His work.
+“In the beginning God created the heaven and the earth.” At first the earth is empty and dark, covered with water, “And the Spirit of God moved upon the face of the waters.” Then God speaks: “Let there be light: and there was light.” Over six days He shapes the world. He separates the sky from the waters below. He gathers the seas and lets dry land appear, covered with plants and trees. He sets the sun, moon, and stars in the sky. He fills the seas with fish and the air with birds, and the land with animals of every kind. At the end of each day, God sees that what He has made is good.
 
-God formed Adam from the dust of the ground and placed him in the garden of Eden, a place watered by a river and filled with trees. Adam was to dress and keep the garden. God told him that he could eat from every tree except the tree of the knowledge of good and evil, warning him, “in the day that thou eatest thereof thou shalt surely die.” God then made a woman from a rib taken from Adam, and the two became husband and wife.
+On the sixth day comes His greatest work: “So God created man in his own image, in the image of God created he him; male and female created he them.” God blesses them and tells them to have children, fill the earth, and rule over the animals. Then “God saw every thing that he had made, and, behold, it was very good.” On the seventh day God rests, and He blesses that day and makes it holy.
+
+Chapter 2 tells the story again, up close. “The LORD God formed man of the dust of the ground, and breathed into his nostrils the breath of life; and man became a living soul.” God plants a garden in Eden and puts the man there to care for it. He may eat from every tree but one: “of the tree of the knowledge of good and evil, thou shalt not eat of it: for in the day that thou eatest thereof thou shalt surely die.”
+
+Then God says, “It is not good that the man should be alone.” He brings the animals to Adam to name, but none of them is a fitting partner. So God puts Adam into a deep sleep, takes one of his ribs, and makes a woman. When Adam sees her, he says, “This is now bone of my bones, and flesh of my flesh.” “Therefore shall a man leave his father and his mother, and shall cleave unto his wife: and they shall be one flesh.” The two of them are naked and not ashamed.
 
 **Sin Enters the World (Genesis 3:1–5:32)** — Adam and Eve disobey God, and their sin brings judgment, hardship, death, and a broken human family.
 
-The serpent questioned God’s command and told the woman that she would not surely die if she ate from the forbidden tree. She ate the fruit and gave some to Adam. Their eyes were opened, and they hid when God came to the garden. God judged the serpent, the woman, and the man. Adam named his wife Eve, “because she was the mother of all living,” and God clothed Adam and Eve before sending them from Eden so they would not eat from the tree of life.
+The serpent is the most cunning of all the animals. He asks the woman, “Yea, hath God said, Ye shall not eat of every tree of the garden?” She explains God's warning. The serpent says, “Ye shall not surely die,” and claims that God is holding something back: “your eyes shall be opened, and ye shall be as gods, knowing good and evil.” The fruit looks good, and she wants the wisdom it promises. She eats, and she gives some to her husband, and he eats too.
 
-Their sons Cain and Abel brought offerings to the Lord. God accepted Abel’s offering but did not respect Cain’s. Cain became angry and killed his brother in the field. God judged Cain, though He placed a mark on him so that no one would kill him.
+At once their eyes are opened. They realize they are naked, so they sew fig leaves together to cover themselves. That evening they hear God walking in the garden, and they hide among the trees. God calls, “Where art thou?” Adam blames the woman, and the woman blames the serpent. God curses the serpent and promises that one day the woman's offspring will crush its head. The woman will have pain in childbirth. The ground will grow thorns, and the man will work hard for his food, until he returns to the dust: “for dust thou art, and unto dust shalt thou return.” Adam names his wife Eve, “because she was the mother of all living.” God makes them clothes from animal skins and sends them out of the garden. Angels with a flaming sword guard the way to the tree of life.
 
-Human families continued to grow. Adam had another son, Seth, and the line from Seth is traced through generations to Noah. During these early generations, people lived long lives, but death remained part of the world after sin. Enoch walked with God, and God took him.
+Adam and Eve have two sons. Cain farms, and Abel keeps sheep. Both bring offerings to God, but God accepts Abel's and not Cain's. Cain is furious. God warns him, “sin lieth at the door,” but Cain lures his brother into the field and kills him. When God asks where Abel is, Cain answers, “I know not: Am I my brother's keeper?” God says, “the voice of thy brother's blood crieth unto me from the ground.” Cain is driven away to wander, but God puts a mark on him so no one will kill him.
+
+Adam and Eve have another son, Seth. Chapter 5 traces the family line from Adam to Noah. People live for hundreds of years, but the same words repeat after each name: “and he died.” Only one man breaks the pattern: “And Enoch walked with God: and he was not; for God took him.” Methuselah, his son, lives 969 years, the longest life in the Bible.
 
 **The Flood and God’s Covenant (Genesis 6:1–9:29)** — As violence fills the earth, God preserves Noah’s family and living creatures through a flood, then makes a covenant with them.
 
-The earth became corrupt before God and was filled with violence. Noah found grace in the eyes of the Lord and was described as a just man who walked with God. God told Noah that He would bring a flood upon the earth and commanded him to build an ark, a large vessel of gopher wood. Noah was to bring his wife, his sons Shem, Ham, and Japheth, their wives, and animals into it.
+As people multiply, evil spreads. “And GOD saw that the wickedness of man was great in the earth, and that every imagination of the thoughts of his heart was only evil continually.” “It repented the LORD that he had made man,” and God decides to wipe out life on the earth. “But Noah found grace in the eyes of the LORD.” Noah is “a just man and perfect in his generations, and Noah walked with God.”
 
-Rain fell for forty days and forty nights, and the waters covered the earth. Every creature on the dry land that had the breath of life died, except those in the ark. After the waters began to go down, the ark rested on the mountains of Ararat. Noah sent out birds, and eventually a dove returned with an olive leaf. When the ground was dry, God told Noah and his family to leave the ark.
+God tells Noah to build an ark, a huge wooden boat about 450 feet long, coated with pitch inside and out. Noah is to bring his wife, his three sons, Shem, Ham, and Japheth, and their wives, along with pairs of every kind of animal, and seven pairs of the clean animals. “Thus did Noah; according to all that God commanded him, so did he.” When they are all inside, “the LORD shut him in.”
 
-Noah built an altar and offered sacrifices. God blessed Noah and his sons and told them to multiply and fill the earth. He promised never again to destroy every living thing with a flood and set the rainbow in the cloud as the sign of His covenant. Yet sin remained: Noah later became drunk, and Ham, the father of Canaan, saw his father’s nakedness and told his brothers. Shem and Japheth walked in backward and covered their father. When Noah awoke, he cursed Canaan, Ham’s son, and blessed Shem and Japheth.
+Then “the fountains of the great deep” burst open, “and the windows of heaven were opened.” Rain falls for forty days and forty nights. The water rises until even the highest mountains are covered, and every living thing on land dies. “Noah only remained alive, and they that were with him in the ark.”
+
+God remembers Noah, and the waters slowly go down. The ark comes to rest on the mountains of Ararat. Noah sends out a raven, and then a dove, which finds no place to land and comes back. A week later he sends the dove again, and in the evening she returns with a fresh olive leaf in her beak. The next time, she does not come back. After more than a year in the ark, God tells Noah's family to come out.
+
+Noah builds an altar and offers sacrifices. God promises never again to destroy every living thing with a flood: “While the earth remaineth, seedtime and harvest, and cold and heat, and summer and winter, and day and night shall not cease.” He blesses Noah's family and sets the rainbow in the clouds as the sign of His covenant: “I do set my bow in the cloud, and it shall be for a token of a covenant between me and the earth.”
+
+But sin did not drown in the flood. Noah plants a vineyard, gets drunk, and lies uncovered in his tent. His son Ham sees him naked and tells his brothers. Shem and Japheth walk in backward with a cloak and cover their father without looking. When Noah wakes, he curses Ham's son Canaan and blesses Shem and Japheth.
 
 **Nations Spread and Babel Rises (Genesis 10:1–11:32)** — The descendants of Noah spread into nations, but people gather in rebellion at Babel before God scatters them across the earth.
 
-Genesis traces the families that came from Noah’s three sons. From them came many peoples, lands, and languages. Nimrod became a mighty ruler, and Babel was among the beginning places of his kingdom in the land of Shinar.
+Chapter 10 is often called the Table of Nations. It lists the peoples who came from Noah's three sons and spread out across the world, each with their own lands and languages. Among them is Nimrod, “a mighty hunter before the LORD,” who builds a kingdom that includes Babel in the land of Shinar, later called Babylon.
 
-At Babel, people used brick and slime to build a city and a tower, seeking to make a name for themselves so they would not be scattered. The Lord confused their language, and they could no longer understand one another. Their building stopped, and the people were scattered abroad over the earth.
+Chapter 11 tells how those languages began. At first “the whole earth was of one language.” People settle on a plain in Shinar and say, “Go to, let us build us a city and a tower, whose top may reach unto heaven; and let us make us a name, lest we be scattered abroad upon the face of the whole earth.” God had told humanity to fill the earth, but they want to stay together and make themselves great. So God comes down and confuses their language, so they cannot understand one another. They stop building the city and are scattered across the earth. “Therefore is the name of it called Babel; because the LORD did there confound the language of all the earth.”
 
-The record then narrows from the nations to the family of Shem. Through generations it reaches Terah, who lived in Ur of the Chaldees. Terah’s son Abram married Sarai, who was barren and had no child, while Abram’s brother Haran became the father of Lot and died in Ur. Terah began traveling toward Canaan but settled in a city also called Haran, where he died.
+Then the story narrows from all nations to one family. The line of Shem leads to a man named Terah, who lives in Ur of the Chaldees, a great city in what is now southern Iraq. Terah has three sons: Abram, Nahor, and Haran. Haran dies young, leaving a son named Lot. Abram marries Sarai, “But Sarai was barren; she had no child.” Terah sets out with Abram, Sarai, and Lot to go to Canaan, but they stop at a city called Haran and settle there, and Terah dies there.
 
 **Abram Receives God’s Promise (Genesis 12:1–14:24)** — God calls Abram to Canaan and promises to make a great nation from him as he learns to rely on God amid danger and conflict.
 
-God told Abram to leave his country and go to a land He would show him. He promised to make Abram a great nation, bless him, and bless all families of the earth through him. Abram traveled into Canaan with Sarai and Lot, built altars to the Lord, and called on His name.
+Then God speaks to Abram: “Get thee out of thy country, and from thy kindred, and from thy father's house, unto a land that I will shew thee: And I will make of thee a great nation, and I will bless thee, and make thy name great.” The promise reaches far beyond one family: “and in thee shall all families of the earth be blessed.” So Abram goes, at seventy-five years old, taking Sarai, his nephew Lot, and all their servants and possessions. He arrives in Canaan, and God appears to him and says, “Unto thy seed will I give this land.” Abram builds an altar to the LORD.
 
-A famine led Abram to Egypt, where he said Sarai was his sister because he feared for his life. Pharaoh took Sarai into his house, but the Lord plagued Pharaoh’s household. Pharaoh returned Sarai and sent Abram away with his possessions.
+When famine strikes, Abram goes down to Egypt. Afraid that the Egyptians will kill him to take his beautiful wife, he tells Sarai to say she is his sister. Pharaoh takes her into his palace and gives Abram sheep, cattle, and servants. But God strikes Pharaoh's household with plagues. Pharaoh calls Abram and asks, “What is this that thou hast done unto me?” Then he sends them away.
 
-Abram and Lot separated because their herdsmen could not live together peacefully. Lot chose the well-watered plain of Jordan and settled near Sodom, while Abram remained in Canaan. When Lot was captured during a war among kings, Abram pursued the invaders and rescued him. On his return, Abram met Melchizedek, king of Salem and priest of the most high God, who blessed him. Abram refused the king of Sodom’s offer of wealth, saying that he would not let anyone claim to have made Abram rich.
+Back in Canaan, Abram and Lot have so many animals that their herdsmen start fighting. Abram says, “Let there be no strife, I pray thee, between me and thee.” He lets Lot choose first. Lot looks out at the well-watered plain of the Jordan and picks it, moving toward the city of Sodom, even though “the men of Sodom were wicked and sinners before the LORD exceedingly.” God tells Abram to look in every direction: all the land he can see will belong to his descendants, who will be as many as “the dust of the earth.”
+
+Later, four kings from the east raid Sodom and carry Lot away. Abram gathers 318 trained men from his household, chases the invaders north, attacks at night, and rescues Lot and all the captives. On the way home, he meets Melchizedek, king of Salem and “the priest of the most high God,” who brings bread and wine and blesses him. Abram gives him a tenth of everything. But when the king of Sodom offers Abram the goods, Abram refuses to take even a thread or a sandal strap, so that no one can say, “I have made Abram rich.”
 
 **The Covenant and the Promised Son (Genesis 15:1–18:15)** — God confirms His covenant with Abram, changes his name to Abraham, and promises that Sarah will bear the son through whom the covenant will continue.
 
-God told Abram not to fear and promised that his own descendant would be his heir. Abram believed the Lord, and it was counted to him for righteousness. God made a covenant with him, declaring that his descendants would inherit the land, though they would first be afflicted in another land for four hundred years.
+After this, God comes to Abram in a vision: “Fear not, Abram: I am thy shield, and thy exceeding great reward.” But Abram is still childless and asks what good any reward will do. God takes him outside: “Look now toward heaven, and tell the stars, if thou be able to number them... So shall thy seed be.” “And he believed in the LORD; and he counted it to him for righteousness.” Then God seals His promise in an ancient covenant ceremony. Abram cuts animals in half, and after dark a smoking furnace and a burning lamp pass between the pieces. God tells Abram that his descendants will be strangers and slaves in another land for four hundred years, but then they will come out with great wealth and inherit Canaan.
 
-Sarai, who had no children, gave her servant Hagar to Abram. When Hagar conceived, she despised Sarai, and Sarai dealt harshly with her until Hagar fled. The angel of the Lord found Hagar by a fountain in the wilderness, sent her back, and promised that her son, Ishmael, would have many descendants. Later, when Abram was ninety-nine, God changed his name to Abraham and Sarai’s name to Sarah. He gave circumcision as the sign of His covenant and said that Sarah herself would bear a son. Abraham fell on his face and laughed at the thought of a child born to a man a hundred years old, and God told him to name the son Isaac.
+Ten years pass in Canaan, and still no child. So Sarai gives Abram her Egyptian slave, Hagar, to have a child by her, a common custom then. When Hagar becomes pregnant, she looks down on Sarai, and Sarai treats her so harshly that Hagar runs away into the desert. There the angel of the LORD finds her by a spring. He tells her to go back and promises that her son, Ishmael, meaning God hears, will have countless descendants. Hagar calls the LORD “Thou God seest me.” Ishmael is born when Abram is eighty-six.
 
-Three men visited Abraham near his tent. The Lord again announced that Sarah would have a son in her old age. Sarah, too, laughed within herself, but the Lord asked, “Is any thing too hard for the Lord?” The promised son would be born at the appointed time.
+Thirteen years later, when Abram is ninety-nine, God appears again: “I am the Almighty God; walk before me, and be thou perfect.” He changes Abram's name, meaning exalted father, to Abraham, “a father of many nations.” Sarai becomes Sarah. As a sign of the covenant, every male in Abraham's household is to be circumcised. Then God says Sarah herself will have a son. Abraham falls on his face and laughs, thinking, “Shall a child be born unto him that is an hundred years old? and shall Sarah, that is ninety years old, bear?” God says the boy will be named Isaac, which means he laughs.
+
+One hot afternoon, three visitors appear near Abraham's tent. He hurries to welcome them with water, bread, and a calf. One of them, the LORD Himself, says that by this time next year Sarah will have a son. Sarah is listening behind the tent door, and she laughs to herself. The LORD asks, “Wherefore did Sarah laugh?... Is any thing too hard for the LORD?” Sarah is afraid and denies it, but He says, “Nay; but thou didst laugh.”
 
 **Sodom Falls and Isaac Is Born (Genesis 18:16–21:34)** — God judges Sodom and Gomorrah, preserves Lot, and fulfills His promise by giving Abraham and Sarah their son Isaac.
 
-The Lord revealed that the outcry against Sodom and Gomorrah was great. Abraham pleaded for the cities, asking whether God would destroy the righteous with the wicked. God said He would spare Sodom if ten righteous people were found there, but the city was not spared.
+As the visitors look toward Sodom, the LORD tells Abraham that the outcry against Sodom and Gomorrah is very great and their sin very grievous. Abraham steps forward and asks, “Wilt thou also destroy the righteous with the wicked?” “Shall not the Judge of all the earth do right?” If there are fifty righteous people in the city, will God spare it? God agrees. Abraham keeps asking: forty-five? forty? thirty? twenty? Finally, ten. God says, “I will not destroy it for ten's sake.”
 
-Angels led Lot, his wife, and his daughters out of Sodom. Fire and brimstone fell upon Sodom and Gomorrah. Lot’s wife looked back and became a pillar of salt. Lot later lived in a cave with his two daughters. They made their father drunk and conceived by him, and their sons, Moab and Benammi, became the fathers of the Moabites and the children of Ammon.
+That evening two angels arrive in Sodom, and Lot insists that they stay at his house. But the men of the city, young and old, surround the house and demand that Lot bring out his guests so they can rape them. Lot goes out and even offers them his own two daughters instead. The mob rushes the door, but the angels pull Lot inside and strike the men blind. They tell Lot to take his family and flee, because God is about to destroy the city. Lot's sons-in-law think he is joking. At dawn, Lot still lingers, so the angels grab him, his wife, and his daughters by the hand and lead them out: “Escape for thy life; look not behind thee.” Then “the LORD rained upon Sodom and upon Gomorrah brimstone and fire.” But Lot's wife looks back, “and she became a pillar of salt.” In the morning Abraham sees smoke rising from the plain like smoke from a furnace.
 
-At Gerar, Abraham again said that Sarah was his sister, and Abimelech king of Gerar took her. God warned Abimelech in a dream, and he returned Sarah to Abraham, who prayed for Abimelech’s household.
+Lot and his daughters hide in a cave in the hills. Thinking there are no men left to marry, the daughters get their father drunk on two nights and each sleeps with him. Both become pregnant. Their sons, Moab and Benammi, become the ancestors of the Moabites and the Ammonites, nations that would trouble Israel for centuries.
 
-Sarah gave birth to Isaac, just as God had said. Abraham circumcised him on the eighth day. Sarah asked Abraham to send away Hagar and Ishmael, and God told Abraham to listen to Sarah, while promising to make a nation of Ishmael also. God provided water for Hagar and her son in the wilderness. Abraham later made a covenant of peace with Abimelech at Beersheba.
+In the land of Gerar, Abraham again says that Sarah is his sister, and King Abimelech takes her. God warns Abimelech in a dream, and he returns her untouched. Then, at last, “the LORD visited Sarah as he had said.” When Abraham is one hundred years old, Sarah gives birth to a son, and they name him Isaac. Sarah says, “God hath made me to laugh, so that all that hear will laugh with me.” Later, Sarah sees Ishmael mocking Isaac and demands that Hagar and her son be sent away. Abraham is very upset, but God tells him to listen to Sarah and promises to make Ishmael a nation too. In the desert, when their water runs out, Hagar sets the boy under a bush and sits a distance away so she will not watch him die. God hears the boy crying, shows Hagar a well, and promises to make him a great nation. Ishmael grows up in the wilderness and becomes an archer.
 
 **Abraham Is Tested and Sarah Dies (Genesis 22:1–23:20)** — Abraham obeys God’s command concerning Isaac, receives God’s renewed promise, and secures a burial place when Sarah dies.
 
-God tested Abraham by commanding him to take Isaac to the land of Moriah and offer him there. On the way Isaac asked where the lamb was, and Abraham answered, “God will provide himself a lamb for a burnt offering.” Abraham obeyed and prepared to sacrifice his son, but the angel of the Lord stopped him. A ram caught in a thicket was offered instead, and Abraham called the place Jehovahjireh, meaning the Lord will provide. God renewed His promise that Abraham’s descendants would be multiplied and that through his seed all nations of the earth would be blessed, because Abraham obeyed His voice.
+Years later, “God did tempt Abraham,” putting him to the hardest test of his life. “Take now thy son, thine only son Isaac, whom thou lovest, and get thee into the land of Moriah; and offer him there for a burnt offering.” Early the next morning Abraham saddles his donkey, cuts the wood, and sets out with Isaac and two servants. On the third day he sees the place far off. He tells the servants, “I and the lad will go yonder and worship, and come again to you.”
 
-Sarah died at Hebron in Canaan. Abraham mourned for her and spoke with the sons of Heth to obtain a burial place. He bought the field and cave of Machpelah from Ephron for four hundred shekels of silver. There Sarah was buried, making it Abraham’s first permanent possession in the land promised to him.
+Isaac carries the wood, and Abraham carries the fire and the knife. As they walk, Isaac says, “Behold the fire and the wood: but where is the lamb for a burnt offering?” Abraham answers, “My son, God will provide himself a lamb.” At the top, Abraham builds an altar, arranges the wood, ties up Isaac, and lays him on the altar. He raises the knife. Then the angel of the LORD calls from heaven, “Abraham, Abraham... Lay not thine hand upon the lad.” “For now I know that thou fearest God, seeing thou hast not withheld thy son, thine only son from me.” Abraham looks up and sees a ram caught by its horns in a thicket. He offers it instead of his son. He names the place “Jehovahjireh,” meaning the LORD will provide. God renews His promise: Abraham's descendants will be as many as the stars and the sand, “And in thy seed shall all the nations of the earth be blessed; because thou hast obeyed my voice.”
+
+Sarah dies at 127 years old in Hebron, and Abraham mourns and weeps for her. Though God has promised him the whole land, he owns none of it. So he asks the local Hittites for a burial place. A man named Ephron offers to give him the cave of Machpelah, but Abraham insists on paying the full price of four hundred shekels of silver. There he buries Sarah. This cave becomes the family tomb, the first piece of the promised land that Abraham's family owns.
 
 **Isaac’s Household and Jacob’s Departure (Genesis 24:1–28:22)** — Isaac receives Rebekah as his wife, and their sons Jacob and Esau divide the family through rivalry, blessing, and departure.
 
-Abraham sent his oldest servant to his relatives in Mesopotamia to find a wife for Isaac. At a well, the servant prayed for a sign, and Rebekah offered water to him and his camels. She agreed to return with him and became Isaac’s wife. After Abraham died, God blessed Isaac.
+Abraham is now old, and he wants Isaac to marry a woman from his own relatives back in Mesopotamia, not a Canaanite. He sends his oldest servant on the long journey. At a well outside the city of Nahor, the servant prays for a sign: the right girl will offer water not only to him but to his ten camels too. Before he finishes praying, Rebekah comes out with a water jar. She gives him a drink and then runs back and forth until all the camels have had enough. She turns out to be the granddaughter of Abraham's brother. Her family agrees, and when they ask Rebekah, she says, “I will go.” When she first sees Isaac walking in the field at evening, she covers herself with a veil. Isaac marries her, “and he loved her.”
 
-Rebekah was barren until Isaac prayed for her. When she conceived twins, the Lord told her that two nations were in her womb and that “the elder shall serve the younger.” Esau, the older, became a hunter, while Jacob dwelt in tents. Esau sold his birthright to Jacob for bread and pottage.
+Abraham dies at 175, “an old man, and full of years,” and Isaac and Ishmael bury him beside Sarah. Like Sarah, Rebekah cannot have children, but Isaac prays, and she becomes pregnant with twins who struggle inside her. God tells her, “Two nations are in thy womb... and the elder shall serve the younger.” The first is born red and hairy, so they name him Esau. His brother comes out holding Esau's heel, so they name him Jacob, which means heel-grabber or one who takes another's place. Esau grows up a hunter and is Isaac's favorite. Jacob is quiet and stays among the tents, and he is Rebekah's favorite.
 
-During a famine the Lord appeared to Isaac, told him not to go down to Egypt, and renewed to him the oath He had sworn to Abraham: the land, many descendants, and blessing for all nations through his seed. Like his father, Isaac said his wife was his sister, this time to the Philistines at Gerar. He later dug wells in the land, and the Lord blessed him at Beersheba.
+One day Esau comes in from the field starving and begs for some of Jacob's red stew. Jacob says, “Sell me this day thy birthright,” the oldest son's right to the family inheritance. Esau says, “Behold, I am at the point to die: and what profit shall this birthright do to me?” He swears to it and eats. “Thus Esau despised his birthright.”
 
-When Isaac was old and his eyes were dim, Rebekah urged Jacob to deceive his father. Wearing Esau’s clothes and goatskins on his hands and neck, Jacob told Isaac, “I am Esau thy firstborn,” and received the blessing intended for Esau. Esau planned to kill Jacob after their father’s death, so Jacob fled toward Rebekah’s family.
+Years later, Isaac is old and blind. He tells Esau to hunt and cook him a meal so he can give him his blessing. Rebekah overhears and makes a plan. She cooks a meal, dresses Jacob in Esau's clothes, and covers his hands and neck with goat skins so he will feel hairy like his brother. Isaac is puzzled: “The voice is Jacob's voice, but the hands are the hands of Esau.” But he blesses Jacob with the blessing meant for the firstborn. Moments later Esau arrives. Isaac trembles violently, and Esau cries out, “Bless me, even me also, O my father.” But the blessing cannot be taken back. Esau vows to kill Jacob after their father dies.
 
-On the journey Jacob dreamed of a ladder set up on earth, with angels ascending and descending. The Lord repeated to him the promises given to Abraham and Isaac: the land, many descendants, and blessing for all families of the earth through his seed. Jacob called the place Bethel and vowed that the Lord would be his God.
+So Rebekah sends Jacob away to her brother Laban in Haran. On the way, Jacob sleeps in the open with a stone for a pillow. He dreams of “a ladder set up on the earth, and the top of it reached to heaven: and behold the angels of God ascending and descending on it.” The LORD stands above it and repeats the promise given to Abraham, adding, “behold, I am with thee, and will keep thee in all places whither thou goest.” Jacob wakes and says, “Surely the LORD is in this place; and I knew it not.” He sets up the stone as a pillar and names the place Bethel, meaning house of God. He vows that if God brings him home safely, the LORD will be his God.
 
 **Jacob’s Family Grows in Haran (Genesis 29:1–31:55)** — Jacob serves Laban, marries Leah and Rachel, fathers many sons, and returns toward Canaan after years away from home.
 
-Jacob met Rachel at a well and came to the house of her father Laban. He agreed to serve seven years to marry Rachel, but Laban gave him Leah instead. Jacob then married Rachel also and served Laban seven more years. Leah bore sons including Reuben, Simeon, Levi, and Judah. Rachel remained barren for a time, and the family grew through Leah and through Bilhah and Zilpah, the servants of Rachel and Leah.
+Jacob arrives at a well near Haran just as a young woman named Rachel brings her father's sheep to drink. She is Laban's daughter, his own cousin. Jacob rolls the heavy stone off the well for her, kisses her, and weeps. Laban welcomes him, and Jacob agrees to work seven years to marry Rachel, “and they seemed unto him but a few days, for the love he had to her.”
 
-Rachel later bore Joseph, and Jacob asked to return home. Laban sought to keep him because the Lord had blessed Laban through Jacob. Jacob’s flocks increased, and conflict grew between him and Laban’s sons. God told Jacob to return to the land of his fathers.
+But on the wedding night, Laban secretly gives him his older daughter, Leah, instead. In the morning Jacob discovers the trick: “What is this thou hast done unto me?... wherefore then hast thou beguiled me?” The deceiver has been deceived. Laban says the younger daughter is never married before the older. Jacob may marry Rachel a week later, but he must work another seven years for her.
 
-While Laban was away shearing his sheep, Jacob left secretly with his wives, children, and possessions, and Rachel stole her father’s household images. Laban pursued him, but God warned Laban not to speak to Jacob either good or bad. After resolving their dispute, they made a covenant marked by a heap of stones and separated.
+Jacob loves Rachel more than Leah. God sees that Leah is unloved and gives her children, while Rachel has none. Leah has four sons: Reuben, Simeon, Levi, and Judah. Rachel becomes desperately jealous and says, “Give me children, or else I die.” The two sisters compete by giving Jacob their servants, Bilhah and Zilpah, as additional wives. Over the years Jacob has eleven sons and a daughter, Dinah. At last God remembers Rachel, and she gives birth to Joseph.
+
+Jacob wants to go home, but Laban begs him to stay because God has blessed Laban through him. They agree that Jacob will keep the spotted and speckled animals as his wages. Laban tries to cheat him and changes his wages ten times, but God makes Jacob's flocks grow strong and large. Laban's sons grow resentful. God tells Jacob, “Return unto the land of thy fathers.” So while Laban is away shearing sheep, Jacob secretly leaves with his wives, children, and flocks. Rachel steals her father's household idols.
+
+Laban chases them for seven days and catches up in the hills of Gilead. But God warns him in a dream not to harm Jacob. Laban searches for his idols, but Rachel has hidden them in her camel's saddle and sits on them, saying she cannot get up because she is having her period. Jacob angrily lists twenty years of hard service. Finally the two men make a covenant and pile up stones as a witness. Laban says, “The LORD watch between me and thee, when we are absent one from another.” Then Laban kisses his daughters and grandchildren goodbye and goes home.
 
 **Jacob Returns as Israel (Genesis 32:1–36:43)** — Jacob meets Esau again, receives the name Israel, and his family settles in Canaan amid both reconciliation and loss.
 
-As Jacob approached Canaan, he feared Esau, who came toward him with four hundred men. Jacob prayed to the God of his fathers and sent gifts ahead. That night he wrestled with a man until daybreak. The man changed Jacob’s name to Israel, saying that he had power with God and with men and had prevailed. Jacob named the place Peniel, saying, “I have seen God face to face, and my life is preserved,” and he limped away as the sun rose.
+Now Jacob must face Esau. He sends messengers ahead, and they return with frightening news: Esau is coming with four hundred men. Jacob is terrified. He divides his people into two camps and prays, “I am not worthy of the least of all the mercies.” “Deliver me, I pray thee, from the hand of my brother.” He sends ahead hundreds of goats, sheep, camels, cattle, and donkeys as gifts, hoping to calm Esau's anger.
 
-Esau met Jacob, embraced him, and they wept. Jacob later settled near Shechem, where Dinah was defiled by Shechem the son of Hamor. Her brothers Simeon and Levi killed the men of the city through deceit, bringing trouble upon Jacob’s household.
+That night Jacob is left alone by the river Jabbok, “and there wrestled a man with him until the breaking of the day.” When the man cannot win, he touches Jacob's hip and puts it out of joint. Still Jacob holds on: “I will not let thee go, except thou bless me.” The man asks his name, then says, “Thy name shall be called no more Jacob, but Israel: for as a prince hast thou power with God and with men, and hast prevailed.” Jacob names the place Peniel, “for I have seen God face to face, and my life is preserved.” As the sun rises, he limps away.
 
-God called Jacob back to Bethel, where Jacob removed foreign gods from his household and built an altar. There God confirmed his new name, Israel, and renewed the promises of the land and many descendants. Rachel died while giving birth to Benjamin. Isaac died and was buried by Esau and Jacob. The record also traces Esau’s descendants, the people of Edom, and their kings.
+Then Jacob sees Esau coming. He bows to the ground seven times as he approaches his brother. “And Esau ran to meet him, and embraced him, and fell on his neck, and kissed him: and they wept.” Esau does not want the gifts, but Jacob insists, saying, “I have seen thy face, as though I had seen the face of God.” The brothers part in peace.
+
+Jacob settles near the city of Shechem. There a prince named Shechem rapes Jacob's daughter Dinah, then wants to marry her. Her brothers pretend to agree if all the men of the city are circumcised. But on the third day, while the men are still in pain, Simeon and Levi attack the city, kill every man, and take back their sister. Their brothers loot the city. Jacob is horrified, fearing revenge from the people of the land.
+
+God tells Jacob to go back to Bethel. Jacob orders his household to get rid of their foreign gods, and they bury them under an oak. At Bethel, God renews His promise and confirms the name Israel. On the road toward Bethlehem, Rachel goes into hard labor and dies giving birth to her second son. With her last breath she names him Benoni, son of my sorrow, but Jacob calls him Benjamin, son of my right hand. Jacob buries her and sets up a pillar on her grave. Now he has twelve sons, the fathers of the twelve tribes of Israel. Jacob returns to his father Isaac, who dies at 180, and Esau and Jacob bury him together. Chapter 36 lists Esau's descendants, the Edomites.
 
 **Joseph Is Sold and Rises in Egypt (Genesis 37:1–41:57)** — Joseph is rejected by his brothers but is raised from prison to rule in Egypt after God enables him to interpret Pharaoh’s dreams.
 
-Jacob loved Joseph, the son of Rachel, more than his other sons and gave him a coat of many colours. Joseph reported dreams in which his family bowed before him, and his brothers hated him. When Joseph came to them near Dothan, they sold him to Ishmaelites traveling to Egypt and deceived their father by showing him Joseph’s bloodstained coat.
+Jacob loves Joseph more than all his other sons, because he is the son of his old age, and he makes him a special robe, “a coat of many colours.” His brothers hate him for it. Then Joseph has two dreams and tells his family about them. In one, his brothers' bundles of grain bow down to his. In the other, the sun, moon, and eleven stars bow down to him. Even his father scolds him, and his brothers hate him even more.
 
-Meanwhile Judah married a Canaanite woman, and after his two oldest sons died, he withheld his third son from their widow, Tamar. Tamar disguised herself and conceived by Judah himself. When the truth came out, Judah confessed, “She hath been more righteous than I.” Tamar bore twins, Pharez and Zarah, and through Pharez the line of Judah would later lead to King David.
+One day Jacob sends seventeen-year-old Joseph to check on his brothers, who are herding sheep far from home. They see him coming and say, “Behold, this dreamer cometh,” and they plot to kill him. Reuben talks them into throwing him into a dry pit instead, planning to rescue him later. They strip off his coat and throw him in. Then a caravan of traders passes by, and Judah says, “What profit is it if we slay our brother...? Come, and let us sell him.” They sell Joseph for twenty pieces of silver. They dip his coat in goat's blood and bring it to their father, who says, “It is my son's coat; an evil beast hath devoured him.” Jacob tears his clothes and refuses to be comforted.
 
-In Egypt, Joseph served in Potiphar’s house but was imprisoned after Potiphar’s wife falsely accused him. The Lord was with Joseph, and he interpreted the dreams of Pharaoh’s butler and baker. Two years later Pharaoh dreamed of seven fat cattle and seven lean cattle, then seven full ears of corn and seven thin ears. Joseph explained that God had revealed seven years of plenty followed by seven years of famine.
+Chapter 38 interrupts the story to tell about Judah. His son dies, leaving a widow named Tamar. When Judah fails to give her his next son as the law required, she disguises herself as a prostitute and sleeps with Judah himself. She becomes pregnant with twins. When Judah orders her burned for adultery, she shows him his own seal and staff, which he had given her. He admits, “She hath been more righteous than I.” One of her sons, Pharez, becomes an ancestor of King David and of Jesus.
 
-Pharaoh placed Joseph over Egypt to store food during the years of abundance. Joseph married Asenath and became the father of Manasseh and Ephraim. When the famine came, people from many lands came to Egypt to buy grain.
+Meanwhile, in Egypt, Joseph is sold to Potiphar, the captain of Pharaoh's guard. “And the LORD was with Joseph,” and Potiphar puts him in charge of his whole household. But Potiphar's wife keeps trying to seduce the handsome young man. Joseph refuses: “how then can I do this great wickedness, and sin against God?” One day she grabs his garment, and he runs out, leaving it in her hand. She claims he tried to rape her, and Potiphar throws Joseph in prison. Even there, God is with him, and he is soon running the prison.
+
+Pharaoh's cupbearer and baker are thrown into the same prison, and each has a troubling dream. Joseph says, “Do not interpretations belong to God?” and explains them. In three days the cupbearer will get his job back, and the baker will be hanged. It happens just as Joseph said. Joseph asks the cupbearer to remember him, “Yet did not the chief butler remember Joseph, but forgat him.”
+
+Two years later, Pharaoh dreams that seven skinny cows eat seven fat cows, and seven thin heads of grain swallow seven full ones. No one can explain it. Then the cupbearer remembers Joseph. Joseph is shaved, dressed, and brought before Pharaoh. He says, “It is not in me: God shall give Pharaoh an answer of peace.” The dreams mean seven years of plenty followed by seven years of terrible famine. Joseph advises Pharaoh to store up grain during the good years. Pharaoh says, “Can we find such a one as this is, a man in whom the Spirit of God is?” He puts Joseph in charge of all Egypt, second only to himself. Joseph is thirty years old. During the seven years of plenty, he stores grain like sand. Then the famine comes, and people from every country come to Egypt to buy grain.
 
 **Joseph Saves His Family (Genesis 42:1–47:31)** — Joseph’s brothers come to Egypt for food, and the family is reunited as Joseph brings them safely into the land of Goshen.
 
-Jacob sent ten sons to Egypt for grain, but Benjamin remained at home. Joseph recognized his brothers, though they did not recognize him. He accused them of being spies, kept Simeon bound in Egypt, and demanded that they bring Benjamin back with them. After they returned with Benjamin, Joseph arranged a final test by placing his silver cup in Benjamin’s sack.
+The famine reaches Canaan, and Jacob sends ten of his sons to Egypt to buy grain. He keeps Benjamin, Rachel's other son, at home. The brothers bow down before the governor of Egypt, not knowing he is Joseph. But Joseph recognizes them and remembers his dreams. He speaks harshly through an interpreter and accuses them of being spies. They protest that they are honest men, twelve brothers, one of whom “is not.” Joseph keeps Simeon in prison and sends the rest home with grain, demanding that they bring their youngest brother. Among themselves, in Hebrew, they say, “We are verily guilty concerning our brother,” not knowing Joseph understands every word. He turns away and weeps. On the way home, they find their money returned in their sacks and are terrified.
 
-Judah offered himself as a servant in Benjamin’s place rather than return to his father without the younger brother. Joseph then revealed himself, telling his brothers not to be grieved or angry with themselves because God had sent him ahead to preserve life. He sent for Jacob and the whole household.
+Jacob refuses to let Benjamin go: “Joseph is not, and Simeon is not, and ye will take Benjamin away.” But when the grain runs out, Judah promises to guard Benjamin with his own life. When they arrive, Joseph invites them to a feast. Seeing Benjamin, he is so overcome that he hurries out to weep in private. He seats the brothers in order of age, to their amazement, and gives Benjamin five times as much food as the others.
 
-Jacob came to Egypt with his family. God told him not to fear going there, promising to make of him a great nation. Pharaoh gave the family the land of Goshen, where they lived as shepherds. During the famine Joseph gathered land, money, livestock, and service for Pharaoh in exchange for food. Jacob lived in Egypt seventeen years and asked Joseph not to bury him there.
+Then Joseph sets a final test. He has his silver cup hidden in Benjamin's sack, sends them off, then has them stopped and searched. The cup is found, and Benjamin is to become Joseph's slave. The brothers tear their clothes in grief. Judah steps forward and pleads. If they go home without Benjamin, he says, their father will die of grief. Then he offers himself: “let thy servant abide instead of the lad a bondman to my lord.” The brother who once sold Joseph as a slave now offers to become one to save his brother.
+
+Joseph cannot hold back any longer. He sends everyone else out and weeps so loudly that the Egyptians hear it. “I am Joseph; doth my father yet live?” His brothers are too terrified to answer. He says, “I am Joseph your brother, whom ye sold into Egypt. Now therefore be not grieved, nor angry with yourselves... for God did send me before you to preserve life.” He kisses all his brothers and weeps on them.
+
+Pharaoh invites the whole family to come and live in Egypt. When the brothers tell Jacob that Joseph is alive and rules Egypt, “Jacob's heart fainted, for he believed them not.” But when he sees the wagons Joseph sent, he says, “It is enough; Joseph my son is yet alive: I will go and see him before I die.” On the way, God tells him in a vision, “fear not to go down into Egypt; for I will there make of thee a great nation.” Seventy members of Jacob's family move to Egypt. Joseph rides out to meet his father, and he falls on his neck and weeps a long time. They settle in the rich land of Goshen. Joseph manages the famine so well that the Egyptians sell their land and themselves to Pharaoh for food. Jacob lives in Egypt seventeen years. Near death, he makes Joseph promise to bury him in Canaan with his fathers.
 
 **Jacob Blesses His Sons and Dies (Genesis 48:1–50:26)** — Jacob blesses Joseph’s sons and speaks concerning his family before his death, while Joseph’s final years close the book in Egypt.
 
-Jacob adopted Joseph’s sons, Ephraim and Manasseh, as his own. Though Manasseh was older, Jacob placed his right hand on Ephraim and gave the greater blessing to him. He then called his sons together and spoke concerning each of them, including Reuben, Simeon, Levi, Judah, Joseph, and Benjamin. To Judah he said, “The sceptre shall not depart from Judah, nor a lawgiver from between his feet, until Shiloh come.”
+When Jacob becomes ill, Joseph brings his two sons, Manasseh and Ephraim. Jacob adopts them as his own sons, so each will become a tribe of Israel. As he blesses them, Jacob crosses his hands and puts his right hand, the hand of greater blessing, on the younger boy, Ephraim. Joseph tries to switch them, but Jacob says, “I know it, my son, I know it,” and says the younger will become greater.
 
-Jacob commanded his sons to bury him in the cave of Machpelah, where Abraham, Sarah, Isaac, Rebekah, and Leah were buried. After Jacob died, Joseph and his brothers carried his body to Canaan and buried him there. Joseph’s brothers feared that he would now repay their earlier wrong, but Joseph told them, “Ye thought evil against me; but God meant it unto good,” to save many people alive.
+Then Jacob calls all twelve sons around his bed: “Gather yourselves together, that I may tell you that which shall befall you in the last days.” He speaks to each one. Reuben, his firstborn, loses his place because he slept with his father's concubine. Simeon and Levi are scolded for their violence at Shechem. Judah receives the royal promise: “The sceptre shall not depart from Judah... until Shiloh come; and unto him shall the gathering of the people be.” Kings, and in the end the Messiah, would come from Judah's line. Joseph is blessed as “a fruitful bough.” When he finishes, Jacob pulls his feet into the bed and dies.
 
-Joseph lived to see Ephraim’s children and the children of Machir, Manasseh’s son. Before he died, Joseph said that God would surely visit his family and bring them out of Egypt to the land He had promised Abraham, Isaac, and Jacob. He made the children of Israel swear to carry his bones from Egypt, and he died at the age of one hundred and ten.
+Joseph falls on his father's face, weeps, and kisses him. The Egyptians mourn Jacob for seventy days. Then Joseph and his brothers, with a great company of Egyptians, carry his body back to Canaan and bury him in the cave of Machpelah, beside Abraham, Sarah, Isaac, Rebekah, and Leah.
+
+Now that their father is dead, the brothers fear Joseph will finally take revenge. They send a message begging for forgiveness and bow before him: “Behold, we be thy servants.” Joseph weeps and answers, “Fear not: for am I in the place of God? But as for you, ye thought evil against me; but God meant it unto good, to bring to pass, as it is this day, to save much people alive.” He comforts them and promises to care for their children.
+
+Joseph lives to 110 and sees his great-grandchildren. Before he dies, he tells his brothers, “God will surely visit you, and bring you out of this land unto the land which he sware to Abraham, to Isaac, and to Jacob.” He makes them promise to carry his bones with them when they leave. Genesis ends with Joseph's body placed in a coffin in Egypt, waiting for that promise to come true.
 
 # Exodus
 When it happened: Israel's slavery in Egypt, the exodus, and the first year in the wilderness. 1 Kings 6:1 places the exodus 480 years before Solomon began the temple, pointing to the mid-1400s BC; many scholars prefer a date in the 1200s BC.
@@ -128,157 +166,125 @@ The world at the time: Egypt was the great power of the region, and its king, wh
 
 **Israel Suffers Under Pharaoh's Rule (Exodus 1:1–2:25)** — The Israelites grow into a large nation in Egypt, but a new king enslaves them and orders the death of their newborn sons.
 
-Many years after Joseph, a Hebrew who had become a powerful leader in Egypt, brought his family there, his descendants had grown into a large and thriving people. They were called the children of Israel because they descended from Jacob, whom God had renamed Israel.
+Jacob's family had come to Egypt as seventy people. Over the years, “the children of Israel were fruitful, and increased abundantly... and the land was filled with them.” “Now there arose up a new king over Egypt, which knew not Joseph.” He fears the Israelites will become too strong, so he makes them slaves. Taskmasters force them to build cities with bricks and mortar. “But the more they afflicted them, the more they multiplied and grew.” So Pharaoh orders the Hebrew midwives, Shiphrah and Puah, to kill every baby boy at birth. The midwives fear God and refuse. Then Pharaoh commands all his people: “Every son that is born ye shall cast into the river.”
 
-A new king arose who did not know Joseph. Fearing the Israelites' growing numbers, Pharaoh, the king of Egypt, forced them into harsh labor. Yet they continued to multiply. Pharaoh told the Hebrew midwives, Shiphrah and Puah, to kill the baby boys at birth, but the midwives feared God and let them live. Pharaoh then commanded all his people, “Every son that is born ye shall cast into the river.”
+A Levite woman gives birth to a son and hides him for three months. When she cannot hide him any longer, she makes a basket of reeds, coats it with tar, puts the baby inside, and sets it among the reeds by the Nile. His sister watches from a distance. Pharaoh's daughter comes down to bathe and finds the basket. The baby is crying, and she feels sorry for him: “This is one of the Hebrews' children.” His sister steps up and offers to find a Hebrew nurse, and she brings the baby's own mother. When the boy is older, he becomes the son of Pharaoh's daughter, who names him Moses, “Because I drew him out of the water.”
 
-During this time, a Hebrew woman hid her newborn son for three months before placing him in a basket among the reeds of the Nile River. Pharaoh's daughter discovered the child. His sister, who had been watching, offered to find a Hebrew nurse and brought the baby's own mother, who nursed him. When the child grew, he became the son of Pharaoh's daughter, who named him Moses because she had drawn him out of the water.
+Moses grows up in the palace. One day he sees an Egyptian beating a Hebrew slave. He looks around, kills the Egyptian, and hides the body in the sand. The next day he tries to stop two Hebrews from fighting, and one of them says, “Who made thee a prince and a judge over us? intendest thou to kill me, as thou killedst the Egyptian?” Pharaoh hears about it and tries to kill Moses, so Moses runs away to the land of Midian. There he defends seven sisters from rough shepherds at a well. Their father, a priest named Jethro, also called Reuel, takes him in, and Moses marries his daughter Zipporah. He becomes a shepherd for forty years.
 
-When Moses became an adult, he killed an Egyptian who was beating a Hebrew. Fearing for his life, he fled to Midian, where he married Zipporah and became a shepherd. Meanwhile, the Israelites continued to suffer, and God heard their cries, remembering His covenant with Abraham, Isaac, and Jacob, their ancestors.
+Meanwhile, the king of Egypt dies, but the Israelites still groan under their slavery. They cry out, “And God heard their groaning, and God remembered his covenant with Abraham, with Isaac, and with Jacob.”
 
 **God Calls Moses to Deliver Israel (Exodus 3:1–4:31)** — God appears to Moses through a burning bush and sends him back to Egypt to lead the Israelites out of slavery.
 
-While tending sheep near Mount Horeb, Moses saw a bush burning without being consumed. God called to him from the midst of the bush, told him to remove his shoes because he stood on holy ground, and revealed Himself as the God of Abraham, Isaac, and Jacob.
+One day Moses leads his flock to Horeb, “the mountain of God.” There the angel of the LORD appears to him “in a flame of fire out of the midst of a bush: and he looked, and, behold, the bush burned with fire, and the bush was not consumed.” When Moses goes closer to see, God calls, “Moses, Moses... put off thy shoes from off thy feet, for the place whereon thou standest is holy ground.” “I am the God of thy father, the God of Abraham, the God of Isaac, and the God of Jacob.” Moses hides his face, afraid to look at God.
 
-God told Moses that He had seen Israel's suffering and would deliver His people into a land flowing with milk and honey, meaning a land of abundance. Moses was to confront Pharaoh and lead the Israelites out of Egypt. When Moses asked what name to give the people, God answered, “I AM THAT I AM,” and told him to say, “I AM hath sent me unto you.”
+God says, “I have surely seen the affliction of my people which are in Egypt, and have heard their cry.” He will bring them out to “a land flowing with milk and honey,” and He is sending Moses to Pharaoh. Moses objects, “Who am I, that I should go unto Pharaoh?” God answers, “Certainly I will be with thee.” Moses asks what to say when the Israelites ask God's name. “And God said unto Moses, I AM THAT I AM: and he said, Thus shalt thou say unto the children of Israel, I AM hath sent me unto you.” This name is connected to the Hebrew name for God, which the King James Version usually prints as “the LORD.”
 
-Moses questioned his ability to accomplish this task. God promised to be with him and gave him miraculous signs to demonstrate His authority. When Moses expressed concern about speaking, God appointed Aaron, Moses' brother, to help him. God also told Moses that He would harden Pharaoh's heart, so that Pharaoh would not let the people go.
+Moses keeps making excuses. What if they will not believe him? God gives him signs. His shepherd's staff turns into a snake and back again. His hand turns white with leprosy and then is healed. Moses says, “I am slow of speech, and of a slow tongue.” God asks, “Who hath made man's mouth?... have not I the LORD?” Finally Moses begs, “send, I pray thee, by the hand of him whom thou wilt send,” meaning anyone but him. God grows angry but sends Moses' brother, Aaron, to speak for him.
 
-Moses returned to Egypt, where he and Aaron gathered Israel's elders. After hearing God's promise and seeing the signs, the people believed and worshiped.
+Moses heads back to Egypt with his wife and sons. On the way, there is a strange incident. The LORD meets Moses and seeks to kill him, until Zipporah circumcises their son. Moses had not obeyed the covenant sign in his own family. Aaron meets Moses in the wilderness, and together they gather the elders of Israel. Aaron tells them everything and Moses performs the signs. “And the people believed... then they bowed their heads and worshipped.”
 
 **Pharaoh Refuses to Release God's People (Exodus 5:1–7:13)** — Moses and Aaron confront Pharaoh, but his refusal brings greater suffering to Israel as God prepares to demonstrate His power.
 
-Moses and Aaron commanded Pharaoh to let Israel go into the wilderness to worship God. Pharaoh refused, declaring that he did not know the Lord.
+Moses and Aaron go to Pharaoh with God's message: “Let my people go, that they may hold a feast unto me in the wilderness.” Pharaoh answers, “Who is the LORD, that I should obey his voice to let Israel go? I know not the LORD, neither will I let Israel go.” Instead, he makes the slaves' work even harder. They must now gather their own straw to make bricks, but still make the same number every day. When they fall short, their Israelite foremen are beaten. The foremen blame Moses and Aaron, and Moses complains to God, “wherefore hast thou so evil entreated this people? why is it that thou hast sent me?”
 
-Instead of granting freedom, Pharaoh increased the Israelites' workload. They now had to gather their own straw while producing the same number of bricks.
+God answers, “Now shalt thou see what I will do to Pharaoh.” He reminds Moses of His covenant and promises, “I will bring you out from under the burdens of the Egyptians... and I will redeem you with a stretched out arm.” “And I will take you to me for a people, and I will be to you a God.” But the people are so crushed that they will not listen.
 
-The people blamed Moses and Aaron for their worsening conditions. Moses turned to God, who reaffirmed His promise to deliver Israel and bring them into the land promised to their ancestors.
-
-God sent Moses and Aaron back to Pharaoh. Aaron threw down his rod, which became a serpent. Pharaoh's magicians performed a similar sign, but Aaron's rod swallowed theirs. Still, Pharaoh's heart was hardened, and he refused to listen.
+God tells Moses that He will harden Pharaoh's heart, so that He can multiply His signs, “And the Egyptians shall know that I am the LORD.” Moses is eighty years old and Aaron eighty-three when they speak to Pharaoh. Aaron throws down his staff, and it becomes a snake. Pharaoh's magicians do the same with their secret arts, “but Aaron's rod swallowed up their rods.” Still, Pharaoh's heart is hardened, and he will not listen.
 
 **God Sends Ten Plagues Upon Egypt (Exodus 7:14–12:36)** — God sends devastating judgments upon Egypt, demonstrating His authority and leading to Pharaoh's eventual decision to release Israel.
 
-God struck Egypt with a series of plagues after Pharaoh repeatedly refused to release the Israelites.
+Then God sends ten plagues on Egypt, each one showing that the gods of Egypt are powerless before Him. First, Aaron strikes the Nile with his staff, and the river turns to blood. The fish die and the river stinks. Second, frogs cover the land, filling houses, beds, and ovens. Pharaoh begs Moses to pray for them to go away, but once they die he hardens his heart. Third, the dust becomes lice. The magicians cannot copy it, and they tell Pharaoh, “This is the finger of God.” Fourth, swarms of flies fill Egypt, but not the land of Goshen where the Israelites live. Fifth, a disease kills Egypt's livestock. Sixth, painful boils break out on people and animals.
 
-The Nile River turned to blood, frogs covered the land, and lice and flies afflicted the people. Disease killed Egyptian livestock, painful boils appeared, hail destroyed crops, locusts consumed what remained, and darkness covered Egypt for three days.
+Seventh, the worst hailstorm Egypt has ever seen pounds the land, mixed with fire. Pharaoh says, “I have sinned this time: the LORD is righteous, and I and my people are wicked.” But when it stops, he changes his mind again. Eighth, locusts cover the ground and eat every plant left by the hail. Ninth, “a thick darkness in all the land of Egypt three days,” so thick it can be felt, “but all the children of Israel had light in their dwellings.” Each time, Pharaoh bargains or promises, then breaks his word. Finally he tells Moses, “see my face no more; for in that day thou seest my face thou shalt die.”
 
-Throughout these judgments, Pharaoh sometimes promised to release Israel but repeatedly changed his mind. At times Pharaoh hardened his own heart, and at other times the Lord hardened it, so that God's power would be shown in Egypt. God also made distinctions between the Egyptians and His people during several plagues.
+God announces one last plague. At midnight He will pass through Egypt, “And all the firstborn in the land of Egypt shall die,” from Pharaoh's son to the son of the lowest slave, and even the firstborn of the animals. To be spared, each Israelite family must kill a young lamb without blemish and put its blood on the sides and top of their doorframe. They must eat the lamb roasted, with bitter herbs and bread without yeast, dressed and ready to leave. “And when I see the blood, I will pass over you.” This meal becomes the Passover, to be remembered every year forever.
 
-Before the final plague, God instructed Israelite families to sacrifice a lamb and place its blood on the side posts and upper door posts of their houses. They were to eat it with unleavened bread and bitter herbs, dressed and ready to depart. This observance became known as Passover because God would pass over the marked houses.
-
-That night, the firstborn throughout Egypt died, including Pharaoh's son. The Israelite households protected according to God's instructions were spared.
-
-Pharaoh finally ordered the Israelites to leave. The Egyptians also gave them silver, gold, and clothing as they departed.
+At midnight, the LORD strikes down the firstborn of Egypt. “And there was a great cry in Egypt; for there was not a house where there was not one dead.” That same night Pharaoh calls for Moses and Aaron: “Rise up, and get you forth from among my people... and go, serve the LORD.” The Egyptians beg the Israelites to leave quickly and give them silver, gold, and clothing. So they leave with the wealth of Egypt, just as God had promised Abraham long before.
 
 **Israel Leaves Egypt and Crosses the Sea (Exodus 12:37–15:21)** — God leads Israel out of Egypt, protects them from Pharaoh's pursuing army, and brings them safely through the divided sea.
 
-About six hundred thousand men on foot, besides children, departed from Egypt with their livestock and a mixed multitude of other people. Israel had dwelt in Egypt four hundred and thirty years. God established the Passover as a lasting remembrance of their deliverance and gave instructions concerning the firstborn. Moses also took the bones of Joseph with them, as Joseph had made the children of Israel swear.
+About six hundred thousand men on foot, plus women and children, leave Egypt, along with “a mixed multitude” of others. They have lived in Egypt for 430 years. Moses takes Joseph's bones with them, as Joseph had asked. God does not lead them by the short road along the coast, where they would meet the Philistine army. Instead He leads them toward the Red Sea: “the LORD went before them by day in a pillar of a cloud, to lead them the way; and by night in a pillar of fire, to give them light.”
 
-God guided the people with a pillar of cloud during the day and a pillar of fire at night.
+Then Pharaoh changes his mind once more: “Why have we done this, that we have let Israel go from serving us?” He chases them with six hundred chariots and his whole army, and catches up as they camp by the sea. The Israelites are terrified and turn on Moses: “Because there were no graves in Egypt, hast thou taken us away to die in the wilderness?” Moses answers, “Fear ye not, stand still, and see the salvation of the LORD... The LORD shall fight for you, and ye shall hold your peace.”
 
-Pharaoh soon regretted releasing them and pursued them with his army. Trapped between the Egyptians and the sea, the Israelites became afraid and cried out against Moses. Moses answered, “Fear ye not, stand still, and see the salvation of the LORD.”
+The pillar of cloud moves behind Israel, keeping the Egyptians in darkness. Moses stretches out his hand over the sea, and God drives the waters back with a strong east wind all night. “And the children of Israel went into the midst of the sea upon the dry ground: and the waters were a wall unto them on their right hand, and on their left.” The Egyptian army follows them in. But God jams their chariot wheels, and they panic. At dawn, Moses stretches out his hand again, and the sea comes crashing back over the chariots and horsemen. Not one Egyptian soldier survives. “And Israel saw that great work which the LORD did upon the Egyptians: and the people feared the LORD, and believed the LORD, and his servant Moses.”
 
-God instructed Moses to stretch out his hand over the water. The Lord drove back the sea with a strong east wind all that night, and the waters divided, allowing Israel to cross on dry ground. When the Egyptian army followed, the waters returned and overwhelmed them.
-
-Safe on the other side, Moses and the Israelites sang praises to God for their deliverance. Miriam, Moses' sister, led the women in celebration with musical instruments and dancing.
+Then Moses and the people sing a song of victory: “I will sing unto the LORD, for he hath triumphed gloriously: the horse and his rider hath he thrown into the sea. The LORD is my strength and song, and he is become my salvation.” “Who is like unto thee, O LORD, among the gods?” Miriam the prophetess, Moses' sister, takes a tambourine, and all the women follow her dancing and singing, “Sing ye to the LORD, for he hath triumphed gloriously.”
 
 **God Provides for Israel in the Wilderness (Exodus 15:22–18:27)** — As Israel journeys through the wilderness, God provides food, water, protection, and guidance despite the people's repeated complaints.
 
-Soon after crossing the sea, the Israelites encountered bitter water at Marah. God showed Moses how to make it drinkable.
+Only three days after the sea, the Israelites find no water in the desert. When they finally reach water at Marah, it is too bitter to drink, and they complain. God shows Moses a piece of wood, and when he throws it into the water, the water becomes sweet. God tells them, “I am the LORD that healeth thee.”
 
-When food became scarce, the people complained. God provided quail in the evening and manna, a bread-like food, each morning. They were instructed to gather enough for each day, with special arrangements for the Sabbath, their appointed day of rest.
+A month later, they complain again, this time about food: “Would to God we had died by the hand of the LORD in the land of Egypt, when we sat by the flesh pots.” God answers, “Behold, I will rain bread from heaven for you.” That evening quail cover the camp. In the morning, thin flakes like frost lie on the ground. The people do not know what it is, so they call it manna, a name that sounds like the Hebrew question What is it? Moses says, “This is the bread which the LORD hath given you to eat.” It tastes like wafers made with honey. Each day they gather just enough, and on the sixth day twice as much, so they can rest on the Sabbath. Anything they keep overnight rots, except on the Sabbath. God will feed them with manna for forty years.
 
-Later, when the people lacked water at Rephidim, God commanded Moses to strike a rock, and water came out.
+At Rephidim there is no water again, and the people are ready to stone Moses. God tells him to strike a rock at Horeb with his staff, and water pours out. Moses names the place Massah and Meribah, meaning testing and quarreling, because they asked, “Is the LORD among us, or not?”
 
-Israel also faced an attack from the Amalekites. Joshua, a leader serving under Moses, commanded the fighters while Moses stood on a hill holding the rod of God. When Moses held up his hands, Israel prevailed, and when they grew heavy, Aaron and Hur held them up until sunset, and Israel won the battle.
+Then the Amalekites attack. Moses sends a young man named Joshua to fight while he stands on a hill holding up the staff of God. As long as Moses holds up his hands, Israel wins. When his arms grow tired and drop, Amalek starts winning. So Aaron and Hur seat Moses on a rock and hold up his hands, one on each side, until sunset, and Joshua defeats the Amalekites.
 
-Moses' father-in-law, Jethro, later visited and advised him to appoint capable leaders to help settle disputes among the people.
+Moses' father-in-law, Jethro, visits and rejoices at everything God has done. The next day he watches Moses judge the people's disputes from morning until night. He says, “The thing that thou doest is not good. Thou wilt surely wear away.” He advises Moses to appoint honest, God-fearing men as judges over groups of thousands, hundreds, fifties, and tens, and to handle only the hardest cases himself. Moses takes his advice.
 
 **God Establishes His Covenant at Sinai (Exodus 19:1–20:26)** — At Mount Sinai, God establishes a covenant with Israel and gives the Ten Commandments as the foundation of their responsibilities to Him.
 
-In the third month after leaving Egypt, the Israelites arrived in the wilderness of Sinai and camped before the mountain.
+Three months after leaving Egypt, Israel camps at the foot of Mount Sinai. God calls Moses up the mountain: “Ye have seen what I did unto the Egyptians, and how I bare you on eagles' wings, and brought you unto myself.” If they obey Him, they will be His “peculiar treasure,” His special possession, “a kingdom of priests, and an holy nation.” The people answer together, “All that the LORD hath spoken we will do.”
 
-God reminded them of their deliverance and declared that, if they obeyed His covenant, they would become His treasured people, a kingdom of priests, and a holy nation.
+For three days the people prepare, washing their clothes and keeping away from the mountain. On the third morning, there is thunder and lightning, a thick cloud on the mountain, and a trumpet blast so loud that everyone in the camp trembles. “And mount Sinai was altogether on a smoke, because the LORD descended upon it in fire.” The whole mountain shakes, and the trumpet grows louder and louder.
 
-The mountain shook with thunder, lightning, smoke, and the sound of a trumpet as God descended upon it. Moses set bounds around the mountain, and the people were warned that anyone who touched it would be put to death.
+Then God speaks the Ten Commandments to all the people. “I am the LORD thy God, which have brought thee out of the land of Egypt, out of the house of bondage. Thou shalt have no other gods before me. Thou shalt not make unto thee any graven image.” “Thou shalt not take the name of the LORD thy God in vain.” “Remember the sabbath day, to keep it holy.” “Honour thy father and thy mother: that thy days may be long upon the land.” “Thou shalt not kill. Thou shalt not commit adultery. Thou shalt not steal. Thou shalt not bear false witness against thy neighbour. Thou shalt not covet thy neighbour's house.”
 
-God then spoke the Ten Commandments, forbidding other gods, idols, misuse of His name, murder, adultery, theft, false testimony, and coveting. He also commanded observance of the Sabbath and honor toward parents.
-
-Overwhelmed by the terrifying display, the people asked Moses to speak with God on their behalf.
+The people are so frightened by the thunder, lightning, trumpet, and smoke that they stand far away. They tell Moses, “Speak thou with us, and we will hear: but let not God speak with us, lest we die.” Moses says, “Fear not: for God is come to prove you, and that his fear may be before your faces, that ye sin not.” Then Moses goes up into “the thick darkness where God was.”
 
 **God Gives Laws for Covenant Living (Exodus 21:1–24:18)** — God gives Israel laws governing justice, worship, relationships, and daily life before the people formally agree to His covenant.
 
-God continued giving Moses laws concerning servants, personal injuries, property, responsibility for harm, and fair treatment of others.
+On the mountain, God gives Moses many more laws, often called the Book of the Covenant. They show what the Ten Commandments mean in daily life. Hebrew slaves must be set free after six years. A person who kills someone on purpose must be put to death, but one who kills by accident may flee to a place of safety. Those who steal must pay back more than they took. If someone causes injury, the punishment must fit the harm: “Eye for eye, tooth for tooth, hand for hand, foot for foot.” This law limited revenge to what was fair.
 
-The commands also addressed care for foreigners, widows, orphans, and the poor. Israel was instructed to reject false worship, practice justice, observe appointed festivals, and honor God in its daily conduct.
+God also commands protection for the weak: “Thou shalt neither vex a stranger, nor oppress him: for ye were strangers in the land of Egypt.” “Ye shall not afflict any widow, or fatherless child.” If they do, God will hear their cry. Judges must not take bribes or twist justice for the rich or the poor. If they find an enemy's ox wandering, they must bring it back. The land must rest every seventh year so the poor can eat what grows, and people and animals must rest every seventh day. Three times a year all the men must come to celebrate feasts before the LORD. God promises to send His angel ahead of them and drive out the nations of Canaan little by little.
 
-God promised to guide the Israelites toward the land He had prepared, warning them against adopting the worship of its inhabitants.
-
-Moses presented God's words to the people, who promised obedience. He then confirmed the covenant with sacrifices and blood, declaring it the blood of the covenant.
-
-Afterward, Moses went up the mountain, where God's glory appeared like consuming fire. He remained there for forty days and forty nights.
+Moses comes down and tells the people all these words, and again they answer, “All the words which the LORD hath said will we do.” He writes them down, builds an altar, and offers sacrifices. He reads the Book of the Covenant aloud, then sprinkles blood on the people: “Behold the blood of the covenant, which the LORD hath made with you.” Then Moses, Aaron, Aaron's sons, and seventy elders go partway up the mountain, “And they saw the God of Israel: and there was under his feet as it were a paved work of a sapphire stone.” They eat and drink in His presence. Then Moses goes up into the cloud with Joshua, and stays on the mountain forty days and forty nights. To the people below, “the sight of the glory of the LORD was like devouring fire on the top of the mount.”
 
 **God Gives Instructions for His Dwelling Place (Exodus 25:1–31:18)** — God instructs Moses to build a sacred tabernacle where His presence will dwell among Israel, establishing its furnishings, priesthood, and worship practices.
 
-God commanded the people to contribute materials willingly for a portable sanctuary called the tabernacle.
+On the mountain, God tells Moses how to build a tabernacle, a holy tent where He will live among His people. “And let them make me a sanctuary; that I may dwell among them.” The people are to bring offerings willingly from their hearts: gold, silver, bronze, fine cloth, animal skins, wood, oil, spices, and precious stones. And it must be made exactly according to the pattern God shows Moses.
 
-He gave detailed instructions for its sacred furniture, including the ark containing the covenant testimony, covered by the mercy seat with two cherubim, a table, a golden lampstand, and altars. Curtains, coverings, and carefully arranged spaces would separate the sanctuary's different areas.
+God describes each object. The most important is the ark of the covenant, a wooden chest covered with gold, to hold the stone tablets of the law. Its gold lid, called the mercy seat, has two golden cherubim on top, facing each other with their wings stretched out. “And there I will meet with thee, and I will commune with thee from above the mercy seat.” There is also a golden table for holy bread, and a golden lampstand with seven branches shaped like almond blossoms. The tent itself is made of linen curtains and goat-hair coverings over a wooden frame. A thick curtain called the veil divides the holy place from the most holy place, where the ark will stand. Outside, in a courtyard surrounded by curtains, are a bronze altar for sacrifices and a bronze basin for washing.
 
-Aaron and his sons were chosen to serve as priests. God prescribed their special garments, sacrifices for their appointment, and responsibilities in worship.
+God chooses Aaron and his sons to serve as priests. He describes their clothing in detail. The high priest wears a breastplate with twelve precious stones, each engraved with the name of a tribe, so he carries Israel on his heart before God. On his turban is a gold plate engraved “HOLINESS TO THE LORD.” God explains how the priests are to be consecrated with sacrifices and anointing oil. There is also a golden altar for burning incense, and every Israelite must pay half a shekel to support the tabernacle, rich and poor alike.
 
-God also appointed Bezaleel and Aholiab, craftsmen equipped with skill and understanding, to oversee the work.
-
-Before Moses descended, God emphasized the importance of keeping the Sabbath and gave him two stone tablets containing the covenant testimony.
+God fills two craftsmen, Bezaleel and Aholiab, “with the spirit of God, in wisdom, and in understanding,” to make all of it. He commands Israel to keep the Sabbath as a sign between Him and them forever. Then He gives Moses “two tables of testimony, tables of stone, written with the finger of God.”
 
 **Israel Breaks the Covenant with a Golden Calf (Exodus 32:1–33:23)** — While Moses remains on the mountain, Israel turns to an idol, bringing God's judgment and threatening the relationship established through His covenant.
 
-When Moses delayed returning, the people asked Aaron to make gods to lead them. Aaron collected their golden earrings and formed a calf, and the people said, “These be thy gods, O Israel, which brought thee up out of the land of Egypt.” Aaron built an altar before it, and the people offered sacrifices and celebrated.
+Meanwhile, down below, the people grow impatient because Moses has been gone so long. They tell Aaron, “Up, make us gods, which shall go before us; for as for this Moses... we wot not what is become of him.” Aaron collects their gold earrings, melts them down, and shapes a golden calf. The people cry, “These be thy gods, O Israel, which brought thee up out of the land of Egypt.” Aaron builds an altar and announces a feast. The next day they offer sacrifices, then “sat down to eat and to drink, and rose up to play,” a wild celebration.
 
-God told Moses that Israel had corrupted itself and that He would consume them and make a great nation of Moses instead. Moses pleaded for the people, appealing to God's promises to their ancestors, and the Lord turned from the destruction He had threatened.
+On the mountain, God tells Moses what they have done and says He will destroy them and make a great nation from Moses instead. But Moses pleads for them. He reminds God of His promises to Abraham, Isaac, and Jacob, and asks what the Egyptians would say. “And the LORD repented of the evil which he thought to do unto his people.”
 
-Descending the mountain, Moses saw the calf and the celebrations. He broke the stone tablets, burned the calf, ground it to powder, and made the people drink it in water. Then he confronted Aaron and the people.
+Moses comes down carrying the tablets. When he sees the calf and the dancing, he is so angry that he throws down the tablets and smashes them at the foot of the mountain. He burns the calf, grinds it to powder, scatters it on the water, and makes the people drink it. He asks Aaron what happened. Aaron gives a weak excuse: “I cast it into the fire, and there came out this calf.” Moses stands at the gate of the camp and calls, “Who is on the LORD'S side? let him come unto me.” The Levites gather around him, and at his command they go through the camp and kill about three thousand of the worst offenders.
 
-The men of the tribe of Levi rallied to Moses, and about three thousand men were killed that day. Moses then returned to the Lord and asked Him to forgive the people, or else to blot Moses himself out of His book. God also struck the people with a plague.
-
-Moses continued interceding for Israel. God declared that His angel would lead them onward, but warned that He would not go up in their midst, because they were a stiffnecked people.
-
-Moses pleaded for God's presence to accompany them. God promised, “My presence shall go with thee,” and allowed Moses to see His glory pass by, but not His face, saying, “Thou canst not see my face: for there shall no man see me, and live.”
+The next day Moses returns to God and offers to be blotted out of God's book if God will not forgive them. God says He will still give them the land, but He will not go with them Himself, because they are “a stiffnecked people.” The people mourn. Moses used to meet God in a tent outside the camp, where “the LORD spake unto Moses face to face, as a man speaketh unto his friend.” There Moses pleads, “If thy presence go not with me, carry us not up hence.” God agrees. Then Moses asks, “I beseech thee, shew me thy glory.” God says He will make all His goodness pass before him, “Thou canst not see my face: for there shall no man see me, and live.” He will hide Moses in a crack in the rock and cover him with His hand as He passes by, and Moses will see only His back.
 
 **God Renews His Covenant with Israel (Exodus 34:1–35:3)** — God renews His covenant after Israel's rebellion, revealing His mercy and reaffirming His commands concerning worship, obedience, and the Sabbath.
 
-God instructed Moses to prepare two new stone tablets and return to Mount Sinai.
+God tells Moses to cut two new stone tablets and climb the mountain alone in the morning. There the LORD comes down in the cloud and passes by in front of him, proclaiming His own name: “The LORD, The LORD God, merciful and gracious, longsuffering, and abundant in goodness and truth, Keeping mercy for thousands, forgiving iniquity and transgression and sin, and that will by no means clear the guilty.” These words are repeated many times later in the Bible. Moses quickly bows to the ground and worships, asking God to go with them and forgive them.
 
-There the Lord passed by and proclaimed Himself “merciful and gracious, longsuffering, and abundant in goodness and truth,” forgiving iniquity, transgression, and sin, while declaring that He would “by no means clear the guilty.”
+God renews His covenant. He will do wonders never seen before and drive out the nations of Canaan. But Israel must not make treaties with them or worship their gods, “For thou shalt worship no other god: for the LORD, whose name is Jealous, is a jealous God.” He repeats the commands about the feasts, the firstborn, and the Sabbath. Moses stays on the mountain another forty days and nights without eating or drinking, and he writes the words of the covenant on the tablets.
 
-God renewed His covenant and warned Israel against worshiping the gods of other nations. He repeated instructions about appointed feasts, offerings, and proper worship.
-
-After another forty days and nights, Moses descended carrying the tablets. His face shone because he had spoken with God. After delivering God's words to the people, Moses covered his face with a veil, removing it whenever he went in to speak with the Lord.
-
-Moses then gathered Israel and repeated God's command to keep the Sabbath holy.
+When Moses comes down, he does not realize that “the skin of his face shone” from speaking with God. Aaron and the people are afraid to come near him. After he finishes speaking to them, Moses puts a veil over his face. Whenever he goes in to speak with the LORD, he takes the veil off. Then Moses gathers the people and reminds them again to keep the Sabbath holy.
 
 **Israel Builds the Tabernacle (Exodus 35:4–39:43)** — The Israelites contribute materials and skilled labor to construct the tabernacle, following the detailed instructions God had given Moses.
 
-Moses invited the people to bring offerings for the sanctuary. Men and women contributed gold, silver, fabric, wood, and other materials.
+Moses asks everyone “of a willing heart” to bring offerings for the tabernacle. The people respond with joy. Men and women bring gold jewelry, fine cloth, animal skins, wood, spices, and precious stones. Skilled women spin yarn and goat hair. They give so much that the craftsmen come to Moses and say, “The people bring much more than enough for the service of the work.” Moses has to send word through the camp to stop bringing gifts.
 
-Their generosity became so great that the craftsmen reported having more than enough. Moses instructed the people to stop bringing gifts.
+Bezaleel and Aholiab lead the skilled workers. Chapter by chapter, the book repeats the instructions given on the mountain, this time describing how each piece was actually made: the curtains and coverings, the wooden frames, the veil, the ark with its mercy seat and cherubim, the table, the lampstand, the altars, the basin, and the courtyard. They make the priests' holy garments, including the breastplate with its twelve stones and the gold plate engraved “HOLINESS TO THE LORD.”
 
-Under Bezaleel and Aholiab's leadership, skilled workers constructed the tabernacle, its furnishings, and the sacred garments worn by Aaron and his sons.
-
-The detailed work followed God's commands, including the ark, lampstand, altars, curtains, and priestly clothing.
-
-When everything was finished, the completed work was brought to Moses. He inspected it, confirmed that the Israelites had followed God's instructions, and blessed them.
+When everything is finished, the people bring it all to Moses. He inspects their work, “and, behold, they had done it as the LORD had commanded, even so had they done it: and Moses blessed them.” A people who had just broken God's covenant with a golden calf have now given gladly to build Him a home among them.
 
 **God's Glory Fills the Completed Tabernacle (Exodus 40:1–38)** — Moses sets up the completed tabernacle, and God's glory fills the sanctuary as His presence begins guiding Israel's continuing journey.
 
-God commanded Moses to establish the tabernacle on the first day of the first month of the second year after Israel's departure from Egypt.
+On the first day of the first month, almost a year after leaving Egypt, God tells Moses to set up the tabernacle. Moses puts up the frame and the coverings, places the tablets in the ark, and sets the ark inside behind the veil. He arranges the table and the bread, lights the lampstand, burns incense on the golden altar, and places the bronze altar and basin in the courtyard. He anoints the tabernacle and everything in it with holy oil, and washes, dresses, and anoints Aaron and his sons as priests. Again and again the chapter repeats that Moses did everything “as the LORD commanded Moses.”
 
-Moses set up the tabernacle and arranged its furniture and altars. God also instructed him to wash, clothe, and anoint Aaron and his sons for the priesthood, and Moses did everything according to God's instructions.
+“So Moses finished the work.” Then something amazing happens: “Then a cloud covered the tent of the congregation, and the glory of the LORD filled the tabernacle.” The glory is so strong that even Moses cannot go in.
 
-Then a cloud covered the tabernacle, and the glory of the Lord filled it so completely that Moses could not enter.
-
-From that time forward, the cloud guided Israel's travels. When it lifted, the people moved. When it remained, they stayed in place. At night, fire appeared in the cloud, visible to all Israel.
-
-The Israelites had entered Egypt as a family, grown into an enslaved nation, and been delivered by God's power. Through His covenant, laws, and sanctuary, God had established how they were to live as His people. Their journey was not finished, but His presence now dwelt among them as they traveled through the wilderness.
+From then on, the cloud guides Israel's journeys. Whenever it lifts from the tabernacle, they pack up and travel. When it stays, they stay. “For the cloud of the LORD was upon the tabernacle by day, and fire was on it by night, in the sight of all the house of Israel, throughout all their journeys.” The book that began with Israel enslaved and crying out to God ends with God Himself living among His people.
 
 # Leviticus
 When it happened: While Israel was camped at Mount Sinai, in the weeks after the tabernacle was set up on the first day of the second year (Exodus 40:17; Numbers 1:1).
@@ -288,139 +294,97 @@ The world at the time: Israel was a newly freed people between Egypt and Canaan.
 
 **God Establishes a Way to Worship (Leviticus 1:1–7:38)** — God gives Israel instructions for sacrifices and offerings, establishing how the people can approach Him, express gratitude, and seek forgiveness for sin.
 
-The Israelites were living near Mount Sinai after God had delivered them from slavery in Egypt. Through Moses, their leader, God had established a covenant, a sacred agreement, with them. They had also built the tabernacle, a portable sanctuary where God's presence would dwell among His people.
+Exodus ended with God's glory filling the tabernacle. Now, “the LORD called unto Moses, and spake unto him out of the tabernacle.” How can sinful people live near a holy God? Leviticus answers that question, beginning with five kinds of offerings.
 
-God called Moses from the tabernacle and gave instructions for Israel's worship. The people could bring burnt offerings, grain offerings, peace offerings, sin offerings, and trespass offerings. Some expressed devotion or thanksgiving, while others provided atonement, the means God established for dealing with sin. Sin offerings covered sins committed through ignorance, and trespass offerings included repaying, with an added fifth, anyone who had been wronged.
+The first is the burnt offering. A worshiper brings a bull, sheep, goat, or, if he is poor, a dove or pigeon. It must be perfect, with no defects. He lays his hand on the animal's head, as if passing his guilt to it, “and it shall be accepted for him to make atonement for him.” Atonement means making things right between God and people by covering sin. Then the animal is killed and burned completely on the altar. The grain offering is fine flour, oil, and incense, a gift of thanks. The peace offering is shared: part is burned, part goes to the priests, and the worshiper and his family eat the rest in a meal of fellowship with God.
 
-Each offering had specific requirements. Animals used for sacrifice had to meet God's standards, and priests were responsible for presenting offerings properly. God also gave detailed instructions about which portions belonged on the altar and which could be eaten by the priests.
+The sin offering is for sins people commit without meaning to. A priest, the whole nation, a leader, or an ordinary person each brings a different animal, and its blood is applied to the altar. The trespass offering is for wrongs against others or against holy things. The guilty person must pay back what he took plus one-fifth more. In every case, the message is the same: sin is serious, it brings death, and God provides a way for the guilty to be forgiven.
 
-These instructions established an orderly way for Israel to worship a holy God while recognizing the seriousness of sin and the importance of obedience.
+The priests are given careful instructions for each offering, including which portions they may eat. Above all, “The fire shall ever be burning upon the altar; it shall never go out.”
 
 **Aaron and His Sons Become Priests (Leviticus 8:1–9:24)** — Moses prepares Aaron and his sons for their sacred responsibilities, and God's glory appears before Israel as their priestly service begins.
 
-God had chosen Aaron, Moses' brother, and Aaron's sons to serve as priests. They would offer sacrifices, care for the sanctuary, and carry out duties connected to Israel's worship.
+Now Moses carries out the instructions God gave on Mount Sinai. In front of the whole congregation, he washes Aaron and his sons with water, dresses Aaron in the high priest's robes, breastplate, and turban, and anoints him and the tabernacle with holy oil. He offers a bull and two rams. He puts some of the blood on Aaron's right ear, right thumb, and right big toe, and does the same to his sons, a picture that their ears, hands, and feet now belong to God. For seven days, Aaron and his sons stay at the entrance to the tabernacle while their ordination is completed.
 
-Moses gathered the congregation, washed Aaron and his sons, and dressed them in the garments God had commanded. He anointed the tabernacle and Aaron with oil, setting them apart for sacred service.
-
-Sacrifices followed, and the priests remained at the entrance of the tabernacle for seven days as God had instructed.
-
-On the eighth day, Aaron began offering sacrifices for himself and the people. When the offerings were completed, God's glory appeared, and fire came from before the Lord and consumed the sacrifice on the altar. The people shouted and fell on their faces.
+On the eighth day, Aaron offers his first sacrifices as high priest, first for his own sins and then for the people. He lifts his hands and blesses them. Then Moses and Aaron go into the tabernacle and come out again, and the glory of the LORD appears to everyone. “And there came a fire out from before the LORD, and consumed upon the altar the burnt offering and the fat: which when all the people saw, they shouted, and fell on their faces.” God has accepted their worship.
 
 **A Warning About Approaching God (Leviticus 10:1–20)** — Two of Aaron's sons die after presenting unauthorized fire before God, showing the seriousness of disregarding His instructions for worship.
 
-Soon after the priestly ministry began, Aaron's sons Nadab and Abihu offered strange fire before the Lord, which He had not commanded. Fire came from God and consumed them, and they died.
+But the joy is quickly shattered. That same day, “Nadab and Abihu, the sons of Aaron, took either of them his censer, and put fire therein... and offered strange fire before the LORD, which he commanded them not.” Strange fire means fire God had not authorized. “And there went out fire from the LORD, and devoured them, and they died before the LORD.” The same fire that showed God's acceptance now shows His holiness.
 
-Moses explained that God must be treated as holy by those who approach Him. Aaron remained silent.
+Moses tells Aaron, “This is it that the LORD spake, saying, I will be sanctified in them that come nigh me, and before all the people I will be glorified. And Aaron held his peace.” Relatives carry the bodies out of the camp. Aaron and his other sons are not allowed to show public signs of mourning while they are on duty.
 
-God then instructed Aaron that priests must not drink wine or strong drink when entering the tabernacle. They were responsible for distinguishing between holy and unholy things and teaching Israel God's laws.
-
-Later, Moses questioned Aaron's remaining sons about a sin offering that had been burned rather than eaten as instructed. Aaron explained the circumstances, and Moses accepted his response.
+God then speaks directly to Aaron. The priests must not drink wine or strong drink when they go into the tabernacle, so they can “put difference between holy and unholy, and between unclean and clean,” and teach the people God's laws. Later, Moses is upset to find that Aaron's remaining sons burned a sin offering they should have eaten. Aaron explains that after such a terrible day, he did not think God would be pleased if they ate it. When Moses hears this, he is satisfied.
 
 **God Teaches Israel About Cleanness (Leviticus 11:1–15:33)** — God establishes rules concerning clean and unclean animals, bodily conditions, and purification so Israel can maintain ceremonial cleanness before Him.
 
-God gave Israel instructions about which animals could be eaten. Certain land animals, fish, birds, and creeping creatures were declared clean or unclean.
+Next God teaches Israel how to tell the difference between clean and unclean. Unclean does not always mean sinful. It means a person or thing is not fit, for the moment, to come near God's holy presence.
 
-He also established purification requirements following childbirth and procedures for examining certain skin diseases, infected garments, and affected houses.
+First come food laws. Israel may eat land animals that both have split hooves and chew the cud, like cattle and sheep. Others, like the camel, the rabbit, and the pig, are unclean. They may eat fish with fins and scales, but not shellfish. Certain birds, like eagles, vultures, and owls, are forbidden, as are most insects and creeping things. The reason given is not health but holiness: “ye shall therefore sanctify yourselves, and ye shall be holy; for I am holy.”
 
-Priests were responsible for inspecting these conditions and determining when someone or something was clean. People with certain conditions could be required to remain outside the camp until the proper requirements were fulfilled.
-
-Additional instructions addressed bodily discharges and washing. These conditions did not always involve personal wrongdoing, but they affected participation in sacred activities.
-
-Through these laws, God commanded Israel to distinguish between clean and unclean things and to remain holy because He was holy.
+After giving birth, a mother is unclean for a time and then brings an offering. The book also gives detailed rules about skin diseases, translated “leprosy.” A priest must examine any rash or sore, sometimes over several weeks. A person with an active disease must live outside the camp, with torn clothes and uncombed hair, covering the upper lip and crying, “Unclean, unclean.” Even mildew on clothing or houses must be inspected. When someone is healed, there is a special ceremony to welcome him back, using two birds. One is killed, and the other is dipped in its blood and set free. Finally, chapter 15 covers bodily discharges of men and women, which also make a person unclean until they wash and wait the required time. All of these rules taught Israel that God's presence is holy and must be approached with care.
 
 **God Establishes the Day of Atonement (Leviticus 16:1–34)** — God establishes an annual observance for making atonement for Israel's sins and cleansing the sanctuary from the uncleanness of the people.
 
-After the deaths of Aaron's sons, God gave instructions limiting when Aaron could enter the Most Holy Place, the innermost room of the tabernacle.
+This chapter begins by recalling “the death of the two sons of Aaron.” God tells Aaron that he must not come into the most holy place behind the veil whenever he wants, or he will die. He may enter only once a year, on the Day of Atonement, and only in the way God commands.
 
-Once each year, on the tenth day of the seventh month, the high priest would enter this sacred place to make atonement. He first offered a sacrifice for his own sins and those of his household.
+On that day, Aaron takes off his beautiful robes and puts on plain white linen. First he offers a bull for his own sins and his family's. He enters the most holy place with a cloud of incense so that the smoke covers the mercy seat, and he sprinkles the bull's blood on it. Then come two goats. Aaron casts lots over them, “one lot for the LORD, and the other lot for the scapegoat.” The first goat is sacrificed as a sin offering for the people, and its blood is sprinkled in the most holy place too.
 
-Lots were then cast over two goats for the people. One was sacrificed as a sin offering, while the other, the scapegoat, was sent away alive into the wilderness after Aaron laid his hands on its head and confessed Israel's sins over it.
+Then Aaron lays both hands on the head of the living goat “and confess over him all the iniquities of the children of Israel, and all their transgressions in all their sins.” A man leads the goat far out into the wilderness. “And the goat shall bear upon him all their iniquities unto a land not inhabited.” Sin is carried away, never to return. This is where the word scapegoat comes from.
 
-The day required the people to humble themselves and rest from their work. It became an annual observance through which atonement was made for the sins of the nation.
+The Day of Atonement is to be kept every year as a day of rest and fasting, when the people “afflict your souls.” “For on that day shall the priest make an atonement for you, to cleanse you, that ye may be clean from all your sins before the LORD.” The book of Hebrews later explains that Jesus is the true high priest who entered heaven itself with His own blood.
 
 **God Calls Israel to Holy Living (Leviticus 17:1–20:27)** — God gives Israel commands concerning sacrifices, relationships, justice, worship, and personal conduct, calling His people to live differently from surrounding nations.
 
-God instructed Israel about the proper handling of sacrifices and prohibited eating blood, explaining that the life of the flesh was in the blood and that He had given it for atonement upon the altar.
+These chapters are sometimes called the Holiness Code. First, God commands that all sacrifices be brought to the tabernacle, not offered in the fields to goat-demons. No one may eat blood, “For the life of the flesh is in the blood: and I have given it to you upon the altar to make an atonement for your souls.”
 
-He also established boundaries for sexual relationships and prohibited practices associated with the nations whose land Israel would enter.
+Israel must not live like the nations around them: “After the doings of the land of Egypt, wherein ye dwelt, shall ye not do: and after the doings of the land of Canaan, whither I bring you, shall ye not do.” God forbids sex with close relatives, adultery, and sacrificing children to the god Molech. He forbids sex between men: “Thou shalt not lie with mankind, as with womankind: it is abomination.” He also forbids sex with animals. The Canaanites did all these things, and the land itself would “spue” them out. If Israel does the same, the land will vomit them out too.
 
-The commands extended beyond ceremonial worship into everyday life. Israel was told to honor parents, care for the poor, deal honestly, avoid oppression, and judge fairly.
-
-God commanded, “thou shalt love thy neighbour as thyself,” and told Israel to love the foreigner living among them as themselves, because they had been strangers in Egypt.
-
-Other laws prohibited idolatry, child sacrifice, consulting spirits, and serious violations of God's moral commands. Certain offenses carried severe penalties.
-
-God repeatedly reminded Israel that they were to be holy because He was holy. Their conduct was to reflect their relationship with Him.
+Chapter 19 sums up the whole idea: “Ye shall be holy: for I the LORD your God am holy.” Holiness touches every part of life. At harvest, farmers must leave the edges of their fields and the fallen grapes “for the poor and stranger.” “Thou shalt not curse the deaf, nor put a stumblingblock before the blind.” Judges must be fair to rich and poor alike. “Thou shalt not hate thy brother in thine heart.” Then comes the command Jesus later called the second greatest: “thou shalt love thy neighbour as thyself: I am the LORD.” This includes foreigners: “thou shalt love him as thyself; for ye were strangers in the land of Egypt.” They must respect the elderly, “Thou shalt rise up before the hoary head,” use honest weights and measures, and avoid fortune-tellers and mediums. Chapter 20 gives the penalties for the worst of these sins, including death for child sacrifice, adultery, and incest.
 
 **God Sets Standards for Priests and Offerings (Leviticus 21:1–22:33)** — God establishes special requirements for priests, their families, and sacrificial offerings to preserve the holiness of Israel's worship.
 
-Because priests served in God's sanctuary, they were held to particular standards concerning mourning, marriage, and ceremonial cleanness.
+Because priests serve so close to God, they must keep even stricter rules. They must not make themselves unclean by touching a dead body, except for their closest family. They must not shave their heads or cut their bodies in mourning, as pagans did. They must marry women of good reputation. The high priest must marry a virgin and may not even mourn for his own parents. A descendant of Aaron who has a physical defect, such as blindness or lameness, may still eat the holy food but may not offer sacrifices at the altar.
 
-Aaron's descendants with certain physical conditions could not perform altar duties, though they could still eat designated holy food.
-
-God also instructed the priests to avoid serving while ceremonially unclean and established rules about who could eat sacred offerings.
-
-Animals presented for sacrifice had to meet the requirements God specified, including freedom from certain defects.
-
-These commands emphasized that worship was not to be conducted carelessly but according to God's instructions.
+Priests who become unclean must not eat the holy offerings until they are clean again. Only priests and their households may eat that food. Every animal offered to God must be perfect, “without blemish.” A blind, injured, or diseased animal is not acceptable. God ends by reminding them why this matters: “Neither shall ye profane my holy name; but I will be hallowed among the children of Israel: I am the LORD which hallow you.”
 
 **God Establishes Sacred Days and Seasons (Leviticus 23:1–44)** — God appoints regular times for worship, rest, remembrance, and celebration, shaping Israel's yearly calendar around His covenant.
 
-The Sabbath was established as a weekly day of rest and sacred gathering.
+God gives Israel a yearly calendar of holy days, which He calls His feasts. It begins with the weekly Sabbath, a day of complete rest. In spring comes the Passover, remembering the night of rescue from Egypt, followed by seven days of eating bread without yeast. Then comes the feast of firstfruits, when the first sheaf of the barley harvest is waved before the LORD, before anyone eats the new crop.
 
-God also appointed annual observances, including Passover and the Feast of Unleavened Bread, which remembered Israel's deliverance from Egypt.
+Fifty days later comes the Feast of Weeks, later called Pentecost, to celebrate the wheat harvest. At harvest time they must again leave the edges of their fields for the poor and the stranger. In the fall, the seventh month begins with a day of trumpet blasts. On the tenth day comes the Day of Atonement, the most solemn day of the year, with fasting and no work at all.
 
-The Feast of Firstfruits and the Feast of Weeks were connected to harvest offerings and thanksgiving.
-
-Other appointed times included the Feast of Trumpets, the Day of Atonement, and the Feast of Tabernacles.
-
-During the Feast of Tabernacles, the Israelites were to live in temporary shelters for seven days, remembering how God had caused them to dwell in booths after bringing them out of Egypt.
-
-These celebrations gave the nation regular opportunities to remember God's actions, worship Him, and observe His commands.
+Five days later comes the joyful Feast of Tabernacles, also called booths. For seven days, the people must live in shelters made of branches: “Ye shall dwell in booths seven days... That your generations may know that I made the children of Israel to dwell in booths, when I brought them out of the land of Egypt.” Each feast reminded Israel of what God had done and taught their children the story.
 
 **God Commands Reverence for His Name (Leviticus 24:1–23)** — God gives instructions for maintaining worship in the tabernacle and establishes consequences for dishonoring His name and harming others.
 
-God commanded that pure olive oil be supplied so the tabernacle lamps could burn continually. Twelve loaves of bread were also to be arranged regularly before Him.
+God commands that the lamps in the tabernacle burn with pure olive oil from evening to morning, “continually.” Every Sabbath, twelve fresh loaves of bread are to be placed on the golden table, one for each tribe, as a constant offering before the LORD.
 
-During this period, a man whose mother was an Israelite and whose father was Egyptian blasphemed God's name during a dispute.
+Then comes a story. A man whose mother was an Israelite named Shelomith and whose father was Egyptian gets into a fight with an Israelite in the camp. During the fight, he curses and blasphemes the name of the LORD. The people bring him to Moses and keep him under guard until God makes His will clear. God says that anyone who blasphemes His name, whether Israelite or foreigner, must be put to death. The whole congregation is to take him outside the camp and stone him.
 
-The people brought him before Moses and waited for God's judgment. God commanded that the man be put to death, establishing the seriousness of blasphemy.
-
-God also gave laws concerning murder, injury, and restitution, requiring consistent justice for Israelites and foreigners alike.
+God also repeats the law of fair punishment: “Breach for breach, eye for eye, tooth for tooth.” The same law applies to everyone: “Ye shall have one manner of law, as well for the stranger, as for one of your own country.” Then the people take the man outside the camp and stone him, as the LORD commanded.
 
 **God Establishes Rest and Restoration (Leviticus 25:1–55)** — God commands Israel to observe sabbatical years and the Year of Jubilee, providing rules for land, property, debt, and the treatment of fellow Israelites.
 
-God instructed that the land receive rest every seventh year. During that year, Israel was not to plant fields or prune vineyards for a regular harvest.
+God gives Israel two special years of rest. Every seventh year is a Sabbath for the land. The people must not plant or prune, and anyone, including the poor and animals, may eat whatever grows on its own. God promises to bless the sixth year's harvest so much that it will last three years.
 
-After seven cycles of seven years, a trumpet would sound on the Day of Atonement, and the fiftieth year would be declared the Year of Jubilee, when Israel was to “proclaim liberty throughout all the land unto all the inhabitants thereof.” Property sold under the established rules would return to its original family holdings, and Israelites in certain forms of servitude would be released.
+After seven sets of seven years comes the fiftieth year, called the jubilee. It begins on the Day of Atonement with a trumpet blast. “And ye shall hallow the fiftieth year, and proclaim liberty throughout all the land unto all the inhabitants thereof.” Those words were later engraved on America's Liberty Bell. In the jubilee, land that was sold returns to its original family, and Israelites who sold themselves into service go free. So land was really only leased until the next jubilee. God explains, “The land shall not be sold for ever: for the land is mine; for ye are strangers and sojourners with me.”
 
-God reminded the people that the land belonged to Him and that they lived upon it under His authority.
-
-He also commanded them not to take advantage of fellow Israelites who became poor. They were to help those in need and avoid treating their own people as slaves subject to harsh rule.
-
-These laws connected economic life, compassion, and the use of land to Israel's covenant with God.
+If someone becomes poor and must sell land, his closest relative should redeem it, or buy it back. This idea of a kinsman redeemer appears later in the story of Ruth. Israelites must help a poor brother and must not charge him interest. If an Israelite becomes so poor that he has to sell himself, he must be treated as a hired worker, not a slave, and released at the jubilee. The reason: “For they are my servants, which I brought forth out of the land of Egypt.”
 
 **God Explains the Blessings and Consequences of Obedience (Leviticus 26:1–46)** — God promises blessings for Israel's obedience and warns of increasingly severe consequences if the people reject His commandments and covenant.
 
-God promised that obedience would bring rain in its season, fruitful harvests, peace, safety, and victory over enemies. He also promised to dwell among His people and walk among them as their God.
+Near the end of the book, God sets out two paths. “If ye walk in my statutes, and keep my commandments, and do them; Then I will give you rain in due season, and the land shall yield her increase.” They will have plenty of food, peace in the land, and victory over enemies. Best of all, “I will walk among you, and will be your God, and ye shall be my people.” God reminds them, “I have broken the bands of your yoke, and made you go upright,” no longer bent over as slaves.
 
-But if Israel rejected His commands, God warned of disease, failed crops, defeat, famine, and destruction. Continued rebellion would bring further punishment, including removal from their land and scattering among other nations.
+But if they reject His laws, disasters will come in waves, each one worse than the last, to call them back. Disease, drought, wild animals, war, and famine will follow. If they still refuse, their cities will be ruined, their land made desolate, and they will be scattered among the nations. Then the land will finally “enjoy her sabbaths,” the rest years they had ignored. Centuries later, the Babylonian exile happened in just this way.
 
-Even these warnings did not end without hope. God declared that if the people humbled themselves and confessed their sins, He would remember His covenant with their ancestors.
-
-Though Israel might experience judgment, God promised not to utterly destroy them or forget the covenant He had established.
+Yet even then, God will not abandon them. If they confess their sins and humble their hearts, “Then will I remember my covenant with Jacob, and also my covenant with Isaac, and also my covenant with Abraham.” “I will not cast them away, neither will I abhor them, to destroy them utterly.”
 
 **God Gives Instructions About Vows and Dedicated Gifts (Leviticus 27:1–34)** — God establishes rules for vows, dedicated property, and offerings, teaching Israel how commitments made to Him must be handled.
 
-God gave Moses instructions concerning people, animals, houses, and land dedicated to Him through special vows.
+The book closes with rules about vows. Sometimes a person would promise to give himself, an animal, a house, or a field to God. Since people could not actually serve in the tabernacle, they could pay a set amount of silver instead, based on age and whether the person was male or female. Animals, houses, and land could be dedicated and, in most cases, bought back by paying their value plus one-fifth.
 
-Some dedicated things could be redeemed through payments determined by God's instructions, while others could not be reclaimed.
-
-The rules also addressed the tithe, a tenth of certain agricultural produce and livestock set apart for the Lord.
-
-These final commands emphasized that promises and offerings made to God carried real obligations. What was declared holy belonged to Him and had to be treated according to His law.
-
-Leviticus ends by identifying these instructions as commandments the Lord gave Moses for the children of Israel at Mount Sinai. From sacrifices and priestly service to justice, holy living, and sacred observances, God had established how His people were to worship Him and live under His covenant. Israel was called to be holy because the God dwelling among them was holy.
+God also reminds them about the tithe, a tenth of everything they produce. “And all the tithe of the land, whether of the seed of the land, or of the fruit of the tree, is the LORD'S: it is holy unto the LORD.” The book ends simply: “These are the commandments, which the LORD commanded Moses for the children of Israel in mount Sinai.” Leviticus teaches that God is holy, that sin is serious, and that God Himself provides a way for His people to come near Him.
 
 # Numbers
 When it happened: From the second month of the second year after the exodus (Numbers 1:1) to the fortieth year (Numbers 33:38)—the nearly forty years Israel spent in the wilderness.
@@ -430,177 +394,129 @@ The world at the time: Canaan was full of walled cities. East of the Jordan lay 
 
 **God Prepares Israel for the Journey (Numbers 1:1–4:49)** — God organizes the Israelites by tribe, assigns their places around the tabernacle, and prepares them to travel toward the land He promised.
 
-The Israelites were camped in the wilderness near Mount Sinai, where God had established His covenant with them after delivering them from slavery in Egypt. Moses, the leader God had chosen, had received His laws, and the people had built the tabernacle, a portable sanctuary where God's presence dwelt among them.
+The book is called Numbers because it begins with a count. A little over a year after leaving Egypt, God tells Moses to take a census of every man twenty years old and older who is able to go to war. The total comes to 603,550 men, so the whole nation probably numbered two million or more. The tribe of Levi is not counted with the others. The Levites are set apart to care for the tabernacle instead of fighting.
 
-In the second year after leaving Egypt, God commanded Moses to count the men twenty years and older who were able to serve in Israel's army. The total was 603,550, not including the tribe of Levi.
+God then arranges the camp. The tabernacle stands in the center, with the Levites camped closely around it. The other twelve tribes camp in four groups of three, one group on each side, each under its own banner. Judah leads on the east side, facing the sunrise. When they travel, they march in the same order. God's presence is at the heart of His people.
 
-The Levites were assigned a different responsibility. They would care for the tabernacle, transport its sacred furnishings, and assist with worship. Aaron, Moses' brother, and his sons served as priests, while the other Levite families received specific duties.
-
-Each tribe was assigned a position around the tabernacle and a place in the order of travel. The sanctuary stood at the center of the camp, reflecting God's presence among His people.
+The Levites belong to God in place of Israel's firstborn sons, whom God had spared on the night of Passover. Each of Levi's three clans has a job. The Kohathites carry the holiest objects, like the ark and the lampstand. But first the priests must cover them, because the Kohathites will die if they touch or even look at them. The Gershonites carry the curtains and coverings, and the Merarites carry the frames, posts, and bases.
 
 **God Establishes Order and Holiness (Numbers 5:1–6:27)** — God gives Israel instructions concerning purity, wrongdoing, special vows, and the blessing His priests are to pronounce over the people.
 
-As Israel prepared to travel, God commanded that people with certain conditions causing ceremonial uncleanness remain outside the camp until they could be restored.
+Because God lives in the middle of the camp, it must be kept clean. Anyone with a skin disease, a discharge, or contact with a dead body must stay outside the camp until clean. Anyone who wrongs another person must confess and pay back what he owes plus one-fifth. If a husband suspects his wife of adultery but has no proof, she must go through a test before the priest, drinking bitter water. God Himself will show whether she is guilty or innocent.
 
-He also required people who had wronged others to confess their wrongdoing and make restitution. Additional instructions established a procedure for a husband who suspected his wife of unfaithfulness.
+Next comes the Nazarite vow, a way for any man or woman to dedicate themselves to God for a special time. During the vow, a Nazarite must not drink wine or eat anything from grapes, must not cut his hair, and must not go near a dead body, even of a parent. When the vow ends, he offers sacrifices and shaves his head. Samson and Samuel were later Nazarites for their whole lives.
 
-God then described the Nazirite vow, a special commitment through which a person could dedicate a period of life to Him. Those taking the vow were required to avoid wine and other grape products, refrain from cutting their hair, and avoid contact with dead bodies.
-
-Finally, God gave Aaron and his sons words of blessing to speak over Israel: “The LORD bless thee, and keep thee: The LORD make his face shine upon thee, and be gracious unto thee: The LORD lift up his countenance upon thee, and give thee peace.”
+The section ends with the blessing God gives the priests to speak over the people. It is still spoken in churches and synagogues today: “The LORD bless thee, and keep thee: The LORD make his face shine upon thee, and be gracious unto thee: The LORD lift up his countenance upon thee, and give thee peace.” God adds, “And they shall put my name upon the children of Israel; and I will bless them.”
 
 **Israel Dedicates the Tabernacle and Celebrates Passover (Numbers 7:1–9:23)** — Israel's leaders bring offerings for the sanctuary, the Levites are dedicated for service, and God directs the people's movements through His presence.
 
-After the tabernacle had been established, the leaders of Israel's twelve tribes brought gifts for its service. Each leader presented offerings according to God's instructions.
+On the day Moses finishes setting up and anointing the tabernacle, the leaders of the twelve tribes bring wagons and oxen to help carry it. Then, for twelve days, one leader each day brings an identical gift for the altar: silver dishes, a gold spoon full of incense, and animals for sacrifice. The chapter repeats the list twelve times, showing that every tribe has an equal share in worship. When Moses goes into the tabernacle to speak with God, “then he heard the voice of one speaking unto him from off the mercy seat.”
 
-The Levites were then cleansed and dedicated to their duties, serving in place of Israel's firstborn sons, whom God had claimed following the deliverance from Egypt.
+Aaron sets up the seven lamps of the golden lampstand. The Levites are cleansed and presented to God as a wave offering, ready to begin their service. Then Israel celebrates the Passover in the wilderness, one year after leaving Egypt. Some men are unclean because they touched a dead body and cannot take part. They ask Moses what to do, and God allows a second Passover one month later for anyone who missed the first.
 
-Israel also observed Passover, remembering the night God spared their firstborn and brought them out of slavery. God provided instructions for those unable to celebrate at the appointed time because of ceremonial uncleanness or travel.
-
-Throughout their time in the wilderness, a cloud covered the tabernacle. When it lifted, Israel traveled. When it remained, the people stayed in camp, following God's direction.
+From then on, the cloud over the tabernacle guides them. When the cloud lifts, they travel. When it settles, they camp, whether for two days, a month, or a year. “At the commandment of the LORD they rested in the tents, and at the commandment of the LORD they journeyed.”
 
 **Israel Leaves Sinai and Begins Complaining (Numbers 10:1–11:35)** — Israel begins its journey toward the promised land, but complaints about hardship and food bring God's judgment and reveal growing discontent.
 
-God instructed Moses to make two silver trumpets for gathering the people and directing their movements. When the cloud lifted, Israel departed from Sinai in the order God had established.
+God tells Moses to make two silver trumpets to call the people together and to signal when to break camp. Then, after almost a year at Sinai, the cloud lifts, and Israel sets out in order, tribe by tribe. Whenever the ark sets out, Moses says, “Rise up, LORD, and let thine enemies be scattered.” When it stops, he says, “Return, O LORD, unto the many thousands of Israel.”
 
-Soon the people began complaining about their hardships. God's anger was kindled, and fire consumed part of the camp until Moses prayed.
+But soon the complaining begins. The people grumble, and God's fire burns at the edge of the camp until Moses prays. The place is named Taberah, meaning burning. Then the “mixt multitude” among them, the non-Israelites who left Egypt with them, start craving meat, and the Israelites join in, weeping: “Who shall give us flesh to eat? We remember the fish, which we did eat in Egypt freely; the cucumbers, and the melons, and the leeks, and the onions, and the garlick.” “There is nothing at all, beside this manna, before our eyes.”
 
-The Israelites also complained about their food, longing for the meat and other foods they remembered from Egypt. Although God had provided manna, they grew dissatisfied.
+Moses is overwhelmed. “I am not able to bear all this people alone, because it is too heavy for me.” He even asks God to kill him. God tells him to gather seventy elders, and He puts some of the Spirit that is on Moses onto them, and they prophesy. Two men, Eldad and Medad, prophesy in the camp instead of at the tabernacle. Joshua wants Moses to stop them, but Moses says, “would God that all the LORD'S people were prophets.”
 
-Moses became overwhelmed by the burden of leading the people. God appointed seventy elders to share his responsibilities and placed His Spirit upon them.
-
-God also sent quail in great numbers, but while the people were eating, a severe plague struck those whose cravings had led them to sin.
+God also promises meat, not for a day but for a whole month, “until it come out at your nostrils.” Moses wonders how, but God asks, “Is the LORD'S hand waxed short?” A wind brings huge numbers of quail, piled about three feet deep around the camp. But while the meat is still between their teeth, a plague strikes the greedy people. They are buried at a place called Kibroth-hattaavah, meaning graves of craving.
 
 **Miriam and Aaron Challenge Moses (Numbers 12:1–16)** — Miriam and Aaron speak against Moses, and God publicly defends the special responsibility He has given Israel's leader.
 
-Miriam and Aaron criticized Moses concerning the Ethiopian woman he had married. They also questioned whether God spoke only through Moses.
+Moses' own sister and brother, Miriam and Aaron, begin to criticize him because of his Ethiopian wife. The real issue is jealousy: “Hath the LORD indeed spoken only by Moses? hath he not spoken also by us?” Then the book adds, “Now the man Moses was very meek, above all the men which were upon the face of the earth.”
 
-God summoned the three to the tabernacle and explained that His relationship with Moses was different from His communication with other prophets. He spoke with Moses directly rather than only through visions and dreams.
-
-When God departed, Miriam became leprous, white as snow. Aaron acknowledged their wrongdoing, and Moses pleaded with God to heal her.
-
-God required Miriam to remain outside the camp for seven days. The people waited until she returned before continuing their journey.
+God suddenly calls all three of them to the tabernacle and comes down in the cloud. He tells Miriam and Aaron that He speaks to other prophets in visions and dreams. But Moses is different: “With him will I speak mouth to mouth, even apparently.” “Wherefore then were ye not afraid to speak against my servant Moses?” When the cloud lifts, Miriam's skin is “leprous, white as snow.” Aaron begs Moses for mercy, and Moses cries out, “Heal her now, O God, I beseech thee.” God heals her, but she must stay outside the camp for seven days. The whole nation waits for her before moving on.
 
 **Israel Refuses to Enter the Promised Land (Numbers 13:1–14:45)** — Twelve men explore Canaan, but the people's refusal to trust God's promise results in judgment and forty years of wilderness wandering.
 
-At God's command, Moses sent twelve leaders to explore Canaan, the land promised to Israel's ancestors. After forty days, they returned carrying fruit and reporting that the land was productive.
+Israel reaches the edge of Canaan. At God's command, Moses sends twelve spies, one from each tribe, to explore the land. Among them are Caleb of Judah and Oshea, whom Moses renames Joshua. For forty days they travel through the land. In the valley of Eshcol, they cut a cluster of grapes so big that two men carry it on a pole between them.
 
-However, ten of the men warned that its inhabitants were powerful and its cities strongly defended. They said they had seen giants there and that “we were in our own sight as grasshoppers.” Only Joshua and Caleb urged Israel to trust God and enter the land.
+They come back and report, “surely it floweth with milk and honey; and this is the fruit of it.” But then they add, “Nevertheless the people be strong that dwell in the land, and the cities are walled, and very great.” They saw giants there. Caleb quiets the people: “Let us go up at once, and possess it; for we are well able to overcome it.” But ten spies insist, “We be not able to go up against the people; for they are stronger than we.” “And we were in our own sight as grasshoppers, and so we were in their sight.”
 
-The people believed the fearful report and rebelled against Moses and Aaron. They even proposed choosing a captain to lead them back to Egypt, and they spoke of stoning Joshua and Caleb. When God threatened to destroy the people, Moses interceded, and the Lord pardoned them according to his word.
+That night the whole community weeps. They complain, “would God we had died in this wilderness!” They say, “Let us make a captain, and let us return into Egypt.” Moses and Aaron fall on their faces. Joshua and Caleb tear their clothes and plead with the people, “If the LORD delight in us, then he will bring us into this land.” “Only rebel not ye against the LORD, neither fear ye the people of the land... the LORD is with us: fear them not.” But the people want to stone them.
 
-God declared that the adults counted in the earlier census, apart from Joshua and Caleb, would not enter the promised land. Instead, Israel would wander in the wilderness forty years, one year for each day the land was searched, and that generation would die there. The ten men who brought the evil report died by a plague.
+Then God's glory appears. God says He will destroy the people and make a new nation from Moses. Once again Moses pleads for them, using God's own words: “The LORD is longsuffering, and of great mercy, forgiving iniquity and transgression.” “Pardon, I beseech thee, the iniquity of this people.” God answers, “I have pardoned according to thy word: But as truly as I live, all the earth shall be filled with the glory of the LORD.” Yet none of that unbelieving generation will see the promised land, except Caleb and Joshua. Instead, they will wander in the wilderness forty years, one year for each day the spies explored the land, until all the adults twenty and older have died. Their children, the very ones they feared would die, will enter it. The ten spies who spread the bad report die of a plague.
 
-When some Israelites later attempted to enter the land against God's command, they were defeated.
+The people mourn. The next morning, they change their minds and decide to attack after all. Moses warns them that God will not go with them. They go anyway, and the Amalekites and Canaanites beat them badly and chase them back.
 
 **God Confirms His Authority Among Israel (Numbers 15:1–17:13)** — God gives further instructions for worship while rebellions against Moses and Aaron lead to judgment and a confirmation of Aaron's priesthood.
 
-Following Israel's rebellion, God gave additional laws concerning sacrifices, offerings, and forgiveness for unintentional sins. He also commanded the people to wear fringes on their garments as reminders of His commandments.
+Even after this failure, God gives laws for the time “When ye be come into the land,” showing that His promise still stands for the next generation. He explains the offerings for sins committed by mistake. But anyone who sins defiantly, “presumptuously,” must be cut off. A man is caught gathering sticks on the Sabbath, and at God's command he is stoned. God also tells the Israelites to sew tassels on the corners of their clothes, “That ye may remember, and do all my commandments.”
 
-God warned that sins committed presumptuously could not be treated as unintentional. When a man was found gathering sticks on the Sabbath, God commanded that he be put to death.
+Then comes a rebellion. Korah, a Levite, joins with Dathan and Abiram from the tribe of Reuben, and 250 well-known leaders. They confront Moses and Aaron: “Ye take too much upon you, seeing all the congregation are holy.” Korah wants to be a priest himself. Moses tells them to come the next day with incense burners, and God will show whom He has chosen. Dathan and Abiram refuse to come and accuse Moses of leading them out of a land of milk and honey to die.
 
-Later, Korah, a Levite, joined Dathan, Abiram, and other leaders in challenging Moses and Aaron. They questioned the authority God had given them.
+The next day, Moses says that if these men die a normal death, then God has not sent him. But if the ground opens and swallows them, everyone will know they despised the LORD. As soon as he finishes speaking, “the earth opened her mouth, and swallowed them up, and their houses,” and they go down alive into the pit. Then fire comes out from the LORD and burns up the 250 men offering incense.
 
-God judged the rebellion. The earth opened and swallowed Dathan, Abiram, their households, and the men who belonged to Korah, while fire consumed the 250 men offering incense. The next day the congregation murmured against Moses and Aaron, and a plague broke out. Aaron ran among the people with incense to make atonement and stood between the dead and the living, and the plague stopped after 14,700 had died.
+Amazingly, the very next day the whole community grumbles against Moses and Aaron, “Ye have killed the people of the LORD.” A plague breaks out. Moses tells Aaron to hurry with his incense into the crowd to make atonement. Aaron runs into the middle of the people, “And he stood between the dead and the living; and the plague was stayed.” Still, 14,700 die.
 
-God then caused Aaron's rod to bud, blossom, and produce almonds, confirming His choice of Aaron's family for the priesthood.
+To end the complaints for good, God tells each tribe leader to bring a wooden staff, with Aaron's name on the staff of Levi. They are left overnight in the tabernacle. The next morning, Aaron's staff has budded, blossomed, and produced ripe almonds. It is kept beside the ark as a sign against rebels.
 
 **God Establishes Duties for Priests and Levites (Numbers 18:1–19:22)** — God clarifies the responsibilities and support of the priests and Levites and establishes a purification procedure for those made unclean by death.
 
-After the rebellion, God reaffirmed that Aaron and his descendants were responsible for the priesthood, while the other Levites would assist them in caring for the tabernacle.
+The people are now afraid to come near the tabernacle. So God explains how He will protect them. The priests and Levites will guard the holy things and bear the responsibility for any wrong done there. In return, the priests receive portions of the offerings, the firstfruits, and the firstborn animals. The priests and Levites will not receive any land in Canaan. God tells Aaron, “I am thy part and thine inheritance among the children of Israel.” Instead, the Levites will live on the tithes the people give, and they must give a tenth of those tithes to the priests.
 
-The priests received designated portions of offerings, and the Levites received tithes, a tenth of Israel's produce, to support their service.
-
-God also gave instructions for preparing water used in ceremonial purification. A red heifer was to be sacrificed, and its ashes used in a cleansing mixture.
-
-Those who became unclean through contact with a dead body were required to follow this purification process before returning to ceremonial cleanness.
+Chapter 19 explains how someone who has touched a dead body can be made clean again. A perfect red cow that has never pulled a plow is killed outside the camp and burned completely, along with cedar wood, hyssop, and scarlet yarn. Its ashes are kept and mixed with water. Anyone who touches a dead body must be sprinkled with this water on the third and seventh days to become clean. With so many deaths in the wilderness, this law was badly needed.
 
 **Moses Disobeys God at Meribah (Numbers 20:1–29)** — Israel faces another water shortage, and Moses' failure to follow God's command prevents him and Aaron from entering the promised land.
 
-The Israelites arrived in the wilderness of Zin, where Miriam died and was buried at Kadesh.
+The forty years are nearly over. The people arrive at Kadesh, and Miriam dies and is buried there. Again there is no water, and the new generation complains just like their parents: “Why have ye brought up the congregation of the LORD into this wilderness, that we and our cattle should die there?”
 
-When the people complained about having no water, God told Moses to take the rod and speak to the rock before the congregation.
+God tells Moses to take his staff and speak to the rock in front of the people, and water will pour out. But Moses is angry. He gathers the people and says, “Hear now, ye rebels; must we fetch you water out of this rock?” Then he strikes the rock twice with his staff. Water gushes out, and the people and animals drink. But God tells Moses and Aaron, “Because ye believed me not, to sanctify me in the eyes of the children of Israel, therefore ye shall not bring this congregation into the land which I have given them.” Moses had disobeyed God and acted as if he and Aaron were the ones providing the water.
 
-Instead, Moses said, “Hear now, ye rebels; must we fetch you water out of this rock?” and struck the rock twice with his rod. Water flowed abundantly, but God declared that Moses and Aaron had failed to honor Him as holy before Israel.
-
-Because of this disobedience, neither would lead the people into the promised land.
-
-Later, the king of Edom refused Israel permission to cross his territory, forcing the people to take another route.
-
-At Mount Hor, Aaron died after his priestly garments were transferred to his son Eleazar. Israel mourned Aaron for thirty days.
+Moses sends messengers to the king of Edom, reminding him that Israel and Edom are brothers, and asks to pass through his land. Edom refuses and comes out with an army, so Israel goes around. At Mount Hor, God tells Moses that Aaron's time has come. Moses takes Aaron and his son Eleazar up the mountain, removes Aaron's priestly garments, and puts them on Eleazar. Aaron dies there on the mountaintop. When the people see that Aaron is dead, they mourn for him thirty days.
 
 **God Delivers Israel Through the Wilderness (Numbers 21:1–35)** — God grants Israel victories over enemies, provides healing through a bronze serpent, and leads the people closer to the promised land.
 
-After Israel defeated a Canaanite king who had attacked them, the people traveled around Edom.
+A Canaanite king named Arad attacks Israel and takes some prisoners. Israel asks God for help, and they defeat him completely. But as they travel the long way around Edom, the people grow impatient and complain again: “there is no bread, neither is there any water; and our soul loatheth this light bread.” They are calling God's manna worthless.
 
-Growing impatient, they again complained against God and Moses. God sent poisonous serpents among them, and many died.
+So God sends “fiery serpents” among them, poisonous snakes that bite the people, and many die. The people come to Moses and confess, “We have sinned.” Moses prays, and God gives a strange cure: “Make thee a fiery serpent, and set it upon a pole: and it shall come to pass, that every one that is bitten, when he looketh upon it, shall live.” Moses makes a bronze snake, and anyone who is bitten and looks at it lives. Jesus later told Nicodemus, “as Moses lifted up the serpent in the wilderness, even so must the Son of man be lifted up” (John 3:14).
 
-When the people confessed their sin, God instructed Moses to make a bronze serpent and place it on a pole. Those who had been bitten could look upon it and live.
-
-As Israel continued traveling, God provided water, and the people defeated Sihon, king of the Amorites, and Og, king of Bashan.
-
-These victories brought Israel into possession of territory east of the Jordan River.
+As they move north, God gives them water at a well, and they sing, “Spring up, O well.” When Sihon, king of the Amorites, refuses to let them pass and attacks, Israel defeats him and takes his land. Then Og, the giant king of Bashan, comes out to fight, and God says, “Fear him not: for I have delivered him into thy hand.” Israel wins again and takes his land too. These victories east of the Jordan become famous and are remembered in Israel's songs for centuries.
 
 **God Turns Balaam's Intended Curses Into Blessings (Numbers 22:1–24:25)** — A Moabite king hires Balaam to curse Israel, but God prevents him from speaking against the people He has chosen to bless.
 
-As Israel camped near Moab, King Balak became afraid of their growing presence. He sent messengers to Balaam, a man known for pronouncing blessings and curses, asking him to curse Israel.
+Israel camps on the plains of Moab, across the Jordan from Jericho. Balak, the king of Moab, is terrified. He sends messengers with money to hire Balaam, a famous fortune-teller from far away, to curse Israel. God tells Balaam, “Thou shalt not go with them; thou shalt not curse the people: for they are blessed.” Balak sends more important men with bigger offers. This time God allows Balaam to go, but only to say what God tells him.
 
-God initially forbade Balaam to go. After further messengers arrived, God permitted him to go but told him to speak only the word God gave him. Even so, God's anger was kindled because he went.
+On the road, an angel of the LORD stands in the way with a drawn sword. Balaam cannot see him, but his donkey can. Three times the donkey turns aside, first into a field, then against a wall, crushing Balaam's foot, and finally lying down under him. Each time, Balaam beats her. “And the LORD opened the mouth of the ass, and she said unto Balaam, What have I done unto thee, that thou hast smitten me these three times?” Balaam answers, “I would there were a sword in mine hand, for now would I kill thee.” Then God opens Balaam's eyes, and he sees the angel with the sword and falls on his face. The angel tells him the donkey saved his life. He may go on, but must speak only God's words.
 
-During the journey, Balaam's donkey saw an angel blocking the road and repeatedly turned aside. God enabled the donkey to speak, and Balaam eventually saw the angel himself.
+Balak takes Balaam up to high places where he can see Israel's camp, and builds altars. But each time Balaam opens his mouth, a blessing comes out instead of a curse: “How shall I curse, whom God hath not cursed?” “God is not a man, that he should lie; neither the son of man, that he should repent.” “What hath God wrought!” Looking at the tribes camped in order, he says, “How goodly are thy tents, O Jacob, and thy tabernacles, O Israel!”
 
-When Balaam reached Balak, he could speak only the words God gave him. Instead of cursing Israel, he repeatedly blessed them.
-
-His messages declared that God had blessed Israel and foretold future victories: “there shall come a Star out of Jacob, and a Sceptre shall rise out of Israel.”
+Balak is furious: “I called thee to curse mine enemies, and, behold, thou hast altogether blessed them these three times.” But Balaam gives one more prophecy, looking far into the future: “there shall come a Star out of Jacob, and a Sceptre shall rise out of Israel.” A great king will come from Israel and crush Moab. Then Balaam goes home.
 
 **Israel Falls Into Sin at Baalpeor (Numbers 25:1–18)** — Israel becomes involved in idolatry and sexual immorality with Moabite women, bringing judgment upon the people before Phinehas acts to stop the offense.
 
-While camped at Shittim, Israelite men became involved with women of Moab, who invited them to sacrifices honoring their gods.
+What Balaam could not do with curses, Moab and Midian manage another way. While Israel camps at Shittim, “the people began to commit whoredom with the daughters of Moab.” The women invite the men to sacrifices for their gods. The Israelites eat with them, bow down to their idols, and join in worshiping Baal of Peor. God's anger burns, and a plague breaks out. Later we learn that this was Balaam's idea (Numbers 31:16).
 
-The Israelites began worshiping Baalpeor, provoking God's anger.
-
-God commanded judgment against those involved, and a plague spread through the congregation.
-
-When Zimri, a leader from the tribe of Simeon, openly brought a Midianite woman named Cozbi into the camp, Phinehas, the grandson of Aaron, killed them both. His action stopped the plague, which had claimed 24,000 lives.
-
-God commended Phinehas for his zeal and established a covenant of peace with him, promising an enduring priesthood to his descendants.
+While the people weep at the entrance to the tabernacle, an Israelite leader named Zimri brings a Midianite woman named Cozbi right past Moses and the whole congregation and into his tent. Phinehas, Aaron's grandson, grabs a spear, follows them into the tent, and drives the spear through both of them. The plague stops, but 24,000 have already died. God says Phinehas “was zealous for my sake,” and gives him “my covenant of peace,” the promise of a lasting priesthood for his family. God then commands Israel to treat the Midianites as enemies.
 
 **A New Generation Prepares to Enter Canaan (Numbers 26:1–30:16)** — God orders a new census, establishes inheritance rights, appoints Joshua as Moses' successor, and gives further instructions for offerings and vows.
 
-After the plague, God commanded Moses and Eleazar to count Israel's men who were twenty years old and older.
+After the plague, God tells Moses and Eleazar to count the people again. The new total is 601,730 men, almost the same as forty years before. But the people are different. Of all the men counted at Sinai, “there was not left a man of them, save Caleb the son of Jephunneh, and Joshua the son of Nun.” A new generation is ready to enter the land, and the land will be divided among the tribes by size.
 
-The new census recorded 601,730 men. Apart from Caleb and Joshua, not one of the men counted at Sinai remained, for the earlier generation had died in the wilderness as God had said.
+Five sisters, Mahlah, Noah, Hoglah, Milcah, and Tirzah, come to Moses with a problem. Their father Zelophehad died without sons, so their family will lose its share of the land. They ask, “Why should the name of our father be done away from among his family, because he hath no son?” Moses brings their case to God, who answers, “The daughters of Zelophehad speak right.” From then on, daughters can inherit when there are no sons.
 
-Five daughters of Zelophehad approached Moses because their father had died without sons. God upheld their request for an inheritance and established rules for similar situations.
+God tells Moses to climb a mountain and look out over the promised land, because he will die soon without entering it. Moses' first thought is for the people. He asks God to appoint a leader, “that the congregation of the LORD be not as sheep which have no shepherd.” God chooses Joshua, “a man in whom is the spirit.” Moses lays his hands on Joshua in front of Eleazar and the whole nation and gives him some of his authority.
 
-God then told Moses that he would see the promised land but would not enter it. Moses asked God to appoint another leader, and Joshua was publicly commissioned to succeed him.
-
-Additional instructions established daily, weekly, monthly, and festival offerings. God also clarified responsibilities concerning vows and promises made to Him.
+Chapters 28 and 29 list the offerings for each day, each Sabbath, each new month, and each yearly feast. Chapter 30 explains how vows work. A man must always keep his vow. A woman's vow can be canceled by her father or husband, but only on the day he hears of it.
 
 **Israel Secures Land East of the Jordan (Numbers 31:1–32:42)** — Israel defeats Midian, and two tribes request territory east of the Jordan while promising to help the remaining tribes conquer Canaan.
 
-God commanded Israel to carry out judgment against Midian for its role in leading the people into sin.
+God tells Moses to take vengeance on the Midianites for leading Israel into sin at Peor. A thousand men from each tribe go to war, with Phinehas carrying the holy trumpets. They kill the Midianite kings, and they also kill Balaam. Moses is angry that the soldiers spared the women, since they were the ones who had followed Balaam's advice and seduced Israel. He orders that the boys and every woman who had slept with a man be put to death, sparing only the young girls who were virgins. The soldiers purify themselves, and the captured goods are divided between the soldiers and the rest of the people, with a share given to the LORD. The commanders are amazed that not a single Israelite soldier was lost.
 
-Moses sent an army of a thousand men from each tribe, accompanied by Phinehas the priest. The Midianite kings and Balaam were killed, and the Israelites took captives and possessions. Moses was angry that the officers had spared the Midianite women, because they had led Israel into sin at Peor through the counsel of Balaam. He then gave commands concerning the captives, purification, and distribution of the spoils.
-
-Afterward, the tribes of Reuben and Gad requested land east of the Jordan River because it was suitable for their large herds.
-
-Moses initially warned them against abandoning the other Israelites. The tribes promised to send their fighting men across the Jordan until the rest of Israel received its inheritance.
-
-Moses accepted their agreement. Land east of the Jordan was assigned to Reuben, Gad, and half the tribe of Manasseh.
+The tribes of Reuben and Gad have huge herds of cattle, and they see that the land east of the Jordan is perfect grazing land. They ask Moses if they can settle there instead of crossing into Canaan. Moses is furious, thinking they are repeating the sin of the ten spies: “Shall your brethren go to war, and shall ye sit here?” They explain that they will build towns for their families and pens for their animals, then march ahead of the other tribes into battle and not return home until the whole land is won. Moses agrees, with a warning: if they fail to keep this promise, “be sure your sin will find you out.” Reuben, Gad, and half the tribe of Manasseh receive the land east of the Jordan.
 
 **God Prepares Israel to Possess the Land (Numbers 33:1–36:13)** — God reviews Israel's wilderness journey and establishes instructions for land boundaries, inheritance, cities of refuge, and life in Canaan.
 
-Moses recorded the stages of Israel's journey from Egypt through the wilderness to the plains of Moab.
+Moses records every stop on Israel's journey, from Rameses in Egypt to the plains of Moab, more than forty camps in all. It is a record of God's faithfulness through every step. Then God gives instructions for taking the land. Israel must drive out the people of Canaan and destroy all their idols and high places. If they do not, “those which ye let remain of them shall be pricks in your eyes, and thorns in your sides.”
 
-God commanded the Israelites to remove the inhabitants of Canaan and destroy their idols and places of false worship. He warned that failure to obey would bring lasting trouble.
+God describes the borders of the promised land and names the leaders who will divide it among the tribes. The Levites receive forty-eight cities to live in, scattered among the tribes. Six of those are cities of refuge. Someone who kills another person by accident can flee there for safety from a relative seeking revenge. He must stay there until the death of the high priest. But a murderer must be put to death, because bloodshed pollutes the land.
 
-God then established the boundaries of the promised land and appointed leaders to oversee its division among the tribes.
-
-The Levites were to receive cities and surrounding lands rather than a separate tribal territory. Six of their cities would serve as places of refuge for people who had killed someone unintentionally, allowing their cases to be judged. A person cleared of murder was to stay in the city of refuge until the death of the high priest.
-
-God also clarified laws concerning murder, accidental death, and inheritance. The daughters of Zelophehad were permitted to inherit, with marriage arrangements that would preserve their tribe's land.
-
-Numbers ends on the plains of Moab, beside the Jordan River, across from Jericho. Israel had spent decades in the wilderness because of rebellion and unbelief, yet God had continued to guide, provide for, discipline, and preserve His people. The generation that left Egypt had largely passed away, and a new generation now stood ready to enter the land God had promised.
+The book ends by returning to the daughters of Zelophehad. Their tribal leaders worry that if the sisters marry men from other tribes, their land will pass to those tribes. So Moses rules that the sisters must marry within their father's tribe, and they do. “These are the commandments and the judgments, which the LORD commanded by the hand of Moses unto the children of Israel in the plains of Moab by Jordan near Jericho.” Numbers ends with a new generation camped at the edge of the promised land, ready to go in.
 
 # Deuteronomy
 When it happened: In the last weeks of Moses' life, beginning on the first day of the eleventh month of the fortieth year after the exodus (Deuteronomy 1:3).
@@ -610,188 +526,118 @@ The world at the time: A new generation, born in the wilderness, was about to cr
 
 **Moses Reminds Israel of Their Journey (Deuteronomy 1:1–3:29)** — As Israel prepares to enter the promised land, Moses recalls the nation's journey, its past rebellion, and God's continued faithfulness.
 
-The Israelites were camped on the plains of Moab, east of the Jordan River. Nearly forty years had passed since God delivered them from slavery in Egypt. Now a new generation stood ready to enter Canaan, the land God had promised to Abraham, Isaac, and Jacob, their ancestors.
+Deuteronomy is Moses' farewell. Forty years after leaving Egypt, the Israelites are camped on the plains of Moab, across the Jordan from the promised land. Moses is 120 years old and knows he will not go in with them. So he gathers the new generation and gives a series of speeches. “These be the words which Moses spake unto all Israel.” The name Deuteronomy means second law, because Moses repeats God's law for the children of the people who first heard it at Sinai.
 
-Moses, the leader who had guided Israel through the wilderness, began reminding the people of their history. He recalled how God had instructed them to leave Mount Horeb, also called Sinai, and travel toward the promised land.
+He begins by reminding them of their story. Forty years earlier, God had said at Mount Sinai, “Ye have dwelt long enough in this mount,” and sent them toward Canaan. Moses had appointed judges to help him. But when they reached the border and sent the spies, their parents refused to go in. Moses reminds them that God had carried them through the wilderness, “as a man doth bear his son,” yet they did not trust Him. So that generation died in the wilderness, and Moses says, “the LORD was angry with me for your sakes.”
 
-When Israel first approached Canaan, twelve men explored the land. Although God had promised it to them, the people became afraid of its inhabitants and refused to enter. Their rebellion brought God's judgment, and that generation wandered in the wilderness until its adults had died, apart from Joshua and Caleb.
-
-Moses also recalled how God had guided Israel around neighboring territories and given them victories over Sihon and Og, two powerful kings east of the Jordan.
-
-Moses recalled how the tribes of Reuben and Gad and half the tribe of Manasseh received land east of the Jordan. He also told how he had pleaded with God to let him cross into the land, but the Lord, angry with him because of the people, refused and told him to view it from the top of Pisgah instead. Joshua, his appointed successor, would lead the people across the river.
+Now, Moses tells them, God has led them past Edom, Moab, and Ammon, nations He had given to Esau and Lot's descendants. And He has already given them victory over Sihon and Og, the kings east of the Jordan. Og was a giant whose iron bed was over thirteen feet long. Moses tells how he begged God, “I pray thee, let me go over, and see the good land that is beyond Jordan.” But God answered, “Let it suffice thee; speak no more unto me of this matter.” God allowed him only to look at the land from the top of Mount Pisgah, and told him to encourage and strengthen Joshua, who would lead them in.
 
 **Israel Must Remember God's Covenant (Deuteronomy 4:1–5:33)** — Moses urges Israel to obey God's commandments, avoid idols, and remember the covenant established when God spoke to them at Mount Sinai.
 
-Moses warned the people not to forget what they had witnessed. God had spoken to them from the fire at Horeb, but they had seen no physical form of Him.
+Moses urges the people to listen and obey, so that they will live and take the land. “Ye shall not add unto the word which I command you, neither shall ye diminish ought from it.” If they obey, other nations will say how wise they are. “For what nation is there so great, who hath God so nigh unto them, as the LORD our God is in all things that we call upon him for?”
 
-Because of this, Israel was forbidden to make idols or worship the sun, moon, stars, or anything God had created.
+They must never forget what they saw at Sinai, and they must teach it to their children and grandchildren. Moses reminds them that at Sinai they heard God's voice but “saw no manner of similitude,” no shape or form. So they must never make an idol of any kind, “For the LORD thy God is a consuming fire, even a jealous God.” If they turn to idols, they will be scattered among the nations. “But if from thence thou shalt seek the LORD thy God, thou shalt find him, if thou seek him with all thy heart and with all thy soul.” No other god ever took a nation out of another nation by such signs and wonders. “Know therefore this day... that the LORD he is God in heaven above, and upon the earth beneath: there is none else.”
 
-Moses warned that turning to idols would eventually bring destruction and removal from the land. Yet he also declared that if Israel sought God with all its heart, He would not forget His covenant.
-
-After identifying three cities of refuge east of the Jordan, Moses reminded Israel of the Ten Commandments.
-
-These commands required the people to worship God alone, honor His name, keep the Sabbath, respect their parents, and reject murder, adultery, theft, false testimony, and coveting.
-
-Moses recalled how the people feared God's voice at the mountain and asked him to receive His words on their behalf.
+In chapter 5, Moses repeats the Ten Commandments. This time he gives a new reason for the Sabbath. Not only did God rest at creation, but they must give rest to their servants because “thou wast a servant in the land of Egypt.” He reminds them how terrified their parents were at the fire on the mountain and how they begged Moses to listen to God for them. God had said, “O that there were such an heart in them, that they would fear me, and keep all my commandments always.”
 
 **God Calls Israel to Love and Obey Him (Deuteronomy 6:1–8:20)** — Moses teaches Israel that wholehearted love for God must shape daily life, especially when the people begin enjoying the blessings of Canaan.
 
-Moses gave Israel a central confession and command: “Hear, O Israel: The LORD our God is one LORD: And thou shalt love the LORD thy God with all thine heart, and with all thy soul, and with all thy might.”
+Then Moses speaks the most important words in the book, called the Shema after its first Hebrew word, hear. Jewish people still pray it every day: “Hear, O Israel: The LORD our God is one LORD: And thou shalt love the LORD thy God with all thine heart, and with all thy soul, and with all thy might.” Jesus later called this the first and greatest commandment. “And these words, which I command thee this day, shall be in thine heart: And thou shalt teach them diligently unto thy children, and shalt talk of them when thou sittest in thine house, and when thou walkest by the way, and when thou liest down, and when thou risest up.” They should even tie them on their hands and write them on their doorposts.
 
-Parents were instructed to teach God's words diligently to their children, speaking of them at home, while traveling, and throughout daily life.
+Moses warns them that when they move into cities they did not build and houses full of good things they did not fill, they may forget God. “Then beware lest thou forget the LORD.” “Ye shall not tempt the LORD your God.” And when their children ask what all these laws mean, they should tell the story: “We were Pharaoh's bondmen in Egypt; and the LORD brought us out of Egypt with a mighty hand.”
 
-As Israel prepared to enter Canaan, Moses warned against adopting the worship practices of its inhabitants. God had chosen Israel not because it was greater than other nations, but because of His love and His promise to their ancestors.
+Israel must completely destroy the nations of Canaan and their idols, and must not marry them, or they will be led to worship false gods. They must remember that God did not choose them for their size: “The LORD did not set his love upon you, nor choose you, because ye were more in number than any people; for ye were the fewest of all people: But because the LORD loved you.” He will drive out their enemies “by little and little.”
 
-Moses reminded the people how God had provided manna, water, and clothing that did not wear out during their wilderness journey. God had humbled them and fed them with manna to teach them “that man doth not live by bread only, but by every word that proceedeth out of the mouth of the LORD.”
-
-When they entered a land of abundant food, flowing water, and valuable resources, they were not to forget who had provided these blessings.
-
-Their prosperity was never to become a reason for pride or disobedience.
+In chapter 8, Moses explains why God led them through forty hard years. He humbled them and let them be hungry, then fed them with manna, “that he might make thee know that man doth not live by bread only, but by every word that proceedeth out of the mouth of the LORD doth man live.” Jesus quoted this when He was tempted in the wilderness. Through all those years, “Thy raiment waxed not old upon thee, neither did thy foot swell.” God disciplined them “as a man chasteneth his son.” Now He is bringing them to “a good land, a land of brooks of water.” But when they are rich and comfortable, they must not say, “My power and the might of mine hand hath gotten me this wealth. But thou shalt remember the LORD thy God: for it is he that giveth thee power to get wealth.”
 
 **Moses Recalls Israel's Rebellion and God's Mercy (Deuteronomy 9:1–11:32)** — Moses reminds Israel that receiving the promised land is not a reward for their righteousness and calls them to respond with humility and obedience.
 
-Moses warned Israel not to believe that its own goodness had earned the land. He reminded the people of their repeated rebellion, especially when they made a golden calf while he was receiving God's commandments.
+Moses tells them that they will soon defeat nations bigger and stronger than they are, including the giant Anakim. But they must not think it is because of their own goodness: “Speak not thou in thine heart... For my righteousness the LORD hath brought me in to possess this land.” The nations are being driven out because of their wickedness, and to keep God's promise to Abraham, Isaac, and Jacob. “For thou art a stiffnecked people.”
 
-He recalled how he broke the first stone tablets, destroyed the idol, and pleaded with God not to destroy the nation.
+To prove it, Moses retells the story of the golden calf. While he was on the mountain receiving the tablets, they made an idol. He smashed the tablets, then lay on his face before God for another forty days and nights without food, pleading for them and for Aaron. He also reminds them of their rebellions at Taberah, Massah, and Kadesh. “Ye have been rebellious against the LORD from the day that I knew you.”
 
-God later instructed him to prepare new tablets, and the covenant commandments were written again.
+But God forgave them and gave new tablets, which Moses placed in the ark. So now Moses asks, “And now, Israel, what doth the LORD thy God require of thee, but to fear the LORD thy God, to walk in all his ways, and to love him, and to serve the LORD thy God with all thy heart and with all thy soul?” “Circumcise therefore the foreskin of your heart, and be no more stiffnecked.” God is “a great God, a mighty, and a terrible, which regardeth not persons,” who cares for the orphan and the widow and loves the foreigner. “Love ye therefore the stranger: for ye were strangers in the land of Egypt.”
 
-Moses urged Israel to fear God, walk in His ways, love Him, and serve Him wholeheartedly. He emphasized God's justice and His care for widows, orphans, and foreigners.
-
-He then placed a choice before the nation: blessings through obedience or a curse through disobedience. These were to be declared after Israel entered the land.
+The new land is not like Egypt, where farmers had to water crops by hand from the Nile. It is a land of hills and valleys that drinks rain from heaven, a land God Himself cares for: “the eyes of the LORD thy God are always upon it.” If they obey, God will send rain. If they turn to other gods, He will shut up the sky. Then Moses says, “Behold, I set before you this day a blessing and a curse.” When they enter the land, the blessing is to be announced from Mount Gerizim and the curse from Mount Ebal.
 
 **God Establishes Rules for Worship (Deuteronomy 12:1–14:29)** — God commands Israel to reject false worship, honor the place He chooses for worship, and follow His instructions concerning food and offerings.
 
-Moses instructed Israel to destroy the idols and pagan worship sites found in Canaan.
+Now Moses begins the laws Israel must live by in the land. First, they must destroy every pagan altar, sacred pillar, and idol in Canaan, on every high mountain and under every green tree. They must not worship God however they like, “every man whatsoever is right in his own eyes.” Instead, they must bring their sacrifices to the one place God will choose for His name, which later becomes Jerusalem. There they will eat and celebrate before the LORD with their families and the Levites. They may eat meat at home, but never the blood. “What thing soever I command you, observe to do it: thou shalt not add thereto, nor diminish from it.”
 
-Rather than copying surrounding nations, the Israelites were to bring sacrifices and sacred offerings to the place God would choose for His name.
+Chapter 13 warns about anyone who tries to lead them to other gods. Even if a prophet performs a sign that comes true, they must not listen, because “the LORD your God proveth you,” testing whether they love Him with all their heart. Even if the person is their own brother, child, wife, or closest friend, they must not hide him. And if a whole city turns to idols, it must be destroyed.
 
-The people could eat meat in their towns, but they were forbidden to eat blood, because “the blood is the life.”
-
-Moses also warned against false prophets and anyone attempting to lead Israel toward other gods, even when the influence came from close family members or entire communities.
-
-Israel was reminded that it belonged to God as a holy people. Dietary restrictions distinguished clean and unclean animals, while instructions concerning tithes established ways to support worship, the Levites, and those in need.
+Chapter 14 explains that because they are God's holy people, they must not cut themselves or shave their heads for the dead, as pagans did. Moses repeats the lists of clean and unclean foods, and adds, “Thou shalt not seethe a kid in his mother's milk.” Every year they must set aside a tenth of their harvest and eat it in a joyful feast at God's chosen place. If the trip is too far, they can sell it and buy whatever they want there, “for oxen, or for sheep, or for wine, or for strong drink.” Every third year, the tithe is to be stored in their towns for the Levites, foreigners, orphans, and widows.
 
 **God Commands Justice and Faithfulness (Deuteronomy 15:1–18:22)** — Moses explains laws concerning generosity, sacred celebrations, leadership, justice, and the responsibility to listen to God's appointed messengers.
 
-Every seventh year, Israelites were to release certain debts owed by fellow Israelites. Moses instructed them to help the poor generously rather than refusing assistance because the year of release was approaching.
+Every seventh year, Israelites must cancel the debts their neighbors owe them. God's goal is a nation where “there shall be no poor among you.” But Moses is realistic: “For the poor shall never cease out of the land: therefore I command thee, saying, Thou shalt open thine hand wide unto thy brother, to thy poor, and to thy needy.” Hebrew servants must be set free in the seventh year, and their masters must not send them away empty-handed but give them generously from their flocks, grain, and wine. If a servant loves his master and wants to stay, his ear is pierced with an awl against the door as a sign that he will serve for life.
 
-He also gave rules concerning Hebrew servants and the dedication of firstborn animals.
+Three times a year, at Passover, the Feast of Weeks, and the Feast of Tabernacles, all the men must come to God's chosen place, “and they shall not appear before the LORD empty: Every man shall give as he is able.” The feasts are times to rejoice with family, servants, Levites, foreigners, orphans, and widows.
 
-Israel was commanded to observe Passover, the Feast of Weeks, and the Feast of Tabernacles, remembering God's deliverance and celebrating His provision.
+Israel must appoint judges in every town who will judge fairly and not take bribes: “That which is altogether just shalt thou follow.” A person may only be put to death on the evidence of two or three witnesses. Hard cases go to the priests and the judge at the central sanctuary. Moses also looks ahead to a time when Israel will want a king. God's king must be an Israelite, and he must not build up great numbers of horses, wives, or silver and gold. He must write his own copy of the law and “read therein all the days of his life,” so he will not think he is better than his brothers.
 
-Moses established standards for judges and warned against bribery and dishonest decisions.
-
-If Israel eventually appointed a king, that ruler was to follow God's law rather than pursue excessive wealth, horses, or wives.
-
-The priests and Levites received instructions concerning their support. Moses also prohibited occult practices and declared that God would raise up a Prophet from among their own people, “like unto me,” whom they were to hear.
+Israel must not practice the evil customs of Canaan: child sacrifice, fortune-telling, witchcraft, or speaking with the dead. Instead, God will speak through His prophets. “The LORD thy God will raise up unto thee a Prophet from the midst of thee, of thy brethren, like unto me; unto him ye shall hearken.” Peter later said this promise pointed to Jesus (Acts 3:22). How can they tell a true prophet from a false one? If what he says does not come true, “that is the thing which the LORD hath not spoken.”
 
 **God Establishes Laws for Justice and Protection (Deuteronomy 19:1–21:23)** — God provides laws addressing accidental death, truthful testimony, warfare, unsolved murders, and responsibilities toward vulnerable people.
 
-Moses instructed Israel to establish cities of refuge where someone who killed another person accidentally could seek protection while the circumstances were examined.
+When they take the land, Israel must set apart cities of refuge so that someone who kills another person by accident can flee there and be safe. Moses gives an example: two men are cutting wood, and an axe head flies off the handle and kills one of them. But a person who murders out of hatred must be handed over for punishment. They must never move a neighbor's boundary stone. A false witness must receive the punishment he tried to bring on the other person, “life shall go for life, eye for eye, tooth for tooth.”
 
-He also prohibited moving property boundaries and required reliable witnesses before serious accusations could be established.
+When Israel goes to war, the priest must encourage the soldiers: “let not your hearts faint, fear not.” Some men are sent home: anyone who has just built a house, planted a vineyard, or become engaged, and anyone who is afraid, so his fear will not spread to others. Before attacking a distant city, they must first offer it peace. During a siege, they must not cut down fruit trees, “for the tree of the field is man's life.”
 
-Instructions for warfare reminded Israel not to fear powerful enemies because God would accompany His people.
-
-Additional laws addressed the treatment of cities during war, responsibility for unsolved murders, marriage to women taken captive, inheritance rights, and the judgment of a stubborn and rebellious son who refused to obey his parents. The body of an executed man hanged on a tree was not to remain there overnight, “for he that is hanged is accursed of God.”
-
-Even when dealing with serious offenses, Israel was required to follow the procedures God had established.
+If a murdered body is found in the open country and no one knows who did it, the elders of the nearest town must offer a young cow in a special ceremony and declare their innocence, so the land is not stained with blood. Other laws protect people who had little power. A woman captured in war may be taken as a wife only after a month of mourning, and she may not be sold as a slave. A firstborn son receives a double inheritance, even if he is the son of a less-loved wife. A son who is stubborn and rebellious, a glutton and drunkard who will not obey his parents, is to be brought to the elders and stoned. And if a criminal is executed and hung on a tree, his body must be buried the same day, “for he that is hanged is accursed of God.” Paul later applied this verse to Christ's death on the cross (Galatians 3:13).
 
 **God Teaches Responsibility in Daily Life (Deuteronomy 22:1–25:19)** — Moses gives Israel practical commands governing relationships, marriage, property, fairness, personal responsibility, and treatment of others.
 
-The laws addressed everyday responsibilities, including returning lost property, helping animals in distress, and preventing avoidable harm.
+These chapters cover many parts of daily life. If you see your neighbor's ox or sheep wandering, you must bring it back. You must help him lift his fallen donkey. Men and women must not wear each other's clothing. If you find a bird's nest, you may take the eggs or young, but you must let the mother bird go. When you build a house, you must put a railing around the flat roof, so no one falls off. Israel must not plant two kinds of seed in a field, plow with an ox and a donkey together, or wear clothes woven of wool and linen together.
 
-Moses also established rules concerning clothing, marriage, sexual conduct, divorce, and family obligations.
+There are laws about sexual sin and marriage. If a husband falsely accuses his new wife of not being a virgin, he is punished and may never divorce her. If the charge is true, she is stoned. Adultery is punished by death for both people. If a man rapes an engaged woman in the open country, where no one could hear her scream, only the man dies. If a man rapes an unengaged girl, he must pay her father and marry her, and he can never divorce her. Certain people, including Ammonites and Moabites, may not enter the assembly of the LORD, because those nations refused to help Israel and hired Balaam to curse them.
 
-Other instructions concerned cleanliness within the military camp, protection of escaped servants, lending, wages, and fair treatment of the poor.
+An escaped slave who flees to Israel must not be handed back to his master. Israelites must not charge interest to one another. A hungry traveler may pick grapes or grain by hand from a neighbor's field, but may not carry any away. If a man divorces his wife, he must give her a written certificate. A newly married man is excused from military service for a year, to stay home and make his wife happy. Workers must be paid the same day. Children must not be put to death for their parents' sins, nor parents for their children's. When harvesting, farmers must leave forgotten sheaves and the last of the olives and grapes, “it shall be for the stranger, for the fatherless, and for the widow.” Even animals are protected: “Thou shalt not muzzle the ox when he treadeth out the corn.”
 
-Israelites were forbidden to exploit vulnerable people or use dishonest weights and measures in business.
-
-God also commanded farmers to leave certain portions of their harvest for foreigners, orphans, and widows.
-
-The instructions concluded with a command to remember Amalek's attack upon Israel during the journey from Egypt and to carry out God's judgment against that nation when He granted them rest.
+If a man dies without a son, his brother should marry the widow, and their first son will carry on the dead man's name. If the brother refuses, the widow pulls off his sandal and spits in his face in front of the elders. Israel must use honest weights and measures. And they must never forget what the Amalekites did, attacking the weak and tired stragglers at the back of the line when Israel came out of Egypt: “Remember what Amalek did unto thee.”
 
 **Israel Is Called to Renew Its Commitment (Deuteronomy 26:1–27:26)** — Moses instructs Israel to acknowledge God's provision through offerings and prepare for a public declaration of the covenant after entering Canaan.
 
-When Israel entered the promised land, the people were to bring the firstfruits of their harvest before God.
+When they finally live in the land, each family is to bring the first part of their harvest to God's chosen place in a basket. The worshiper must recite Israel's story out loud: “A Syrian ready to perish was my father, and he went down into Egypt, and sojourned there with a few, and became there a nation, great, mighty, and populous.” He tells how the Egyptians made them slaves, how they cried out, and how God brought them out “with a mighty hand” to this land flowing with milk and honey. Then he sets the basket before the LORD and rejoices. In the third year, after giving the tithe to the poor, he must declare that he has obeyed God's commands. Moses tells them, “this day thou art become the people of the LORD thy God.”
 
-As they presented these offerings, they were to remember their ancestors' journey, their suffering in Egypt, and God's deliverance into a fruitful land.
-
-Every third year, designated tithes were to provide for the Levites, foreigners, orphans, and widows.
-
-Moses then commanded Israel to set up large stones after crossing the Jordan and write God's law upon them.
-
-The tribes were to gather at Mount Gerizim and Mount Ebal, where blessings and curses would be publicly declared.
-
-The Levites would pronounce curses against serious acts of disobedience, and the people would affirm them.
+Once they cross the Jordan, they must set up large stones on Mount Ebal, coat them with plaster, and write all the words of the law on them. They must also build an altar there. Then six tribes are to stand on Mount Gerizim to bless the people, and six on Mount Ebal for the curses. The Levites will shout a list of curses, and after each one, all the people must answer, “Amen.” “Cursed be he that removeth his neighbour's landmark.” “Cursed be he that maketh the blind to wander out of the way.” “Cursed be he that perverteth the judgment of the stranger, fatherless, and widow.” The list includes idol worship, dishonoring parents, sexual sins, secret murder, and taking bribes. The last one covers everything: “Cursed be he that confirmeth not all the words of this law to do them.”
 
 **God Sets Before Israel Blessings and Curses (Deuteronomy 28:1–68)** — Moses describes the blessings promised for covenant obedience and the severe consequences Israel will face if it persistently rejects God's commandments.
 
-Moses declared that obedience would bring blessings upon Israel's cities, fields, families, livestock, and harvests.
+Moses lays out the blessings that will come if Israel obeys. “Blessed shalt thou be in the city, and blessed shalt thou be in the field.” Their children, crops, and animals will be blessed. “Blessed shalt thou be when thou comest in, and blessed shalt thou be when thou goest out.” God will defeat their enemies, open His treasure house of rain, and make other nations fear them. “And the LORD shall make thee the head, and not the tail.”
 
-God promised protection from enemies, productive land, and prosperity under His covenant.
+But if they disobey, every blessing will turn into a curse. “Cursed shalt thou be in the city, and cursed shalt thou be in the field.” The list of curses is far longer than the list of blessings, and it grows more terrible as it goes. Disease, drought, and defeat will come. “And thy heaven that is over thy head shall be brass, and the earth that is under thee shall be iron.” Locusts will eat their crops. Foreigners will rule over them. Enemies will besiege their cities so long that people will become desperate enough to eat their own children.
 
-But disobedience would bring the opposite. Moses warned of disease, failed crops, defeat, oppression, famine, and eventual removal from the land.
-
-The warnings grew increasingly severe, describing foreign invasion, siege, widespread suffering, and scattering among distant nations.
-
-These consequences were presented as covenant judgments if Israel abandoned the God who had delivered them from Egypt.
+Finally, “the LORD shall scatter thee among all people, from the one end of the earth even unto the other.” There they will find no rest, only fear: “In the morning thou shalt say, Would God it were even! and at even thou shalt say, Would God it were morning!” God will even send them back to Egypt in ships, to be sold as slaves where no one will buy them. Israel's later history, including the Assyrian and Babylonian exiles and the destruction of Jerusalem, followed this warning closely.
 
 **Moses Calls Israel to Choose Life (Deuteronomy 29:1–30:20)** — Moses renews the covenant with Israel, warns against future rebellion, and declares that returning to God remains possible after judgment.
 
-Moses gathered the people and reminded them of God's protection throughout the wilderness.
+Moses now leads the people into a renewal of the covenant there in Moab. He reminds them, “Your clothes are not waxen old upon you, and thy shoe is not waxen old upon thy foot.” The covenant is not just for those standing there, but for their descendants too. He warns that if anyone thinks he can secretly turn to other gods and still be safe, God will single him out for disaster. Future generations and foreigners will see the ruined land and ask why. The answer will be that they abandoned the covenant. Then Moses adds, “The secret things belong unto the LORD our God: but those things which are revealed belong unto us and to our children for ever, that we may do all the words of this law.”
 
-He warned that no individual, family, or tribe should secretly turn toward false gods while assuming they would escape the consequences.
+Yet Moses also looks beyond the coming disaster. When the curses have fallen and they are scattered among the nations, if they return to God with all their heart, He will gather them back. “And the LORD thy God will circumcise thine heart, and the heart of thy seed, to love the LORD thy God with all thine heart.”
 
-Moses also spoke of a future in which Israel might be scattered among nations because of disobedience.
-
-Yet he declared that if the people returned to God with all their heart, He would gather them again and restore them.
-
-God's commandments were not presented as unreachable or impossible to understand. Moses explained that His word had been made known to them.
-
-He placed before Israel life and death, blessing and cursing, and told them to “choose life” by loving God, obeying His voice, and remaining faithful to Him.
+And obeying God is not out of reach. “It is not in heaven,” and it is not across the sea. “But the word is very nigh unto thee, in thy mouth, and in thy heart, that thou mayest do it.” Then Moses puts the choice before them: “See, I have set before thee this day life and good, and death and evil.” “I call heaven and earth to record this day against you, that I have set before you life and death, blessing and cursing: therefore choose life, that both thou and thy seed may live: That thou mayest love the LORD thy God, and that thou mayest obey his voice, and that thou mayest cleave unto him: for he is thy life.”
 
 **Joshua Is Commissioned to Lead Israel (Deuteronomy 31:1–30)** — As Moses approaches the end of his leadership, he appoints Joshua, preserves God's law, and prepares Israel for future challenges.
 
-Moses told the people that he was 120 years old and would not cross the Jordan River.
+Moses tells the people, “I am an hundred and twenty years old this day; I can no more go out and come in.” God has told him he will not cross the Jordan, but God Himself will go before them, and Joshua will lead them. “Be strong and of a good courage, fear not, nor be afraid of them: for the LORD thy God, he it is that doth go with thee; he will not fail thee, nor forsake thee.” Then he calls Joshua and says the same thing to him in front of all Israel.
 
-He told Israel, “Be strong and of a good courage,” reminding them that God would go before them and would not fail or forsake them.
+Moses writes down the law and gives it to the priests and elders. Every seven years, at the Feast of Tabernacles, they must read it aloud to everyone, men, women, children, and foreigners, so that each new generation will learn to fear the LORD.
 
-Joshua was publicly commissioned to lead the nation into Canaan.
-
-Moses then wrote down the law and entrusted it to the priests and elders. He commanded that it be read publicly every seven years so future generations could hear and learn God's instructions.
-
-God also warned Moses that Israel would eventually turn toward other gods after entering the land.
-
-Moses was instructed to teach the people a song that would serve as a witness concerning their covenant responsibilities.
+Then God calls Moses and Joshua to the tabernacle and appears in the pillar of cloud. He tells Moses something painful: after Moses dies, the people will turn to other gods and break His covenant, and great troubles will come on them. So God gives Moses a song to teach the people, to stand as a witness against them when that day comes. Moses writes the song and teaches it to Israel. He places the book of the law beside the ark of the covenant, and he tells the Levites, “I know thy rebellion, and thy stiff neck.” Then he gathers everyone to hear the song.
 
 **Moses Declares God's Faithfulness and Blesses Israel (Deuteronomy 32:1–33:29)** — Moses delivers a song warning Israel against unfaithfulness, receives final instructions concerning his death, and blesses the tribes before his departure.
 
-Moses recited the song God had commanded him to teach Israel.
+Moses' song begins, “Give ear, O ye heavens, and I will speak; and hear, O earth, the words of my mouth.” It praises God: “He is the Rock, his work is perfect: for all his ways are judgment.” It tells how God found Israel in a desert land and cared for them, “As an eagle stirreth up her nest, fluttereth over her young, spreadeth abroad her wings, taketh them, beareth them on her wings.” But the song also predicts their unfaithfulness: “But Jeshurun waxed fat, and kicked.” Jeshurun is a poetic name for Israel. They will grow rich and forget the Rock who saved them. They will worship new gods, and God will punish them. Yet in the end, God will take vengeance on their enemies and show mercy to His people: “See now that I, even I, am he, and there is no god with me: I kill, and I make alive.” Moses tells the people to take all these words to heart, “For it is not a vain thing for you; because it is your life.”
 
-It proclaimed God's justice and faithfulness while describing how His people might grow prosperous, forget Him, and turn toward false gods.
+That same day, God tells Moses to climb Mount Nebo, where he will see the land of Canaan and die, just as Aaron died on Mount Hor.
 
-The song warned of judgment but also declared God's authority and His power to show mercy.
-
-Afterward, God instructed Moses to ascend Mount Nebo, where he would view Canaan before his death, because he and Aaron had not honored God as holy at the waters of Meribah-Kadesh.
-
-Before departing, Moses pronounced blessings over Israel's tribes, speaking of their responsibilities, protection, and future blessings.
-
-He concluded by celebrating Israel's unique position as a people saved and protected by the Lord.
+Before he goes, Moses blesses each tribe, much as Jacob blessed his sons in Genesis. Levi is blessed to teach God's law, Benjamin to “dwell in safety,” and Joseph with the richest gifts of the land. He ends with praise for Israel's God: “The eternal God is thy refuge, and underneath are the everlasting arms.” “Happy art thou, O Israel: who is like unto thee, O people saved by the LORD.”
 
 **Moses Sees the Promised Land and Dies (Deuteronomy 34:1–12)** — God allows Moses to see the promised land before his death, and Joshua assumes leadership as Israel prepares to enter Canaan.
 
-Moses climbed Mount Nebo to the top of Pisgah, across from Jericho.
+Moses climbs from the plains of Moab up Mount Nebo, to the top of Pisgah across from Jericho. There God shows him the whole land, from Gilead to Dan in the north, all the way to the western sea, and down to the south. “This is the land which I sware unto Abraham, unto Isaac, and unto Jacob, saying, I will give it unto thy seed: I have caused thee to see it with thine eyes, but thou shalt not go over thither.”
 
-From there, God showed him the land promised to Abraham, Isaac, and Jacob. Although Moses could see it, he would not cross the Jordan to enter it.
+“So Moses the servant of the LORD died there in the land of Moab, according to the word of the LORD.” God Himself buries him in a valley in Moab, “but no man knoweth of his sepulchre unto this day.” Moses was 120 years old, yet “his eye was not dim, nor his natural force abated.” The Israelites weep for him for thirty days.
 
-Moses died in the land of Moab at the age of 120. Scripture records that his eyesight had not weakened and his natural strength had not departed.
-
-God buried him in a valley in Moab, but the location of his grave remained unknown.
-
-The Israelites mourned Moses for thirty days.
-
-Joshua, full of the spirit of wisdom because Moses had laid his hands upon him, became Israel's new leader, and the people listened to him as God had commanded.
-
-Deuteronomy closes by honoring Moses as a prophet uniquely known by the Lord, through whom God performed great signs and wonders in Egypt and before Israel. The generation that had wandered through the wilderness now stood at the edge of the promised land, carrying God's commandments and covenant promises into a new chapter of its history.
+Joshua is now “full of the spirit of wisdom; for Moses had laid his hands upon him,” and the people obey him. The book closes with a tribute: “And there arose not a prophet since in Israel like unto Moses, whom the LORD knew face to face.” No one else did such signs and wonders in Egypt, or showed such great power before all Israel. The five books of Moses end with Israel at the edge of the promised land, waiting for a new leader to take them in.

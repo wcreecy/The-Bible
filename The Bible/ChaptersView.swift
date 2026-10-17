@@ -8,6 +8,11 @@ struct ChaptersView: View {
     /// Lets an iPad host keep an overview open while the selected book changes.
     let onSelectOverview: (() -> Void)?
     @State private var completedChapters: Set<String> = []
+    @State private var isShowingOverview = false
+    @State private var headerHeight: CGFloat = 0
+    @State private var isHeaderScrolledAway = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(
         book: Book,
@@ -29,13 +34,16 @@ struct ChaptersView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 16) {
-                if book.name == "Genesis" {
-                    GenesisChapterHeader(chapterCount: book.chapters.count)
-                } else if let theme = BookChapterTheme.themes[book.name] {
-                    ThemedBookChaptersHeader(title: book.name, theme: theme)
-                }
+                VStack(alignment: .leading, spacing: 16) {
+                    if book.name == "Genesis" {
+                        GenesisChapterHeader(chapterCount: book.chapters.count)
+                    } else if let theme = BookChapterTheme.themes[book.name] {
+                        ThemedBookChaptersHeader(title: book.name, theme: theme)
+                    }
 
-                overviewLink
+                    overviewLink
+                }
+                .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("\(book.chapters.count) chapters")
@@ -59,6 +67,27 @@ struct ChaptersView: View {
             .padding(.horizontal, 16)
             .padding(.vertical)
         }
+        // Matches StudyBookView: once most of the book header and About card scroll
+        // away, a compact bar floats over the content so the overview stays one tap away.
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            let scrolled = geometry.contentOffset.y + geometry.contentInsets.top
+            return headerHeight > 0 && scrolled > headerHeight * 0.75
+        } action: { _, isScrolledAway in
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .smooth(duration: 0.25)) {
+                isHeaderScrolledAway = isScrolledAway
+            }
+        }
+        .overlay(alignment: .top) {
+            if isHeaderScrolledAway {
+                CompactStudyBookHeader(bookName: book.name, onOpenOverview: openOverview)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .navigationDestination(isPresented: $isShowingOverview) {
+            BookOverviewView(bookName: book.name)
+        }
         .background(AppBackgroundView(tab: .bible))
         // Genesis already has its own styled title card in the content.
         .navigationTitle(book.name == "Genesis" ? "" : book.name)
@@ -69,20 +98,19 @@ struct ChaptersView: View {
         }
     }
 
-    @ViewBuilder
     private var overviewLink: some View {
+        Button(action: openOverview) {
+            overviewLabel
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Uses the host's overview handler on iPad; otherwise pushes the overview.
+    private func openOverview() {
         if let onSelectOverview {
-            Button(action: onSelectOverview) {
-                overviewLabel
-            }
-            .buttonStyle(.plain)
+            onSelectOverview()
         } else {
-            NavigationLink {
-                BookOverviewView(bookName: book.name)
-            } label: {
-                overviewLabel
-            }
-            .buttonStyle(.plain)
+            isShowingOverview = true
         }
     }
 

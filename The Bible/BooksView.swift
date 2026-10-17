@@ -583,8 +583,8 @@ private struct StudyBookHeader: View {
 }
 
 /// A one-row version of `StudyBookHeader` that stays pinned once the full header
-/// scrolls away, keeping the book overview one tap away.
-private struct CompactStudyBookHeader: View {
+/// scrolls away, keeping the book overview one tap away. Also used by `ChaptersView`.
+struct CompactStudyBookHeader: View {
     let bookName: String
     let onOpenOverview: () -> Void
 
