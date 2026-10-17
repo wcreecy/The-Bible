@@ -6,165 +6,89 @@ The world at the time: Rome was the capital of the empire. Its church included b
 
 **Paul Announces the Power of the Gospel (Romans 1:1–17)** — Paul introduces himself to the believers in Rome and explains that the gospel reveals God's power to save everyone who believes.
 
-Paul, an apostle called to serve Jesus Christ, writes to believers living in Rome, the capital of the Roman Empire. Though he has not yet visited them, he has long desired to meet them and strengthen their faith.
+Paul opens with a long introduction, because he has never met this church. He is “a servant of Jesus Christ, called to be an apostle, separated unto the gospel of God.” This gospel was promised by the prophets. It is about God's Son, who was born from David's family line and “declared to be the Son of God with power... by the resurrection from the dead.”
 
-He introduces Jesus as God's Son, descended from King David according to His human ancestry and declared the Son of God with power through the resurrection.
+Paul thanks God that “your faith is spoken of throughout the whole world,” and he tells them he has often planned to visit Rome but has been prevented. He longs to share some spiritual gift with them, so that they can encourage each other.
 
-Paul gives thanks for the faith of the Roman believers and explains his desire to preach among them.
-
-He is not ashamed of the gospel, the good news about Jesus Christ. It reveals God's righteousness and His power to bring salvation to everyone who believes, both Jews and Gentiles, people outside the Jewish nation.
+Then he states the theme of the whole letter: “For I am not ashamed of the gospel of Christ: for it is the power of God unto salvation to every one that believeth; to the Jew first, and also to the Greek. For therein is the righteousness of God revealed from faith to faith: as it is written, The just shall live by faith.” That last line is from Habakkuk. The rest of the letter explains what these verses mean.
 
 **All Humanity Stands Guilty Before God (Romans 1:18–3:20)** — Paul explains how humanity has turned away from God and why neither religious knowledge nor personal effort can make anyone righteous.
 
-Paul begins by describing people who reject the knowledge of God revealed through creation. Instead of honoring their Creator, they worship created things and become trapped in sinful desires and behavior.
+Before giving the good news, Paul explains the bad news. “For the wrath of God is revealed from heaven against all ungodliness and unrighteousness of men.” No one can claim ignorance, because God shows Himself through creation: “the invisible things of him from the creation of the world are clearly seen... so that they are without excuse.” But people refused to honor Him. “Professing themselves to be wise, they became fools,” and they made idols shaped like humans and animals. They “changed the truth of God into a lie, and worshipped and served the creature more than the Creator.” So three times Paul says, “God gave them up,” letting them have what they wanted. They fall into sexual sin and into every kind of evil, including envy, murder, deceit, gossip, pride, and disobedience to parents.
 
-He then confronts those who condemn others while committing wrongdoing themselves. God's judgment, Paul explains, is based on truth rather than outward appearance.
+Then Paul turns to the reader who agrees and feels superior: “Therefore thou art inexcusable, O man, whosoever thou art that judgest.” Judging others while doing the same things only stores up wrath. God is patient, because “the goodness of God leadeth thee to repentance.” He will judge everyone by what they have done, “For there is no respect of persons with God.”
 
-The Jews had received God's law through Moses, Israel's great leader, but possessing that law did not make them righteous if they disobeyed it. Gentiles, who had not received the law in the same way, also remained accountable for their conduct.
-
-Circumcision, the physical sign of God's covenant with Abraham's descendants, could not replace inward obedience.
-
-Paul concludes that both Jews and Gentiles are under sin. No one can claim righteousness through personal effort, because everyone has fallen short of God's standard.
-
-The law reveals sin, but it cannot remove humanity's guilt.
+Next, Paul speaks to his fellow Jews, who have God's law and circumcision. Having the law does not help if you break it. “For he is not a Jew, which is one outwardly,” but one whose heart has been changed, for true “circumcision is that of the heart.” The Jews still have great advantages, especially that they were entrusted with God's word. But they are not better off in the end. Paul strings together verses from the Psalms and Isaiah: “There is none righteous, no, not one... there is none that seeketh after God.” The law silences every excuse, “that every mouth may be stopped, and all the world may become guilty before God.” Keeping the law cannot make anyone right with God, “for by the law is the knowledge of sin.”
 
 **God Makes People Righteous Through Faith (Romans 3:21–4:25)** — Paul reveals that people are justified through faith in Jesus Christ and uses Abraham as an example of righteousness received by believing God.
 
-Having shown that humanity cannot establish its own righteousness, Paul explains that God has provided another way.
+Then comes the turning point: “But now the righteousness of God without the law is manifested.” God has provided a way to be right with Him that does not depend on keeping the law. It comes “by faith of Jesus Christ unto all and upon all them that believe: for there is no difference: For all have sinned, and come short of the glory of God; Being justified freely by his grace through the redemption that is in Christ Jesus.” Justified means declared not guilty. Redemption means being bought back out of slavery. God set Jesus forth as the sacrifice that turns away His anger, so that God can be both just and the One who justifies the believer. “Where is boasting then? It is excluded.” “Therefore we conclude that a man is justified by faith without the deeds of the law.”
 
-Through faith in Jesus Christ, sinners can be justified, meaning counted righteous before God. This comes by God's grace, His undeserved favor, through the redemption provided in Jesus.
+To prove this is not a new idea, Paul turns to Abraham, the father of the Jewish people. How was he made right with God? “Abraham believed God, and it was counted unto him for righteousness.” God credited righteousness to Abraham the way a bank credits money to an account. And this happened before Abraham was circumcised, so he is the father of all who believe, both Jews and Gentiles. David says the same thing: “Blessed are they whose iniquities are forgiven, and whose sins are covered.”
 
-Christ's blood demonstrates God's righteousness in dealing with sin. No one can boast, because justification is received through faith rather than earned through keeping the law.
-
-Paul turns to Abraham, the ancestor of Israel. Before receiving circumcision, Abraham believed God's promise, and his faith was counted as righteousness.
-
-David, Israel's former king, also spoke of the blessing of having sins forgiven.
-
-Abraham's example shows that God's promise extends beyond those who possess the law. He trusted God's power even when the fulfillment seemed impossible.
-
-Paul connects that faith with believing in the God who raised Jesus from the dead.
+Abraham was nearly a hundred years old, and Sarah could not have children, yet “against hope believed in hope.” “He staggered not at the promise of God through unbelief; but was strong in faith, giving glory to God.” This was written for us too, Paul says. Righteousness will be counted to us if we believe in God, who raised Jesus from the dead, “Who was delivered for our offences, and was raised again for our justification.”
 
 **Peace with God and Freedom from Sin (Romans 5:1–6:23)** — Paul explains how Jesus brings reconciliation with God and why those united with Christ must no longer live under sin's control.
 
-Because believers are justified by faith, they have peace with God through Jesus Christ.
+“Therefore being justified by faith, we have peace with God through our Lord Jesus Christ.” We stand in His grace and look forward to His glory. Even our troubles have purpose, “knowing that tribulation worketh patience; And patience, experience; and experience, hope.” This hope will not let us down, because God has poured His love into our hearts through the Holy Ghost. And His love is amazing: someone might possibly die for a good person, “But God commendeth his love toward us, in that, while we were yet sinners, Christ died for us.”
 
-Even suffering can produce patience, experience, and hope. God's love has been shown through Christ's death for sinners, making reconciliation possible.
+Paul compares Adam and Christ. “By one man sin entered into the world, and death by sin; and so death passed upon all men, for that all have sinned.” Adam's one act of disobedience brought condemnation to all. Christ's one act of obedience brings the free gift of righteousness and life to many. The law came in and made sin even more obvious, “But where sin abounded, grace did much more abound.”
 
-Paul compares Adam, the first man, with Jesus. Through Adam's disobedience, sin and death entered humanity. Through Christ's obedience, grace and the gift of righteousness are offered.
-
-But God's grace does not give believers permission to continue deliberately in sin.
-
-Paul explains that baptism represents sharing in Christ's death and resurrection. Just as Jesus rose from the dead, believers are called to walk in newness of life.
-
-Sin must no longer rule their bodies or determine their actions. Instead, they are to offer themselves to God as servants of righteousness.
-
-Paul contrasts the consequences of serving sin with the gift God provides through Christ: sin leads to death, but God's gift is eternal life.
+Someone might reply: if grace grows where sin grows, why not keep sinning? “Shall we continue in sin, that grace may abound? God forbid.” Believers have died to sin. Baptism pictures this: “we are buried with him by baptism into death: that like as Christ was raised up from the dead by the glory of the Father, even so we also should walk in newness of life.” So “Let not sin therefore reign in your mortal body.” Everyone serves something, either sin or God. Sin pays its workers in death, but God gives a gift: “For the wages of sin is death; but the gift of God is eternal life through Jesus Christ our Lord.”
 
 **The Struggle with Sin and Life in the Spirit (Romans 7:1–8:39)** — Paul describes the limits of the law, the struggle against sin, and the freedom and hope given through God's Spirit.
 
-Using marriage as an illustration, Paul explains that believers have died to the law through Christ and now belong to the risen Lord.
+Paul uses marriage as an example. A wife is bound to her husband only while he lives. In the same way, believers have died to the law through Christ's body, so they are free to belong to another, to Christ who was raised from the dead. Is the law bad, then? No: “the law is holy, and the commandment holy, and just, and good.” But sin used the law to stir up the very desires it forbids. Paul describes the struggle honestly: “For the good that I would I do not: but the evil which I would not, that I do.” He cries out, “O wretched man that I am! who shall deliver me from the body of this death? I thank God through Jesus Christ our Lord.”
 
-The law itself is holy and good, but sin uses God's commandments to expose human weakness. Paul describes the painful conflict of recognizing what is right while struggling against sinful desires.
+Chapter 8 is one of the high points of the whole Bible. “There is therefore now no condemnation to them which are in Christ Jesus.” What the law could not do, God did by sending His own Son. Now the Holy Spirit lives in believers and gives them power to live for God. “For as many as are led by the Spirit of God, they are the sons of God.” They have received “the Spirit of adoption, whereby we cry, Abba, Father,” which makes them God's children and “joint-heirs with Christ.”
 
-He then points to deliverance through Jesus Christ.
+Life is still hard, but “the sufferings of this present time are not worthy to be compared with the glory which shall be revealed in us.” Even creation itself “groaneth” like a woman in labor, waiting to be set free. When believers do not know how to pray, “the Spirit itself maketh intercession for us with groanings which cannot be uttered.” “And we know that all things work together for good to them that love God, to them who are the called according to his purpose.”
 
-For those in Christ, there is no condemnation. The Spirit brings life and enables believers to turn away from the desires of the flesh, meaning human nature under sin's influence.
-
-Through the Spirit, believers are adopted as God's children and may call Him Father.
-
-Yet creation still suffers, and believers await the full redemption of their bodies. The Spirit helps them in weakness, while God works according to His purposes for those who love Him.
-
-Paul closes with confidence that suffering, persecution, death, and every other created power are unable to separate believers from God's love in Christ Jesus.
+Paul ends the chapter with a burst of confidence: “If God be for us, who can be against us?” God did not spare His own Son, so surely He will give us everything else. “Who shall separate us from the love of Christ? shall tribulation, or distress, or persecution, or famine, or nakedness, or peril, or sword?... Nay, in all these things we are more than conquerors through him that loved us. For I am persuaded, that neither death, nor life, nor angels, nor principalities, nor powers, nor things present, nor things to come, Nor height, nor depth, nor any other creature, shall be able to separate us from the love of God, which is in Christ Jesus our Lord.”
 
 **God's Promises to Israel Remain Important (Romans 9:1–11:36)** — Paul considers Israel's unbelief, God's freedom to show mercy, and His continuing purposes for Jews and Gentiles.
 
-Paul expresses deep sorrow that many of his fellow Israelites have not believed in Christ.
+Paul's mood changes sharply. He has “great heaviness and continual sorrow” in his heart for his fellow Jews, most of whom have rejected Jesus. He would even be cut off from Christ himself if it would save them. They were given so much: God's covenants, the law, the promises, and the Messiah Himself came from them. Has God's word failed? No, “For they are not all Israel, which are of Israel.” God has always chosen freely. He chose Isaac, not Ishmael. Before the twins were born, He chose Jacob, not Esau: “Jacob have I loved, but Esau have I hated.” God told Moses, “I will have mercy on whom I will have mercy.” Paul compares God to a potter who has the right to shape the clay as He wishes.
 
-He recalls God's promises to Abraham, Isaac, and Jacob, showing that belonging to Israel by ancestry does not automatically mean receiving the fulfillment of God's promise.
+Israel pursued righteousness through the law and stumbled over Christ, the stumbling stone. “For Christ is the end of the law for righteousness to every one that believeth.” Salvation is near and simple: “That if thou shalt confess with thy mouth the Lord Jesus, and shalt believe in thine heart that God hath raised him from the dead, thou shalt be saved.” There is no difference between Jew and Greek, “For whosoever shall call upon the name of the Lord shall be saved.” But people cannot believe in someone they have never heard of, “and how shall they hear without a preacher?” “How beautiful are the feet of them that preach the gospel of peace.” “So then faith cometh by hearing, and hearing by the word of God.”
 
-God's mercy is not something people can demand or earn. Paul uses examples from Israel's history to explain God's authority and His patience toward humanity.
+“Hath God cast away his people? God forbid.” Paul himself is an Israelite, and there is still “a remnant according to the election of grace.” Israel's stumbling has opened the door for Gentiles to be saved. Paul pictures Israel as an olive tree. Some natural branches were broken off because of unbelief, and Gentile believers were grafted in like branches from a wild olive tree. So Gentiles must not be proud: “Boast not against the branches.” They stand only by faith, and God can graft the natural branches back in. “Behold therefore the goodness and severity of God.” “Blindness in part is happened to Israel, until the fulness of the Gentiles be come in. And so all Israel shall be saved.” Christians have understood this promise in different ways, but Paul is sure that “the gifts and calling of God are without repentance.” God does not take back His promises.
 
-Israel had pursued righteousness through the law but stumbled by failing to receive righteousness through faith.
-
-Paul declares that salvation is available to those who confess Jesus as Lord and believe that God raised Him from the dead. The message must therefore be proclaimed so people can hear and believe.
-
-He then explains that God has not rejected His people entirely. A remnant of Israel remains through grace.
-
-Using an olive tree, Paul describes believing Gentiles as branches grafted into Israel's cultivated tree. He warns them against pride, since they stand by faith.
-
-Paul speaks of Israel's partial hardening and a future mercy connected with God's continuing promises. The precise fulfillment of these words has been understood differently.
-
-He ends by praising God's wisdom, whose judgments and ways reach beyond human understanding.
+Thinking about God's plan, Paul breaks into praise: “O the depth of the riches both of the wisdom and knowledge of God! how unsearchable are his judgments, and his ways past finding out!... For of him, and through him, and to him, are all things: to whom be glory for ever. Amen.”
 
 **A Life Transformed by God's Mercy (Romans 12:1–13:14)** — Paul explains how believers should respond to God's mercy through renewed thinking, sincere love, humble service, and responsible conduct.
 
-After explaining God's saving work, Paul turns to the way believers should live.
+Paul now turns from what God has done to how believers should live. The word “therefore” connects the two: “I beseech you therefore, brethren, by the mercies of God, that ye present your bodies a living sacrifice, holy, acceptable unto God, which is your reasonable service. And be not conformed to this world: but be ye transformed by the renewing of your mind.”
 
-He urges them to present their bodies as living sacrifices, devoted to God, and to be transformed through the renewing of their minds.
+No one should “think of himself more highly than he ought to think.” Just as a body has many parts with different jobs, “So we, being many, are one body in Christ.” Each believer has a different gift, such as prophesying, serving, teaching, encouraging, giving, leading, or showing mercy, and each should use it well. Then comes a list of short commands: “Let love be without dissimulation,” meaning without pretending. “Abhor that which is evil; cleave to that which is good.” “Rejoice with them that do rejoice, and weep with them that weep.” “Recompense to no man evil for evil.” Leave revenge to God, for “Vengeance is mine; I will repay, saith the Lord.” Instead, “if thine enemy hunger, feed him; if he thirst, give him drink.” “Be not overcome of evil, but overcome evil with good.”
 
-No one should think too highly of themselves. Believers form one body with different gifts, including teaching, serving, encouraging, giving, and leading.
-
-Their love must be genuine. They should honor one another, help those in need, practice hospitality, bless persecutors, and refuse revenge.
-
-Rather than being overcome by evil, they are to overcome evil with good.
-
-Paul also instructs them to respect governing authorities, pay what is owed, and fulfill their duties responsibly. Love for one's neighbor expresses the purpose of God's commandments concerning relationships.
-
-Because salvation is drawing nearer, believers are called to abandon sinful behavior and live in the light of Christ.
+“Let every soul be subject unto the higher powers,” Paul says, because governments are put in place by God to punish wrongdoing. So believers should pay their taxes and give respect to whom it is owed. “Owe no man any thing, but to love one another,” for “love is the fulfilling of the law.” And time is short: “now it is high time to awake out of sleep: for now is our salvation nearer than when we believed. The night is far spent, the day is at hand.” So they must stop partying, drunkenness, sexual sin, and fighting, “But put ye on the Lord Jesus Christ, and make not provision for the flesh.” Centuries later, these verses led to the conversion of Augustine, one of the most influential Christian thinkers in history.
 
 **Believers Must Welcome One Another (Romans 14:1–15:13)** — Paul urges Christians to avoid unnecessary disputes, respect differences of conscience, and pursue peace within the community of faith.
 
-Some believers disagreed about eating certain foods or observing particular days.
+The Roman church included believers who disagreed about food and holy days. Some ate only vegetables, perhaps to avoid meat offered to idols. Others ate anything. Some treated certain days as special, and others treated every day alike. Paul says, “Him that is weak in the faith receive ye, but not to doubtful disputations,” meaning not to argue over opinions. The meat-eater must not look down on the vegetarian, and the vegetarian must not judge the meat-eater. “Who art thou that judgest another man's servant?” “Let every man be fully persuaded in his own mind.” “For none of us liveth to himself, and no man dieth to himself.” “For we shall all stand before the judgment seat of Christ,” and “every one of us shall give account of himself to God.”
 
-Paul instructs them not to despise or condemn one another over these matters. Each person is accountable to the Lord and should act according to conscience.
+Instead of judging, believers should make sure they do not put a stumbling block in a brother's way. Paul himself is convinced that no food is unclean in itself. But if eating something hurts a brother's faith, love means giving it up. “For the kingdom of God is not meat and drink; but righteousness, and peace, and joy in the Holy Ghost.”
 
-Christian freedom must be guided by love. Even when something is permitted, believers should avoid using their freedom in ways that cause others to stumble.
-
-God's kingdom is not centered on food and drink but on righteousness, peace, and joy in the Holy Ghost.
-
-Paul urges stronger believers to bear with those who are weak rather than please themselves.
-
-Christ is their example of selfless service.
-
-Paul then connects unity among believers with God's promises. Jesus served the people of Israel to confirm God's faithfulness, while Gentiles also receive reason to praise Him.
-
-The God of hope can fill both groups with joy and peace through believing.
+“We then that are strong ought to bear the infirmities of the weak, and not to please ourselves.” Christ is the example: “For even Christ pleased not himself.” Paul prays that they will live in harmony and with one voice glorify God. “Wherefore receive ye one another, as Christ also received us to the glory of God.” Christ came to serve the Jews and to bring the Gentiles to praise God, as the Scriptures promised. Paul closes this section with a blessing: “Now the God of hope fill you with all joy and peace in believing, that ye may abound in hope, through the power of the Holy Ghost.”
 
 **Paul Explains His Mission and Future Plans (Romans 15:14–33)** — Paul describes his work among the Gentiles, his plans to visit Rome, and his desire to carry aid to believers in Jerusalem.
 
-Paul expresses confidence in the Roman believers while explaining why he has written so openly.
+Paul explains that he has written boldly only to remind them of what they already know. God gave him a special job as “the minister of Jesus Christ to the Gentiles.” Through signs, wonders, and the Spirit's power, “from Jerusalem, and round about unto Illyricum, I have fully preached the gospel of Christ.” Illyricum was a region across the sea from Italy, in what is now the Balkans. His goal has always been to preach “not where Christ was named, lest I should build upon another man's foundation.”
 
-God has appointed him to minister to the Gentiles, and he has preached Christ across many regions, from Jerusalem toward Illyricum.
+That work is now finished in those regions. So Paul plans a new mission to Spain, at the western edge of the known world, and he hopes to visit Rome on the way: “Whensoever I take my journey into Spain, I will come to you.” But first he must go to Jerusalem. The Gentile churches of Macedonia and Achaia, in Greece, have collected money “for the poor saints which are at Jerusalem.” Paul sees this gift as a way of thanking the Jewish believers who first shared the gospel with the Gentiles.
 
-His ambition has been to proclaim the gospel where Christ was not already known.
-
-This work has repeatedly prevented him from visiting Rome.
-
-Now Paul hopes to travel there while making his way to Spain. First, however, he must go to Jerusalem with a contribution gathered from believers in Macedonia and Achaia for the poor among the saints there.
-
-He asks the Romans to pray for his protection and that his service in Jerusalem will be accepted.
+He asks the Romans to pray “that I may be delivered from them that do not believe in Judaea,” and that the Jerusalem believers will accept the gift. Then he hopes to come to them with joy. As Acts tells, Paul did reach Rome, but only after being arrested in Jerusalem and sent there as a prisoner.
 
 **Paul Honors His Fellow Workers and Closes with Praise (Romans 16:1–27)** — Paul concludes with personal greetings, warnings against division, and praise to God for revealing the gospel to the nations.
 
-Paul commends Phebe, a servant of the church at Cenchrea, and asks the Romans to welcome and assist her.
+Paul recommends “Phebe our sister, which is a servant of the church which is at Cenchrea,” a port near Corinth. She probably carried this letter to Rome. He asks them to welcome her and help her, “for she hath been a succourer of many, and of myself also.” A succourer is a helper or supporter.
 
-He then sends greetings to numerous believers, including Priscilla and Aquila, who risked their lives for him, and many others who labored faithfully in the Lord.
+Then comes a long list of greetings to more than two dozen people by name. First are “Priscilla and Aquila my helpers in Christ Jesus: Who have for my life laid down their own necks,” along with the church that meets in their house. There are Jews and Gentiles, men and women, slaves and free people, all part of one church family. Paul tells them to “Salute one another with an holy kiss.”
 
-These greetings reveal a community made up of people from different households and backgrounds, joined together through their faith in Christ.
+He adds a warning: “mark them which cause divisions,” people who “by good words and fair speeches deceive the hearts of the simple.” He wants them to be “wise unto that which is good, and simple concerning evil,” and he promises, “the God of peace shall bruise Satan under your feet shortly.” His companions send greetings too, including Timothy, and the man who wrote the letter down for Paul adds his own line: “I Tertius, who wrote this epistle, salute you in the Lord.”
 
-Paul warns the believers to watch for those who create divisions and teach contrary to what they have received. Such people may use flattering words to deceive others.
-
-He encourages the Romans to remain wise concerning what is good and innocent concerning evil.
-
-Greetings also come from Paul's companions, including Timothy and Tertius, who wrote down the letter.
-
-Paul closes by praising God, who is able to establish believers through the gospel of Jesus Christ.
-
-The message once described as a mystery has now been made known through the prophetic Scriptures so that all nations may respond with the obedience of faith.
-
-Romans begins with humanity's need for salvation and explains God's answer through Jesus Christ. It then shows how faith transforms relationships, conduct, and the unity of believers from different nations.
-
-The letter ends where its message began: with glory given to the wise God through Jesus Christ, whose gospel offers righteousness, reconciliation, and lasting hope to those who believe.
+The letter ends with praise to God, who has now revealed to all nations the mystery kept secret for ages: “To God only wise, be glory through Jesus Christ for ever. Amen.” Romans began by declaring that the gospel is God's power to save everyone who believes, and it ends with that gospel going out to the whole world.
 
 # 1 Corinthians
 When it happened: Written from Ephesus (1 Corinthians 16:8) during Paul's third missionary journey, around AD 53–55.
@@ -174,181 +98,91 @@ The world at the time: Corinth was a busy center of trade, full of temples to ma
 
 **Paul Calls a Divided Church to Unity (1 Corinthians 1:1–4:21)** — Paul confronts divisions among the Corinthian believers and explains that the wisdom of God is revealed through Jesus Christ rather than human pride.
 
-The apostle Paul writes to the church in Corinth, a busy Greek city under Roman rule. He had previously preached there, and many people had come to believe in Jesus. Now reports of division and misconduct have reached him.
+Paul writes to the church he started in Corinth, calling them “sanctified in Christ Jesus,” and thanking God for the gifts they have received. Then he gets to the problem. People from Chloe's household have told him the church is splitting into fan clubs: “every one of you saith, I am of Paul; and I of Apollos; and I of Cephas; and I of Christ.” Paul asks, “Is Christ divided? was Paul crucified for you?”
 
-Some believers claim loyalty to Paul, others to Apollos, a gifted teacher, and others to Peter. Paul challenges these divisions, reminding them that Christ alone was crucified for their salvation.
+The Corinthians admired clever speakers and impressive wisdom. But Paul says God's way looks foolish to the world: “For the preaching of the cross is to them that perish foolishness; but unto us which are saved it is the power of God.” “For the Jews require a sign, and the Greeks seek after wisdom: But we preach Christ crucified, unto the Jews a stumblingblock, and unto the Greeks foolishness.” God chose the foolish, the weak, and the lowly so “That no flesh should glory in his presence.” “He that glorieth, let him glory in the Lord.” When Paul first came to them, he did not use fancy speeches: “For I determined not to know any thing among you, save Jesus Christ, and him crucified.” True wisdom comes from God's Spirit: “Eye hath not seen, nor ear heard, neither have entered into the heart of man, the things which God hath prepared for them that love him.”
 
-He explains that the message of the cross appears foolish to those who reject it, but reveals God's power and wisdom to believers. Human achievements cannot replace what God has accomplished through Christ.
+Paul says their quarrels show they are still spiritual babies, so he had to feed them “with milk, and not with meat.” He and Apollos are just workers in God's field: “I have planted, Apollos watered; but God gave the increase.” Jesus Christ is the only foundation, and each builder's work will be tested by fire. “Know ye not that ye are the temple of God, and that the Spirit of God dwelleth in you?”
 
-Paul reminds the Corinthians that he preached Jesus Christ crucified rather than relying on impressive speeches. God's Spirit reveals truths that human wisdom cannot discover.
-
-Yet the Corinthians' jealousy and arguments show that they remain spiritually immature. Paul compares himself and Apollos to servants working in God's field, while God gives the growth.
-
-The church belongs to God, not its human leaders. Paul urges them to abandon pride, recognize their responsibility before God, and imitate his example of faithfulness.
+With biting sarcasm, Paul contrasts the Corinthians, who think they are already rich and wise, with the apostles, who are hungry, beaten, homeless, and treated as “the filth of the world.” He writes as a father: “For though ye have ten thousand instructors in Christ, yet have ye not many fathers.” He is sending Timothy to remind them of his ways. Then he asks, “shall I come unto you with a rod, or in love, and in the spirit of meekness?”
 
 **The Church Must Confront Serious Sin (1 Corinthians 5:1–6:20)** — Paul addresses sexual wrongdoing, disputes between believers, and the responsibility Christians have to honor God through their bodies and conduct.
 
-Paul has heard that a man in the Corinthian church is involved in a sexual relationship with his father's wife. Rather than mourning this wrongdoing, the community has become proud and careless.
+Paul has heard shocking news. A man in the church is living with his father's wife, probably his stepmother, a kind of sin that even pagans would condemn. Instead of grieving, the church is proud of how open-minded it is. Paul tells them to remove the man from their fellowship, hoping it will bring him to repentance so that his spirit may be saved. “Know ye not that a little leaven leaveneth the whole lump?” Just as Jews cleared all yeast from their homes at Passover, they must clear out sin, “For even Christ our passover is sacrificed for us.” Paul explains that he does not mean they should avoid all sinful people in the world. He means they should not tolerate someone who claims to be a believer and lives in open sin.
 
-He commands the church to remove the unrepentant man from its fellowship, explaining that tolerated wrongdoing can spread throughout a community.
+Next, believers are suing each other in pagan courts. Paul is amazed: “Dare any of you, having a matter against another, go to law before the unjust, and not before the saints?” It would be better to be wronged than to drag a brother before unbelievers. He reminds them that the unrighteous will not inherit God's kingdom, including the sexually immoral, idolaters, adulterers, thieves, the greedy, and drunkards. “And such were some of you: but ye are washed, but ye are sanctified, but ye are justified in the name of the Lord Jesus.”
 
-Paul then confronts believers who take one another before unbelieving judges instead of resolving disputes wisely among themselves.
-
-He reminds them that their former ways of life do not define them. Through Jesus Christ and God's Spirit, they have been washed, sanctified, and justified.
-
-Although believers possess freedom, not everything is beneficial. Their bodies belong to the Lord and are temples of the Holy Ghost.
-
-Because they were bought with a price, they are called to honor God through their bodies.
+Some Corinthians said, “All things are lawful unto me,” and claimed that what they did with their bodies did not matter, even going to prostitutes. Paul answers that not all things are helpful, and he will not be mastered by anything. The body belongs to the Lord and will be raised. “Flee fornication.” “What? know ye not that your body is the temple of the Holy Ghost which is in you, which ye have of God, and ye are not your own? For ye are bought with a price: therefore glorify God in your body.”
 
 **Paul Teaches About Marriage and Singleness (1 Corinthians 7:1–40)** — Responding to questions from Corinth, Paul gives guidance about marriage, sexual faithfulness, separation, singleness, and serving God in different circumstances.
 
-Paul turns to matters the Corinthians have written about.
+Now Paul answers questions the Corinthians had sent him in a letter. Some there apparently thought married couples should stop having sexual relations to be more spiritual. Paul disagrees. Because of the temptation to immorality, “let every man have his own wife, and let every woman have her own husband.” Husbands and wives should not refuse each other, except for a short time of prayer by agreement, “that Satan tempt you not.”
 
-He explains that husbands and wives have responsibilities toward one another and should treat their marriage with mutual care and faithfulness.
+Paul wishes everyone could be single as he is, but “every man hath his proper gift of God.” For those who struggle with desire, “it is better to marry than to burn.” To married believers, he passes on the Lord's command that they should not divorce. If a believer is married to an unbeliever who is willing to stay, the believer should not leave, because the believing spouse brings a holy influence to the family. But if the unbeliever leaves, the believer is not bound, “but God hath called us to peace.”
 
-He addresses unmarried people and widows, explaining that remaining single can provide freedom for undivided service to the Lord, while marriage is also honorable.
+As a general rule, Paul says, believers should remain in the situation they were in when God called them. Circumcised or not, slave or free, what matters is “the keeping of the commandments of God.” A slave who can gain freedom should take it, but even a slave is “the Lord's freeman.” “Ye are bought with a price; be not ye the servants of men.”
 
-To married believers, he gives instructions concerning separation and reconciliation. He also considers marriages in which one spouse believes in Christ and the other does not.
-
-Paul encourages believers to remain faithful to God within the circumstances in which they were called, whether circumcised or uncircumcised, enslaved or free.
-
-Because of present difficulties and the shortness of time, he urges them not to become consumed by worldly concerns.
-
-His aim is not to burden them but to help them serve the Lord faithfully.
+To those who have never married, Paul says that because of “the present distress” and the shortness of time, staying single can be wise. Single people can focus on “the things of the Lord,” while married people must also care for their spouse. But marrying is not a sin. A widow is free to remarry, “only in the Lord,” though Paul thinks she will be happier if she stays as she is.
 
 **Christian Freedom Must Be Guided by Love (1 Corinthians 8:1–10:33)** — Paul explains that knowledge and personal freedom must never become excuses for harming others or participating in idolatry.
 
-Another question concerns food offered to idols, the false gods worshiped throughout Corinth.
+Another question: may Christians eat meat that was offered to idols? Much of the meat sold in Corinth's markets came from pagan temples. Some believers said, “we know” that idols are nothing, so it does not matter. Paul agrees that “an idol is nothing in the world” and that there is one God and one Lord, Jesus Christ. But he warns, “Knowledge puffeth up, but charity edifieth.” Charity means love, and edifieth means builds up. Not everyone has that knowledge. A newer believer might see a stronger believer eating in an idol's temple and be led back into idol worship. “Wherefore, if meat make my brother to offend, I will eat no flesh while the world standeth.”
 
-Paul explains that an idol has no true divine power, but some believers still associate such food with their former worship. Those with greater understanding must not use their freedom in ways that damage another believer's conscience.
+Paul uses himself as an example. As an apostle, he has the right to be paid by the churches. “Thou shalt not muzzle the mouth of the ox that treadeth out the corn.” But he has given up that right so that no one can say he preaches for money. “For though I be free from all men, yet have I made myself servant unto all, that I might gain the more.” “I am made all things to all men, that I might by all means save some.” He compares the Christian life to a race: “Know ye not that they which run in a race run all, but one receiveth the prize? So run, that ye may obtain.” Athletes train hard for a crown that fades, but believers run for one that lasts forever, so Paul keeps his body under control.
 
-Paul uses his own ministry as an example. Although he has a right to receive support, he has sometimes chosen not to exercise that right so the gospel will face no unnecessary obstacle.
-
-He describes the discipline of an athlete preparing for competition, showing the importance of self-control.
-
-Paul then recalls Israel's journey through the wilderness after Moses led the people out of Egypt. Despite experiencing God's provision, many Israelites fell into idolatry, immorality, and disobedience.
-
-Their failures serve as warnings.
-
-Believers must flee idolatry and remain faithful to Christ. Paul distinguishes ordinary food sold in the marketplace from deliberate participation in idol worship.
-
-His guiding principle is that everything should be done for God's glory, with consideration for the good of others.
+He warns them not to be overconfident. The Israelites in the wilderness all experienced God's miracles, yet many fell into idolatry and immorality and died. “These things... are written for our admonition.” “Wherefore let him that thinketh he standeth take heed lest he fall.” But there is hope in temptation: “There hath no temptation taken you but such as is common to man: but God is faithful, who will not suffer you to be tempted above that ye are able; but will with the temptation also make a way to escape.” So “flee from idolatry.” Believers cannot share in the Lord's table and in feasts honoring demons. In everyday life, they may eat what is sold in the market without asking questions. But if someone points out that it was offered to an idol, they should not eat it for that person's sake. “Whether therefore ye eat, or drink, or whatsoever ye do, do all to the glory of God.”
 
 **Worship Must Honor God and One Another (1 Corinthians 11:1–34)** — Paul addresses conduct in public worship and corrects abuses of the Lord's Supper that have brought division and dishonor into the church.
 
-Paul next discusses customs concerning head coverings, honor, and the relationship between men and women during prayer and prophecy.
+“Be ye followers of me, even as I also am of Christ.” Paul praises the Corinthians for keeping the traditions he taught them. Then he addresses how men and women should present themselves in worship. In that culture, whether a woman covered her head in public said a great deal about honor and shame. Paul teaches that “the head of every man is Christ; and the head of the woman is the man; and the head of Christ is God,” so women should keep their heads covered when they pray or prophesy. He also reminds them that in the Lord, men and women depend on each other, “for as the woman is of the man, even so is the man also by the woman; but all things of God.” Christians today understand and apply this passage in different ways.
 
-He appeals to creation, established customs, and the mutual dependence of men and women in the Lord. The application of these instructions across cultures has been understood differently.
+Then Paul turns to a more serious problem. When the church gathers for the Lord's Supper, which was part of a shared meal, the wealthy eat their own food first. “One is hungry, and another is drunken.” The poor, who arrive late after work, go home hungry and humiliated. Paul asks, “despise ye the church of God, and shame them that have not?”
 
-Paul then confronts a more serious problem within the church's gatherings.
+He reminds them what the Lord's Supper means. “For I have received of the Lord that which also I delivered unto you, That the Lord Jesus the same night in which he was betrayed took bread: And when he had given thanks, he brake it, and said, Take, eat: this is my body, which is broken for you: this do in remembrance of me.” After supper He took the cup: “This cup is the new testament in my blood.” “For as often as ye eat this bread, and drink this cup, ye do shew the Lord's death till he come.”
 
-When the Corinthians meet to share the Lord's Supper, some eat abundantly while others remain hungry. Their behavior humiliates poorer believers and deepens divisions.
-
-Paul reminds them that Jesus established this meal on the night He was betrayed.
-
-The bread represents His body, and the cup represents the new testament in His blood. Through this observance, believers proclaim His death until He comes.
-
-Paul commands them to examine themselves, recognize the seriousness of the meal, and wait for one another rather than treating the gathering as an ordinary private feast.
+Anyone who eats in an unworthy manner, ignoring the body of Christ around them, sins against the Lord. “But let a man examine himself, and so let him eat of that bread.” Paul says this is why some of them are sick and some have died. So when they come together to eat, they should wait for one another.
 
 **One Spirit Gives Many Gifts to One Body (1 Corinthians 12:1–31)** — Paul explains that the Holy Ghost gives different spiritual gifts to believers so the whole church can serve together in unity.
 
-Paul turns to spiritual gifts, abilities given through God's Spirit for the benefit of the church.
+Paul now answers questions about spiritual gifts. The Corinthians were especially excited about speaking in tongues and seemed to rank people by their gifts. Paul begins with a test: no one speaking by God's Spirit curses Jesus, and “no man can say that Jesus is the Lord, but by the Holy Ghost.”
 
-These include wisdom, knowledge, faith, healing, miracles, prophecy, discerning spirits, different kinds of tongues, and interpreting tongues.
+“Now there are diversities of gifts, but the same Spirit.” To one person the Spirit gives wisdom, to another knowledge, faith, healing, miracles, prophecy, telling spirits apart, different kinds of tongues, or interpreting tongues. “But all these worketh that one and the selfsame Spirit, dividing to every man severally as he will.” The gifts are given “to profit withal,” for the good of everyone.
 
-Though the gifts differ, they come from the same Spirit.
+Paul compares the church to a human body: “For as the body is one, and hath many members... so also is Christ.” “For by one Spirit are we all baptized into one body, whether we be Jews or Gentiles, whether we be bond or free.” Imagine if the foot said, “Because I am not the hand, I am not of the body,” or if the whole body were an eye: “where were the hearing?” The eye cannot say to the hand, “I have no need of thee.” In fact, the parts that seem weakest are necessary. God has arranged the body “That there should be no schism,” or division. “And whether one member suffer, all the members suffer with it; or one member be honoured, all the members rejoice with it.” “Now ye are the body of Christ, and members in particular.”
 
-Paul compares the church to a human body. A body has many parts, each with its own purpose, yet all belong together.
-
-An eye cannot dismiss a hand as unnecessary, and a head cannot claim it has no need of feet.
-
-Likewise, believers with different responsibilities remain equally connected to Christ.
-
-God has appointed apostles, prophets, teachers, and others with various gifts and ministries.
-
-No individual possesses every gift, and no believer should despise another's contribution.
-
-Paul closes by directing their attention toward an even greater way of living together.
+God has placed apostles, prophets, teachers, miracle workers, healers, helpers, leaders, and those who speak in tongues in the church. Not everyone has the same gift. “But covet earnestly the best gifts: and yet shew I unto you a more excellent way.”
 
 **Love Is Greater Than Every Spiritual Gift (1 Corinthians 13:1–13)** — Paul reveals that spiritual abilities, sacrifice, and religious knowledge have little value without genuine love, which surpasses all temporary gifts.
 
-Paul explains that even remarkable spiritual gifts become empty without love.
+The “more excellent way” is love. The King James Version calls it charity, from a Latin word for love. Without it, even the greatest gifts are worthless. “Though I speak with the tongues of men and of angels, and have not charity, I am become as sounding brass, or a tinkling cymbal. And though I have the gift of prophecy, and understand all mysteries, and all knowledge; and though I have all faith, so that I could remove mountains, and have not charity, I am nothing. And though I bestow all my goods to feed the poor, and though I give my body to be burned, and have not charity, it profiteth me nothing.”
 
-A person might speak with extraordinary eloquence, understand mysteries, possess great faith, or give away every possession. Yet without love, these actions gain nothing of lasting spiritual value.
+Then Paul describes what love is like: “Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up, Doth not behave itself unseemly, seeketh not her own, is not easily provoked, thinketh no evil; Rejoiceth not in iniquity, but rejoiceth in the truth; Beareth all things, believeth all things, hopeth all things, endureth all things. Charity never faileth.” To “vaunt” means to brag. Almost every line is the opposite of how the Corinthians were acting.
 
-True love is patient and kind. It does not envy, boast, behave proudly, or seek its own advantage.
-
-Love does not rejoice in wrongdoing but delights in truth. It endures difficulties and continues faithfully.
-
-Prophecies, tongues, and knowledge in their present forms are limited and will pass away when completeness comes.
-
-Paul compares present understanding to the limited awareness of childhood and to seeing an unclear reflection in a mirror.
-
-Faith, hope, and love remain central to Christian life, but love is the greatest.
+The spiritual gifts they prize will one day end, “For we know in part, and we prophesy in part. But when that which is perfect is come, then that which is in part shall be done away.” “When I was a child, I spake as a child, I understood as a child, I thought as a child: but when I became a man, I put away childish things.” Right now we see only dimly, as in an ancient mirror of polished metal: “For now we see through a glass, darkly; but then face to face: now I know in part; but then shall I know even as also I am known.” “And now abideth faith, hope, charity, these three; but the greatest of these is charity.”
 
 **Spiritual Gifts Should Strengthen the Church (1 Corinthians 14:1–40)** — Paul teaches that prophecy, tongues, and other expressions of worship should be exercised with understanding, order, and concern for everyone's spiritual growth.
 
-Having emphasized love, Paul explains how spiritual gifts should function when believers gather.
+“Follow after charity, and desire spiritual gifts, but rather that ye may prophesy.” Paul explains why prophecy, speaking God's message in a language everyone understands, is more useful in church than tongues. Someone speaking in an unknown tongue speaks to God, but no one else understands. “He that speaketh in an unknown tongue edifieth himself; but he that prophesieth edifieth the church.” Paul compares it to music: if a trumpet gives an unclear sound, “who shall prepare himself to the battle?”
 
-He particularly compares prophecy, speaking a message from God, with speaking in tongues, languages or speech requiring interpretation for others to understand.
+Paul is not against tongues. “I thank my God, I speak with tongues more than ye all: Yet in the church I had rather speak five words with my understanding... than ten thousand words in an unknown tongue.” If visitors walk in and everyone is speaking in tongues, they will think the church has gone mad. But if they hear prophecy, they may be convicted, fall down, worship God, and “report that God is in you of a truth.”
 
-A message that the congregation understands can instruct, encourage, and strengthen everyone.
-
-Speaking in tongues without interpretation does not provide the same benefit to listeners.
-
-Paul therefore emphasizes clarity and understanding in prayer, singing, and teaching.
-
-He warns that disorderly gatherings may confuse outsiders. Worship should instead reveal God's presence and allow people to learn.
-
-Paul also gives instructions concerning participation, discernment, and speaking during gatherings, including directions about women whose meaning and application are debated among Christians.
-
-His central concern is that everything be done decently and in order, because God is not the author of confusion but of peace.
+So Paul gives guidelines. When they gather, each may bring a song, a teaching, or a revelation, but “Let all things be done unto edifying.” Only two or three should speak in tongues, one at a time, and only if someone can interpret. Prophets should also take turns while others weigh what is said. “For God is not the author of confusion, but of peace.” Paul also tells the women to keep silent in the churches and ask their husbands at home. Christians understand this instruction in different ways, since Paul had already spoken of women praying and prophesying in chapter 11. He ends the chapter with a summary: “Let all things be done decently and in order.”
 
 **Christ's Resurrection Guarantees the Hope of Resurrection (1 Corinthians 15:1–58)** — Paul defends the resurrection of Jesus and explains that those who belong to Christ will also be raised and transformed.
 
-Paul reminds the Corinthians of the gospel he preached: Christ died for sins according to the Scriptures, was buried, and rose again on the third day.
+Some in Corinth were saying there is no resurrection of the dead. Paul answers with the heart of the gospel: “how that Christ died for our sins according to the scriptures; And that he was buried, and that he rose again the third day according to the scriptures.” Then he lists the eyewitnesses. The risen Christ was seen by Peter, then by the twelve, then by more than five hundred believers at once, most of whom were still alive and could be asked. He was seen by James, by all the apostles, “And last of all he was seen of me also, as of one born out of due time.” Paul calls himself “the least of the apostles” because he persecuted the church, “But by the grace of God I am what I am.”
 
-The risen Jesus appeared to Peter, the twelve, more than five hundred believers, James, and other apostles. Paul also encountered Him, despite previously persecuting the church.
+If there is no resurrection, Paul argues, then Christ was not raised. “And if Christ be not risen, then is our preaching vain, and your faith is also vain.” “If in this life only we have hope in Christ, we are of all men most miserable.” “But now is Christ risen from the dead, and become the firstfruits of them that slept.” The firstfruits were the first part of the harvest, a promise that the rest would follow. “For as in Adam all die, even so in Christ shall all be made alive.” Christ will reign until all His enemies are defeated, and “The last enemy that shall be destroyed is death.” If the dead are not raised, why should Paul risk his life every day? Then they might as well say, “let us eat and drink; for to morrow we die.”
 
-Some Corinthians have questioned whether the dead can rise.
-
-Paul argues that if there is no resurrection, Christ has not risen, their faith is empty, and their sins remain unforgiven.
-
-But Christ has risen and become the firstfruits of those who sleep in death.
-
-Paul compares Adam, through whom death entered humanity, with Christ, through whom resurrection comes. Christ will ultimately defeat every opposing power, including death, and deliver the kingdom to the Father.
-
-Paul then explains that resurrection involves transformation. Just as a seed is buried and grows into something different, the body that is raised will possess a new kind of glory.
-
-The perishable will become imperishable, and the mortal will put on immortality.
-
-Death will lose its victory through Jesus Christ.
-
-Because resurrection is certain, Paul urges believers to remain steadfast, knowing their labor in the Lord is not in vain.
+What kind of body will the dead have? Paul compares it to a seed. A seed is buried, and something far more glorious grows from it. The body “is sown in corruption; it is raised in incorruption: It is sown in dishonour; it is raised in glory... It is sown a natural body; it is raised a spiritual body.” “Behold, I shew you a mystery; We shall not all sleep, but we shall all be changed, In a moment, in the twinkling of an eye, at the last trump: for the trumpet shall sound, and the dead shall be raised incorruptible, and we shall be changed.” Then Scripture will be fulfilled: “Death is swallowed up in victory. O death, where is thy sting? O grave, where is thy victory?... But thanks be to God, which giveth us the victory through our Lord Jesus Christ.” So Paul urges, “be ye stedfast, unmoveable, always abounding in the work of the Lord, forasmuch as ye know that your labour is not in vain in the Lord.”
 
 **Paul Closes with Instructions and Personal Greetings (1 Corinthians 16:1–24)** — Paul gives practical instructions about collecting aid, announces future travel plans, commends fellow workers, and ends by calling the church to faithfulness and love.
 
-Paul concludes by addressing a collection for believers in Jerusalem.
+Paul gives instructions for the collection for the poor believers in Jerusalem: “Upon the first day of the week let every one of you lay by him in store, as God hath prospered him.” That way no collections will be needed when he arrives. He plans to visit after passing through Macedonia, but he will stay in Ephesus until Pentecost, “For a great door and effectual is opened unto me, and there are many adversaries.”
 
-He instructs the Corinthians to set aside contributions regularly so the money will be ready when he arrives. Trusted representatives will carry their gift.
+He asks them to welcome Timothy kindly and says Apollos will come later. Then he gives a short summary of everything: “Watch ye, stand fast in the faith, quit you like men, be strong. Let all your things be done with charity.” He praises the household of Stephanas, the first converts in their region, who had “addicted themselves to the ministry of the saints,” devoting themselves to serving God's people. He sends greetings from the churches of Asia and from Aquila and Priscilla and the church in their house.
 
-Paul hopes to visit Corinth after traveling through Macedonia, although he plans to remain in Ephesus for a time because a significant opportunity for ministry has opened there despite opposition.
-
-He asks the church to receive Timothy without causing him fear and explains that Apollos is not presently willing to visit.
-
-Paul urges the Corinthians to remain watchful, stand firm in the faith, act courageously, and do everything with love.
-
-He commends the household of Stephanas for devoted service and encourages the church to recognize faithful workers.
-
-Greetings come from churches in Asia, from Aquila and Priscilla, and from other believers.
-
-Paul adds a greeting in his own handwriting and closes with a blessing of grace and an expression of his love in Christ Jesus.
-
-Throughout the letter, Paul has confronted a church rich in spiritual gifts but troubled by division, pride, immorality, and disorder.
-
-He has shown that belonging to Christ must shape everything from personal relationships to public worship. Knowledge must be guided by love, freedom by concern for others, and spiritual gifts by the good of the whole community.
-
-The letter ends with the same concern that runs through its teachings: believers who have received God's grace through Jesus Christ are called to live together in faithfulness, holiness, unity, and love.
+Paul writes the last lines in his own hand. He adds a warning: anyone who does not love the Lord Jesus Christ is under a curse. Then he adds “Maranatha,” an Aramaic word meaning our Lord comes. He closes, “My love be with you all in Christ Jesus. Amen.” A church full of division, pride, and confusion is called back to the cross, to love, and to the hope of the resurrection.
 
 # 2 Corinthians
 When it happened: Written from Macedonia (2 Corinthians 2:13; 7:5), some months after 1 Corinthians, around AD 55–56.
@@ -358,187 +192,77 @@ The world at the time: Paul's relationship with the Corinthians had been straine
 
 **God Provides Comfort Through Suffering (2 Corinthians 1:1–2:11)** — Paul opens his letter by explaining how God sustained him through suffering and why he postponed his visit to Corinth.
 
-The apostle Paul writes with Timothy, a fellow worker, to the Christians in Corinth, a major Greek city under Roman rule. Paul had helped establish the church, but disagreements and questions about his authority had troubled their relationship.
+This is Paul's most personal letter. He opens with praise: “Blessed be God, even the Father of our Lord Jesus Christ, the Father of mercies, and the God of all comfort; Who comforteth us in all our tribulation, that we may be able to comfort them which are in any trouble.” Comfort received is meant to be passed on. Paul tells them that in Asia he faced trouble so crushing “that we despaired even of life.” It felt like a death sentence, but it taught him “that we should not trust in ourselves, but in God which raiseth the dead.”
 
-He begins by praising God as the Father of mercies and the God of all comfort. Paul explains that God comforts His people during suffering so they can comfort others facing similar hardships.
+Some in Corinth accused Paul of being unreliable, because he had promised to visit and then changed his plans. He says he was not saying yes and no at the same time. God is faithful, “For all the promises of God in him are yea, and in him Amen.” He stayed away to spare them another painful visit. Instead, he wrote them a hard letter: “For out of much affliction and anguish of heart I wrote unto you with many tears; not that ye should be grieved, but that ye might know the love which I have more abundantly unto you.”
 
-Paul recalls severe trouble in Asia, where he and his companions feared for their lives. Through this experience, they learned to depend upon God, who raises the dead, rather than their own strength.
-
-He then explains why his travel plans changed. He had intended to visit Corinth but delayed his return to spare the believers another painful meeting.
-
-Paul's earlier letter had caused sorrow, yet his purpose was to express love and encourage repentance, not to destroy their confidence.
-
-He urges the church to forgive and comfort a person who has received sufficient correction, preventing overwhelming sorrow from causing further harm.
+The church had disciplined a man who caused great hurt, and he has repented. Now Paul asks them to forgive and comfort him, “lest perhaps such a one should be swallowed up with overmuch sorrow.” Refusing to forgive would let Satan win, “for we are not ignorant of his devices.”
 
 **Paul Describes His Ministry as a Sacred Responsibility (2 Corinthians 2:12–4:6)** — Paul explains that his ministry is guided by God and that the new covenant reveals a greater glory through Jesus Christ.
 
-Although an opportunity for preaching opened in Troas, Paul remained troubled because he could not find Titus, a trusted fellow worker who had been carrying news between him and Corinth.
+Paul explains how anxious he was waiting to hear how they had received his letter. He went to Troas to preach, but he had no rest because Titus had not arrived with news, so he went on to Macedonia. Then he breaks into thanks: “Now thanks be unto God, which always causeth us to triumph in Christ.” He pictures a Roman victory parade, with incense filling the air. To those being saved, the message is a sweet smell of life, but to those who refuse it, it smells of death. “And who is sufficient for these things?”
 
-Paul continued toward Macedonia, trusting that God was leading his ministry.
+Paul's critics may carry letters of recommendation, but he does not need any. “Ye are our epistle written in our hearts, known and read of all men,” written “not with ink, but with the Spirit of the living God; not in tables of stone, but in fleshy tables of the heart.” He serves a new covenant, “not of the letter, but of the spirit: for the letter killeth, but the spirit giveth life.”
 
-He compares the spread of Christ's message to a fragrance that reaches different people. Some receive it as life-giving, while others reject it.
+When Moses came down from Mount Sinai, his face shone so brightly that he covered it with a veil. If the old covenant came with glory, the new covenant has far greater glory. Paul says a veil still covers the hearts of many who read Moses, but when someone turns to the Lord, the veil is taken away. “Now the Lord is that Spirit: and where the Spirit of the Lord is, there is liberty. But we all, with open face beholding as in a glass the glory of the Lord, are changed into the same image from glory to glory.”
 
-Paul insists that he does not corrupt God's word for personal gain. His ministry is sincere, and the changed lives of the Corinthian believers serve as evidence of its work.
-
-He then compares the covenant given through Moses, Israel's great leader, with the new covenant established through Christ. The earlier covenant was written on stone, while the Spirit now works within believers.
-
-Paul explains that the glory revealed through Christ surpasses the former glory associated with Moses.
-
-Because God has entrusted him with this ministry, Paul refuses dishonesty or manipulation. He openly proclaims Jesus Christ as Lord, trusting God to bring spiritual light into human hearts.
+So Paul does not give up or twist God's word. If the gospel seems hidden, it is because “the god of this world hath blinded the minds of them which believe not.” “For we preach not ourselves, but Christ Jesus the Lord.” The God who said “Let there be light” at creation “hath shined in our hearts, to give the light of the knowledge of the glory of God in the face of Jesus Christ.”
 
 **God's Power Is Revealed Through Human Weakness (2 Corinthians 4:7–5:10)** — Paul describes the hardships of serving Christ and explains how the hope of resurrection gives believers courage beyond their present suffering.
 
-Paul compares God's message to treasure carried in fragile clay jars.
+Paul admits that God's messengers are weak and ordinary: “But we have this treasure in earthen vessels, that the excellency of the power may be of God, and not of us.” Earthen vessels are cheap clay jars. Then he describes his life: “We are troubled on every side, yet not distressed; we are perplexed, but not in despair; Persecuted, but not forsaken; cast down, but not destroyed.” Every day he faces death, so that the life of Jesus may be seen in him.
 
-Human weakness makes clear that the extraordinary power belongs to God rather than His servants.
+“For which cause we faint not; but though our outward man perish, yet the inward man is renewed day by day. For our light affliction, which is but for a moment, worketh for us a far more exceeding and eternal weight of glory; While we look not at the things which are seen, but at the things which are not seen: for the things which are seen are temporal; but the things which are not seen are eternal.”
 
-Paul and his companions face trouble, persecution, and danger, yet they are not abandoned or destroyed. They carry the reality of Jesus' death in their bodies so that His life may also be revealed through them.
-
-Although their outward bodies are wearing down, Paul declares that their inward lives are being renewed.
-
-Present suffering is temporary when compared with the eternal glory God has promised.
-
-Paul then looks beyond physical death. He compares the earthly body to a temporary tent and speaks of a lasting dwelling provided by God.
-
-Believers long for the life God has prepared, and the Holy Spirit serves as a guarantee of that future.
-
-Until then, they walk by faith rather than sight, seeking to please Christ because everyone must appear before His judgment seat.
+Paul compares the body to a tent. “For we know that if our earthly house of this tabernacle were dissolved, we have a building of God, an house not made with hands, eternal in the heavens.” In this tent we groan, longing for our heavenly home, and God has given the Spirit as a down payment that guarantees what is coming. So Paul is confident, “For we walk by faith, not by sight.” He would rather be “absent from the body, and to be present with the Lord.” Either way, his goal is to please Him, “For we must all appear before the judgment seat of Christ.”
 
 **Christ Gives His People a Ministry of Reconciliation (2 Corinthians 5:11–6:13)** — Paul explains that Christ's death changes how believers live and gives them the responsibility of announcing reconciliation with God.
 
-Knowing that everyone is accountable to Christ, Paul continues his ministry with sincerity.
+“Knowing therefore the terror of the Lord, we persuade men.” Some think Paul is out of his mind, but he says, “For the love of Christ constraineth us,” meaning it drives him on. Christ died for all, so that those who live should no longer live for themselves. That changes everything: “Therefore if any man be in Christ, he is a new creature: old things are passed away; behold, all things are become new.”
 
-He explains that Christ's love directs his actions because Jesus died for all. Those who live through Him should no longer live only for themselves.
+God has done all this. He “hath reconciled us to himself by Jesus Christ,” and He has given believers the job of telling others. “God was in Christ, reconciling the world unto himself, not imputing their trespasses unto them; and hath committed unto us the word of reconciliation. Now then we are ambassadors for Christ.” An ambassador speaks for his king in a foreign land. So Paul pleads, “be ye reconciled to God. For he hath made him to be sin for us, who knew no sin; that we might be made the righteousness of God in him.” And there is no time to wait: “behold, now is the accepted time; behold, now is the day of salvation.”
 
-Through Christ, believers become new creations. Their former way of life gives way to something new.
-
-Paul describes this transformation as reconciliation, the restoration of a broken relationship with God.
-
-God has acted through Jesus Christ to reconcile the world to Himself, and Paul has been entrusted with proclaiming that message.
-
-He therefore serves as an ambassador for Christ, urging people to receive God's offered reconciliation.
-
-Paul also explains that Christ, who knew no sin, was made sin for humanity so that believers might become righteous in Him.
-
-He urges the Corinthians not to receive God's grace without allowing it to change their lives.
-
-Despite beatings, imprisonment, sleepless nights, hunger, and dishonor, Paul continues serving through patience, purity, sincere love, and the Holy Ghost.
-
-His heart remains open toward the Corinthians, and he asks them to respond with the same affection.
+Paul describes the hardships he has endured to deliver this message. He has faced beatings, prison, riots, hard work, sleepless nights, and hunger. Yet he served “as sorrowful, yet alway rejoicing; as poor, yet making many rich; as having nothing, and yet possessing all things.” He speaks to them with an open heart and asks them to open their hearts to him in return: “O ye Corinthians, our mouth is open unto you, our heart is enlarged.”
 
 **God Calls His People to Holiness and Repentance (2 Corinthians 6:14–7:16)** — Paul urges believers to remain distinct from sinful practices and expresses joy that his earlier correction produced genuine repentance.
 
-Paul warns the Corinthians against becoming bound together with unbelievers in partnerships that compromise their faithfulness to God.
+“Be ye not unequally yoked together with unbelievers: for what fellowship hath righteousness with unrighteousness? and what communion hath light with darkness?” A yoke joins two animals to pull together. If they are mismatched, they cannot plow straight. Believers are “the temple of the living God,” so they must not join in pagan worship and sin. “Wherefore come out from among them, and be ye separate, saith the Lord.” God promises to be a Father to them. Therefore, “let us cleanse ourselves from all filthiness of the flesh and spirit.”
 
-He contrasts righteousness with wickedness, light with darkness, and God's temple with idols.
+Paul asks them again, “Receive us.” He has wronged no one. Then he returns to the story he started earlier. When he reached Macedonia, “we were troubled on every side; without were fightings, within were fears. Nevertheless God, that comforteth those that are cast down, comforted us by the coming of Titus.” Titus brought good news. The Corinthians had taken Paul's painful letter to heart and changed.
 
-Because believers belong to the living God, they are called to separate themselves from uncleanness and pursue holiness.
-
-Paul then returns to his relationship with Corinth. He assures the believers that he has wronged no one and continues to hold them close in his heart.
-
-When Paul reached Macedonia, he experienced trouble and anxiety. But God comforted him through the arrival of Titus.
-
-Titus reported that the Corinthians had responded to Paul's earlier correction with sorrow, renewed concern, and a desire to do what was right.
-
-Paul explains that sorrow according to God's will leads to repentance, while worldly sorrow produces death.
-
-He is thankful that his difficult message brought a change in their conduct rather than lasting separation.
-
-Titus also received encouragement from the Corinthians, leaving Paul confident in their response.
+Paul says he is not sorry he made them sad, because their sorrow led them to repent. “For godly sorrow worketh repentance to salvation not to be repented of: but the sorrow of the world worketh death.” Godly sorrow leads to change and life, while worldly sorrow only leads to despair. Their response filled Titus with joy and made Paul proud of them. “I rejoice therefore that I have confidence in you in all things.”
 
 **Paul Encourages Generosity Toward Those in Need (2 Corinthians 8:1–9:15)** — Paul encourages the Corinthians to complete their collection for struggling believers, explaining that generosity should be willing, honest, and joyful.
 
-With their relationship improving, Paul turns to a collection being gathered for Christians in need.
+Paul now turns to the collection for the poor believers in Jerusalem, which the Corinthians had started a year earlier but not finished. He points to the churches of Macedonia, who were very poor and suffering. Yet “the abundance of their joy and their deep poverty abounded unto the riches of their liberality.” They begged for the privilege of giving and gave beyond what they could afford, because they “first gave their own selves to the Lord.”
 
-He describes the churches of Macedonia, where believers contributed generously despite poverty and hardship.
+Paul does not command the Corinthians to give. Instead, he points to Jesus: “For ye know the grace of our Lord Jesus Christ, that, though he was rich, yet for your sakes he became poor, that ye through his poverty might be rich.” The goal is fairness, so that those who have plenty help those in need. He quotes the story of the manna: “He that had gathered much had nothing over; and he that had gathered little had no lack.” Titus and two trusted brothers will handle the money, so that no one can accuse Paul of mishandling it, “Providing for honest things, not only in the sight of the Lord, but also in the sight of men.”
 
-Their giving was voluntary, and they offered themselves first to the Lord.
-
-Paul reminds the Corinthians that Jesus Christ, though rich, became poor for their sake so that through His poverty they might become rich.
-
-He does not command them to give beyond their ability. Instead, he urges them to complete the commitment they had already made, giving according to what they possess.
-
-Paul sends Titus and other trusted brothers to help administer the collection responsibly and avoid any suspicion concerning the money.
-
-He then compares generosity to planting seeds. A person who sows sparingly will reap sparingly, while one who sows generously will reap generously.
-
-Each believer should give willingly rather than reluctantly or under pressure, because God loves a cheerful giver.
-
-Paul explains that such generosity meets practical needs while also producing thanksgiving and praise to God.
+Paul reminds them that giving is like planting: “He which soweth sparingly shall reap also sparingly; and he which soweth bountifully shall reap also bountifully.” “Every man according as he purposeth in his heart, so let him give; not grudgingly, or of necessity: for God loveth a cheerful giver.” God is able to give them all they need, so they can be generous in every good work. Their gift will not only meet needs but also cause many people to thank God. Paul ends with thanks for the greatest gift of all: “Thanks be unto God for his unspeakable gift.”
 
 **Paul Defends the Authority of His Ministry (2 Corinthians 10:1–11:15)** — Paul responds to critics who question his leadership and warns the church against false teachers who present themselves as servants of Christ.
 
-Paul now addresses opponents who have challenged his authority.
+The tone of the letter changes sharply here. Some in Corinth mock Paul as weak in person and only bold from a distance. They say, “his letters... are weighty and powerful; but his bodily presence is weak, and his speech contemptible.” Paul warns that he can be just as bold in person. His fight is spiritual: “For though we walk in the flesh, we do not war after the flesh: (For the weapons of our warfare are not carnal, but mighty through God to the pulling down of strong holds;)” He tears down proud arguments against God, “bringing into captivity every thought to the obedience of Christ.” His critics compare themselves with each other, which is not wise. “But he that glorieth, let him glory in the Lord.”
 
-Some claim that his letters are powerful but that his personal presence and speaking ability are unimpressive.
+Paul feels a protective love for the church, like a father who has promised his daughter in marriage: “I am jealous over you with godly jealousy: for I have espoused you to one husband, that I may present you as a chaste virgin to Christ.” He fears that just as “the serpent beguiled Eve through his subtilty,” they will be led astray. Some visitors are preaching “another Jesus” and a different gospel, and the Corinthians put up with it.
 
-Paul explains that although he lives in the world, his ministry does not depend upon worldly methods of power. His weapons are spiritual, directed toward confronting false arguments and bringing thoughts into obedience to Christ.
-
-He refuses to measure himself against people who praise themselves.
-
-Instead, he seeks the approval of the Lord and intends to serve within the responsibility God has given him.
-
-Paul then expresses concern that the Corinthians may be deceived by people proclaiming a different Jesus or presenting a different gospel.
-
-He reminds them that he preached without placing a financial burden upon them.
-
-Though his opponents present themselves as apostles, Paul warns that false teachers can disguise themselves as servants of righteousness.
-
-Outward appearance and impressive claims do not prove that someone truly serves Christ.
+Paul calls these rivals “the very chiefest apostles,” with sarcasm. He admits he may be “rude in speech,” untrained as a speaker, “yet not in knowledge.” He preached to them for free, supported by other churches, and he will keep doing so to take away his critics' excuse. Then he names them for what they are: “For such are false apostles, deceitful workers, transforming themselves into the apostles of Christ. And no marvel; for Satan himself is transformed into an angel of light.”
 
 **Paul's Suffering and Weakness Reveal God's Strength (2 Corinthians 11:16–12:13)** — Paul recounts the hardships he has endured for Christ and explains that God's grace remains sufficient even when personal weakness continues.
 
-Reluctantly, Paul compares his experiences with those who boast about their spiritual importance.
+Since his rivals love to boast, Paul reluctantly plays their game, saying again and again that he speaks “as a fool.” “Are they Hebrews? so am I. Are they Israelites? so am I.” Are they servants of Christ? He is more. But instead of listing successes, he lists sufferings: “Of the Jews five times received I forty stripes save one. Thrice was I beaten with rods, once was I stoned, thrice I suffered shipwreck, a night and a day I have been in the deep.” Forty stripes save one means thirty-nine lashes. He faced dangers from rivers, robbers, his own people, Gentiles, and false brothers. He knew hunger, thirst, cold, and sleepless nights. On top of all that came “the care of all the churches.” His most memorable “achievement” was escaping from Damascus by being lowered over the wall in a basket.
 
-He identifies himself as an Israelite and a descendant of Abraham, but he considers his sufferings more meaningful than such credentials.
+Then Paul tells of a vision, speaking of himself as “a man in Christ” who was “caught up to the third heaven,” into paradise, fourteen years earlier. There he “heard unspeakable words,” things no one is permitted to tell. To keep him from becoming proud, “there was given to me a thorn in the flesh, the messenger of Satan to buffet me.” No one knows exactly what this thorn was. Three times Paul begged the Lord to take it away. But the Lord said, “My grace is sufficient for thee: for my strength is made perfect in weakness.” So Paul says, “Most gladly therefore will I rather glory in my infirmities, that the power of Christ may rest upon me... for when I am weak, then am I strong.”
 
-He has endured imprisonments, beatings, stoning, shipwrecks, dangerous journeys, hunger, sleeplessness, and threats from many directions.
-
-Beyond these physical troubles, he carries daily concern for the churches.
-
-Paul even recalls escaping Damascus when he was lowered through a window in a basket to avoid capture.
-
-He then describes extraordinary revelations, including an experience of being caught up to the third heaven, or paradise. He does not claim to understand whether this occurred bodily or apart from the body.
-
-To prevent pride because of these revelations, Paul says he was given a thorn in the flesh, which he describes as a messenger of Satan troubling him.
-
-The exact nature of this affliction is not identified.
-
-Paul asked the Lord three times to remove it, but received the assurance that God's grace was sufficient and His strength was perfected in weakness.
-
-Rather than boasting about personal greatness, Paul learned to take satisfaction in Christ's sustaining power.
-
-He reminds the Corinthians that signs of his apostleship had been demonstrated among them through perseverance, wonders, and mighty works.
+He says they forced him to talk like this, when they should have defended him. “Truly the signs of an apostle were wrought among you,” including miracles. The only thing he did not do for them was ask for money: “forgive me this wrong.”
 
 **Paul Prepares for His Final Visit to Corinth (2 Corinthians 12:14–13:14)** — Paul closes by urging the Corinthians to examine their faith, abandon wrongdoing, pursue unity, and receive the grace and peace of God.
 
-Paul announces that he is preparing to visit Corinth for the third time.
+“Behold, the third time I am ready to come to you; and I will not be burdensome to you: for I seek not yours, but you.” Like a parent saving for his children, Paul is glad to give everything: “And I will very gladly spend and be spent for you; though the more abundantly I love you, the less I be loved.” Neither he nor Titus took advantage of them.
 
-He assures the believers that he does not seek their possessions but desires their spiritual well-being.
+Paul is afraid that when he comes he will find quarreling, jealousy, anger, gossip, and pride, and that many have not repented of their sexual sins. He warns that this time he will not go easy on those who keep sinning. Christ is not weak toward them. He was crucified in weakness but lives by God's power. Then Paul turns the test around: “Examine yourselves, whether ye be in the faith; prove your own selves.” He hopes they will do what is right, so that he will not need to be harsh when he arrives.
 
-Like a parent caring for children, he is willing to spend himself for their benefit.
-
-Paul also defends the conduct of Titus and the other workers he sent, explaining that they have not exploited the church.
-
-Yet he fears that his coming visit may reveal continuing jealousy, arguments, pride, disorder, and sexual wrongdoing.
-
-He warns that those who persist in sin without repentance will face correction when he arrives.
-
-Paul calls the Corinthians to examine themselves and determine whether they are truly living in the faith.
-
-He wants them to become spiritually mature and do what is right, rather than forcing him to use his authority severely.
-
-His authority was given for building up believers, not destroying them.
-
-As the letter draws to a close, Paul urges them to rejoice, seek maturity, receive encouragement, live in peace, and remain united.
-
-He sends greetings from the believers with him and ends by blessing the Corinthians with the grace of Jesus Christ, the love of God, and the fellowship of the Holy Ghost.
-
-Throughout the letter, Paul's relationship with the Corinthians reveals the difficulties of guiding a young church through correction, disagreement, and spiritual growth.
-
-He has explained that Christian ministry is not measured by outward success, impressive speech, or freedom from suffering. Its strength comes from God, whose power works through human weakness.
-
-The Corinthians are left with a call to repentance, generosity, faithfulness, and unity. The same grace that sustained Paul through hardship is presented as the foundation for their continuing life together in Christ.
+He closes with warm words: “Finally, brethren, farewell. Be perfect, be of good comfort, be of one mind, live in peace; and the God of love and peace shall be with you.” The final verse is a blessing many churches still use today: “The grace of the Lord Jesus Christ, and the love of God, and the communion of the Holy Ghost, be with you all. Amen.” The letter shows God's power working through weakness, and the comfort He gives His people even in suffering.
 
 # Galatians
 When it happened: Probably around AD 48–55. Whether it was written before or after the Jerusalem council of Acts 15 is debated.
@@ -548,199 +272,53 @@ The world at the time: Some teachers were insisting that Gentile believers must 
 
 **Paul Defends the True Gospel (Galatians 1:1–24)** — Paul confronts false teaching in the Galatian churches and explains that the message he preaches came through a revelation of Jesus Christ.
 
-The apostle Paul writes to the churches of Galatia, a region in what is now Turkey. He had preached Jesus Christ among these believers, but troubling changes had begun. Certain teachers were persuading them that faith in Jesus was not enough and that they also needed to follow requirements of the Jewish law.
+Paul begins sharply. He is an apostle “not of men, neither by man, but by Jesus Christ, and God the Father, who raised him from the dead.” Unlike his other letters, there is no word of thanks. Instead he writes, “I marvel that ye are so soon removed from him that called you into the grace of Christ unto another gospel.” Teachers have come to the churches in Galatia saying that Gentile believers must be circumcised and keep the law of Moses. Paul says that is no gospel at all: “But though we, or an angel from heaven, preach any other gospel unto you than that which we have preached unto you, let him be accursed.” He is not trying to please people, “for if I yet pleased men, I should not be the servant of Christ.”
 
-Paul begins by reminding them that his authority as an apostle comes from Jesus Christ and God the Father, who raised Jesus from the dead.
-
-He is astonished that the Galatians are turning toward a different message. Paul warns that anyone preaching a gospel contrary to the one they received is leading them away from God's grace.
-
-To explain why his message can be trusted, Paul recalls his earlier life.
-
-He had once fiercely persecuted the church and worked to destroy it. He was deeply committed to the traditions of his ancestors and had advanced in Judaism beyond many others his age.
-
-But God called him through His grace and revealed His Son to him so that Paul might preach among the Gentiles, people who were not Jewish.
-
-Paul explains that he did not receive his gospel from human teachers. After his calling, he spent time in Arabia and Damascus before eventually visiting Peter in Jerusalem.
-
-The churches of Judea did not know him personally. They only heard that the man who once persecuted believers was now preaching the faith he had tried to destroy.
-
-Because of this change, they glorified God.
+To prove that his message came from God, Paul tells his story. He did not learn the gospel from any person, “but by the revelation of Jesus Christ.” He had been a zealous Jew who “beyond measure... persecuted the church of God, and wasted it.” But God, “who separated me from my mother's womb, and called me by his grace,” revealed His Son to him, so that he would preach among the Gentiles. Paul did not run to Jerusalem for approval. He went to Arabia, then back to Damascus. Only three years later did he visit Jerusalem, and then just for fifteen days with Peter, also meeting James, the Lord's brother. The churches in Judea did not know his face. They only heard that the man who once persecuted them was now preaching the faith, “And they glorified God in me.”
 
 **Paul Protects the Gospel from Human Requirements (Galatians 2:1–21)** — Paul explains how church leaders recognized his ministry and why he opposed efforts to make Jewish religious practices necessary for acceptance by God.
 
-Fourteen years later, Paul returned to Jerusalem with Barnabas, a fellow worker, and Titus, a Gentile believer.
+Fourteen years later, Paul went to Jerusalem again with Barnabas and Titus, a Greek believer. He explained the gospel he preached to the church leaders privately. Titus was not forced to be circumcised, even though “false brethren” had slipped in “to spy out our liberty.” Paul says, “To whom we gave place by subjection, no, not for an hour.” James, Peter, and John, known as “pillars” of the church, added nothing to Paul's message. They saw that God had sent Paul to the Gentiles just as He sent Peter to the Jews, and they gave Paul and Barnabas “the right hands of fellowship.” They asked only that he remember the poor, which he was eager to do.
 
-He explained the gospel he preached among the Gentiles to recognized church leaders. Titus was not compelled to undergo circumcision, the physical sign of God's covenant with Abraham's descendants.
+But later, in Antioch, Peter himself stumbled. At first he ate freely with Gentile believers. Then, when men came from James, he pulled away out of fear of those who insisted on circumcision. Other Jewish believers followed him, “insomuch that Barnabas also was carried away with their dissimulation,” or hypocrisy. So Paul says, “I withstood him to the face, because he was to be blamed.” In front of everyone, Paul asked Peter how he could force Gentiles to live like Jews when he himself lived like a Gentile.
 
-Some people had attempted to impose this requirement upon Gentile Christians, but Paul refused to surrender the freedom believers had received through Christ.
-
-James, Peter, and John recognized that Paul had been entrusted with preaching to the Gentiles, just as Peter had been entrusted with ministry among the Jews.
-
-They extended fellowship to Paul and Barnabas and encouraged them to remember the poor.
-
-Later, however, a disagreement arose in Antioch.
-
-Peter had been eating with Gentile believers but withdrew when certain men associated with the Jewish believers arrived. His actions influenced others, including Barnabas.
-
-Paul confronted Peter publicly because this behavior suggested that Gentiles needed to follow Jewish customs to enjoy full fellowship.
-
-He explained that people are justified, or counted righteous before God, through faith in Jesus Christ rather than by keeping the works of the law.
-
-Paul declared that his former life had been changed through Christ's death. He now lived by faith in the Son of God, who loved him and gave Himself for him.
-
-If righteousness could be obtained through the law, Paul argued, Christ's death would have been unnecessary.
+The heart of the matter is this: “a man is not justified by the works of the law, but by the faith of Jesus Christ.” Then Paul writes one of his most personal verses: “I am crucified with Christ: nevertheless I live; yet not I, but Christ liveth in me: and the life which I now live in the flesh I live by the faith of the Son of God, who loved me, and gave himself for me.” If we could be made right by keeping the law, “then Christ is dead in vain.”
 
 **Faith, Not the Law, Brings God's Blessing (Galatians 3:1–29)** — Paul reminds the Galatians that they received the Spirit through faith and explains how God's promise to Abraham finds its fulfillment in Christ.
 
-Paul challenges the Galatians to remember how their relationship with God began.
+“O foolish Galatians, who hath bewitched you?” Paul asks them to remember how they became Christians. “Received ye the Spirit by the works of the law, or by the hearing of faith?” They began by the Spirit, so why try to finish by human effort? Then he points to Abraham, who “believed God, and it was accounted to him for righteousness.” So the true children of Abraham are those who believe, including Gentiles. God promised Abraham that all nations would be blessed through him.
 
-They had received the Holy Spirit through hearing and believing the gospel, not by performing the works required by Moses' law.
+The law cannot save, because it curses everyone who fails to keep all of it. But “Christ hath redeemed us from the curse of the law, being made a curse for us: for it is written, Cursed is every one that hangeth on a tree.” The law came 430 years after God's promise to Abraham, so it cannot cancel that promise. Why then was the law given? “It was added because of transgressions,” to show people their sin until Christ came. “Wherefore the law was our schoolmaster to bring us unto Christ, that we might be justified by faith.” In Paul's day, the schoolmaster was a household servant who watched over a child until he grew up.
 
-Why, then, were they now attempting to complete through human effort what God had begun through His Spirit?
-
-Paul turns to Abraham, the ancestor of Israel.
-
-Long before God gave the law through Moses, Abraham believed God's promise, and his faith was counted as righteousness.
-
-God had promised that all nations would be blessed through Abraham. Paul explains that those who believe share in that blessing.
-
-The law, however, declares a curse upon those who fail to obey everything it requires.
-
-Christ redeemed believers from that curse by becoming a curse for them through His death upon the cross.
-
-Paul explains that God's promise to Abraham was not canceled by the law, which came 430 years later.
-
-The law had a particular purpose. It revealed transgressions and served as a guide leading people toward Christ.
-
-But now that faith in Christ has come, believers are no longer under that guide in the same way.
-
-Through faith, they become children of God and are united with Christ.
-
-Paul explains that distinctions such as Jew and Greek, enslaved and free, male and female do not create separate levels of belonging in Christ.
-
-Those who belong to Him are Abraham's seed and heirs according to God's promise.
+Now that faith has come, believers no longer need that guardian. “For ye are all the children of God by faith in Christ Jesus.” Then comes one of the most important verses about equality in the church: “There is neither Jew nor Greek, there is neither bond nor free, there is neither male nor female: for ye are all one in Christ Jesus. And if ye be Christ's, then are ye Abraham's seed, and heirs according to the promise.”
 
 **Believers Become Children and Heirs of God (Galatians 4:1–31)** — Paul explains that Christ frees believers from spiritual bondage and expresses concern that the Galatians are returning to practices that threaten their freedom.
 
-Paul continues by comparing an heir who is still a child to a servant.
+Paul compares God's people before Christ to a child who will inherit a great estate. While he is young, he is no different from a servant, kept under guardians until the time his father sets. “But when the fulness of the time was come, God sent forth his Son, made of a woman, made under the law, To redeem them that were under the law, that we might receive the adoption of sons. And because ye are sons, God hath sent forth the Spirit of his Son into your hearts, crying, Abba, Father. Wherefore thou art no more a servant, but a son.”
 
-Although the child will eventually inherit the estate, he remains under guardians until the appointed time.
+So why would the Galatians want to go back to slavery? They are carefully keeping special days, months, seasons, and years. “I am afraid of you,” Paul says, worried that his work among them was wasted. He reminds them how warmly they welcomed him when he first came to them sick. They received him like an angel, “ye would have plucked out your own eyes, and have given them to me.” Now he asks, “Am I therefore become your enemy, because I tell you the truth?” He feels like a mother in labor all over again: “My little children, of whom I travail in birth again until Christ be formed in you.”
 
-Similarly, Paul explains that before Christ came, people were held under conditions of spiritual bondage.
-
-But when the fullness of time arrived, God sent His Son, born of a woman and born under the law.
-
-Christ came to redeem those under the law so that believers might receive adoption as God's children.
-
-Because they are His children, God sends the Spirit of His Son into their hearts, enabling them to call Him Father.
-
-They are no longer servants but sons and heirs through Christ.
-
-Paul is therefore deeply concerned that the Galatians are returning to the observance of religious days, months, seasons, and years as though these practices were necessary to secure their standing before God.
-
-He reminds them of the kindness they showed him when he first preached among them despite a physical weakness.
-
-Now he fears that those seeking their attention are drawing them away from the truth.
-
-Paul then uses an illustration involving Abraham's two sons.
-
-Ishmael was born to Hagar, an enslaved woman, while Isaac was born to Sarah, Abraham's wife, through God's promise.
-
-Paul uses these women to represent two covenants, contrasting bondage under the law with freedom connected to God's promise.
-
-He concludes that believers in Christ are children of promise, like Isaac, rather than children of bondage.
+Then Paul uses an illustration from Abraham's life. Abraham had two sons. Ishmael was born to Hagar the slave woman, and Isaac was born to Sarah the free woman by God's promise. Paul says Hagar stands for the covenant of the law given at Mount Sinai, which leads to slavery. Sarah stands for the “Jerusalem which is above,” which “is free, which is the mother of us all.” Just as Ishmael mocked Isaac, those who live by the law persecute those who live by the promise. “So then, brethren, we are not children of the bondwoman, but of the free.”
 
 **Christ Calls His People to Live in Freedom (Galatians 5:1–26)** — Paul warns against returning to bondage under the law and teaches that true Christian freedom is expressed through love and life in the Spirit.
 
-Having explained God's promise, Paul urges the Galatians to remain firm in the freedom Christ has given them.
+“Stand fast therefore in the liberty wherewith Christ hath made us free, and be not entangled again with the yoke of bondage.” Paul warns that if they accept circumcision as necessary for salvation, Christ will be of no benefit to them. They would be required to keep the whole law. “Whosoever of you are justified by the law; ye are fallen from grace.” In Christ, circumcision does not matter either way, but only “faith which worketh by love.” “Ye did run well; who did hinder you that ye should not obey the truth?” Like yeast in dough, “A little leaven leaveneth the whole lump.” He is so angry at the false teachers that he wishes they would go all the way and castrate themselves.
 
-He warns that those who seek justification through circumcision and the law are placing themselves under an obligation to keep the whole law.
+But freedom is not permission to sin. “For, brethren, ye have been called unto liberty; only use not liberty for an occasion to the flesh, but by love serve one another. For all the law is fulfilled in one word, even in this; Thou shalt love thy neighbour as thyself.” “But if ye bite and devour one another, take heed that ye be not consumed one of another.”
 
-Attempting to establish righteousness this way means turning away from reliance upon Christ's grace.
-
-Paul explains that neither circumcision nor uncircumcision gives a person special standing in Christ. What matters is faith working through love.
-
-The Galatians had begun their spiritual journey well, but someone had interrupted their obedience to the truth.
-
-Paul warns that even a small amount of false teaching can influence an entire community.
-
-Yet Christian freedom is not permission to satisfy every selfish desire.
-
-Instead, believers are called to serve one another through love.
-
-Paul reminds them that the command to love one's neighbor as oneself expresses the purpose of the law concerning human relationships.
-
-He then contrasts the desires of the flesh, meaning sinful human nature, with the leading of the Holy Spirit.
-
-The works of the flesh include sexual immorality, idolatry, hatred, jealousy, anger, divisions, drunkenness, and other sinful behaviors.
-
-Those who continue practicing such things are warned that they will not inherit God's kingdom.
-
-In contrast, the fruit of the Spirit is love, joy, peace, patience, gentleness, goodness, faith, meekness, and self-control.
-
-Those who belong to Christ have crucified the flesh with its sinful desires.
-
-Paul urges believers to live according to the Spirit, avoiding pride, needless competition, and envy.
+The answer is life in the Spirit: “Walk in the Spirit, and ye shall not fulfil the lust of the flesh.” The flesh, meaning our sinful nature, and the Spirit fight against each other. Paul lists the works of the flesh, including sexual immorality, idol worship, witchcraft, hatred, fighting, jealousy, anger, selfishness, division, envy, murder, and drunkenness. Those who live this way will not inherit God's kingdom. “But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith, Meekness, temperance: against such there is no law.” Longsuffering means patience, and temperance means self-control. Those who belong to Christ have crucified the flesh. “If we live in the Spirit, let us also walk in the Spirit.”
 
 **Believers Must Carry One Another's Burdens (Galatians 6:1–10)** — Paul explains how spiritual maturity is demonstrated through gentle correction, personal responsibility, generosity, perseverance, and practical goodness toward others.
 
-Paul turns from the inner work of the Spirit to the relationships among believers.
+Paul gives practical instructions for living together. “Brethren, if a man be overtaken in a fault, ye which are spiritual, restore such an one in the spirit of meekness; considering thyself, lest thou also be tempted. Bear ye one another's burdens, and so fulfil the law of Christ.” At the same time, each person should examine his own work, not compare himself to others, “For every man shall bear his own burden.” Those who are taught God's word should share good things with their teachers.
 
-If someone is overtaken by wrongdoing, those who are spiritually mature should help restore that person gently.
-
-But they must also examine themselves so they do not fall into temptation.
-
-Paul instructs believers to carry one another's burdens, fulfilling the law of Christ through love.
-
-At the same time, each person remains responsible for examining their own conduct rather than constantly comparing themselves with others.
-
-He warns against self-deception and pride.
-
-Those who receive instruction in God's word should share good things with those who teach them.
-
-Paul then introduces an illustration from farming.
-
-Just as a farmer harvests what has been planted, people will eventually receive the results of what they sow.
-
-Those who sow to satisfy the flesh will reap corruption, while those who sow to the Spirit will reap everlasting life.
-
-Believers must therefore not become weary of doing good.
-
-Even when the results of faithfulness are not immediately visible, Paul encourages perseverance because a harvest will come in the proper season.
-
-Whenever opportunities arise, they should do good to everyone, especially those who belong to the household of faith.
-
-The freedom Christ provides is therefore closely connected to responsibility, compassion, and love.
+Then comes a principle from farming: “Be not deceived; God is not mocked: for whatsoever a man soweth, that shall he also reap.” Whoever sows to please his sinful nature will reap ruin. Whoever sows to please the Spirit will reap everlasting life. So Paul encourages them, “And let us not be weary in well doing: for in due season we shall reap, if we faint not. As we have therefore opportunity, let us do good unto all men, especially unto them who are of the household of faith.”
 
 **Paul Boasts Only in the Cross of Christ (Galatians 6:11–18)** — Paul closes by exposing the motives of those demanding circumcision and declaring that his confidence rests entirely in the cross of Jesus Christ.
 
-As the letter draws to a close, Paul draws attention to the large letters he has written with his own hand.
+Paul usually dictated his letters, but now he takes the pen himself: “Ye see how large a letter I have written unto you with mine own hand.” The large letters may be because of poor eyesight, or simply for emphasis. He exposes the false teachers' real motive. They want to look good and avoid persecution, and they want to boast about how many Gentiles they have circumcised. They do not even keep the law themselves.
 
-He returns once more to the teachers who are pressuring the Galatians to be circumcised.
-
-Paul explains that these individuals desire an outward appearance of religious success and wish to avoid persecution connected with the cross of Christ.
-
-They want to boast about persuading Gentile believers to accept circumcision, even though they themselves do not faithfully keep the whole law.
-
-Paul refuses to share in that kind of boasting.
-
-His only boast is in the cross of the Lord Jesus Christ.
-
-Through Christ, Paul considers the world crucified to him and himself crucified to the world. The old measures of religious status and human approval no longer determine his identity.
-
-Neither circumcision nor uncircumcision is what matters most. What matters is becoming a new creation.
-
-Paul asks that peace and mercy rest upon those who walk according to this rule and upon the Israel of God, an expression whose precise meaning has been understood differently.
-
-He then points to the marks he bears in his body from suffering for Jesus, asking that no one trouble him further.
-
-The letter ends with a blessing of the grace of the Lord Jesus Christ upon the Galatian believers.
-
-Paul began by confronting churches that were being persuaded to add requirements of the Jewish law to the gospel. He defended the message he had received from Christ, explained God's promise to Abraham, and showed that believers become God's children through faith rather than by earning righteousness through the law.
-
-Yet the freedom he defended was never meant to encourage selfishness or wrongdoing. It was a freedom shaped by the Holy Spirit, expressed through love, and demonstrated through faithful service to others.
-
-Galatians closes with Paul's attention fixed upon the cross of Christ. The believers' hope rests not in outward religious achievements but in God's grace, which brings them into His family and calls them to live as a new creation.
+Paul will boast in only one thing: “But God forbid that I should glory, save in the cross of our Lord Jesus Christ, by whom the world is crucified unto me, and I unto the world.” What matters is not circumcision or uncircumcision, “but a new creature.” He asks that no one trouble him any more about these things, “for I bear in my body the marks of the Lord Jesus,” the scars from beatings and stonings he suffered for Christ. He ends with a blessing: “Brethren, the grace of our Lord Jesus Christ be with your spirit. Amen.” The whole letter defends one truth: people are made right with God by faith in Christ, not by keeping the law.
 
 # Ephesians
 When it happened: Written while Paul was a prisoner (Ephesians 3:1; 4:1; 6:20), most likely in Rome around AD 60–62.
@@ -750,231 +328,67 @@ The world at the time: Ephesus was famous for its great temple of Diana. Its chu
 
 **God Blesses His People Through Jesus Christ (Ephesians 1:1–23)** — Paul introduces God's eternal plan of salvation through Jesus Christ and prays that believers will understand the hope, inheritance, and power they have received.
 
-The apostle Paul writes to the believers in Ephesus, an important city in the Roman province of Asia, located in what is now Turkey. He identifies himself as an apostle of Jesus Christ and opens with a blessing of grace and peace.
+After a short greeting, Paul bursts into praise in one long sentence that runs for twelve verses in the original Greek. “Blessed be the God and Father of our Lord Jesus Christ, who hath blessed us with all spiritual blessings in heavenly places in Christ: According as he hath chosen us in him before the foundation of the world, that we should be holy and without blame before him in love.” God planned in love to adopt them as His children. “In whom we have redemption through his blood, the forgiveness of sins, according to the riches of his grace.” His great plan is “That in the dispensation of the fulness of times he might gather together in one all things in Christ.” When they believed, they were “sealed with that holy Spirit of promise, Which is the earnest of our inheritance.” An earnest is a down payment that guarantees the rest will come.
 
-Paul begins by praising God for the spiritual blessings given to believers through Christ. He explains that God chose His people in Christ before the foundation of the world, intending for them to live holy lives before Him.
-
-Through Jesus, believers receive adoption into God's family, redemption through His blood, and forgiveness of sins according to the riches of God's grace.
-
-Paul describes God's purpose of bringing all things together under Christ, both in heaven and on earth. Those who believe the gospel are sealed with the promised Holy Spirit, who serves as the guarantee of their future inheritance.
-
-Having heard of the Ephesians' faith and love, Paul gives thanks for them and prays that God will open their understanding. He wants them to recognize the hope of His calling, the greatness of His promises, and the power that raised Jesus from the dead.
-
-That same power exalted Christ above every authority and placed Him as head over the church, which Paul describes as His body.
+Then Paul prays for them. He asks God to give them wisdom, so that “The eyes of your understanding being enlightened; that ye may know what is the hope of his calling.” He wants them to understand God's great power. It is the same power that raised Christ from the dead and “set him at his own right hand in the heavenly places, Far above all principality, and power, and might, and dominion.” God put all things under Christ's feet and made Him “the head over all things to the church, Which is his body.”
 
 **God Brings the Spiritually Dead to Life (Ephesians 2:1–10)** — Paul explains that salvation comes through God's mercy and grace rather than human achievements, giving believers a new life prepared for good works.
 
-Paul reminds the Ephesians of what their lives were like before receiving Christ.
+Paul reminds them what they were before Christ: “And you hath he quickened, who were dead in trespasses and sins.” Quickened means made alive. They used to follow the world and “the prince of the power of the air,” meaning Satan, and were “by nature the children of wrath, even as others.”
 
-They had been spiritually dead because of sins and disobedience. Their conduct followed the ways of the world, the influence of evil, and the desires of their sinful nature.
-
-This condition was not limited to the Gentiles. Paul includes himself and other Jewish believers among those who had once lived according to sinful desires.
-
-But God's great love and mercy changed their situation.
-
-Even while they were spiritually dead, God made them alive together with Christ. Through His grace, they were raised with Christ and given a new standing before Him.
-
-Paul emphasizes that salvation is God's gift, received through faith. It is not something people can earn through good deeds or religious achievements.
-
-Because salvation comes from God, no one can boast about deserving it.
-
-Yet good works still have an important place in the Christian life.
-
-Paul explains that believers are God's workmanship, created in Christ Jesus for good works that God prepared for them to walk in.
-
-Their obedience does not purchase salvation. Instead, their changed lives reflect the work God has already begun within them.
+“But God” are two of the most important words in the passage. “But God, who is rich in mercy, for his great love wherewith he loved us, Even when we were dead in sins, hath quickened us together with Christ, (by grace ye are saved;)” He raised them up and seated them with Christ in heaven, to show “the exceeding riches of his grace” for all ages to come. Then Paul explains how salvation works: “For by grace are ye saved through faith; and that not of yourselves: it is the gift of God: Not of works, lest any man should boast.” Good works do not earn salvation, but they are its purpose: “For we are his workmanship, created in Christ Jesus unto good works, which God hath before ordained that we should walk in them.”
 
 **Christ Unites Jews and Gentiles into One Family (Ephesians 2:11–22)** — Paul explains how Jesus removes the division between Jews and Gentiles, bringing both groups near to God and making them members of one spiritual household.
 
-Paul turns toward the Gentile believers, reminding them that they had once been separated from Israel's covenant promises.
+Paul speaks directly to the Gentile believers. Before Christ, they were outsiders: “without Christ, being aliens from the commonwealth of Israel, and strangers from the covenants of promise, having no hope, and without God in the world. But now in Christ Jesus ye who sometimes were far off are made nigh by the blood of Christ.”
 
-The Jews were descendants of Abraham, the man through whom God established a special covenant with Israel. Gentiles were people outside that nation who had not shared the same covenant relationship.
+In the temple in Jerusalem, a stone wall kept Gentiles out of the inner courts, with signs warning them of death if they went further. Paul says Christ has torn down that kind of barrier: “For he is our peace, who hath made both one, and hath broken down the middle wall of partition between us.” By His death, He made Jews and Gentiles into “one new man, so making peace,” and reconciled both to God in one body through the cross. Now both have access to the Father by one Spirit.
 
-Paul explains that the Gentiles had once been strangers to the promises, without Christ and without the hope now revealed through Him.
-
-But through Jesus' blood, those who had been far away were brought near.
-
-Christ became their peace.
-
-Through His death, Jesus broke down the dividing wall of hostility between Jews and Gentiles. Paul explains that Christ removed the barrier created by the law's commandments and ordinances, making peace through the cross.
-
-Instead of remaining two separated groups, believers from both backgrounds could become one new people in Christ.
-
-Both Jews and Gentiles now have access to the Father through the same Spirit.
-
-The Gentiles are therefore no longer strangers or outsiders.
-
-They have become fellow citizens with God's people and members of His household.
-
-Paul compares this new community to a building founded upon the apostles and prophets, with Jesus Christ Himself as the chief cornerstone.
-
-Together, believers are being built into a holy temple where God dwells through His Spirit.
+“Now therefore ye are no more strangers and foreigners, but fellowcitizens with the saints, and of the household of God.” Paul pictures the church as a building “built upon the foundation of the apostles and prophets, Jesus Christ himself being the chief corner stone.” The whole building grows into “an holy temple in the Lord,” a place where God Himself lives by His Spirit.
 
 **God Reveals His Plan for All Nations (Ephesians 3:1–21)** — Paul explains his calling to preach God's previously hidden purpose among the Gentiles and prays that believers will be strengthened through Christ's love.
 
-Paul describes himself as a prisoner of Jesus Christ for the sake of the Gentiles.
+Paul calls himself “the prisoner of Jesus Christ for you Gentiles.” God revealed to him a mystery, a secret hidden for ages but now made known. That mystery is “That the Gentiles should be fellowheirs, and of the same body, and partakers of his promise in Christ by the gospel.” Paul is amazed that he was chosen to share it: “Unto me, who am less than the least of all saints, is this grace given, that I should preach among the Gentiles the unsearchable riches of Christ.” Through the church, God is showing His wisdom even to the powers in heaven. So the Ephesians should not lose heart because of Paul's sufferings.
 
-His imprisonment is connected with the ministry God entrusted to him, but he does not want the believers to lose heart because of his suffering.
+Then Paul prays again: “For this cause I bow my knees unto the Father of our Lord Jesus Christ.” He asks that God would strengthen them by His Spirit, “That Christ may dwell in your hearts by faith; that ye, being rooted and grounded in love, May be able to comprehend with all saints what is the breadth, and length, and depth, and height; And to know the love of Christ, which passeth knowledge, that ye might be filled with all the fulness of God.”
 
-God had revealed a mystery to Paul through His Spirit.
-
-This mystery was a purpose that had not been made known to earlier generations in the same way. Through the gospel, Gentiles would become fellow heirs, members of the same body, and participants in God's promise through Jesus Christ.
-
-Paul explains that he was given the responsibility of preaching the riches of Christ among the nations.
-
-He considers this calling an act of grace rather than a reward for personal greatness.
-
-Through the church, God's wisdom is now being displayed, even to heavenly rulers and authorities.
-
-Paul then turns from explanation to prayer.
-
-He asks the Father to strengthen the believers through His Spirit in their inner lives so that Christ may dwell in their hearts through faith.
-
-He prays that they will become deeply rooted in love and understand the greatness of Christ's love, which surpasses human knowledge.
-
-Paul ends by praising God, who is able to accomplish far more than believers can ask or imagine through His power working within them.
-
-To Him belongs glory in the church and in Christ Jesus throughout all generations.
+The first half of the letter ends with praise: “Now unto him that is able to do exceeding abundantly above all that we ask or think, according to the power that worketh in us, Unto him be glory in the church by Christ Jesus throughout all ages, world without end. Amen.”
 
 **The Church Must Grow Together in Unity (Ephesians 4:1–16)** — Paul urges believers to preserve unity through humility and love while using their different gifts to help the church grow toward spiritual maturity.
 
-After explaining what God has accomplished through Christ, Paul turns toward the way believers should live.
+The second half of the letter turns to daily life. “I therefore, the prisoner of the Lord, beseech you that ye walk worthy of the vocation wherewith ye are called, With all lowliness and meekness, with longsuffering, forbearing one another in love; Endeavouring to keep the unity of the Spirit in the bond of peace.” Vocation means calling. The church is already one: “There is one body, and one Spirit, even as ye are called in one hope of your calling; One Lord, one faith, one baptism, One God and Father of all.”
 
-As a prisoner for the Lord, he urges them to walk in a manner worthy of their calling.
+Within that unity, each person has received grace as Christ gave it. When Christ ascended, “he led captivity captive, and gave gifts unto men.” “And he gave some, apostles; and some, prophets; and some, evangelists; and some, pastors and teachers; For the perfecting of the saints, for the work of the ministry, for the edifying of the body of Christ.” Church leaders are given to equip all believers to serve, until everyone grows up into the full stature of Christ.
 
-Their relationships should be marked by humility, gentleness, patience, and love. They must work to preserve the unity created by the Holy Spirit.
-
-Paul reminds them that there is one body, one Spirit, one hope, one Lord, one faith, one baptism, and one God and Father of all.
-
-Yet unity does not mean that everyone has identical responsibilities.
-
-Christ has given different gifts to His people.
-
-Paul identifies apostles, prophets, evangelists, pastors, and teachers as those appointed to prepare believers for the work of ministry and strengthen the church.
-
-The goal is spiritual maturity, with the community growing toward a fuller knowledge of Christ.
-
-Without this maturity, believers can be easily influenced by false teaching and deceptive ideas.
-
-Instead, they must speak the truth in love.
-
-Paul compares the church to a body whose different parts work together under Christ, its head.
-
-As each member faithfully contributes, the whole body grows stronger and builds itself up in love.
+The goal is maturity: “That we henceforth be no more children, tossed to and fro, and carried about with every wind of doctrine,” fooled by clever liars. “But speaking the truth in love, may grow up into him in all things, which is the head, even Christ.” Like a healthy body, the church grows and builds itself up in love as every part does its share.
 
 **Believers Must Leave Their Former Ways Behind (Ephesians 4:17–5:21)** — Paul describes the difference between the old sinful life and the new life in Christ, calling believers to holiness, love, wisdom, and gratitude.
 
-Paul urges the Ephesians not to continue living like those who remain separated from God's truth.
+Believers must no longer live like the Gentiles around them, “in the vanity of their mind,” with darkened understanding and hard hearts that have given themselves over to impurity and greed. Instead, they must “put off... the old man,” like old clothes, “And be renewed in the spirit of your mind; And that ye put on the new man, which after God is created in righteousness and true holiness.”
 
-He describes people whose understanding has become darkened and whose hearts have grown hardened toward God.
+Paul gets specific. “Wherefore putting away lying, speak every man truth with his neighbour.” “Be ye angry, and sin not: let not the sun go down upon your wrath: Neither give place to the devil.” “Let him that stole steal no more,” but work, so he can give to others. “Let no corrupt communication proceed out of your mouth,” only words that build others up. “And grieve not the holy Spirit of God.” Put away bitterness, anger, shouting, and slander. “And be ye kind one to another, tenderhearted, forgiving one another, even as God for Christ's sake hath forgiven you.”
 
-But believers have learned a different way through Jesus Christ.
-
-They are to put aside their former conduct, described as the old man, and be renewed in their thinking.
-
-They must put on the new man, created according to God in righteousness and holiness.
-
-Paul explains what this change means in daily life.
-
-Falsehood must be replaced with truth. Anger must not become an opportunity for sin, and stealing must give way to honest work that provides enough to share with those in need.
-
-Their words should build others up rather than cause harm.
-
-Bitterness, hostility, shouting, and malice must be replaced by kindness, compassion, and forgiveness.
-
-Paul reminds them that God has forgiven them through Christ.
-
-He then calls believers to imitate God as beloved children and walk in love, following the example of Jesus, who gave Himself as an offering and sacrifice.
-
-Sexual immorality, greed, foolish speech, and other forms of uncleanness have no proper place among God's people.
-
-Instead of sharing in darkness, believers are to live as children of light, producing goodness, righteousness, and truth.
-
-Paul urges them to walk wisely, make good use of their time, understand the Lord's will, and avoid drunkenness.
-
-Their gatherings should be filled with spiritual songs, thanksgiving, and mutual submission in reverence for God.
+“Be ye therefore followers of God, as dear children; And walk in love, as Christ also hath loved us, and hath given himself for us.” There must be no sexual immorality, impurity, greed, or dirty joking among them. “For ye were sometimes darkness, but now are ye light in the Lord: walk as children of light.” Paul quotes what may be an early Christian hymn: “Awake thou that sleepest, and arise from the dead, and Christ shall give thee light.” They must live wisely, “Redeeming the time, because the days are evil,” making the most of every opportunity. “And be not drunk with wine, wherein is excess; but be filled with the Spirit; Speaking to yourselves in psalms and hymns and spiritual songs, singing and making melody in your heart to the Lord; Giving thanks always for all things.” And they should be “Submitting yourselves one to another in the fear of God.”
 
 **Faith Must Shape Marriage, Family, and Work (Ephesians 5:22–6:9)** — Paul explains how belonging to Christ should influence marriage, parenting, and relationships between servants and masters through love, respect, and responsibility.
 
-Paul now applies Christian teaching to relationships within the household.
+Paul applies that mutual submission to the household. “Wives, submit yourselves unto your own husbands, as unto the Lord.” But he gives husbands an even higher standard: “Husbands, love your wives, even as Christ also loved the church, and gave himself for it.” Christ's love is the model, a love that sacrifices itself to make the other holy and beautiful. “So ought men to love their wives as their own bodies.” Paul quotes Genesis: “For this cause shall a man leave his father and mother, and shall be joined unto his wife, and they two shall be one flesh.” Then he adds, “This is a great mystery: but I speak concerning Christ and the church.” Marriage is meant to be a living picture of Christ's love for His people.
 
-He begins with husbands and wives.
+“Children, obey your parents in the Lord: for this is right. Honour thy father and mother; which is the first commandment with promise,” the promise of a long life. “And, ye fathers, provoke not your children to wrath: but bring them up in the nurture and admonition of the Lord.”
 
-Wives are instructed to submit to their husbands as part of the order Paul describes within marriage. Husbands are commanded to love their wives as Christ loved the church and gave Himself for it.
-
-Paul presents Christ's sacrificial love as the model for husbands, calling them to care for their wives as they care for their own bodies.
-
-He refers to the marriage union established in Genesis, where husband and wife become one flesh.
-
-Paul also explains that marriage reflects a greater mystery concerning Christ and His church.
-
-He concludes by calling husbands to love their wives and wives to respect their husbands.
-
-Paul then addresses children, urging them to obey their parents in the Lord. He recalls God's commandment to honor father and mother, which includes a promise of well-being.
-
-Fathers are instructed not to provoke their children to anger but to raise them through the Lord's instruction and correction.
-
-Paul also speaks to servants and masters within the social arrangements of the Roman world.
-
-Servants are told to carry out their responsibilities sincerely, as serving Christ rather than merely trying to impress people.
-
-Masters are instructed to treat their servants properly and abandon threats.
-
-Both groups are reminded that they answer to the same Master in heaven, who shows no favoritism.
-
-Through these instructions, Paul connects faith in Christ with conduct inside ordinary households, where love, obedience, fairness, and responsibility are to shape relationships.
+Many in the early church were slaves. Paul tells servants to obey their earthly masters sincerely, “Not with eyeservice, as menpleasers,” working hard only when someone is watching, but as servants of Christ, knowing that the Lord will reward every good deed. Then he turns to masters, who in that culture had nearly total power over slaves: “And, ye masters, do the same things unto them, forbearing threatening: knowing that your Master also is in heaven; neither is there respect of persons with him.”
 
 **God Equips Believers with Spiritual Armor (Ephesians 6:10–20)** — Paul warns that believers face spiritual opposition and describes the protection God provides through truth, righteousness, faith, salvation, Scripture, and prayer.
 
-As the letter approaches its conclusion, Paul urges believers to find their strength in the Lord and the power of His might.
+“Finally, my brethren, be strong in the Lord, and in the power of his might. Put on the whole armour of God, that ye may be able to stand against the wiles of the devil.” Wiles are tricks and schemes. The real enemy is not human: “For we wrestle not against flesh and blood, but against principalities, against powers, against the rulers of the darkness of this world, against spiritual wickedness in high places.”
 
-He explains that their deepest struggle is not against human beings but against spiritual forces of evil.
+Paul, likely chained to a Roman soldier as he writes, describes each piece of armor. They must stand firm, “having your loins girt about with truth,” like a soldier's belt, “and having on the breastplate of righteousness; And your feet shod with the preparation of the gospel of peace; Above all, taking the shield of faith, wherewith ye shall be able to quench all the fiery darts of the wicked. And take the helmet of salvation, and the sword of the Spirit, which is the word of God.” Every piece is defensive except the sword, God's word.
 
-For this reason, they must put on the whole armor of God.
-
-Paul uses the equipment of a soldier to describe what believers need to remain faithful.
-
-The belt represents truth, while the breastplate represents righteousness.
-
-Their feet are prepared with the gospel of peace, and the shield of faith enables them to withstand the attacks of the wicked.
-
-The helmet represents salvation, and the sword of the Spirit is the word of God.
-
-Each part emphasizes dependence upon what God provides rather than confidence in human strength.
-
-Paul then adds the importance of continual prayer.
-
-Believers are to pray through the Spirit, remain watchful, and pray for all God's people.
-
-Paul also asks them to pray for him.
-
-Although he is an ambassador for Christ in chains, he wants courage and clarity to proclaim the mystery of the gospel as he ought.
-
-His imprisonment has not changed the message entrusted to him or his responsibility to proclaim it.
+Armor alone is not enough: they must be “Praying always with all prayer and supplication in the Spirit.” Paul asks them to pray for him, too. He does not ask for release, but for courage to make known the mystery of the gospel, for which he is “an ambassador in bonds.”
 
 **Paul Closes with Encouragement and Peace (Ephesians 6:21–24)** — Paul sends Tychicus to encourage the believers and closes with a blessing of peace, love, faith, and grace for those who love Jesus Christ.
 
-Paul concludes by explaining that Tychicus, a beloved brother and faithful minister in the Lord, will tell the believers about his circumstances.
-
-Tychicus is being sent so they may know how Paul is doing and receive encouragement in their hearts.
-
-Although Paul has written about great spiritual promises and responsibilities, his closing words show his continuing concern for the well-being of the believers.
-
-He prays that peace, love, and faith will come to them from God the Father and the Lord Jesus Christ.
-
-He also asks that grace remain with all who love Jesus Christ sincerely.
-
-The letter ends without describing Paul's release from imprisonment or giving further details about the challenges facing the Ephesian believers.
-
-Instead, it leaves them with the encouragement that God's work through Christ has given them a new identity and a new way of living.
-
-Paul began by praising God for choosing, redeeming, and adopting His people through Jesus Christ. He explained that Jews and Gentiles, once divided, had been brought together into one household through the cross.
-
-From that foundation, he described the kind of community believers were called to become.
-
-Their unity would be strengthened through humility and love. Their conduct would reflect holiness and truth. Their homes and relationships would be shaped by care and responsibility, and their spiritual strength would come from the Lord.
-
-Ephesians closes with the assurance that the God who has brought believers near through Christ continues to strengthen, unite, and equip them for lives that reflect His grace.
+Paul is sending Tychicus, “a beloved brother and faithful minister in the Lord,” to carry the letter and tell them how Paul is doing, so that their hearts may be comforted. He ends with a blessing: “Peace be to the brethren, and love with faith, from God the Father and the Lord Jesus Christ. Grace be with all them that love our Lord Jesus Christ in sincerity. Amen.” Ephesians moves from the riches God has given His people in Christ to the way they should live together as one body, made up of Jews and Gentiles alike.
 
 # Philippians
 When it happened: Written while Paul was in bonds (Philippians 1:7, 13), likely in Rome around AD 60–62; he sends greetings from "Caesar's household" (Philippians 4:22).
@@ -984,235 +398,67 @@ The world at the time: As a Roman colony, Philippi was proud of its Roman citize
 
 **Paul Gives Thanks for the Philippian Believers (Philippians 1:1–11)** — Paul opens his letter with gratitude for the believers in Philippi, celebrating their partnership in the gospel and praying for their spiritual growth.
 
-The apostle Paul writes with Timothy, a fellow servant of Jesus Christ, to the believers in Philippi, a Roman colony in Macedonia, located in what is now Greece. Paul had previously preached the gospel there, and the church had continued supporting his ministry.
-
-Although Paul is now imprisoned, his letter begins with thanksgiving rather than complaint. He remembers the Philippians with joy because they have shared in spreading the gospel from the beginning of their relationship.
-
-Paul expresses confidence that God, who began a good work in them, will continue it until the day of Jesus Christ.
-
-He also explains how deeply he cares for them. They have shared in God's grace with him, both during his imprisonment and in his defense of the gospel.
-
-Paul prays that their love will continue growing alongside knowledge and good judgment. He wants them to recognize what is best, live sincere and blameless lives, and produce the fruit of righteousness through Jesus Christ.
+Philippians is one of Paul's warmest letters, and the word joy runs through it, even though he is writing from prison. “Paul and Timotheus, the servants of Jesus Christ,” greet all the saints in Philippi, along with their overseers and deacons. Paul tells them, “I thank my God upon every remembrance of you,” and he always prays for them with joy “For your fellowship in the gospel from the first day until now.” He is sure of one thing: “that he which hath begun a good work in you will perform it until the day of Jesus Christ.” He holds them in his heart and longs for them all. And he prays “that your love may abound yet more and more in knowledge and in all judgment,” so they will choose what is best and be filled with the fruit of righteousness.
 
 **The Gospel Advances Despite Paul's Imprisonment (Philippians 1:12–30)** — Paul explains that his imprisonment has helped spread the gospel and encourages believers to remain courageous whether he lives or dies.
 
-Paul wants the Philippians to understand that his difficult circumstances have not stopped God's work.
+The Philippians are worried about Paul, but he tells them his imprisonment has actually “fallen out rather unto the furtherance of the gospel.” The whole palace guard knows he is in chains for Christ. His example has made other believers bolder to preach. Some preach out of jealousy, hoping to make his troubles worse, and some out of love. But Paul does not mind: “Christ is preached; and I therein do rejoice, yea, and will rejoice.”
 
-His imprisonment has become widely known as being connected to Christ, even among the palace guard. Other believers have gained confidence and begun speaking God's word more boldly.
+He does not know whether his trial will end in release or execution, but either way he wins: “For to me to live is Christ, and to die is gain.” If he lives, he can keep working. If he dies, he will be with Christ, “which is far better.” He is torn between the two, but he believes he will stay for their sake.
 
-Not everyone preaches with pure motives. Some proclaim Christ out of envy and rivalry, hoping to make Paul's imprisonment more difficult. Others preach sincerely out of love.
-
-Paul nevertheless rejoices that Christ is being proclaimed.
-
-He then considers his uncertain future. Whether he continues living or faces death, his desire is that Christ will be honored.
-
-Living would allow him to continue serving others, while dying would bring him into Christ's presence. Although he longs to be with Christ, Paul recognizes that remaining alive would benefit the believers.
-
-He hopes to visit Philippi again and witness their continued growth.
-
-Until then, he urges them to conduct themselves in a manner worthy of the gospel.
-
-They must stand together in one spirit, remain united in their faith, and refuse to be frightened by opposition.
-
-Paul reminds them that following Christ may involve suffering as well as believing. Their struggles connect them with the difficulties he himself has experienced.
+Whatever happens, he wants them to live “as it becometh the gospel of Christ.” They should stand firm in one spirit, “striving together for the faith of the gospel,” and not be afraid of their opponents. Suffering is part of the calling: “For unto you it is given in the behalf of Christ, not only to believe on him, but also to suffer for his sake.”
 
 **Jesus Christ Reveals the Meaning of True Humility (Philippians 2:1–11)** — Paul calls believers to unity and selfless love, presenting Jesus Christ's humility, obedience, and exaltation as their greatest example.
 
-Having urged the Philippians to stand together, Paul explains the attitude that should shape their relationships.
+Paul asks them to complete his joy by being united: “Let nothing be done through strife or vainglory; but in lowliness of mind let each esteem other better than themselves. Look not every man on his own things, but every man also on the things of others.”
 
-They have received encouragement in Christ, comfort from His love, and fellowship through the Spirit. These blessings should lead them toward unity rather than selfish competition.
+Then he points to the greatest example of humility. Many scholars believe these lines were an early Christian hymn: “Let this mind be in you, which was also in Christ Jesus: Who, being in the form of God, thought it not robbery to be equal with God: But made himself of no reputation, and took upon him the form of a servant, and was made in the likeness of men: And being found in fashion as a man, he humbled himself, and became obedient unto death, even the death of the cross.” Though He was God, Jesus did not cling to His rights. He stepped all the way down, to a slave's death on a cross.
 
-Paul urges them to share the same love and purpose.
-
-Nothing should be done merely through selfish ambition or empty pride. Instead, believers should humbly consider others and care about their interests rather than focusing only on themselves.
-
-Paul then directs their attention to Jesus Christ.
-
-Although Christ existed in the form of God, He did not cling to His heavenly position for personal advantage.
-
-Instead, He humbled Himself, took the form of a servant, and entered human life.
-
-His humility continued through obedience to the Father, even to the point of death upon a cross.
-
-Because of this, God highly exalted Him and gave Him the name above every name.
-
-Paul describes a future recognition of Christ's authority, when every knee will bow and every tongue will confess that Jesus Christ is Lord, bringing glory to God the Father.
-
-The example of Jesus establishes the pattern Paul wants the Philippians to follow: greatness expressed through humility, obedience, and sacrificial love.
+Then the hymn turns upward: “Wherefore God also hath highly exalted him, and given him a name which is above every name: That at the name of Jesus every knee should bow, of things in heaven, and things in earth, and things under the earth; And that every tongue should confess that Jesus Christ is Lord, to the glory of God the Father.”
 
 **Believers Must Shine as Lights in the World (Philippians 2:12–18)** — Paul encourages the Philippians to continue obeying God, avoid complaining and arguments, and demonstrate their faith through lives that honor Christ.
 
-After describing Christ's obedience, Paul returns to the responsibilities of the Philippian believers.
+Paul tells them to keep obeying, even while he is away: “work out your own salvation with fear and trembling. For it is God which worketh in you both to will and to do of his good pleasure.” They are to live out what God is working in them.
 
-He reminds them that they have obeyed God's teaching not only when he was present but also during his absence.
-
-They must continue working out their salvation with reverence and seriousness, recognizing that God is working within them to shape both their desires and their actions according to His good purpose.
-
-Paul does not present obedience as something accomplished independently of God's power. Their faithful conduct is connected to His ongoing work within them.
-
-He instructs them to do everything without complaining or arguing.
-
-In a world marked by dishonesty and wrongdoing, their lives should stand out like lights shining in darkness.
-
-By holding firmly to the word of life, they will demonstrate the difference Christ has made among them.
-
-Paul also looks toward the day of Christ, hoping that their faithfulness will show his ministry among them was not in vain.
-
-Even if his own life is poured out like a drink offering upon their service of faith, Paul says he will rejoice.
-
-He invites them to share that same joy with him.
+“Do all things without murmurings and disputings,” he says, meaning without grumbling or arguing, “That ye may be blameless and harmless, the sons of God, without rebuke, in the midst of a crooked and perverse nation, among whom ye shine as lights in the world; Holding forth the word of life.” Then Paul will know that his work was not wasted. He even pictures his possible death as a drink offering poured out on the altar of their faith, and he says, “I joy, and rejoice with you all.” He asks them to rejoice with him.
 
 **Timothy and Epaphroditus Demonstrate Faithful Service (Philippians 2:19–30)** — Paul explains his plans to send trusted fellow workers and honors Epaphroditus for risking his life while serving the needs of the church.
 
-Paul hopes to send Timothy to Philippi so he can receive news about the believers and be encouraged by their progress.
+Paul hopes to send Timothy to them soon. He has no one else like him: “For I have no man likeminded, who will naturally care for your state. For all seek their own, not the things which are Jesus Christ's.” Timothy has proved himself, “as a son with the father, he hath served with me in the gospel.” Paul also trusts that he himself will come soon.
 
-Timothy has proven himself through faithful service alongside Paul, much like a son working with his father.
-
-Unlike those who seek only their own interests, Timothy genuinely cares about the well-being of the Philippian church.
-
-Paul hopes to send him once he knows how his own circumstances will develop. He also remains hopeful that he will personally visit the believers.
-
-Meanwhile, Paul considers it necessary to send Epaphroditus back to Philippi.
-
-Epaphroditus had come from the Philippian church to help Paul and provide for his needs during imprisonment.
-
-While carrying out this service, Epaphroditus became seriously ill and nearly died.
-
-God showed mercy by restoring his health, sparing both Epaphroditus and Paul from further sorrow.
-
-Epaphroditus had been deeply concerned because the Philippians learned of his illness.
-
-Paul therefore sends him home and asks the church to receive him with joy and honor.
-
-His willingness to risk his life while serving Christ makes him an example of the selfless concern Paul has been teaching throughout the letter.
+Meanwhile, he is sending back Epaphroditus, the man the Philippians had sent with a gift to help Paul. Paul calls him “my brother, and companion in labour, and fellowsoldier.” While serving Paul, Epaphroditus became so sick that he nearly died, “but God had mercy on him.” Now he is homesick and upset that the church heard he was ill. Paul tells them to welcome him with joy “and hold such in reputation,” because he risked his life for the work of Christ.
 
 **Knowing Christ Is Greater Than Earthly Achievements (Philippians 3:1–11)** — Paul warns against trusting religious accomplishments and explains why knowing Jesus Christ surpasses every advantage he once possessed.
 
-Paul urges the Philippians to rejoice in the Lord and warns them against teachers who place their confidence in outward religious practices.
+“Finally, my brethren, rejoice in the Lord.” Then Paul gives a sharp warning about the same kind of teachers he fought in Galatians, who insisted on circumcision: “Beware of dogs, beware of evil workers, beware of the concision,” a mocking word meaning those who merely cut the flesh. True believers “have no confidence in the flesh.”
 
-He particularly challenges those who insist upon circumcision, the physical sign of the covenant God established with Abraham's descendants, as a basis for confidence before God.
+If anyone could trust in religious credentials, Paul could. He was “Circumcised the eighth day, of the stock of Israel, of the tribe of Benjamin, an Hebrew of the Hebrews; as touching the law, a Pharisee; Concerning zeal, persecuting the church; touching the righteousness which is in the law, blameless.” “But what things were gain to me, those I counted loss for Christ. Yea doubtless, and I count all things but loss for the excellency of the knowledge of Christ Jesus my Lord: for whom I have suffered the loss of all things, and do count them but dung, that I may win Christ.” Paul uses a crude word for rubbish on purpose. Compared to knowing Christ, his old achievements are worthless.
 
-Paul explains that if anyone could boast about religious qualifications, he could.
-
-He was circumcised on the eighth day, belonged to the nation of Israel, and came from the tribe of Benjamin.
-
-He was also a Pharisee, a member of a Jewish religious group devoted to careful observance of the law.
-
-His zeal had been so intense that he persecuted the church, and he had considered himself blameless according to the righteousness required by the law.
-
-But his understanding changed through Jesus Christ.
-
-Everything Paul once regarded as personal advantage now seemed insignificant compared with knowing Christ.
-
-He no longer sought righteousness based upon his own obedience to the law.
-
-Instead, he desired the righteousness that comes from God through faith in Christ.
-
-Paul's deepest ambition was to know Jesus, experience the power of His resurrection, share in His sufferings, and be united with Him in death, looking toward the resurrection from the dead.
+He wants to be found in Christ, “not having mine own righteousness, which is of the law, but that which is through the faith of Christ.” His deepest desire is “That I may know him, and the power of his resurrection, and the fellowship of his sufferings,” sharing even in Christ's death, so that he may reach the resurrection from the dead.
 
 **Paul Presses Toward His Heavenly Calling (Philippians 3:12–4:1)** — Paul admits that he has not reached spiritual perfection and encourages believers to keep growing while remembering that their true citizenship is in heaven.
 
-Although Paul has described his desire to know Christ completely, he makes clear that he has not yet reached perfection.
+Paul admits he has not arrived: “Not as though I had already attained, either were already perfect: but I follow after.” Like a runner straining toward the finish line, he says, “Brethren, I count not myself to have apprehended: but this one thing I do, forgetting those things which are behind, and reaching forth unto those things which are before, I press toward the mark for the prize of the high calling of God in Christ Jesus.” He urges them to follow his example and the example of others who live this way.
 
-He continues pursuing the purpose for which Jesus Christ took hold of him.
-
-Rather than remaining focused on past accomplishments or failures, Paul presses forward toward the goal and the prize of God's heavenly calling in Christ.
-
-He encourages spiritually mature believers to share this attitude and continue living according to the understanding they have already received.
-
-Paul also urges them to follow faithful examples.
-
-With sorrow, he warns that many people live as enemies of the cross of Christ. Their minds are fixed upon earthly desires, and their way of life leads toward destruction.
-
-Believers, however, possess a different citizenship.
-
-Their true citizenship is in heaven, from which they await the Lord Jesus Christ as Saviour.
-
-Paul explains that Christ will transform their present lowly bodies to become like His glorious body through the power by which He rules over all things.
-
-Because of this hope, Paul calls the Philippians his beloved brothers and sisters, his joy and crown.
-
-He urges them to stand firm in the Lord.
+With tears, he warns about many who live as “the enemies of the cross of Christ: Whose end is destruction, whose God is their belly,” who take pride in shameful things and think only about earthly things. The Philippians were proud to be Roman citizens. But Paul reminds them, “For our conversation is in heaven,” using a word that means citizenship. From heaven “we look for the Saviour, the Lord Jesus Christ: Who shall change our vile body, that it may be fashioned like unto his glorious body.” So he urges, “my brethren dearly beloved and longed for, my joy and crown, so stand fast in the Lord.”
 
 **Paul Calls the Church to Peace and Joy (Philippians 4:2–9)** — Paul encourages reconciliation, gentleness, prayer, and disciplined thinking, teaching that God's peace can guard believers through life's uncertainties.
 
-Paul turns to specific concerns within the Philippian church.
+Two women in the church, Euodias and Syntyche, have been quarreling. They had worked hard beside Paul in spreading the gospel. He pleads with them “that they be of the same mind in the Lord,” and asks a trusted friend to help them make peace. Their names, he says, “are in the book of life.”
 
-He appeals to two women, Euodias and Syntyche, to live in agreement in the Lord.
+Then comes some of the best-loved advice in the Bible: “Rejoice in the Lord alway: and again I say, Rejoice. Let your moderation be known unto all men. The Lord is at hand. Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God. And the peace of God, which passeth all understanding, shall keep your hearts and minds through Christ Jesus.” Moderation means gentleness. “Be careful for nothing” means do not be anxious about anything. God's peace will stand guard over their hearts like a soldier.
 
-Both women had worked alongside him in spreading the gospel, and Paul asks a trusted fellow worker to help them.
-
-He also remembers other companions, including Clement, whose names he says are written in the book of life.
-
-Paul then urges the believers to rejoice in the Lord continually.
-
-Their gentleness should be evident to everyone because the Lord is near.
-
-Instead of being overcome by anxiety, they should bring their concerns to God through prayer, requests, and thanksgiving.
-
-Paul explains that God's peace, which surpasses human understanding, will guard their hearts and minds through Jesus Christ.
-
-He also teaches them to direct their thoughts toward what is true, honorable, just, pure, lovely, and worthy of praise.
-
-The Philippians should continue practicing the things they have learned, received, heard, and seen in Paul's example.
-
-As they do so, the God of peace will be with them.
+Paul also tells them what to fill their minds with: “Finally, brethren, whatsoever things are true, whatsoever things are honest, whatsoever things are just, whatsoever things are pure, whatsoever things are lovely, whatsoever things are of good report; if there be any virtue, and if there be any praise, think on these things.” If they practice what they learned from him, “the God of peace shall be with you.”
 
 **Paul Learns Contentment Through Christ's Strength (Philippians 4:10–20)** — Paul thanks the Philippians for their generous support and explains that his contentment comes from Christ rather than changing circumstances or possessions.
 
-Paul rejoices because the Philippians have once again expressed their concern for him through practical assistance.
+Paul thanks them for the gift they sent with Epaphroditus. But he wants them to know that he was not desperate: “for I have learned, in whatsoever state I am, therewith to be content. I know both how to be abased, and I know how to abound.” He has learned the secret of being content whether full or hungry, rich or poor. Then he gives the secret: “I can do all things through Christ which strengtheneth me.”
 
-He makes clear that their earlier inability to help did not mean they had stopped caring.
-
-Yet Paul's joy is not simply the result of receiving financial support.
-
-Through his experiences, he has learned to be content in different circumstances.
-
-He knows what it means to have little and what it means to have plenty.
-
-He has experienced hunger and abundance, need and provision.
-
-Through these changing conditions, Paul has learned to depend upon the strength Christ provides.
-
-He explains that he can endure all these circumstances through Christ who strengthens him.
-
-Paul nevertheless praises the Philippians for sharing in his troubles.
-
-When he first traveled beyond Macedonia to preach the gospel, their church had supported him when others had not.
-
-Even while he was in Thessalonica, they had sent help more than once.
-
-Paul explains that he does not seek gifts merely for his own benefit. He values the spiritual fruit that grows from their generosity.
-
-Their support, brought through Epaphroditus, has met his needs and is described as an acceptable sacrifice pleasing to God.
-
-Paul assures them that God will supply their needs according to His riches in glory through Christ Jesus.
-
-He ends this expression of thanks by giving glory to God the Father.
+Still, he is grateful. The Philippians were the only church that supported him when he first left Macedonia, and they sent help to him in Thessalonica again and again. He is not after their money. He wants them to receive the blessing that comes from giving. Their gift was “an odour of a sweet smell, a sacrifice acceptable, wellpleasing to God.” He assures them, “But my God shall supply all your need according to his riches in glory by Christ Jesus.”
 
 **Paul Ends with Greetings and a Blessing of Grace (Philippians 4:21–23)** — Paul closes his affectionate letter by greeting the believers and blessing them with the grace of Jesus Christ, who has sustained his ministry.
 
-As his letter comes to an end, Paul asks that every believer in Christ Jesus receive his greetings.
-
-The fellow believers with him also send their greetings.
-
-Paul adds that all the saints greet the Philippians, especially those belonging to Caesar's household.
-
-Although Paul remains imprisoned, this greeting shows that believers are present even among people connected with the Roman emperor's household.
-
-The letter concludes with Paul's blessing that the grace of the Lord Jesus Christ will remain with them.
-
-Throughout his message, Paul has shown that his circumstances do not determine his confidence in God.
-
-Imprisonment has become an opportunity for the gospel to advance. Uncertainty about his future has strengthened his desire to honor Christ, whether through life or death.
-
-He has called the Philippians to remain united, follow Christ's example of humility, and continue growing in faith.
-
-He has also reminded them that knowing Jesus is worth more than outward achievements and that genuine contentment comes through dependence upon Christ.
-
-The Philippians have shared in Paul's ministry through their prayers, concern, and generous support. Their partnership demonstrates the love and service he has encouraged throughout the letter.
-
-Philippians ends with grace, just as it began. Paul's circumstances remain uncertain, but his message is filled with joy, peace, gratitude, and confidence that God will continue working in the lives of those who belong to Jesus Christ.
+Paul sends greetings to every believer in Philippi. The brothers with him send greetings too, and so do all the believers in Rome, “chiefly they that are of Caesar's household,” likely servants and officials in the emperor's service who had come to faith. He closes, “The grace of our Lord Jesus Christ be with you all. Amen.” Written from chains, Philippians is a letter of joy, showing that contentment and peace come from knowing Christ, whatever the circumstances.
 
 # Colossians
 When it happened: Written while Paul was in prison (Colossians 4:3, 18), likely in Rome around AD 60–62, and sent with Tychicus and Onesimus (Colossians 4:7–9).
@@ -1222,199 +468,59 @@ The world at the time: A false teaching was spreading that mixed human philosoph
 
 **Paul Gives Thanks for Their Growing Faith (Colossians 1:1–14)** — Paul expresses gratitude for the believers in Colossae and prays that their faith will continue growing through knowledge, wisdom, and spiritual strength.
 
-The apostle Paul writes with Timothy, a fellow worker, to the Christians in Colossae, a city in the Roman province of Asia, in what is now Turkey. Paul is imprisoned, but he has received encouraging news about this community of believers.
+Paul and Timothy write to the believers in Colosse, a church Paul had never visited. It was started by Epaphras, “a faithful minister of Christ,” who had told Paul about their faith and love. Paul thanks God for “the hope which is laid up for you in heaven,” and for the gospel, which is bearing fruit all over the world, just as it is among them.
 
-Their faith in Jesus Christ and love for God's people have become known through Epaphras, a faithful minister who had taught them the gospel.
-
-Paul thanks God for the hope awaiting them in heaven. He explains that the same gospel they received is spreading and bearing fruit in other places.
-
-He prays that they will understand God's will, live in ways that please Him, and grow in every good work.
-
-Paul also reminds them that God has rescued them from the power of darkness and brought them into the kingdom of His beloved Son. Through Jesus Christ, they have redemption and forgiveness of sins.
+Ever since he heard about them, Paul has prayed that they would be filled with the knowledge of God's will, “That ye might walk worthy of the Lord unto all pleasing, being fruitful in every good work,” strengthened with God's power, and giving thanks with joy. For God the Father “hath delivered us from the power of darkness, and hath translated us into the kingdom of his dear Son: In whom we have redemption through his blood, even the forgiveness of sins.”
 
 **Jesus Christ Holds Authority Over All Creation (Colossians 1:15–23)** — Paul describes Jesus as supreme over creation and the church, explaining how His death makes reconciliation with God possible.
 
-Paul turns from thanking God for salvation to explaining the greatness of the One through whom salvation comes.
+False teachers in Colosse seem to have taught that Christ was only one of many spiritual powers. Paul answers with one of the greatest descriptions of Christ in the Bible, likely an early Christian hymn. Christ is “the image of the invisible God, the firstborn of every creature.” Firstborn here means first in rank, the heir over all creation. “For by him were all things created, that are in heaven, and that are in earth, visible and invisible, whether they be thrones, or dominions, or principalities, or powers: all things were created by him, and for him: And he is before all things, and by him all things consist.” Consist means hold together.
 
-Jesus Christ is the image of the invisible God and the firstborn of all creation, expressing His supreme position over everything God has made.
+“And he is the head of the body, the church,” the first to rise from the dead, “that in all things he might have the preeminence,” or first place. “For it pleased the Father that in him should all fulness dwell; And, having made peace through the blood of his cross, by him to reconcile all things unto himself.”
 
-All things in heaven and earth, visible and invisible, were created through Him and for Him. He existed before all things, and everything holds together through Him.
-
-Christ is also the head of the church, which Paul describes as His body. Through His resurrection, He holds first place in all things.
-
-Paul explains that God's fullness dwells in Christ and that reconciliation comes through the blood of His cross.
-
-The Colossians had once been separated from God and opposed to Him through sinful thoughts and actions.
-
-Now, through Christ's death, they have been brought near so they may stand holy and blameless before God.
-
-Paul urges them to remain grounded in faith and not abandon the hope proclaimed through the gospel.
+This includes the Colossians themselves. Once they were “alienated and enemies in your mind by wicked works, yet now hath he reconciled” them through Christ's death, so He can present them holy and blameless before God. All they must do is continue in the faith, “grounded and settled,” and not drift away from the hope of the gospel.
 
 **Paul Labors to Make Christ Fully Known (Colossians 1:24–2:7)** — Paul explains his responsibility to proclaim Christ and urges believers to remain firmly rooted in the faith they have received.
 
-Paul describes the sufferings he endures while serving the church. Rather than abandoning his calling, he continues proclaiming the message God entrusted to him.
+Paul says, “Who now rejoice in my sufferings for you.” He suffers gladly for the sake of Christ's body, the church. God made him a servant to fully proclaim His word, “the mystery which hath been hid from ages and from generations, but now is made manifest to his saints.” That mystery, now revealed even to Gentiles, is “Christ in you, the hope of glory: Whom we preach, warning every man, and teaching every man in all wisdom; that we may present every man perfect in Christ Jesus.”
 
-That message includes a mystery once hidden but now revealed among God's people.
-
-The mystery is Christ among the Gentiles, giving them the hope of glory.
-
-Paul's goal is to proclaim Christ, warn people, and teach them with wisdom so they may become spiritually mature.
-
-He works toward this purpose through the strength God supplies.
-
-Although Paul has not personally seen many of the believers in Colossae and nearby Laodicea, he cares deeply about their spiritual well-being.
-
-He wants their hearts to be encouraged, their relationships strengthened through love, and their understanding firmly established in Christ.
-
-Paul explains that the treasures of wisdom and knowledge are found in Him.
-
-He warns against persuasive arguments that might lead them away from the truth.
-
-Having received Jesus Christ as Lord, they must continue walking in Him, growing like plants rooted deeply in good soil and like a building established on a secure foundation.
-
-Their faith should become stronger, accompanied by thanksgiving to God.
+Paul wants them to know how hard he struggles in prayer for them, for the believers in nearby Laodicea, and for all who have never met him. He wants their hearts to be encouraged and joined together in love, so they may fully know Christ, “In whom are hid all the treasures of wisdom and knowledge.” He warns them not to be fooled by smooth-sounding arguments. Instead, “As ye have therefore received Christ Jesus the Lord, so walk ye in him: Rooted and built up in him, and stablished in the faith,” overflowing with thanksgiving.
 
 **Believers Are Complete Through Christ Alone (Colossians 2:8–23)** — Paul warns against deceptive teachings, unnecessary religious regulations, and practices that draw attention away from the complete salvation found in Jesus Christ.
 
-Paul is concerned that the Colossians might be taken captive by teachings based on human traditions rather than Christ.
+“Beware lest any man spoil you through philosophy and vain deceit, after the tradition of men, after the rudiments of the world, and not after Christ.” Spoil here means to carry off as plunder. Believers do not need anything more than Christ: “For in him dwelleth all the fulness of the Godhead bodily. And ye are complete in him.”
 
-He reminds them that the fullness of the Godhead dwells bodily in Jesus and that believers are complete in Him.
+In Christ they have received a spiritual circumcision, cutting away the sinful nature. They were buried with Him in baptism and raised with Him through faith. God forgave all their sins, “Blotting out the handwriting of ordinances that was against us... nailing it to his cross.” This is the record of debt that stood against them. And on the cross, Christ disarmed the evil powers: “having spoiled principalities and powers, he made a shew of them openly, triumphing over them in it.”
 
-Through Christ, they have experienced a spiritual circumcision, representing the removal of their former sinful condition.
-
-Paul connects their baptism with Christ's death and resurrection, explaining that God has made them alive together with Him through faith.
-
-Their sins have been forgiven, and the written record that stood against them has been removed through the cross.
-
-Christ has also triumphed over spiritual powers and authorities.
-
-Because of this, Paul warns the believers not to allow others to judge their standing before God through regulations about food, drink, festivals, new moons, or Sabbaths.
-
-He describes these practices as shadows pointing toward realities found in Christ.
-
-Paul also cautions against false humility, angel worship, and claims based on extraordinary spiritual experiences.
-
-Such practices may appear impressive but can lead people away from Christ, the true head of the church.
-
-Rules about handling, tasting, and touching certain things may seem wise, yet outward restrictions cannot by themselves overcome sinful desires.
-
-The believers' spiritual life must remain centered on Christ rather than human-made systems of righteousness.
+So they must not let anyone judge them over religious rules: “Let no man therefore judge you in meat, or in drink, or in respect of an holyday, or of the new moon, or of the sabbath days: Which are a shadow of things to come; but the body is of Christ.” A shadow points to the real thing. They must not let anyone cheat them by insisting on false humility, the worship of angels, and claims of special visions. Such people lose touch with Christ, the head. If they died with Christ, why follow rules like “Touch not; taste not; handle not”? Those rules have “a shew of wisdom,” but they cannot stop the desires of the sinful nature.
 
 **A New Life Requires a New Way of Living (Colossians 3:1–17)** — Paul explains how those raised with Christ should abandon their former sinful behavior and develop lives marked by holiness, forgiveness, and love.
 
-Having explained the freedom believers possess through Christ, Paul turns toward the way they should live.
+“If ye then be risen with Christ, seek those things which are above, where Christ sitteth on the right hand of God. Set your affection on things above, not on things on the earth. For ye are dead, and your life is hid with Christ in God. When Christ, who is our life, shall appear, then shall ye also appear with him in glory.”
 
-Because they have been raised with Christ, their thoughts and desires should be directed toward the things above, where Christ sits at God's right hand.
+So, Paul says, “Mortify therefore your members which are upon the earth.” Mortify means put to death. They must kill off sexual immorality, impure desires, and greed, which is a form of idol worship. They must also put away anger, rage, hateful words, and filthy talk. “Lie not one to another, seeing that ye have put off the old man with his deeds.” In the new life, old divisions disappear: “there is neither Greek nor Jew, circumcision nor uncircumcision, Barbarian, Scythian, bond nor free: but Christ is all, and in all.”
 
-Their former way of life must no longer control them.
-
-Paul tells them to put away sexual immorality, impure desires, greed, anger, hatred, dishonesty, and harmful speech.
-
-These behaviors belong to the old life they have left behind.
-
-In their place, believers are to put on a new character that reflects the One who created them.
-
-Paul explains that distinctions such as Greek and Jew, circumcised and uncircumcised, enslaved and free do not determine anyone's value within this new life. Christ is central to all who belong to Him.
-
-As God's chosen and beloved people, they should demonstrate compassion, kindness, humility, gentleness, and patience.
-
-They must bear with one another and forgive grievances, remembering how Christ has forgiven them.
-
-Above everything else, Paul places love, which binds believers together in unity.
-
-The peace of God should govern their hearts, and thankfulness should remain part of their lives.
-
-He encourages them to let Christ's word dwell richly among them through teaching, encouragement, psalms, hymns, and spiritual songs.
-
-Everything they say and do should be carried out in the name of the Lord Jesus, giving thanks to God the Father through Him.
+Then Paul lists the new clothes they should put on: “Put on therefore, as the elect of God, holy and beloved, bowels of mercies, kindness, humbleness of mind, meekness, longsuffering; Forbearing one another, and forgiving one another.” Bowels of mercies means a heart of compassion. “Even as Christ forgave you, so also do ye. And above all these things put on charity, which is the bond of perfectness. And let the peace of God rule in your hearts.” “Let the word of Christ dwell in you richly in all wisdom,” teaching one another with psalms, hymns, and spiritual songs. “And whatsoever ye do in word or deed, do all in the name of the Lord Jesus, giving thanks to God and the Father by him.”
 
 **Faithfulness Shapes Families and Daily Responsibilities (Colossians 3:18–4:1)** — Paul applies Christian teaching to marriage, parenting, and relationships between servants and masters, emphasizing love, fairness, and service to Christ.
 
-Paul now describes how the new life in Christ should shape everyday relationships.
+Paul gives short instructions for each part of a household, much like Ephesians. “Wives, submit yourselves unto your own husbands, as it is fit in the Lord. Husbands, love your wives, and be not bitter against them. Children, obey your parents in all things: for this is well pleasing unto the Lord. Fathers, provoke not your children to anger, lest they be discouraged.”
 
-He begins with husbands and wives.
-
-Wives are instructed to submit to their husbands as fitting in the Lord. Husbands are commanded to love their wives and avoid treating them harshly.
-
-Children are told to obey their parents, while fathers are warned against provoking their children in ways that cause discouragement.
-
-Paul then addresses servants and masters within the social structure of his time.
-
-Servants are instructed to work sincerely rather than performing well only when someone is watching.
-
-Their service should come from the heart, recognizing that they ultimately serve the Lord Christ.
-
-Paul reminds them that God sees their work and that faithfulness will receive its proper reward. Wrongdoing, however, will also be judged without favoritism.
-
-Masters are instructed to treat their servants justly and fairly.
-
-They must remember that they also have a Master in heaven.
-
-Through these instructions, Paul shows that belonging to Christ should affect how people exercise responsibility, treat others, and carry out ordinary duties.
-
-Faith is not limited to worship gatherings. It is meant to influence the relationships and work that fill daily life.
+To slaves he says, obey your earthly masters with sincere hearts, not just when they are watching. “And whatsoever ye do, do it heartily, as to the Lord, and not unto men,” for the Lord will reward them, “for ye serve the Lord Christ.” Then he tells masters, “give unto your servants that which is just and equal; knowing that ye also have a Master in heaven.” Every role in life is to be lived as service to Christ.
 
 **Paul Encourages Prayer, Wisdom, and Gracious Speech (Colossians 4:2–6)** — Paul urges believers to remain devoted to prayer and to interact wisely and graciously with those outside the church.
 
-As Paul approaches the end of his letter, he calls the Colossians to continue faithfully in prayer.
+“Continue in prayer, and watch in the same with thanksgiving.” Paul asks them to pray for him too, “that God would open unto us a door of utterance, to speak the mystery of Christ, for which I am also in bonds.” He asks for opportunities to share the gospel and for clear words.
 
-Their prayers should be watchful and filled with thanksgiving.
-
-He also asks them to pray for him and his fellow workers so that God will open opportunities to proclaim the mystery of Christ.
-
-Although Paul is imprisoned because of his ministry, his concern remains focused on making the gospel known.
-
-He asks for the ability to explain the message clearly, as he ought to speak.
-
-Paul then turns toward the believers' relationships with people outside the church.
-
-They should conduct themselves with wisdom and make good use of every opportunity.
-
-Their conversations should be gracious, thoughtful, and appropriately seasoned, so they will know how to answer different people.
-
-The instruction connects personal conduct with the message they proclaim.
-
-The Colossians are not simply expected to know the truth about Christ. Their prayers, decisions, and words should also reflect the wisdom and grace they have received through Him.
+Then he tells them how to act toward unbelievers: “Walk in wisdom toward them that are without, redeeming the time.” Make the most of every chance. “Let your speech be alway with grace, seasoned with salt, that ye may know how ye ought to answer every man.” Salt adds flavor and keeps food from spoiling, so their words should be both kind and wise.
 
 **Paul Honors His Fellow Workers and Sends Final Greetings (Colossians 4:7–18)** — Paul closes by recognizing faithful companions, sending greetings to nearby churches, and reminding the Colossians to continue the ministry entrusted to them.
 
-Paul explains that Tychicus, a beloved brother and faithful minister, will tell the Colossians about his circumstances.
+Paul is sending Tychicus with the letter, along with “Onesimus, a faithful and beloved brother, who is one of you.” Onesimus was a runaway slave from Colosse who had become a believer through Paul. The short letter to Philemon was written to his master at the same time.
 
-Tychicus is being sent to encourage their hearts and help them understand how Paul and his companions are doing.
+Paul sends greetings from his companions. There is Aristarchus, “my fellowprisoner,” and “Marcus, sister's son to Barnabas.” This is the same John Mark that Paul once refused to take on a journey, but now Paul tells the church to welcome him. Epaphras is with Paul, “always labouring fervently for you in prayers.” “Luke, the beloved physician, and Demas” also send greetings. Paul greets the believers in Laodicea and Nymphas and the church in his house. He asks the Colossians to share this letter with the church at Laodicea and to read the letter he sent there. He also has a message for a man named Archippus: “Take heed to the ministry which thou hast received in the Lord, that thou fulfil it.”
 
-He will travel with Onesimus, whom Paul describes as a faithful and beloved brother who belongs to their community.
-
-Paul then shares greetings from several fellow workers.
-
-Aristarchus, who is imprisoned with him, sends his greetings, along with Mark, the relative of Barnabas, and Jesus, who is called Justus.
-
-Paul also mentions Epaphras, who continues praying earnestly that the Colossians will stand mature and complete in God's will.
-
-Epaphras is deeply concerned not only for Colossae but also for the believers in Laodicea and Hierapolis.
-
-Luke, the beloved physician, and Demas send greetings as well.
-
-Paul asks that his greetings be passed to the believers in Laodicea, to Nymphas, and to the church gathering in that person's house.
-
-He instructs the Colossians to share his letter with the Laodicean church and to read a letter coming from Laodicea.
-
-He also sends a specific reminder to Archippus, urging him to fulfill the ministry he has received in the Lord.
-
-Paul ends with a greeting written in his own hand.
-
-He asks the believers to remember his imprisonment and closes with a blessing of grace.
-
-The letter concludes without describing Paul's release or the later circumstances of the Colossian church.
-
-Instead, it leaves the believers with the message that has guided everything Paul has written.
-
-Jesus Christ is supreme over creation, head of the church, and the One through whom God has provided reconciliation and forgiveness.
-
-Because believers are complete in Him, they do not need to seek spiritual fullness through human traditions or outward religious requirements.
-
-Their new life should be visible through holiness, compassion, forgiveness, love, faithful service, and wise conduct.
-
-Colossians begins by celebrating the believers' faith and ends by connecting them with a wider community of Christians who share in the same gospel. Throughout the letter, Christ remains the foundation of their faith, the source of their spiritual life, and the center of everything they are called to become.
+Paul signs the letter himself: “The salutation by the hand of me Paul. Remember my bonds. Grace be with you. Amen.” Colossians declares that Christ is supreme over all things and that believers are complete in Him, needing no other spiritual power or rule.
 
 # 1 Thessalonians
 When it happened: Written from Corinth around AD 50–51, shortly after Paul founded the church in Thessalonica (Acts 17–18; 1 Thessalonians 3:6). It is likely one of Paul's earliest letters.
