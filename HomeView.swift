@@ -22,12 +22,6 @@ import WidgetKit
 // }
 
 struct HomeView: View {
-    private struct SavedVersesHomeCardData {
-        let preview: SavedVerseHomePreview?
-        let favoriteCount: Int
-        let highlightCount: Int
-    }
-
     @State private var showPrayerStudySheet: Bool = false
 
     private var timerController = PrayerTimerController.shared
@@ -64,7 +58,10 @@ struct HomeView: View {
     private var isPad: Bool { horizontalSizeClass == .regular }
     // Newest first; synced devices can briefly hold more than one bookmark.
     @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
-    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [Favorite]
+    @Query(filter: #Predicate<VerseNote> { $0.highlightColor != "" }) private var highlights: [VerseNote]
+    @AppStorage("homeSavedVersePinID") private var savedVersePinID: String = ""
+    @AppStorage("homeSavedVersePinDay") private var savedVersePinDay: Int = 0
 
     /// The verse the reader bookmarked; the single source for Continue Reading.
     /// (The automatic last-read position only drives where the Bible tab opens.)
@@ -72,161 +69,44 @@ struct HomeView: View {
         bookmarks.first
     }
 
-    private var savedVersesHomeCardData: SavedVersesHomeCardData {
-        let favoriteCount = savedVerseCount(for: Favorite.self)
-        let highlightCount = savedVerseCount(for: VerseNote.self)
-        let savedVerseCount = favoriteCount + highlightCount
-        guard savedVerseCount > 0 else {
-            return SavedVersesHomeCardData(
-                preview: nil,
-                favoriteCount: favoriteCount,
-                highlightCount: highlightCount
+    /// Every saved favorite and highlight, rotated through one per day.
+    private var savedVersePreviews: [SavedVerseHomePreview] {
+        favorites.map { favorite in
+            SavedVerseHomePreview(
+                reference: "\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)",
+                text: favorite.verseText,
+                kind: .favorite,
+                date: favorite.createdAt,
+                bookName: favorite.bookName,
+                chapterNumber: favorite.chapterNumber,
+                verseNumber: favorite.verseNumber,
+                highlightColor: nil
+            )
+        } + highlights.map { highlight in
+            // createdAt, not updatedAt: editing a highlight's note shouldn't change when it was highlighted.
+            SavedVerseHomePreview(
+                reference: highlight.reference,
+                text: highlight.verseText,
+                kind: .highlight,
+                date: highlight.createdAt ?? highlight.updatedAt ?? .distantPast,
+                bookName: highlight.bookName,
+                chapterNumber: highlight.chapterNumber,
+                verseNumber: highlight.verseNumber,
+                highlightColor: VerseHighlightColor(rawValue: highlight.highlightColor)
             )
         }
-
-        if savedVerseCount == 1 {
-            if let favorite = favorite(at: 0) {
-                return SavedVersesHomeCardData(
-                    preview: savedVersePreview(from: favorite),
-                    favoriteCount: favoriteCount,
-                    highlightCount: highlightCount
-                )
-            }
-            if let highlight = highlight(at: 0) {
-                return SavedVersesHomeCardData(
-                    preview: savedVersePreview(from: highlight),
-                    favoriteCount: favoriteCount,
-                    highlightCount: highlightCount
-                )
-            }
-            return SavedVersesHomeCardData(
-                preview: nil,
-                favoriteCount: favoriteCount,
-                highlightCount: highlightCount
-            )
-        }
-
-        let newestFavorite = favorite(at: favoriteCount - 1)
-        let newestHighlight = highlight(at: highlightCount - 1)
-        let newestKind: SavedVerseHomePreview.Kind
-
-        switch (newestFavorite, newestHighlight) {
-        case let (favorite?, highlight?) where favorite.createdAt >= (highlight.updatedAt ?? highlight.createdAt ?? .distantPast):
-            newestKind = .favorite
-        case (nil, nil):
-            return SavedVersesHomeCardData(
-                preview: nil,
-                favoriteCount: favoriteCount,
-                highlightCount: highlightCount
-            )
-        case (nil, _):
-            newestKind = .highlight
-        default:
-            newestKind = .favorite
-        }
-
-        let eligibleFavoriteCount = favoriteCount - (newestKind == .favorite ? 1 : 0)
-        let eligibleHighlightCount = highlightCount - (newestKind == .highlight ? 1 : 0)
-        let eligibleCount = eligibleFavoriteCount + eligibleHighlightCount
-        guard let index = SavedVerseHomePreview.dailyIndex(
-            itemCount: eligibleCount,
-            rotationOffset: savedVersePreviewOffset
-        ) else {
-            return SavedVersesHomeCardData(
-                preview: nil,
-                favoriteCount: favoriteCount,
-                highlightCount: highlightCount
-            )
-        }
-
-        if index < eligibleFavoriteCount, let favorite = favorite(at: index) {
-            return SavedVersesHomeCardData(
-                preview: savedVersePreview(from: favorite),
-                favoriteCount: favoriteCount,
-                highlightCount: highlightCount
-            )
-        }
-
-        guard let highlight = highlight(at: index - eligibleFavoriteCount) else {
-            return SavedVersesHomeCardData(
-                preview: nil,
-                favoriteCount: favoriteCount,
-                highlightCount: highlightCount
-            )
-        }
-        return SavedVersesHomeCardData(
-            preview: savedVersePreview(from: highlight),
-            favoriteCount: favoriteCount,
-            highlightCount: highlightCount
-        )
     }
 
-    private func savedVerseCount(for type: Favorite.Type) -> Int {
-        (try? modelContext.fetchCount(FetchDescriptor<Favorite>())) ?? 0
+    private var savedVersePin: SavedVerseHomePreview.DailyPin? {
+        savedVersePinID.isEmpty ? nil : .init(id: savedVersePinID, day: savedVersePinDay)
     }
 
-    private func savedVerseCount(for type: VerseNote.Type) -> Int {
-        let descriptor = FetchDescriptor<VerseNote>(
-            predicate: #Predicate { $0.highlightColor != "" }
-        )
-        return (try? modelContext.fetchCount(descriptor)) ?? 0
-    }
-
-    private func favorite(at offset: Int) -> Favorite? {
-        guard offset >= 0 else { return nil }
-        var descriptor = FetchDescriptor<Favorite>(
-            sortBy: [
-                SortDescriptor(\Favorite.createdAt),
-                SortDescriptor(\Favorite.bookName),
-                SortDescriptor(\Favorite.chapterNumber),
-                SortDescriptor(\Favorite.verseNumber)
-            ]
-        )
-        descriptor.fetchLimit = 1
-        descriptor.fetchOffset = offset
-        return try? modelContext.fetch(descriptor).first
-    }
-
-    private func highlight(at offset: Int) -> VerseNote? {
-        guard offset >= 0 else { return nil }
-        var descriptor = FetchDescriptor<VerseNote>(
-            predicate: #Predicate { $0.highlightColor != "" },
-            sortBy: [
-                SortDescriptor(\VerseNote.updatedAt),
-                SortDescriptor(\VerseNote.bookName),
-                SortDescriptor(\VerseNote.chapterNumber),
-                SortDescriptor(\VerseNote.verseNumber)
-            ]
-        )
-        descriptor.fetchLimit = 1
-        descriptor.fetchOffset = offset
-        return try? modelContext.fetch(descriptor).first
-    }
-
-    private func savedVersePreview(from favorite: Favorite) -> SavedVerseHomePreview {
-        SavedVerseHomePreview(
-            reference: "\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)",
-            text: favorite.verseText,
-            kind: .favorite,
-            date: favorite.createdAt,
-            bookName: favorite.bookName,
-            chapterNumber: favorite.chapterNumber,
-            verseNumber: favorite.verseNumber,
-            highlightColor: nil
-        )
-    }
-
-    private func savedVersePreview(from highlight: VerseNote) -> SavedVerseHomePreview {
-        SavedVerseHomePreview(
-            reference: highlight.reference,
-            text: highlight.verseText,
-            kind: .highlight,
-            date: highlight.updatedAt ?? highlight.createdAt ?? .distantPast,
-            bookName: highlight.bookName,
-            chapterNumber: highlight.chapterNumber,
-            verseNumber: highlight.verseNumber,
-            highlightColor: VerseHighlightColor(rawValue: highlight.highlightColor)
-        )
+    /// Records today's pick so it stays put until tomorrow.
+    private func pinSavedVerse(_ preview: SavedVerseHomePreview?) {
+        let day = SavedVerseHomePreview.dayIndex(for: .now)
+        guard let preview, preview.pinID != savedVersePinID || day != savedVersePinDay else { return }
+        savedVersePinID = preview.pinID
+        savedVersePinDay = day
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
@@ -430,15 +310,21 @@ struct HomeView: View {
                 }
             )
         case .savedVerses:
-            let savedVersesData = savedVersesHomeCardData
+            let preview = SavedVerseHomePreview.dailyPreview(
+                from: savedVersePreviews,
+                rotationOffset: savedVersePreviewOffset,
+                pinned: savedVersePin
+            )
             SavedVersesHomeCard(
-                preview: savedVersesData.preview,
-                favoriteCount: savedVersesData.favoriteCount,
-                highlightCount: savedVersesData.highlightCount,
+                preview: preview,
+                favoriteCount: favorites.count,
+                highlightCount: highlights.count,
                 onOpenSavedVerses: {
                     AppRouter.shared.open(.favorites)
                 },
                 onRefresh: {
+                    // Debug only: skip the pin and step to the next verse in the rotation.
+                    savedVersePinID = ""
                     savedVersePreviewOffset += 1
                 },
                 onOpenVerse: { preview in
@@ -449,6 +335,9 @@ struct HomeView: View {
                     )
                 }
             )
+            .onChange(of: "\(preview?.pinID ?? "")|\(SavedVerseHomePreview.dayIndex(for: .now))", initial: true) {
+                pinSavedVerse(preview)
+            }
         case .study:
             let target = studyTarget
             StudyHomeCard(bookName: target.bookName, chapterNumber: target.chapterNumber, source: target.source) {

@@ -102,18 +102,15 @@ struct SavedVerseHomePreview: Equatable {
 enum SavedVersesHomeCardSubtitle {
     /// Lists only the non-zero counts, or nil when nothing is saved yet.
     static func text(favoriteCount: Int, highlightCount: Int) -> String? {
-        var parts: [String] = []
+        // Automatic grammar agreement picks "favorite" or "favorites" for the count.
+        var parts: [AttributedString] = []
         if favoriteCount > 0 {
-            parts.append(inflected(AttributedString(localized: "^[\(favoriteCount) favorite](inflect: true)")))
+            parts.append(AttributedString(localized: "^[\(favoriteCount) favorite](inflect: true)"))
         }
         if highlightCount > 0 {
-            parts.append(inflected(AttributedString(localized: "^[\(highlightCount) highlight](inflect: true)")))
+            parts.append(AttributedString(localized: "^[\(highlightCount) highlight](inflect: true)"))
         }
-        return parts.isEmpty ? nil : parts.joined(separator: " · ")
-    }
-
-    private static func inflected(_ string: AttributedString) -> String {
-        String(string.characters)
+        return parts.isEmpty ? nil : parts.map { String($0.characters) }.joined(separator: " · ")
     }
 }
 
