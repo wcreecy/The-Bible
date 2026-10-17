@@ -47,29 +47,21 @@ struct BibleBookStorySection: Identifiable, Equatable, Sendable {
 
     /// The one-sentence preview shown on a book's About page.
     var previewText: String {
-        openingPreviewAndStory.preview
+        openingSentence(in: summary ?? text)
     }
 
-    /// The story text after its About-page preview has been removed.
-    var storyText: String {
-        openingPreviewAndStory.story
+    /// The section's opening summary paragraph, when it has one ahead of the retelling.
+    /// Unlabeled continuation paragraphs are pure story, so they never have a summary.
+    var summary: String? {
+        guard !passage.isEmpty, let paragraphBreak = text.range(of: "\n\n") else { return nil }
+        return String(text[..<paragraphBreak.lowerBound])
     }
 
-    private var openingPreviewAndStory: (preview: String, story: String) {
-        if let paragraphBreak = text.range(of: "\n\n") {
-            let openingParagraph = String(text[..<paragraphBreak.lowerBound])
-            let story = String(text[paragraphBreak.upperBound...])
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-
-            if !story.isEmpty {
-                return (openingSentence(in: openingParagraph), story)
-            }
-        }
-
-        let preview = openingSentence(in: text)
-        let story = String(text.dropFirst(preview.count))
+    /// The retelling that follows the section's summary.
+    var narrative: String {
+        guard summary != nil, let paragraphBreak = text.range(of: "\n\n") else { return text }
+        return String(text[paragraphBreak.upperBound...])
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return story.isEmpty ? (text, text) : (preview, story)
     }
 
     private func openingSentence(in text: String) -> String {

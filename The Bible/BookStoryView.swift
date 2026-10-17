@@ -19,7 +19,11 @@ struct BookStoryView: View {
                             StorySectionHeader(passage: section.passage)
                         }
 
-                        Text(section.id == story.first?.id ? section.storyText : section.text)
+                        if let summary = section.summary {
+                            StorySectionSummary(text: summary)
+                        }
+
+                        Text(section.narrative)
                             .font(.body)
                             .lineSpacing(5)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -71,6 +75,26 @@ private struct StorySectionHeader: View {
     }
 }
 
+/// A section's one-line overview, set apart from the retelling with a tinted rule and italics.
+private struct StorySectionSummary: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.callout.italic())
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 12)
+            .overlay(alignment: .leading) {
+                Capsule()
+                    .fill(.tint)
+                    .frame(width: 3)
+            }
+            .padding(.vertical, 4)
+            .accessibilityLabel("Summary: \(text)")
+    }
+}
+
 /// The passage a story section retells, shown as a link to its preview when it can be parsed.
 private struct PassageLabel: View {
     let passage: String
@@ -95,7 +119,7 @@ private struct PassageLabel: View {
         BookStoryView(
             bookName: "Ruth",
             story: [
-                BibleBookStorySection(id: 1, passage: "Ruth 1", text: "In the days when the judges ruled, there was a famine in the land."),
+                BibleBookStorySection(id: 1, passage: "Naomi Loses Her Family in Moab (Ruth 1:1–22)", text: "A famine leads an Israelite family to Moab.\n\nIn the days when the judges ruled, there was a famine in the land."),
                 BibleBookStorySection(id: 2, passage: "", text: "When Naomi heard that the LORD had visited his people by giving them bread, she set out for home.")
             ]
         )
