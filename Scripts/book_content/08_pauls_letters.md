@@ -530,207 +530,51 @@ The world at the time: Opposition had forced Paul to leave Thessalonica after on
 
 **Paul Gives Thanks for Their Faith and Love (1 Thessalonians 1:1–10)** — Paul celebrates the Thessalonian believers' faith, love, and hope, remembering how they received the gospel despite suffering and became examples to others.
 
-The apostle Paul writes with Silvanus, also called Silas, and Timothy to the believers in Thessalonica, a major city in Macedonia under Roman rule. Paul had previously preached Jesus Christ there, and the church had continued growing despite opposition.
+Paul writes with Silas, called Silvanus, and Timothy to a young church he had to leave after only a few weeks. He is full of thanks. He keeps remembering their “work of faith, and labour of love, and patience of hope in our Lord Jesus Christ.” When Paul preached in Thessalonica, “our gospel came not unto you in word only, but also in power, and in the Holy Ghost.” They received the message “in much affliction, with joy of the Holy Ghost,” because they were persecuted from the start.
 
-Paul begins by thanking God for their faith, their loving service, and their patient hope in the Lord Jesus Christ.
-
-He remembers how the gospel came to them not merely through words but with power, the Holy Ghost, and deep conviction.
-
-Although receiving the message brought suffering, the Thessalonians welcomed it with joy from the Holy Ghost. Their response became an example to believers throughout Macedonia and Achaia.
-
-News of their faith spread beyond their city. People spoke of how they had turned away from idols, the false gods they once worshiped, to serve the living and true God.
-
-They were also waiting for God's Son, Jesus, to return from heaven. Paul reminds them that God raised Jesus from the dead and that He delivers believers from the coming wrath.
-
-Their changed lives demonstrate how the gospel has taken root among them.
+Now they have become an example to believers all over Greece. “From you sounded out the word of the Lord,” Paul says, so that people everywhere are talking about how “ye turned to God from idols to serve the living and true God; And to wait for his Son from heaven, whom he raised from the dead, even Jesus, which delivered us from the wrath to come.” That one sentence sums up their new life: they turned from idols, they serve God, and they wait for Jesus.
 
 **Paul Remembers His Ministry Among the Thessalonians (1 Thessalonians 2:1–16)** — Paul recalls how he preached with sincerity, worked to avoid burdening the believers, and cared for them with the tenderness of a parent.
 
-Paul reminds the Thessalonians that his earlier visit was not meaningless.
+Some in Thessalonica were apparently saying Paul was just another traveling teacher out for money. Paul reminds them how he really acted. He had just been beaten and “shamefully entreated... at Philippi,” yet he still preached boldly. He did not flatter them or try to get rich, but spoke “not as pleasing men, but God, which trieth our hearts.”
 
-Before arriving, he and his companions had suffered mistreatment in Philippi, another Macedonian city. Yet despite continued opposition, God gave them courage to proclaim the gospel.
+He cared for them like a parent. “But we were gentle among you, even as a nurse cherisheth her children.” “We were willing to have imparted unto you, not the gospel of God only, but also our own souls, because ye were dear unto us.” He worked “night and day” at his trade so he would not be a burden to anyone. And like “a father doth his children,” he urged each of them to “walk worthy of God.”
 
-Paul explains that their preaching did not come from deception, dishonest motives, or a desire to please people.
-
-God had entrusted them with the gospel, and they sought His approval rather than human praise.
-
-Paul and his companions did not use flattering words or seek financial advantage. Although they had a right to receive support as servants of Christ, they chose to work so they would not place an unnecessary burden upon the new believers.
-
-Paul compares their care to a nursing mother gently caring for her children.
-
-Their love was so deep that they were willing to share not only the gospel but their own lives.
-
-He also describes their encouragement as resembling a father's care for his children. They urged the believers to live in a manner worthy of the God who had called them into His kingdom and glory.
-
-Paul thanks God because the Thessalonians received his message as God's word rather than merely human teaching.
-
-Their faith was tested through suffering, just as other Christian communities had experienced persecution.
-
-Despite these hardships, God's word continued working among those who believed.
+Paul thanks God that they accepted his message “not as the word of men, but as it is in truth, the word of God.” Because of it, they have suffered from their own countrymen, just as the churches in Judea suffered from those who “killed the Lord Jesus, and their own prophets.”
 
 **Paul Longs to See the Believers Again (1 Thessalonians 2:17–3:13)** — Separated from the church by difficult circumstances, Paul sends Timothy to strengthen their faith and rejoices when he returns with encouraging news.
 
-Paul explains that although he has been physically separated from the Thessalonians, his affection for them has never diminished.
+Paul explains why he has not come back. He was torn away from them “for a short time in presence, not in heart.” He tried again and again to return, “but Satan hindered us.” He tells them how much they mean to him: “For what is our hope, or joy, or crown of rejoicing? Are not even ye in the presence of our Lord Jesus Christ at his coming? For ye are our glory and joy.”
 
-He repeatedly desired to return, but his plans were hindered.
-
-The believers remained a source of joy and hope for him. He describes them as his glory and crown in the presence of Jesus Christ at His coming.
-
-Unable to bear the uncertainty about their condition, Paul decided to send Timothy while he remained in Athens.
-
-Timothy, a trusted fellow worker, was sent to strengthen and encourage the Thessalonians so that their faith would not be shaken by suffering.
-
-Paul reminds them that affliction was something he had warned them to expect. His concern was that temptation might draw them away from Christ and make his work among them ineffective.
-
-Timothy eventually returned with good news.
-
-The Thessalonians remained strong in faith and love. They remembered Paul with affection and desired to see him again.
-
-This report brought Paul great comfort in the midst of his own troubles.
-
-He rejoices that they continue standing firm in the Lord and gives thanks to God for their faithfulness.
-
-Paul prays that God will make it possible for him to visit them and supply anything lacking in their faith.
-
-He also asks that their love increase and overflow toward one another and toward everyone else.
-
-His prayer looks ahead to the return of Jesus Christ, when he desires that their hearts will be established in holiness before God the Father.
+When he could not stand the worry any longer, he stayed alone in Athens and sent Timothy to strengthen them, “That no man should be moved by these afflictions.” He had warned them that trouble was coming, and he feared that the tempter had shaken their faith. But Timothy has just returned with good news of their faith and love, and that they long to see Paul as much as he longs to see them. Paul is overjoyed: “For now we live, if ye stand fast in the Lord.” He prays night and day to see them again. He prays, “And the Lord make you to increase and abound in love one toward another, and toward all men,” so they will be holy and blameless when Jesus comes.
 
 **God Calls His People to Live in Holiness (1 Thessalonians 4:1–12)** — Paul urges the Thessalonians to continue pleasing God through sexual purity, brotherly love, responsible work, and quiet, honorable living.
 
-Having expressed his joy over their faith, Paul turns toward the way the Thessalonians should continue living.
+Paul now turns to how they should live. In a city where sexual immorality was normal, he is clear: “For this is the will of God, even your sanctification, that ye should abstain from fornication.” Each one must learn to control his own body “in sanctification and honour; Not in the lust of concupiscence, even as the Gentiles which know not God.” Concupiscence means strong sinful desire. No one should wrong a brother in this matter, “For God hath not called us unto uncleanness, but unto holiness.”
 
-He reminds them that they have already received instruction about conduct that pleases God. Now he encourages them to grow even further in obedience.
-
-God's will for them includes sanctification, meaning being set apart for holy living.
-
-They must avoid sexual immorality and learn to control their bodies with holiness and honor rather than following uncontrolled desires.
-
-Paul warns against taking advantage of others in these matters, explaining that God has called His people to holiness rather than uncleanness.
-
-Rejecting this instruction is not merely rejecting human advice, because God has given believers His Holy Spirit.
-
-Paul then turns to their relationships within the church.
-
-They have already learned from God to love one another, and their love reaches believers throughout Macedonia.
-
-Yet Paul urges them to increase in love even more.
-
-He also encourages them to seek a quiet life, attend to their own responsibilities, and work with their hands.
-
-Such conduct will help them behave honorably toward people outside the church and avoid unnecessary dependence upon others.
-
-Their growing faith should therefore be visible not only in worship but also through personal purity, love, and ordinary daily responsibilities.
+About loving each other, Paul says he hardly needs to write, “for ye yourselves are taught of God to love one another.” They already do this, but he urges them to do it more and more. He also tells them to “study to be quiet, and to do your own business, and to work with your own hands.” Some of them may have stopped working, perhaps because they expected Jesus to return any day. Living this way will win the respect of outsiders, and they will not depend on anyone.
 
 **Christ's Return Brings Hope Beyond Death (1 Thessalonians 4:13–18)** — Paul comforts believers grieving fellow Christians who have died, assuring them that those who belong to Christ will share in His return.
 
-Paul now addresses a concern about believers who have died before Jesus Christ's return.
+Since Paul left, some believers in Thessalonica have died, and the church is worried that those who died will miss out when Jesus returns. Paul writes, “But I would not have you to be ignorant, brethren, concerning them which are asleep, that ye sorrow not, even as others which have no hope.” Christians still grieve, but not without hope. “For if we believe that Jesus died and rose again, even so them also which sleep in Jesus will God bring with him.”
 
-He does not want the Thessalonians to grieve without hope, as those who do not know God's promise.
-
-Because Jesus died and rose again, Paul explains that God will bring with Jesus those who have fallen asleep in Him.
-
-He describes the Lord descending from heaven with a shout, the voice of the archangel, and the trumpet of God.
-
-The dead in Christ will rise first.
-
-Afterward, believers who remain alive will be caught up together with them in the clouds to meet the Lord in the air.
-
-Paul assures the Thessalonians that they will then be with the Lord forever.
-
-His purpose is to comfort those who fear that death has separated their loved ones from the hope of Christ's return.
-
-The passage does not establish the precise calendar date of these events.
-
-Instead, it emphasizes that the resurrection of Jesus provides lasting hope for those who belong to Him, whether they have already died or remain alive when He comes.
-
-Paul urges the believers to encourage one another with this promise.
+Then Paul describes the Lord's return: “For the Lord himself shall descend from heaven with a shout, with the voice of the archangel, and with the trump of God: and the dead in Christ shall rise first: Then we which are alive and remain shall be caught up together with them in the clouds, to meet the Lord in the air: and so shall we ever be with the Lord.” The believers who died will not miss anything. In fact, they rise first. Paul's purpose is practical: “Wherefore comfort one another with these words.”
 
 **Believers Must Remain Ready for the Day of the Lord (1 Thessalonians 5:1–11)** — Paul warns that the day of the Lord will come unexpectedly and encourages believers to remain spiritually alert, faithful, and encouraged by salvation.
 
-Having explained the hope surrounding Christ's return, Paul addresses its timing.
+The Thessalonians want to know when this will happen. Paul says they already know the answer: “the day of the Lord so cometh as a thief in the night.” “For when they shall say, Peace and safety; then sudden destruction cometh upon them, as travail upon a woman with child; and they shall not escape.”
 
-He reminds the Thessalonians that the day of the Lord will come like a thief in the night.
-
-While people speak confidently of peace and safety, sudden destruction will come upon those who are unprepared.
-
-But believers are not meant to live in spiritual darkness.
-
-Paul describes them as children of light and children of the day.
-
-For that reason, they should remain awake and sober rather than becoming spiritually careless.
-
-He compares faith and love to a breastplate protecting the body and the hope of salvation to a helmet guarding the head.
-
-These images emphasize the protection that comes through trusting God and remaining faithful.
-
-Paul reminds the Thessalonians that God has not appointed them to wrath but to obtain salvation through Jesus Christ.
-
-Christ died for them so that, whether they are awake or asleep, they may live together with Him.
-
-The hope of His return is therefore not presented as a reason for fear or speculation.
-
-It is a foundation for confidence, perseverance, and mutual encouragement.
-
-Paul urges the believers to continue comforting one another and building one another up, just as they have already been doing.
+But believers do not need to be caught by surprise. “But ye, brethren, are not in darkness, that that day should overtake you as a thief. Ye are all the children of light, and the children of the day.” So they must stay awake: “let us not sleep, as do others; but let us watch and be sober.” Paul pictures armor again: they should put on “the breastplate of faith and love; and for an helmet, the hope of salvation. For God hath not appointed us to wrath, but to obtain salvation by our Lord Jesus Christ.” Whether they are alive or dead when He comes, they will live with Him. “Wherefore comfort yourselves together, and edify one another, even as also ye do.”
 
 **Paul Calls the Church to Peace and Faithfulness (1 Thessalonians 5:12–22)** — Paul gives practical instructions for church life, urging respect for leaders, patience with others, continual prayer, gratitude, and careful spiritual discernment.
 
-Paul now brings together several instructions concerning life within the Christian community.
+Paul ends with a string of short commands for church life. They should respect their leaders, “esteem them very highly in love for their work's sake. And be at peace among yourselves.” They should “warn them that are unruly, comfort the feebleminded, support the weak, be patient toward all men.” Feebleminded here means fainthearted, those easily discouraged. “See that none render evil for evil.”
 
-He asks the Thessalonians to recognize those who labor among them, lead them in the Lord, and provide correction.
-
-These workers should be regarded with love because of their service.
-
-Paul also urges the believers to live peacefully with one another.
-
-Those who are disorderly should be warned, the discouraged should be comforted, and the weak should receive support.
-
-Patience should guide their treatment of everyone.
-
-No one should repay wrongdoing with wrongdoing. Instead, believers should continually seek what is good for one another and for all people.
-
-Paul then gives a series of brief instructions concerning spiritual life.
-
-They should rejoice always, pray without ceasing, and give thanks in every circumstance.
-
-He explains that thanksgiving is God's will for them in Christ Jesus.
-
-They must not quench the Spirit or despise prophecies, but neither should they accept everything without examination.
-
-Instead, they are to test all things, hold firmly to what is good, and avoid every form of evil.
-
-Through these instructions, Paul shows that Christian faithfulness involves both personal devotion to God and thoughtful, loving relationships within the church.
+Then comes a burst of commands that many believers have memorized: “Rejoice evermore. Pray without ceasing. In every thing give thanks: for this is the will of God in Christ Jesus concerning you. Quench not the Spirit. Despise not prophesyings. Prove all things; hold fast that which is good. Abstain from all appearance of evil.” To prove something means to test it.
 
 **Paul Ends with Prayer and a Blessing of Grace (1 Thessalonians 5:23–28)** — Paul prays that God will preserve the believers in holiness until Christ's return and closes by requesting prayer and sending grace to the church.
 
-As his letter draws to a close, Paul directs the Thessalonians' attention once more toward God's continuing work among them.
-
-He prays that the God of peace will sanctify them completely.
-
-His desire is that their whole spirit, soul, and body will be preserved blameless until the coming of the Lord Jesus Christ.
-
-Paul expresses confidence that God will accomplish His purpose because the One who has called them is faithful.
-
-He then asks the believers to pray for him and his fellow workers.
-
-He instructs them to greet all the brothers with a holy kiss, an expression of fellowship and affection among the believers.
-
-Paul also gives a solemn charge that the letter be read to all the holy brothers.
-
-His message is not intended only for a few church leaders. The entire community is to hear its encouragement, teaching, and instructions.
-
-He ends with a blessing that the grace of the Lord Jesus Christ will remain with them.
-
-The letter began with Paul's gratitude for a church whose faith had become known throughout the surrounding regions. Although the Thessalonians faced opposition and hardship, they had continued following Christ with love and hope.
-
-Paul has reminded them of the sincerity of his ministry, celebrated their perseverance, and encouraged them to keep growing in holiness.
-
-He has also addressed their concerns about believers who had died, assuring them that Christ's resurrection provides hope beyond death.
-
-The promise of Jesus' return runs throughout the letter, shaping the way believers understand suffering, obedience, and their future with God.
-
-First Thessalonians closes with confidence not in human strength but in God's faithfulness. The same God who called the believers into His kingdom will continue His work among them as they wait for Jesus Christ.
+Paul closes with a prayer: “And the very God of peace sanctify you wholly; and I pray God your whole spirit and soul and body be preserved blameless unto the coming of our Lord Jesus Christ.” He is confident God will answer: “Faithful is he that calleth you, who also will do it.” He asks, “Brethren, pray for us,” and tells them to greet one another with a holy kiss. He solemnly charges them to read the letter to all the believers. Then he ends, “The grace of our Lord Jesus Christ be with you. Amen.” Every chapter of this short letter ends by looking ahead to Christ's return, the hope that holds the young church together.
 
 # 2 Thessalonians
 When it happened: Written soon after 1 Thessalonians, probably from Corinth around AD 51.
@@ -740,199 +584,45 @@ The world at the time: Persecution continued. Some were teaching that the day of
 
 **Paul Encourages Believers Facing Persecution (2 Thessalonians 1:1–4)** — Paul gives thanks for the Thessalonians' growing faith and love, encouraging them as they remain steadfast through persecution and hardship.
 
-The apostle Paul writes with Silvanus, also called Silas, and Timothy to the believers in Thessalonica, a major city in Macedonia under Roman rule. Paul had previously preached the gospel there, and the church had continued following Jesus despite opposition.
-
-Paul begins by greeting them with grace and peace from God the Father and the Lord Jesus Christ.
-
-He then expresses gratitude because their faith continues to grow and their love for one another is increasing. Although they face persecution and suffering, they have remained patient and faithful.
-
-Their perseverance has become a source of encouragement to other churches.
-
-Paul speaks proudly of their endurance, not because their circumstances are easy, but because their commitment to Christ remains strong despite the difficulties they experience.
+Paul, Silas, and Timothy write again, probably only a few months later. Paul says, “We are bound to thank God always for you, brethren, as it is meet, because that your faith groweth exceedingly, and the charity of every one of you all toward each other aboundeth.” Meet means right or fitting. Their persecution has not stopped, but neither has their faith. Paul is so proud of them that he boasts about them to other churches, “for your patience and faith in all your persecutions and tribulations that ye endure.”
 
 **God Promises Justice and Rest at Christ's Return (2 Thessalonians 1:5–12)** — Paul assures the suffering believers that God will judge wrongdoing, bring relief to His people, and reveal the glory of Jesus Christ.
 
-Paul explains that the Thessalonians' endurance through suffering demonstrates their commitment to God's kingdom.
+Paul explains that their suffering is not a sign that God has forgotten them. It is “a manifest token of the righteous judgment of God, that ye may be counted worthy of the kingdom of God, for which ye also suffer.” God will set things right. He will repay with trouble those who trouble them, “And to you who are troubled rest with us, when the Lord Jesus shall be revealed from heaven with his mighty angels, In flaming fire taking vengeance on them that know not God, and that obey not the gospel.” Those who reject Him “shall be punished with everlasting destruction from the presence of the Lord.”
 
-Their hardships do not mean that God has abandoned them. Paul points toward a future judgment when God will act with justice.
-
-Those who trouble His people will face judgment, while those who suffer for their faith will receive rest.
-
-Paul describes the Lord Jesus being revealed from heaven with His mighty angels, bringing judgment upon those who do not know God and do not obey the gospel.
-
-He speaks of everlasting destruction away from the Lord's presence and the glory of His power.
-
-At the same time, Christ will be glorified among His people and admired by those who have believed.
-
-Paul connects this future hope directly to the Thessalonians because they have received the message he preached.
-
-He then explains that he continually prays for them.
-
-His desire is that God will count them worthy of their calling and accomplish every good purpose and work of faith through His power.
-
-Paul wants the name of Jesus Christ to be glorified in their lives and for them to share in His glory.
-
-This blessing comes through the grace of God and the Lord Jesus Christ.
+That day will be a day of glory for believers, “When he shall come to be glorified in his saints.” So Paul keeps praying that God will make them worthy of His calling and fulfill every good purpose in them, “That the name of our Lord Jesus Christ may be glorified in you, and ye in him.”
 
 **Paul Corrects Confusion About the Day of the Lord (2 Thessalonians 2:1–5)** — Paul warns the Thessalonians against alarming claims that the day of Christ has already arrived and reminds them of what he previously taught.
 
-Having encouraged the believers with the promise of Christ's return, Paul addresses confusion about when that return will occur.
+Someone has been upsetting the church with a message that the day of the Lord has already arrived. They may have even used a letter falsely signed with Paul's name. Paul writes, “be not soon shaken in mind, or be troubled, neither by spirit, nor by word, nor by letter as from us, as that the day of Christ is at hand.” “Let no man deceive you by any means.”
 
-He speaks of the coming of the Lord Jesus Christ and the gathering of believers to Him.
-
-Some among the Thessalonians have become troubled by messages suggesting that the day of Christ is already present.
-
-These claims may have come through supposed spiritual revelations, spoken teachings, or a letter falsely presented as coming from Paul and his companions.
-
-Paul urges the believers not to become quickly shaken or alarmed.
-
-He reminds them that certain developments must occur before that day comes.
-
-First, he says, there will be a falling away, a departure or rebellion.
-
-Then a figure he calls the man of sin, also described as the son of perdition, will be revealed.
-
-This figure will oppose and exalt himself above everything called God or worshiped, even presenting himself as God.
-
-Paul reminds the Thessalonians that he had already spoken about these matters when he was with them.
-
-His purpose is to correct their confusion and prevent them from being misled by claims that contradict his earlier teaching.
+Certain things must happen first. “For that day shall not come, except there come a falling away first, and that man of sin be revealed, the son of perdition.” Perdition means destruction. This man will oppose God and exalt himself above everything that is worshiped, “so that he as God sitteth in the temple of God, shewing himself that he is God.” Then Paul asks, “Remember ye not, that, when I was yet with you, I told you these things?” He had taught them all this in person.
 
 **The Mystery of Lawlessness and Coming Deception (2 Thessalonians 2:6–12)** — Paul explains that lawlessness is already at work and warns of a future deceiver whose appearance will be marked by false signs and opposition to God.
 
-Paul continues explaining the events connected with the day of the Lord.
+Something is holding this man back for now: “And now ye know what withholdeth that he might be revealed in his time.” Evil is already at work in the world, “For the mystery of iniquity doth already work: only he who now letteth will let, until he be taken out of the way.” In old English, to let means to hold back. Paul does not say who or what the restrainer is, and Christians have offered many explanations.
 
-He tells the Thessalonians that something is presently restraining the revelation of the lawless one until the appointed time.
-
-Although Paul assumes his readers understand this restraint from his earlier teaching, he does not clearly identify it in the letter.
-
-He then explains that the mystery of iniquity, meaning lawlessness already working in the world, is active even before the lawless one is openly revealed.
-
-When the restraint is removed, the wicked figure will be revealed.
-
-Paul declares that the Lord Jesus will ultimately destroy him with the spirit of His mouth and the brightness of His coming.
-
-Before that defeat, however, the lawless one's appearance will involve the working of Satan.
-
-His activity will be accompanied by power, signs, and lying wonders intended to deceive.
-
-Those who are perishing will be especially vulnerable because they have refused to receive the love of the truth that could lead to salvation.
-
-Paul explains that God will send them a strong delusion so that they believe what is false.
-
-The result will be judgment upon those who reject the truth and instead take pleasure in unrighteousness.
-
-Paul does not identify the lawless figure by a personal name or provide a complete timetable for these events. His warning centers on the danger of deception and the certainty of Christ's ultimate victory.
+“And then shall that Wicked be revealed, whom the Lord shall consume with the spirit of his mouth, and shall destroy with the brightness of his coming.” This lawless one will come with Satan's power, “with all power and signs and lying wonders,” and will fool those who are perishing. They will be deceived “because they received not the love of the truth, that they might be saved.” Because they chose to reject the truth, God will give them over to “strong delusion, that they should believe a lie.”
 
 **God Calls His People to Stand Firm in the Truth (2 Thessalonians 2:13–17)** — Paul reassures the Thessalonians that God has called them to salvation and urges them to remain faithful to the teaching they have received.
 
-After describing the danger of deception, Paul returns to thanksgiving for the Thessalonian believers.
+In contrast, Paul thanks God for the Thessalonian believers, “because God hath from the beginning chosen you to salvation through sanctification of the Spirit and belief of the truth.” God called them through the gospel so they would share in Christ's glory.
 
-He calls them beloved of the Lord and explains that God has chosen them for salvation through the sanctifying work of the Spirit and belief in the truth.
-
-Their hope rests not in secret knowledge about future events but in God's saving work through Jesus Christ.
-
-Paul reminds them that they were called through the gospel he and his companions preached.
-
-Through that message, they have been invited to obtain the glory of the Lord Jesus Christ.
-
-For this reason, Paul urges them to stand firm.
-
-They should hold closely to the teachings they received, whether through his spoken instruction or his letter.
-
-He then offers a prayer for their encouragement.
-
-God the Father has loved His people and given them everlasting consolation and good hope through grace.
-
-Paul asks that the Lord Jesus Christ and God the Father comfort their hearts and establish them in every good word and work.
-
-The believers are therefore called to remain steady in their faith, trusting God's promises while continuing to live according to the truth they have received.
+“Therefore, brethren, stand fast, and hold the traditions which ye have been taught, whether by word, or our epistle.” The traditions are the teachings Paul passed on to them, whether in person or by letter. He prays that God, who has given them “everlasting consolation and good hope through grace,” will comfort their hearts “and stablish you in every good word and work.” To stablish means to make firm.
 
 **Paul Requests Prayer for the Gospel's Advance (2 Thessalonians 3:1–5)** — Paul asks the believers to pray for his ministry and expresses confidence that the faithful Lord will strengthen and protect them.
 
-As Paul approaches the final part of his letter, he asks the Thessalonians to pray for him and his fellow workers.
-
-He wants the word of the Lord to spread rapidly and be honored, just as it has been among the Thessalonians.
-
-Paul also asks for deliverance from unreasonable and wicked people who oppose the message.
-
-He acknowledges that not everyone possesses faith.
-
-Yet opposition does not weaken his confidence in the Lord.
-
-Paul assures the believers that the Lord is faithful and will strengthen them and guard them from evil.
-
-He also expresses confidence that they are following his instructions and will continue doing so.
-
-Paul's prayer is that the Lord will direct their hearts into the love of God and the patient endurance associated with Christ.
-
-This encouragement follows naturally from his earlier warnings.
-
-The Thessalonians do not need to respond to persecution or alarming claims with fear. They are to remain faithful, continue obeying God's teaching, and trust the Lord who strengthens them.
+“Finally, brethren, pray for us, that the word of the Lord may have free course, and be glorified, even as it is with you.” Paul asks them to pray that God's message will spread quickly, and that he will be “delivered from unreasonable and wicked men: for all men have not faith.” But he is confident about them: “But the Lord is faithful, who shall stablish you, and keep you from evil.” He trusts that they are doing what he taught. He prays, “And the Lord direct your hearts into the love of God, and into the patient waiting for Christ.”
 
 **Believers Must Work Faithfully and Avoid Disorder (2 Thessalonians 3:6–15)** — Paul confronts those refusing to work, reminds the church of his own example, and instructs believers to correct disorderly conduct without hostility.
 
-Paul now addresses a practical problem within the Thessalonian church.
+Paul now deals with a real problem. Some believers have stopped working. They may think Christ's return is so close that work does not matter, or they may simply be living off the generosity of others. Paul tells the church to keep away from “every brother that walketh disorderly.” He reminds them of his own example. He did not eat anyone's food for free, but “wrought with labour and travail night and day,” so he would not be a burden. He had the right to their support but gave it up to set an example.
 
-Some believers are living disorderly lives and refusing to work, while becoming involved in the affairs of others.
-
-He instructs the church to distance itself from members who persistently reject the teaching they received from him.
-
-Paul reminds them of his own conduct during his visit.
-
-Although he had the right to receive support for his ministry, he and his companions worked diligently, laboring day and night so they would not become a financial burden.
-
-Their example was intended to show the importance of responsible living.
-
-Paul recalls the instruction that anyone unwilling to work should not expect others to provide food for them.
-
-His warning concerns those who refuse to work, not people who are unable to provide for themselves.
-
-He has heard that some are doing no useful work and instead are becoming busybodies, interfering in matters that do not concern them.
-
-Paul commands such people to work quietly and earn their own living.
-
-At the same time, he warns the rest of the believers not to become weary of doing good.
-
-Those who refuse to obey the letter's instructions are to be identified so that they may recognize the seriousness of their conduct.
-
-Yet Paul makes an important distinction.
-
-These individuals must not be treated as enemies.
-
-Instead, the church should correct them as brothers, seeking their restoration rather than responding with hatred or revenge.
-
-Through these instructions, Paul connects Christian faith with personal responsibility, honest work, and loving correction within the community.
+He had given them a clear rule when he was with them: “if any would not work, neither should he eat.” Now he hears that some are idle, not busy but “busybodies.” He commands them “that with quietness they work, and eat their own bread.” And to the rest he says, “But ye, brethren, be not weary in well doing.” If anyone refuses to obey this letter, the church should take note of him and avoid him, “that he may be ashamed. Yet count him not as an enemy, but admonish him as a brother.”
 
 **Paul Closes with Peace and a Personal Greeting (2 Thessalonians 3:16–18)** — Paul ends by asking the Lord to give the Thessalonians lasting peace and confirms the authenticity of his letter with his own handwriting.
 
-After addressing persecution, confusion about Christ's return, and disorderly conduct, Paul closes with a prayer for peace.
-
-He asks that the Lord of peace Himself will give the Thessalonians peace always and in every way.
-
-He also prays that the Lord will remain with them all.
-
-Paul then draws attention to a greeting written in his own hand.
-
-He explains that this personal greeting serves as a sign of authenticity in his letters.
-
-This detail is especially important because he has already warned the Thessalonians about messages or letters falsely claiming apostolic authority.
-
-By identifying his own handwriting, Paul helps distinguish his genuine instruction from misleading claims.
-
-He ends by asking that the grace of the Lord Jesus Christ be with them all.
-
-The letter closes without describing whether the persecution has ended or whether every problem within the church has been resolved.
-
-Instead, Paul leaves the believers with encouragement to remain faithful while they wait for Christ's return.
-
-Throughout the letter, he has assured them that God sees their suffering and will bring justice at the appointed time. He has warned them against deception and reminded them that future events remain under God's authority.
-
-He has also emphasized that expecting Christ's return does not remove the responsibility to live faithfully in the present.
-
-Believers must continue working honestly, loving one another, holding firmly to the truth, and correcting wrongdoing with patience.
-
-Second Thessalonians ends with the same confidence that runs through Paul's message: the Lord is faithful, His justice is certain, and His grace and peace sustain those who continue trusting Him.
+Paul closes with a prayer: “Now the Lord of peace himself give you peace always by all means. The Lord be with you all.” Then, because of the fake letter that had confused them, he takes the pen and adds a line in his own handwriting: “The salutation of Paul with mine own hand, which is the token in every epistle: so I write.” In other words, this is how they can tell a real letter from him. He ends, “The grace of our Lord Jesus Christ be with you all. Amen.” The letter calms a frightened church, telling them that Christ's return is certain, but that they should keep working faithfully until He comes.
 
 # 1 Timothy
 When it happened: Written after Paul left Timothy in Ephesus and went on to Macedonia (1 Timothy 1:3), often placed after Paul's first imprisonment in Rome, around AD 62–64.
@@ -942,249 +632,67 @@ The world at the time: False teachers were spreading fables and endless genealog
 
 **Paul Warns Timothy Against False Teaching (1 Timothy 1:1–11)** — Paul instructs Timothy to confront misleading teachings in Ephesus and reminds him that true Christian instruction should produce love, faith, and a pure conscience.
 
-The apostle Paul writes to Timothy, a younger fellow worker whom he considers his own son in the faith. Timothy has been left in Ephesus, an important city in the Roman province of Asia, to help guide the believers and address problems within the church.
+Paul writes “Unto Timothy, my own son in the faith.” Timothy is not Paul's son by birth, but Paul led him to faith and trained him. Paul had asked Timothy to “abide still at Ephesus” to deal with false teachers. They must stop teaching wrong ideas and stop paying attention “to fables and endless genealogies,” which only lead to arguments instead of building faith.
 
-Some teachers have begun spreading questionable ideas, including endless genealogies and arguments about the Jewish law. Paul warns that these discussions produce disputes rather than strengthen faith.
-
-He explains that the purpose of sound teaching is love flowing from a pure heart, a good conscience, and sincere faith.
-
-The law itself is good when used properly. It exposes wrongdoing, but it must not become a source of empty arguments or false claims of religious authority.
-
-Paul wants Timothy to protect the message entrusted to the church and prevent teachers from drawing believers away from the truth.
+Paul reminds Timothy of the goal of all true teaching: “Now the end of the commandment is charity out of a pure heart, and of a good conscience, and of faith unfeigned.” Unfeigned means sincere, not faked. Some have wandered away from this into empty talk. They want to be teachers of the law, “understanding neither what they say, nor whereof they affirm.” Paul says, “But we know that the law is good, if a man use it lawfully.” The law was given to restrain sinners like murderers, liars, and kidnappers, and to point to the gospel.
 
 **Paul Remembers the Mercy He Received (1 Timothy 1:12–20)** — Paul recalls his former persecution of Christians and explains how God's mercy transformed him into a servant of Jesus Christ.
 
-Paul turns from warning about false teachers to remembering his own past.
+Paul thanks Christ for trusting him with the ministry, even though he “was before a blasphemer, and a persecutor, and injurious.” Injurious means violent. “But I obtained mercy, because I did it ignorantly in unbelief.” God's grace overflowed toward him. Then Paul gives one of the clearest summaries of the gospel: “This is a faithful saying, and worthy of all acceptation, that Christ Jesus came into the world to save sinners; of whom I am chief.” If God could save the worst sinner, He can save anyone. Thinking of this, Paul bursts into praise: “Now unto the King eternal, immortal, invisible, the only wise God, be honour and glory for ever and ever. Amen.”
 
-Before becoming an apostle, he had spoken against Jesus, persecuted believers, and acted violently toward the church. Yet God showed him mercy because he had acted in ignorance and unbelief.
-
-Through Jesus Christ, Paul received abundant grace, faith, and love.
-
-He explains that Christ Jesus came into the world to save sinners, and Paul considers himself a powerful example of God's patience.
-
-His transformation demonstrates that even someone who once opposed Christ can receive mercy and become a witness to others.
-
-Paul responds with praise to the eternal, immortal, invisible God.
-
-He then reminds Timothy of the responsibility entrusted to him through earlier prophecies concerning his ministry.
-
-Timothy must hold firmly to faith and a good conscience.
-
-Paul warns that some have rejected these things and damaged their faith. He names Hymenaeus and Alexander as examples of people he has handed over to Satan so they may learn not to blaspheme.
+Paul charges Timothy to “war a good warfare,” holding onto faith and a good conscience. Some have thrown these away and “made shipwreck” of their faith, including Hymenaeus and Alexander. Paul has put them out of the church, “delivered unto Satan, that they may learn not to blaspheme.”
 
 **The Church Must Pray for Everyone (1 Timothy 2:1–15)** — Paul gives instructions concerning public prayer, the conduct of men and women, and the importance of worship that honors God.
 
-Paul urges believers to offer prayers, requests, intercessions, and thanksgiving for all people.
+Paul begins his instructions for church life with prayer. “Supplications, prayers, intercessions, and giving of thanks, be made for all men; For kings, and for all that are in authority; that we may lead a quiet and peaceable life in all godliness and honesty.” God wants everyone to hear the gospel. He “will have all men to be saved, and to come unto the knowledge of the truth. For there is one God, and one mediator between God and men, the man Christ Jesus; Who gave himself a ransom for all.” A mediator stands between two sides to bring them together.
 
-He especially mentions kings and those in authority, explaining that such prayers seek peaceful conditions in which believers can live with godliness and honesty.
+Paul wants the men everywhere to pray, “lifting up holy hands, without wrath and doubting.” He wants the women to dress “in modest apparel,” “not with broided hair, or gold, or pearls, or costly array; But (which becometh women professing godliness) with good works.” Broided means braided, a sign of wealth and showy fashion at the time.
 
-This reflects God's desire for people to be saved and come to the knowledge of the truth.
-
-Paul explains that there is one God and one mediator between God and humanity: Jesus Christ, who gave Himself as a ransom for all.
-
-Paul identifies himself as a preacher and apostle entrusted with proclaiming this message to the Gentiles, people outside the Jewish nation.
-
-He then addresses conduct during worship.
-
-Men are instructed to pray without anger or arguments. Women are encouraged to dress modestly and demonstrate godliness through good works rather than placing their confidence in expensive clothing or outward appearance.
-
-Paul also gives directions concerning women's learning and teaching authority, drawing upon the creation of Adam and Eve and the events surrounding humanity's first disobedience.
-
-His reference to women being saved through childbearing has received differing interpretations, as have the wider applications of these instructions.
-
-Throughout the passage, Paul connects worship with faith, holiness, self-control, and reverence for God.
+Then Paul says, “But I suffer not a woman to teach, nor to usurp authority over the man, but to be in silence.” He points back to creation, when Adam was formed first, and to Eve, who was deceived first. He adds that a woman “shall be saved in childbearing,” if she continues in faith, love, and holiness. Christians have long disagreed about how these verses apply in churches today and what “saved in childbearing” means.
 
 **Church Leaders Must Demonstrate Godly Character (1 Timothy 3:1–16)** — Paul establishes qualifications for bishops and deacons, emphasizing that those entrusted with responsibility in the church must demonstrate maturity and integrity.
 
-Paul turns toward the selection of church leaders.
+Paul lists the qualities of church leaders. “If a man desire the office of a bishop, he desireth a good work.” A bishop here means an overseer or elder. He must be “blameless, the husband of one wife, vigilant, sober, of good behaviour, given to hospitality, apt to teach; Not given to wine, no striker, not greedy of filthy lucre.” A striker is someone violent, and filthy lucre means dishonest money. He must manage his own family well, “For if a man know not how to rule his own house, how shall he take care of the church of God?” He must not be a new convert, “a novice,” or he may become proud. And he must have a good reputation with outsiders.
 
-He begins with bishops, also called overseers, who carry responsibility for caring for and guiding the congregation.
+Deacons, who serve the church in practical ways, must also be serious and honest, “not doubletongued,” not heavy drinkers or greedy. They must hold the faith with a clear conscience and be tested first. Their wives, or perhaps women who serve as deacons, must also be serious and faithful.
 
-Anyone desiring this work seeks a good responsibility, but the role requires a trustworthy character.
-
-An overseer must be above reproach, faithful in marriage, self-controlled, hospitable, able to teach, and gentle rather than violent or quarrelsome.
-
-He must manage his household responsibly and possess spiritual maturity, avoiding the pride that can accompany sudden authority.
-
-Paul also emphasizes the importance of a good reputation among people outside the church.
-
-He then describes qualifications for deacons, servants entrusted with responsibilities within the congregation.
-
-They must be honorable, sincere, free from greed, and faithful to the truth. Their character should be tested before they serve.
-
-Paul includes instructions concerning women in this setting, whose precise identification as wives of deacons or women serving in ministry is understood differently.
-
-He explains that he is writing so Timothy will know how people ought to conduct themselves in God's household.
-
-The church is described as the house of the living God, the pillar and ground of the truth.
-
-Paul closes with a declaration about the mystery of godliness, centered on Christ's appearance in the flesh, His vindication by the Spirit, His proclamation among the nations, and His reception into glory.
+Paul is writing so Timothy will know how to act “in the house of God, which is the church of the living God, the pillar and ground of the truth.” Then he quotes what may be an early hymn about Christ: “And without controversy great is the mystery of godliness: God was manifest in the flesh, justified in the Spirit, seen of angels, preached unto the Gentiles, believed on in the world, received up into glory.”
 
 **Timothy Must Reject False Religion and Pursue Godliness (1 Timothy 4:1–16)** — Paul warns of misleading spiritual teachings and urges Timothy to become a faithful example through his conduct, teaching, and devotion.
 
-Paul explains that the Spirit has warned of people departing from the faith in later times.
+The Spirit has warned “that in the latter times some shall depart from the faith, giving heed to seducing spirits, and doctrines of devils.” These false teachers will be “Forbidding to marry, and commanding to abstain from meats,” meaning certain foods. But Paul says these rules are wrong, “For every creature of God is good, and nothing to be refused, if it be received with thanksgiving.”
 
-Some will follow deceiving spirits and teachings associated with evil influences.
-
-These teachers will forbid marriage and require abstaining from certain foods that God created to be received with thanksgiving.
-
-Paul responds that God's creation is good and that food received with gratitude should not be rejected when sanctified through God's word and prayer.
-
-Timothy must explain these truths to the believers and avoid pointless myths and arguments.
-
-Instead, he should train himself in godliness.
-
-Physical exercise has some value, Paul explains, but godliness carries benefits for both the present life and the life to come.
-
-Paul reminds Timothy that believers place their hope in the living God.
-
-Although Timothy is young, he should not allow others to dismiss his leadership merely because of his age.
-
-He is to become an example through speech, conduct, love, faith, and purity.
-
-Until Paul arrives, Timothy should devote himself to the public reading of Scripture, encouragement, and teaching.
-
-He must not neglect the spiritual gift associated with his calling and the laying on of hands by the elders.
-
-Paul urges him to continue growing, paying close attention to his life and teaching.
-
-Through faithful perseverance, Timothy will benefit both himself and those who hear him.
+Timothy should train himself to be godly. “For bodily exercise profiteth little: but godliness is profitable unto all things, having promise of the life that now is, and of that which is to come.” Timothy was young for a leader, and some looked down on him. Paul tells him, “Let no man despise thy youth; but be thou an example of the believers, in word, in conversation, in charity, in spirit, in faith, in purity.” Conversation here means way of life. Until Paul comes, he should “give attendance to reading, to exhortation, to doctrine,” reading Scripture aloud to the church and teaching it. “Neglect not the gift that is in thee.” “Take heed unto thyself, and unto the doctrine; continue in them: for in doing this thou shalt both save thyself, and them that hear thee.”
 
 **The Church Must Care for People with Wisdom (1 Timothy 5:1–16)** — Paul explains how Timothy should treat different members of the church and establishes guidelines for supporting widows who are genuinely in need.
 
-Paul next addresses relationships within the congregation.
+Paul tells Timothy to treat the church like a family. “Rebuke not an elder, but intreat him as a father; and the younger men as brethren; The elder women as mothers; the younger as sisters, with all purity.”
 
-Timothy should not harshly rebuke an older man but appeal to him respectfully, as he would to a father.
-
-Older women should be treated as mothers, younger men as brothers, and younger women as sisters, with complete purity.
-
-Paul then gives detailed instructions concerning widows.
-
-The church must honor and help widows who are truly in need and have no one to support them.
-
-However, family members, especially children and grandchildren, should first fulfill their responsibility to care for their own relatives.
-
-Paul distinguishes between widows who are genuinely alone and those who have other means of support.
-
-He describes the qualifications for widows placed on the church's regular support list, including age, faithfulness, hospitality, and a record of good works.
-
-He gives different instructions concerning younger widows, encouraging marriage, family responsibilities, and avoiding harmful habits such as idleness and gossip.
-
-His concern is that the church's resources be directed toward those who genuinely need assistance while families fulfill their own obligations.
+The church should care for widows, especially those who are truly alone. “Honour widows that are widows indeed.” But families must take care of their own first: “But if any provide not for his own, and specially for those of his own house, he hath denied the faith, and is worse than an infidel,” worse than an unbeliever. The church kept a list of widows over sixty who had been faithful to their husbands and known for good works, and it supported them. Younger widows should remarry and raise families. Otherwise, Paul warns, they may become “idle, wandering about from house to house; and not only idle, but tattlers also and busybodies.”
 
 **Timothy Must Lead with Fairness and Care (1 Timothy 5:17–25)** — Paul instructs Timothy to honor faithful elders, handle accusations fairly, avoid favoritism, and exercise caution when appointing leaders.
 
-Paul turns from the care of widows to the treatment of church elders.
+“Let the elders that rule well be counted worthy of double honour, especially they who labour in the word and doctrine.” Double honour probably includes being paid. Paul quotes the law, “Thou shalt not muzzle the ox that treadeth out the corn,” and Jesus' words, “The labourer is worthy of his reward.”
 
-Those who lead well, especially those who labor in preaching and teaching, are worthy of honor and appropriate support.
-
-He supports this instruction with Scripture concerning the rights of workers to receive the benefit of their labor.
-
-Paul then warns against accepting an accusation against an elder without two or three witnesses.
-
-At the same time, leaders who persist in sin must be corrected publicly so that others will recognize the seriousness of wrongdoing.
-
-Timothy must apply these instructions without prejudice or favoritism.
-
-Paul warns him not to appoint people hastily or become involved in the sins of others.
-
-He also gives Timothy a personal instruction to use a little wine for his stomach and frequent illnesses, rather than drinking only water.
-
-The chapter closes by explaining that some people's sins are immediately visible, while others become known later.
-
-Good works may likewise be apparent or eventually come to light.
-
-Timothy must therefore exercise patience and careful judgment when evaluating character and responsibility.
+Timothy must be fair. “Against an elder receive not an accusation, but before two or three witnesses.” Those who keep sinning must be corrected publicly, as a warning to others. He must do “nothing by partiality,” not playing favorites. And he must not rush to appoint leaders: “Lay hands suddenly on no man.” Some people's sins are obvious, while others come to light later. In the middle of all this, Paul gives Timothy a personal health tip: “Drink no longer water, but use a little wine for thy stomach's sake and thine often infirmities.”
 
 **Paul Warns Against Greed and False Teaching (1 Timothy 6:1–10)** — Paul addresses the conduct of servants and exposes the danger of teachers who use religion for personal gain rather than pursuing godliness.
 
-Paul first instructs enslaved servants to show proper respect toward their masters so that God's name and teaching will not be dishonored.
+Christian slaves should respect their masters so that God's name is not dishonored. Those with believing masters should not take advantage of them just because they are brothers, but serve them even better.
 
-Those serving believing masters should not take advantage of their shared faith but should serve faithfully.
-
-These instructions address relationships within the social arrangements of Paul's time.
-
-Paul then returns to the danger of false teachers.
-
-Anyone who rejects the sound words of Jesus Christ and the teaching that promotes godliness is described as proud and lacking understanding.
-
-Such teachers become consumed with disputes, arguments, jealousy, suspicion, and conflict.
-
-Some treat religion as a means of financial gain.
-
-Paul contrasts this attitude with the value of godliness joined with contentment.
-
-Human beings enter the world with nothing and can take nothing from it when they die.
-
-Food and clothing should therefore be sufficient reasons for contentment.
-
-Those determined to become rich expose themselves to temptation, harmful desires, and spiritual ruin.
-
-Paul warns that the love of money is the root of all kinds of evil.
-
-Some people have pursued wealth so intensely that they have wandered from the faith and brought suffering upon themselves.
+Paul returns to the false teachers. They are proud, love to argue about words, and stir up envy and fighting. They are “supposing that gain is godliness,” treating religion as a way to get rich. Paul turns the phrase around: “But godliness with contentment is great gain. For we brought nothing into this world, and it is certain we can carry nothing out. And having food and raiment let us be therewith content.” Raiment means clothing. Those who want to be rich fall into traps and foolish desires that drown people in ruin. “For the love of money is the root of all evil: which while some coveted after, they have erred from the faith, and pierced themselves through with many sorrows.”
 
 **Timothy Must Fight the Good Fight of Faith (1 Timothy 6:11–16)** — Paul calls Timothy to reject sinful desires, pursue godliness, remain faithful to his confession, and live with Christ's appearing in view.
 
-After warning against greed, Paul addresses Timothy personally as a man of God.
+“But thou, O man of God, flee these things; and follow after righteousness, godliness, faith, love, patience, meekness. Fight the good fight of faith, lay hold on eternal life, whereunto thou art also called.” Paul reminds Timothy of the public confession he made when he committed himself to Christ, just as Christ “before Pontius Pilate witnessed a good confession.”
 
-Rather than pursuing wealth and the desires that accompany it, Timothy must seek righteousness, godliness, faith, love, patience, and meekness.
-
-Paul urges him to fight the good fight of faith and hold firmly to eternal life.
-
-Timothy has already made a good confession before many witnesses, and Paul calls him to remain faithful to that commitment.
-
-He gives this charge before God, who gives life to all things, and Jesus Christ, who made a good confession before Pontius Pilate, the Roman governor involved in His trial.
-
-Timothy must keep the commandment without stain or reproach until the appearing of the Lord Jesus Christ.
-
-Paul then turns toward praise of God.
-
-He describes God as the blessed and only Potentate, the King of kings and Lord of lords.
-
-God alone possesses immortality in Himself and dwells in unapproachable light.
-
-No human being has seen Him in the fullness of His being.
-
-To God belong everlasting honor and power.
-
-The praise reinforces the greatness of the One whom Timothy serves and the importance of remaining faithful to his calling.
+He charges Timothy to keep this command until Jesus appears. Then he praises God in some of the grandest words in Scripture: “the blessed and only Potentate, the King of kings, and Lord of lords; Who only hath immortality, dwelling in the light which no man can approach unto; whom no man hath seen, nor can see: to whom be honour and power everlasting. Amen.” A potentate is a ruler.
 
 **True Riches Are Found in Faithfulness to God (1 Timothy 6:17–21)** — Paul concludes by instructing wealthy believers to practice generosity and urging Timothy to protect the truth entrusted to him.
 
-Paul now addresses those who possess wealth in the present world.
+Paul has a word for wealthy believers: “Charge them that are rich in this world, that they be not highminded, nor trust in uncertain riches, but in the living God, who giveth us richly all things to enjoy.” Riches are not evil, but they are uncertain. Instead, the rich should “do good, that they be rich in good works, ready to distribute, willing to communicate,” meaning willing to share. That way they store up a treasure for the future and “lay hold on eternal life.”
 
-They must not become proud or place their confidence in riches, which are uncertain and can disappear.
-
-Instead, they should trust the living God, who generously provides what people need and enjoy.
-
-Paul urges wealthy believers to become rich in good works.
-
-They should be generous, willing to share, and prepared to use their resources for the benefit of others.
-
-By doing so, they lay up a good foundation for the future and pursue what Paul calls true life.
-
-The emphasis is not upon rejecting every possession but upon refusing to make wealth the foundation of security or personal identity.
-
-Paul then returns to Timothy's responsibility.
-
-He calls him to guard what has been entrusted to his care.
-
-Timothy must turn away from empty and irreverent arguments and from teachings that falsely claim to possess special knowledge.
-
-Some who have embraced such claims have wandered away from the faith.
-
-Paul ends his letter with a blessing of grace.
-
-His final words bring the message back to the concern with which it began: preserving the truth of the gospel amid misleading teachings and spiritual dangers.
-
-Throughout the letter, Paul has explained that the health of the church depends upon sound teaching, godly leadership, sincere worship, responsible relationships, and practical care for those in need.
-
-He has warned against pride, greed, and religious arguments that produce division rather than love.
-
-He has also shown that leadership is not merely a position of authority. It requires a life shaped by faithfulness, purity, patience, humility, and service.
-
-First Timothy closes with the responsibility still resting upon Timothy. He must protect the message entrusted to him and lead the church toward the kind of godliness that reflects the truth of Jesus Christ.
+Paul ends with a personal plea: “O Timothy, keep that which is committed to thy trust, avoiding profane and vain babblings, and oppositions of science falsely so called.” Science here means knowledge, the false knowledge the teachers claimed to have. Some have wandered from the faith by chasing it. “Grace be with thee. Amen.” The letter equips a young leader to guard the truth and to lead God's household with integrity.
 
 # 2 Timothy
 When it happened: Written while Paul was imprisoned in Rome and expected to be executed soon (2 Timothy 1:8, 17; 4:6)—traditionally under the emperor Nero, around AD 64–67.
@@ -1194,271 +702,67 @@ The world at the time: Many had deserted Paul (2 Timothy 1:15; 4:10, 16), and on
 
 **Paul Encourages Timothy to Remain Courageous (2 Timothy 1:1–7)** — From prison, Paul writes to Timothy with affection, remembering his sincere faith and encouraging him to serve God with courage and confidence.
 
-The apostle Paul writes to Timothy, a younger fellow worker whom he considers his beloved son in the faith. Paul is imprisoned because of his ministry, and he longs to see Timothy again.
+This is Paul's last letter. He is in prison in Rome again, and this time he expects to be executed. He writes “To Timothy, my dearly beloved son.” He prays for him night and day and longs to see him, remembering his tears when they last parted.
 
-He begins by thanking God for Timothy and remembering him continually in prayer. He recalls Timothy's tears and expresses his desire to see him so that he may be filled with joy.
-
-Paul also remembers the sincere faith that first lived in Timothy's grandmother Lois and his mother Eunice. That same faith now lives in Timothy.
-
-Because of this, Paul encourages him to stir up the gift of God that was given through the laying on of Paul's hands.
-
-Timothy must not allow fear to prevent him from fulfilling his calling.
-
-Paul reminds him that God has not given His people a spirit of fear, but of power, love, and a sound mind.
+Paul remembers “the unfeigned faith that is in thee, which dwelt first in thy grandmother Lois, and thy mother Eunice.” Timothy's faith was passed down through three generations. So Paul urges him to “stir up the gift of God, which is in thee by the putting on of my hands.” Timothy seems to have been timid by nature, and Paul reminds him, “For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.”
 
 **The Gospel Is Worth Suffering For (2 Timothy 1:8–18)** — Paul urges Timothy not to be ashamed of Christ or Paul's imprisonment, but to remain faithful to the gospel despite suffering and abandonment.
 
-Paul calls Timothy to stand openly with the Lord Jesus Christ and not be ashamed of Paul's imprisonment.
+“Be not thou therefore ashamed of the testimony of our Lord, nor of me his prisoner.” Instead, Timothy should be willing to share in suffering for the gospel. God saved us and called us, not because of our works, but by His own purpose and grace. Christ Jesus “hath abolished death, and hath brought life and immortality to light through the gospel.”
 
-He encourages Timothy to share in suffering for the gospel according to God's power.
+Paul is suffering for that gospel, but he is not ashamed: “for I know whom I have believed, and am persuaded that he is able to keep that which I have committed unto him against that day.” He tells Timothy, “Hold fast the form of sound words,” guarding the truth with the Holy Spirit's help.
 
-God has saved and called believers to a holy life, not because of their achievements, but according to His purpose and grace given through Jesus Christ.
-
-That grace has been revealed through Christ's appearing. Through His death and resurrection, Jesus has abolished death and brought life and immortality to light through the gospel.
-
-Paul explains that he was appointed to preach this message, and it is the reason he suffers.
-
-Yet he is not ashamed. He knows whom he has believed and trusts God's ability to preserve what has been entrusted to Him.
-
-Paul urges Timothy to hold firmly to the sound teaching he has received and guard that precious trust through the Holy Ghost.
-
-He then describes a painful reality of his imprisonment. Many in Asia have turned away from him, including Phygellus and Hermogenes.
-
-But Onesiphorus has shown a different kind of faithfulness.
-
-He repeatedly refreshed Paul, was not ashamed of his chains, and searched diligently for him in Rome until he found him.
-
-Paul remembers Onesiphorus's earlier service in Ephesus and prays that the Lord will show mercy to his household.
+Paul has been badly let down. “All they which are in Asia be turned away from me,” including two men named Phygellus and Hermogenes. But one friend was different. Onesiphorus “oft refreshed me, and was not ashamed of my chain: But, when he was in Rome, he sought me out very diligently, and found me.” In a huge city, it took real effort and courage to find a prisoner of Rome.
 
 **Timothy Must Endure as a Faithful Servant (2 Timothy 2:1–13)** — Paul uses examples from military service, athletics, and farming to teach Timothy about discipline, endurance, and faithfulness in Christian ministry.
 
-Paul encourages Timothy to find strength in the grace of Jesus Christ.
+“Thou therefore, my son, be strong in the grace that is in Christ Jesus.” Paul wants Timothy to pass the faith on: “the things that thou hast heard of me among many witnesses, the same commit thou to faithful men, who shall be able to teach others also.” That is four generations of teachers, from Paul to Timothy to faithful men to others.
 
-The teaching Timothy has received must not end with him. He is to entrust it to faithful people who will be able to teach others.
+Paul gives three pictures of faithful service. A soldier: “Thou therefore endure hardness, as a good soldier of Jesus Christ. No man that warreth entangleth himself with the affairs of this life.” An athlete, who only wins the crown if he competes by the rules. And a hardworking farmer, who should be the first to enjoy the harvest. Timothy should remember Jesus Christ, raised from the dead. Paul is in chains for this gospel, “but the word of God is not bound.”
 
-Paul compares Christian service to the responsibilities of a soldier.
-
-A soldier does not become entangled in unnecessary affairs that distract from the duty assigned by his commander.
-
-He then describes an athlete, who must compete according to the rules to receive a crown, and a farmer, whose hard work comes before enjoying the harvest.
-
-Through these examples, Paul emphasizes discipline, patience, and perseverance.
-
-Timothy must remember Jesus Christ, a descendant of King David, who was raised from the dead according to the gospel.
-
-Paul suffers imprisonment because he preaches this message, even being treated like a criminal.
-
-Yet he declares that God's word cannot be imprisoned.
-
-He willingly endures hardship for the sake of those who will receive salvation in Christ Jesus.
-
-Paul then reminds Timothy that those who die with Christ will live with Him, and those who endure will reign with Him.
-
-He also warns against denying Christ.
-
-Even when people prove unfaithful, Christ remains faithful to His own nature, for He cannot deny Himself.
+Then Paul quotes what may be an early Christian saying: “It is a faithful saying: For if we be dead with him, we shall also live with him: If we suffer, we shall also reign with him: if we deny him, he also will deny us: If we believe not, yet he abideth faithful: he cannot deny himself.”
 
 **A Faithful Worker Must Handle God's Word Correctly (2 Timothy 2:14–26)** — Paul warns Timothy against destructive arguments and false teaching, urging him to pursue righteousness and correct opponents with patience and gentleness.
 
-Paul now turns toward the problems caused by careless and misleading teaching.
+Timothy must warn the believers not to fight over words, which only ruins those who listen. Instead, “Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth.” Study here means be diligent, and rightly dividing means handling it correctly. He must avoid empty talk, because false teaching spreads “as doth a canker,” an old word for a spreading sore. Two men, Hymenaeus and Philetus, are teaching “that the resurrection is past already,” and they are upsetting some people's faith. “Nevertheless the foundation of God standeth sure, having this seal, The Lord knoweth them that are his.”
 
-Timothy must remind believers of the truth and warn them against arguments over words that produce no spiritual benefit.
-
-Such disputes can damage those who listen.
-
-Instead, Timothy should work diligently to present himself as someone approved by God, correctly handling the word of truth.
-
-Paul warns against empty, irreverent talk because it leads people further into ungodliness.
-
-He names Hymenaeus and Philetus, who have departed from the truth by claiming that the resurrection has already happened.
-
-Their teaching is damaging the faith of some believers.
-
-Nevertheless, Paul assures Timothy that God's firm foundation remains secure. The Lord knows those who belong to Him, and those who name Christ must turn away from wrongdoing.
-
-Paul then compares God's household to a large home containing vessels of gold, silver, wood, and clay.
-
-Some are used for honorable purposes, while others serve ordinary or dishonorable purposes.
-
-A person who turns away from wrongdoing becomes useful for the Master's work.
-
-Timothy must flee youthful desires and pursue righteousness, faith, love, and peace alongside those who sincerely call upon the Lord.
-
-He must avoid foolish arguments and refuse to become quarrelsome.
-
-As a servant of the Lord, he should be gentle, patient, and able to teach.
-
-Even opponents should receive correction with humility, in the hope that God will grant them repentance and free them from the devil's deception.
+In a large house there are vessels of gold and silver and also of wood and clay. Those who clean themselves from evil will be “a vessel unto honour, sanctified, and meet for the master's use.” So “Flee also youthful lusts: but follow righteousness, faith, charity, peace.” And Timothy should stay out of foolish arguments. “And the servant of the Lord must not strive; but be gentle unto all men, apt to teach, patient, In meekness instructing those that oppose themselves,” in the hope that God will lead them to repent and escape the devil's trap.
 
 **Difficult Times Will Bring Widespread Ungodliness (2 Timothy 3:1–9)** — Paul warns that the last days will include selfishness, deception, and outward religion without genuine godliness, creating serious dangers for believers.
 
-Paul tells Timothy that difficult times will come in the last days.
+“This know also, that in the last days perilous times shall come.” Paul describes what people will be like: “For men shall be lovers of their own selves, covetous, boasters, proud, blasphemers, disobedient to parents, unthankful, unholy.” They will be without natural affection, unforgiving, slanderers, without self-control, brutal, and haters of good. They will be traitors, reckless, and puffed up, “lovers of pleasures more than lovers of God; Having a form of godliness, but denying the power thereof: from such turn away.” They look religious on the outside but have no real power to change.
 
-He describes people who love themselves and money, boast about their importance, and refuse to honor God.
-
-Many will become proud, unthankful, disobedient to parents, unloving, unforgiving, and lacking self-control.
-
-Some will act cruelly, betray others, and pursue pleasure more eagerly than they seek God.
-
-Especially dangerous are those who maintain an outward appearance of religion while rejecting its transforming power.
-
-Paul urges Timothy to turn away from such influences.
-
-He describes deceivers who enter households and take advantage of vulnerable people burdened by sin and influenced by harmful desires.
-
-These individuals may appear eager to learn but never arrive at a true understanding of God's truth.
-
-Paul compares such opposition to Jannes and Jambres, figures traditionally associated with those who resisted Moses, the leader God used to deliver Israel from Egypt.
-
-Just as those men opposed Moses, false teachers resist the truth through corrupted thinking and unreliable faith.
-
-Yet Paul assures Timothy that their foolishness will eventually become evident.
-
-Their apparent influence will not overturn God's purposes.
+Some of them sneak into homes and take advantage of weak-willed women weighed down with sins, who are “Ever learning, and never able to come to the knowledge of the truth.” Just as Jannes and Jambres, the magicians of Pharaoh according to Jewish tradition, opposed Moses, these men oppose the truth. But they will not get far, because their foolishness will become obvious to everyone.
 
 **The Scriptures Equip God's Servants for Every Good Work (2 Timothy 3:10–17)** — Paul reminds Timothy of his own example of endurance and teaches that the Scriptures provide the wisdom and instruction necessary for faithful living.
 
-After describing the danger of false teachers, Paul directs Timothy's attention toward the example he has already witnessed.
+Timothy knows Paul's life well: his teaching, his way of life, his faith, patience, love, and endurance. He saw the persecutions Paul suffered “at Antioch, at Iconium, at Lystra,” Timothy's own home region, “but out of them all the Lord delivered me.” This is normal for faithful believers: “Yea, and all that will live godly in Christ Jesus shall suffer persecution. But evil men and seducers shall wax worse and worse, deceiving, and being deceived.”
 
-Timothy knows Paul's teaching, conduct, purpose, faith, patience, love, and perseverance.
-
-He also knows the persecutions and suffering Paul endured in Antioch, Iconium, and Lystra.
-
-These cities had been places of serious opposition during Paul's missionary work, yet the Lord delivered him through those hardships.
-
-Paul warns that everyone who desires to live a godly life in Christ Jesus will face persecution.
-
-Meanwhile, evil people and deceivers will continue advancing in wrongdoing, deceiving others while also being deceived themselves.
-
-Because of these dangers, Timothy must remain faithful to what he has learned and firmly believed.
-
-He knows the character of those who taught him, and he has been familiar with the Holy Scriptures since childhood.
-
-These writings are able to make him wise concerning salvation through faith in Jesus Christ.
-
-Paul then explains the importance of Scripture for every servant of God.
-
-All Scripture is given by inspiration of God and is useful for teaching, correction, reproof, and instruction in righteousness.
-
-Through the Scriptures, the person devoted to God can become mature and fully equipped for every good work.
-
-The truth Timothy has received provides a reliable foundation for his ministry amid growing deception and opposition.
+So Timothy should hold on to what he learned. He has known the Scriptures since he was a child, and they “are able to make thee wise unto salvation through faith which is in Christ Jesus.” Then Paul writes one of the most important statements about the Bible: “All scripture is given by inspiration of God, and is profitable for doctrine, for reproof, for correction, for instruction in righteousness: That the man of God may be perfect, throughly furnished unto all good works.” Inspiration here means breathed out by God. Throughly furnished means fully equipped.
 
 **Timothy Must Preach the Word Faithfully (2 Timothy 4:1–5)** — Paul gives Timothy a solemn charge to proclaim God's word consistently, even when people reject sound teaching and prefer messages that satisfy their desires.
 
-Paul now gives Timothy one of his most serious instructions.
+Paul gives Timothy a solemn charge in the presence of God and of Christ, “who shall judge the quick and the dead,” the living and the dead. “Preach the word; be instant in season, out of season; reprove, rebuke, exhort with all longsuffering and doctrine.” To be instant means to be ready, whether the time seems right or not.
 
-He places the charge before God and the Lord Jesus Christ, who will judge the living and the dead at His appearing and kingdom.
-
-Timothy must preach the word.
-
-He is to remain ready whether circumstances are favorable or difficult, correcting wrongdoing, confronting error, and encouraging believers with patience and careful teaching.
-
-Paul warns that a time will come when people refuse to accept sound doctrine.
-
-Instead of listening to the truth, they will seek teachers who tell them what they want to hear.
-
-Their desires will lead them away from faithful instruction and toward myths and misleading ideas.
-
-Timothy must respond differently.
-
-He is to remain alert, endure suffering, carry out the work of an evangelist, and fulfill every responsibility of his ministry.
-
-Paul's concern is not merely that Timothy continue speaking publicly.
-
-He wants him to remain faithful to God's message without changing it to gain approval or avoid opposition.
+The need is urgent, “For the time will come when they will not endure sound doctrine; but after their own lusts shall they heap to themselves teachers, having itching ears; And they shall turn away their ears from the truth, and shall be turned unto fables.” People will collect teachers who say what they want to hear. “But watch thou in all things, endure afflictions, do the work of an evangelist, make full proof of thy ministry.”
 
 **Paul Finishes His Race with Faith (2 Timothy 4:6–8)** — Paul recognizes that his death is approaching and expresses confidence that he has completed his calling and awaits the Lord's righteous reward.
 
-Paul now speaks openly about his own circumstances.
+Now Paul speaks about his own death, which he knows is near. “For I am now ready to be offered, and the time of my departure is at hand.” He pictures his life being poured out like a drink offering on God's altar. Looking back, he can say, “I have fought a good fight, I have finished my course, I have kept the faith.”
 
-He explains that his life is already being poured out like a drink offering, and the time of his departure is near.
-
-The language shows that Paul expects his earthly life to end soon.
-
-Looking back over his ministry, he declares that he has fought the good fight, finished his course, and kept the faith.
-
-The work entrusted to him has involved years of preaching, hardship, opposition, imprisonment, and perseverance.
-
-Yet Paul does not measure his life by the suffering he has experienced.
-
-He looks instead toward the reward awaiting him.
-
-He describes a crown of righteousness that the Lord, the righteous Judge, will give him on that day.
-
-Paul adds that this promise is not limited to himself.
-
-It also belongs to all who love and eagerly await Christ's appearing.
-
-The confidence he expresses is rooted in the Lord's faithfulness rather than in the approval of others.
-
-Even as death approaches, Paul's hope remains fixed upon Jesus Christ and the future promised to those who belong to Him.
+And he looks forward with confidence: “Henceforth there is laid up for me a crown of righteousness, which the Lord, the righteous judge, shall give me at that day: and not to me only, but unto all them also that love his appearing.” The reward is not for Paul alone. It is for everyone who longs for Christ's return.
 
 **Paul Faces His Final Days with Trust in God (2 Timothy 4:9–18)** — Paul shares personal requests and disappointments, describes his abandonment during a legal defense, and expresses confidence that the Lord will preserve him for His heavenly kingdom.
 
-Paul asks Timothy to come to him as soon as possible.
+Paul is lonely. “Do thy diligence to come shortly unto me: For Demas hath forsaken me, having loved this present world.” Others have gone to different places to serve. “Only Luke is with me.” Then Paul writes, “Take Mark, and bring him with thee: for he is profitable to me for the ministry.” This is the same Mark that Paul once refused to take on a journey. Now Paul asks for him by name.
 
-His circumstances have become increasingly lonely.
+He asks for very ordinary things: “The cloke that I left at Troas with Carpus, when thou comest, bring with thee, and the books, but especially the parchments.” Winter is coming, and the prison is cold. He warns Timothy about “Alexander the coppersmith,” who “did me much evil.”
 
-Demas has abandoned him because of his love for the present world and has gone to Thessalonica. Crescens has traveled to Galatia, while Titus has gone to Dalmatia.
-
-Only Luke remains with Paul.
-
-He asks Timothy to bring Mark, explaining that Mark will be useful to him in ministry.
-
-Paul has sent Tychicus to Ephesus, and he requests that Timothy bring a cloak left at Troas, along with books and especially the parchments.
-
-These practical requests reveal the ordinary needs of a man living under imprisonment.
-
-Paul then warns Timothy about Alexander the coppersmith, who caused him serious harm and strongly opposed his teaching.
-
-He trusts the Lord to repay Alexander according to his deeds.
-
-Paul also recalls his first defense, when no one stood with him.
-
-Although others abandoned him, he asks that their failure not be counted against them.
-
-The Lord, however, remained at his side and strengthened him so that the gospel could be fully proclaimed and the Gentiles could hear it.
-
-Paul declares that he was delivered from the mouth of the lion.
-
-He expresses confidence that the Lord will continue delivering him from every evil work and preserve him for His heavenly kingdom.
-
-His words do not promise escape from death. Instead, they reveal his trust that God's purposes will stand even as his earthly life approaches its end.
-
-Paul responds with praise, giving glory to the Lord forever.
+At his first hearing in court, everyone deserted him: “At my first answer no man stood with me, but all men forsook me: I pray God that it may not be laid to their charge.” Like Jesus and Stephen, he forgives those who failed him. “Notwithstanding the Lord stood with me, and strengthened me,” so that Paul could preach even in court, “and I was delivered out of the mouth of the lion.” He is sure of the future: “And the Lord shall deliver me from every evil work, and will preserve me unto his heavenly kingdom: to whom be glory for ever and ever. Amen.”
 
 **Paul Closes with Final Greetings and Grace (2 Timothy 4:19–22)** — Paul ends his letter with personal greetings, news of fellow workers, a request for Timothy's arrival, and a final blessing of grace.
 
-As the letter draws to a close, Paul asks Timothy to greet Prisca and Aquila, faithful Christian workers who had served alongside him.
-
-He also sends greetings to the household of Onesiphorus, whose kindness during Paul's imprisonment had already been remembered earlier in the letter.
-
-Paul then shares additional news about his companions.
-
-Erastus has remained in Corinth, while Trophimus has been left sick at Miletus.
-
-These brief details show that the work of the gospel continues across different cities, even while Paul remains imprisoned.
-
-Paul urges Timothy to make every effort to arrive before winter.
-
-He also passes along greetings from Eubulus, Pudens, Linus, Claudia, and all the brothers.
-
-His final words ask that the Lord Jesus Christ will be with Timothy's spirit and that grace will remain with them.
-
-The letter closes without describing Timothy's arrival or the eventual outcome of Paul's imprisonment.
-
-Instead, it leaves Paul awaiting the future with confidence in God's faithfulness.
-
-Throughout his message, Paul has urged Timothy to preserve the gospel, endure hardship, reject false teaching, and remain devoted to the Scriptures.
-
-He has reminded Timothy that faithful ministry requires courage, discipline, patience, love, and willingness to suffer for Christ.
-
-Paul's own life stands behind these instructions. He has experienced persecution, abandonment, imprisonment, and opposition, yet he continues trusting the Lord who sustained him.
-
-Second Timothy ends with a personal appeal from an imprisoned apostle to a younger servant entrusted with continuing the work.
-
-Paul knows his departure is near, but his confidence rests in the Lord Jesus Christ, whose message remains powerful and whose promised kingdom gives meaning to a life of faithful service.
+Paul sends greetings to “Prisca and Aquila, and the household of Onesiphorus.” He mentions that he left Trophimus sick at Miletus. Then he repeats his request with new urgency: “Do thy diligence to come before winter.” Believers in Rome named Eubulus, Pudens, Linus, and Claudia send their greetings. Paul's very last written words are a blessing: “The Lord Jesus Christ be with thy spirit. Grace be with you. Amen.” According to early church tradition, Paul was beheaded in Rome under the emperor Nero not long after writing this letter. We do not know whether Timothy arrived in time.
 
 # Titus
 When it happened: Written after Paul left Titus on the island of Crete (Titus 1:5), likely around AD 62–64. Paul planned to spend the winter at Nicopolis (Titus 3:12).
@@ -1468,221 +772,51 @@ The world at the time: Cretans had a poor reputation, which Paul illustrates by 
 
 **Paul Entrusts Titus with Leading the Churches (Titus 1:1–5)** — Paul writes to Titus, explaining the hope of eternal life and the responsibility of establishing strong, faithful churches throughout Crete.
 
-The apostle Paul writes to Titus, a trusted fellow worker whom he considers his own son in their shared faith. Titus has been left on Crete, a large island in the Mediterranean Sea, where several Christian communities need guidance and leadership.
+Paul writes to Titus, another of his closest helpers. He calls himself a servant of God and an apostle, working “In hope of eternal life, which God, that cannot lie, promised before the world began.” He greets Titus as “mine own son after the common faith,” the faith they share.
 
-Paul begins by identifying himself as a servant of God and an apostle of Jesus Christ. His ministry is devoted to strengthening faith and spreading the truth that leads to godliness.
-
-He explains that believers possess the hope of eternal life, promised by God, who cannot lie, before the world began. At the appointed time, God made His word known through the preaching entrusted to Paul.
-
-Paul then explains why Titus has remained in Crete.
-
-His responsibility is to put unfinished matters in order and appoint elders in every city, following the instructions Paul previously gave him.
-
-These leaders will help the growing churches remain faithful to the gospel and establish communities marked by sound teaching and godly conduct.
+Then Paul explains why he is writing: “For this cause left I thee in Crete, that thou shouldest set in order the things that are wanting, and ordain elders in every city.” Paul and Titus had started churches on the island of Crete, but the work was unfinished. The churches needed leaders.
 
 **Church Leaders Must Be Faithful and Above Reproach (Titus 1:6–9)** — Paul describes the character required of church elders, emphasizing faithful family leadership, self-control, hospitality, and the ability to teach God's truth.
 
-Paul explains that those appointed to lead the churches must demonstrate trustworthy character.
-
-An elder should be above reproach, faithful in marriage, and responsible in managing his household. His children must not be known for uncontrolled or rebellious behavior.
-
-As a steward entrusted with God's work, a church leader must not be arrogant, quick-tempered, violent, greedy, or controlled by strong drink.
-
-Instead, he should be hospitable, love what is good, and demonstrate wisdom, fairness, holiness, and self-control.
-
-These qualities matter because spiritual leadership involves more than holding a position of authority.
-
-Elders are responsible for caring for God's people and setting an example through their conduct.
-
-Paul also emphasizes their responsibility to remain faithful to sound teaching.
-
-They must hold firmly to the trustworthy message they have received so they can encourage others through correct doctrine and answer those who oppose it.
-
-The churches need leaders whose personal lives support the truth they proclaim.
+Paul describes the kind of man who can be an elder. He must be “blameless, the husband of one wife, having faithful children not accused of riot or unruly.” “For a bishop must be blameless, as the steward of God; not selfwilled, not soon angry, not given to wine, no striker, not given to filthy lucre.” A steward manages a household for its owner, so an elder manages God's household, not his own. He must instead be “a lover of hospitality, a lover of good men, sober, just, holy, temperate.” Above all, he must hold firmly to the true message he was taught, “that he may be able by sound doctrine both to exhort and to convince the gainsayers,” to encourage believers and correct those who argue against the truth.
 
 **False Teachers Threaten the Churches in Crete (Titus 1:10–16)** — Paul warns that rebellious teachers are spreading harmful ideas and instructs Titus to confront their errors so believers can remain sound in faith.
 
-Having described the qualities of faithful leaders, Paul explains why such leadership is urgently needed.
+Crete needed strong leaders because “there are many unruly and vain talkers and deceivers, specially they of the circumcision,” Jewish teachers who demanded that Gentiles keep the law. They must be silenced, because they are upsetting whole families and teaching wrong things “for filthy lucre's sake,” just to make money.
 
-Many people are spreading empty arguments and deception among the churches, particularly some who insist upon Jewish religious requirements.
-
-These teachers are upsetting entire households by promoting ideas they should not teach, often for dishonest financial gain.
-
-Paul instructs Titus to correct them firmly.
-
-He quotes a Cretan prophet who sharply criticized the character of his own people. Paul applies that warning to the problems Titus is facing and urges correction so that believers may become sound in faith.
-
-The churches must not become absorbed in Jewish myths or human commandments that turn people away from the truth.
-
-Paul explains that outward religious claims are not enough to demonstrate genuine purity.
-
-Some people profess to know God, yet their actions contradict that profession.
-
-Their minds and consciences have become corrupted, and their conduct reveals disobedience.
-
-Paul's concern is that the churches should not be guided by impressive claims, misleading traditions, or selfish teachers.
-
-They need leaders who preserve the gospel and demonstrate its truth through faithful living.
+Paul quotes a famous Cretan poet: “One of themselves, even a prophet of their own, said, The Cretians are alway liars, evil beasts, slow bellies.” Slow bellies means lazy gluttons. Paul adds, “This witness is true.” So Titus must “rebuke them sharply,” so they will be sound in the faith. These teachers focus on rules about clean and unclean things, but “Unto the pure all things are pure.” “They profess that they know God; but in works they deny him.”
 
 **Sound Teaching Must Shape Every Generation (Titus 2:1–10)** — Paul instructs Titus to teach believers of different ages and responsibilities how to demonstrate self-control, love, faithfulness, and integrity.
 
-Paul now turns from confronting false teaching to explaining the conduct that should accompany sound doctrine.
+“But speak thou the things which become sound doctrine.” Paul tells Titus what to teach each group in the church. Older men should be sober, serious, wise, and strong in faith, love, and patience. Older women should be reverent, not gossips or heavy drinkers, but “teachers of good things.” They should train the younger women to love their husbands and children, to be wise and pure, to work at home, and to be kind, “that the word of God be not blasphemed.” Younger men should be self-controlled.
 
-Older men are to be sober-minded, honorable, self-controlled, and strong in faith, love, and patience.
-
-Older women should behave in a manner that reflects holiness. They must avoid slander and excessive drinking, becoming teachers of what is good.
-
-Through their example and instruction, they can help younger women develop love for their husbands and children, self-control, purity, kindness, and faithfulness in their households.
-
-Paul also urges younger men to be self-controlled.
-
-Titus himself must serve as an example through good works, sincere teaching, seriousness, and speech that cannot rightly be condemned.
-
-His character should give opponents no legitimate reason to speak against the Christian message.
-
-Paul then addresses servants within the social arrangements of his time.
-
-They are instructed to respect their masters, work faithfully, avoid stealing, and demonstrate honesty and reliability.
-
-Such conduct should reflect well upon the teaching of God their Saviour.
-
-Throughout these instructions, Paul connects sound teaching with everyday behavior.
-
-Faith is not merely something believers claim to possess. It should become visible through their relationships, responsibilities, speech, and conduct.
+Titus himself must be a role model: “In all things shewing thyself a pattern of good works.” His teaching should be so sound that no opponent can find anything bad to say. Slaves should obey their masters, not talk back or steal, but be completely trustworthy, “that they may adorn the doctrine of God our Saviour in all things.” Their good behavior would make the gospel look beautiful, like jewelry.
 
 **God's Grace Teaches Believers to Live Differently (Titus 2:11–15)** — Paul explains that God's saving grace calls people away from sin and toward self-controlled, righteous living while they await Jesus Christ's return.
 
-After addressing the responsibilities of different believers, Paul explains the foundation of the life he has described.
+Paul explains why believers live this way: “For the grace of God that bringeth salvation hath appeared to all men, Teaching us that, denying ungodliness and worldly lusts, we should live soberly, righteously, and godly, in this present world.” God's grace does not just forgive. It trains believers to live differently.
 
-The grace of God that brings salvation has appeared, extending the offer of salvation to all kinds of people.
-
-This grace does more than provide forgiveness.
-
-It teaches believers to reject ungodliness and worldly desires and to live with self-control, righteousness, and devotion to God in the present world.
-
-Their conduct is shaped by the hope of Christ's return.
-
-Paul describes believers as looking forward to the appearing of the glory of the great God and their Saviour Jesus Christ.
-
-Jesus gave Himself to redeem His people from lawlessness and purify them as a people belonging to Him, eager to perform good works.
-
-The purpose of His sacrifice therefore includes both deliverance from sin and the transformation of those who follow Him.
-
-Paul instructs Titus to teach these truths, encourage believers, and correct wrongdoing with the authority entrusted to him.
-
-He must not allow others to dismiss the importance of the message.
-
-The churches' faithfulness depends upon understanding that salvation comes through God's grace and that this grace calls them to a new way of life.
+And it gives them hope: “Looking for that blessed hope, and the glorious appearing of the great God and our Saviour Jesus Christ; Who gave himself for us, that he might redeem us from all iniquity, and purify unto himself a peculiar people, zealous of good works.” Peculiar here means His own special possession. Titus must teach these things with full authority: “Let no man despise thee.”
 
 **Believers Must Demonstrate Goodness in Society (Titus 3:1–2)** — Paul reminds Titus that Christians should respect governing authorities, avoid unnecessary conflict, and treat everyone with gentleness and consideration.
 
-Paul continues describing how the Christian faith should influence conduct beyond the church.
-
-He instructs Titus to remind believers to submit to rulers and authorities, obey lawful directions, and remain prepared for every good work.
-
-Their behavior should demonstrate that faith in Christ encourages responsibility rather than disorder.
-
-Paul also warns against speaking evil of others or becoming quarrelsome.
-
-Believers should avoid needless arguments and show gentleness toward everyone.
-
-This instruction follows naturally from his earlier emphasis on godly character.
-
-The same self-control and kindness expected within Christian households and congregations should also shape relationships with neighbors and people in positions of authority.
-
-Paul's concern is that believers demonstrate humility and consideration rather than arrogance or hostility.
-
-Their conduct should reflect the grace they have received from God.
+Believers must be good citizens. “Put them in mind to be subject to principalities and powers, to obey magistrates, to be ready to every good work, To speak evil of no man, to be no brawlers, but gentle, shewing all meekness unto all men.” Magistrates are government officials. Christians on Crete, surrounded by people with a bad reputation, should stand out for their gentleness and respect toward everyone.
 
 **God Saves Through Mercy, Not Human Achievement (Titus 3:3–8)** — Paul reminds Titus of humanity's former sinful condition and explains how God's kindness, mercy, and renewing Spirit bring salvation through Jesus Christ.
 
-Paul now explains why believers should treat others with humility and gentleness.
+Paul reminds them that they have no reason to look down on anyone: “For we ourselves also were sometimes foolish, disobedient, deceived, serving divers lusts and pleasures, living in malice and envy, hateful, and hating one another.” Then everything changed: “But after that the kindness and love of God our Saviour toward man appeared, Not by works of righteousness which we have done, but according to his mercy he saved us, by the washing of regeneration, and renewing of the Holy Ghost.” Regeneration means new birth. God poured out the Spirit richly through Jesus Christ, so that “being justified by his grace, we should be made heirs according to the hope of eternal life.”
 
-He reminds Titus that Christians themselves once lived in foolishness and disobedience.
-
-They were deceived, controlled by harmful desires, and consumed by envy and hatred.
-
-Their former condition gives them no reason to consider themselves naturally superior to others.
-
-But God's kindness and love toward humanity appeared through Jesus Christ.
-
-God saved believers not because they had performed enough righteous deeds, but according to His mercy.
-
-Paul describes this salvation as the washing of regeneration and renewing of the Holy Ghost, whom God poured out abundantly through Jesus Christ.
-
-Through God's grace, believers are justified, meaning counted righteous before Him, and become heirs according to the hope of eternal life.
-
-These truths form the foundation of Paul's teaching about Christian conduct.
-
-Because salvation is a gift of mercy rather than a reward for human achievement, believers should respond with gratitude and humility.
-
-Paul calls this message faithful and trustworthy.
-
-He wants Titus to emphasize it continually so that those who believe in God will devote themselves to good works.
-
-Such actions are good and beneficial to others, not because they earn salvation, but because they reflect the new life God has given.
+“This is a faithful saying,” Paul says, and he wants Titus to stress it, so that those who believe in God will “be careful to maintain good works.” Salvation is not earned by good works, but it always leads to them.
 
 **Titus Must Avoid Useless Disputes and Division (Titus 3:9–11)** — Paul warns Titus against pointless religious arguments and instructs him to confront people who repeatedly create divisions within the church.
 
-After emphasizing the importance of good works, Paul returns to the danger of harmful teaching.
-
-He warns Titus to avoid foolish questions, endless genealogies, arguments, and disputes concerning the Jewish law.
-
-These controversies consume attention without producing meaningful spiritual growth.
-
-Paul describes them as unprofitable and empty.
-
-Titus must instead remain focused on the truths that strengthen faith and encourage godly living.
-
-Paul then addresses those who deliberately create divisions within the church.
-
-A divisive person should receive a first and second warning.
-
-If that person continues promoting division after repeated correction, Titus is instructed to reject further association with the individual.
-
-Paul explains that such persistent behavior reveals a person who has turned away from what is right and stands condemned by their own actions.
-
-The instruction is meant to protect the congregation from ongoing disruption.
-
-Throughout the letter, Paul has emphasized that the church must combine sound teaching with sound conduct.
-
-Allowing endless arguments and deliberate division to continue unchecked would undermine both.
-
-Titus is therefore responsible for maintaining the church's faithfulness while exercising clear and careful judgment.
+“But avoid foolish questions, and genealogies, and contentions, and strivings about the law; for they are unprofitable and vain.” These arguments go nowhere. And if someone keeps stirring up division, Titus should warn him once, then twice. After that, he should have nothing more to do with him: “A man that is an heretick after the first and second admonition reject.” Such a person is “subverted, and sinneth, being condemned of himself.” His own behavior shows that he is in the wrong.
 
 **Paul Ends with Plans and Final Instructions (Titus 3:12–15)** — Paul closes by sharing travel plans, requesting practical assistance for fellow workers, and reminding believers to remain devoted to good works.
 
-As his letter approaches its conclusion, Paul gives Titus several practical instructions.
+Paul plans to send either Artemas or Tychicus to take Titus's place. When that happens, Titus should “be diligent to come unto me to Nicopolis: for I have determined there to winter.” Nicopolis was a city on the western coast of Greece. Titus should also help Zenas the lawyer and Apollos with everything they need for their journey.
 
-He plans to send either Artemas or Tychicus, both fellow workers, to assist with the ministry in Crete.
-
-Once one of them arrives, Titus should make every effort to join Paul at Nicopolis.
-
-Paul explains that he has decided to spend the winter there.
-
-He also asks Titus to help Zenas the lawyer and Apollos, another Christian teacher, prepare for their journey.
-
-They should receive the supplies and assistance necessary so that they lack nothing.
-
-Paul then returns once more to the importance of practical service.
-
-He urges the believers to learn to maintain good works and provide for necessary needs so that their lives will not become unfruitful.
-
-This reminder connects the church's spiritual teaching with ordinary acts of generosity and responsibility.
-
-Paul concludes by sending greetings from those with him and asking Titus to greet everyone who loves them in the faith.
-
-His final words are a blessing of grace upon them all.
-
-The letter ends without describing Titus's departure from Crete or the later condition of the churches.
-
-Instead, it leaves Titus with the responsibility of appointing trustworthy leaders, confronting false teaching, and helping believers develop lives shaped by God's truth.
-
-Throughout the letter, Paul has connected salvation with transformation.
-
-God saves through His mercy and grace, not through human achievement. Those who receive that grace are then called to demonstrate faith through holiness, love, self-control, generosity, and good works.
-
-Titus closes with the expectation that healthy churches will be recognized not only by the truth they teach but also by the character and conduct of the people who belong to them.
+Paul repeats the theme of the letter one last time: “And let ours also learn to maintain good works for necessary uses, that they be not unfruitful.” Everyone with Paul sends greetings. “Grace be with you all. Amen.” Titus shows how the gospel of grace produces changed lives, healthy churches, and good works in a difficult place.
 
 # Philemon
 When it happened: Written while Paul was a prisoner (Philemon 1:1, 9), likely in Rome around AD 60–62, and sent at the same time as Colossians, which mentions Onesimus (Colossians 4:9).
@@ -1692,128 +826,26 @@ The world at the time: Slavery was common throughout the Roman Empire. Onesimus,
 
 **Paul Gives Thanks for Philemon's Faith and Love (Philemon 1:1–7)** — From prison, Paul writes to Philemon, a fellow believer whose generosity and love have strengthened the Christian community.
 
-The apostle Paul is imprisoned because of his service to Jesus Christ when he writes a personal letter to Philemon, a fellow Christian whom he calls a dearly beloved coworker.
+This is Paul's shortest letter, a personal note about a runaway slave. Paul writes as “a prisoner of Jesus Christ” to “Philemon our dearly beloved, and fellowlabourer.” He also greets Apphia, probably Philemon's wife, Archippus, and “the church in thy house,” which met in Philemon's home in Colosse.
 
-Timothy, Paul's trusted companion in ministry, is also named in the greeting.
-
-Paul addresses Apphia, Archippus, whom he calls a fellow soldier, and the church that meets in Philemon's house. Their mention shows that Paul's message concerns more than a private relationship, even though Philemon is its central recipient.
-
-He begins by wishing them grace and peace from God the Father and the Lord Jesus Christ.
-
-Paul then expresses gratitude for Philemon's faith in Jesus and his love toward God's people.
-
-Whenever Paul remembers Philemon in prayer, he gives thanks because Philemon's kindness has brought comfort and encouragement to other believers.
-
-The hearts of the saints, meaning those who belong to God, have been refreshed through his care.
-
-Paul prays that Philemon's sharing of faith will grow through a deeper understanding of the good things believers possess in Christ.
-
-These opening words establish Philemon as a man whose faith has already produced practical love.
-
-Paul will soon ask him to demonstrate that same love in a difficult and deeply personal situation.
+Paul thanks God whenever he prays for Philemon, “Hearing of thy love and faith, which thou hast toward the Lord Jesus, and toward all saints.” Philemon's love has given Paul great joy and comfort, “because the bowels of the saints are refreshed by thee, brother.” Bowels was an old way of saying hearts. Philemon has a reputation for kindness, and Paul is about to ask him to show it in a hard situation.
 
 **Paul Appeals for Mercy Toward Onesimus (Philemon 1:8–16)** — Paul asks Philemon to receive Onesimus, an enslaved man who has become a Christian, with the love and consideration due to a brother in Christ.
 
-After expressing his gratitude, Paul explains the reason for his letter.
+Paul says he could order Philemon to do the right thing, “Yet for love's sake I rather beseech thee, being such an one as Paul the aged, and now also a prisoner of Jesus Christ.” Then he names the man he is writing about: “I beseech thee for my son Onesimus, whom I have begotten in my bonds.” Onesimus was Philemon's slave who had run away, probably after stealing from him. Somehow he met Paul in prison and became a believer.
 
-He could command Philemon to do what is proper, but instead chooses to appeal to him through love.
+Paul makes a play on words. The name Onesimus means useful. “Which in time past was to thee unprofitable, but now profitable to thee and to me.” Paul would like to keep Onesimus as a helper, but he will not do so without Philemon's permission. So he is sending him back, “that is, mine own bowels,” as if sending his own heart.
 
-Paul identifies himself as an older man and a prisoner of Jesus Christ.
-
-His request concerns Onesimus, an enslaved man belonging to Philemon who has been separated from him.
-
-While Paul has been imprisoned, Onesimus has become a believer through Paul's ministry. Paul therefore describes him as his own son in the faith.
-
-Paul makes a meaningful observation about Onesimus's name, which is associated with usefulness.
-
-He explains that Onesimus had formerly been unprofitable to Philemon, but now he has become profitable both to Philemon and to Paul.
-
-The letter does not explain exactly why Onesimus left Philemon or describe the circumstances of his departure.
-
-What is clear is that Paul has developed a deep affection for him.
-
-Although Paul would have liked to keep Onesimus nearby to assist him during imprisonment, he has decided to send him back.
-
-He does not want to receive Philemon's help through pressure or without Philemon's willing agreement.
-
-Instead, Paul wants any kindness shown to come freely.
-
-He then offers a careful reflection on their separation.
-
-Perhaps Onesimus was separated from Philemon for a time so that Philemon might receive him back forever.
-
-But their relationship should no longer be understood only through the social position of master and enslaved servant.
-
-Onesimus is now much more than a servant in Paul's eyes. He is a beloved brother in Christ.
-
-Paul asks Philemon to recognize that same relationship.
-
-His appeal does not describe Onesimus receiving legal freedom, but it clearly calls Philemon to regard him with a new level of love, dignity, and fellowship.
+Paul suggests that God had a purpose in all this: “For perhaps he therefore departed for a season, that thou shouldest receive him for ever; Not now as a servant, but above a servant, a brother beloved.” Onesimus returns not just as a slave but as a fellow believer.
 
 **Paul Offers to Carry Onesimus's Debt (Philemon 1:17–21)** — Paul asks Philemon to welcome Onesimus as he would welcome Paul himself and personally offers to repay anything Onesimus owes.
 
-Paul now brings his request to its most direct point.
+Paul makes his request plain: “If thou count me therefore a partner, receive him as myself.” Then he offers to pay any debt: “If he hath wronged thee, or oweth thee ought, put that on mine account; I Paul have written it with mine own hand, I will repay it.” Many readers see in this a picture of what Christ does for sinners, taking their debt on Himself. With a gentle nudge, Paul adds that Philemon owes Paul “even thine own self,” since Paul led him to Christ.
 
-If Philemon considers Paul a partner in the faith, he should receive Onesimus as though he were receiving Paul.
-
-This appeal places Paul's own relationship with Philemon behind his concern for Onesimus.
-
-Paul then addresses the possibility of wrongdoing or an unpaid debt.
-
-If Onesimus has wronged Philemon in any way or owes him anything, Paul asks that the amount be charged to his own account.
-
-He personally promises to repay it.
-
-Paul emphasizes this promise by writing it with his own hand.
-
-At the same time, he gently reminds Philemon that Philemon himself owes Paul a great deal, a reference to the spiritual benefit Philemon has received through Paul's ministry.
-
-Paul does not use this reminder to cancel the offer of repayment.
-
-Instead, he continues appealing to the love and fellowship they share in Christ.
-
-He asks Philemon to refresh his heart, just as Philemon has already refreshed the hearts of other believers.
-
-Paul then expresses confidence in Philemon's obedience.
-
-He believes that Philemon will respond positively and even do more than Paul has specifically requested.
-
-The letter does not explain what those additional actions might include.
-
-Paul leaves the decision with Philemon, trusting that his faith and love will guide his response.
-
-Throughout the appeal, Paul combines personal affection, responsibility, and mercy.
-
-He does not ignore the possibility that Onesimus has caused harm, but he offers to bear the financial cost himself while asking Philemon to restore their relationship.
+“Yea, brother, let me have joy of thee in the Lord: refresh my bowels in the Lord.” Paul is confident Philemon will obey, “knowing that thou wilt also do more than I say.” Some think this hints that Paul hoped Philemon would set Onesimus free.
 
 **Paul Closes with Hope, Fellowship, and Grace (Philemon 1:22–25)** — Paul expresses hope of visiting Philemon, sends greetings from his companions, and closes with a blessing of Christ's grace.
 
-As his letter comes to an end, Paul asks Philemon to prepare a place for him to stay.
+Paul expects to be released and asks Philemon to get a guest room ready: “But withal prepare me also a lodging: for I trust that through your prayers I shall be given unto you.” That would also let Paul see for himself how Onesimus was received.
 
-He hopes that through the prayers of the believers, he will be granted an opportunity to visit them.
-
-Although Paul remains imprisoned, he looks forward to the possibility of seeing Philemon and the Christian community gathered in his home.
-
-He then shares greetings from several fellow workers.
-
-Epaphras, whom Paul identifies as a fellow prisoner in Christ Jesus, sends his greetings.
-
-Mark, Aristarchus, Demas, and Luke are also mentioned as Paul's fellow workers.
-
-These greetings reveal a network of believers connected through their service to Christ, even while living in different places and facing different circumstances.
-
-Paul ends by asking that the grace of the Lord Jesus Christ be with their spirit.
-
-The letter does not reveal how Philemon responded to Paul's appeal.
-
-It does not describe Onesimus's reception, whether any debt was repaid, or what eventually happened to the relationship between the two men.
-
-Instead, the conclusion leaves Philemon with a personal decision shaped by the message of Jesus Christ.
-
-At the beginning of the letter, Paul praised Philemon for the love and kindness he had already shown toward other believers.
-
-Now Paul has asked him to extend that same love to Onesimus, a man whose social position and past circumstances could have made reconciliation difficult.
-
-Paul has not simply requested forgiveness. He has asked Philemon to recognize Onesimus as a beloved brother, welcome him into fellowship, and allow their shared faith to change the way they relate to one another.
-
-Philemon closes without recording the outcome, but its central appeal remains clear. The grace received through Jesus Christ is meant to shape personal relationships, replacing hostility with reconciliation and calling believers to demonstrate their faith through mercy, responsibility, and love.
+He sends greetings from Epaphras, “my fellowprisoner,” and from his co-workers Mark, Aristarchus, Demas, and Luke, the same group named in Colossians. He ends, “The grace of our Lord Jesus Christ be with your spirit. Amen.” We are not told how Philemon responded. But the letter was kept and copied, and some early Christians believed that Onesimus later became a leader in the church. The short letter shows how the gospel turns a master and a runaway slave into brothers.

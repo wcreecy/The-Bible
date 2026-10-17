@@ -6,195 +6,93 @@ The world at the time: The readers had already endured persecution and the loss 
 
 **God Speaks Through His Son (Hebrews 1:1–2:18)** — God's final revelation through Jesus Christ reveals His authority above the angels and His willingness to share humanity's suffering.
 
-God had spoken to His people through the prophets in many ways throughout Israel's history. Now He has spoken through His Son, Jesus Christ.
+Hebrews opens without a greeting, like a sermon: “God, who at sundry times and in divers manners spake in time past unto the fathers by the prophets, Hath in these last days spoken unto us by his Son.” The Son is the heir of all things, the one through whom God made the worlds. He is “the brightness of his glory, and the express image of his person,” and He holds everything together “by the word of his power.” After He “purged our sins,” He “sat down on the right hand of the Majesty on high.”
 
-The writer of Hebrews, whose identity is not stated, addresses believers familiar with Israel's Scriptures and worship. They face pressure and need encouragement to remain faithful.
+The readers were Jewish believers who honored angels, because angels had helped deliver the law at Sinai. So the writer strings together seven Old Testament quotations to show that the Son is far greater than the angels. To which angel did God ever say, “Thou art my Son, this day have I begotten thee”? Angels are only “ministering spirits.” But of the Son, God says, “Thy throne, O God, is for ever and ever.”
 
-Jesus is presented as the One through whom God made the worlds, the exact expression of His nature, and the One who sustains all things. After making purification for sins, He sat at God's right hand.
+Then comes the first of several warnings: “How shall we escape, if we neglect so great salvation?” If breaking the law brought judgment, ignoring the Son's message is even more dangerous.
 
-The writer explains that Jesus is greater than the angels, God's heavenly messengers. Because of His greatness, believers must not neglect the salvation announced through Him.
-
-Yet Jesus also became fully human. He experienced suffering and death so He could deliver people from the fear of death. Having faced temptation and suffering Himself, He is able to help those who are tempted.
+The writer explains why the Son became human. Psalm 8 says that God put everything under humanity's feet, but we do not yet see that. “But we see Jesus, who was made a little lower than the angels for the suffering of death... that he by the grace of God should taste death for every man.” He shared our flesh and blood so that through death He might destroy the devil, “and deliver them who through fear of death were all their lifetime subject to bondage.” He was made like His brothers in every way so He could be “a merciful and faithful high priest.” “For in that he himself hath suffered being tempted, he is able to succour them that are tempted.” To succour means to help.
 
 **Jesus Is Greater Than Moses (Hebrews 3:1–4:13)** — The writer compares Jesus with Moses and warns believers against the unbelief that prevented an earlier generation from entering God's promised rest.
 
-Moses had faithfully served God by leading Israel out of slavery in Egypt and guiding the people through the wilderness.
+The writer tells the readers to “consider the Apostle and High Priest of our profession, Christ Jesus.” Moses, the most honored figure in Israel's history, was faithful as a servant in God's house. But Christ is faithful as a Son over the house, “whose house are we, if we hold fast.”
 
-But while Moses was a faithful servant in God's house, Jesus is the Son over that house.
+Then comes a warning from Psalm 95, about the Israelites who left Egypt with Moses but died in the wilderness because they would not trust God: “To day if ye will hear his voice, Harden not your hearts, as in the provocation.” That generation never entered the promised land. “So we see that they could not enter in because of unbelief.” The readers must encourage one another “daily, while it is called To day; lest any of you be hardened through the deceitfulness of sin.”
 
-The writer recalls how the Israelites repeatedly hardened their hearts despite witnessing God's mighty works. Their unbelief prevented that generation from entering the promised land.
-
-This history becomes a warning against turning away from the living God.
-
-God's promise of rest still calls for a response of faith and obedience. The writer connects it with God's rest after creation and explains that a deeper rest remains for His people.
-
-He urges believers to respond while the opportunity remains, remembering that God's word is living and powerful, exposing the thoughts and intentions of the heart.
-
-Nothing is hidden from the God to whom everyone must give an account.
+God still offers a rest to His people. Joshua led Israel into Canaan, but that was not the final rest, because centuries later David still spoke of a rest to come. “There remaineth therefore a rest to the people of God.” So they must make every effort to enter it. And no one can hide from God: “For the word of God is quick, and powerful, and sharper than any twoedged sword, piercing even to the dividing asunder of soul and spirit... and is a discerner of the thoughts and intents of the heart.” Quick here means living.
 
 **Jesus Becomes the Great High Priest (Hebrews 4:14–5:10)** — Jesus is presented as the compassionate high priest who understands human weakness and provides access to God's mercy and grace.
 
-Under Israel's law, high priests represented the people before God and offered sacrifices for sins.
+Now the writer begins the main theme of the book, Jesus as our high priest. “Seeing then that we have a great high priest, that is passed into the heavens, Jesus the Son of God, let us hold fast our profession. For we have not an high priest which cannot be touched with the feeling of our infirmities; but was in all points tempted like as we are, yet without sin.” Because He understands, we can come to God with confidence: “Let us therefore come boldly unto the throne of grace, that we may obtain mercy, and find grace to help in time of need.”
 
-Jesus fulfills this role in a greater way.
-
-Because He is the Son of God who has passed into heaven, believers are encouraged to hold firmly to their faith.
-
-Jesus understands human weakness because He was tempted as people are, yet remained without sin.
-
-Through Him, believers can approach God's throne of grace with confidence, seeking mercy and help in times of need.
-
-The writer explains that Jesus did not appoint Himself to this honor. God appointed Him as priest forever according to the order of Melchisedec, a priest mentioned in Israel's earlier Scriptures.
-
-Through suffering and obedience, Jesus became the source of eternal salvation to those who obey Him.
+Every human high priest was chosen from among the people to offer sacrifices for sins. He could be gentle with sinners because he was weak himself. And no one took that honor on himself. God had to call him, as He called Aaron. In the same way, Christ did not choose Himself. God said to Him, “Thou art a priest for ever after the order of Melchisedec.” During His life on earth, Jesus prayed “with strong crying and tears.” “Though he were a Son, yet learned he obedience by the things which he suffered,” and He became “the author of eternal salvation unto all them that obey him.”
 
 **A Warning Against Turning Away from Faith (Hebrews 5:11–6:20)** — The writer challenges spiritual immaturity, warns against falling away, and encourages believers to remain confident in God's trustworthy promises.
 
-The writer pauses his explanation because the believers have become slow to understand.
+The writer wants to say more about Melchisedec but stops, because the readers have become “dull of hearing.” By now they should be teachers, but they need someone to teach them the basics all over again. They need “milk, and not of strong meat,” like babies. Solid food is for the mature, who have trained themselves to tell good from evil. So the writer urges, “let us go on unto perfection,” or maturity.
 
-Although they should be mature enough to teach others, they still need instruction in the basic truths of God's word.
+Then comes the most serious warning in the book. Those who have tasted the heavenly gift, shared in the Holy Ghost, and tasted God's good word, and then fall away, cannot be brought back to repentance. They “crucify to themselves the Son of God afresh, and put him to an open shame.” Like land that soaks up rain but grows only thorns, they are close to being cursed. Christians have long debated exactly who this passage describes.
 
-He urges them to advance toward maturity.
-
-He then gives a serious warning concerning those who have experienced great spiritual privileges and afterward fall away. The passage describes the danger in strong terms and has been understood differently concerning the possibility of losing salvation.
-
-Nevertheless, the writer expresses confidence that his readers will continue in faithfulness.
-
-He points to Abraham, who patiently trusted God's promise.
-
-Because God cannot lie, His promise and oath provide firm encouragement. Christian hope is compared to an anchor for the soul, reaching into God's presence, where Jesus has entered on behalf of His people.
+But the writer is “persuaded better things” of these readers, because God has not forgotten their love and service. They must not become lazy but imitate those “who through faith and patience inherit the promises.” God made a promise to Abraham and confirmed it with an oath, so there are two unchangeable things, and it is impossible for God to lie. This hope is “an anchor of the soul, both sure and stedfast,” fixed behind the curtain in heaven, where Jesus has gone ahead of us, “made an high priest for ever after the order of Melchisedec.”
 
 **A Greater Priesthood Brings a Better Hope (Hebrews 7:1–28)** — The writer explains why Jesus' priesthood is greater than the priesthood established under Moses and provides lasting access to God.
 
-The writer returns to Melchisedec, who was both king of Salem and priest of the Most High God.
+Melchisedec appears only briefly in Genesis 14. He was “king of Salem, priest of the most high God,” who met Abraham after a battle and blessed him. Abraham gave him a tenth of everything. His name means “King of righteousness,” and Salem means peace, so he was “King of peace.” Genesis says nothing about his parents, birth, or death, so he stands as a picture of the Son of God, a priest who “abideth a priest continually.”
 
-Abraham gave him a tenth of the spoils after a victory, and Melchisedec blessed Abraham.
+The writer argues that Melchisedec was greater than Abraham, because Abraham paid him tithes and received his blessing. In a sense, Levi, the father of Israel's priests, paid tithes to Melchisedec through his ancestor Abraham. If the Levitical priesthood could have made people perfect, why would God later promise a different priest “after the order of Melchisedec”? Jesus came from the tribe of Judah, not Levi. He became a priest not by family line, “but after the power of an endless life.”
 
-The writer uses this encounter to show the greatness of Melchisedec's priesthood compared with the later priesthood descended from Levi, one of Israel's tribes.
-
-Jesus did not come from the tribe of Levi but from Judah. His priesthood rests on the power of an endless life rather than a family line.
-
-Unlike priests who died and were replaced, Jesus lives forever.
-
-He can therefore save those who come to God through Him, continually interceding on their behalf.
-
-As a holy and sinless high priest, He does not need to offer sacrifices for His own sins. He offered Himself once for all.
+The old priests died and had to be replaced, but Jesus lives forever. “Wherefore he is able also to save them to the uttermost that come unto God by him, seeing he ever liveth to make intercession for them.” He is exactly the high priest we need, “holy, harmless, undefiled, separate from sinners.” He does not need to offer sacrifices every day for His own sins and then for the people's, “for this he did once, when he offered up himself.”
 
 **Jesus Establishes a Better Covenant (Hebrews 8:1–9:10)** — Jesus ministers in the heavenly sanctuary and establishes a new covenant that fulfills God's promise to transform His people's relationship with Him.
 
-The writer explains that Jesus serves as high priest in the true heavenly sanctuary, rather than merely in an earthly place of worship.
+Here is the main point: “We have such an high priest, who is set on the right hand of the throne of the Majesty in the heavens.” He serves in the true tabernacle in heaven, “which the Lord pitched, and not man.” The earthly priests serve in a copy, “the example and shadow of heavenly things.” When Moses built the tabernacle, God told him to make everything according to the pattern shown on the mountain.
 
-He introduces the new covenant promised through the prophet Jeremiah.
+Jesus is the mediator of “a better covenant, which was established upon better promises.” If the first covenant had been without fault, there would have been no need for a second. The writer quotes Jeremiah's promise of a new covenant: “I will put my laws into their mind, and write them in their hearts: and I will be to them a God, and they shall be to me a people.” “For I will be merciful to their unrighteousness, and their sins and their iniquities will I remember no more.” By calling it new, God made the first one old, and it is ready to vanish away.
 
-Under this covenant, God promises to place His laws within His people, establish a personal relationship with them, and remember their sins no more.
-
-The earlier covenant given through Moses had included detailed instructions for worship.
-
-A sacred tent, called the tabernacle, contained a holy place and an inner chamber known as the Most Holy Place. Priests performed regular duties, while the high priest entered the inner chamber only once each year with sacrificial blood.
-
-These arrangements pointed to a greater access to God that the former system could not fully provide.
+The writer describes the old tabernacle. Its outer room held the lampstand, the table, and the bread. Behind the second curtain was the most holy place, with the golden ark of the covenant. The priests went into the outer room every day. But only the high priest could enter the inner room, once a year, and never without blood. The Holy Ghost was showing that “the way into the holiest of all was not yet made manifest.” Those sacrifices could not clear the worshiper's conscience. They were only outward rules until the time of reformation came.
 
 **Christ's Sacrifice Opens the Way to God (Hebrews 9:11–10:18)** — The writer explains that Jesus' death accomplishes what repeated animal sacrifices could not: lasting cleansing and forgiveness of sins.
 
-Jesus entered the greater heavenly sanctuary, not with the blood of animals, but through His own blood.
+“But Christ being come an high priest of good things to come,” entered the greater tabernacle in heaven, “Neither by the blood of goats and calves, but by his own blood he entered in once into the holy place, having obtained eternal redemption for us.” If animal blood could make people outwardly clean, “How much more shall the blood of Christ, who through the eternal Spirit offered himself without spot to God, purge your conscience from dead works to serve the living God?”
 
-His sacrifice secured eternal redemption.
+A will only takes effect when the person who made it dies. In the same way, the new covenant came into force through Christ's death. Even the first covenant was put in place with blood, “and without shedding of blood is no remission.” Christ did not need to offer Himself again and again, as the high priest did each year. “But now once in the end of the world hath he appeared to put away sin by the sacrifice of himself. And as it is appointed unto men once to die, but after this the judgment: So Christ was once offered to bear the sins of many; and unto them that look for him shall he appear the second time without sin unto salvation.”
 
-The writer explains that blood was central to the earlier covenant's sacrifices, but those ceremonies could not fully cleanse the human conscience.
-
-Christ offered Himself without sin to God.
-
-As mediator of the new covenant, His death provides redemption from transgressions and establishes the promised inheritance.
-
-Unlike the repeated sacrifices of Israel's priests, Jesus' offering does not need to be repeated.
-
-The law's sacrifices served as a shadow of the good things to come. They reminded worshipers of sin but could not permanently remove it.
-
-Jesus accomplished God's will by offering His body once for all.
-
-Having completed His sacrifice, He sat at God's right hand, awaiting the final defeat of His enemies.
-
-Where sins have been forgiven, no further offering for sin is required.
+The law was only “a shadow of good things to come.” If its sacrifices could really take away sin, they would have stopped. Instead they were a yearly reminder of sin, “For it is not possible that the blood of bulls and of goats should take away sins.” So Christ came saying, “Lo, I come to do thy will, O God.” Every earthly priest stands daily, offering the same sacrifices that can never remove sin. “But this man, after he had offered one sacrifice for sins for ever, sat down on the right hand of God.” His work is finished. “For by one offering he hath perfected for ever them that are sanctified.” And where sins have been forgiven, “there is no more offering for sin.”
 
 **Believers Must Hold Firmly to Their Hope (Hebrews 10:19–39)** — Because Jesus has opened the way into God's presence, believers are urged to persevere in faith, encourage one another, and resist deliberate rejection of the truth.
 
-Through Jesus' blood, believers have confidence to approach God.
+Now the writer draws the conclusion. Because of Jesus' blood, we can enter the most holy place with boldness, “By a new and living way, which he hath consecrated for us, through the veil, that is to say, his flesh.” So “Let us draw near with a true heart in full assurance of faith.” “Let us hold fast the profession of our faith without wavering; (for he is faithful that promised;)” “And let us consider one another to provoke unto love and to good works: Not forsaking the assembling of ourselves together, as the manner of some is.” Some were already skipping church meetings.
 
-The writer urges them to draw near with sincere hearts, hold firmly to their hope, and encourage one another toward love and good works.
+Then comes another sharp warning. “For if we sin wilfully after that we have received the knowledge of the truth, there remaineth no more sacrifice for sins.” Rejecting Christ means trampling on the Son of God and treating His blood as worthless. “It is a fearful thing to fall into the hands of the living God.”
 
-Gathering together remains important, especially as they anticipate the coming day of Christ.
-
-A severe warning follows against deliberately continuing in sin after receiving the knowledge of the truth and treating Christ's sacrifice with contempt.
-
-The writer then reminds his readers of their earlier endurance.
-
-They had suffered public mistreatment, supported imprisoned believers, and accepted the loss of possessions because they trusted in a better, lasting inheritance.
-
-They must not abandon that confidence now.
-
-God's people are called to live by faith and endure until His promises are fulfilled.
+But the writer also reminds them of their courage in earlier days. When they first believed, they endured public insults and suffering, stood with those in prison, “and took joyfully the spoiling of your goods,” knowing they had a better and lasting possession in heaven. “Cast not away therefore your confidence, which hath great recompence of reward.” They need endurance, for “yet a little while, and he that shall come will come.” “Now the just shall live by faith: but if any man draw back, my soul shall have no pleasure in him.” Then the writer adds, “But we are not of them who draw back unto perdition; but of them that believe to the saving of the soul.”
 
 **Faith Trusts God Beyond What Is Seen (Hebrews 11:1–40)** — The writer recalls generations of faithful people who trusted God's promises despite uncertainty, hardship, and the absence of their complete fulfillment.
 
-Faith is described as confidence in what is hoped for and conviction concerning things not seen.
+Mentioning faith leads into what is often called the Bible's hall of faith. “Now faith is the substance of things hoped for, the evidence of things not seen.” “Through faith we understand that the worlds were framed by the word of God.” “But without faith it is impossible to please him: for he that cometh to God must believe that he is, and that he is a rewarder of them that diligently seek him.”
 
-The writer begins with Abel, Enoch, and Noah, whose lives demonstrated trust in God.
+Then the writer walks through Israel's history, starting each example with “By faith.” By faith Abel offered a better sacrifice. Enoch was taken up without dying. Noah built the ark. Abraham obeyed and went out, “not knowing whither he went,” and lived in tents as a foreigner in the promised land, for “he looked for a city which hath foundations, whose builder and maker is God.” Sarah received strength to have a child when she was past the age. All of these “died in faith, not having received the promises,” confessing “that they were strangers and pilgrims on the earth.” By faith Abraham offered up Isaac, believing God could raise him from the dead. Isaac, Jacob, and Joseph all looked ahead to God's promises.
 
-Abraham obeyed God's call to leave his homeland and journey toward an inheritance he had not yet received. Sarah also trusted God's promise concerning a child.
+Moses' parents hid him as a baby. When Moses grew up, he refused to be called the son of Pharaoh's daughter, “Choosing rather to suffer affliction with the people of God, than to enjoy the pleasures of sin for a season.” By faith he left Egypt, kept the Passover, and led the people through the Red Sea. By faith the walls of Jericho fell, and Rahab the harlot was saved.
 
-Other examples follow, including Isaac, Jacob, Joseph, Moses, and Rahab.
-
-Moses chose to identify with God's people rather than enjoy the temporary advantages of Egypt's royal household.
-
-The writer also remembers judges, kings, and prophets who acted through faith.
-
-Some experienced remarkable victories and deliverance. Others endured imprisonment, torture, rejection, and death.
-
-Not all received the fulfillment of God's promises during their lifetimes.
-
-Yet they continued trusting Him.
-
-Their lives demonstrate that faith does not always remove suffering but rests upon confidence in God's faithfulness.
+“And what shall I more say? for the time would fail me to tell of Gedeon, and of Barak, and of Samson, and of Jephthae; of David also, and Samuel, and of the prophets.” Through faith they conquered kingdoms, “stopped the mouths of lions,” and escaped the sword. But others were tortured, mocked, whipped, imprisoned, stoned, and “sawn asunder.” They wandered in sheepskins and goatskins, destitute, “Of whom the world was not worthy.” All of them were commended for their faith, yet none received the final promise, because God had planned something better that includes us.
 
 **Jesus Is the Perfect Example of Endurance (Hebrews 12:1–29)** — Surrounded by examples of faith, believers are urged to follow Jesus, accept God's correction, pursue holiness, and remain faithful to His unshakable kingdom.
 
-The writer compares the Christian life to a race requiring endurance.
+“Wherefore seeing we also are compassed about with so great a cloud of witnesses, let us lay aside every weight, and the sin which doth so easily beset us, and let us run with patience the race that is set before us, Looking unto Jesus the author and finisher of our faith; who for the joy that was set before him endured the cross, despising the shame, and is set down at the right hand of the throne of God.” The heroes of chapter 11 are like a crowd in the stands. But the runner's eyes must be fixed on Jesus. When they grow tired, they should “consider him that endured such contradiction of sinners.”
 
-Believers must lay aside the sins that hinder them and keep their attention fixed upon Jesus, who endured the cross and afterward sat at God's right hand.
+Their hardships are a sign of God's love, not His anger: “For whom the Lord loveth he chasteneth.” Chastening means discipline or training. Every good father disciplines his children. “Now no chastening for the present seemeth to be joyous, but grievous: nevertheless afterward it yieldeth the peaceable fruit of righteousness unto them which are exercised thereby.” So “lift up the hands which hang down, and the feeble knees.” “Follow peace with all men, and holiness, without which no man shall see the Lord.” They must not be like Esau, who sold his birthright for one meal and later could not get it back, though he sought it with tears.
 
-Their suffering should not cause them to abandon faith.
-
-God's discipline is compared with a loving father's correction of his children. Though painful, it can produce righteousness and peace.
-
-The writer urges believers to pursue peace and holiness, warning against bitterness and the careless rejection of spiritual blessings, as Esau once did.
-
-He then contrasts Mount Sinai, where Israel received God's law amid fear and trembling, with the heavenly Mount Zion.
-
-Through Jesus, believers belong to a greater gathering and a new covenant.
-
-Because they are receiving a kingdom that cannot be shaken, they are called to worship God with reverence and gratitude.
+The writer contrasts two mountains. At Mount Sinai, Israel met God with fire, darkness, storm, and a voice so terrifying that even Moses said, “I exceedingly fear and quake.” “But ye are come unto mount Sion, and unto the city of the living God, the heavenly Jerusalem,” to countless angels, to the church, to God the Judge, “And to Jesus the mediator of the new covenant.” So they must not refuse Him who speaks. God will shake heaven and earth once more, so that only what cannot be shaken will remain. “Wherefore we receiving a kingdom which cannot be moved, let us have grace, whereby we may serve God acceptably with reverence and godly fear: For our God is a consuming fire.”
 
 **Faithfulness Must Be Seen in Everyday Life (Hebrews 13:1–25)** — The letter concludes with practical instructions for Christian living, encouragement to follow faithful leaders, and a prayer for God's continuing work.
 
-The writer urges believers to continue loving one another, welcoming strangers, remembering prisoners, and honoring marriage.
+The book closes with practical instructions. “Let brotherly love continue. Be not forgetful to entertain strangers: for thereby some have entertained angels unawares.” They should remember prisoners as if they were in chains with them. “Marriage is honourable in all, and the bed undefiled: but whoremongers and adulterers God will judge.” They must be free from the love of money and content with what they have, for God has said, “I will never leave thee, nor forsake thee.” So they can boldly say, “The Lord is my helper, and I will not fear what man shall do unto me.”
 
-They must avoid greed and remain content, trusting God's promise never to abandon His people.
+They should remember the leaders who taught them and imitate their faith. “Jesus Christ the same yesterday, and to day, and for ever.” They must not be carried away by strange teachings about foods. Just as the bodies of sacrificed animals were burned outside the camp, Jesus suffered outside the city gate. “Let us go forth therefore unto him without the camp, bearing his reproach. For here have we no continuing city, but we seek one to come.” Instead of animal sacrifices, they should offer “the sacrifice of praise to God continually,” and not forget to do good and share. “Obey them that have the rule over you,” because their leaders watch over their souls.
 
-Remembering faithful leaders, they should imitate their faith while recognizing that Jesus Christ remains the same yesterday, today, and forever.
-
-The writer warns against strange teachings and points again to Jesus, who suffered outside Jerusalem's gate to make His people holy through His blood.
-
-Believers should willingly bear disgrace for His sake, recognizing that their lasting city is still to come.
-
-Their worship now includes praise, generosity, and doing good.
-
-They are also urged to respect their spiritual leaders and pray for the writer, who hopes to visit them.
-
-The letter closes with a prayer that the God of peace, who raised Jesus from the dead, will equip them for every good work.
-
-The writer mentions Timothy's release, sends greetings, and ends with a blessing of grace.
-
-Hebrews leaves its readers with a clear foundation for endurance: Jesus Christ is greater than the former priests and sacrifices, His work provides lasting access to God, and faith in Him gives reason to persevere through suffering while awaiting God's promised inheritance.
+The writer asks for prayer, then gives one of the Bible's great blessings: “Now the God of peace, that brought again from the dead our Lord Jesus, that great shepherd of the sheep, through the blood of the everlasting covenant, Make you perfect in every good work to do his will.” He calls the book “the word of exhortation,” shares news that “our brother Timothy is set at liberty,” and sends greetings from “They of Italy.” “Grace be with you all. Amen.” Hebrews urges tired believers not to turn back, because Jesus is better than everything that came before Him.
 
 # James
 When it happened: Possibly one of the earliest New Testament writings, from the AD 40s to early 60s. According to the Jewish historian Josephus, James was put to death around AD 62.
@@ -204,251 +102,73 @@ The world at the time: The readers were facing trials, and the rich were oppress
 
 **Faith Grows Stronger Through Trials (James 1:1–18)** — James encourages believers to endure difficulties, seek God's wisdom, and understand the difference between trials that test faith and temptations that lead to sin.
 
-James introduces himself as a servant of God and the Lord Jesus Christ. He writes to the twelve tribes scattered abroad, addressing believers connected with Israel who are living in different places. The letter does not identify his family background, although James, the brother of Jesus, has traditionally been recognized as its author.
+James, a leader of the church in Jerusalem and traditionally the brother of Jesus, writes “to the twelve tribes which are scattered abroad,” Jewish believers living outside Israel. His letter is full of short, practical commands, much like the book of Proverbs or Jesus' Sermon on the Mount. He begins with a surprise: “My brethren, count it all joy when ye fall into divers temptations; Knowing this, that the trying of your faith worketh patience.” Divers temptations means many kinds of trials. Hard times build endurance, and endurance makes believers mature.
 
-He begins by encouraging believers facing various trials. Difficult experiences can test their faith and develop patience, helping them grow toward spiritual maturity.
+“If any of you lack wisdom, let him ask of God, that giveth to all men liberally, and upbraideth not; and it shall be given him.” Upbraideth means scolds. But he must ask in faith, without doubting, because a doubter “is like a wave of the sea driven with the wind and tossed.” “A double minded man is unstable in all his ways.” Poor believers should be glad that God lifts them up, and rich believers should remember that their wealth will fade like a flower in the hot sun. “Blessed is the man that endureth temptation: for when he is tried, he shall receive the crown of life.”
 
-When they lack wisdom, they should ask God, who gives generously. But they must ask in faith rather than remain divided between trusting God and doubting Him.
-
-James reminds both poor and wealthy believers that earthly circumstances do not determine lasting worth. Riches can disappear as quickly as flowers fade beneath the sun.
-
-Those who endure temptation faithfully are promised the crown of life.
-
-James makes an important distinction: God does not tempt anyone to do evil. Temptation arises when people are drawn away by their own desires, which can lead to sin and death.
-
-Every good and perfect gift, however, comes from God, who does not change. Through His word of truth, He has brought His people into new life.
+No one should blame God for temptation: “Let no man say when he is tempted, I am tempted of God.” Temptation comes from a person's own desires, which give birth to sin, “and sin, when it is finished, bringeth forth death.” God gives only good things: “Every good gift and every perfect gift is from above, and cometh down from the Father of lights, with whom is no variableness, neither shadow of turning.” He chose to give us new birth through “the word of truth.”
 
 **Hearing God's Word Is Not Enough (James 1:19–27)** — James explains that genuine faith requires more than listening to God's word; it must produce obedience, self-control, and practical compassion.
 
-James moves from the testing of faith to the importance of responding correctly to God's truth.
+“Wherefore, my beloved brethren, let every man be swift to hear, slow to speak, slow to wrath: For the wrath of man worketh not the righteousness of God.” Believers should get rid of filth and wickedness and humbly receive God's word, which is able to save them.
 
-Believers should be quick to listen, slow to speak, and slow to become angry. Human anger does not produce the righteousness God desires.
+Then James gives one of the main points of his letter: “But be ye doers of the word, and not hearers only, deceiving your own selves.” Someone who hears God's word and does not obey it is like a man who looks at his face in a mirror, walks away, and immediately forgets what he looks like. But whoever looks closely into “the perfect law of liberty” and keeps doing it will be blessed in what he does.
 
-They must put away sinful behavior and humbly receive God's word, which is able to save their souls.
-
-But hearing the word without obeying it creates a dangerous kind of self-deception.
-
-James compares such a person to someone who looks into a mirror, notices their appearance, and immediately forgets what they have seen.
-
-The person who continues in God's teaching and puts it into practice, however, will be blessed in doing so.
-
-James also connects true religion with everyday conduct.
-
-Someone who claims to worship God but refuses to control their tongue deceives themselves.
-
-Pure religion includes caring for orphans and widows in their suffering and remaining uncorrupted by the world's sinful ways.
-
-Faith must therefore become visible through both personal holiness and compassion for vulnerable people.
+Religion is worthless if someone cannot control his tongue. James defines real religion this way: “Pure religion and undefiled before God and the Father is this, To visit the fatherless and widows in their affliction, and to keep himself unspotted from the world.”
 
 **God's People Must Reject Favoritism (James 2:1–13)** — James confronts the unfair treatment of poor people and teaches that believers must show mercy rather than judge others by wealth or appearance.
 
-James describes a gathering where two visitors arrive.
+James tells believers not to play favorites. Imagine a rich man wearing gold rings and fine clothes walking into your meeting, followed by a poor man in shabby clothes. If you give the rich man the best seat and tell the poor man to stand or sit on the floor, you are judging with evil motives. “Hearken, my beloved brethren, Hath not God chosen the poor of this world rich in faith, and heirs of the kingdom?” Besides, James says, it is the rich who are dragging you into court and mocking the name of Christ.
 
-One wears fine clothing and a gold ring, while the other is poor and dressed in shabby clothes.
-
-If the wealthy visitor receives a place of honor while the poor visitor is told to stand or sit on the floor, the congregation has judged people according to outward appearance.
-
-Such favoritism contradicts faith in Jesus Christ.
-
-James reminds his readers that God has chosen many who are poor in the world's eyes to be rich in faith and heirs of His promised kingdom.
-
-He also points out that some wealthy people have oppressed believers and dragged them before courts.
-
-James then recalls the command to love one's neighbor as oneself.
-
-Showing favoritism violates this command.
-
-He explains that God's law cannot be treated as though people may choose which commandments matter.
-
-Believers are accountable for their conduct and must speak and act with mercy.
-
-James warns that judgment will be without mercy toward those who refuse to show mercy, while mercy triumphs over judgment.
+The royal law of Scripture is, “Thou shalt love thy neighbour as thyself.” Showing favoritism breaks that law. “For whosoever shall keep the whole law, and yet offend in one point, he is guilty of all.” So they should speak and act as people who will be judged by the law that gives freedom. God will not show mercy to those who show none, but “mercy rejoiceth against judgment.”
 
 **Living Faith Is Demonstrated Through Actions (James 2:14–26)** — James challenges the idea that claiming faith is sufficient when a person's conduct shows no evidence of obedience or love.
 
-James asks what benefit there is in claiming to have faith while refusing to act upon it.
+“What doth it profit, my brethren, though a man say he hath faith, and have not works? can faith save him?” James gives an example. If a brother or sister has no clothes or food, and you say, “Depart in peace, be ye warmed and filled,” but give them nothing, what good is that? “Even so faith, if it hath not works, is dead, being alone.” Someone might say he has faith and another has works. James answers, “shew me thy faith without thy works, and I will shew thee my faith by my works.” Even the demons believe there is one God, “and tremble.”
 
-He imagines a brother or sister lacking proper clothing and daily food.
+James points to Abraham, who was willing to offer Isaac on the altar. “Seest thou how faith wrought with his works, and by works was faith made perfect?” Abraham believed God, and his obedience proved it. “Ye see then how that by works a man is justified, and not by faith only.” Rahab the harlot also showed her faith by hiding the Israelite spies. “For as the body without the spirit is dead, so faith without works is dead also.”
 
-If someone offers kind wishes but provides nothing to meet those needs, their words accomplish little.
-
-James applies the same principle to faith.
-
-Faith without works is dead because genuine trust in God produces action.
-
-He explains that merely acknowledging God's existence is not enough. Even demons believe that God exists, yet they tremble before Him.
-
-James then points to Abraham, the ancestor of Israel.
-
-When Abraham offered his son Isaac in obedience to God's command, his actions demonstrated the faith he already possessed.
-
-James explains that Abraham's faith worked together with his deeds and was brought to completion through obedience.
-
-He also mentions Rahab, a woman in Jericho who received Israelite messengers and helped them escape.
-
-Her actions likewise demonstrated her faith.
-
-James concludes that just as a body without the spirit is dead, faith without works is dead.
-
-His concern is not outward religious activity for its own sake, but faith that becomes visible through obedience and love.
+Some readers have thought James contradicts Paul, who taught that we are justified by faith without works. But they are fighting different problems. Paul says no one can earn salvation by keeping the law. James says that faith which never changes how a person lives is not real faith at all.
 
 **The Tongue Can Bring Life or Destruction (James 3:1–12)** — James warns that words possess great power and that believers must recognize the danger of careless, harmful, and uncontrolled speech.
 
-James cautions that not everyone should seek to become a teacher, because those who teach God's truth face greater responsibility.
+“My brethren, be not many masters,” or teachers, because teachers will be judged more strictly. Everyone stumbles in many ways, and “If any man offend not in word, the same is a perfect man.”
 
-He acknowledges that everyone makes mistakes, especially through speech.
+James shows how something small can control something large. A small bit in a horse's mouth turns the whole animal. A small rudder steers a huge ship through strong winds. “Even so the tongue is a little member, and boasteth great things. Behold, how great a matter a little fire kindleth! And the tongue is a fire, a world of iniquity.” It can set a person's whole life on fire, and it is set on fire by hell itself. People have tamed every kind of animal, “But the tongue can no man tame; it is an unruly evil, full of deadly poison.”
 
-To explain the tongue's power, James uses several comparisons.
-
-A small bit placed in a horse's mouth can direct the entire animal. A small rudder can guide a large ship even through strong winds.
-
-Likewise, the tongue is a small part of the body but can influence an entire life.
-
-James compares destructive speech to a tiny fire capable of setting a great forest ablaze.
-
-Human beings have learned to control many kinds of animals, yet no person can completely tame the tongue.
-
-With the same mouth, people may praise God and curse other human beings made in God's likeness.
-
-James insists that such inconsistency is wrong.
-
-Just as a spring should not produce both fresh and bitter water, a life devoted to God should not continually produce speech that harms others.
+Worst of all, the tongue is inconsistent. “Therewith bless we God, even the Father; and therewith curse we men, which are made after the similitude of God. Out of the same mouth proceedeth blessing and cursing. My brethren, these things ought not so to be.” A spring does not pour out both fresh and salt water, and a fig tree does not grow olives.
 
 **True Wisdom Produces Peace and Humility (James 3:13–4:12)** — James contrasts wisdom from God with selfish ambition and explains how pride, jealousy, and worldly desires create conflict among believers.
 
-James asks who among his readers is truly wise.
+“Who is a wise man and endued with knowledge among you? let him shew out of a good conversation his works with meekness of wisdom.” Bitter jealousy and selfish ambition are not wisdom from above. They are “earthly, sensual, devilish,” and they lead to confusion and every evil work. “But the wisdom that is from above is first pure, then peaceable, gentle, and easy to be intreated, full of mercy and good fruits, without partiality, and without hypocrisy.”
 
-Wisdom is not proved through impressive claims but through good conduct performed with humility.
+“From whence come wars and fightings among you?” James asks. They come from selfish desires that battle inside us. People want what they do not have, so they fight. “Ye have not, because ye ask not.” And when they do ask, they ask with wrong motives. Loving the world makes a person an enemy of God. But God “giveth more grace. Wherefore he saith, God resisteth the proud, but giveth grace unto the humble.”
 
-Bitter jealousy and selfish ambition reveal a different kind of wisdom, one driven by earthly desires rather than God's Spirit.
-
-Such attitudes produce confusion and wrongdoing.
-
-Wisdom from above, however, is pure, peaceful, gentle, merciful, sincere, and willing to listen.
-
-Those who make peace sow the conditions in which righteousness grows.
-
-James then asks why quarrels and conflicts arise among believers.
-
-He explains that selfish desires battle within people, leading to jealousy, fighting, and wrongly motivated prayers.
-
-Friendship with the world's sinful values places people in opposition to God.
-
-Yet God gives greater grace to the humble.
-
-James urges believers to submit to God, resist the devil, turn away from sin, and approach God with sincere repentance.
-
-He promises that God will lift up those who humble themselves before Him.
-
-James also warns against speaking evil of fellow believers or judging them arrogantly.
-
-God alone is the Lawgiver and Judge, the One who has authority to save and destroy.
+So James calls them to repent: “Submit yourselves therefore to God. Resist the devil, and he will flee from you. Draw nigh to God, and he will draw nigh to you.” They should wash their hands and purify their hearts, mourn over their sin, and “Humble yourselves in the sight of the Lord, and he shall lift you up.” And they must stop slandering one another, for there is only one Lawgiver and Judge: “who art thou that judgest another?”
 
 **Human Plans Must Recognize God's Authority (James 4:13–17)** — James challenges people who confidently plan their future without recognizing life's uncertainty and their dependence upon God's will.
 
-James now addresses people who make confident business plans.
-
-He describes merchants announcing that they will travel to a particular city, remain there for a year, trade goods, and make a profit.
-
-Their confidence overlooks an important truth.
-
-They do not know what tomorrow will bring.
-
-Human life is like a vapor that appears briefly and then disappears.
-
-James explains that plans should be made with recognition of God's authority.
-
-Rather than boasting about what they will accomplish, people should acknowledge that their lives and opportunities depend upon the Lord's will.
-
-He warns that arrogant boasting is evil.
-
-James then broadens the lesson beyond business decisions.
-
-Knowing what is right creates responsibility.
-
-When someone understands the good they ought to do but refuses to do it, that failure is itself sin.
-
-Faithfulness therefore includes both avoiding wrongdoing and acting upon opportunities to do what is right.
+James speaks to business people who make confident plans: “To day or to morrow we will go into such a city, and continue there a year, and buy and sell, and get gain.” But they do not even know what tomorrow will bring. “For what is your life? It is even a vapour, that appeareth for a little time, and then vanisheth away.” Instead, they should say, “If the Lord will, we shall live, and do this, or that.” Bragging about their plans is evil. Then James adds a simple rule: “Therefore to him that knoweth to do good, and doeth it not, to him it is sin.”
 
 **James Warns the Wealthy Against Oppression (James 5:1–6)** — James announces judgment against wealthy oppressors who have gained riches unjustly, withheld workers' wages, and lived selfishly at the expense of others.
 
-James speaks directly to wealthy people who have abused their power and possessions.
+James now speaks like an Old Testament prophet to rich people who oppress others. “Go to now, ye rich men, weep and howl for your miseries that shall come upon you.” Their wealth is rotting, their clothes are moth-eaten, and their gold and silver are rusting. The rust will testify against them, because they have hoarded wealth in the last days.
 
-He warns them that misery is coming because of their wrongdoing.
-
-Their accumulated riches will not protect them from God's judgment.
-
-Gold, silver, and expensive clothing may appear valuable, but their possessions have become evidence against them.
-
-James especially condemns employers who have withheld wages from laborers working in their fields.
-
-The workers' cries have reached the Lord of hosts.
-
-These wealthy oppressors have lived in luxury and self-indulgence while others suffered.
-
-James also accuses them of condemning and killing the righteous.
-
-His warning does not teach that possessing wealth automatically makes someone guilty.
-
-Instead, it confronts greed, exploitation, injustice, and the misuse of power.
-
-The passage reveals God's concern for those harmed by dishonest and oppressive behavior.
+They have cheated their workers: “Behold, the hire of the labourers who have reaped down your fields, which is of you kept back by fraud, crieth.” The cries of the harvesters have reached “the ears of the Lord of sabaoth,” the Lord of armies. The rich have lived in luxury and self-indulgence, fattening themselves like cattle for the day of slaughter. They have condemned and killed innocent people who did not resist them.
 
 **Believers Must Remain Patient Through Suffering (James 5:7–12)** — James encourages believers to wait patiently for the Lord's coming, avoiding bitterness and following the examples of faithful people who endured hardship.
 
-After warning those who oppress others, James turns toward believers who are suffering.
+To the believers who suffer, James says, “Be patient therefore, brethren, unto the coming of the Lord.” A farmer waits patiently for the early and late rains to bring the harvest. “Be ye also patient; stablish your hearts: for the coming of the Lord draweth nigh.” They should not grumble against each other, because “the judge standeth before the door.”
 
-He urges them to remain patient until the coming of the Lord.
-
-James compares their waiting to a farmer who plants crops and patiently waits for the early and later rains before receiving the harvest.
-
-The farmer cannot force the crops to mature immediately, but continues waiting for the proper season.
-
-In the same way, believers must strengthen their hearts and remain faithful.
-
-James warns them not to complain against one another, reminding them that the Judge stands before the door.
-
-He points to the prophets, God's messengers who spoke His word despite suffering and opposition.
-
-He also recalls Job, a righteous man who experienced severe hardship yet continued struggling to understand his suffering before God.
-
-James reminds his readers of God's compassion and mercy revealed in Job's experience.
-
-He then warns against careless oath-taking.
-
-Their words should be truthful and dependable, allowing their yes to mean yes and their no to mean no.
+They can look to the prophets as examples of suffering and patience. “Ye have heard of the patience of Job, and have seen the end of the Lord; that the Lord is very pitiful, and of tender mercy.” Pitiful here means full of pity, or compassionate. Job suffered greatly, but in the end God showed him great kindness. Then James echoes Jesus' teaching: “But above all things, my brethren, swear not.” They should not need oaths. “Let your yea be yea; and your nay, nay.”
 
 **Prayer, Healing, and Restoration Strengthen the Church (James 5:13–20)** — James closes by encouraging prayer in every circumstance, confession among believers, care for the sick, and the restoration of those who wander from the truth.
 
-James turns toward the importance of prayer within the Christian community.
+James ends with prayer. “Is any among you afflicted? let him pray. Is any merry? let him sing psalms. Is any sick among you? let him call for the elders of the church; and let them pray over him, anointing him with oil in the name of the Lord: And the prayer of faith shall save the sick, and the Lord shall raise him up.” If he has sinned, he will be forgiven.
 
-Those experiencing suffering should pray, while those who are cheerful should sing praises to God.
+“Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much.” James gives an example. Elijah “was a man subject to like passions as we are,” an ordinary man. Yet he prayed earnestly that it would not rain, and it did not rain for three and a half years. Then he prayed again, and the rain came.
 
-If someone is sick, they should call upon the elders of the church.
-
-The elders are instructed to pray over the sick person and anoint them with oil in the name of the Lord.
-
-James speaks of the prayer of faith, the Lord's power to raise up the sick, and forgiveness where sins have been committed.
-
-He also encourages believers to confess their faults to one another and pray for one another so that healing may take place.
-
-To demonstrate the power of earnest prayer, James recalls Elijah, a prophet of Israel.
-
-Although Elijah was an ordinary human being, his prayers were connected with a period without rain and the later return of rainfall.
-
-James then concludes with concern for those who have wandered away from God's truth.
-
-If someone helps restore a person who has gone astray, that act can rescue a soul from death and cover a multitude of sins.
-
-The letter ends without a formal farewell.
-
-Instead, James leaves his readers with a responsibility to care for one another spiritually.
-
-Throughout his message, he has shown that genuine faith is not limited to belief, religious knowledge, or outward appearances.
-
-Faith becomes visible through perseverance, obedience, honest speech, humility, justice, generosity, prayer, and love.
-
-The final appeal to restore those who wander reflects the message running through the entire letter: those who truly trust God must allow that faith to shape how they live and how they treat others.
+The letter ends abruptly, with no greetings. If someone wanders from the truth and another believer brings him back, “Let him know, that he which converteth the sinner from the error of his way shall save a soul from death, and shall hide a multitude of sins.” Faith, for James, is always something lived out in daily life.
 
 # 1 Peter
 When it happened: Likely written in the early AD 60s, before Peter's death in Rome under the emperor Nero, traditionally around AD 64–68.
@@ -458,215 +178,73 @@ The world at the time: Believers were being slandered and mistreated by their ne
 
 **God Gives His People a Living Hope (1 Peter 1:1–12)** — Peter encourages believers facing trials by reminding them that Jesus Christ's resurrection has given them a lasting hope and an eternal inheritance.
 
-The apostle Peter, one of Jesus Christ's closest disciples, writes to believers scattered across Pontus, Galatia, Cappadocia, Asia, and Bithynia, regions within the Roman Empire in what is now Turkey.
+Peter, “an apostle of Jesus Christ,” writes to believers scattered across five Roman provinces in what is now Turkey. He calls them “strangers,” people living away from home, because their true home is in heaven. Many of them were Gentiles facing hostility for their new faith.
 
-These Christians face difficulties because of their faith, but Peter begins by reminding them of God's mercy.
+Peter begins with praise: “Blessed be the God and Father of our Lord Jesus Christ, which according to his abundant mercy hath begotten us again unto a lively hope by the resurrection of Jesus Christ from the dead, To an inheritance incorruptible, and undefiled, and that fadeth not away, reserved in heaven for you.” A lively hope is a living hope. This inheritance cannot spoil or fade, and God's power is guarding them until they receive it.
 
-Through the resurrection of Jesus Christ, God has given believers a living hope and an inheritance that cannot decay, disappear, or lose its value. This inheritance is reserved in heaven, while God's power preserves them through faith.
-
-Their present trials may bring sorrow, yet tested faith is more precious than gold. Peter explains that faithful endurance will result in praise, honor, and glory when Jesus Christ is revealed.
-
-Although they have not seen Jesus, they love Him and believe in Him.
-
-Peter adds that the prophets of earlier generations searched carefully to understand the salvation they foretold. Their messages pointed toward Christ's sufferings and the glory that would follow.
+So they can rejoice, even though for a little while they suffer “manifold temptations,” many kinds of trials. These trials test their faith the way fire tests gold, and their faith is “much more precious than of gold that perisheth.” They have never seen Jesus, “Whom having not seen, ye love; in whom, though now ye see him not, yet believing, ye rejoice with joy unspeakable and full of glory.” The prophets searched carefully to understand this salvation and the sufferings of Christ. Even the angels long to look into these things.
 
 **God Calls His Children to Holy Living (1 Peter 1:13–2:3)** — Peter explains that those redeemed through Christ must leave behind sinful desires and develop lives marked by holiness, obedience, and sincere love.
 
-Because of the hope awaiting them, Peter urges believers to prepare their minds, remain watchful, and place their confidence in God's grace.
+“Wherefore gird up the loins of your mind,” Peter says, like a person tucking up a long robe to get ready for action. They should be self-controlled and set their hope fully on the grace coming when Jesus is revealed. As obedient children, they must not go back to their old desires. Instead, “as he which hath called you is holy, so be ye holy in all manner of conversation; Because it is written, Be ye holy; for I am holy.”
 
-They must no longer follow the sinful desires that shaped their former lives. Instead, they are called to holiness because God Himself is holy.
+They should live in reverent fear, remembering what their freedom cost. “Ye were not redeemed with corruptible things, as silver and gold... But with the precious blood of Christ, as of a lamb without blemish and without spot.” God planned this before the world was made.
 
-Peter reminds them that their redemption was not purchased with silver or gold but through the precious blood of Jesus Christ, who offered Himself without sin.
-
-Christ was known before the foundation of the world and revealed in these last times for their sake. Through Him, their faith and hope rest in God.
-
-Peter then connects holiness with love.
-
-Having received new life through God's enduring word, believers must love one another sincerely and deeply.
-
-They are to put away malice, dishonesty, hypocrisy, envy, and harmful speech.
-
-Like newborn children longing for milk, they should desire the nourishment of God's word so they may continue growing spiritually.
+Since they have been purified by obeying the truth, they must “love one another with a pure heart fervently.” They have been born again, “not of corruptible seed, but of incorruptible, by the word of God, which liveth and abideth for ever.” Peter quotes Isaiah: “For all flesh is as grass... The grass withereth, and the flower thereof falleth away: But the word of the Lord endureth for ever.” So they must put away malice, deceit, hypocrisy, envy, and slander. “As newborn babes, desire the sincere milk of the word, that ye may grow thereby.”
 
 **Believers Become God's Spiritual Household (1 Peter 2:4–12)** — Peter describes Christians as living stones in God's spiritual house and urges them to demonstrate their new identity through honorable conduct.
 
-Peter compares Jesus Christ to a living stone rejected by people but chosen and precious to God.
+Peter, whose name means rock, pictures Jesus as “a living stone, disallowed indeed of men, but chosen of God, and precious.” Believers too are “lively stones,” being built into “a spiritual house, an holy priesthood, to offer up spiritual sacrifices.” He quotes the prophecy that God would lay “a chief corner stone, elect, precious.” To those who believe, Jesus is precious. To those who reject Him, He is “The stone which the builders disallowed,” and “a stone of stumbling, and a rock of offence.”
 
-Believers who come to Christ also become living stones, joined together into a spiritual house.
+Then Peter gives his readers titles that once belonged to Israel: “But ye are a chosen generation, a royal priesthood, an holy nation, a peculiar people; that ye should shew forth the praises of him who hath called you out of darkness into his marvellous light.” Peculiar here means God's own special possession. “Which in time past were not a people, but are now the people of God.”
 
-They form a holy priesthood, offering spiritual sacrifices acceptable to God through Jesus Christ.
-
-Peter recalls passages from Israel's Scriptures describing a chosen cornerstone. Those who believe in Christ receive honor, while those who reject Him stumble over the very stone God has established.
-
-He then describes believers as a chosen generation, a royal priesthood, a holy nation, and a people belonging to God.
-
-Once they had not received mercy, but now they have received God's mercy.
-
-Because they belong to Him, Peter urges them to resist sinful desires and live honorably among unbelievers.
-
-Even when others accuse them of wrongdoing, their good conduct may lead those observers to glorify God.
+Because they are “strangers and pilgrims” in this world, they must avoid sinful desires that war against the soul. They should live such good lives among unbelievers that even those who accuse them of doing wrong will see their good deeds and glorify God.
 
 **Christians Must Do Good Even When Mistreated (1 Peter 2:13–25)** — Peter encourages respectful conduct toward authorities and presents Jesus' patient suffering as the example for believers facing unjust treatment.
 
-Peter urges Christians to respect governing authorities for the Lord's sake and to use their freedom responsibly.
+Believers must respect human authority “for the Lord's sake,” whether the emperor or his governors. By doing good, they will silence foolish critics. They are free, but they should not use freedom as a cover for evil. Peter sums it up: “Honour all men. Love the brotherhood. Fear God. Honour the king.” The king at that time was likely the emperor Nero.
 
-Their good actions should answer false accusations, while their conduct should reflect respect for everyone, love for fellow believers, reverence toward God, and honor toward the king.
+Peter tells slaves to respect their masters, not only kind ones but also harsh ones. There is no credit in being punished for doing wrong. But suffering for doing good is pleasing to God. That is what Christ did, “leaving us an example, that ye should follow his steps.” He “did no sin, neither was guile found in his mouth: Who, when he was reviled, reviled not again; when he suffered, he threatened not.” Instead, He trusted God.
 
-Peter then addresses household servants, including those serving harsh masters.
-
-He distinguishes suffering caused by wrongdoing from suffering endured while doing good.
-
-Unjust suffering is not presented as something pleasant, but patient endurance under such treatment is described as pleasing to God.
-
-Peter points to Jesus Christ as the greatest example.
-
-Jesus committed no sin and spoke no deceit. When insulted, He did not return insults. When suffering, He did not threaten revenge but entrusted Himself to God, who judges righteously.
-
-Through His suffering on the cross, Christ bore sins so that believers might turn away from sin and live in righteousness.
-
-Peter compares them to sheep that had wandered away but have now returned to the Shepherd and Bishop of their souls.
+Peter draws on Isaiah 53 to describe what Christ's suffering accomplished: “Who his own self bare our sins in his own body on the tree, that we, being dead to sins, should live unto righteousness: by whose stripes ye were healed. For ye were as sheep going astray; but are now returned unto the Shepherd and Bishop of your souls.”
 
 **Faith Must Shape Marriage and Relationships (1 Peter 3:1–12)** — Peter gives instructions concerning husbands, wives, and the wider Christian community, emphasizing respect, understanding, humility, compassion, and peace.
 
-Peter continues by addressing relationships within marriage.
+Peter speaks to wives who are married to unbelieving husbands. They should respect their husbands, so that even if the husbands do not obey the word, they may be won over “by the conversation of the wives,” their way of life. Their beauty should not depend on fancy hairstyles, gold jewelry, or fine clothes, but on “the hidden man of the heart... even the ornament of a meek and quiet spirit, which is in the sight of God of great price.” He points to Sarah as an example.
 
-He encourages wives to demonstrate respectful and pure conduct, explaining that such behavior may influence husbands who do not obey God's word.
+Husbands must live with their wives “according to knowledge,” with understanding, “giving honour unto the wife, as unto the weaker vessel, and as being heirs together of the grace of life.” If they do not, their prayers will be hindered.
 
-He places greater value on inward character than outward decoration, pointing to gentleness and a peaceful spirit.
-
-Peter recalls Sarah, Abraham's wife, as an example of trust in God.
-
-He then instructs husbands to live considerately with their wives, showing them honor as fellow heirs of the grace of life.
-
-Mistreatment within marriage, Peter warns, can hinder prayer.
-
-Turning toward the entire community, he urges believers to remain united in spirit, compassionate, loving, tenderhearted, and humble.
-
-They must not repay evil with evil or insults with insults.
-
-Instead, they are called to bless others.
-
-Peter recalls Scripture teaching that those who desire a good life should avoid deceitful speech, turn away from evil, do good, and pursue peace.
-
-God's eyes are upon the righteous, and His ears are open to their prayers.
+Then Peter speaks to everyone: “Finally, be ye all of one mind, having compassion one of another, love as brethren, be pitiful, be courteous: Not rendering evil for evil, or railing for railing: but contrariwise blessing.” Railing means insulting. He quotes Psalm 34: whoever wants to love life and see good days must keep his tongue from evil, turn from evil and do good, “let him seek peace, and ensue it,” or pursue it. “For the eyes of the Lord are over the righteous, and his ears are open unto their prayers.”
 
 **Believers Must Remain Faithful Through Unjust Suffering (1 Peter 3:13–22)** — Peter encourages Christians to respond to opposition with gentleness and confidence, remembering Christ's suffering, resurrection, and victory.
 
-Peter asks who can ultimately harm those devoted to doing good, while acknowledging that righteous conduct may still bring suffering.
+“And who is he that will harm you, if ye be followers of that which is good?” Even if they suffer for doing right, they are blessed. They should not be afraid of their persecutors. “But sanctify the Lord God in your hearts: and be ready always to give an answer to every man that asketh you a reason of the hope that is in you with meekness and fear.” They should keep a clear conscience, so that those who slander them will be ashamed. “For it is better, if the will of God be so, that ye suffer for well doing, than for evil doing.”
 
-When believers suffer for righteousness, they are called blessed.
-
-They should not surrender to fear but honor Christ as Lord in their hearts.
-
-Peter urges them to remain prepared to explain their hope, doing so with gentleness, respect, and a clear conscience.
-
-If they suffer, it is better to suffer for doing good than for doing evil.
-
-Jesus Himself suffered once for sins, the righteous for the unrighteous, to bring people to God.
-
-Peter then refers to Christ's proclamation to spirits in prison and recalls the days of Noah, when eight people were preserved through the flood.
-
-The precise meaning of this proclamation has been interpreted differently.
-
-Peter connects Noah's deliverance with baptism, emphasizing an appeal toward God through a good conscience and the resurrection of Jesus Christ, rather than merely outward washing.
-
-Jesus has ascended into heaven and is at God's right hand, with angels and authorities subject to Him.
+Christ is the example: “For Christ also hath once suffered for sins, the just for the unjust, that he might bring us to God, being put to death in the flesh, but quickened by the Spirit.” Then Peter adds a mysterious passage about Christ preaching “unto the spirits in prison,” connected with the disobedient people of Noah's day. Christians have understood this in different ways. Noah's family was saved through water, and Peter says baptism now saves believers, not by washing dirt from the body, but as the pledge of a good conscience toward God, through the resurrection of Jesus. Christ has gone into heaven and sits at God's right hand, with angels and powers subject to Him.
 
 **Living for God's Will Rather Than Sinful Desires (1 Peter 4:1–11)** — Peter calls believers to abandon their former behavior, remain spiritually alert, and serve one another faithfully through love and God's gifts.
 
-Because Christ suffered in the flesh, Peter urges believers to adopt His willingness to endure suffering rather than continue living for sinful desires.
+Since Christ suffered in His body, believers should arm themselves with the same attitude. They should live the rest of their lives for God's will, not for human desires. They have already spent enough time doing what pagans like to do, including sexual immorality, drunken parties, and idol worship. Their old friends are surprised that they no longer join in, and they insult them for it. But those friends will have to give an account to God, who is ready to judge the living and the dead.
 
-Their remaining earthly lives should be devoted to God's will.
-
-Peter describes former behavior marked by uncontrolled desires, drunkenness, and idolatry.
-
-Those who still practice these things may be surprised when believers refuse to join them and may speak against them.
-
-Yet everyone must answer to God, who is ready to judge the living and the dead. Peter also refers to the gospel being preached to the dead, a statement whose precise interpretation is debated.
-
-Because the end of all things is at hand, believers should remain watchful and devoted to prayer.
-
-Above all, they should love one another deeply, show hospitality without complaining, and use their gifts to serve others.
-
-Those who speak should communicate God's truth faithfully, while those who serve should depend upon the strength God provides.
-
-Everything should bring glory to God through Jesus Christ.
+“But the end of all things is at hand: be ye therefore sober, and watch unto prayer.” “And above all things have fervent charity among yourselves: for charity shall cover the multitude of sins.” They should welcome guests into their homes “without grudging.” Every believer has received a gift and should use it to serve others, “as good stewards of the manifold grace of God.” Whoever speaks should speak as one bringing God's words. Whoever serves should serve with the strength God supplies, “that God in all things may be glorified through Jesus Christ.”
 
 **Suffering for Christ Is Not a Reason for Shame (1 Peter 4:12–19)** — Peter explains that suffering for belonging to Christ should not surprise believers and urges them to remain faithful while trusting God's judgment.
 
-Peter warns believers not to regard severe trials as strange or unexpected.
+“Beloved, think it not strange concerning the fiery trial which is to try you, as though some strange thing happened unto you.” Suffering for Christ is not unusual. “But rejoice, inasmuch as ye are partakers of Christ's sufferings; that, when his glory shall be revealed, ye may be glad also with exceeding joy.” “If ye be reproached for the name of Christ, happy are ye.”
 
-Those who suffer because they belong to Christ share in His sufferings and may rejoice in the hope of His coming glory.
-
-When they are insulted for Christ's name, Peter describes them as blessed because God's Spirit rests upon them.
-
-Yet he makes an important distinction.
-
-No one should bring suffering upon themselves through murder, stealing, wrongdoing, or interfering in other people's affairs.
-
-But those who suffer as Christians should not be ashamed.
-
-Peter explains that judgment begins with God's household, emphasizing the seriousness of remaining faithful before Him.
-
-He asks what the final outcome will be for those who reject the gospel.
-
-His instruction is that believers suffering according to God's will should continue doing good while entrusting their souls to their faithful Creator.
-
-Their suffering does not release them from the responsibility to live righteously.
+None of them should suffer for being a murderer, thief, or troublemaker. “Yet if any man suffer as a Christian, let him not be ashamed; but let him glorify God on this behalf.” The name Christian was still new, and often used as an insult. Judgment begins with God's own household. So those who suffer according to God's will should “commit the keeping of their souls to him in well doing, as unto a faithful Creator.”
 
 **Faithful Leaders Must Care for God's People (1 Peter 5:1–7)** — Peter urges church elders to lead willingly and humbly while encouraging younger believers and the entire congregation to trust God's care.
 
-Peter turns directly to the elders responsible for guiding the churches.
+Peter speaks to the church elders as “also an elder, and a witness of the sufferings of Christ.” He tells them, “Feed the flock of God which is among you,” echoing the words Jesus once spoke to him by the Sea of Galilee. They should serve willingly, not because they have to, “not for filthy lucre,” not for money, “but of a ready mind.” They must not be bossy, but be examples to the flock. “And when the chief Shepherd shall appear, ye shall receive a crown of glory that fadeth not away.”
 
-He identifies himself as a fellow elder, a witness of Christ's sufferings, and a participant in the glory yet to be revealed.
-
-He urges them to shepherd God's people willingly rather than merely from obligation.
-
-They must not serve for dishonest financial gain or exercise harsh control over those entrusted to them.
-
-Instead, they should lead through a faithful example.
-
-When the Chief Shepherd, Jesus Christ, appears, faithful shepherds will receive an unfading crown of glory.
-
-Peter then encourages younger believers to show respect toward their elders.
-
-Everyone must be clothed with humility in their relationships because God resists the proud but gives grace to the humble.
-
-Believers are called to humble themselves under God's mighty hand, trusting Him to exalt them at the proper time.
-
-They may cast their anxieties upon Him because He cares for them.
+Younger people should submit to the elders, and everyone should “be clothed with humility: for God resisteth the proud, and giveth grace to the humble. Humble yourselves therefore under the mighty hand of God, that he may exalt you in due time: Casting all your care upon him; for he careth for you.”
 
 **Stand Firm Against Evil and Trust God's Grace (1 Peter 5:8–14)** — Peter closes by warning believers against spiritual danger, assuring them of God's restoring power, and sending encouragement and peace.
 
-Peter urges believers to remain sober-minded and watchful.
+“Be sober, be vigilant; because your adversary the devil, as a roaring lion, walketh about, seeking whom he may devour: Whom resist stedfast in the faith.” They are not alone, because believers all over the world are going through the same sufferings. “But the God of all grace, who hath called us unto his eternal glory by Christ Jesus, after that ye have suffered a while, make you perfect, stablish, strengthen, settle you.”
 
-He compares the devil to a roaring lion searching for someone to devour.
-
-Christians must resist him by remaining firm in faith, remembering that fellow believers throughout the world also experience suffering.
-
-Peter does not promise a life free from hardship.
-
-Instead, he assures them that after they have suffered for a while, the God of all grace, who has called them to eternal glory through Christ, will establish, strengthen, and settle them.
-
-Peter responds with praise, declaring that dominion and glory belong to God forever.
-
-He then explains that he has written through Silvanus, whom he regards as a faithful brother.
-
-His purpose has been to encourage the believers and testify to the true grace of God in which they must stand.
-
-Greetings are sent from the church described as being in Babylon, whose precise location has been understood differently, and from Marcus, whom Peter calls his son.
-
-He urges the believers to greet one another with love and closes with a blessing of peace upon everyone who belongs to Christ Jesus.
-
-The letter ends without reporting whether the readers' suffering has ended.
-
-Instead, Peter leaves them with a lasting assurance: through the resurrection of Jesus Christ, they possess a living hope that present troubles cannot destroy.
-
-Their identity as God's people calls them to holiness, humility, compassion, honorable conduct, and perseverance.
-
-Throughout the letter, Peter has shown that following Christ may involve rejection and suffering, but those difficulties do not place believers beyond God's care.
-
-The same Lord who suffered unjustly and rose in victory remains their Shepherd, and His promised glory gives them reason to stand firm in faith.
+Peter wrote this letter with the help of Silvanus, or Silas, who probably carried it. He sends greetings from the church “at Babylon,” likely a code name for Rome, and from “Marcus my son,” the same Mark who wrote the Gospel. Early tradition says Mark's Gospel recorded Peter's preaching. Peter tells them to greet one another with a kiss of love and ends, “Peace be with you all that are in Christ Jesus. Amen.” The letter gives suffering believers a living hope that no trial can take away.
 
 # 2 Peter
 When it happened: Written shortly before Peter's death, which he knew was near (2 Peter 1:14)—traditionally in the mid-AD 60s.
@@ -676,209 +254,47 @@ The world at the time: False teachers were exploiting the churches, and scoffers
 
 **God Provides Everything Needed for a Godly Life (2 Peter 1:1–11)** — Peter encourages believers to grow in faith and godly character, reminding them that God's power and promises provide everything necessary for spiritual life.
 
-The apostle Simon Peter, one of Jesus Christ's closest disciples, writes to believers who have received the same precious faith that he possesses. His letter addresses the importance of spiritual growth, the danger of false teachers, and the certainty of Christ's return.
+Simon Peter writes to “them that have obtained like precious faith with us.” God's “divine power hath given unto us all things that pertain unto life and godliness,” through knowing Him. He has given them “exceeding great and precious promises,” so that they might share in God's nature and escape the corruption in the world caused by evil desires.
 
-Peter begins by wishing his readers grace and peace through the knowledge of God and Jesus Christ.
-
-He explains that God's divine power has provided everything necessary for life and godliness. Through His promises, believers can share in the divine nature and escape the corruption caused by sinful desires.
-
-Because of these blessings, Peter urges them to grow in their faith.
-
-Faith should be accompanied by virtue, knowledge, self-control, patience, godliness, brotherly kindness, and love.
-
-These qualities should continue increasing throughout their lives.
-
-Peter warns that those who lack them have become spiritually shortsighted, forgetting that they were cleansed from their former sins.
-
-By growing in godly character, believers strengthen their confidence in God's calling and demonstrate the transforming power of their faith.
-
-Peter encourages them to remain diligent so that they may receive a rich welcome into the everlasting kingdom of Jesus Christ.
+So they must make every effort to grow. Peter lists qualities that build on each other like steps: “add to your faith virtue; and to virtue knowledge; And to knowledge temperance; and to temperance patience; and to patience godliness; And to godliness brotherly kindness; and to brotherly kindness charity.” Temperance means self-control, and charity means love. If they keep growing in these things, they will be fruitful in knowing Christ. Anyone who lacks them is blind and has forgotten that he was cleansed from his old sins. “Wherefore the rather, brethren, give diligence to make your calling and election sure.” Then they will receive a rich welcome into the everlasting kingdom of Jesus Christ.
 
 **Peter Confirms the Truth of Christ's Glory (2 Peter 1:12–21)** — Knowing that his death is approaching, Peter recalls witnessing Jesus' glory and emphasizes that God's prophetic word comes through the Holy Spirit.
 
-Peter explains that he intends to keep reminding believers of these truths, even though they already know them.
+Peter knows he will die soon, just as Jesus had told him. “Knowing that shortly I must put off this my tabernacle,” he says, picturing his body as a tent he will soon take down. So he wants to keep reminding them of these truths, even after he is gone.
 
-He recognizes that his earthly life is approaching its end.
+He insists that the apostles did not make up stories: “For we have not followed cunningly devised fables, when we made known unto you the power and coming of our Lord Jesus Christ, but were eyewitnesses of his majesty.” He was there on the holy mountain at the Transfiguration, when the voice came from heaven, “This is my beloved Son, in whom I am well pleased.”
 
-Jesus Christ has made known to him that he will soon put aside his earthly body, and Peter wants his readers to remember his teaching after his departure.
-
-He then explains why his testimony about Jesus deserves their confidence.
-
-Peter and the other apostles did not invent clever stories when they proclaimed the power and coming of Jesus Christ.
-
-They had personally witnessed His majesty.
-
-Peter recalls an occasion when Jesus received honor and glory from God the Father. A voice from heaven declared that Jesus was God's beloved Son, in whom He was well pleased.
-
-Peter explains that he heard this voice while accompanying Jesus on the holy mountain.
-
-This experience confirmed the greatness of Christ.
-
-He then directs attention to the prophetic Scriptures.
-
-Believers should regard God's prophetic word as a light shining in darkness until the day dawns.
-
-Peter explains that biblical prophecy did not originate merely from human imagination or personal interpretation.
-
-Instead, holy men spoke as they were moved by the Holy Ghost.
-
-The message about Jesus therefore rests upon both eyewitness testimony and God's revealed word.
+They also have “a more sure word of prophecy,” the Scriptures, which are like “a light that shineth in a dark place, until the day dawn, and the day star arise in your hearts.” “Knowing this first, that no prophecy of the scripture is of any private interpretation. For the prophecy came not in old time by the will of man: but holy men of God spake as they were moved by the Holy Ghost.”
 
 **False Teachers Will Secretly Lead People Astray (2 Peter 2:1–10)** — Peter warns that deceptive teachers will enter the church, spread destructive beliefs, exploit believers, and eventually face God's judgment.
 
-After affirming the reliability of God's word, Peter warns that false prophets existed among Israel's people in earlier generations.
+Just as false prophets arose in Israel, “even as there shall be false teachers among you, who privily shall bring in damnable heresies, even denying the Lord that bought them.” Privily means secretly. Many will follow their immoral ways, and the way of truth will be insulted because of them. Out of greed, they will exploit believers with made-up stories. But their judgment is coming.
 
-In the same way, false teachers will arise among Christians.
-
-They will secretly introduce destructive teachings, even denying the Lord who bought them.
-
-Many people will follow their harmful ways, bringing dishonor upon the truth.
-
-Motivated by greed, these teachers will exploit others through dishonest words.
-
-Peter assures his readers that their judgment has not been forgotten.
-
-He points to earlier examples of God's justice.
-
-God did not spare angels who sinned but reserved them for judgment.
-
-He also brought the flood upon the ungodly world while preserving Noah, a preacher of righteousness, along with seven others.
-
-Peter then recalls the destruction of Sodom and Gomorrah, cities judged for their wickedness.
-
-Yet God rescued Lot, a righteous man distressed by the lawless conduct surrounding him.
-
-These examples reveal that God knows how to deliver the godly from temptation and reserve the unjust for judgment.
-
-Peter especially warns about those who follow corrupt desires, reject authority, and behave with arrogance.
-
-Their confidence does not place them beyond God's judgment.
+Peter gives three examples from the past. God did not spare the angels who sinned but cast them down to hell to await judgment. He did not spare the ancient world but brought the flood, while saving “Noah the eighth person, a preacher of righteousness.” And He turned Sodom and Gomorrah to ashes, while rescuing “just Lot,” who was sickened by the evil around him. So, “The Lord knoweth how to deliver the godly out of temptations, and to reserve the unjust unto the day of judgment to be punished.” This is especially true of those who chase sinful desires and despise authority.
 
 **Corrupt Teachers Promise Freedom but Spread Slavery (2 Peter 2:11–22)** — Peter exposes the greed, arrogance, and moral corruption of false teachers who promise freedom while remaining controlled by sinful desires.
 
-Peter continues describing the character of the false teachers.
+These false teachers are bold and arrogant. They insult things they do not understand, like animals acting on instinct. Peter does not hold back. They hold parties in broad daylight, and they join the church's love feasts while being “Spots they are and blemishes.” They have “eyes full of adultery, and that cannot cease from sin,” and they lure unstable people. They are like Balaam, the prophet who “loved the wages of unrighteousness” and was rebuked by his own donkey.
 
-They act with boldness and disrespect, speaking arrogantly about matters they do not understand.
-
-Even angels, who are greater in power, do not bring the same kinds of reckless accusations before the Lord.
-
-Peter compares these teachers to creatures driven by instinct rather than understanding.
-
-They pursue pleasure, practice deception, and corrupt the gatherings of believers.
-
-Their eyes are filled with adultery, and they continually seek opportunities for sin.
-
-They also tempt those who are spiritually unstable.
-
-Peter compares their greed to Balaam, a prophet who loved the reward of wrongdoing but was rebuked when a donkey spoke with a human voice.
-
-The false teachers are like wells without water and clouds driven by a storm.
-
-They promise something valuable but provide nothing that can satisfy spiritual needs.
-
-Through impressive words and appeals to sinful desires, they attract people who have begun escaping a corrupt way of life.
-
-Although these teachers promise freedom, they themselves are enslaved by corruption.
-
-Peter explains that people become servants of whatever overcomes them.
-
-He warns that those who have known the way of righteousness and then deliberately turn away face a serious condition.
-
-Their return to former corruption is compared to a dog returning to its vomit and a washed pig returning to mud.
-
-These disturbing images emphasize the danger of abandoning the truth after receiving it.
+“These are wells without water, clouds that are carried with a tempest.” They speak proud, empty words and use sexual temptation to catch people who are just escaping from wrong living. “While they promise them liberty, they themselves are the servants of corruption: for of whom a man is overcome, of the same is he brought in bondage.” It would have been better for them never to have known the way of righteousness than to know it and turn away. Peter quotes two proverbs: “The dog is turned to his own vomit again; and the sow that was washed to her wallowing in the mire.”
 
 **Peter Warns Against Mocking Christ's Promised Return (2 Peter 3:1–7)** — Peter reminds believers of the prophets and apostles while confronting those who mock the promise of Christ's return and ignore God's earlier judgments.
 
-Peter explains that this is his second letter to his readers.
+This is Peter's second letter, written to stir up their minds and remind them of what the prophets and apostles taught. First, they should know “that there shall come in the last days scoffers, walking after their own lusts, And saying, Where is the promise of his coming? for since the fathers fell asleep, all things continue as they were from the beginning of the creation.” The mockers claim that nothing ever changes, so Jesus will never return.
 
-In both letters, he seeks to awaken their sincere minds through reminders.
-
-He wants them to remember the words spoken by God's holy prophets and the commandments delivered through the apostles of Jesus Christ.
-
-Peter then warns that scoffers will arise in the last days.
-
-These people will follow their own desires and mock the promise of Christ's return.
-
-They will question why Jesus has not appeared, arguing that life continues as it has since earlier generations died.
-
-Peter responds that their argument ignores God's past actions.
-
-By His word, God created the heavens and formed the earth out of water and through water.
-
-The same world later experienced judgment through the flood.
-
-Peter explains that the present heavens and earth are also preserved by God's word.
-
-They are being kept for a future day of judgment and destruction of the ungodly.
-
-The apparent stability of the world therefore does not mean that God has forgotten His promises.
-
-Just as He acted in the past, He will act again at the appointed time.
+But they deliberately forget that God created the world by His word and once destroyed it with water in the flood. By the same word, “the heavens and the earth, which are now,” are being kept for fire, “against the day of judgment and perdition of ungodly men.”
 
 **God's Patience Reveals His Desire for Repentance (2 Peter 3:8–13)** — Peter explains that God's apparent delay is an expression of patience, while the coming day of the Lord will bring judgment and renewal.
 
-Peter urges believers not to misunderstand God's relationship with time.
+Why has the Lord not returned yet? “But, beloved, be not ignorant of this one thing, that one day is with the Lord as a thousand years, and a thousand years as one day.” God does not measure time as we do. “The Lord is not slack concerning his promise, as some men count slackness; but is longsuffering to us-ward, not willing that any should perish, but that all should come to repentance.” The delay is God's patience, giving people time to turn to Him.
 
-He explains that one day with the Lord is as a thousand years, and a thousand years are as one day.
-
-God's promises are not limited by human expectations about how quickly events should occur.
-
-The Lord is not delaying His promise through carelessness or inability.
-
-Instead, He is patient, not willing that any should perish but that all should come to repentance.
-
-Nevertheless, Peter warns that the day of the Lord will come unexpectedly, like a thief in the night.
-
-He describes the heavens passing away with a great noise and the elements being dissolved with intense heat.
-
-The earth and its works will face God's judgment.
-
-Because the present world will not continue unchanged forever, Peter asks what kind of lives believers ought to live.
-
-They should pursue holiness and godliness while looking forward to the day of God.
-
-Peter then points beyond destruction toward God's promise of renewal.
-
-Believers await new heavens and a new earth in which righteousness dwells.
-
-His emphasis is not upon calculating the exact date of these events.
-
-Instead, he connects the certainty of God's future judgment with the importance of faithful living in the present.
+“But the day of the Lord will come as a thief in the night; in the which the heavens shall pass away with a great noise, and the elements shall melt with fervent heat, the earth also and the works that are therein shall be burned up.” Since everything will be dissolved, “what manner of persons ought ye to be in all holy conversation and godliness?” Believers look forward to that day. “Nevertheless we, according to his promise, look for new heavens and a new earth, wherein dwelleth righteousness.”
 
 **Believers Must Remain Steadfast and Grow in Grace (2 Peter 3:14–18)** — Peter closes by urging believers to remain faithful, recognize God's patience as an opportunity for salvation, and continue growing in the knowledge of Jesus Christ.
 
-Having described God's promise of a new heaven and earth, Peter encourages his readers to remain diligent.
+So while they wait, they should make every effort to be found by Him “in peace, without spot, and blameless.” They should see the Lord's patience as a chance for people to be saved. Peter adds that “our beloved brother Paul” wrote about these same things. Some of Paul's letters contain things “hard to be understood,” which ignorant and unstable people twist, “as they do also the other scriptures,” to their own destruction. Peter treats Paul's letters as Scripture.
 
-As they await these things, they should seek to be found by the Lord in peace, without spot and blameless.
-
-Peter again reminds them that God's patience serves a saving purpose.
-
-He then mentions Paul, a fellow apostle whom he calls a beloved brother.
-
-Peter explains that Paul has written about these matters according to the wisdom God gave him.
-
-He acknowledges that some things in Paul's letters are difficult to understand.
-
-Unfortunately, people who are unlearned or spiritually unstable twist those teachings, just as they distort other Scriptures, bringing destruction upon themselves.
-
-Peter warns his readers to remain alert.
-
-Because they have already been warned about deceptive teachers, they must not allow the errors of wicked people to draw them away from their steadfast faith.
-
-Instead, they should continue growing in the grace and knowledge of the Lord and Saviour Jesus Christ.
-
-Peter ends by giving glory to Jesus, both now and forever.
-
-The letter closes without describing the later circumstances of the believers or the outcome of the false teachers' activities.
-
-Peter has reminded his readers that God provides everything necessary for spiritual growth and that genuine faith produces godly character.
-
-He has defended the reliability of the apostles' testimony, affirmed the authority of God's prophetic word, and warned against those who twist the truth for personal gain.
-
-He has also assured believers that God's judgment is certain, even when it appears delayed.
-
-Second Peter ends with confidence that Jesus Christ will fulfill His promises. Until that day, the believers' responsibility is to remain grounded in the truth, resist deception, and continue growing in the grace and knowledge of their Lord.
+He gives a final warning: since they know these things in advance, they must be on guard so they are not carried away by the errors of the wicked. “But grow in grace, and in the knowledge of our Lord and Saviour Jesus Christ. To him be glory both now and for ever. Amen.” Written as he faced death, Peter's last letter calls believers to keep growing, to trust God's word, and to wait for Christ's certain return.
 
 # 1 John
 When it happened: Likely written around AD 85–95.
@@ -888,227 +304,69 @@ The world at the time: A group had left the fellowship (1 John 2:19) and was tea
 
 **The Word of Life Brings Fellowship with God (1 John 1:1–4)** — John begins by declaring that Jesus Christ truly came into the world and that knowing Him brings fellowship with God and other believers.
 
-The letter opens with the testimony of someone who has personally encountered Jesus Christ. Its writer is traditionally identified as John, one of Jesus' apostles, although the letter itself does not name him or identify its recipients.
+Like John's Gospel, this letter starts at “the beginning.” John writes about the Word of life as an eyewitness: “That which was from the beginning, which we have heard, which we have seen with our eyes, which we have looked upon, and our hands have handled, of the Word of life.” Some false teachers were saying that Jesus only seemed to have a real human body. John insists that he heard, saw, and touched Him. “For the life was manifested, and we have seen it.”
 
-He speaks of the One who existed from the beginning, whom he and other witnesses heard, saw, and touched.
-
-Jesus was not merely an idea or a spiritual vision. He truly appeared in human life, revealing the eternal life that was with the Father.
-
-John explains that he is sharing this testimony so others may enter the same fellowship with God the Father and His Son, Jesus Christ.
-
-He also desires that the joy shared among believers may be complete.
-
-From the beginning, his message connects the truth about Jesus with a living relationship with God and His people.
+He shares this so his readers can join in the same fellowship: “and truly our fellowship is with the Father, and with his Son Jesus Christ. And these things write we unto you, that your joy may be full.”
 
 **Walking in God's Light Requires Honesty About Sin (1 John 1:5–2:2)** — John teaches that God is light and that genuine fellowship with Him requires truthful confession, obedience, and trust in Jesus Christ's forgiveness.
 
-John announces a central truth: God is light, and there is no darkness in Him.
+John's message is simple: “God is light, and in him is no darkness at all.” If someone claims to have fellowship with God but lives in darkness, he is lying. “But if we walk in the light, as he is in the light, we have fellowship one with another, and the blood of Jesus Christ his Son cleanseth us from all sin.”
 
-Those who claim fellowship with God while continuing to walk in darkness contradict their own profession.
+No one can pretend to be sinless: “If we say that we have no sin, we deceive ourselves, and the truth is not in us. If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness.”
 
-But those who walk in the light share fellowship with one another, and the blood of Jesus Christ cleanses them from sin.
-
-John warns against claiming to have no sin.
-
-Such a claim is self-deception rather than spiritual maturity.
-
-Instead, believers should confess their sins, trusting that God is faithful and just to forgive and cleanse them.
-
-John explains that he writes these things so his readers will not sin. Yet if anyone does sin, Jesus Christ the righteous serves as their advocate with the Father.
-
-Through His sacrifice, Christ provides atonement for sin. John describes Him as the sacrifice not only for the sins of believers but also for those of the whole world.
+John writes so that his “little children” will not sin. “And if any man sin, we have an advocate with the Father, Jesus Christ the righteous.” An advocate is like a defense lawyer who speaks for us. “And he is the propitiation for our sins: and not for ours only, but also for the sins of the whole world.” Propitiation means the sacrifice that turns away God's anger against sin.
 
 **Obedience and Love Reveal Genuine Faith (1 John 2:3–17)** — John explains that knowing God becomes visible through obedience and love, while warning believers against allowing worldly desires to control their hearts.
 
-John now describes how genuine faith can be recognized.
+How can someone know he truly knows God? “And hereby we do know that we know him, if we keep his commandments.” Anyone who claims to know Him but disobeys is a liar. “He that saith he abideth in him ought himself also so to walk, even as he walked.” The command to love is both old and new. “He that saith he is in the light, and hateth his brother, is in darkness even until now.”
 
-Those who claim to know God but refuse to obey His commandments contradict their words.
-
-True knowledge of God produces a desire to follow His teaching and walk as Jesus walked.
-
-John gives special attention to the command to love one another.
-
-Anyone who claims to live in the light while hating a fellow believer remains in darkness. Love, however, reflects the light of Christ.
-
-John then addresses different groups within the Christian community, encouraging them because their sins have been forgiven, they know God, and they have overcome the wicked one.
-
-He warns them not to love the world or its sinful desires.
-
-The desires of the flesh, the desires of the eyes, and the pride of life do not come from the Father.
-
-The world and its desires are passing away, but those who do God's will remain forever.
+John writes warmly to believers of every stage, to “little children,” to “fathers,” and to “young men,” because their sins are forgiven, they know God, and they have overcome the evil one. Then he warns, “Love not the world, neither the things that are in the world. If any man love the world, the love of the Father is not in him.” He names three kinds of worldly desire: “the lust of the flesh, and the lust of the eyes, and the pride of life.” “And the world passeth away, and the lust thereof: but he that doeth the will of God abideth for ever.”
 
 **Believers Must Remain Faithful to the Truth About Jesus (1 John 2:18–29)** — John warns against false teachers who deny Jesus Christ and urges believers to remain grounded in the truth they received from the beginning.
 
-John tells his readers that it is the last time and that many antichrists have already appeared.
+“Little children, it is the last time: and as ye have heard that antichrist shall come, even now are there many antichrists.” John is the only Bible writer to use the word antichrist. Some people had left the church, “They went out from us, but they were not of us,” and their leaving showed they never truly belonged. But the believers have “an unction from the Holy One,” an anointing from the Spirit, and they know the truth.
 
-He describes people who once associated with the believers but departed from them, revealing that they did not truly share their faith.
-
-These deceivers deny that Jesus is the Christ, the promised Messiah.
-
-John explains that denying the Son also means rejecting the Father.
-
-He reminds believers that they have received an anointing from the Holy One and possess knowledge of the truth.
-
-They must continue holding firmly to the message they heard from the beginning.
-
-Those who remain in the Son also remain in the Father and possess the promise of eternal life.
-
-John warns against those attempting to lead them astray.
-
-Rather than abandoning the truth, believers should remain in Christ so they may have confidence when He appears.
-
-He concludes that those who practice righteousness demonstrate that they have been born of God.
+“Who is a liar but he that denieth that Jesus is the Christ? He is antichrist, that denieth the Father and the Son.” Whoever denies the Son does not have the Father either. So the believers must let what they heard from the beginning remain in them. Then they will remain in the Son and the Father, “And this is the promise that he hath promised us, even eternal life.” They should abide in Christ, so that when He appears, they will have confidence and not be ashamed before Him.
 
 **God's Children Must Practice Righteousness and Love (1 John 3:1–10)** — John celebrates the love that makes believers God's children and explains why their new identity should lead them away from habitual sin.
 
-John marvels at the Father's love, which allows believers to be called the children of God.
+John is amazed at God's love: “Behold, what manner of love the Father hath bestowed upon us, that we should be called the sons of God.” The world does not recognize them, because it did not recognize Him. “Beloved, now are we the sons of God, and it doth not yet appear what we shall be: but we know that, when he shall appear, we shall be like him; for we shall see him as he is.” Everyone who has this hope purifies himself.
 
-Their full future has not yet been revealed, but John explains that when Christ appears, they will be like Him because they will see Him as He is.
-
-This hope encourages purity.
-
-John contrasts righteousness with lawlessness, reminding his readers that Jesus appeared to take away sins and that no sin is found in Him.
-
-He warns that a life continually given over to sin contradicts the claim of belonging to Christ.
-
-The Son of God was revealed to destroy the works of the devil.
-
-Those born of God are therefore called to live differently because God's life is at work within them.
-
-John identifies righteousness and love as visible distinctions between the children of God and those who do not belong to Him.
-
-His emphasis is on the direction and character of a person's life, not a claim that believers never need forgiveness.
+Sin is “the transgression of the law,” and Christ came to take away sins. So whoever lives in Him does not keep on sinning as a way of life. “Little children, let no man deceive you.” The one who keeps on sinning belongs to the devil, who has sinned from the beginning. “For this purpose the Son of God was manifested, that he might destroy the works of the devil.” By this, God's children and the devil's children are made plain: those who do not do right and do not love their brother are not of God.
 
 **True Love Must Be Shown Through Actions (1 John 3:11–24)** — John contrasts hatred with Christ's sacrificial love and teaches that genuine love is demonstrated through practical care for others.
 
-John returns to the command believers heard from the beginning: they must love one another.
+“For this is the message that ye heard from the beginning, that we should love one another.” They must not be like Cain, who murdered his brother because his own works were evil and his brother's were righteous. They should not be surprised if the world hates them. “We know that we have passed from death unto life, because we love the brethren.” “Whosoever hateth his brother is a murderer.”
 
-He recalls Cain, who murdered his brother Abel because his own works were evil while Abel's were righteous.
+Jesus showed what love really is: “Hereby perceive we the love of God, because he laid down his life for us: and we ought to lay down our lives for the brethren.” Love must be practical. If someone has plenty and sees a brother in need but shuts his heart, “how dwelleth the love of God in him? My little children, let us not love in word, neither in tongue; but in deed and in truth.”
 
-John warns that hatred stands in opposition to the life God gives.
-
-Jesus provides the opposite example.
-
-Christ laid down His life for others, revealing the depth of genuine love.
-
-John asks how God's love can remain in someone who possesses material resources, sees a fellow believer in need, and refuses to help.
-
-Love must be expressed through actions and truth, not merely words.
-
-Such love also strengthens confidence before God.
-
-John acknowledges that believers' hearts may sometimes condemn them, but God is greater than their hearts and knows everything.
-
-He then brings together God's commandments: believe in the name of His Son, Jesus Christ, and love one another.
-
-Those who keep His commandments remain in Him, and His Spirit confirms His presence among them.
+Even when our hearts condemn us, “God is greater than our heart, and knoweth all things.” His command is “That we should believe on the name of his Son Jesus Christ, and love one another.” Those who obey live in Him, and He in them, and they know it by the Spirit He has given.
 
 **Believers Must Test Every Spiritual Message (1 John 4:1–6)** — John warns that not every spiritual claim comes from God and provides a test centered on the truth about Jesus Christ.
 
-John urges believers not to accept every spirit or religious message without examination.
-
-Many false prophets have gone into the world, and their teaching must be tested.
-
-He explains that a spirit confessing Jesus Christ has come in the flesh is from God.
-
-Those who reject this truth reveal the spirit of antichrist, which John says is already active in the world.
-
-The central issue is the identity of Jesus and the reality of His coming as a human being.
-
-John reassures his readers that they belong to God and have overcome the false teachers.
-
-The One dwelling within them is greater than the one influencing the world.
-
-False teachers speak according to the world's values, and the world listens to them.
-
-Those who know God, however, recognize the teaching delivered through His faithful witnesses.
-
-Through this distinction, John urges believers to separate truth from error rather than being persuaded by every spiritual claim.
+“Beloved, believe not every spirit, but try the spirits whether they are of God: because many false prophets are gone out into the world.” To try means to test. John gives the test: “Every spirit that confesseth that Jesus Christ is come in the flesh is of God.” Any spirit that denies this is the spirit of antichrist. The believers can be confident, “because greater is he that is in you, than he that is in the world.” The false teachers speak the world's language, so the world listens to them. But those who know God listen to the apostles' message. “Hereby know we the spirit of truth, and the spirit of error.”
 
 **God's Perfect Love Overcomes Fear (1 John 4:7–21)** — John explains that love comes from God, was revealed through Jesus Christ, and must shape the way believers treat one another.
 
-After warning against deception, John returns to the importance of love.
+“Beloved, let us love one another: for love is of God; and every one that loveth is born of God, and knoweth God. He that loveth not knoweth not God; for God is love.” God showed His love by sending His only Son into the world, “that we might live through him. Herein is love, not that we loved God, but that he loved us, and sent his Son to be the propitiation for our sins. Beloved, if God so loved us, we ought also to love one another.”
 
-He explains that love comes from God because God is love.
+No one has ever seen God, but when we love each other, God lives in us and His love is made complete in us. “God is love; and he that dwelleth in love dwelleth in God, and God in him.” Because of this, believers can face the day of judgment with confidence. “There is no fear in love; but perfect love casteth out fear.” “We love him, because he first loved us.”
 
-Those who truly love demonstrate that they have been born of God and know Him.
-
-God revealed His love by sending His only begotten Son into the world so that people might live through Him.
-
-This love did not begin with humanity's affection for God.
-
-God loved first and sent His Son as the sacrifice for sins.
-
-Because God has loved believers in this way, they are called to love one another.
-
-Although no one has seen God, His love becomes evident when His people live in love.
-
-John explains that God's Spirit confirms the relationship between God and believers, who confess Jesus as the Son of God.
-
-As love becomes complete in them, they gain confidence concerning the day of judgment.
-
-Perfect love casts out fear because fear involves punishment.
-
-John ends by rejecting the claim that someone can love God while hating a fellow believer.
-
-Love for God and love for others cannot be separated.
+John closes with a test: “If a man say, I love God, and hateth his brother, he is a liar: for he that loveth not his brother whom he hath seen, how can he love God whom he hath not seen?” Loving God and loving others cannot be separated.
 
 **Faith in Jesus Brings Victory and Eternal Life (1 John 5:1–12)** — John explains that those who believe Jesus is the Christ are born of God and possess victory through faith and the testimony concerning God's Son.
 
-John brings together the themes of faith, obedience, and love.
+“Whosoever believeth that Jesus is the Christ is born of God.” Loving God means keeping His commandments, “and his commandments are not grievous,” not a heavy burden. “For whatsoever is born of God overcometh the world: and this is the victory that overcometh the world, even our faith.” “Who is he that overcometh the world, but he that believeth that Jesus is the Son of God?”
 
-Everyone who believes that Jesus is the Christ is born of God, and love for the Father includes love for His children.
+Jesus came “by water and blood,” probably meaning His baptism and His death, and the Spirit also bears witness to Him. If we accept human testimony, God's testimony is greater. “And this is the record, that God hath given to us eternal life, and this life is in his Son. He that hath the Son hath life; and he that hath not the Son of God hath not life.”
 
-Obedience to God's commandments is part of that love, and His commandments are not burdensome.
-
-John explains that those born of God overcome the world through faith.
-
-This victory is found in believing that Jesus is the Son of God.
-
-He then describes Jesus as the One who came by water and blood, with the Spirit bearing witness to the truth.
-
-The precise significance of the water and blood has been understood differently, but John's central point is that God's testimony concerning His Son is trustworthy.
-
-He emphasizes the testimony of the Spirit, the water, and the blood. The KJV also includes a statement about heavenly witnesses, whose wording has a notable history of textual differences among ancient manuscripts.
-
-John declares that God has given eternal life through His Son.
-
-Whoever has the Son has life, while whoever does not have the Son does not have that life.
+In the King James Version, verse 7 adds, “For there are three that bear record in heaven, the Father, the Word, and the Holy Ghost: and these three are one.” These words are not found in the oldest Greek manuscripts and were likely added later, though the teaching of the Trinity rests on many other passages.
 
 **John Closes with Confidence in God's Truth (1 John 5:13–21)** — John concludes by assuring believers of eternal life, encouraging confident prayer, and warning them to remain faithful to the true God.
 
-John explains that he has written to those who believe in the name of the Son of God so they may know they have eternal life.
+John explains why he wrote the letter: “These things have I written unto you that believe on the name of the Son of God; that ye may know that ye have eternal life.” Believers can pray with confidence: “if we ask any thing according to his will, he heareth us.” If they see a brother sinning, they should pray for him. John adds that there is “a sin unto death,” though he does not explain it.
 
-This assurance gives them confidence in prayer.
-
-When they ask according to God's will, they can trust that He hears them.
-
-John then addresses prayer for a fellow believer who has committed sin.
-
-He encourages intercession but distinguishes between sin that does not lead to death and sin that does. He does not fully explain this distinction, and its precise meaning has been interpreted differently.
-
-John reminds his readers that all unrighteousness is sin.
-
-He then returns to the security of those born of God.
-
-They are called to resist sin, and the wicked one does not have the final claim over them.
-
-John contrasts the world, which lies under the power of wickedness, with those who belong to God.
-
-The Son of God has come and given understanding so believers may know the One who is true.
-
-Through Jesus Christ, they have fellowship with the true God and eternal life.
-
-John ends with a brief command to keep themselves from idols.
-
-The letter closes without personal greetings or information about the later circumstances of its readers.
-
-Instead, John leaves them with the central convictions that have shaped his message: Jesus Christ truly came in the flesh, eternal life is found in Him, and those who belong to God are called to live in truth, righteousness, obedience, and love.
-
-Throughout the letter, John has warned against false teaching while offering assurance to believers who remain in Christ.
-
-His final instruction against idols reinforces the importance of undivided faithfulness to God, whose love has been revealed through His Son.
+He closes with three things believers know. Those born of God do not keep on sinning. “We know that we are of God, and the whole world lieth in wickedness.” And “we know that the Son of God is come, and hath given us an understanding, that we may know him that is true.” “This is the true God, and eternal life.” Then a final, simple warning: “Little children, keep yourselves from idols. Amen.”
 
 # 2 John
 When it happened: Written in the same period as 1 John, around AD 85–95.
@@ -1118,91 +376,17 @@ The world at the time: Travelling teachers depended on believers' hospitality, a
 
 **Walking in Truth and Love (2 John 1:1–6)** — John expresses his love for the believers and reminds them that genuine Christian love is inseparable from truth and obedience to God's commandments.
 
-The letter begins with a greeting from someone who identifies himself as the elder, a title suggesting spiritual leadership. The writer is traditionally understood to be John, one of Jesus Christ's apostles, although he does not identify himself by name.
-
-He addresses the elect lady and her children. The letter does not explain whether this refers to a particular Christian woman and her family or symbolically to a church and its members.
-
-John expresses his sincere love for them, explaining that this affection is shared by others who know the truth.
-
-Their relationship is grounded in the truth that remains within believers and will continue with them forever.
-
-He then offers a blessing of grace, mercy, and peace from God the Father and the Lord Jesus Christ, the Son of the Father, in truth and love.
-
-John expresses great joy because he has found some of the lady's children walking in the truth, just as God has commanded.
-
-Their faithful conduct demonstrates that they have not merely heard God's message but are allowing it to guide their lives.
-
-John then reminds them of a commandment they have possessed from the beginning.
-
-They must love one another.
-
-This is not a new teaching but a responsibility already established among those who follow Jesus Christ.
-
-John explains that love involves walking according to God's commandments. The command to love and the call to obedience belong together.
-
-For John, truth is more than correct religious knowledge, and love is more than warm feelings toward others.
-
-Genuine love expresses itself through faithful conduct, while obedience to God's truth shapes the way believers treat one another.
+John calls himself simply “The elder.” He writes “unto the elect lady and her children,” which may mean a particular woman and her family, or a church and its members. He loves them “in the truth,” as do all who know the truth. He rejoices that some of her children are “walking in truth.” Then he gives the same command Jesus gave: “that we love one another.” “And this is love, that we walk after his commandments.” For John, truth and love always go together.
 
 **Beware of Those Who Deny Jesus Christ (2 John 1:7–11)** — John warns that deceivers are spreading false teaching about Jesus and urges believers to remain faithful without supporting those who oppose Christ's truth.
 
-After encouraging the believers to walk in truth and love, John explains why remaining faithful to that truth is so important.
+“For many deceivers are entered into the world, who confess not that Jesus Christ is come in the flesh. This is a deceiver and an antichrist.” The readers must watch themselves, so they do not lose what they have worked for. Anyone who goes beyond Christ's teaching does not have God. But “He that abideth in the doctrine of Christ, he hath both the Father and the Son.”
 
-Many deceivers have entered the world.
-
-These individuals refuse to acknowledge that Jesus Christ has come in the flesh.
-
-Their teaching rejects an essential truth about Jesus: that He truly came into human life.
-
-John identifies such people as deceivers and associates their teaching with the antichrist, meaning opposition to Christ and His true identity.
-
-He warns the believers to remain watchful so they do not lose the benefit of what has already been accomplished among them.
-
-Instead, they should continue faithfully and receive a full reward.
-
-John then explains that anyone who goes beyond Christ's teaching and does not remain in it does not have God.
-
-Those who continue in Christ's teaching have both the Father and the Son.
-
-This distinction becomes especially important when John addresses how the believers should respond to visiting teachers.
-
-Hospitality was an important part of Christian life, particularly because traveling teachers often depended upon others for shelter and assistance.
-
-Yet John warns that anyone who comes promoting teaching contrary to Christ's message must not be welcomed into the home or encouraged as a teacher.
-
-Offering such support would make the believers participants in the person's harmful work.
-
-John's warning concerns cooperation with those spreading false teaching, rather than a general rejection of kindness toward people who hold different beliefs.
-
-His concern is that the Christian community remain loving without helping deception spread.
-
-The truth about Jesus must guide both their fellowship and their willingness to support those claiming to teach in His name.
+In those days, traveling teachers depended on believers to give them food and a place to stay. John tells the church not to welcome false teachers: “If there come any unto you, and bring not this doctrine, receive him not into your house, neither bid him God speed.” Supporting such a teacher would mean sharing in his evil work.
 
 **John Hopes to Speak with Them Personally (2 John 1:12–13)** — John closes his brief letter by expressing his desire to visit the believers and speak with them directly, ending with greetings from fellow Christians.
 
-As the letter draws to a close, John explains that he has many more things he would like to communicate.
-
-Rather than putting everything into writing with paper and ink, he hopes to visit the recipients and speak with them face to face.
-
-His desire is that their joy may be full through their time together.
-
-This personal hope reflects the affection expressed at the beginning of the letter.
-
-John's concern for the believers is not limited to correcting false teaching. He also values their fellowship and wants their relationships to remain grounded in shared faith and love.
-
-The letter ends with greetings from the children of the recipient's elect sister.
-
-As with the opening reference to the elect lady, the exact identities of these individuals are not explained. They may refer to members of another Christian family or congregation.
-
-John does not describe whether his planned visit eventually takes place or how the believers respond to his instructions.
-
-Instead, the letter concludes with the same two concerns that have shaped its message from the beginning.
-
-Believers are called to love one another and remain faithful to the truth about Jesus Christ.
-
-John has celebrated those who walk in obedience, warned against teachers who deny Christ's coming in the flesh, and urged the community to avoid supporting deception.
-
-Second John reveals that Christian love and biblical truth are not competing responsibilities. They belong together, guiding how believers live, care for one another, and remain faithful to Jesus Christ.
+John has much more to say, but he does not want to write it with paper and ink. He hopes to visit and “speak face to face, that our joy may be full.” He closes with greetings from “The children of thy elect sister,” perhaps a sister church. 2 John is one of the shortest books in the Bible, but it shows that true love includes guarding the truth about Jesus.
 
 # 3 John
 When it happened: Written in the same period as 1 and 2 John, around AD 85–95.
@@ -1212,157 +396,23 @@ The world at the time: Missionaries travelling from church to church relied on b
 
 **Gaius Brings Joy Through His Faithfulness (3 John 1:1–4)** — John writes with affection to Gaius, a faithful believer whose commitment to God's truth brings him great joy and encouragement.
 
-The letter begins with a greeting from someone who identifies himself as the elder, a title suggesting spiritual leadership. The writer is traditionally understood to be John, one of Jesus Christ's apostles, although he does not identify himself by name.
-
-He addresses Gaius, a beloved fellow believer whom he sincerely loves in the truth. The letter does not identify where Gaius lives or explain how the two men first came to know one another.
-
-John begins by expressing his desire that Gaius will prosper and enjoy good health, just as his soul is prospering.
-
-His words reveal genuine concern for both Gaius's physical well-being and his spiritual condition.
-
-John then explains why he has been especially encouraged.
-
-Fellow believers have visited him and testified that Gaius remains faithful to the truth. His conduct demonstrates that he is not merely familiar with God's teaching but continues living according to it.
-
-This news brings John great joy.
-
-He explains that nothing makes him happier than hearing that those he regards as his spiritual children are walking in the truth.
-
-The relationship between John and Gaius establishes the personal character of the letter. John is writing not simply to communicate instructions but to encourage a faithful believer whose life has become an example to others.
+Again John writes as “The elder,” this time to his friend “the wellbeloved Gaius, whom I love in the truth.” He prays for Gaius's health: “Beloved, I wish above all things that thou mayest prosper and be in health, even as thy soul prospereth.” Traveling believers have told John about Gaius's faithfulness. “I have no greater joy than to hear that my children walk in truth.”
 
 **Gaius Shows Faith Through Generous Hospitality (3 John 1:5–8)** — John praises Gaius for welcoming traveling Christian workers and explains how supporting those who proclaim the gospel makes believers partners in God's work.
 
-John turns from celebrating Gaius's faithfulness to describing a particular way that faith has become visible.
-
-Gaius has been showing kindness to fellow believers who travel in service to Christ.
-
-Some of these visitors were strangers to him, yet he welcomed and assisted them.
-
-Their testimony about his love has reached the church, confirming that his generosity is known beyond his own household.
-
-John praises his conduct and encourages him to continue helping such workers as they travel.
-
-In the early Christian communities, traveling teachers and missionaries often depended upon the hospitality of fellow believers. They needed food, lodging, and practical assistance while carrying the gospel from place to place.
-
-John explains that these workers have gone out for the sake of Christ's name.
-
-They do not depend upon financial support from those outside the faith.
-
-Because of this, fellow Christians have an important opportunity to provide for their needs.
-
-John explains that those who support faithful gospel workers become fellow helpers in the truth.
-
-Gaius may not be traveling and preaching alongside these men, but his generosity allows him to participate in their ministry.
-
-Through his willingness to welcome strangers and provide practical assistance, he demonstrates how love and truth work together in the Christian life.
-
-His hospitality is more than an act of personal kindness. It becomes a way of supporting the spread of the gospel.
+John praises Gaius for welcoming traveling preachers, even strangers. They have told the church about his love. John encourages him to help them on their way “after a godly sort,” in a way that honors God. These preachers went out for the sake of Christ's name and refused to take anything from the Gentiles they preached to. “We therefore ought to receive such, that we might be fellowhelpers to the truth.” Those who support missionaries share in their work.
 
 **Diotrephes Rejects Authority and Divides the Church (3 John 1:9–10)** — John confronts the harmful conduct of Diotrephes, a man who seeks prominence, rejects fellow believers, and prevents others from offering hospitality.
 
-After praising Gaius's generosity, John describes a troubling situation involving another man in the church.
-
-His name is Diotrephes.
-
-Unlike Gaius, Diotrephes does not welcome the Christian workers John supports.
-
-John explains that he had previously written to the church, but Diotrephes refuses to receive his authority.
-
-The central problem is Diotrephes's desire for prominence.
-
-He wants to hold the highest position among the believers and is unwilling to accept correction or guidance from John.
-
-His behavior goes beyond refusing hospitality.
-
-John explains that Diotrephes speaks against him and his companions with malicious words.
-
-He also refuses to receive fellow Christians who come seeking welcome and assistance.
-
-When other members of the church want to show hospitality, Diotrephes prevents them from doing so.
-
-He even puts those who attempt to welcome the traveling believers out of the church.
-
-Through these actions, Diotrephes uses his influence to control others rather than serve them.
-
-John does not explain how Diotrephes gained his position or describe every circumstance behind the disagreement.
-
-What he makes clear is that the man's conduct is harmful to the Christian community.
-
-John therefore announces that if he comes, he will call attention to the things Diotrephes has been doing.
-
-He intends to confront the malicious accusations, rejection of fellow believers, and interference with those who want to help.
-
-The contrast between Gaius and Diotrephes is striking.
-
-One uses his resources and influence to welcome others and support the truth. The other seeks personal importance and uses his position to exclude and silence fellow believers.
+But there is a problem in the church. “I wrote unto the church: but Diotrephes, who loveth to have the preeminence among them, receiveth us not.” Preeminence means first place. Diotrephes wants to be in charge. He spreads lies about John, refuses to welcome the traveling believers, stops others who want to welcome them, and even throws them out of the church. John promises that if he comes, he will deal with what Diotrephes is doing.
 
 **Demetrius Provides an Example Worth Following (3 John 1:11–12)** — John encourages Gaius to follow what is good rather than evil and commends Demetrius as a man whose faithful character is widely recognized.
 
-After exposing the wrongdoing of Diotrephes, John offers Gaius a simple but important instruction.
-
-He must not imitate evil behavior but should follow what is good.
-
-John explains that those who do good demonstrate their relationship with God, while those who practice evil reveal that they have not truly known Him.
-
-This instruction connects directly with the examples already presented.
-
-Gaius has demonstrated faithful love through hospitality, while Diotrephes has shown the damage caused by pride and selfish ambition.
-
-John now introduces another person whose conduct deserves recognition.
-
-His name is Demetrius.
-
-John explains that Demetrius has received a good testimony from everyone who knows him.
-
-His reputation is supported not only by the words of other believers but also by the truth itself, suggesting that his conduct agrees with the message he professes.
-
-John adds his own testimony, assuring Gaius that his judgment concerning Demetrius is trustworthy.
-
-The letter does not explain Demetrius's particular responsibilities or state whether he is carrying the letter to Gaius.
-
-What matters in John's account is that Demetrius provides another example of a life worthy of respect and imitation.
-
-His character stands in clear contrast to the harmful behavior of Diotrephes.
-
-Together, these examples reinforce John's message that genuine faith becomes visible in a person's conduct toward others.
+“Beloved, follow not that which is evil, but that which is good. He that doeth good is of God: but he that doeth evil hath not seen God.” In contrast to Diotrephes, John recommends a man named Demetrius, who probably carried this letter. “Demetrius hath good report of all men, and of the truth itself.” John adds his own testimony, “and ye know that our record is true.”
 
 **John Hopes to Restore Fellowship in Person (3 John 1:13–14)** — John closes his letter by expressing his desire to visit Gaius personally, sending greetings and offering a final blessing of peace.
 
-As the letter approaches its conclusion, John explains that he has many more things he could write.
-
-However, he does not want to communicate everything through ink and pen.
-
-Instead, he hopes to see Gaius soon and speak with him face to face.
-
-This desire reflects the personal concern that has shaped the entire letter.
-
-John has celebrated Gaius's faithful conduct, encouraged continued hospitality, confronted the harmful behavior of Diotrephes, and commended Demetrius as an example of goodness.
-
-Some matters, especially the conflict affecting the church, remain unresolved in the written account.
-
-John's planned visit offers the possibility of addressing these concerns directly, although the letter does not reveal whether that visit eventually takes place.
-
-He then closes with a blessing of peace.
-
-John explains that their friends send greetings and asks Gaius to greet the friends among his own community individually.
-
-These final words emphasize the personal relationships connecting believers, even when they are separated by distance.
-
-The letter ends without describing what happened to Diotrephes or whether his actions were corrected.
-
-It also does not record any further response from Gaius or Demetrius.
-
-Instead, the account leaves a clear contrast between two approaches to Christian fellowship.
-
-Gaius demonstrates faith through generosity, hospitality, and support for those serving Christ. Diotrephes seeks personal importance and uses his influence to reject others.
-
-Demetrius provides another example of faithful character, reminding Gaius that goodness is worth recognizing and following.
-
-Throughout this brief letter, John shows that truth and love are meant to shape relationships within the church.
-
-Faithfulness is not measured by personal influence or the desire for recognition but by conduct that honors God and serves others.
-
-Third John closes with the hope of renewed fellowship and peace, leaving its readers with the importance of supporting what is good, resisting harmful leadership, and allowing the truth of Jesus Christ to guide the way believers treat one another.
+As in 2 John, the elder has much more to say but does not want to write it with pen and ink. “But I trust I shall shortly see thee, and we shall speak face to face.” He ends, “Peace be to thee. Our friends salute thee. Greet the friends by name.” This short personal note shows the everyday life of the early church, its faithful hosts, its traveling preachers, and its struggles with proud leaders.
 
 # Jude
 When it happened: Likely written between the AD 60s and 80s.
@@ -1372,191 +422,35 @@ The world at the time: Ungodly men had slipped into the churches, using God's gr
 
 **Jude Calls Believers to Defend Their Faith (Jude 1:1–4)** — Jude urges Christians to remain faithful to the gospel because dangerous teachers have entered their communities and are turning God's grace into an excuse for sin.
 
-Jude introduces himself as a servant of Jesus Christ and the brother of James. He is traditionally identified as a brother of Jesus, although he does not describe that relationship in his letter.
+Jude calls himself “the servant of Jesus Christ, and brother of James,” which makes him most likely another brother of Jesus. He writes “to them that are sanctified by God the Father, and preserved in Jesus Christ, and called.” He had planned to write about the salvation they share, but he felt he had to write something more urgent. He urges them to “earnestly contend for the faith which was once delivered unto the saints.” The truth has already been given, once for all. Now it must be defended.
 
-He writes to believers who are called, loved by God the Father, and preserved in Jesus Christ. Their exact location is not identified.
-
-Jude begins by wishing them mercy, peace, and love in abundance.
-
-He had intended to write about the salvation they shared, but a serious concern has changed his purpose. Certain people have secretly entered the Christian community and are spreading dangerous teachings.
-
-These individuals misuse God's grace as permission for immoral behavior and deny the authority of the only Lord God and Jesus Christ.
-
-Jude urges believers to earnestly defend the faith that has been entrusted to God's people.
-
-His concern is not merely disagreement over religious ideas. He warns that these teachers are encouraging conduct that contradicts the message of Jesus Christ.
-
-The believers must recognize the danger and remain faithful to the truth they have received.
+The danger is real: “For there are certain men crept in unawares.” These ungodly people have slipped into the church. They are “turning the grace of our God into lasciviousness,” using God's grace as an excuse for sexual sin, “and denying the only Lord God, and our Lord Jesus Christ.”
 
 **Past Judgments Reveal the Danger of Rebellion (Jude 1:5–7)** — Jude recalls examples from Israel's history and earlier judgments to demonstrate that rejecting God's authority carries serious consequences.
 
-To explain the danger facing the believers, Jude reminds them of events they already know.
-
-He begins with Israel's deliverance from Egypt.
-
-God rescued the people from slavery, yet afterward destroyed those who refused to believe. Their earlier deliverance did not excuse their continued unbelief.
-
-Jude then refers to angels who abandoned their proper place and authority.
-
-He explains that God has kept them in everlasting chains under darkness until the judgment of the great day.
-
-Jude does not provide a detailed account of their rebellion, but he presents their punishment as another example of God's judgment.
-
-He next recalls Sodom and Gomorrah and the surrounding cities.
-
-These places became known for sexual immorality and the pursuit of forbidden desires. Their destruction by fire serves as a warning of divine judgment.
-
-Through these examples, Jude establishes a pattern.
-
-Those who rebel against God's authority cannot assume that their former position, privileges, or experiences will protect them from judgment.
-
-His warning prepares the believers to recognize similar attitudes among the false teachers now troubling their communities.
+Jude reminds them of three warnings from the past. First, the Lord saved Israel out of Egypt, but afterward He destroyed those who did not believe. Second, there were angels “which kept not their first estate,” who left their proper place. God holds them “in everlasting chains under darkness unto the judgment of the great day.” Third, “Even as Sodom and Gomorrha, and the cities about them,” which gave themselves to sexual immorality and went after “strange flesh,” serve as an example, “suffering the vengeance of eternal fire.” Each example shows that God's people cannot take His patience for granted.
 
 **False Teachers Reject Authority and Corrupt Others (Jude 1:8–13)** — Jude exposes the arrogance, greed, and destructive influence of false teachers who reject authority while participating in the believers' gatherings.
 
-Jude compares the false teachers to those who rebelled in earlier generations.
+The false teachers are just like those examples. They defile the flesh, reject authority, and insult heavenly beings. Even “Michael the archangel, when contending with the devil he disputed about the body of Moses,” did not dare to accuse him himself, “but said, The Lord rebuke thee.” This story is not found in the Old Testament but comes from Jewish tradition. Yet these men mock what they do not understand, and like animals, they destroy themselves.
 
-He describes them as people who defile their bodies, reject authority, and speak disrespectfully about heavenly beings.
-
-Their arrogance stands in contrast to Michael the archangel.
-
-Jude recalls an account in which Michael disputed with the devil concerning the body of Moses, the leader who guided Israel out of Egypt.
-
-Rather than bringing a reckless accusation, Michael left the matter to the Lord's judgment.
-
-This incident is not described in the Old Testament account of Moses' death, and Jude does not explain its original source.
-
-The false teachers, however, speak abusively about matters they do not understand.
-
-Jude compares their conduct to three figures from Israel's earlier history.
-
-Cain murdered his brother Abel. Balaam pursued the reward associated with wrongdoing. Korah rebelled against the leadership God had established.
-
-These examples illustrate the teachers' violence of spirit, greed, and rejection of authority.
-
-Jude then describes their harmful influence through a series of images.
-
-They are dangerous blemishes at the believers' shared meals, serving themselves without proper concern for others.
-
-They resemble clouds without water, promising refreshment but providing none.
-
-They are like fruitless trees, wild waves producing shame, and wandering stars reserved for darkness.
-
-Their outward presence among believers does not make their teaching trustworthy.
-
-Instead, Jude portrays them as spiritually empty and destructive.
+“Woe unto them! for they have gone in the way of Cain, and ran greedily after the error of Balaam for reward, and perished in the gainsaying of Core.” Core is Korah, who rebelled against Moses. Jude piles up vivid pictures. They are “spots in your feasts of charity,” the church's shared meals. They are “clouds they are without water, carried about of winds; trees whose fruit withereth, without fruit, twice dead, plucked up by the roots; Raging waves of the sea, foaming out their own shame; wandering stars, to whom is reserved the blackness of darkness for ever.”
 
 **God's Judgment Will Expose Ungodliness (Jude 1:14–16)** — Jude warns that God will judge ungodly conduct and speech, recalling a prophecy attributed to Enoch and describing the selfish character of the deceivers.
 
-Jude continues his warning by referring to Enoch, the seventh from Adam.
-
-He quotes a prophecy attributed to Enoch concerning the Lord coming with thousands of His holy ones to execute judgment.
-
-The prophecy declares that God will confront ungodly deeds and the harsh words spoken against Him.
-
-Jude's quotation closely resembles a passage preserved in the ancient writing known as 1 Enoch. The letter does not explain how that prophecy was transmitted.
-
-Jude applies its warning to those who have entered the Christian community and rejected God's authority.
-
-He describes these people as complainers and faultfinders who follow their own sinful desires.
-
-Their speech is filled with arrogance, and they flatter others when doing so offers some personal advantage.
-
-Their behavior reveals a pattern of selfishness rather than sincere devotion to God.
-
-Jude's warning emphasizes that God sees not only outward actions but also the motives and words that accompany them.
-
-Those who use religion to promote themselves, exploit others, or encourage ungodliness will ultimately answer to Him.
+Jude quotes a prophecy from “Enoch also, the seventh from Adam,” found in an ancient Jewish book called 1 Enoch: “Behold, the Lord cometh with ten thousands of his saints, To execute judgment upon all.” The Lord will convict the ungodly of all their ungodly deeds and of all the harsh words they have spoken against Him. Jude describes the false teachers as “murmurers, complainers, walking after their own lusts.” They speak proud words and flatter people to gain an advantage.
 
 **The Apostles Warned That Mockers Would Come (Jude 1:17–19)** — Jude reminds believers that the apostles had already warned about people who would follow ungodly desires, create divisions, and reject the Spirit's influence.
 
-After describing the character and judgment of the false teachers, Jude turns toward encouragement.
-
-He reminds his readers of the words previously spoken by the apostles of the Lord Jesus Christ.
-
-These messengers had warned that mockers would appear in the last time.
-
-Such people would follow their own ungodly desires rather than submit to God's truth.
-
-Jude explains that the believers are witnessing the kind of behavior the apostles had described.
-
-The false teachers create divisions within the Christian community.
-
-They are driven by natural desires and do not have the Spirit.
-
-This reminder helps the believers understand that the appearance of deceptive teachers does not mean God's purposes have failed.
-
-They have already been warned that opposition and spiritual corruption would arise.
-
-Instead of allowing these people to shake their confidence, the believers must remember the trustworthy teaching they received and recognize the difference between genuine faith and conduct driven by selfish desires.
+But the believers should not be surprised. “But, beloved, remember ye the words which were spoken before of the apostles of our Lord Jesus Christ; How that they told you there should be mockers in the last time, who should walk after their own ungodly lusts.” These are the people who cause divisions, who follow their natural instincts, “having not the Spirit.”
 
 **Believers Must Remain in God's Love (Jude 1:20–23)** — Jude encourages Christians to strengthen their faith through prayer, remain in God's love, and show mercy while helping others escape spiritual danger.
 
-Having warned against the false teachers, Jude now explains how believers should respond.
-
-They must continue building themselves up in their most holy faith.
-
-Rather than becoming distracted by destructive arguments, they should strengthen their understanding and commitment to the truth.
-
-Jude also urges them to pray in the Holy Ghost.
-
-Their spiritual lives should remain dependent upon God's presence and guidance.
-
-He then instructs them to keep themselves in the love of God while looking for the mercy of the Lord Jesus Christ that leads to eternal life.
-
-This expectation directs their attention toward the hope promised through Christ.
-
-Jude also reminds the believers that faithfulness involves concern for others.
-
-Some people are struggling with doubt or have become vulnerable to misleading teaching.
-
-They should receive mercy.
-
-Others require urgent help because they are in serious spiritual danger. Jude describes their rescue as pulling someone out of the fire.
-
-Still others must be approached with mercy joined to caution, because their sinful behavior presents a danger that must not be treated lightly.
-
-His instructions distinguish between different spiritual needs without abandoning the responsibility to show compassion.
-
-The believers are not called merely to protect themselves from deception.
-
-They must also care for those who are struggling and seek to restore those being drawn away from the truth.
+In contrast, Jude tells the believers how to stay strong: “But ye, beloved, building up yourselves on your most holy faith, praying in the Holy Ghost, Keep yourselves in the love of God, looking for the mercy of our Lord Jesus Christ unto eternal life.” And they must care for others who are wavering: “And of some have compassion, making a difference: And others save with fear, pulling them out of the fire.” They should help people escape sin while hating even the clothing stained by it.
 
 **God Is Able to Keep His People from Falling (Jude 1:24–25)** — Jude closes with praise to God, expressing confidence in His power to preserve believers and bring them into His glorious presence with joy.
 
-After describing the dangers of deception and the responsibilities of faithful believers, Jude concludes by directing attention toward God.
-
-He praises the One who is able to keep His people from falling.
-
-Throughout the letter, Jude has warned that false teachers can lead people away from the truth. He has shown how pride, greed, rebellion, and uncontrolled desires can corrupt a community.
-
-Yet his final words do not leave the believers focused upon those dangers.
-
-Instead, he reminds them of God's power to preserve them.
-
-God is able to present His people faultless before the presence of His glory with exceeding joy.
-
-This assurance stands alongside Jude's earlier instructions to remain faithful, pray, and continue in God's love.
-
-The believers must take spiritual danger seriously, but their hope ultimately rests in God's saving power.
-
-Jude then offers praise to the only wise God our Saviour.
-
-Through Jesus Christ, he declares that glory, majesty, dominion, and power belong to God, both now and forever.
-
-The letter ends without personal greetings or further information about the communities receiving it.
-
-Its conclusion brings together the central concerns that have shaped the entire message.
-
-Jude began by urging believers to defend the faith because deceptive teachers were turning God's grace into permission for wrongdoing.
-
-He then recalled earlier examples of judgment, exposed the destructive behavior of the false teachers, and reminded the community of warnings delivered through the apostles.
-
-Finally, he encouraged believers to strengthen their faith, continue praying, remain in God's love, and show mercy toward those in spiritual danger.
-
-Jude closes with confidence that the God who calls His people is also powerful enough to preserve them.
-
-His final praise places the future of believers in the hands of the One whose glory, authority, and power endure forever.
+Jude ends with one of the most beloved blessings in the Bible: “Now unto him that is able to keep you from falling, and to present you faultless before the presence of his glory with exceeding joy, To the only wise God our Saviour, be glory and majesty, dominion and power, both now and ever. Amen.” After a letter full of warnings, Jude reminds them that their safety does not depend on their own strength. God is able to keep them.
 
 # Revelation
 When it happened: John was on the island of Patmos "for the word of God, and for the testimony of Jesus Christ" (Revelation 1:9). Early church tradition dates the book near the end of the emperor Domitian's reign, around AD 95; some scholars prefer the late AD 60s.
@@ -1566,218 +460,102 @@ The world at the time: Believers in the Roman Empire faced persecution—Antipas
 
 **John Receives a Vision of Jesus Christ (Revelation 1:1–20)** — While on the island of Patmos, John receives a revelation from Jesus Christ and is commanded to share what he sees with seven churches.
 
-John, a servant of Jesus Christ, is on the island of Patmos because of God's word and his testimony about Jesus. He receives a revelation intended to show God's servants things that must take place.
+The book begins, “The Revelation of Jesus Christ, which God gave unto him, to shew unto his servants things which must shortly come to pass.” Revelation means unveiling. It is full of symbols, like a vivid picture language, and Christians have read it in different ways: as describing the Roman world of John's day, as predicting future events, or as showing the spiritual battle in every age. It is the only book in the Bible that promises a special blessing to its readers: “Blessed is he that readeth, and they that hear the words of this prophecy.”
 
-On the Lord's day, John hears a powerful voice commanding him to write to seven churches in Asia.
+John writes to seven churches in the Roman province of Asia. He sends grace from God, “which is, and which was, and which is to come,” and from Jesus Christ, “the first begotten of the dead, and the prince of the kings of the earth. Unto him that loved us, and washed us from our sins in his own blood.” “Behold, he cometh with clouds; and every eye shall see him.” God declares, “I am Alpha and Omega, the beginning and the ending.” Alpha and Omega are the first and last letters of the Greek alphabet.
 
-Turning around, he sees seven golden candlesticks and someone resembling the Son of man standing among them. His appearance is radiant, and His voice sounds like rushing waters.
+John explains that he was on the island of Patmos, exiled “for the word of God, and for the testimony of Jesus Christ.” He was “in the Spirit on the Lord's day” when he heard a voice like a trumpet. He turned and saw seven golden lampstands, and among them “one like unto the Son of man.” His hair was white as snow, “his eyes were as a flame of fire,” His feet were like glowing bronze, and His voice was “as the sound of many waters.” He held seven stars in His right hand, a sharp two-edged sword came out of His mouth, and His face shone like the sun.
 
-John falls at His feet, but Jesus tells him not to fear. He declares that He was dead and is now alive forevermore, holding the keys of death and hell.
-
-Jesus explains that the candlesticks represent the seven churches and the stars in His hand represent their angels.
+John fell at His feet as though dead. But Jesus laid His right hand on him and said, “Fear not; I am the first and the last: I am he that liveth, and was dead; and, behold, I am alive for evermore, Amen; and have the keys of hell and of death.” He explains that the seven stars are the angels, or messengers, of the seven churches, and the seven lampstands are the churches themselves.
 
 **Jesus Speaks to the Seven Churches (Revelation 2:1–3:22)** — Jesus addresses seven congregations, praising their faithfulness, exposing their failures, and calling them to repentance, endurance, and spiritual readiness.
 
-Jesus first addresses Ephesus, praising its perseverance but warning that it has abandoned its first love.
+Jesus dictates a short letter to each of the seven churches. Each letter describes Jesus in a different way, praises what is good, corrects what is wrong, and promises a reward “To him that overcometh.” Each one ends with, “He that hath an ear, let him hear what the Spirit saith unto the churches.”
 
-Smyrna faces suffering and poverty but is encouraged to remain faithful. Pergamos is warned against corrupt teaching, while Thyatira is confronted for tolerating a woman called Jezebel, who leads believers into immorality and idolatry.
+Ephesus works hard and rejects false teachers, “Nevertheless I have somewhat against thee, because thou hast left thy first love.” Smyrna is poor and persecuted, but Jesus says, “be thou faithful unto death, and I will give thee a crown of life.” Pergamos lives “where Satan's seat is,” and one of its members, Antipas, has been killed for his faith. Yet some there follow false teaching. Thyatira is growing in love and service, but it tolerates a woman Jesus calls “that woman Jezebel,” who leads believers into sexual immorality and idol worship. Sardis has a reputation for being alive, “and art dead.” It must wake up.
 
-Sardis has a reputation for being alive but is spiritually dead. Philadelphia receives encouragement for keeping Christ's word despite having little strength.
-
-Laodicea is rebuked for being lukewarm and trusting in its wealth while failing to recognize its spiritual poverty.
-
-Throughout these messages, Jesus calls His people to listen, repent where necessary, and overcome through faithfulness.
-
-He promises eternal blessings to those who remain loyal to Him.
+Philadelphia is weak, but faithful. Jesus says, “behold, I have set before thee an open door, and no man can shut it.” Finally comes Laodicea, a wealthy city known for banking, cloth, and eye medicine, whose water supply was lukewarm. Jesus says, “I know thy works, that thou art neither cold nor hot... So then because thou art lukewarm, and neither cold nor hot, I will spue thee out of my mouth.” They think they are rich and need nothing, but they are “wretched, and miserable, and poor, and blind, and naked.” Yet Jesus loves them and invites them: “Behold, I stand at the door, and knock: if any man hear my voice, and open the door, I will come in to him, and will sup with him, and he with me.”
 
 **Heaven Worships the Lamb Who Is Worthy (Revelation 4:1–5:14)** — John sees God's heavenly throne and witnesses Jesus Christ, represented as a slain Lamb, receiving authority to open a sealed scroll.
 
-John sees an open door in heaven and is invited to witness what follows.
+Next John sees “a door was opened in heaven,” and a voice says, “Come up hither.” He sees a throne with someone seated on it who shines like precious stones, with a rainbow around the throne. Around it are twenty-four elders on thrones, wearing white robes and gold crowns. Lightning and thunder come from the throne. Around it are four living creatures, like a lion, a calf, a man, and a flying eagle, full of eyes. Day and night they never stop saying, “Holy, holy, holy, Lord God Almighty, which was, and is, and is to come.” The elders lay their crowns before the throne and say, “Thou art worthy, O Lord, to receive glory and honour and power: for thou hast created all things.”
 
-God's throne stands at the center of the vision, surrounded by twenty-four elders and four living creatures. Thunder and lightning proceed from the throne as heavenly beings continually worship God.
+In the right hand of the One on the throne is a scroll, written on both sides and sealed with seven seals. An angel asks, “Who is worthy to open the book, and to loose the seals thereof?” No one in heaven or on earth can, and John weeps. But an elder tells him, “Weep not: behold, the Lion of the tribe of Juda, the Root of David, hath prevailed to open the book.” John looks for a lion. Instead, he sees “a Lamb as it had been slain,” standing at the center of the throne. The conquering Lion is the Lamb who was sacrificed.
 
-John then notices a scroll sealed with seven seals.
-
-No one is found worthy to open it, causing John to weep.
-
-An elder announces that the Lion of Judah has prevailed. John then sees a Lamb appearing as though it had been slain.
-
-The Lamb takes the scroll, and heaven erupts in worship.
-
-The heavenly beings praise Jesus because His sacrifice has redeemed people for God from every nation and language.
+When the Lamb takes the scroll, the creatures and elders fall down before Him and sing a new song: “Thou art worthy to take the book, and to open the seals thereof: for thou wast slain, and hast redeemed us to God by thy blood out of every kindred, and tongue, and people, and nation.” Then countless angels join in, “ten thousand times ten thousand,” saying, “Worthy is the Lamb that was slain to receive power, and riches, and wisdom, and strength, and honour, and glory, and blessing.” Finally every creature in heaven, on earth, under the earth, and in the sea joins the praise.
 
 **The Seven Seals Reveal Judgment and Suffering (Revelation 6:1–8:5)** — As the Lamb opens the seals, John witnesses symbolic riders, persecution, heavenly disturbances, and God's protection of His servants.
 
-The Lamb begins opening the seven seals.
+The Lamb begins opening the seals. With the first four come four horsemen. A white horse goes out “conquering, and to conquer.” A red horse takes peace from the earth. A black horse brings famine. And a pale horse comes, “and his name that sat on him was Death, and Hell followed with him.” At the fifth seal, John sees under the altar the souls of those killed for God's word. They cry, “How long, O Lord, holy and true, dost thou not judge and avenge our blood?” They are given white robes and told to wait a little longer. The sixth seal brings a great earthquake. The sun turns black and the stars fall, and the kings and great men of the earth hide in caves, calling to the mountains, “Fall on us, and hide us from the face of him that sitteth on the throne, and from the wrath of the Lamb.” “For the great day of his wrath is come; and who shall be able to stand?”
 
-Four riders appear on differently colored horses, representing forces associated with conquest, warfare, scarcity, and death.
+Chapter 7 answers that question. Before more judgment falls, an angel seals 144,000 servants of God on their foreheads, twelve thousand from each tribe of Israel. Then John sees “a great multitude, which no man could number, of all nations, and kindreds, and people, and tongues,” standing before the throne in white robes, holding palm branches. They cry, “Salvation to our God which sitteth upon the throne, and unto the Lamb.” An elder explains, “These are they which came out of great tribulation, and have washed their robes, and made them white in the blood of the Lamb.” “They shall hunger no more, neither thirst any more,” “and God shall wipe away all tears from their eyes.”
 
-The fifth seal reveals souls beneath heaven's altar who were killed for their testimony. They cry out for justice and are told to wait.
-
-When the sixth seal opens, a great earthquake and terrifying disturbances shake the heavens and earth. People hide in fear of divine judgment.
-
-Before the seventh seal, John sees 144,000 sealed servants from Israel's tribes.
-
-He also sees an uncountable multitude from every nation standing before God's throne, clothed in white and praising the Lamb. They have come through great tribulation and are promised God's continuing care.
-
-The seventh seal brings silence in heaven. Seven angels receive trumpets, and an angel presents the prayers of God's people before the throne.
+When the Lamb opens the seventh seal, “there was silence in heaven about the space of half an hour.” Seven angels are given seven trumpets. Another angel offers incense with the prayers of all the saints, then throws fire from the altar onto the earth, bringing thunder, lightning, and an earthquake.
 
 **Seven Trumpets Announce Further Judgments (Revelation 8:6–11:19)** — The trumpet visions portray devastating judgments, warnings against unrepentance, and the announcement that the world's kingdom belongs to Christ.
 
-As the first four trumpets sound, John sees destruction affecting vegetation, seas, fresh waters, and heavenly lights.
+The seven angels begin to blow their trumpets, and each brings a disaster, many echoing the plagues of Egypt. Hail and fire mixed with blood burn a third of the earth's trees and grass. A burning mountain falls into the sea, and a third of the sea turns to blood. A blazing star called Wormwood falls on the rivers and makes the waters bitter. A third of the sun, moon, and stars go dark. An eagle cries, “Woe, woe, woe,” warning that the last three trumpets will be worse.
 
-The fifth trumpet releases tormenting locust-like creatures from the bottomless pit. The sixth brings a destructive army, yet surviving people refuse to repent of their idolatry and wrongdoing.
+At the fifth trumpet, the bottomless pit is opened, and smoke pours out with locusts shaped like horses ready for battle. They torment those who do not have God's seal for five months, and their king is called Abaddon, or Apollyon, meaning destroyer. The sixth trumpet releases an army of two hundred million horsemen that kills a third of humanity. Yet the survivors “repented not of the works of their hands,” and kept worshiping idols and committing murder, sorcery, sexual immorality, and theft.
 
-John then sees a mighty angel holding a little book. He eats it as commanded, finding it sweet in his mouth but bitter in his stomach.
+Before the seventh trumpet, a mighty angel declares “that there should be time no longer,” meaning no more delay. He gives John a little scroll to eat, sweet in his mouth but bitter in his stomach, and tells him he must prophesy again. Then John is told to measure God's temple. Two witnesses will prophesy for 1,260 days, with power to shut the sky and turn water to blood. When they finish, the beast from the pit kills them, and their bodies lie in the street while the world celebrates. But after three and a half days, God breathes life into them, and they rise up to heaven in a cloud.
 
-He is instructed to prophesy again.
-
-Next, John receives a measuring rod and sees two witnesses who prophesy for 1,260 days. A beast kills them, but God raises them to life, and they ascend into heaven.
-
-After a great earthquake, the seventh trumpet sounds.
-
-Heaven announces that the kingdoms of the world have become the kingdom of the Lord and His Christ. Worship follows as God's heavenly temple opens.
+Then the seventh angel sounds, and loud voices in heaven announce, “The kingdoms of this world are become the kingdoms of our Lord, and of his Christ; and he shall reign for ever and ever.” The elders worship, and God's temple in heaven opens, revealing the ark of His covenant.
 
 **The Dragon Makes War Against God's People (Revelation 12:1–13:18)** — John sees a dragon opposing a woman and her child, followed by two beasts that receive authority and demand the world's allegiance.
 
-A woman clothed with the sun appears, followed by a great red dragon seeking to destroy her child.
+John sees “a great wonder in heaven; a woman clothed with the sun, and the moon under her feet, and upon her head a crown of twelve stars.” She is about to give birth. Then a great red dragon with seven heads and ten horns stands ready to devour her child. She gives birth to a son “who was to rule all nations with a rod of iron,” and the child is caught up to God's throne, while the woman flees to the wilderness, where God protects her. The child is Christ, and the woman represents God's people.
 
-The child, destined to rule the nations, is caught up to God. The woman receives protection in the wilderness.
+“And there was war in heaven: Michael and his angels fought against the dragon.” The dragon loses and is thrown down to earth. John names him plainly: “that old serpent, called the Devil, and Satan, which deceiveth the whole world.” A voice in heaven celebrates, because the accuser of believers has been thrown down: “And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death.” But it warns the earth, because the devil is furious, “because he knoweth that he hath but a short time.” Unable to destroy the woman, he goes to make war with the rest of her children, “which keep the commandments of God, and have the testimony of Jesus Christ.”
 
-War breaks out in heaven. Michael and his angels defeat the dragon, who is identified as Satan, and cast him down.
-
-The dragon then attacks those who keep God's commandments and hold the testimony of Jesus.
-
-John next sees a beast rising from the sea, receiving authority from the dragon and demanding worship.
-
-Another beast rises from the earth, performs signs, and directs people to worship the first beast.
-
-It also enforces a mark associated with the beast's name or number, 666, restricting buying and selling.
-
-The identities and timing of these symbolic figures remain subjects of differing Christian interpretations.
+The dragon calls up two allies. A beast rises out of the sea with seven heads and ten horns. One of its heads seems to have a fatal wound that has healed, and the whole world follows it in amazement. They worship the dragon and the beast, saying, “Who is like unto the beast? who is able to make war with him?” The beast speaks blasphemies and makes war on the saints. Then a second beast rises from the earth. It has two horns like a lamb but speaks like a dragon. It does great signs and forces everyone to worship the first beast. No one can buy or sell without the beast's mark on their right hand or forehead. “Here is wisdom. Let him that hath understanding count the number of the beast: for it is the number of a man; and his number is Six hundred threescore and six,” which is 666. Many early readers connected this number with the emperor Nero, but its meaning has been widely debated.
 
 **Heaven Announces the Coming Judgment (Revelation 14:1–15:8)** — John sees the Lamb with His people, hears warnings concerning Babylon and the beast, and witnesses preparations for God's final plagues.
 
-John sees the Lamb standing on Mount Zion with 144,000 who bear His Father's name.
+After the terrifying beasts, John sees the Lamb standing on Mount Sion with the 144,000, who have His name and His Father's name on their foreheads. They sing a new song that only they can learn. “These are they which follow the Lamb whithersoever he goeth.”
 
-Heavenly voices sing a new song before God's throne.
+Three angels fly through the sky with messages for the world. The first proclaims “the everlasting gospel” to every nation: “Fear God, and give glory to him; for the hour of his judgment is come.” The second announces, “Babylon is fallen, is fallen, that great city.” The third warns that anyone who worships the beast and receives its mark will drink the wine of God's wrath. Then a voice says, “Blessed are the dead which die in the Lord from henceforth... that they may rest from their labours; and their works do follow them.” Then John sees one like the Son of man on a white cloud, with a sharp sickle, and the earth is harvested. Angels gather the grapes of the earth and throw them into “the great winepress of the wrath of God.”
 
-Three angels then announce significant messages.
-
-The first calls people to fear God and worship their Creator. The second announces the fall of Babylon, a symbol associated with opposition to God. The third warns against worshiping the beast and receiving its mark.
-
-John is reminded of the endurance required of God's people and the blessing awaiting those who die in the Lord.
-
-A vision of harvest and judgment follows, including a winepress representing divine wrath.
-
-John then sees seven angels carrying the final plagues.
-
-Victorious worshipers praise God beside a sea of glass, while the heavenly temple fills with the smoke of His glory.
+In chapter 15, John sees seven angels with the seven last plagues. He also sees the believers who defeated the beast, standing beside a sea of glass mixed with fire. They hold harps and sing “the song of Moses the servant of God, and the song of the Lamb,” just as Israel sang after crossing the Red Sea: “Great and marvellous are thy works, Lord God Almighty; just and true are thy ways, thou King of saints.” The temple in heaven fills with smoke from God's glory, and no one can enter until the seven plagues are finished.
 
 **The Seven Bowls Complete God's Wrath (Revelation 16:1–21)** — Seven angels pour out bowls of judgment upon the earth, revealing widespread suffering, continued rebellion, and the collapse of earthly opposition.
 
-The seven angels begin pouring their bowls upon the earth.
+A loud voice from the temple tells the seven angels, “Go your ways, and pour out the vials of the wrath of God upon the earth.” Vials are bowls. These judgments are not partial, as the trumpets were. They are complete. Painful sores break out on those with the mark of the beast. The sea turns to blood, and every living thing in it dies. The rivers and springs turn to blood. An angel says this is just, for “they have shed the blood of saints and prophets, and thou hast given them blood to drink.” The sun scorches people with fire, “and they repented not to give him glory.” The beast's kingdom is plunged into darkness, and people gnaw their tongues in pain, yet still they curse God and do not repent.
 
-Painful sores afflict those bearing the beast's mark. The sea becomes blood, followed by the rivers and fountains of water.
-
-The sun scorches people with intense heat, yet they refuse to repent.
-
-Darkness covers the beast's kingdom, but its people continue blaspheming God.
-
-The sixth bowl dries the Euphrates River, while deceptive spirits gather kings for battle at a place called Armageddon.
-
-When the seventh bowl is poured into the air, a voice from heaven declares that the judgment is finished.
-
-A great earthquake shakes the earth, cities fall, and enormous hailstones descend.
-
-Even amid these judgments, the vision emphasizes the stubbornness of those who continue resisting God.
+At the sixth bowl, the Euphrates River dries up to prepare the way for the kings of the east. Three unclean spirits like frogs come out of the mouths of the dragon, the beast, and the false prophet, gathering the kings of the whole world “to the battle of that great day of God Almighty,” at a place called “Armageddon.” Jesus breaks in with a warning: “Behold, I come as a thief. Blessed is he that watcheth.” When the seventh bowl is poured out, a voice from the throne says, “It is done.” The greatest earthquake in history splits the great city into three parts, islands and mountains disappear, and huge hailstones weighing about a hundred pounds fall from the sky.
 
 **Babylon's Corruption and Destruction Are Revealed (Revelation 17:1–18:24)** — John sees Babylon portrayed as a corrupt woman and a powerful city whose wealth, violence, and rebellion end in sudden destruction.
 
-An angel shows John a woman seated upon a scarlet beast.
+An angel shows John “the great whore that sitteth upon many waters,” a woman riding a scarlet beast with seven heads and ten horns. She is dressed in purple and scarlet, covered in gold and jewels, and holds a gold cup full of filth. On her forehead is written, “MYSTERY, BABYLON THE GREAT, THE MOTHER OF HARLOTS AND ABOMINATIONS OF THE EARTH.” She is drunk “with the blood of the saints, and with the blood of the martyrs of Jesus.” The angel explains that the seven heads are seven mountains on which she sits, and that she is “that great city, which reigneth over the kings of the earth.” In John's day, Rome was famous as the city on seven hills. Babylon stands for the proud, rich, godless world power that persecutes God's people. The beast's allies will turn on her and destroy her. They will also make war with the Lamb, “and the Lamb shall overcome them: for he is Lord of lords, and King of kings.”
 
-She wears luxurious clothing and holds a golden cup filled with corruption. Her name identifies her with Babylon the Great.
+In chapter 18, an angel shining with glory cries, “Babylon the great is fallen, is fallen.” Another voice warns God's people, “Come out of her, my people, that ye be not partakers of her sins.” Her sins have piled up to heaven, and God will repay her double. She boasted, “I sit a queen, and am no widow, and shall see no sorrow,” but in one day her plagues will come.
 
-The woman is drunk with the blood of God's faithful witnesses.
-
-The angel explains parts of the vision, including the beast's heads and horns, representing kings and ruling powers.
-
-The beast and its allies ultimately turn against the woman.
-
-John then hears another announcement that Babylon has fallen.
-
-God's people are called to separate themselves from her sins.
-
-Kings, merchants, and sailors mourn her destruction because they benefited from her wealth and trade.
-
-Yet heaven is called to rejoice because God's judgment has answered her violence and wrongdoing.
-
-A mighty angel illustrates Babylon's complete downfall by casting a great stone into the sea.
+The kings of the earth weep over her: “Alas, alas, that great city Babylon, that mighty city! for in one hour is thy judgment come.” The merchants mourn, because no one buys their cargo anymore. John lists their goods: gold, silver, jewels, silk, ivory, spices, wine, horses, chariots, “and slaves, and souls of men.” Sailors stand far off and watch her burn. But heaven rejoices. An angel throws a huge millstone into the sea and says Babylon will be thrown down just as violently and never found again. Music, craftsmen, and the voices of bride and groom will never be heard in her again, for in her was found the blood of the prophets and saints.
 
 **Christ Triumphs Over the Powers of Evil (Revelation 19:1–20:15)** — Heaven celebrates God's victory as Christ appears in judgment, evil powers are defeated, and all the dead stand before God's throne.
 
-Heaven rejoices over Babylon's judgment, and the marriage supper of the Lamb is announced.
+Heaven erupts in praise with a great multitude: “Alleluia; Salvation, and glory, and honour, and power, unto the Lord our God.” Then they announce, “Alleluia: for the Lord God omnipotent reigneth. Let us be glad and rejoice, and give honour to him: for the marriage of the Lamb is come, and his wife hath made herself ready.” The bride is clothed in fine linen, “for the fine linen is the righteousness of saints.” “Blessed are they which are called unto the marriage supper of the Lamb.”
 
-John then sees heaven opened and a rider on a white horse called Faithful and True. He is identified as the Word of God and King of kings.
+Then heaven opens, and John sees a white horse. Its rider is called “Faithful and True.” “His eyes were as a flame of fire, and on his head were many crowns,” and He is clothed in a robe dipped in blood, “and his name is called The Word of God.” The armies of heaven follow Him on white horses. From His mouth comes a sharp sword to strike the nations. “And he hath on his vesture and on his thigh a name written, KING OF KINGS, AND LORD OF LORDS.” The beast and the kings of the earth gather to fight Him. But the beast and the false prophet are captured and thrown alive into a lake of fire, and their armies are struck down.
 
-He judges and makes war in righteousness.
+An angel comes down with the key to the bottomless pit and a great chain. He binds “the dragon, that old serpent, which is the Devil, and Satan,” for a thousand years, so he can no longer deceive the nations. The martyrs who refused the beast's mark come to life and reign with Christ for a thousand years. “Blessed and holy is he that hath part in the first resurrection.” Christians have understood this thousand-year reign, called the millennium, in several different ways. When the thousand years end, Satan is released and gathers the nations, called Gog and Magog, for one last battle. They surround the camp of God's people, but fire falls from heaven and consumes them. The devil is thrown into the lake of fire, where the beast and false prophet are, forever.
 
-The beast and the kings of the earth gather against Him, but the beast and false prophet are captured and thrown into the lake of fire.
-
-John next sees Satan bound for a thousand years.
-
-Those described as sharing in the first resurrection reign with Christ during this period.
-
-Afterward, Satan is released and gathers nations for a final rebellion, but fire from heaven destroys them. Satan is thrown into the lake of fire.
-
-John then sees a great white throne.
-
-The dead are judged according to what is written in the books, and anyone not found in the book of life is cast into the lake of fire.
-
-Christians differ on how the thousand years and these events relate to history and Christ's return.
+Then John sees “a great white throne, and him that sat on it,” from whose face the earth and heaven flee away. “And I saw the dead, small and great, stand before God; and the books were opened: and another book was opened, which is the book of life: and the dead were judged out of those things which were written in the books, according to their works.” The sea, death, and hell give up their dead. Then “death and hell were cast into the lake of fire. This is the second death. And whosoever was not found written in the book of life was cast into the lake of fire.”
 
 **God Creates a New Heaven and Earth (Revelation 21:1–27)** — John witnesses the disappearance of the former world and the arrival of the New Jerusalem, where God dwells permanently among His people.
 
-John sees a new heaven and a new earth, for the former heaven and earth have passed away.
+“And I saw a new heaven and a new earth: for the first heaven and the first earth were passed away; and there was no more sea.” John sees “the holy city, new Jerusalem, coming down from God out of heaven, prepared as a bride adorned for her husband.” A loud voice from the throne announces, “Behold, the tabernacle of God is with men, and he will dwell with them, and they shall be his people, and God himself shall be with them, and be their God. And God shall wipe away all tears from their eyes; and there shall be no more death, neither sorrow, nor crying, neither shall there be any more pain: for the former things are passed away.”
 
-The holy city, New Jerusalem, descends from God, prepared like a bride.
+The One on the throne says, “Behold, I make all things new.” “It is done. I am Alpha and Omega, the beginning and the end. I will give unto him that is athirst of the fountain of the water of life freely.” Those who overcome will inherit all things, but the unbelieving, murderers, the sexually immoral, sorcerers, idolaters, and all liars will have their part in the lake of fire.
 
-A voice announces that God's dwelling is now with humanity.
+An angel carries John to a high mountain to show him “the bride, the Lamb's wife,” the holy city. It shines with God's glory like a precious jewel. It has a great high wall with twelve gates, each named for one of the twelve tribes of Israel, and twelve foundations bearing the names of the twelve apostles. The city is a perfect cube, about fifteen hundred miles on each side, made of pure gold like clear glass. Its foundations are decorated with every kind of precious stone. “And the twelve gates were twelve pearls,” and “the street of the city was pure gold.”
 
-God will wipe away every tear. Death, sorrow, crying, and pain will no longer exist because the former things have passed away.
-
-God declares that He is making all things new.
-
-An angel then shows John the New Jerusalem, shining with God's glory.
-
-The city has twelve gates, twelve foundations, precious stones, and streets of pure gold.
-
-John sees no temple within it because God Almighty and the Lamb are its temple.
-
-The city needs neither sun nor moon, for God's glory gives it light.
-
-Nothing unclean enters, but those written in the Lamb's book of life belong there.
+John sees no temple in the city, “for the Lord God Almighty and the Lamb are the temple of it.” The city needs no sun or moon, “for the glory of God did lighten it, and the Lamb is the light thereof.” The nations walk in its light, and its gates are never shut. Nothing unclean will ever enter it, “but they which are written in the Lamb's book of life.”
 
 **The River of Life and Christ's Final Promise (Revelation 22:1–21)** — John's final vision reveals eternal life in God's presence and closes with Christ's promise to come, an invitation to receive life, and a blessing of grace.
 
-John sees a pure river of the water of life flowing from the throne of God and the Lamb.
+The angel shows John “a pure river of water of life, clear as crystal, proceeding out of the throne of God and of the Lamb.” On each side of the river grows “the tree of life,” the same tree humanity lost in the garden of Eden. It bears twelve kinds of fruit, a new crop every month, “and the leaves of the tree were for the healing of the nations.” “And there shall be no more curse.” God's servants will serve Him, “And they shall see his face; and his name shall be in their foreheads.” There will be no night there, “and they shall reign for ever and ever.”
 
-Beside the river stands the tree of life, bearing twelve kinds of fruit. Its leaves are for the healing of the nations.
+The angel assures John, “These sayings are faithful and true.” Then Jesus Himself speaks: “Behold, I come quickly: blessed is he that keepeth the sayings of the prophecy of this book.” John falls down to worship the angel, but the angel stops him: “See thou do it not... worship God.” John is told not to seal up the book, because the time is near. Jesus says, “And, behold, I come quickly; and my reward is with me, to give every man according as his work shall be. I am Alpha and Omega, the beginning and the end, the first and the last.” “I Jesus have sent mine angel to testify unto you these things in the churches. I am the root and the offspring of David, and the bright and morning star.”
 
-The curse is removed, and God's servants worship Him, see His face, and reign forever.
-
-The angel assures John that these words are faithful and true.
-
-Jesus declares that He is coming quickly and that His reward is with Him.
-
-John is warned not to seal the prophecy and not to add to or remove from its words.
-
-The Spirit and the bride extend an invitation to come, and those who thirst are invited to receive the water of life freely.
-
-Jesus identifies Himself as the root and offspring of David and the bright morning star.
-
-John responds to Christ's promise of coming with an appeal for His arrival.
-
-The book concludes with a blessing of the grace of the Lord Jesus Christ.
-
-Revelation ends where its message has been leading: with God's victory over evil, the removal of death and suffering, and the promise that His people will dwell with Him forever.
+Then comes the Bible's final invitation: “And the Spirit and the bride say, Come. And let him that heareth say, Come. And let him that is athirst come. And whosoever will, let him take the water of life freely.” John warns that no one should add to or take away from the words of this book. Then Jesus speaks one last time: “Surely I come quickly.” John answers, “Amen. Even so, come, Lord Jesus.” The Bible ends with a blessing: “The grace of our Lord Jesus Christ be with you all. Amen.” The story that began in a garden with a tree of life ends in a city with the tree of life, where God lives with His people forever.
