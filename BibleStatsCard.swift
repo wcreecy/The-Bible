@@ -32,14 +32,59 @@ struct BibleStatsCard: View {
         .buttonStyle(.plain)
     }
 
+    /// Progress through the Bible, this week's reading, and the most-read book, which
+    /// the Stats page charts in full.
+    @ViewBuilder
+    private var highlights: some View {
+        StatHighlightTile(
+            title: "Bible Read",
+            value: "\(bibleVM.completionPercent)%",
+            caption: "\(bibleVM.visitedCount) of \(bibleVM.totalChapters) chapters",
+            systemImage: "book.closed.fill",
+            tint: .teal
+        )
+
+        StatHighlightTile(
+            title: "This Week",
+            value: StatHighlightTile.formattedDuration(bibleVM.thisWeekSeconds),
+            caption: "Reading time",
+            systemImage: "calendar",
+            tint: .blue
+        )
+
+        StatHighlightTile(
+            title: "Top Book",
+            value: bibleVM.topBooks.first?.book ?? "—",
+            caption: "Most time read",
+            systemImage: "star.fill",
+            tint: .orange
+        )
+    }
+
     var body: some View {
         HeroCard(
-            title: "App Activity",
-            subtitle: "Active reading and game time",
-            icon: "chart.bar.fill",
-            tint: .teal
+            title: HomeCardID.bibleStats.title,
+            subtitle: "Reading progress and activity",
+            icon: HomeCardID.bibleStats.systemImage,
+            tint: .teal,
+            trailingAccessory: {
+                Button(action: onOpenReadingStats) {
+                    Label("See All", systemImage: "chevron.right")
+                        .labelStyle(.titleAndIcon)
+                        .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.teal)
+                .accessibilityLabel("See all stats")
+            }
         ) {
             VStack(alignment: .leading, spacing: 14) {
+                // Three across when there's room; stacked in a narrow dashboard column.
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: 10) { highlights }
+                    VStack(spacing: 10) { highlights }
+                }
+
                 ActivityTimeGraph(
                     title: "Today",
                     readingSeconds: bibleVM.todaySeconds,
@@ -77,6 +122,54 @@ struct BibleStatsCard: View {
     private func refreshGameTime() {
         todayGameSeconds = GameStats.shared.playSeconds()
         allTimeGameSeconds = GameStats.shared.allTimePlaySeconds
+    }
+}
+
+private struct StatHighlightTile: View {
+    let title: LocalizedStringResource
+    let value: String
+    let caption: LocalizedStringResource
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label(title, systemImage: systemImage)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+
+            Text(value)
+                .font(.title3.weight(.bold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Text(caption)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(minWidth: 96, maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(tint.opacity(0.08))
+        )
+        .accessibilityElement(children: .combine)
+    }
+
+    /// "45s", "12m", or "1h 5m".
+    static func formattedDuration(_ seconds: Int) -> String {
+        let safeSeconds = max(0, seconds)
+        if safeSeconds < 60 {
+            return "\(safeSeconds)s"
+        }
+
+        let hours = safeSeconds / 3_600
+        let minutes = (safeSeconds % 3_600) / 60
+        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
     }
 }
 

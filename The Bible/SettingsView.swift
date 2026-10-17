@@ -737,7 +737,7 @@ private struct SettingsNavigationRow: View {
     }
 }
 
-private struct SettingsAppearanceDetailView: View {
+struct SettingsAppearanceDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "Appearance") {
             SettingsAppearanceSection()
@@ -958,7 +958,7 @@ private struct SettingsBibleReaderDetailView: View {
     }
 }
 
-private struct SettingsVerseOfTheDayDetailView: View {
+struct SettingsVerseOfTheDayDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "Verse of the Day") {
             SettingsVOTDSection()
@@ -966,7 +966,7 @@ private struct SettingsVerseOfTheDayDetailView: View {
     }
 }
 
-private struct SettingsDailyGoalDetailView: View {
+struct SettingsDailyGoalDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "Daily Goal") {
             SettingsDailyGoalSection()
@@ -991,7 +991,7 @@ private struct SettingsPermissionsDetailView: View {
     }
 }
 
-private struct SettingsiCloudDetailView: View {
+struct SettingsiCloudDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "iCloud Sync") {
             SettingsiCloudSection()

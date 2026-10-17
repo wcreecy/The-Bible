@@ -184,6 +184,8 @@ struct HomeView: View {
     @State private var isShowingDashboard = false
     /// Incremented by the Search card to ask Home to scroll it into view while typing.
     @State private var searchScrollRequest = 0
+    /// Set by the Get Started card's Customize Home step.
+    @State private var showsSetupLayoutEditor = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
     @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
@@ -221,6 +223,12 @@ struct HomeView: View {
         }
         saveHomeLayout()
         Haptics.selection()
+    }
+
+    /// Hides a card from its own controls (such as Get Started's Dismiss); Customize Home can show it again.
+    private func hideCard(_ id: HomeCardID) {
+        guard !hiddenCards.contains(id) else { return }
+        toggleCardHidden(id)
     }
 
     private func saveFavoriteLayout() {
@@ -360,6 +368,11 @@ struct HomeView: View {
                 onOpenGameStats: {
                     AppRouter.shared.open(.stats(.games))
                 }
+            )
+        case .setup:
+            SetupChecklistCard(
+                onCustomizeHome: { showsSetupLayoutEditor = true },
+                onDismiss: { hideCard(.setup) }
             )
         }
     }
@@ -619,18 +632,22 @@ struct HomeView: View {
         }
     }
 
+    private func layoutEditor(usesDashboard: Bool) -> some View {
+        HomeLayoutEditorView(
+            order: $layoutOrder,
+            hiddenSet: $hiddenCards,
+            columns: $columns,
+            usesDashboard: usesDashboard,
+            onDone: saveHomeLayout,
+            onSaveFavorite: saveFavoriteLayout,
+            onResetToFavorite: applyFavoriteLayout,
+            hasFavorite: hasFavoriteLayout
+        )
+    }
+
     private var customizeHomeLink: some View {
         NavigationLink {
-            HomeLayoutEditorView(
-                order: $layoutOrder,
-                hiddenSet: $hiddenCards,
-                columns: $columns,
-                usesDashboard: isPad,
-                onDone: saveHomeLayout,
-                onSaveFavorite: saveFavoriteLayout,
-                onResetToFavorite: applyFavoriteLayout,
-                hasFavorite: hasFavoriteLayout
-            )
+            layoutEditor(usesDashboard: isPad)
         } label: {
             Label("Customize Home", systemImage: "slider.horizontal.3")
                 .font(.subheadline.weight(.semibold))
@@ -699,21 +716,15 @@ struct HomeView: View {
             if isPad && !isEditingLayout {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
-                        HomeLayoutEditorView(
-                            order: $layoutOrder,
-                            hiddenSet: $hiddenCards,
-                            columns: $columns,
-                            usesDashboard: true,
-                            onDone: saveHomeLayout,
-                            onSaveFavorite: saveFavoriteLayout,
-                            onResetToFavorite: applyFavoriteLayout,
-                            hasFavorite: hasFavoriteLayout
-                        )
+                        layoutEditor(usesDashboard: true)
                     } label: {
                         Label("Customize Home", systemImage: "slider.horizontal.3")
                     }
                 }
             }
+        }
+        .navigationDestination(isPresented: $showsSetupLayoutEditor) {
+            layoutEditor(usesDashboard: isPad)
         }
         .appToast(
             isPresented: $showCopyToast,

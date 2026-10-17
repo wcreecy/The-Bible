@@ -10,14 +10,19 @@ struct HomeColumnLayoutTests {
     func seedingMatchesTheOldDashboardPlacement() {
         // The iPad default: Verse of the Day spanned the top, then visible cards filled
         // the two card columns row by row, with Today's Reading on the right.
+        let order: [HomeCardID] = [.verseOfDay, .today, .study, .streaks, .timer, .dailyFocus, .resumeReading, .search, .bibleStats]
         let layout = HomeColumnLayout.seeded(
-            from: [.verseOfDay, .today, .study, .streaks, .timer, .dailyFocus, .resumeReading, .search, .bibleStats],
+            from: order,
             hidden: defaultHidden,
             readerColumn: .right
         )
+        // Cards added since (left out of `order`) are appended by normalizing; only the seeded ones are checked.
+        func seededVisible(_ cards: [HomeCardID]) -> [HomeCardID] {
+            cards.filter { order.contains($0) && !defaultHidden.contains($0) }
+        }
 
-        #expect(layout.left.filter { !defaultHidden.contains($0) } == [.verseOfDay, .today, .streaks, .dailyFocus])
-        #expect(layout.middle.filter { !defaultHidden.contains($0) } == [.study, .timer])
+        #expect(seededVisible(layout.left) == [.verseOfDay, .today, .streaks, .dailyFocus])
+        #expect(seededVisible(layout.middle) == [.study, .timer])
         #expect(layout.right.isEmpty)
         #expect(Set(layout.left + layout.middle + layout.right) == Set(HomeCardID.allCases))
     }

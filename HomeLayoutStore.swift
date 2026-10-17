@@ -45,6 +45,7 @@ struct HomeLayoutStore {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [
                 .verseOfDay,
+                .setup,
                 .today,
                 .savedVerses,
                 .study,
@@ -58,8 +59,9 @@ struct HomeLayoutStore {
         }
 
         // iPhone: get back into the text and what it's about first, then the daily verse and challenges.
-        // Search, App Activity and Daily Focus are opt-in.
+        // Search, Your Stats and Daily Focus are opt-in. Get Started leads until it's dismissed.
         return [
+            .setup,
             .resumeReading,
             .study,
             .verseOfDay,
@@ -77,7 +79,7 @@ struct HomeLayoutStore {
             // Today's Reading covers Continue Reading, and the header has a Search button.
             return [.resumeReading, .search, .bibleStats]
         }
-        // Search duplicates the header's Search button; App Activity and Daily Focus are opt-in.
+        // Search duplicates the header's Search button; Your Stats and Daily Focus are opt-in.
         return [.search, .bibleStats, .dailyFocus]
     }
     // The iPad Today's Reading panel; iPhone does not show it.

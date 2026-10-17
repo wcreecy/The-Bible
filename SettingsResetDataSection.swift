@@ -80,7 +80,7 @@ struct SettingsResetDataSection: View {
         }
 
         // Reading time comes from reading stats and game time from the game ledger,
-        // so each reset above also clears the matching App Activity totals.
+        // so each reset above also clears the matching Your Stats card totals.
         resetConfirmationText = ""
         Haptics.success()
     }
