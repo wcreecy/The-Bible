@@ -7,11 +7,9 @@ struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
     var body: some View {
         Form {
-            SettingsPersonalizeLinksSection()
+            SettingsAppLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsReadingLinksSection()
-                .listRowBackground(HeroCardListRowBackground())
-            SettingsPrayerLinksSection()
+            SettingsReadingAndPrayerLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
             SettingsPrivacyAndSyncLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
@@ -35,15 +33,18 @@ struct SettingsView: View {
     }
 }
 
-private struct SettingsPersonalizeLinksSection: View {
+private struct SettingsAppLinksSection: View {
+    @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw = ColorSchemePreference.system.rawValue
+    @AppStorage(LaunchTabPreference.defaultsKey) private var launchTabRaw = LaunchTabPreference.home.rawValue
+
     var body: some View {
-        Section("Personalize") {
+        Section("App") {
             NavigationLink {
                 SettingsAppearanceDetailView()
             } label: {
                 SettingsNavigationRow(
                     title: "Appearance",
-                    subtitle: "Theme and Home background",
+                    subtitle: appearanceSummary,
                     systemImage: "paintbrush"
                 )
             }
@@ -63,7 +64,7 @@ private struct SettingsPersonalizeLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Launch Page",
-                    subtitle: "Choose where the app opens on this device",
+                    subtitle: launchPageSummary,
                     systemImage: "rectangle.on.rectangle"
                 )
             }
@@ -80,17 +81,40 @@ private struct SettingsPersonalizeLinksSection: View {
             .accessibilityIdentifier("widgetsSettingsLink")
         }
     }
+
+    private var appearanceSummary: LocalizedStringResource {
+        switch ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system {
+        case .system: "System appearance"
+        case .light: "Light appearance"
+        case .dark: "Dark appearance"
+        }
+    }
+
+    private var launchPageSummary: LocalizedStringResource {
+        switch LaunchTabPreference(rawValue: launchTabRaw) ?? .home {
+        case .home: "Opens to Home"
+        case .bible: "Opens to Bible"
+        case .notes: "Opens to Notes"
+        case .games: "Opens to Games"
+        }
+    }
 }
 
-private struct SettingsReadingLinksSection: View {
+private struct SettingsReadingAndPrayerLinksSection: View {
+    @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
+    @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes = 30
+    @AppStorage("verseOfDayScope") private var verseScopeRaw = "whole"
+    @AppStorage("timerSoundSelection") private var timerSoundSelection = TimerSound.default.rawValue
+
     var body: some View {
-        Section("Reading") {
+        Section("Reading & Prayer") {
             NavigationLink {
                 SettingsBibleReaderDetailView()
             } label: {
                 SettingsNavigationRow(
                     title: "Bible Reader",
-                    subtitle: "Focus Reading and verse indicators",
+                    subtitle: bibleReaderSummary,
                     systemImage: "book"
                 )
             }
@@ -100,8 +124,9 @@ private struct SettingsReadingLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Daily Goal",
-                    subtitle: "Set your daily reading target",
-                    systemImage: "target"
+                    subtitle: "Daily reading target",
+                    systemImage: "target",
+                    value: dailyGoalMinutes
                 )
             }
 
@@ -110,26 +135,51 @@ private struct SettingsReadingLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Verse of the Day",
-                    subtitle: "Source, refresh schedule, and notifications",
+                    subtitle: verseOfTheDaySummary,
                     systemImage: "book.pages"
                 )
             }
-        }
-    }
-}
 
-private struct SettingsPrayerLinksSection: View {
-    var body: some View {
-        Section("Prayer") {
             NavigationLink {
                 SettingsTimerDetailView()
             } label: {
                 SettingsNavigationRow(
                     title: "Prayer Timer",
-                    subtitle: "Sound, alarms, Live Activities, and Mindful Minutes",
+                    subtitle: prayerTimerSummary,
                     systemImage: "timer"
                 )
             }
+        }
+    }
+
+    private var bibleReaderSummary: LocalizedStringResource {
+        if focusReadingEnabled {
+            "Focus Reading on"
+        } else if showsReadProgress {
+            "Reading progress on"
+        } else {
+            "Standard reading view"
+        }
+    }
+
+    private var verseOfTheDaySummary: LocalizedStringResource {
+        switch verseScopeRaw {
+        case "old": "Old Testament"
+        case "new": "New Testament"
+        case "book": "A selected book"
+        default: "Whole Bible"
+        }
+    }
+
+    private var prayerTimerSummary: LocalizedStringResource {
+        switch TimerSound(rawValue: timerSoundSelection) ?? .default {
+        case .bell: "Bell sound"
+        case .chime: "Chime sound"
+        case .glass: "Glass sound"
+        case .horn: "Horn sound"
+        case .piano: "Piano sound"
+        case .pop: "Pop sound"
+        case .synth: "Synth sound"
         }
     }
 }
@@ -409,7 +459,7 @@ private struct SettingsHelpSection: View {
             }
             .accessibilityIdentifier("appVersionRow")
         } header: {
-            Text("Help")
+            Text("Support")
         } footer: {
             Text("Tips appear near features such as favorites, reader gestures, verse actions, stats, widgets, timers, Health, and Home customization.")
         }
@@ -664,14 +714,21 @@ private struct SettingsNavigationRow: View {
     let title: LocalizedStringResource
     let subtitle: LocalizedStringResource
     let systemImage: String
+    var value: Int? = nil
 
     var body: some View {
         Label {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if let value {
+                    Text("\(value) minutes per day", comment: "Daily Goal summary; the value is the configured number of minutes.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         } icon: {
             Image(systemName: systemImage)
