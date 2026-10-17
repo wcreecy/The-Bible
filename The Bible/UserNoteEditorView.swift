@@ -91,15 +91,6 @@ struct UserNoteEditorView: View {
             }
 
             NoteBodyTextEditor(text: $noteText, selection: $noteSelection, isFocused: $isEditingBody)
-                .overlay(alignment: .topTrailing) {
-                    if selectedCategory == .sermon, trimmedNote.isEmpty {
-                        Button("Insert Sermon Outline", systemImage: "list.bullet.rectangle", action: insertSermonOutline)
-                            .font(.caption.weight(.semibold))
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                            .padding(12)
-                    }
-                }
         }
         .padding()
         .animation(.snappy, value: areFieldsCollapsed)
@@ -238,23 +229,7 @@ struct UserNoteEditorView: View {
         formattingChanged = false
     }
 
-    private func insertSermonOutline() {
-        noteText = AttributedString(String(localized: """
-        Main Points
-        1.
-
-        Key Verses
-        •
-
-        Application
-        •
-
-        Questions
-        •
-        """))
-    }
-
-    // MARK: Saving
+     // MARK: Saving
 
     private func save() {
         ModelContextPersistence.perform(

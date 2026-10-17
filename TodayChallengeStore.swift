@@ -32,7 +32,7 @@ private struct TodayChallengeSnapshot: Codable {
 
 /// What recent days' tasks were, so the same thing doesn't come back within `windowDays`.
 private struct TodayChallengeHistory: Codable {
-    static let windowDays = 30
+    static let windowDays = 31
 
     /// Day key (yyyy-MM-dd) to the `HistoryKey`s of what was shown that day.
     var days: [String: [String]] = [:]
@@ -92,6 +92,10 @@ private struct FreshPicker {
 
         if let choice { usedToday.append(key(choice)) }
         return choice
+    }
+
+    mutating func record(_ key: String) {
+        usedToday.append(key)
     }
 }
 
@@ -443,7 +447,12 @@ final class TodayChallengeStore {
         var picker = FreshPicker(lastShown: history.lastShown(excluding: todayKey))
 
         var challenges = [makeReadingChallenge(using: &picker)]
-        if isReflectionDue(on: now, history: history) {
+        // If the app was not opened on either scheduled date, show one overdue optional
+        // prompt today and leave the other for a later day instead of pairing them.
+        if let title = monthlySystemTaskTitlesDue(in: history, on: now).randomElement() {
+            challenges.append(makeMonthlySystemTask(title: title, using: &picker))
+        }
+        if challenges.count < Self.challengesPerDay, isReflectionDue(on: now, history: history) {
             challenges.append(makeReflectionChallenge(using: &picker))
         }
         for task in InAppTask.allCases.shuffled().prefix(Self.challengesPerDay - challenges.count) {
@@ -579,9 +588,83 @@ final class TodayChallengeStore {
         challenges.contains { $0.title == "Add a verse to your bookmarks" }
     }
 
+    private static let monthlySystemTaskTitles = [
+        "Add a verse to your favorites",
+        "Highlight a verse to study later"
+    ]
+
+    /// A stable pseudo-random date keeps the monthly prompt consistent across devices.
+    static func monthlySystemTaskDay(for title: String, on date: Date) -> Int {
+        let calendar = Calendar.autoupdatingCurrent
+        let dayCount = calendar.range(of: .day, in: .month, for: date)?.count ?? 28
+        let components = calendar.dateComponents([.year, .month], from: date)
+        let monthIdentifier = "\(components.year ?? 0)-\(components.month ?? 0)"
+        var hash: UInt64 = 5_381
+
+        for scalar in (monthIdentifier + title).unicodeScalars {
+            hash = ((hash << 5) &+ hash) &+ UInt64(scalar.value)
+        }
+
+        var day = Int(hash % UInt64(dayCount)) + 1
+        if title == monthlySystemTaskTitles[1] {
+            let favoriteDay = monthlySystemTaskDay(for: monthlySystemTaskTitles[0], on: date)
+            if day == favoriteDay {
+                day = day == dayCount ? 1 : day + 1
+            }
+        }
+        return day
+    }
+
+    private func monthlySystemTaskTitlesDue(
+        in history: TodayChallengeHistory,
+        on date: Date
+    ) -> [String] {
+        let calendar = Calendar.autoupdatingCurrent
+        guard let month = calendar.dateInterval(of: .month, for: date) else { return [] }
+        let monthStartKey = dayKey(for: month.start)
+        let currentDay = calendar.component(.day, from: date)
+
+        return Self.monthlySystemTaskTitles.filter { title in
+            let taskKey = HistoryKey.reflection(title)
+            let wasShownThisMonth = history.days.contains { day, keys in
+                day >= monthStartKey && keys.contains(taskKey)
+            }
+            return !wasShownThisMonth &&
+                currentDay >= Self.monthlySystemTaskDay(for: title, on: date)
+        }
+    }
+
+    private func makeMonthlySystemTask(
+        title: String,
+        using picker: inout FreshPicker
+    ) -> TodayChallenge {
+        let task = catalog.reflectionTasks.first { $0.title == title }
+            ?? TodayChallengeCatalog.ReflectionTask(
+                title: title,
+                detail: "Save a verse you want to return to."
+            )
+        picker.record(HistoryKey.reflection(task.title))
+
+        return TodayChallenge(
+            id: UUID(),
+            kind: Self.kind(forReflectionTaskTitle: task.title),
+            title: task.title,
+            detail: task.detail,
+            bookName: nil,
+            chapterNumber: nil,
+            gameName: nil,
+            minimumMinutes: nil,
+            isCompleted: false
+        )
+    }
+
     private func makeReflectionChallenge(using picker: inout FreshPicker) -> TodayChallenge {
+        // Monthly system-tracked prompts are scheduled separately from weekly reflections.
+        let eligibleTasks = catalog.reflectionTasks.filter {
+            !Self.monthlySystemTaskTitles.contains($0.title)
+        }
         // Keyed by the template, so "Pray for {{prayerFocus}}" counts once whatever the focus.
-        let task = picker.pick(from: catalog.reflectionTasks, key: { HistoryKey.reflection($0.title) })
+        let task = picker.pick(from: eligibleTasks, key: { HistoryKey.reflection($0.title) })
             ?? TodayChallengeCatalog.ReflectionTask(
                 title: "Reflect on your blessings",
                 detail: "Name three things you are grateful for."
