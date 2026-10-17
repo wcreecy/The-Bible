@@ -155,29 +155,45 @@ private struct SavedVersesHomeCardContent: View {
                 onOpenVerse(preview)
             } label: {
                 VStack(alignment: .leading, spacing: 6) {
-                    if preview.kind == .highlight, let highlightColor = preview.highlightColor {
-                        Text("From your \(Text("Highlighted Verses").foregroundStyle(highlightColor.color))")
-                            .font(.caption.weight(.semibold))
+                    VStack(alignment: .leading, spacing: 6) {
+                        if preview.kind == .highlight, let highlightColor = preview.highlightColor {
+                            Text("From your \(Text("Highlighted Verses").foregroundStyle(highlightColor.color))")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        } else if preview.kind == .highlight {
+                            Text("From your Highlighted Verses")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("From your favorites")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Text(preview.reference)
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+
+                        Text("“\(preview.text)”")
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
-                    } else if preview.kind == .highlight {
-                        Text("From your Highlighted Verses")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text("From your favorites")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .lineLimit(3)
+                            .multilineTextAlignment(.leading)
                     }
-
-                    Text(preview.reference)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-
-                    Text("“\(preview.text)”")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(3)
-                        .multilineTextAlignment(.leading)
+                    .padding(.leading, preview.highlightColor == nil ? 0 : 14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(preview.highlightColor?.color.opacity(0.10) ?? .clear)
+                    )
+                    .overlay(alignment: .leading) {
+                        if let highlightColor = preview.highlightColor {
+                            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                                .fill(highlightColor.color)
+                                .frame(width: 4)
+                                .accessibilityHidden(true)
+                        }
+                    }
 
                     HStack {
                         Spacer()
@@ -190,15 +206,6 @@ private struct SavedVersesHomeCardContent: View {
                     }
                     .font(.caption2)
                     .foregroundStyle(.secondary)
-                }
-                .padding(.leading, preview.highlightColor == nil ? 0 : 14)
-                .overlay(alignment: .leading) {
-                    if let highlightColor = preview.highlightColor {
-                        RoundedRectangle(cornerRadius: 2, style: .continuous)
-                            .fill(highlightColor.color)
-                            .frame(width: 4)
-                            .accessibilityHidden(true)
-                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
