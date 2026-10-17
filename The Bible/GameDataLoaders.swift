@@ -1,4 +1,10 @@
 import Foundation
+import OSLog
+
+private let gameDataLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+    category: "GameData"
+)
 
 struct BibleCharacter: Decodable, Identifiable, Hashable {
     let id: Int
@@ -66,7 +72,7 @@ enum GameDataLoaders {
         ) {
             return characters
         }
-        print("⚠️ Bible_Characters_Game_Clues_With_Difficulty.json could not be loaded or decoded.")
+        gameDataLogger.error("The character game catalog could not be loaded or decoded.")
         return []
     }
 
@@ -77,7 +83,7 @@ enum GameDataLoaders {
         ) {
             return locations
         }
-        print("⚠️ bible_locations.json could not be loaded or decoded.")
+        gameDataLogger.error("The location game catalog could not be loaded or decoded.")
         return []
     }
 
@@ -111,6 +117,7 @@ enum GameDataLoaders {
 
     private static func tryLoadArray<T: Decodable>(_ type: T.Type, resource: String) -> T? {
         guard let url = Bundle.main.url(forResource: resource, withExtension: "json") else {
+            gameDataLogger.error("A game catalog resource is missing.")
             return nil
         }
         do {
@@ -118,7 +125,7 @@ enum GameDataLoaders {
             let decoded = try JSONDecoder().decode(T.self, from: data)
             return decoded
         } catch {
-            print("⚠️ Failed to decode \(resource).json: \(error)")
+            gameDataLogger.error("A game catalog could not be decoded. Error: \(String(describing: error), privacy: .public)")
             return nil
         }
     }

@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import CloudKit
 import SwiftUI
+import OSLog
 
 // MARK: - Which SwiftData store the app ended up using at launch
 
@@ -46,6 +47,10 @@ public final class CloudKitManager {
     public private(set) var userRecordID: CKRecord.ID?
 
     private let container: CKContainer
+    private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+        category: "CloudKit"
+    )
 
     // Throttling/coalescing
     @ObservationIgnored private var lastRefreshAt: Date?
@@ -135,26 +140,28 @@ public final class CloudKitManager {
             @unknown default:
                 accountState = .couldNotDetermine
             }
-            print("🔎 CloudKit account status: \(accountState.description)")
+            logger.notice("CloudKit account status changed to \(self.accountState.description, privacy: .public).")
         } catch {
             accountState = .couldNotDetermine
-            print("❌ Failed to fetch CloudKit account status: \(error.localizedDescription)")
+            let nsError = error as NSError
+            logger.error("CloudKit account status lookup failed; domain=\(nsError.domain, privacy: .public), code=\(nsError.code, privacy: .public).")
         }
     }
 
     private func fetchUserRecordIDIfAvailable() async {
         guard accountState == .available else {
             userRecordID = nil
-            print("ℹ️ Skipping userRecordID fetch; account state = \(accountState.description)")
+            logger.debug("Skipped CloudKit user record lookup; account state=\(self.accountState.description, privacy: .public).")
             return
         }
         do {
             let id = try await container.userRecordID()
             userRecordID = id
-            print("✅ Fetched CloudKit userRecordID: \(id.recordName)")
+            logger.debug("Fetched the CloudKit user record identifier.")
         } catch {
             userRecordID = nil
-            print("❌ Failed to fetch userRecordID: \(error.localizedDescription)")
+            let nsError = error as NSError
+            logger.error("CloudKit user record lookup failed; domain=\(nsError.domain, privacy: .public), code=\(nsError.code, privacy: .public).")
         }
     }
 

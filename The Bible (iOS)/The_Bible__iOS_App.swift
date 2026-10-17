@@ -10,6 +10,7 @@ import SwiftData
 import UIKit
 import UserNotifications
 import CloudKit
+import OSLog
 
 final class BibleAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     static let pendingVerseOfDayNotificationKey = "pendingVerseOfDayNotification"
@@ -55,6 +56,11 @@ struct The_Bible__iOS_App: App {
     @UIApplicationDelegateAdaptor(BibleAppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
+    private static let persistenceLogger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+        category: "PersistenceStore"
+    )
+
     private let sharedModelContainer: ModelContainer
     /// Shown in Settings so a fallback store is never mistaken for working sync.
     private let persistenceStoreMode: PersistenceStoreMode
@@ -89,6 +95,7 @@ struct The_Bible__iOS_App: App {
 
         func logError(_ prefix: String, error: Error) {
             let nsError = error as NSError
+            Self.persistenceLogger.error("\(prefix, privacy: .public); domain=\(nsError.domain, privacy: .public), code=\(nsError.code, privacy: .public).")
             print("❌ \(prefix): \(nsError.domain) (\(nsError.code)) \(nsError.localizedDescription)")
             if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
                 print("   ↳ underlying: \(underlying.domain) (\(underlying.code)) \(underlying.localizedDescription)")
@@ -154,6 +161,7 @@ struct The_Bible__iOS_App: App {
                     UserNote.self,
                 configurations: cloudKitConfig
             )
+            Self.persistenceLogger.notice("Initialized the CloudKit-backed SwiftData store.")
             print("✅ CloudKit-backed ModelContainer initialized successfully.")
 
             // Attempt to log the underlying store location(s) if available
@@ -175,6 +183,7 @@ struct The_Bible__iOS_App: App {
                     VerseNote.self,
                     UserNote.self
             )
+            Self.persistenceLogger.notice("Using the local-only SwiftData fallback; iCloud sync is unavailable.")
             print("ℹ️ Using local on-disk SwiftData store (no CloudKit). Data will NOT sync between devices.")
 
             print("🔎 Probing likely store locations (after local container init)…")
@@ -199,6 +208,7 @@ struct The_Bible__iOS_App: App {
                     UserNote.self,
                 configurations: memoryConfig
             )
+            Self.persistenceLogger.fault("Using the in-memory SwiftData fallback; changes will not persist.")
             print("ℹ️ Using in-memory SwiftData store. Data will NOT persist or sync.")
             return (container, .inMemory)
         } catch {

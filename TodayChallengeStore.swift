@@ -1,6 +1,12 @@
 import SwiftUI
 import Foundation
 import Observation
+import OSLog
+
+private let todayChallengesLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+    category: "TodayChallenges"
+)
 
 enum TodayChallengeKind: String, Codable {
     case readChapter
@@ -127,6 +133,7 @@ private struct TodayChallengeCatalog: Decodable {
               !catalog.gameNames.isEmpty,
               !catalog.prayerFocuses.isEmpty,
               !catalog.reflectionTasks.isEmpty else {
+            todayChallengesLogger.error("Today challenge catalog is missing, empty, or invalid; using the fallback catalog.")
             assertionFailure("TodayChallengeCatalog.json is missing or invalid.")
             return fallback
         }
@@ -162,6 +169,7 @@ final class TodayChallengeStore {
 
     private init() {
         cloudStore.synchronize()
+        todayChallengesLogger.debug("Initialized Today challenge store.")
         loadOrCreateForToday()
     }
 
@@ -286,6 +294,7 @@ final class TodayChallengeStore {
            !Self.containsRetiredBookmarkTask(in: cloudSnapshot.challenges) {
             let cloudChallenges = cloudSnapshot.challenges.map(repairedChallenge)
             challenges = cloudChallenges
+            todayChallengesLogger.debug("Loaded Today challenges from the iCloud snapshot; count=\(cloudChallenges.count, privacy: .public).")
             persistLocally(lastModified: cloudSnapshot.lastModified)
 
             if cloudChallenges != cloudSnapshot.challenges {
@@ -296,6 +305,7 @@ final class TodayChallengeStore {
                   localSnapshot.challenges.count == 3,
                   !Self.containsRetiredBookmarkTask(in: localSnapshot.challenges) {
             challenges = localSnapshot.challenges.map(repairedChallenge)
+            todayChallengesLogger.debug("Loaded Today challenges from the local snapshot; count=\(self.challenges.count, privacy: .public).")
             if challenges != localSnapshot.challenges {
                 save()
             } else {
@@ -307,6 +317,7 @@ final class TodayChallengeStore {
             createChallengesWhenCorpusLoads()
         } else {
             challenges = makeChallenges()
+            todayChallengesLogger.notice("Generated a new Today challenge set; count=\(self.challenges.count, privacy: .public).")
             save()
         }
     }
@@ -336,6 +347,8 @@ final class TodayChallengeStore {
         }
 
         if didChange {
+            let completedCount = challenges.filter(\.isCompleted).count
+            todayChallengesLogger.notice("Today challenge progress updated; completed=\(completedCount, privacy: .public).")
             save()
         }
     }
@@ -346,7 +359,10 @@ final class TodayChallengeStore {
             challenges: challenges,
             lastModified: Date()
         )
-        guard let data = try? JSONEncoder().encode(snapshot) else { return }
+        guard let data = try? JSONEncoder().encode(snapshot) else {
+            todayChallengesLogger.error("Could not encode the Today challenge snapshot for local storage.")
+            return
+        }
         UserDefaults.standard.set(data, forKey: storageKey)
         publishToCloud(snapshot)
     }
@@ -367,8 +383,12 @@ final class TodayChallengeStore {
     }
 
     private func publishToCloud(_ snapshot: TodayChallengeSnapshot) {
-        guard let data = try? JSONEncoder().encode(snapshot) else { return }
+        guard let data = try? JSONEncoder().encode(snapshot) else {
+            todayChallengesLogger.error("Could not encode the Today challenge snapshot for iCloud sync.")
+            return
+        }
         cloudStore.set(data, forKey: cloudStorageKey)
+        todayChallengesLogger.debug("Published Today challenge snapshot to iCloud; count=\(snapshot.challenges.count, privacy: .public).")
 
         Task.detached {
             NSUbiquitousKeyValueStore.default.synchronize()
@@ -450,7 +470,9 @@ final class TodayChallengeStore {
         // If the app was not opened on either scheduled date, show one overdue optional
         // prompt today and leave the other for a later day instead of pairing them.
         if let title = monthlySystemTaskTitlesDue(in: history, on: now).randomElement() {
-            challenges.append(makeMonthlySystemTask(title: title, using: &picker))
+            let monthlyTask = makeMonthlySystemTask(title: title, using: &picker)
+            challenges.append(monthlyTask)
+            todayChallengesLogger.notice("Scheduled monthly Today prompt; kind=\(monthlyTask.kind.rawValue, privacy: .public).")
         }
         if challenges.count < Self.challengesPerDay, isReflectionDue(on: now, history: history) {
             challenges.append(makeReflectionChallenge(using: &picker))

@@ -1,4 +1,10 @@
 import Foundation
+import OSLog
+
+private nonisolated(unsafe) let bibleDataLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+    category: "BibleData"
+)
 
 private nonisolated final class BibleCorpusCache: @unchecked Sendable {
     private let lock = NSLock()
@@ -30,12 +36,15 @@ actor BibleRepository {
 
         let resourceURL = Bundle.main.url(forResource: "kjv", withExtension: "json")
         let task = Task.detached(priority: .userInitiated) {
-            guard let resourceURL else { return BibleData.fallbackBooks }
+            guard let resourceURL else {
+                bibleDataLogger.error("The bundled Bible corpus resource is missing; using fallback data.")
+                return BibleData.fallbackBooks
+            }
             do {
                 let data = try Data(contentsOf: resourceURL, options: .mappedIfSafe)
                 return try BibleData.decodeBooks(from: data)
             } catch {
-                print("Failed to load kjv.json: \(error)")
+                bibleDataLogger.error("Failed to load the bundled Bible corpus; using fallback data. Error: \(String(describing: error), privacy: .public)")
                 return BibleData.fallbackBooks
             }
         }

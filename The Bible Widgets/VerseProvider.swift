@@ -2,7 +2,12 @@ import AppIntents
 import Foundation
 import SwiftUI
 import WidgetKit
+import OSLog
 
+private let verseWidgetLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible Widgets",
+    category: "VerseWidgetTimeline"
+)
 
 enum VerseWidgetBackgroundOption: String, AppEnum {
     case useSettings
@@ -93,6 +98,7 @@ struct VerseProvider: AppIntentTimelineProvider {
     func timeline(for configuration: Intent, in context: Context) async -> Timeline<Entry> {
         let now = Date()
         let refresh = nextAutoRefreshDate(from: now)
+        verseWidgetLogger.debug("Built Verse widget timeline; next refresh interval=\(refresh.timeIntervalSince(now), privacy: .public)s.")
         var entry = loadCurrentEntry(configuration: configuration, date: now)
         entry.relevance = TimelineEntryRelevance(score: Self.restingScore)
         var entries = [entry]
@@ -146,6 +152,7 @@ struct VerseProvider: AppIntentTimelineProvider {
         let m1 = defaults?.object(forKey: "votdRefresh1Minute") as? Int ?? 0
         let h2 = defaults?.object(forKey: "votdRefresh2Hour") as? Int ?? 18
         let m2 = defaults?.object(forKey: "votdRefresh2Minute") as? Int ?? 0
+        verseWidgetLogger.debug("Read Verse widget schedule; frequency=\(frequency, privacy: .public), first=\(h1, privacy: .public):\(m1, privacy: .public), second=\(h2, privacy: .public):\(m2, privacy: .public).")
 
         func dateForToday(hour: Int, minute: Int, from date: Date) -> Date? {
             let calendar = Calendar.current
