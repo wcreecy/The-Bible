@@ -138,7 +138,7 @@ struct StudyHomeCard: View {
             }
         }
 
-        actionButtons(secondaryTitle: "Chapter Insights", secondarySheet: .chapterInsights)
+        actionButtons(secondaryTitle: "Insights", secondarySheet: .chapterInsights)
     }
 
     /// A full-width theme row that opens a preview of its first linked passage.
@@ -185,7 +185,7 @@ struct StudyHomeCard: View {
 
         if !overview.keyScripture.text.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
-                sectionLabel("Key Verse")
+                sectionLabel("KEY VERSE")
                 if let passage = PassageReferenceParser.parse(overview.keyScripture.reference) {
                     Link(destination: passage.url) {
                         Label(passage.displayTitle, systemImage: "book")
@@ -273,14 +273,14 @@ struct StudyHomeCard: View {
         StudyCardSectionLabel(title: title)
     }
 
-    private func actionButtons(secondaryTitle: String?, secondarySheet: Sheet?) -> some View {
+    private func actionButtons(secondaryTitle: LocalizedStringResource?, secondarySheet: Sheet?) -> some View {
         HStack(spacing: 10) {
             actionButtonContent(secondaryTitle, secondarySheet)
         }
     }
 
     @ViewBuilder
-    private func actionButtonContent(_ secondaryTitle: String?, _ secondarySheet: Sheet?) -> some View {
+    private func actionButtonContent(_ secondaryTitle: LocalizedStringResource?, _ secondarySheet: Sheet?) -> some View {
         Button(action: onRead) {
             Label("Read", systemImage: "book.fill")
                 .lineLimit(1)
@@ -289,12 +289,12 @@ struct StudyHomeCard: View {
         .tint(.teal)
         .frame(maxWidth: .infinity)
 
-        if secondaryTitle != nil, let secondarySheet {
+        if let secondaryTitle, let secondarySheet {
             Button {
                 Haptics.selection()
                 presentedSheet = secondarySheet
             } label: {
-                Label("Insights", systemImage: "text.book.closed")
+                Label(secondaryTitle, systemImage: "text.book.closed")
                     .lineLimit(1)
             }
             .buttonStyle(.bordered)
@@ -404,7 +404,6 @@ private struct StudyCardSectionLabel: View {
         Text(title)
             .font(.footnote.weight(.bold))
             .foregroundStyle(.primary)
-            .textCase(.uppercase)
             .accessibilityAddTraits(.isHeader)
     }
 }

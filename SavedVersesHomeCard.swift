@@ -132,7 +132,6 @@ struct SavedVersesHomeCard: View {
     var body: some View {
         HeroCard(
             title: "Saved Verses",
-            subtitle: subtitle,
             icon: "heart.text.clipboard",
             tint: .pink,
             trailingAccessory: {
@@ -153,6 +152,7 @@ struct SavedVersesHomeCard: View {
             }
         ) {
             SavedVersesHomeCardContent(
+                subtitle: subtitle,
                 preview: preview,
                 onOpenSavedVerses: onOpenSavedVerses,
                 onOpenVerse: onOpenVerse
@@ -163,17 +163,29 @@ struct SavedVersesHomeCard: View {
 }
 
 private struct SavedVersesHomeCardContent: View {
+    let subtitle: String?
     let preview: SavedVerseHomePreview?
     let onOpenSavedVerses: () -> Void
     let onOpenVerse: (SavedVerseHomePreview) -> Void
 
     var body: some View {
-        if let preview {
-            Button {
-                onOpenVerse(preview)
-            } label: {
-                VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 12) {
+            if let subtitle {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .allowsTightening(true)
+                    .accessibilityLabel(subtitle)
+            }
+
+            if let preview {
+                Button {
+                    onOpenVerse(preview)
+                } label: {
                     VStack(alignment: .leading, spacing: 6) {
+                        VStack(alignment: .leading, spacing: 6) {
                         if preview.kind == .highlight, let highlightColor = preview.highlightColor {
                             Text("From your \(Text("Highlighted Verses").foregroundStyle(highlightColor.color))")
                                 .font(.caption.weight(.semibold))
@@ -197,49 +209,50 @@ private struct SavedVersesHomeCardContent: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(3)
                             .multilineTextAlignment(.leading)
+                        }
+                        .padding(.leading, preview.highlightColor == nil ? 0 : 14)
+                        .padding(.trailing, preview.highlightColor == nil ? 0 : 10)
+                        .padding(.vertical, preview.highlightColor == nil ? 0 : 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(preview.highlightColor?.color.opacity(0.10) ?? .clear)
+                        )
+                        .overlay(alignment: .leading) {
+                            if let highlightColor = preview.highlightColor {
+                                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                                    .fill(highlightColor.color)
+                                    .frame(width: 4)
+                                    .accessibilityHidden(true)
+                            }
+                        }
+
+                        HStack {
+                            Spacer()
+
+                            if preview.kind == .favorite {
+                                Text("Saved on \(preview.date, format: .dateTime.month(.abbreviated).day().year())")
+                            } else {
+                                Text("Highlighted on \(preview.date, format: .dateTime.month(.abbreviated).day().year())")
+                            }
+                        }
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                     }
-                    .padding(.leading, preview.highlightColor == nil ? 0 : 14)
-                    .padding(.trailing, preview.highlightColor == nil ? 0 : 10)
-                    .padding(.vertical, preview.highlightColor == nil ? 0 : 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(preview.highlightColor?.color.opacity(0.10) ?? .clear)
-                    )
-                    .overlay(alignment: .leading) {
-                        if let highlightColor = preview.highlightColor {
-                            RoundedRectangle(cornerRadius: 2, style: .continuous)
-                                .fill(highlightColor.color)
-                                .frame(width: 4)
-                                .accessibilityHidden(true)
-                        }
-                    }
-
-                    HStack {
-                        Spacer()
-
-                        if preview.kind == .favorite {
-                            Text("Saved on \(preview.date, format: .dateTime.month(.abbreviated).day().year())")
-                        } else {
-                            Text("Highlighted on \(preview.date, format: .dateTime.month(.abbreviated).day().year())")
-                        }
-                    }
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens this verse in the Bible")
+            } else {
+                Label(
+                    "Long-press any verse when reading the Bible to favorite or highlight that verse.",
+                    systemImage: "heart"
+                )
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .buttonStyle(.plain)
-            .accessibilityHint("Opens this verse in the Bible")
-        } else {
-            Label(
-                "Long-press any verse when reading the Bible to favorite or highlight that verse.",
-                systemImage: "heart"
-            )
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
