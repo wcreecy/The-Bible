@@ -4,7 +4,6 @@ import WidgetKit
 
 
 enum LastReadWidgetBackgroundOption: String, AppEnum {
-    case useSettings
     case black
     case midnight
     case forest
@@ -24,7 +23,6 @@ enum LastReadWidgetBackgroundOption: String, AppEnum {
 
     static var caseDisplayRepresentations: [LastReadWidgetBackgroundOption: DisplayRepresentation] {
         [
-            .useSettings: "Match App Setting",
             .black: "Black",
             .midnight: "Midnight",
             .forest: "Forest",
@@ -40,20 +38,16 @@ enum LastReadWidgetBackgroundOption: String, AppEnum {
         ]
     }
 
-    var resolvedRawValue: String {
-        guard self == .useSettings else { return rawValue }
-        return UserDefaults(suiteName: "group.bible.app")?
-            .string(forKey: "lastReadWidgetBackground") ?? "black"
-    }
+    var resolvedRawValue: String { rawValue }
 }
 
 struct LastReadWidgetAppearanceIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Widget Appearance"
     static var description = IntentDescription(
-        "Choose a background for this widget, or use the choice from the app’s Settings."
+        "Choose a background for this widget."
     )
 
-    @Parameter(title: "Background", default: .useSettings)
+    @Parameter(title: "Background", default: .black)
     var background: LastReadWidgetBackgroundOption
 }
 

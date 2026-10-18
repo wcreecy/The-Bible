@@ -119,7 +119,7 @@ struct SetupChecklistCard: View {
             case .viewGameStats: "See your game activity and progress"
             case .changeBackground: "Choose a color or photo for an app page"
             case .updateLaunchPage: "Choose the page the app opens to"
-            case .setupWidget: "Choose backgrounds for your Home Screen widgets"
+            case .setupWidget: "Learn how to customize a Home Screen widget"
             case .customizeHomeCards: "Arrange the cards on your Home screen"
             case .verseOfDaySettings: "Choose how your daily verse is selected"
             case .focusReading: "Read one verse at a time"
@@ -174,7 +174,6 @@ struct SetupChecklistCard: View {
     private static let iCloudBaselineKey = "homeOnboardingICloudBaselineV2"
     private static let backgroundBaselineKey = "homeOnboardingBackgroundBaselineV2"
     private static let launchPageBaselineKey = "homeOnboardingLaunchPageBaselineV2"
-    private static let widgetBaselineKey = "homeOnboardingWidgetBaselineV2"
 
     @Environment(CloudKitManager.self) private var cloudKitManager
     @Environment(\.persistenceStoreMode) private var persistenceStoreMode
@@ -209,7 +208,7 @@ struct SetupChecklistCard: View {
     @AppStorage(Self.iCloudBaselineKey) private var iCloudBaseline = false
     @AppStorage(Self.backgroundBaselineKey) private var backgroundBaseline = ""
     @AppStorage(Self.launchPageBaselineKey) private var launchPageBaseline = LaunchTabPreference.home.rawValue
-    @AppStorage(Self.widgetBaselineKey) private var widgetBaseline = ""
+    @AppStorage("homeOnboardingWidgetSetupInstructionsViewedV1") private var widgetSetupInstructionsViewed = false
 
     @State private var presentedStep: Step?
     @State private var isShowingResetConfirmation = false
@@ -260,16 +259,6 @@ struct SetupChecklistCard: View {
                 UserDefaults.standard.string(forKey: AppBackgroundStorage.photoKey(for: tab)) ?? ""
             ]
         }
-        .joined(separator: "|")
-    }
-
-    private var widgetSnapshot: String {
-        let defaults = UserDefaults(suiteName: "group.bible.app") ?? .standard
-        return [
-            defaults.string(forKey: "verseWidgetBackground") ?? "",
-            defaults.string(forKey: "lastReadWidgetBackground") ?? "",
-            defaults.string(forKey: "pinnedVerseWidgetBackground") ?? ""
-        ]
         .joined(separator: "|")
     }
 
@@ -465,7 +454,7 @@ struct SetupChecklistCard: View {
         case .updateLaunchPage:
             return UserDefaults.standard.string(forKey: LaunchTabPreference.defaultsKey) != launchPageBaseline
         case .setupWidget:
-            return widgetSnapshot != widgetBaseline
+            return widgetSetupInstructionsViewed
         case .customizeHomeCards:
             return homeCardOrderRaw != homeOrderBaseline
         case .verseOfDaySettings:
@@ -492,6 +481,7 @@ struct SetupChecklistCard: View {
             verseOfDayRefreshed = false
             readingStatsViewed = false
             gameStatsViewed = false
+            widgetSetupInstructionsViewed = false
         }
         Haptics.selection()
     }
@@ -515,6 +505,7 @@ struct SetupChecklistCard: View {
             verseOfDayRefreshed = false
             readingStatsViewed = false
             gameStatsViewed = false
+            widgetSetupInstructionsViewed = false
         }
         Haptics.selection()
     }
@@ -530,7 +521,6 @@ struct SetupChecklistCard: View {
         iCloudBaseline = isICloudSyncing
         backgroundBaseline = backgroundSnapshot
         launchPageBaseline = UserDefaults.standard.string(forKey: LaunchTabPreference.defaultsKey) ?? LaunchTabPreference.home.rawValue
-        widgetBaseline = widgetSnapshot
     }
 
     private func skip(_ step: Step) {
@@ -593,7 +583,10 @@ struct SetupChecklistCard: View {
         case .viewGameStats:
             gameStatsViewed = true
             AppRouter.shared.open(.stats(.games))
-        case .changeBackground, .updateLaunchPage, .setupWidget:
+        case .changeBackground, .updateLaunchPage:
+            presentedStep = step
+        case .setupWidget:
+            widgetSetupInstructionsViewed = true
             presentedStep = step
         case .verseOfDaySettings:
             verseOfDaySettingsOpened = true
@@ -628,12 +621,24 @@ struct SetupChecklistCard: View {
         case .updateLaunchPage:
             SettingsLaunchTabSection()
         case .setupWidget:
-            SettingsWidgetAppearanceDetailView()
+            WidgetCustomizationInstructionsView()
         case .verseOfDaySettings:
             SettingsVerseOfTheDayDetailView()
         case .firstReading, .firstStudy, .studyChapter, .saveVerse, .highlightVerse, .favoriteVerse, .refreshVerseOfDay, .playGame, .viewReadingStats, .viewGameStats, .studyDesk, .customizeHomeCards:
             EmptyView()
         }
+    }
+}
+
+private struct WidgetCustomizationInstructionsView: View {
+    var body: some View {
+        ContentUnavailableView(
+            "Customize Widgets",
+            systemImage: "rectangle.3.group",
+            description: Text("Touch and hold a widget on your Home Screen, then choose Edit Widget to select its background.")
+        )
+        .navigationTitle("Widgets")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
