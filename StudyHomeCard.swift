@@ -29,13 +29,6 @@ struct StudyHomeCard: View {
     let source: Source
     let onRead: () -> Void
 
-    private enum Sheet: String, Identifiable {
-        case chapterInsights
-        case bookOverview
-
-        var id: String { rawValue }
-    }
-
     /// The card shows at most this many themes; the rest are in Chapter Insights.
     private static let maximumThemes = 3
 
@@ -46,7 +39,6 @@ struct StudyHomeCard: View {
     /// Heights of the summary at three lines and in full, to know whether it's cut off.
     @State private var collapsedSummaryHeight: CGFloat = 0
     @State private var fullSummaryHeight: CGFloat = 0
-    @State private var presentedSheet: Sheet?
 
     /// Only a summary longer than three lines gets the More control.
     private var isSummaryTruncatable: Bool {
@@ -87,7 +79,7 @@ struct StudyHomeCard: View {
                     Text("Study notes for \(reference) aren't available yet.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    actionButtons(secondaryTitle: nil, secondarySheet: nil)
+                    actionButtons(secondaryTitle: nil, secondaryAction: nil)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -95,24 +87,6 @@ struct StudyHomeCard: View {
         // Theme and key-verse links open a passage preview with Open in Bible.
         .scripturePassagePreviews()
         .task(id: reference, load)
-        .sheet(item: $presentedSheet) { sheet in
-            NavigationStack {
-                Group {
-                    switch sheet {
-                    case .chapterInsights:
-                        ChapterInsightsView(bookName: bookName, chapterNumber: chapterNumber)
-                    case .bookOverview:
-                        BookOverviewView(bookName: bookName)
-                    }
-                }
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Done") { presentedSheet = nil }
-                    }
-                }
-            }
-            .environment(\.closeStudySheet) { presentedSheet = nil }
-        }
     }
 
     // MARK: - Chapter
@@ -138,7 +112,7 @@ struct StudyHomeCard: View {
             }
         }
 
-        actionButtons(secondaryTitle: "Insights", secondarySheet: .chapterInsights)
+        actionButtons(secondaryTitle: "Insights", secondaryAction: openChapterInsights)
     }
 
     /// A full-width theme row that opens a preview of its first linked passage.
@@ -206,7 +180,7 @@ struct StudyHomeCard: View {
             }
         }
 
-        actionButtons(secondaryTitle: "About \(bookName)", secondarySheet: .bookOverview)
+        actionButtons(secondaryTitle: "About \(bookName)", secondaryAction: openBookOverview)
     }
 
     /// The KJV marks translator-supplied words with braces, e.g. "{his}".
@@ -273,14 +247,20 @@ struct StudyHomeCard: View {
         StudyCardSectionLabel(title: title)
     }
 
-    private func actionButtons(secondaryTitle: LocalizedStringResource?, secondarySheet: Sheet?) -> some View {
+    private func actionButtons(
+        secondaryTitle: LocalizedStringResource?,
+        secondaryAction: (() -> Void)?
+    ) -> some View {
         HStack(spacing: 10) {
-            actionButtonContent(secondaryTitle, secondarySheet)
+            actionButtonContent(secondaryTitle, secondaryAction)
         }
     }
 
     @ViewBuilder
-    private func actionButtonContent(_ secondaryTitle: LocalizedStringResource?, _ secondarySheet: Sheet?) -> some View {
+    private func actionButtonContent(
+        _ secondaryTitle: LocalizedStringResource?,
+        _ secondaryAction: (() -> Void)?
+    ) -> some View {
         Button(action: onRead) {
             Label("Read", systemImage: "book.fill")
                 .lineLimit(1)
@@ -289,11 +269,8 @@ struct StudyHomeCard: View {
         .tint(.teal)
         .frame(maxWidth: .infinity)
 
-        if let secondaryTitle, let secondarySheet {
-            Button {
-                Haptics.selection()
-                presentedSheet = secondarySheet
-            } label: {
+        if let secondaryTitle, let secondaryAction {
+            Button(action: secondaryAction) {
                 Label(secondaryTitle, systemImage: "text.book.closed")
                     .lineLimit(1)
             }
@@ -301,6 +278,21 @@ struct StudyHomeCard: View {
             .tint(.teal)
             .frame(maxWidth: .infinity)
         }
+    }
+
+    private func openChapterInsights() {
+        Haptics.selection()
+        UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
+        UserDefaults.standard.set(chapterNumber, forKey: "lastStudiedChapter")
+        UserDefaults.standard.set(true, forKey: "openLastStudiedChapter")
+        AppRouter.shared.open(.bibleStudy)
+    }
+
+    private func openBookOverview() {
+        Haptics.selection()
+        UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
+        UserDefaults.standard.set(true, forKey: "openLastStudiedBookOverview")
+        AppRouter.shared.open(.bibleStudy)
     }
 
     private var loadingPlaceholder: some View {

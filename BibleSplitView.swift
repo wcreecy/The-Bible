@@ -22,6 +22,10 @@ struct BibleSplitView: View {
 
     // Shared preference for sort mode across iPhone/iPad
     @AppStorage("bibleBooksSortAlphabetical") private var sortAlphabetically: Bool = false
+    @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
+    @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
+    @AppStorage("openLastStudiedChapter") private var shouldOpenLastStudiedChapter = false
+    @AppStorage("openLastStudiedBookOverview") private var shouldOpenLastStudiedBookOverview = false
 
     private struct ReadingRoute: Hashable {
         let bookName: String
@@ -38,6 +42,16 @@ struct BibleSplitView: View {
     /// A book's study page, above the Bible Study home so Back returns there.
     private struct StudyBookRoute: Hashable {
         let bookName: String
+    }
+
+    private struct ChapterInsightsRoute: Hashable {
+        let bookName: String
+        let chapterNumber: Int
+    }
+
+    private enum StudyShortcut {
+        case bookOverview(bookName: String)
+        case chapterInsights(bookName: String, chapterNumber: Int)
     }
 
     private var books: [Book] { BibleData.books }
@@ -61,7 +75,48 @@ struct BibleSplitView: View {
     private func openStudyIfRequested() {
         guard studyRequestID > handledStudyRequestID else { return }
         handledStudyRequestID = studyRequestID
-        setStudyMode(true)
+
+        guard let shortcut = consumeStudyShortcut() else {
+            setStudyMode(true)
+            return
+        }
+
+        searchModel.query = ""
+        isShowingBookOverview = false
+        detailPath = NavigationPath()
+        withAnimation(.snappy) { isStudyMode = true }
+        Haptics.selection()
+
+        Task { @MainActor in
+            await Task.yield()
+            var path = NavigationPath()
+            switch shortcut {
+            case .bookOverview(let bookName):
+                path.append(OverviewRoute(bookName: bookName))
+            case .chapterInsights(let bookName, let chapterNumber):
+                path.append(ChapterInsightsRoute(bookName: bookName, chapterNumber: chapterNumber))
+            }
+            detailPath = path
+        }
+    }
+
+    private func consumeStudyShortcut() -> StudyShortcut? {
+        defer {
+            shouldOpenLastStudiedBookOverview = false
+            shouldOpenLastStudiedChapter = false
+        }
+
+        guard !lastStudiedBook.isEmpty else { return nil }
+
+        if shouldOpenLastStudiedBookOverview {
+            return .bookOverview(bookName: lastStudiedBook)
+        }
+
+        if shouldOpenLastStudiedChapter, lastStudiedChapter > 0 {
+            return .chapterInsights(bookName: lastStudiedBook, chapterNumber: lastStudiedChapter)
+        }
+
+        return nil
     }
 
     /// Switches modes, keeping the selected book: its study page and its chapter grid
@@ -245,6 +300,9 @@ struct BibleSplitView: View {
                     if let book = books.first(where: { $0.name == route.bookName }) {
                         StudyBookView(book: book)
                     }
+                }
+                .navigationDestination(for: ChapterInsightsRoute.self) { route in
+                    ChapterInsightsView(bookName: route.bookName, chapterNumber: route.chapterNumber)
                 }
                 .navigationDestination(for: ReadingRoute.self) { route in
                     readingDestination(for: route)

@@ -34,6 +34,15 @@ struct SetupChecklistCard: View {
             }
         }
 
+        var checklistSubtitle: LocalizedStringResource {
+            switch self {
+            case .read: "Begin your reading journey"
+            case .study: "Discover something new"
+            case .habit: "Make time for Scripture"
+            case .settings: "Make The Bible yours"
+            }
+        }
+
         var systemImage: String {
             switch self {
             case .read: "book"
@@ -88,7 +97,7 @@ struct SetupChecklistCard: View {
             case .saveVerse: "Save a verse that matters to you"
             case .highlightVerse: "Highlight a verse"
             case .favoriteVerse: "Favorite a verse"
-            case .dailyGoal: "Set a daily reading goal"
+            case .dailyGoal: "Reading Goal"
             case .refreshVerseOfDay: "Refresh Verse of the Day"
             case .playGame: "Play any game"
             case .viewReadingStats: "View Reading Stats"
@@ -98,7 +107,7 @@ struct SetupChecklistCard: View {
             case .setupWidget: "Set up a widget"
             case .customizeHomeCards: "Customize Homepage cards"
             case .verseOfDaySettings: "Edit Verse of the Day settings"
-            case .focusReading: "Read a verse in Focus Reading"
+            case .focusReading: "Focus Reading"
             case .studyDesk: "Build your study desk"
             case .iCloud: "Protect your library with iCloud"
             }
@@ -112,7 +121,7 @@ struct SetupChecklistCard: View {
             case .saveVerse: "Highlight, favorite, or add a note to a verse"
             case .highlightVerse: "Mark a passage you want to return to"
             case .favoriteVerse: "Add a verse to your Saved Verses"
-            case .dailyGoal: "Choose a goal that fits your day"
+            case .dailyGoal: "Set a daily reading goal target"
             case .refreshVerseOfDay: "Refresh the Verse of the Day to find inspiration"
             case .playGame: "Try a Bible game and answer a question"
             case .viewReadingStats: "See your reading progress and habits"
@@ -320,8 +329,6 @@ struct SetupChecklistCard: View {
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 if focus != nil {
-                    OnboardingFocusHeader(backAction: clearFocus)
-
                     ProgressView(value: Double(steps.count - incompleteSteps.count), total: Double(steps.count))
                         .tint(isAllComplete ? .green : .orange)
                         .accessibilityHidden(true)
@@ -333,7 +340,7 @@ struct SetupChecklistCard: View {
                                     step: step,
                                     isComplete: isComplete(step),
                                     title: step == .focusReading && focusReadingEnabled
-                                        ? "Read a scripture"
+                                        ? "Focus Reading"
                                         : step == .refreshVerseOfDay && !isVerseOfDayCardActive
                                             ? "Show Verse of the Day on Home"
                                             : nil,
@@ -400,26 +407,33 @@ struct SetupChecklistCard: View {
             String(localized: "Choose your path")
         } else if isAllComplete {
             String(localized: "Your reading space is ready.")
+        } else if let focus {
+            String(localized: focus.checklistSubtitle)
         } else {
-            String(localized: "A few steps for your device.")
+            String(localized: "Choose your path")
         }
     }
 
     private var footer: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline) {
+        HStack(alignment: .firstTextBaseline) {
+            if focus != nil {
+                Button("Choose a different path", systemImage: "chevron.left", action: clearFocus)
+                    .font(.caption.weight(.semibold))
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.tint)
+                    .accessibilityHint("Returns to the Get Started choices")
+            } else {
                 Text("You can change these anytime in Settings.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-
-                Spacer(minLength: 8)
-
-                Button(isAllComplete ? "Remove Card" : "Hide Card", action: onDismiss)
-                    .font(.subheadline.weight(.semibold))
-                    .tint(isAllComplete ? .green : .orange)
-                    .accessibilityHint("Hides the Get Started card from Home")
             }
 
+            Spacer(minLength: 8)
+
+            Button(isAllComplete ? "Remove Card" : "Hide Card", action: onDismiss)
+                .font(.subheadline.weight(.semibold))
+                .tint(isAllComplete ? .green : .orange)
+                .accessibilityHint("Hides the Get Started card from Home")
         }
     }
 
@@ -687,18 +701,6 @@ private struct OnboardingFocusPicker: View {
                 .buttonStyle(.plain)
             }
         }
-    }
-}
-
-private struct OnboardingFocusHeader: View {
-    let backAction: () -> Void
-
-    var body: some View {
-        Button("All paths", systemImage: "chevron.left", action: backAction)
-            .font(.caption.weight(.semibold))
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-            .accessibilityHint("Returns to the Get Started choices")
     }
 }
 
