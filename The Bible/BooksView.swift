@@ -30,6 +30,7 @@ struct BooksView: View {
             .padding(.horizontal, 16)
             .padding(.vertical)
         }
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")
         .searchable(
@@ -184,6 +185,7 @@ struct StudyBibleView: View {
                 }
                 .padding()
             }
+            .tabBarContentClearance()
             .background(AppBackgroundView(tab: .bible))
             .accessibilityIdentifier("studyBibleView")
             .navigationTitle("Study")
@@ -493,6 +495,7 @@ struct StudyBookView: View {
                 isHeaderScrolledAway = isScrolledAway
             }
         }
+        .tabBarContentClearance()
         .overlay(alignment: .top) {
             if isHeaderScrolledAway {
                 CompactStudyBookHeader(bookName: book.name, onOpenOverview: openOverview)

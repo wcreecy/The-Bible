@@ -29,6 +29,30 @@ private struct HeroCardSurfaceModifier: ViewModifier {
     }
 }
 
+/// Reserves scrollable space above the app's floating tab bar on compact layouts.
+private struct TabBarContentClearance: ViewModifier {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if horizontalSizeClass == .compact {
+            content.safeAreaInset(edge: .bottom, spacing: 0) {
+                Color.clear
+                    .frame(height: 80)
+                    .allowsHitTesting(false)
+            }
+        } else {
+            content
+        }
+    }
+}
+
+extension View {
+    func tabBarContentClearance() -> some View {
+        modifier(TabBarContentClearance())
+    }
+}
+
 struct HeroCardListRowBackground: View {
     var body: some View {
         Color.clear

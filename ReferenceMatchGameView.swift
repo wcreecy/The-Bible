@@ -222,6 +222,7 @@ struct VerseMatchGameView: View {
             }
             .padding()
         }
+        .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

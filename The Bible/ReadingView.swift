@@ -462,6 +462,7 @@ struct ReadingView: View {
                 }
             }
             .scrollPosition(id: $viewModel.topVisibleVerseID, anchor: .top)
+            .tabBarContentClearance()
             .onChange(of: viewModel.topVisibleVerseID) { _, _ in
                 saveVisibleReaderPosition()
             }

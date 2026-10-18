@@ -183,7 +183,7 @@ struct NotesAndHighlightsView: View {
             )
         }
         .padding(.horizontal)
-        .padding(.bottom)
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 
     private func regularContent(_ library: NotesLibrary, selectedItem: NotesListItem?) -> some View {
@@ -224,7 +224,7 @@ struct NotesAndHighlightsView: View {
             }
         }
         .padding(.horizontal)
-        .padding(.bottom)
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 
     @ViewBuilder

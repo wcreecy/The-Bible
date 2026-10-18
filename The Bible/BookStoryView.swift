@@ -40,6 +40,7 @@ struct BookStoryView: View {
             .padding()
             .frame(maxWidth: .infinity)
         }
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle(bookName)
         .navigationBarTitleDisplayMode(.inline)

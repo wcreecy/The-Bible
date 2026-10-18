@@ -976,6 +976,7 @@ private struct HomeScrollContent<Dashboard: View, Compact: View>: View {
                 .padding(.horizontal, horizontalPadding)
             }
             .scrollDismissesKeyboard(.interactively)
+            .tabBarContentClearance()
             .simultaneousGesture(DragGesture(minimumDistance: 1).onChanged { _ in dismissCue() })
             .simultaneousGesture(TapGesture().onEnded { dismissCue() })
             .onChange(of: searchScrollRequest) { _, _ in onSearchScroll(scrollProxy) }

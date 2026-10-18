@@ -101,6 +101,7 @@ struct FavoritesView: View {
             .padding(.horizontal)
             .padding(.vertical, 8)
         }
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("Saved Verses")
         .navigationSubtitle(shownCount == 0 ? "" : Self.verseCount(shownCount))

@@ -200,6 +200,7 @@ struct BeatTheClockGameView: View {
                     }
                     .padding()
                 }
+                .tabBarContentClearance()
                 .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)
                 .frame(
                     maxWidth: .infinity,

@@ -265,6 +265,7 @@ struct QuizView: View {
                     }
                     .padding(.horizontal)
                 }
+                .tabBarContentClearance()
                 .background {
                     if usesSplitLayout {
                         Color.clear

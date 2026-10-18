@@ -37,6 +37,7 @@ struct SearchView: View {
 
             BibleSearchResultsView(model: model, onOpen: openInBibleTab)
         }
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)

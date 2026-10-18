@@ -329,6 +329,7 @@ struct WordleView: View {
         .padding(.bottom, usesCompactPhoneLayout ? 0 : 16)
       }
     }
+    .tabBarContentClearance()
     .navigationTitle("")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {

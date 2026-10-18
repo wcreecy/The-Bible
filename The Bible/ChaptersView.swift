@@ -88,6 +88,7 @@ struct ChaptersView: View {
         .navigationDestination(isPresented: $isShowingOverview) {
             BookOverviewView(bookName: book.name)
         }
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
         // Genesis already has its own styled title card in the content.
         .navigationTitle(book.name == "Genesis" ? "" : book.name)

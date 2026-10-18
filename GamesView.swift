@@ -276,6 +276,7 @@ struct GamesView: View {
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .games))
         .navigationTitle("Games")
         .navigationBarTitleDisplayMode(.large)

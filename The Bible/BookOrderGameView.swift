@@ -46,6 +46,7 @@ struct BookOrderGameView: View {
             }
         }
         }
+        .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

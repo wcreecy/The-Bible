@@ -25,6 +25,7 @@ struct MoreView: View {
             .listRowBackground(HeroCardListRowBackground())
         }
         .scrollContentBackground(.hidden)
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("More")
         .navigationBarTitleDisplayMode(.large)

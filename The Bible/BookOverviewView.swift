@@ -62,6 +62,7 @@ struct BookOverviewView: View {
             }
             .padding()
         }
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
         .environment(\.scriptureContextBook, bookName)
         .scripturePassagePreviews()

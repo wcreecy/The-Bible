@@ -233,6 +233,7 @@ struct HangmanGameView: View {
                 .padding(.bottom, 12)
             }
         }
+        .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

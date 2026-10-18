@@ -235,6 +235,7 @@ struct StatsView: View {
             }
         }
         .groupBoxStyle(StatsHeroGroupBoxStyle())
+        .tabBarContentClearance()
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)

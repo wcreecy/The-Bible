@@ -167,6 +167,7 @@ struct NotesListCard: View {
         .scrollContentBackground(.hidden)
         .contentMargins(.horizontal, 0, for: .scrollContent)
         .contentMargins(.top, 0, for: .scrollContent)
+        .tabBarContentClearance()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 

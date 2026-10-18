@@ -114,6 +114,7 @@ struct WordSearchGameView: View {
                 if !isOver { proxy.scrollTo(Self.scrollTopID, anchor: .top) }
             }
         }
+        .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

@@ -44,6 +44,7 @@ struct WhoAmIGameView: View {
             }
             .padding()
         }
+        .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
