@@ -335,17 +335,24 @@ final class GameStatsLedger {
         var payloads: [Payload] = [own]
         for (key, value) in kvs.dictionaryRepresentation where key.hasPrefix(Self.kvsKeyPrefix) {
             guard key != ownKVSKey,
-                  let payload = decodePayload(value as? Data),
-                  payload.epoch >= epoch else { continue }
+                  let payload = decodePayload(value as? Data) else { continue }
             payloads.append(payload)
         }
-        // Devices that haven't updated yet may still publish older days; skip them.
-        payloads = payloads.map { payload in
-            var payload = payload
-            payload.baseline = Self.trimmed(payload.baseline, before: cutoff)
-            payload.contributions = Self.trimmed(payload.contributions, before: cutoff)
-            return payload
-        }
+        return Self.mergedTotals(payloads: payloads, epoch: epoch, cutoff: cutoff)
+    }
+
+    /// Reduces per-installation game ledgers into the totals shown by the app.
+    /// Keeping this pure makes concurrent-device behavior deterministic and testable.
+    static func mergedTotals(payloads: [Payload], epoch: Double, cutoff: String) -> Section {
+        // Devices that haven't updated to the current reset epoch cannot restore old data.
+        let payloads = payloads
+            .filter { $0.epoch >= epoch }
+            .map { payload in
+                var payload = payload
+                payload.baseline = Self.trimmed(payload.baseline, before: cutoff)
+                payload.contributions = Self.trimmed(payload.contributions, before: cutoff)
+                return payload
+            }
 
         var totals = Section()
 
@@ -364,7 +371,7 @@ final class GameStatsLedger {
         for key in Self.sumMapKeys {
             var map: [String: Int] = [:]
             for payload in payloads {
-                map = mergeMax(map, payload.baseline.maps[key] ?? [:])
+                map = Self.mergedMaximum(map, payload.baseline.maps[key] ?? [:])
             }
             for payload in payloads {
                 for (entry, value) in payload.contributions.maps[key] ?? [:] {
@@ -377,8 +384,8 @@ final class GameStatsLedger {
         for key in Self.maxMapKeys {
             var map: [String: Int] = [:]
             for payload in payloads {
-                map = mergeMax(map, payload.baseline.maps[key] ?? [:])
-                map = mergeMax(map, payload.contributions.maps[key] ?? [:])
+                map = Self.mergedMaximum(map, payload.baseline.maps[key] ?? [:])
+                map = Self.mergedMaximum(map, payload.contributions.maps[key] ?? [:])
             }
             if !map.isEmpty { totals.maps[key] = map }
         }
@@ -387,7 +394,7 @@ final class GameStatsLedger {
             var nested: [String: [String: Int]] = [:]
             for payload in payloads {
                 for (outer, inner) in payload.baseline.nestedMaps[key] ?? [:] {
-                    nested[outer] = mergeMax(nested[outer] ?? [:], inner)
+                    nested[outer] = Self.mergedMaximum(nested[outer] ?? [:], inner)
                 }
             }
             for payload in payloads {
@@ -401,6 +408,14 @@ final class GameStatsLedger {
         }
 
         return totals
+    }
+
+    private static func mergedMaximum(_ lhs: [String: Int], _ rhs: [String: Int]) -> [String: Int] {
+        var merged = lhs
+        for (key, value) in rhs {
+            merged[key] = max(merged[key] ?? 0, max(0, value))
+        }
+        return merged
     }
 
     /// Writes totals into `UserDefaults`. Returns whether any stored value changed.

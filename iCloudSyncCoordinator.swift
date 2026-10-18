@@ -7,6 +7,41 @@ import UIKit
 // iCloud Key-Value sync coordinator for small aggregates and reading stats.
 // Mirrors selected UserDefaults keys to NSUbiquitousKeyValueStore and merges incoming changes.
 // Add iCloud capability with "Key-Value storage" enabled for this target.
+enum KVSSyncLifecyclePolicy {
+    enum InitialDownloadAction: Equatable {
+        case bootstrapLocalDifferences
+        case flushPendingWrites
+        case mergeOnly
+    }
+
+    struct AccountChangePlan: Equatable {
+        let initialDownloadComplete: Bool
+        let pendingKeys: Set<String>
+        let permitsBootstrap: Bool
+    }
+
+    static func initialDownloadAction(
+        bootstrapComplete: Bool,
+        pendingKeys: Set<String>
+    ) -> InitialDownloadAction {
+        if !bootstrapComplete { return .bootstrapLocalDifferences }
+        return pendingKeys.isEmpty ? .mergeOnly : .flushPendingWrites
+    }
+
+    static func accountChangePlan() -> AccountChangePlan {
+        // An established install must download and merge the new account before writing.
+        AccountChangePlan(
+            initialDownloadComplete: false,
+            pendingKeys: [],
+            permitsBootstrap: false
+        )
+    }
+
+    static func shouldApplyReset(remoteEpoch: Double, lastSeenEpoch: Double) -> Bool {
+        remoteEpoch > 0 && remoteEpoch > lastSeenEpoch
+    }
+}
+
 @MainActor
 final class iCloudSyncCoordinator {
     static let shared = iCloudSyncCoordinator()
@@ -142,14 +177,20 @@ final class iCloudSyncCoordinator {
         // Cloud values are merged before any local value can be published.
         reconcileAllKeysFromKVS()
 
-        if !defaults.bool(forKey: bootstrapFlagKey) {
+        switch KVSSyncLifecyclePolicy.initialDownloadAction(
+            bootstrapComplete: defaults.bool(forKey: bootstrapFlagKey),
+            pendingKeys: pendingKeys
+        ) {
+        case .bootstrapLocalDifferences:
             pushLocalDifferencesToKVS()
             defaults.set(true, forKey: bootstrapFlagKey)
-        } else if !pendingKeys.isEmpty {
+        case .flushPendingWrites:
             let queuedKeys = pendingKeys
             pendingKeys.removeAll()
             for key in queuedKeys { mirrorLocalKeyToKVS(key) }
             enqueueKeysForSync(queuedKeys)
+        case .mergeOnly:
+            break
         }
 
         let repaired = normalizeGameCountersInvariant()
@@ -585,7 +626,7 @@ final class iCloudSyncCoordinator {
         let incomingEpoch = kvs.double(forKey: bibleStatsResetEpochKVSKey)
         if incomingEpoch > 0 {
             let lastSeen = defaults.double(forKey: bibleStatsLastSeenEpochLocalKey)
-            if incomingEpoch > lastSeen {
+            if KVSSyncLifecyclePolicy.shouldApplyReset(remoteEpoch: incomingEpoch, lastSeenEpoch: lastSeen) {
                 // Clear sessions via API (updates caches/listeners and KVS)
                 ReadingSessionsStore.shared.clearAll()
                 // Clear Bible stats locally and caches
@@ -613,7 +654,7 @@ final class iCloudSyncCoordinator {
         let incomingGameEpoch = kvs.double(forKey: gameStatsResetEpochKVSKey)
         if incomingGameEpoch > 0 {
             let lastSeenGame = defaults.double(forKey: gameStatsLastSeenEpochLocalKey)
-            if incomingGameEpoch > lastSeenGame {
+            if KVSSyncLifecyclePolicy.shouldApplyReset(remoteEpoch: incomingGameEpoch, lastSeenEpoch: lastSeenGame) {
                 // Purge local game data without writing back to KVS (remote reset is authoritative)
                 clearAllGameDataLocalOnly()
                 for key in allKnownGameDataKeys {
@@ -685,12 +726,13 @@ final class iCloudSyncCoordinator {
 
     private func restartForAccountChange() {
         initialSyncTask?.cancel()
-        hasCompletedInitialDownload = false
+        let plan = KVSSyncLifecyclePolicy.accountChangePlan()
+        hasCompletedInitialDownload = plan.initialDownloadComplete
         syncState = .downloading
         lastErrorMessage = nil
         // Do not re-bootstrap an established installation into a different
         // account. A genuinely fresh install already has a false bootstrap flag.
-        pendingKeys.removeAll()
+        pendingKeys = plan.pendingKeys
         recordSynchronizeResult(kvs.synchronize())
         initialSyncTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(3))
