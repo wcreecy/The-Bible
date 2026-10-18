@@ -109,6 +109,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
             if horizontalSizeClass == .regular {
                 HStack(alignment: .top, spacing: 16) {
                     GameSplashConfigurationCard(minimumHeight: 360) {
+                        GameExperienceStandardsCard(tint: tint)
                         configuration
                         facts
                     }
@@ -124,6 +125,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                 }
             } else {
                 GameSplashConfigurationCard {
+                    GameExperienceStandardsCard(tint: tint)
                     configuration
                     facts
                 }
@@ -131,6 +133,53 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                 GameStartActionBar(isEnabled: isStartEnabled, action: startAction)
             }
         }
+    }
+}
+
+/// Shared rules shown on every game lobby so players learn one consistent system.
+struct GameExperienceStandardsCard: View {
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("How you’ll play", systemImage: "gamecontroller.fill")
+                .font(.headline)
+                .foregroundStyle(tint)
+
+            HStack(alignment: .top, spacing: 8) {
+                rule("Learn", detail: "Untimed practice with guidance.", icon: "lightbulb.fill")
+                rule("Standard", detail: "The balanced default challenge.", icon: "target")
+                rule("Challenge", detail: "Fewer assists and tougher prompts.", icon: "flame.fill")
+            }
+
+            Divider()
+
+            Label("Timers appear only in a labeled Time Attack round and pause for interruptions.", systemImage: "timer")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Label("After every answer: result, correct answer, Scripture context, then Next. Current and best streaks stay separate.", systemImage: "checkmark.message.fill")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Game rules: Learn is untimed practice with guidance. Standard is the balanced challenge. Challenge has fewer assists and tougher prompts. Timers only appear in Time Attack and pause for interruptions. Every answer includes feedback and Scripture context.")
+    }
+
+    private func rule(_ title: LocalizedStringKey, detail: LocalizedStringKey, icon: String) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Image(systemName: icon)
+                .foregroundStyle(tint)
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            Text(detail)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 

@@ -293,6 +293,8 @@ struct BeatTheClockGameView: View {
 
         GameLobbyPreview(kind: .beatTheClock)
 
+        GameExperienceStandardsCard(tint: .indigo)
+
         if isWide {
             HStack(alignment: .top, spacing: 16) {
                 BeatTheClockConfigurationCard(
