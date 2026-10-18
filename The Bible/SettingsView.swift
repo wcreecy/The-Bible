@@ -287,7 +287,7 @@ private struct SettingsVerseMarkersCard: View {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Verse Markers")
-                        Text("Show bookmarks, favorites, notes, and cross-references beside each reference")
+                        Text("Show your bookmark, favorites, notes, and cross-references beside each reference")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -302,7 +302,7 @@ private struct SettingsVerseMarkersCard: View {
                 .padding(.leading, 36)
 
             VStack(spacing: 10) {
-                Toggle("Bookmarks", isOn: $showsBookmarkMarkers)
+                Toggle("Bookmark", isOn: $showsBookmarkMarkers)
                     .accessibilityIdentifier("bookmarkMarkerToggle")
 
                 Toggle("Favorites", isOn: $showsFavoriteMarkers)

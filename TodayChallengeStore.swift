@@ -607,7 +607,11 @@ final class TodayChallengeStore {
     }
 
     private static func containsRetiredBookmarkTask(in challenges: [TodayChallenge]) -> Bool {
-        challenges.contains { $0.title == "Add a verse to your bookmarks" }
+        let retiredTitles = [
+            "Bookmark a verse",
+            "Add a verse to your bookmarks"
+        ]
+        return challenges.contains { retiredTitles.contains($0.title) }
     }
 
     private static let monthlySystemTaskTitles = [

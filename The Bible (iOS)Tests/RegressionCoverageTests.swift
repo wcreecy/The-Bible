@@ -145,6 +145,7 @@ struct RegressionCoverageTests {
     func savedVerseChallengesAreSystemTracked() {
         #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Add a verse to your favorites") == .favoriteVerse)
         #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Highlight a verse to study later") == .highlightVerse)
+        #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Bookmark a verse") == .reflection)
         #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Add a verse to your bookmarks") == .reflection)
     }
 

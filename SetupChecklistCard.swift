@@ -124,7 +124,7 @@ struct SetupChecklistCard: View {
             case .verseOfDaySettings: "Choose how your daily verse is selected"
             case .focusReading: "Read one verse at a time"
             case .studyDesk: "Arrange the iPad dashboard for your study"
-            case .iCloud: "Keep notes, favorites, and bookmarks available everywhere"
+            case .iCloud: "Keep notes, favorites, and your bookmark available everywhere"
             }
         }
 

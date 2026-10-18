@@ -19,9 +19,9 @@ struct SettingsiCloudSection: View {
         case .cloudKit:
             return nil
         case .localOnly:
-            return "iCloud couldn't be opened, so notes, favorites, and bookmarks are being saved on this device only and won't sync. Quit and reopen the app to try again."
+            return "iCloud couldn't be opened, so notes, favorites, and your bookmark are being saved on this device only and won't sync. Quit and reopen the app to try again."
         case .inMemory:
-            return "Your library couldn't be opened, so new notes, favorites, and bookmarks won't be saved and will be lost when the app closes. Quit and reopen the app to try again."
+            return "Your library couldn't be opened, so new notes, favorites, and your bookmark won't be saved and will be lost when the app closes. Quit and reopen the app to try again."
         }
     }
 
