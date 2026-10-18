@@ -14,6 +14,8 @@ struct FocusReadingView: View {
     @State private var scrollPhase: ScrollPhase = .idle
     @State private var lastReportedPageIndex: Int?
     @State private var showsControls = false
+    @State private var controlsAutoHideID = 0
+    @State private var isControlsAutoHideSuspended = false
     @State private var isLocationPickerPresented = false
     @State private var isChapterInsightsPresented = false
     @AppStorage("hasSeenFocusModeControlsHint") private var hasSeenControlsHint = false
@@ -93,14 +95,8 @@ struct FocusReadingView: View {
                 }
             }
             .onAppear(perform: reportSettledPage)
-            .onTapGesture {
-                showsControls = true
-                hasSeenControlsHint = true
-            }
-            .accessibilityAction(named: "Show Focus Mode Controls") {
-                showsControls = true
-                hasSeenControlsHint = true
-            }
+            .onTapGesture(perform: showControls)
+            .accessibilityAction(named: "Show Focus Mode Controls", showControls)
             .accessibilityAction(named: "Exit Focus Mode", onExit)
 
             if showsControls {
@@ -113,7 +109,10 @@ struct FocusReadingView: View {
                     onShowChapterInsights: {
                         isChapterInsightsPresented = true
                     },
-                    onExit: onExit
+                    onExit: onExit,
+                    onInteraction: resetControlsAutoHideTimer,
+                    onHighlightOrNote: suspendControlsAutoHide,
+                    onNoteEditorDismissed: restoreControlsAutoHide
                 )
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
@@ -149,12 +148,33 @@ struct FocusReadingView: View {
             }
             .environment(\.closeStudySheet) { isChapterInsightsPresented = false }
         }
-        .task(id: showsControls) {
-            guard showsControls else { return }
+        .task(id: controlsAutoHideID) {
+            guard showsControls, !isControlsAutoHideSuspended else { return }
             try? await Task.sleep(for: .seconds(4))
             guard Task.isCancelled == false else { return }
             showsControls = false
         }
+    }
+
+    private func showControls() {
+        showsControls = true
+        hasSeenControlsHint = true
+        isControlsAutoHideSuspended = false
+        resetControlsAutoHideTimer()
+    }
+
+    private func resetControlsAutoHideTimer() {
+        controlsAutoHideID += 1
+    }
+
+    private func suspendControlsAutoHide() {
+        isControlsAutoHideSuspended = true
+        controlsAutoHideID += 1
+    }
+
+    private func restoreControlsAutoHide() {
+        isControlsAutoHideSuspended = false
+        resetControlsAutoHideTimer()
     }
 }
 
@@ -176,6 +196,9 @@ private struct FocusControls: View {
     let onChooseLocation: () -> Void
     let onShowChapterInsights: () -> Void
     let onExit: () -> Void
+    let onInteraction: () -> Void
+    let onHighlightOrNote: () -> Void
+    let onNoteEditorDismissed: () -> Void
 
     var body: some View {
         HStack(spacing: 18) {
@@ -205,7 +228,9 @@ private struct FocusControls: View {
                         verseNumber: verse.verseNumber,
                         verseText: verse.text
                     ),
-                    presentation: .focus
+                    presentation: .focus,
+                    onNoteEditorPresented: onHighlightOrNote,
+                    onNoteEditorDismissed: onNoteEditorDismissed
                 )
             }
 
@@ -220,6 +245,7 @@ private struct FocusControls: View {
         .frame(minHeight: 56)
         .background(.thinMaterial, in: Capsule())
         .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
+        .simultaneousGesture(TapGesture().onEnded { _ in onInteraction() })
     }
 }
 

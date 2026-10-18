@@ -79,6 +79,8 @@ struct VerseActionMenu: View {
     let verse: VerseActionReference
     var presentation: VerseActionPresentation = .menu
     var onFeedback: (VerseActionFeedback) -> Void = { _ in }
+    var onNoteEditorPresented: () -> Void = {}
+    var onNoteEditorDismissed: () -> Void = {}
 
     private var isFavorite: Bool {
         favorites.contains {
@@ -126,7 +128,7 @@ struct VerseActionMenu: View {
                 await pinnedStore.load()
             }
             .persistenceFailureAlert(failure: $persistenceFailure)
-            .sheet(isPresented: $isShowingNoteEditor) {
+            .sheet(isPresented: $isShowingNoteEditor, onDismiss: onNoteEditorDismissed) {
                 NavigationStack {
                     VerseNoteEditorView(verse: verse, existingNote: existingNote)
                 }
@@ -201,7 +203,10 @@ struct VerseActionMenu: View {
                 .accessibilityLabel(isFavorite ? "Remove from Favorites" : "Add to Favorites")
 
                 Menu {
-                    Button(action: { isShowingNoteEditor = true }) {
+                    Button(action: {
+                        onNoteEditorPresented()
+                        isShowingNoteEditor = true
+                    }) {
                         Label(
                             existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight",
                             systemImage: "highlighter"
