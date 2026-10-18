@@ -84,6 +84,25 @@ struct BeatTheClockGameView: View {
     @AppStorage("beatTheClockDifficulty") private var difficulty: Difficulty = .normal
     @AppStorage("beatTheClockCategory") private var category: Category = .people
 
+    private var experienceLevel: Binding<GameExperienceLevel> {
+        Binding(
+            get: {
+                switch difficulty {
+                case .easy: .learn
+                case .normal: .standard
+                case .hard: .challenge
+                }
+            },
+            set: { level in
+                difficulty = switch level {
+                case .learn: .easy
+                case .standard: .normal
+                case .challenge: .hard
+                }
+            }
+        )
+    }
+
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
@@ -293,7 +312,7 @@ struct BeatTheClockGameView: View {
 
         GameLobbyPreview(kind: .beatTheClock)
 
-        GameExperienceStandardsCard(tint: .indigo)
+        GameExperienceStandardsCard(tint: .indigo, selection: experienceLevel)
 
         if isWide {
             HStack(alignment: .top, spacing: 16) {
@@ -912,10 +931,7 @@ private struct BeatTheClockConfigurationCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            BeatTheClockSetupControls(
-                difficulty: $difficulty,
-                category: $category
-            )
+            BeatTheClockSetupControls(category: $category)
 
             Spacer(minLength: 0)
 
@@ -993,28 +1009,10 @@ private struct BeatTheClockGameFact: View {
 }
 
 private struct BeatTheClockSetupControls: View {
-    @Binding var difficulty: BeatTheClockGameView.Difficulty
     @Binding var category: BeatTheClockGameView.Category
 
     var body: some View {
         VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    ForEach(BeatTheClockGameView.Difficulty.allCases) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text(difficulty.detail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
             VStack(alignment: .leading, spacing: 8) {
                 Text("Question Subject")
                     .font(.headline)

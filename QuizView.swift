@@ -155,6 +155,25 @@ struct QuizView: View {
     @AppStorage("quizSections") private var quizSectionsRaw: String = ""
     @AppStorage("quizDifficulty") private var difficulty: Difficulty = .normal
 
+    private var experienceLevel: Binding<GameExperienceLevel> {
+        Binding(
+            get: {
+                switch difficulty {
+                case .easy: .learn
+                case .normal: .standard
+                case .hard: .challenge
+                }
+            },
+            set: { level in
+                difficulty = switch level {
+                case .learn: .easy
+                case .standard: .normal
+                case .challenge: .hard
+                }
+            }
+        )
+    }
+
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
@@ -354,11 +373,14 @@ struct QuizView: View {
         Text("Test your knowledge by guessing the book of the Bible from a given verse.")
             .gameStartDescriptionStyle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
 
-        GameSplashLaunchLayout(tint: .blue, isStartEnabled: isFilterReady, startAction: startQuiz) {
+        GameSplashLaunchLayout(
+            tint: .blue,
+            experienceLevel: experienceLevel,
+            isStartEnabled: isFilterReady,
+            startAction: startQuiz
+        ) {
             GameLobbyPreview(kind: .quiz)
         } configuration: {
-            QuizDifficultyControl(difficulty: $difficulty)
-
             VStack(alignment: .leading, spacing: 8) {
                 QuizCategoryQuickPicks(selection: sectionSelection)
 
@@ -874,31 +896,6 @@ private enum QuizOutcome {
 }
 
 // MARK: - Setup views
-
-private struct QuizDifficultyControl: View {
-    @Binding var difficulty: QuizView.Difficulty
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Difficulty")
-                .font(.headline)
-
-            Picker("Difficulty", selection: $difficulty) {
-                ForEach(QuizView.Difficulty.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text(difficulty.detail)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: 620)
-        .padding(.horizontal)
-    }
-}
 
 /// One-tap shortcuts for the whole Bible or one Testament. Also used by Verse Match.
 struct QuizCategoryQuickPicks: View {

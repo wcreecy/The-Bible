@@ -109,6 +109,25 @@ struct HangmanGameView: View {
     @AppStorage("hangmanTheme") private var theme: Theme = .all
     @AppStorage("hangmanDifficulty") private var difficulty: Difficulty = .normal
 
+    private var experienceLevel: Binding<GameExperienceLevel> {
+        Binding(
+            get: {
+                switch difficulty {
+                case .easy: .learn
+                case .normal: .standard
+                case .hard: .challenge
+                }
+            },
+            set: { level in
+                difficulty = switch level {
+                case .learn: .easy
+                case .standard: .normal
+                case .challenge: .hard
+                }
+            }
+        )
+    }
+
     @State private var phase: Phase = .setup
     @State private var loadedPeople: [BibleCharacter] = []
     @State private var loadedPlaces: [BibleLocationChallenge] = []
@@ -306,15 +325,13 @@ struct HangmanGameView: View {
 
         GameSplashLaunchLayout(
             tint: .teal,
+            experienceLevel: experienceLevel,
             isStartEnabled: !loadedPeople.isEmpty && !loadedPlaces.isEmpty,
             startAction: startGame
         ) {
             GameLobbyPreview(kind: .hangman)
         } configuration: {
-            HangmanSetupControls(
-                theme: $theme,
-                difficulty: $difficulty
-            )
+            HangmanSetupControls(theme: $theme)
         } facts: {
             GameSplashFacts(
                 first: ("number", "\(Self.wordsPerGame)", String(localized: "Words")),
@@ -763,27 +780,9 @@ struct HangmanGameView: View {
 
 private struct HangmanSetupControls: View {
     @Binding var theme: HangmanGameView.Theme
-    @Binding var difficulty: HangmanGameView.Difficulty
 
     var body: some View {
         VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    ForEach(HangmanGameView.Difficulty.allCases) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text(difficulty.detail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
             VStack(alignment: .leading, spacing: 8) {
                 Text("Word Type")
                     .font(.headline)

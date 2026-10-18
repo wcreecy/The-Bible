@@ -19,6 +19,25 @@ struct WhoAmIGameView: View {
 
     private var promptIsName: Bool { vm.mode == .nameToClue }
 
+    private var experienceLevel: Binding<GameExperienceLevel> {
+        Binding(
+            get: {
+                switch vm.difficulty {
+                case .easy: .learn
+                case .normal: .standard
+                case .hard: .challenge
+                }
+            },
+            set: { level in
+                vm.difficulty = switch level {
+                case .learn: .easy
+                case .standard: .normal
+                case .challenge: .hard
+                }
+            }
+        )
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -69,10 +88,15 @@ struct WhoAmIGameView: View {
         Text("Name the Bible person from a clue, or the clue from a name.")
             .gameStartDescriptionStyle(title: "Who am I?", systemImage: "person.text.rectangle", tint: .brown)
 
-        GameSplashLaunchLayout(tint: .brown, isStartEnabled: vm.isReady, startAction: vm.startGame) {
+        GameSplashLaunchLayout(
+            tint: .brown,
+            experienceLevel: experienceLevel,
+            isStartEnabled: vm.isReady,
+            startAction: vm.startGame
+        ) {
             GameLobbyPreview(kind: .whoAmI)
         } configuration: {
-            WhoAmISetupControls(mode: $vm.mode, difficulty: $vm.difficulty)
+            WhoAmISetupControls(mode: $vm.mode)
         } facts: {
             GameSplashFacts(
                 first: ("number", "\(WhoAmIGameViewModel.questionsPerGame)", String(localized: "Questions")),
@@ -369,7 +393,6 @@ struct WhoAmIGameView: View {
 
 private struct WhoAmISetupControls: View {
     @Binding var mode: WhoAmIGameViewModel.Mode
-    @Binding var difficulty: WhoAmIGameViewModel.Difficulty
 
     var body: some View {
         VStack(spacing: 16) {
@@ -390,22 +413,6 @@ private struct WhoAmISetupControls: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    ForEach(WhoAmIGameViewModel.Difficulty.allCases) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text(difficulty.detail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)

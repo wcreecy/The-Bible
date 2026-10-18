@@ -100,6 +100,25 @@ struct VerseMatchGameView: View {
     }
 
     @AppStorage("verseMatchDifficulty") private var difficulty: Difficulty = .normal
+
+    private var experienceLevel: Binding<GameExperienceLevel> {
+        Binding(
+            get: {
+                switch difficulty {
+                case .easy: .learn
+                case .normal: .standard
+                case .hard: .challenge
+                }
+            },
+            set: { level in
+                difficulty = switch level {
+                case .learn: .easy
+                case .standard: .normal
+                case .challenge: .hard
+                }
+            }
+        )
+    }
     @AppStorage("versematchPool") private var pool: VersePool = .wellKnown
     // Replaced by the category quick picks; read once to carry an old choice over.
     @AppStorage("versematchScope") private var legacyScope: String = "whole"
@@ -263,11 +282,15 @@ struct VerseMatchGameView: View {
         Text("Choose the verse text that matches the reference.")
             .gameStartDescriptionStyle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
 
-        GameSplashLaunchLayout(tint: .orange, isStartEnabled: canStart, startAction: startGame) {
+        GameSplashLaunchLayout(
+            tint: .orange,
+            experienceLevel: experienceLevel,
+            isStartEnabled: canStart,
+            startAction: startGame
+        ) {
             GameLobbyPreview(kind: .verseMatch)
         } configuration: {
             VerseMatchSetupControls(
-                difficulty: $difficulty,
                 pool: $pool,
                 poolDetail: poolDetail
             )
@@ -565,7 +588,6 @@ struct VerseMatchGameView: View {
 // MARK: - Setup views
 
 private struct VerseMatchSetupControls: View {
-    @Binding var difficulty: VerseMatchGameView.Difficulty
     @Binding var pool: VerseMatchGameView.VersePool
     let poolDetail: String
 
@@ -588,22 +610,6 @@ private struct VerseMatchSetupControls: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    ForEach(VerseMatchGameView.Difficulty.allCases) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text(difficulty.detail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)

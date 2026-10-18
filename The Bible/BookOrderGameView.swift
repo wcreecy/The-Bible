@@ -5,6 +5,25 @@ struct BookOrderGameView: View {
     @State private var elapsedSeconds: Int = 0
     @State private var isTimerHidden: Bool = false
 
+    private var experienceLevel: Binding<GameExperienceLevel> {
+        Binding(
+            get: {
+                switch vm.difficulty {
+                case .easy: .learn
+                case .normal: .standard
+                case .hard, .all: .challenge
+                }
+            },
+            set: { level in
+                vm.difficulty = switch level {
+                case .learn: .easy
+                case .standard: .normal
+                case .challenge: .hard
+                }
+            }
+        )
+    }
+
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
@@ -17,14 +36,14 @@ struct BookOrderGameView: View {
                         Text("Rearrange the books in the correct order.")
                             .gameStartDescriptionStyle(title: "Book Order", systemImage: "list.number", tint: .purple)
 
-                        GameSplashLaunchLayout(tint: .purple, startAction: startGame) {
+                        GameSplashLaunchLayout(
+                            tint: .purple,
+                            experienceLevel: experienceLevel,
+                            startAction: startGame
+                        ) {
                             GameLobbyPreview(kind: .bookOrder, bookOrderBooks: vm.source.previewBookNames)
                         } configuration: {
-                            BookOrderSetupControls(
-                                source: $vm.source,
-                                difficulty: $vm.difficulty,
-                                roundBookCount: vm.roundBookCount
-                            )
+                            BookOrderSetupControls(source: $vm.source)
                         } facts: {
                             GameSplashFacts(
                                 first: ("books.vertical", "\(vm.roundBookCount)", String(localized: "Books")),
@@ -494,8 +513,6 @@ private struct BookOrderResultSummary: View {
 
 private struct BookOrderSetupControls: View {
     @Binding var source: BookSourceScope
-    @Binding var difficulty: BookOrderDifficulty
-    let roundBookCount: Int
 
     private static let testamentOptions = BookSourceScope.allCases.filter { !$0.isCategory }
     private static let categoryOptions = BookSourceScope.allCases.filter(\.isCategory)
@@ -507,17 +524,6 @@ private struct BookOrderSetupControls: View {
         case .nt: String(localized: "the New Testament")
         default: String(localized: "the \(String(localized: source.title)) books")
         }
-    }
-
-    private var detail: String {
-        let available = source.bookNames.count
-        if difficulty.runLength == nil {
-            return String(localized: "Every book in \(partPhrase): \(available) books.")
-        }
-        if roundBookCount < (difficulty.runLength ?? 0) {
-            return String(localized: "\(String(localized: source.title)) has only \(available) books, so you’ll arrange all of them.")
-        }
-        return String(localized: "A run of \(roundBookCount) books in a row from \(partPhrase).")
     }
 
     var body: some View {
@@ -542,22 +548,6 @@ private struct BookOrderSetupControls: View {
                 .pickerStyle(.menu)
             }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    ForEach(BookOrderDifficulty.allCases) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text(detail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)

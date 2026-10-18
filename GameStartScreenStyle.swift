@@ -76,10 +76,43 @@ struct GameStartActionBar: View {
     }
 }
 
+enum GameExperienceLevel: String, CaseIterable, Identifiable {
+    case learn
+    case standard
+    case challenge
+
+    var id: Self { self }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .learn: "Learn"
+        case .standard: "Standard"
+        case .challenge: "Challenge"
+        }
+    }
+
+    var detail: LocalizedStringKey {
+        switch self {
+        case .learn: "Untimed practice with guidance."
+        case .standard: "The balanced default challenge."
+        case .challenge: "Fewer assists and tougher prompts."
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .learn: "lightbulb.fill"
+        case .standard: "target"
+        case .challenge: "flame.fill"
+        }
+    }
+}
+
 struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let tint: Color
+    let experienceLevel: Binding<GameExperienceLevel>?
     let isStartEnabled: Bool
     let startAction: () -> Void
     @ViewBuilder let preview: Preview
@@ -88,6 +121,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
 
     init(
         tint: Color,
+        experienceLevel: Binding<GameExperienceLevel>? = nil,
         isStartEnabled: Bool = true,
         startAction: @escaping () -> Void,
         @ViewBuilder preview: () -> Preview,
@@ -95,6 +129,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         @ViewBuilder facts: () -> Facts
     ) {
         self.tint = tint
+        self.experienceLevel = experienceLevel
         self.isStartEnabled = isStartEnabled
         self.startAction = startAction
         self.preview = preview()
@@ -109,7 +144,9 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
             if horizontalSizeClass == .regular {
                 HStack(alignment: .top, spacing: 16) {
                     GameSplashConfigurationCard(minimumHeight: 360) {
-                        GameExperienceStandardsCard(tint: tint)
+                        if let experienceLevel {
+                            GameExperienceStandardsCard(tint: tint, selection: experienceLevel)
+                        }
                         configuration
                         facts
                     }
@@ -125,7 +162,9 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                 }
             } else {
                 GameSplashConfigurationCard {
-                    GameExperienceStandardsCard(tint: tint)
+                    if let experienceLevel {
+                        GameExperienceStandardsCard(tint: tint, selection: experienceLevel)
+                    }
                     configuration
                     facts
                 }
@@ -136,9 +175,10 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
     }
 }
 
-/// Shared rules shown on every game lobby so players learn one consistent system.
+/// The one place on each supported game lobby where players choose its difficulty.
 struct GameExperienceStandardsCard: View {
     let tint: Color
+    @Binding var selection: GameExperienceLevel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -147,9 +187,17 @@ struct GameExperienceStandardsCard: View {
                 .foregroundStyle(tint)
 
             HStack(alignment: .top, spacing: 8) {
-                rule("Learn", detail: "Untimed practice with guidance.", icon: "lightbulb.fill")
-                rule("Standard", detail: "The balanced default challenge.", icon: "target")
-                rule("Challenge", detail: "Fewer assists and tougher prompts.", icon: "flame.fill")
+                ForEach(GameExperienceLevel.allCases) { level in
+                    Button {
+                        selection = level
+                    } label: {
+                        rule(level)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(level.title)
+                    .accessibilityValue(selection == level ? "Selected" : "Not selected")
+                    .accessibilityAddTraits(selection == level ? .isSelected : [])
+                }
             }
 
             Divider()
@@ -162,24 +210,30 @@ struct GameExperienceStandardsCard: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Game rules: Learn is untimed practice with guidance. Standard is the balanced challenge. Challenge has fewer assists and tougher prompts. Timers only appear in Time Attack and pause for interruptions. Every answer includes feedback and Scripture context.")
     }
 
-    private func rule(_ title: LocalizedStringKey, detail: LocalizedStringKey, icon: String) -> some View {
+    private func rule(_ level: GameExperienceLevel) -> some View {
         VStack(alignment: .leading, spacing: 5) {
-            Image(systemName: icon)
-                .foregroundStyle(tint)
-            Text(title)
+            Image(systemName: level.icon)
+                .foregroundStyle(selection == level ? .white : tint)
+            Text(level.title)
                 .font(.subheadline.weight(.semibold))
-            Text(detail)
+                .foregroundStyle(selection == level ? .white : .primary)
+            Text(level.detail)
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(selection == level ? .white.opacity(0.9) : .secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
-        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .background(
+            selection == level ? tint : tint.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(selection == level ? tint : .clear, lineWidth: 2)
+        }
     }
 }
 

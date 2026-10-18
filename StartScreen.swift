@@ -12,6 +12,25 @@ struct WordSearchStartScreen: View {
 
     private var needsFavorites: Bool { verseSource == .favorites && !hasFavorites }
 
+    private var experienceLevel: Binding<GameExperienceLevel> {
+        Binding(
+            get: {
+                switch difficulty {
+                case .easy: .learn
+                case .medium: .standard
+                case .hard, .expert: .challenge
+                }
+            },
+            set: { level in
+                difficulty = switch level {
+                case .learn: .easy
+                case .standard: .medium
+                case .challenge: .hard
+                }
+            }
+        )
+    }
+
     private var verseSourceTitle: String {
         switch verseSource {
         case .popular: "Popular"
@@ -26,7 +45,12 @@ struct WordSearchStartScreen: View {
             Text("Find the hidden words from a Bible verse.")
                 .gameStartDescriptionStyle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
 
-            GameSplashLaunchLayout(tint: .green, isStartEnabled: !needsFavorites, startAction: onStart) {
+            GameSplashLaunchLayout(
+                tint: .green,
+                experienceLevel: experienceLevel,
+                isStartEnabled: !needsFavorites,
+                startAction: onStart
+            ) {
                 GameLobbyPreview(kind: .wordSearch)
             } configuration: {
                 WordSearchSetupCard(
@@ -38,7 +62,6 @@ struct WordSearchStartScreen: View {
                 )
 
                 WordSearchSetupControls(
-                    difficulty: $difficulty,
                     verseSource: $verseSource,
                     needsFavorites: needsFavorites
                 )
@@ -146,25 +169,11 @@ private struct WordSearchSetupCard: View {
 }
 
 private struct WordSearchSetupControls: View {
-    @Binding var difficulty: WordSearchEngine.Difficulty
     @Binding var verseSource: WordSearchViewModel.VerseSource
     let needsFavorites: Bool
 
     var body: some View {
         VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    Text("Easy").tag(WordSearchEngine.Difficulty.easy)
-                    Text("Normal").tag(WordSearchEngine.Difficulty.medium)
-                    Text("Hard").tag(WordSearchEngine.Difficulty.hard)
-                    Text("Expert").tag(WordSearchEngine.Difficulty.expert)
-                }
-                .pickerStyle(.segmented)
-            }
-
             VStack(alignment: .leading, spacing: 8) {
                 Text("Verses")
                     .font(.headline)
