@@ -83,6 +83,7 @@ final class VerseOfDayViewModel {
     func refreshNow() {
         guard !paused else { return }
         loadRandomVerse()
+        UserDefaults.standard.set(true, forKey: "homeOnboardingVerseOfDayRefreshedV2")
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
     }

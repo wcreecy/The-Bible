@@ -114,7 +114,11 @@ struct StudyBibleView: View {
 
     @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
     @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
+    @AppStorage("openLastStudiedChapter") private var shouldOpenLastStudiedChapter = false
+    @AppStorage("openLastStudiedBookOverview") private var shouldOpenLastStudiedBookOverview = false
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var requestedChapter: StudyChapterRequest?
+    @State private var requestedBookOverview: StudyBookOverviewRequest?
     @State private var searchText = ""
     @State private var testamentFilter: StudyTestamentFilter = .all
     @AppStorage("studyBooksSortAlphabetical") private var sortAlphabetically = false
@@ -201,7 +205,36 @@ struct StudyBibleView: View {
                 }
             }
         }
+        .navigationDestination(item: $requestedChapter) { request in
+            ChapterInsightsView(bookName: request.bookName, chapterNumber: request.chapterNumber)
+        }
+        .navigationDestination(item: $requestedBookOverview) { request in
+            BookOverviewView(bookName: request.bookName)
+        }
+        .onAppear {
+            if shouldOpenLastStudiedBookOverview, !lastStudiedBook.isEmpty {
+                shouldOpenLastStudiedBookOverview = false
+                requestedBookOverview = StudyBookOverviewRequest(bookName: lastStudiedBook)
+            } else if shouldOpenLastStudiedChapter, !lastStudiedBook.isEmpty, lastStudiedChapter > 0 {
+                shouldOpenLastStudiedChapter = false
+                requestedChapter = StudyChapterRequest(
+                    bookName: lastStudiedBook,
+                    chapterNumber: lastStudiedChapter
+                )
+            }
+        }
     }
+}
+
+private struct StudyChapterRequest: Hashable, Identifiable {
+    let bookName: String
+    let chapterNumber: Int
+    let id = UUID()
+}
+
+private struct StudyBookOverviewRequest: Hashable, Identifiable {
+    let bookName: String
+    let id = UUID()
 }
 
 private enum StudyTestamentFilter: String, CaseIterable, Identifiable {

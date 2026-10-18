@@ -186,6 +186,10 @@ struct HomeView: View {
     @State private var searchScrollRequest = 0
     /// Set by the Get Started card's Customize Home step.
     @State private var showsSetupLayoutEditor = false
+    @State private var showsEditHomeOnboardingCue = false
+    @State private var isEditHomeCueDismissalEnabled = false
+    @State private var editHomeCueCircleProgress: CGFloat = 0
+    @State private var editHomeCueArrowProgress: CGFloat = 0
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
     @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
@@ -201,6 +205,41 @@ struct HomeView: View {
 
     private func saveHomeLayout() {
         HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards, columns: columns)
+    }
+
+    private func showEditHomeOnboardingCue() {
+        editHomeCueCircleProgress = 0
+        editHomeCueArrowProgress = 0
+        isEditHomeCueDismissalEnabled = false
+        showsEditHomeOnboardingCue = true
+
+        Task { @MainActor in
+            await Task.yield()
+            withAnimation(.easeOut(duration: 0.8)) {
+                editHomeCueCircleProgress = 1
+            }
+
+            try? await Task.sleep(for: .milliseconds(850))
+            guard showsEditHomeOnboardingCue else { return }
+            isEditHomeCueDismissalEnabled = true
+            withAnimation(.easeOut(duration: 0.65)) {
+                editHomeCueArrowProgress = 1
+            }
+        }
+    }
+
+    private func dismissEditHomeOnboardingCue(force: Bool = false) {
+        guard showsEditHomeOnboardingCue, force || isEditHomeCueDismissalEnabled else { return }
+        withAnimation(.easeOut(duration: 0.15)) {
+            showsEditHomeOnboardingCue = false
+        }
+    }
+
+    private func beginEditingHomeLayout() {
+        withAnimation(.snappy) {
+            isEditingLayout = true
+        }
+        dismissEditHomeOnboardingCue(force: true)
     }
 
     /// Applies a column change from Edit Home and keeps the narrow-width order in step.
@@ -372,6 +411,13 @@ struct HomeView: View {
         case .setup:
             SetupChecklistCard(
                 onCustomizeHome: { showsSetupLayoutEditor = true },
+                onEditHome: {
+                    if isPad && isShowingDashboard {
+                        showEditHomeOnboardingCue()
+                    } else {
+                        showsSetupLayoutEditor = true
+                    }
+                },
                 onDismiss: { hideCard(.setup) }
             )
         }
@@ -658,41 +704,42 @@ struct HomeView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let availableWidth = proxy.size.width
-            let usesDashboard = availableWidth >= 700
+            let usesDashboard = proxy.size.width >= 700
             let horizontalPadding: CGFloat = usesDashboard ? 24 : 16
-            let contentWidth = max(0, availableWidth - (horizontalPadding * 2))
+            let contentWidth = max(0, proxy.size.width - (horizontalPadding * 2))
 
-            ScrollViewReader { scrollProxy in
-                ScrollView {
-                    VStack(spacing: 16) {
-                        if usesDashboard {
-                            dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
-                        } else {
-                            compactHomeContent
-                        }
-                    }
-                    .frame(width: contentWidth, alignment: .leading)
-                    .padding(.horizontal, horizontalPadding)
-                }
-                .scrollDismissesKeyboard(.interactively)
-                .onChange(of: searchScrollRequest) { _, _ in
+            HomeScrollContent(
+                usesDashboard: usesDashboard,
+                contentWidth: contentWidth,
+                availableHeight: proxy.size.height,
+                horizontalPadding: horizontalPadding,
+                searchScrollRequest: searchScrollRequest,
+                dismissCue: { dismissEditHomeOnboardingCue() },
+                onSearchScroll: { scrollProxy in
                     Task {
-                        // Let the keyboard finish appearing so the visible area is final.
                         try? await Task.sleep(for: .milliseconds(350))
                         withAnimation(.snappy) {
                             scrollProxy.scrollTo(HomeCardID.search, anchor: .top)
                         }
                     }
+                },
+                dashboard: {
+                    dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
+                },
+                compact: {
+                    compactHomeContent
                 }
-            }
+            )
         }
         .onGeometryChange(for: Bool.self) { proxy in
             proxy.size.width >= 700
         } action: { showsDashboard in
             isShowingDashboard = showsDashboard
             // Edit Home arranges the dashboard; leave it if the dashboard goes away.
-            if !showsDashboard { isEditingLayout = false }
+            if !showsDashboard {
+                isEditingLayout = false
+                dismissEditHomeOnboardingCue(force: true)
+            }
         }
         .background(AppBackgroundView(tab: .home))
         .accessibilityIdentifier("homeView")
@@ -706,12 +753,14 @@ struct HomeView: View {
                         }
                         .accessibilityIdentifier("homeEditDoneButton")
                     } else {
-                        Button("Edit Home", systemImage: "square.grid.2x2") {
-                            withAnimation(.snappy) { isEditingLayout = true }
-                        }
-                        .accessibilityIdentifier("homeEditButton")
-                    }
+                        EditHomeToolbarButton(
+                            showsCue: showsEditHomeOnboardingCue,
+                            circleProgress: editHomeCueCircleProgress,
+                            arrowProgress: editHomeCueArrowProgress,
+                            action: beginEditingHomeLayout
+                        )
                 }
+            }
             }
             if isPad && !isEditingLayout {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -788,14 +837,7 @@ struct HomeView: View {
             })
             .presentationDetents([.medium, .large])
         }
-        .alert(PrayerTimerController.finishedTitle, isPresented: Bindable(timerController).showFinishedAlert) {
-            Button("Dismiss", role: .cancel) {
-                timerController.stopFinishAlerts()
-                timerController.showFinishedAlert = false
-            }
-        } message: {
-            Text(PrayerTimerController.finishedMessage)
-        }
+        .modifier(PrayerTimerFinishedAlert(timerController: timerController))
     }
 
     /// Starts the prayer timer from a Today challenge and confirms it with a toast.
@@ -826,6 +868,134 @@ struct HomeView: View {
         }
     }
 
+}
+
+private struct PrayerTimerFinishedAlert: ViewModifier {
+    let timerController: PrayerTimerController
+
+    func body(content: Content) -> some View {
+        content
+            .alert(
+                PrayerTimerController.finishedTitle,
+                isPresented: Bindable(timerController).showFinishedAlert
+            ) {
+                Button("Dismiss", role: .cancel) {
+                    timerController.stopFinishAlerts()
+                    timerController.showFinishedAlert = false
+                }
+            } message: {
+                Text(PrayerTimerController.finishedMessage)
+            }
+    }
+}
+
+private struct EditHomeToolbarButton: View {
+    let showsCue: Bool
+    let circleProgress: CGFloat
+    let arrowProgress: CGFloat
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                if showsCue {
+                    EditHomeToolbarArrow()
+                        .trim(from: 0, to: arrowProgress)
+                        .stroke(
+                            .red,
+                            style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round)
+                        )
+                        .frame(width: 34, height: 22)
+                        .accessibilityHidden(true)
+                }
+                Image(systemName: "square.grid.2x2")
+                    .overlay {
+                        Circle()
+                            .trim(from: 0, to: circleProgress)
+                            .stroke(
+                                .red,
+                                style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                            )
+                            .padding(-8)
+                            .opacity(showsCue ? 1 : 0)
+                            .accessibilityHidden(true)
+                            .allowsHitTesting(false)
+                    }
+                Text("Edit Home")
+            }
+        }
+        .accessibilityIdentifier("homeEditButton")
+    }
+}
+
+private struct HomeScrollContent<Dashboard: View, Compact: View>: View {
+    let usesDashboard: Bool
+    let contentWidth: CGFloat
+    let availableHeight: CGFloat
+    let horizontalPadding: CGFloat
+    let searchScrollRequest: Int
+    let dismissCue: () -> Void
+    let onSearchScroll: (ScrollViewProxy) -> Void
+    private let dashboard: () -> Dashboard
+    private let compact: () -> Compact
+
+    init(
+        usesDashboard: Bool,
+        contentWidth: CGFloat,
+        availableHeight: CGFloat,
+        horizontalPadding: CGFloat,
+        searchScrollRequest: Int,
+        dismissCue: @escaping () -> Void,
+        onSearchScroll: @escaping (ScrollViewProxy) -> Void,
+        @ViewBuilder dashboard: @escaping () -> Dashboard,
+        @ViewBuilder compact: @escaping () -> Compact
+    ) {
+        self.usesDashboard = usesDashboard
+        self.contentWidth = contentWidth
+        self.availableHeight = availableHeight
+        self.horizontalPadding = horizontalPadding
+        self.searchScrollRequest = searchScrollRequest
+        self.dismissCue = dismissCue
+        self.onSearchScroll = onSearchScroll
+        self.dashboard = dashboard
+        self.compact = compact
+    }
+
+    var body: some View {
+        ScrollViewReader { scrollProxy in
+            ScrollView {
+                VStack(spacing: 16) {
+                    if usesDashboard {
+                        dashboard()
+                    } else {
+                        compact()
+                    }
+                }
+                .frame(width: contentWidth, alignment: .leading)
+                .padding(.horizontal, horizontalPadding)
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .simultaneousGesture(DragGesture(minimumDistance: 1).onChanged { _ in dismissCue() })
+            .simultaneousGesture(TapGesture().onEnded { dismissCue() })
+            .onChange(of: searchScrollRequest) { _, _ in onSearchScroll(scrollProxy) }
+        }
+    }
+}
+
+/// A short arrow that ends immediately beside the highlighted Edit Home grid icon.
+private struct EditHomeToolbarArrow: Shape {
+    func path(in rect: CGRect) -> Path {
+        let tip = CGPoint(x: rect.maxX - 2, y: rect.midY)
+        var path = Path()
+
+        path.move(to: CGPoint(x: rect.minX + 2, y: rect.midY))
+        path.addLine(to: tip)
+        path.addLine(to: CGPoint(x: tip.x - 8, y: tip.y - 6))
+        path.move(to: tip)
+        path.addLine(to: CGPoint(x: tip.x - 8, y: tip.y + 6))
+
+        return path
+    }
 }
 
 // Note: HeroCard, button styles,

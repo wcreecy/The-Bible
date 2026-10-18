@@ -185,6 +185,11 @@ private struct SettingsReadingAndPrayerLinksSection: View {
 }
 
 private struct SettingsReadingProgressSection: View {
+    let highlightFocusReading: Bool
+
+    init(highlightFocusReading: Bool = false) {
+        self.highlightFocusReading = highlightFocusReading
+    }
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
     @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers = true
     @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers = true
@@ -210,6 +215,11 @@ private struct SettingsReadingProgressSection: View {
                 }
             }
             .accessibilityIdentifier("focusReadingToggle")
+            .listRowBackground(
+                highlightFocusReading
+                    ? Color.orange.opacity(0.16)
+                    : Color.clear
+            )
 
             SettingsVerseMarkersCard(
                 showsVerseMarkers: $showsVerseMarkers,
@@ -950,10 +960,16 @@ private enum WidgetBackgroundStyle: String, CaseIterable, Identifiable {
     }
 }
 
-private struct SettingsBibleReaderDetailView: View {
+struct SettingsBibleReaderDetailView: View {
+    let highlightFocusReading: Bool
+
+    init(highlightFocusReading: Bool = false) {
+        self.highlightFocusReading = highlightFocusReading
+    }
+
     var body: some View {
         SettingsDetailForm(title: "Bible Reader") {
-            SettingsReadingProgressSection()
+            SettingsReadingProgressSection(highlightFocusReading: highlightFocusReading)
         }
     }
 }

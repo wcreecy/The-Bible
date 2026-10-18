@@ -5,6 +5,7 @@ import SwiftUI
 /// Shared reading steps remain the same on every device; the last step adapts to the device.
 struct SetupChecklistCard: View {
     let onCustomizeHome: () -> Void
+    let onEditHome: () -> Void
     let onDismiss: () -> Void
 
     fileprivate enum Focus: String, CaseIterable, Identifiable {
@@ -45,13 +46,13 @@ struct SetupChecklistCard: View {
         func steps(deviceStep: Step) -> [Step] {
             switch self {
             case .read:
-                [.firstReading, .saveVerse, deviceStep, .iCloud]
+                [.firstReading, .saveVerse, .highlightVerse, .focusReading]
             case .study:
-                [.firstStudy, .highlightVerse, .favoriteVerse, deviceStep, .iCloud]
+                [.firstStudy, .studyChapter]
             case .habit:
-                [.dailyGoal, .playGame, deviceStep, .iCloud]
+                [.dailyGoal, .refreshVerseOfDay, .focusReading, .playGame, .viewReadingStats, .viewGameStats]
             case .settings:
-                [.changeBackground, .updateLaunchPage, .setupWidget, .customizeHomeCards]
+                [.customizeHomeCards, .updateLaunchPage, .setupWidget, .verseOfDaySettings]
             }
         }
     }
@@ -59,15 +60,20 @@ struct SetupChecklistCard: View {
     fileprivate enum Step: String, Identifiable {
         case firstReading
         case firstStudy
+        case studyChapter
         case saveVerse
         case highlightVerse
         case favoriteVerse
         case dailyGoal
+        case refreshVerseOfDay
         case playGame
+        case viewReadingStats
+        case viewGameStats
         case changeBackground
         case updateLaunchPage
         case setupWidget
         case customizeHomeCards
+        case verseOfDaySettings
         case focusReading
         case studyDesk
         case iCloud
@@ -76,18 +82,23 @@ struct SetupChecklistCard: View {
 
         var title: LocalizedStringResource {
             switch self {
-            case .firstReading: "Read your first passage"
-            case .firstStudy: "Explore a Bible study"
+            case .firstReading: "Read a verse"
+            case .firstStudy: "Study about a book"
+            case .studyChapter: "Learn about a specific chapter"
             case .saveVerse: "Save a verse that matters to you"
             case .highlightVerse: "Highlight a verse"
             case .favoriteVerse: "Favorite a verse"
             case .dailyGoal: "Set a daily reading goal"
+            case .refreshVerseOfDay: "Refresh Verse of the Day"
             case .playGame: "Play any game"
+            case .viewReadingStats: "View Reading Stats"
+            case .viewGameStats: "View Game Stats"
             case .changeBackground: "Change background"
             case .updateLaunchPage: "Update launch page"
             case .setupWidget: "Set up a widget"
-            case .customizeHomeCards: "Customize Home screen cards"
-            case .focusReading: "Try Focus Reading"
+            case .customizeHomeCards: "Customize Homepage cards"
+            case .verseOfDaySettings: "Edit Verse of the Day settings"
+            case .focusReading: "Read a verse in Focus Reading"
             case .studyDesk: "Build your study desk"
             case .iCloud: "Protect your library with iCloud"
             }
@@ -95,18 +106,23 @@ struct SetupChecklistCard: View {
 
         var detail: LocalizedStringResource {
             switch self {
-            case .firstReading: "Open Mark 1 and begin reading"
-            case .firstStudy: "See themes, people, places, and connections"
+            case .firstReading: "Start with today’s Verse of the Day"
+            case .firstStudy: "Explore a book’s background and themes"
+            case .studyChapter: "Explore a chapter’s themes and key passages"
             case .saveVerse: "Highlight, favorite, or add a note to a verse"
             case .highlightVerse: "Mark a passage you want to return to"
             case .favoriteVerse: "Add a verse to your Saved Verses"
             case .dailyGoal: "Choose a goal that fits your day"
+            case .refreshVerseOfDay: "Refresh the Verse of the Day to find inspiration"
             case .playGame: "Try a Bible game and answer a question"
+            case .viewReadingStats: "See your reading progress and habits"
+            case .viewGameStats: "See your game activity and progress"
             case .changeBackground: "Choose a color or photo for an app page"
             case .updateLaunchPage: "Choose the page the app opens to"
             case .setupWidget: "Choose backgrounds for your Home Screen widgets"
             case .customizeHomeCards: "Arrange the cards on your Home screen"
-            case .focusReading: "Read one verse at a time on iPhone"
+            case .verseOfDaySettings: "Choose how your daily verse is selected"
+            case .focusReading: "Read one verse at a time"
             case .studyDesk: "Arrange the iPad dashboard for your study"
             case .iCloud: "Keep notes, favorites, and bookmarks available everywhere"
             }
@@ -116,15 +132,20 @@ struct SetupChecklistCard: View {
             switch self {
             case .firstReading: "book.pages"
             case .firstStudy: "text.book.closed"
+            case .studyChapter: "lightbulb.max.fill"
             case .saveVerse: "heart.text.clipboard"
             case .highlightVerse: "highlighter"
             case .favoriteVerse: "heart"
             case .dailyGoal: "target"
+            case .refreshVerseOfDay: "arrow.clockwise"
             case .playGame: "gamecontroller"
+            case .viewReadingStats: "chart.bar"
+            case .viewGameStats: "chart.bar.xaxis"
             case .changeBackground: "photo"
             case .updateLaunchPage: "rectangle.on.rectangle"
             case .setupWidget: "rectangle.3.group"
             case .customizeHomeCards: "rectangle.grid.1x2"
+            case .verseOfDaySettings: "sun.max"
             case .focusReading: "arrow.up.left.and.arrow.down.right"
             case .studyDesk: "rectangle.3.group"
             case .iCloud: "icloud"
@@ -133,8 +154,8 @@ struct SetupChecklistCard: View {
 
         var canSkip: Bool {
             switch self {
-            case .firstReading, .firstStudy, .saveVerse, .highlightVerse, .favoriteVerse, .playGame, .changeBackground, .updateLaunchPage, .setupWidget, .customizeHomeCards: false
-            case .dailyGoal, .focusReading, .studyDesk, .iCloud: true
+            case .firstReading, .firstStudy, .studyChapter, .saveVerse, .highlightVerse, .favoriteVerse, .refreshVerseOfDay, .playGame, .viewReadingStats, .viewGameStats, .changeBackground, .updateLaunchPage, .customizeHomeCards, .verseOfDaySettings: false
+            case .dailyGoal, .setupWidget, .focusReading, .studyDesk, .iCloud: true
             }
         }
     }
@@ -164,9 +185,20 @@ struct SetupChecklistCard: View {
     @AppStorage(Self.skippedStepsKey) private var skippedStepsRaw = ""
     @AppStorage(Self.readStartedKey) private var readStarted = false
     @AppStorage(Self.studyOpenedKey) private var studyOpened = false
+    @AppStorage("homeOnboardingChapterStudyOpenedV2") private var chapterStudyOpened = false
+    @AppStorage("homeOnboardingVODSettingsOpenedV2") private var verseOfDaySettingsOpened = false
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes = 30
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
+    @AppStorage("homeOnboardingFocusReadingReadV2") private var focusReadingRead = false
+    @AppStorage("homeOnboardingVerseOfDayRefreshedV2") private var verseOfDayRefreshed = false
+    @AppStorage("homeOnboardingReadingStatsViewedV2") private var readingStatsViewed = false
+    @AppStorage("homeOnboardingGameStatsViewedV2") private var gameStatsViewed = false
+    @AppStorage("verseOfDayPaused") private var verseOfDayPaused = false
     @AppStorage("homeCardOrder") private var homeCardOrderRaw = ""
+    @AppStorage("homeCardHidden") private var homeCardHiddenRaw = ""
+    @AppStorage("verseOfDayBook") private var verseOfDayBook = ""
+    @AppStorage("verseOfDayChapter") private var verseOfDayChapter = 0
+    @AppStorage("verseOfDayNumber") private var verseOfDayNumber = 0
     @AppStorage(Self.savedVerseBaselineKey) private var savedVerseBaseline = 0
     @AppStorage(Self.highlightBaselineKey) private var highlightBaseline = 0
     @AppStorage(Self.favoriteBaselineKey) private var favoriteBaseline = 0
@@ -241,6 +273,21 @@ struct SetupChecklistCard: View {
         .joined(separator: "|")
     }
 
+    private var isVerseOfDayCardActive: Bool {
+        guard let data = homeCardHiddenRaw.data(using: .utf8),
+              let hiddenIDs = try? JSONDecoder().decode([String].self, from: data) else {
+            return true
+        }
+        return !hiddenIDs.contains(HomeCardID.verseOfDay.rawValue)
+    }
+
+    private var verseOfDayReference: String? {
+        guard !verseOfDayBook.isEmpty, verseOfDayChapter > 0, verseOfDayNumber > 0 else {
+            return nil
+        }
+        return "\(verseOfDayBook) \(verseOfDayChapter):\(verseOfDayNumber)"
+    }
+
     private var deviceStep: Step {
         UIDevice.current.userInterfaceIdiom == .pad ? .studyDesk : .focusReading
     }
@@ -254,44 +301,77 @@ struct SetupChecklistCard: View {
         steps.filter { !isComplete($0) }
     }
 
+    private func pathProgressText(_ path: Focus) -> String {
+        let pathSteps = path.steps(deviceStep: deviceStep)
+        let completedCount = pathSteps.filter(isComplete).count
+        return "\(completedCount)/\(pathSteps.count)"
+    }
+
     private var isAllComplete: Bool {
         focus != nil && incompleteSteps.isEmpty
     }
 
     var body: some View {
         HeroCard(
-            title: focus == nil ? "Welcome to The Bible" : "Your next steps",
+            title: headerTitle,
             subtitle: subtitle,
-            icon: HomeCardID.setup.systemImage,
-            tint: .orange
+            icon: focus?.systemImage ?? HomeCardID.setup.systemImage,
+            tint: .orange,
+            trailingAccessory: {
+                Button("Reset Card", role: .destructive) {
+                    isShowingResetConfirmation = true
+                }
+                .font(.caption.weight(.semibold))
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .opacity(focus == nil ? 1 : 0)
+                .allowsHitTesting(focus == nil)
+            }
         ) {
             VStack(alignment: .leading, spacing: 14) {
-                if let focus {
-                    OnboardingFocusHeader(focus: focus, backAction: clearFocus)
+                if focus != nil {
+                    OnboardingFocusHeader(backAction: clearFocus)
 
                     ProgressView(value: Double(steps.count - incompleteSteps.count), total: Double(steps.count))
                         .tint(isAllComplete ? .green : .orange)
                         .accessibilityHidden(true)
 
-                    VStack(spacing: 4) {
-                        ForEach(incompleteSteps.prefix(3)) { step in
-                            OnboardingStepRow(
-                                step: step,
-                                action: { open(step) },
-                                skipAction: step.canSkip ? { skip(step) } : nil
-                            )
+                    ScrollView(.vertical, showsIndicators: steps.count > 3) {
+                        VStack(spacing: 4) {
+                            ForEach(steps) { step in
+                                OnboardingStepRow(
+                                    step: step,
+                                    isComplete: isComplete(step),
+                                    title: step == .focusReading && focusReadingEnabled
+                                        ? "Read a scripture"
+                                        : step == .refreshVerseOfDay && !isVerseOfDayCardActive
+                                            ? "Show Verse of the Day on Home"
+                                            : nil,
+                                    detail: step == .firstReading
+                                        ? verseOfDayReference.map { "Start with \($0)" }
+                                        : step == .focusReading
+                                            ? (focusReadingEnabled
+                                                ? "Open a passage in Focus Reading"
+                                                : "Turn on Focus Reading in Bible Reader settings")
+                                            : step == .refreshVerseOfDay && !isVerseOfDayCardActive
+                                                ? "Turn on the Verse of the Day card in Home Layout"
+                                                : nil,
+                                    action: { open(step) },
+                                    skipAction: step.canSkip ? { skip(step) } : nil
+                                )
+                            }
                         }
                     }
+                    .frame(maxHeight: steps.count > 3 ? 240 : nil)
 
                     if isAllComplete {
                         OnboardingCompletionMessage()
-                    } else if incompleteSteps.count > 3 {
-                        Text("Complete these first; the rest will appear next.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
                     }
                 } else {
-                    OnboardingFocusPicker(select: select)
+                    OnboardingFocusPicker(
+                        select: select,
+                        progressText: pathProgressText
+                    )
                 }
 
                 footer
@@ -320,6 +400,11 @@ struct SetupChecklistCard: View {
         }
     }
 
+    private var headerTitle: String {
+        guard let focus else { return String(localized: "Welcome to The Bible") }
+        return String(localized: "Your next steps") + " · " + String(localized: focus.title)
+    }
+
     private var subtitle: String {
         if focus == nil {
             String(localized: "Choose how you’d like to begin.")
@@ -339,18 +424,12 @@ struct SetupChecklistCard: View {
 
                 Spacer(minLength: 8)
 
-                Button(isAllComplete ? "Remove Card" : "Dismiss", action: onDismiss)
+                Button(isAllComplete ? "Remove Card" : "Hide Card", action: onDismiss)
                     .font(.subheadline.weight(.semibold))
                     .tint(isAllComplete ? .green : .orange)
                     .accessibilityHint("Hides the Get Started card from Home")
             }
 
-            if focus != nil {
-                Button("Reset Checklist", role: .destructive) {
-                    isShowingResetConfirmation = true
-                }
-                .font(.caption.weight(.semibold))
-            }
         }
     }
 
@@ -362,6 +441,8 @@ struct SetupChecklistCard: View {
             return readStarted
         case .firstStudy:
             return studyOpened
+        case .studyChapter:
+            return chapterStudyOpened
         case .saveVerse:
             return hasSavedVerse
         case .highlightVerse:
@@ -370,8 +451,14 @@ struct SetupChecklistCard: View {
             return favorites.count > favoriteBaseline
         case .dailyGoal:
             return dailyGoalMinutes != dailyGoalBaseline
+        case .refreshVerseOfDay:
+            return verseOfDayRefreshed
         case .playGame:
             return hasPlayedGame
+        case .viewReadingStats:
+            return readingStatsViewed
+        case .viewGameStats:
+            return gameStatsViewed
         case .changeBackground:
             return backgroundSnapshot != backgroundBaseline
         case .updateLaunchPage:
@@ -380,8 +467,10 @@ struct SetupChecklistCard: View {
             return widgetSnapshot != widgetBaseline
         case .customizeHomeCards:
             return homeCardOrderRaw != homeOrderBaseline
+        case .verseOfDaySettings:
+            return verseOfDaySettingsOpened
         case .focusReading:
-            return focusReadingEnabled != focusReadingBaseline
+            return focusReadingRead
         case .studyDesk:
             return homeCardOrderRaw != homeOrderBaseline
         case .iCloud:
@@ -396,6 +485,12 @@ struct SetupChecklistCard: View {
             skippedStepsRaw = ""
             readStarted = false
             studyOpened = false
+            chapterStudyOpened = false
+            verseOfDaySettingsOpened = false
+            focusReadingRead = false
+            verseOfDayRefreshed = false
+            readingStatsViewed = false
+            gameStatsViewed = false
         }
         Haptics.selection()
     }
@@ -409,9 +504,16 @@ struct SetupChecklistCard: View {
     private func resetChecklist() {
         captureCompletionBaseline()
         withAnimation(.snappy) {
+            focusRaw = ""
             skippedStepsRaw = ""
             readStarted = false
             studyOpened = false
+            chapterStudyOpened = false
+            verseOfDaySettingsOpened = false
+            focusReadingRead = false
+            verseOfDayRefreshed = false
+            readingStatsViewed = false
+            gameStatsViewed = false
         }
         Haptics.selection()
     }
@@ -444,20 +546,70 @@ struct SetupChecklistCard: View {
         switch step {
         case .firstReading:
             readStarted = true
-            AppRouter.shared.openBibleReference(book: "Mark", chapter: 1, verse: 1)
+            if verseOfDayReference != nil {
+                AppRouter.shared.openBibleReference(
+                    book: verseOfDayBook,
+                    chapter: verseOfDayChapter,
+                    verse: verseOfDayNumber
+                )
+            } else {
+                AppRouter.shared.open(.verseOfDayNotification)
+            }
         case .firstStudy:
             studyOpened = true
+            UserDefaults.standard.set(
+                verseOfDayBook.isEmpty ? "Genesis" : verseOfDayBook,
+                forKey: "lastStudiedBook"
+            )
+            UserDefaults.standard.set(true, forKey: "openLastStudiedBookOverview")
+            AppRouter.shared.open(.bibleStudy)
+        case .studyChapter:
+            chapterStudyOpened = true
+            let bookName = verseOfDayBook.isEmpty ? "Genesis" : verseOfDayBook
+            let chapterNumber = verseOfDayChapter > 0 ? verseOfDayChapter : 1
+            UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
+            UserDefaults.standard.set(chapterNumber, forKey: "lastStudiedChapter")
+            UserDefaults.standard.set(true, forKey: "openLastStudiedChapter")
             AppRouter.shared.open(.bibleStudy)
         case .saveVerse, .highlightVerse, .favoriteVerse:
             AppRouter.shared.openBibleReference(book: "John", chapter: 3, verse: 16)
+        case .refreshVerseOfDay:
+            guard isVerseOfDayCardActive else {
+                onCustomizeHome()
+                return
+            }
+            guard !verseOfDayPaused else {
+                presentedStep = .verseOfDaySettings
+                return
+            }
+            VerseOfDayViewModel().refreshNow()
+            verseOfDayRefreshed = true
         case .playGame:
             GameLaunchRequest.open(gameName: "Bible Quiz")
+        case .viewReadingStats:
+            readingStatsViewed = true
+            AppRouter.shared.open(.stats(.reading))
+        case .viewGameStats:
+            gameStatsViewed = true
+            AppRouter.shared.open(.stats(.games))
         case .changeBackground, .updateLaunchPage, .setupWidget:
             presentedStep = step
-        case .studyDesk, .customizeHomeCards:
-            onCustomizeHome()
-        case .dailyGoal, .focusReading, .iCloud:
+        case .verseOfDaySettings:
+            verseOfDaySettingsOpened = true
             presentedStep = step
+        case .studyDesk:
+            onCustomizeHome()
+        case .customizeHomeCards:
+            onEditHome()
+        case .dailyGoal, .iCloud:
+            presentedStep = step
+        case .focusReading:
+            if focusReadingEnabled {
+                focusReadingRead = true
+                AppRouter.shared.openBibleReference(book: "John", chapter: 3, verse: 16)
+            } else {
+                presentedStep = step
+            }
         }
     }
 
@@ -467,7 +619,7 @@ struct SetupChecklistCard: View {
         case .dailyGoal:
             SettingsDailyGoalDetailView()
         case .focusReading:
-            SettingsView()
+            SettingsBibleReaderDetailView(highlightFocusReading: true)
         case .iCloud:
             SettingsiCloudDetailView()
         case .changeBackground:
@@ -476,7 +628,9 @@ struct SetupChecklistCard: View {
             SettingsLaunchTabSection()
         case .setupWidget:
             SettingsWidgetAppearanceDetailView()
-        case .firstReading, .firstStudy, .saveVerse, .highlightVerse, .favoriteVerse, .playGame, .studyDesk, .customizeHomeCards:
+        case .verseOfDaySettings:
+            SettingsVerseOfTheDayDetailView()
+        case .firstReading, .firstStudy, .studyChapter, .saveVerse, .highlightVerse, .favoriteVerse, .refreshVerseOfDay, .playGame, .viewReadingStats, .viewGameStats, .studyDesk, .customizeHomeCards:
             EmptyView()
         }
     }
@@ -484,6 +638,7 @@ struct SetupChecklistCard: View {
 
 private struct OnboardingFocusPicker: View {
     let select: (SetupChecklistCard.Focus) -> Void
+    let progressText: (SetupChecklistCard.Focus) -> String
 
     var body: some View {
         VStack(spacing: 8) {
@@ -507,6 +662,11 @@ private struct OnboardingFocusPicker: View {
 
                         Spacer(minLength: 8)
 
+                        Text(progressText(focus))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .accessibilityLabel("\(progressText(focus)) tasks completed")
+
                         Image(systemName: "chevron.right")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.tertiary)
@@ -521,47 +681,49 @@ private struct OnboardingFocusPicker: View {
 }
 
 private struct OnboardingFocusHeader: View {
-    let focus: SetupChecklistCard.Focus
     let backAction: () -> Void
 
     var body: some View {
-        HStack(spacing: 8) {
-            Button("All paths", systemImage: "chevron.left", action: backAction)
-                .font(.caption.weight(.semibold))
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .accessibilityHint("Returns to the Get Started choices")
-
-            Spacer(minLength: 8)
-
-            Label(focus.title, systemImage: focus.systemImage)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.tint)
-        }
+        Button("All paths", systemImage: "chevron.left", action: backAction)
+            .font(.caption.weight(.semibold))
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .accessibilityHint("Returns to the Get Started choices")
     }
 }
 
 private struct OnboardingStepRow: View {
     let step: SetupChecklistCard.Step
+    let isComplete: Bool
+    let title: String?
+    let detail: String?
     let action: () -> Void
     let skipAction: (() -> Void)?
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Button(action: action) {
-                HStack(alignment: .top, spacing: 12) {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: isComplete ? "checkmark.circle.fill" : "circle")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(isComplete ? .green : .secondary)
+                        .frame(width: 22)
+                        .accessibilityHidden(true)
+
                     Image(systemName: step.systemImage)
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(isComplete ? Color.secondary : Color.accentColor)
                         .frame(width: 22)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(step.title)
+                        Text(title ?? String(localized: step.title))
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-                        Text(step.detail)
+                            .foregroundStyle(isComplete ? .secondary : .primary)
+                            .strikethrough(isComplete)
+                        Text(detail ?? String(localized: step.detail))
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .strikethrough(isComplete)
                     }
 
                     Spacer(minLength: 4)
@@ -573,8 +735,9 @@ private struct OnboardingStepRow: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .disabled(isComplete)
 
-            if let skipAction {
+            if !isComplete, let skipAction {
                 Button("Not now", action: skipAction)
                     .font(.caption.weight(.semibold))
                     .buttonStyle(.bordered)
