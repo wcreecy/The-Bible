@@ -183,6 +183,7 @@ struct SetupChecklistCard: View {
     private static let iCloudBaselineKey = "homeOnboardingICloudBaselineV2"
     private static let backgroundBaselineKey = "homeOnboardingBackgroundBaselineV2"
     private static let launchPageBaselineKey = "homeOnboardingLaunchPageBaselineV2"
+    private static let completionBaselineCapturedKey = "homeOnboardingCompletionBaselineCapturedV1"
 
     @Environment(CloudKitManager.self) private var cloudKitManager
     @Environment(\.persistenceStoreMode) private var persistenceStoreMode
@@ -217,6 +218,7 @@ struct SetupChecklistCard: View {
     @AppStorage(Self.iCloudBaselineKey) private var iCloudBaseline = false
     @AppStorage(Self.backgroundBaselineKey) private var backgroundBaseline = ""
     @AppStorage(Self.launchPageBaselineKey) private var launchPageBaseline = LaunchTabPreference.home.rawValue
+    @AppStorage(Self.completionBaselineCapturedKey) private var completionBaselineCaptured = false
     @AppStorage("homeOnboardingWidgetSetupInstructionsViewedV1") private var widgetSetupInstructionsViewed = false
 
     @State private var presentedStep: Step?
@@ -307,6 +309,21 @@ struct SetupChecklistCard: View {
 
     private var isAllComplete: Bool {
         focus != nil && incompleteSteps.isEmpty
+    }
+
+    private var hasExistingCompletionBaseline: Bool {
+        [
+            Self.savedVerseBaselineKey,
+            Self.highlightBaselineKey,
+            Self.favoriteBaselineKey,
+            Self.gameBaselineKey,
+            Self.dailyGoalBaselineKey,
+            Self.focusReadingBaselineKey,
+            Self.homeOrderBaselineKey,
+            Self.iCloudBaselineKey,
+            Self.backgroundBaselineKey,
+            Self.launchPageBaselineKey
+        ].contains { UserDefaults.standard.object(forKey: $0) != nil }
     }
 
     var body: some View {
@@ -483,19 +500,9 @@ struct SetupChecklistCard: View {
     }
 
     private func select(_ focus: Focus) {
-        captureCompletionBaseline()
+        establishCompletionBaselineIfNeeded()
         withAnimation(.snappy) {
             focusRaw = focus.rawValue
-            skippedStepsRaw = ""
-            readStarted = false
-            studyOpened = false
-            chapterStudyOpened = false
-            verseOfDaySettingsOpened = false
-            focusReadingRead = false
-            verseOfDayRefreshed = false
-            readingStatsViewed = false
-            gameStatsViewed = false
-            widgetSetupInstructionsViewed = false
         }
         Haptics.selection()
     }
@@ -508,6 +515,7 @@ struct SetupChecklistCard: View {
 
     private func resetChecklist() {
         captureCompletionBaseline()
+        completionBaselineCaptured = true
         withAnimation(.snappy) {
             focusRaw = ""
             skippedStepsRaw = ""
@@ -522,6 +530,18 @@ struct SetupChecklistCard: View {
             widgetSetupInstructionsViewed = false
         }
         Haptics.selection()
+    }
+
+    private func establishCompletionBaselineIfNeeded() {
+        guard !completionBaselineCaptured else { return }
+
+        guard !hasExistingCompletionBaseline else {
+            completionBaselineCaptured = true
+            return
+        }
+
+        captureCompletionBaseline()
+        completionBaselineCaptured = true
     }
 
     private func captureCompletionBaseline() {
@@ -587,8 +607,7 @@ struct SetupChecklistCard: View {
                 presentedStep = .verseOfDaySettings
                 return
             }
-            VerseOfDayViewModel().refreshNow()
-            verseOfDayRefreshed = true
+            AppRouter.shared.open(.tab(.home))
         case .playGame:
             GameLaunchRequest.open(gameName: "Bible Quiz")
         case .viewReadingStats:
