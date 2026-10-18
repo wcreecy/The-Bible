@@ -30,6 +30,15 @@ struct HangmanGameView: View {
             case .all: "square.grid.2x2.fill"
             }
         }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .all: "People, places, and books"
+            case .people: "Bible people"
+            case .places: "Bible places"
+            case .books: "Books of the Bible"
+            }
+        }
     }
 
     enum Difficulty: String, CaseIterable, Identifiable {
@@ -781,22 +790,62 @@ struct HangmanGameView: View {
 private struct HangmanSetupControls: View {
     @Binding var theme: HangmanGameView.Theme
 
-    var body: some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Word Type")
-                    .font(.headline)
+    private let columns = [
+        GridItem(.flexible(), spacing: 8),
+        GridItem(.flexible(), spacing: 8)
+    ]
 
-                Picker("Word Type", selection: $theme) {
-                    ForEach(HangmanGameView.Theme.allCases) { option in
-                        Text(option.title).tag(option)
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Choose word types", systemImage: "text.word.spacing")
+                .font(.headline)
+                .foregroundStyle(.teal)
+
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(HangmanGameView.Theme.allCases) { option in
+                    let isSelected = theme == option
+
+                    Button {
+                        theme = option
+                    } label: {
+                        themeCard(option, isSelected: isSelected)
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(option.title)
+                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
-                .pickerStyle(.segmented)
             }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
+    }
+
+    private func themeCard(
+        _ option: HangmanGameView.Theme,
+        isSelected: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Image(systemName: option.systemImage)
+                .foregroundStyle(isSelected ? .white : .teal)
+            Text(option.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isSelected ? .white : .primary)
+            Text(option.detail)
+                .font(.caption2)
+                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            isSelected ? Color.teal : Color.teal.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(isSelected ? Color.teal : .clear, lineWidth: 2)
+        }
     }
 }
 

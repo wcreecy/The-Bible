@@ -63,7 +63,7 @@ struct WordSearchStartScreen: View {
 
                 WordSearchSetupControls(
                     verseSource: $verseSource,
-                    needsFavorites: needsFavorites
+                    hasFavorites: hasFavorites
                 )
 
                 VStack(spacing: 10) {
@@ -170,29 +170,71 @@ private struct WordSearchSetupCard: View {
 
 private struct WordSearchSetupControls: View {
     @Binding var verseSource: WordSearchViewModel.VerseSource
-    let needsFavorites: Bool
+    let hasFavorites: Bool
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Verses")
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Choose verses", systemImage: "text.quote")
+                .font(.headline)
+                .foregroundStyle(.green)
 
-                Picker("Verses", selection: $verseSource) {
-                    Text("Popular").tag(WordSearchViewModel.VerseSource.popular)
-                    Text("Any Verse").tag(WordSearchViewModel.VerseSource.random)
-                    Text("Favorites").tag(WordSearchViewModel.VerseSource.favorites)
-                }
-                .pickerStyle(.segmented)
+            HStack(alignment: .top, spacing: 8) {
+                ForEach(WordSearchViewModel.VerseSource.allCases) { option in
+                    let isSelected = verseSource == option
+                    let isEnabled = option != .favorites || hasFavorites
 
-                if needsFavorites {
-                    Label("Save a verse as a favorite to use it here.", systemImage: "heart")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    Button {
+                        verseSource = option
+                    } label: {
+                        sourceCard(option, isSelected: isSelected)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!isEnabled)
+                    .accessibilityLabel(option.title)
+                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                    .accessibilityHint(
+                        isEnabled
+                            ? ""
+                            : "Save favorite verses while reading to unlock this option."
+                    )
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
+            }
+
+            if verseSource == .favorites && !hasFavorites {
+                Label("Save a verse as a favorite to use it here.", systemImage: "heart")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
+    }
+
+    private func sourceCard(
+        _ option: WordSearchViewModel.VerseSource,
+        isSelected: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Image(systemName: option.icon)
+                .foregroundStyle(isSelected ? .white : .green)
+            Text(option.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isSelected ? .white : .primary)
+            Text(option.detail)
+                .font(.caption2)
+                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            isSelected ? Color.green : Color.green.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(isSelected ? Color.green : .clear, lineWidth: 2)
+        }
     }
 }

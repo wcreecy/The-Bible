@@ -498,14 +498,33 @@ struct GameLobbyPreview: View {
 
 struct GameStartMultiPickerCard<Value: Hashable, OptionLabel: View>: View {
     let title: LocalizedStringKey
+    let tint: Color
     @Binding var selection: Set<Value>
     let options: [Value]
     @ViewBuilder let label: (Value) -> OptionLabel
 
     @State private var isExpanded = false
 
+    init(
+        title: LocalizedStringKey,
+        tint: Color = .accentColor,
+        selection: Binding<Set<Value>>,
+        options: [Value],
+        @ViewBuilder label: @escaping (Value) -> OptionLabel
+    ) {
+        self.title = title
+        self.tint = tint
+        _selection = selection
+        self.options = options
+        self.label = label
+    }
+
     var body: some View {
-        GroupBox(title) {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(title, systemImage: "square.grid.2x2.fill")
+                .font(.headline)
+                .foregroundStyle(tint)
+
             DisclosureGroup(isExpanded: $isExpanded) {
                 VStack(spacing: 8) {
                     ForEach(options, id: \.self) { option in
@@ -525,12 +544,12 @@ struct GameStartMultiPickerCard<Value: Hashable, OptionLabel: View>: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
 
                                 Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+                                    .foregroundStyle(isSelected ? tint : Color.secondary)
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 11)
                             .background(
-                                isSelected ? Color.accentColor.opacity(0.12) : Color.secondary.opacity(0.06),
+                                isSelected ? tint.opacity(0.12) : Color.secondary.opacity(0.06),
                                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                             )
                         }
@@ -538,17 +557,27 @@ struct GameStartMultiPickerCard<Value: Hashable, OptionLabel: View>: View {
                         .accessibilityAddTraits(isSelected ? .isSelected : [])
                     }
                 }
-                .padding(.top, 8)
-                .frame(maxWidth: .infinity, alignment: .top)
+                .padding(.top, 10)
             } label: {
                 Label {
-                    Text(selection.count == options.count ? "All" : "\(selection.count) selected")
+                    Text(selection.count == options.count ? "All categories" : "\(selection.count) categories")
                 } icon: {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(tint)
                 }
                 .font(.body.weight(.semibold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(tint.opacity(0.2), lineWidth: 1)
         }
     }
 }

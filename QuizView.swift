@@ -382,10 +382,11 @@ struct QuizView: View {
             GameLobbyPreview(kind: .quiz)
         } configuration: {
             VStack(alignment: .leading, spacing: 8) {
-                QuizCategoryQuickPicks(selection: sectionSelection)
+                QuizCategoryQuickPicks(tint: .blue, selection: sectionSelection)
 
                 GameStartMultiPickerCard(
                     title: "Biblical Categories",
+                    tint: .blue,
                     selection: sectionSelection,
                     options: VerseSection.allCases
                 ) { section in
@@ -899,39 +900,93 @@ private enum QuizOutcome {
 
 /// One-tap shortcuts for the whole Bible or one Testament. Also used by Verse Match.
 struct QuizCategoryQuickPicks: View {
+    let tint: Color
+
+    private enum Scope: CaseIterable, Identifiable {
+        case wholeBible
+        case oldTestament
+        case newTestament
+
+        var id: Self { self }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .wholeBible: "Whole Bible"
+            case .oldTestament: "Old Testament"
+            case .newTestament: "New Testament"
+            }
+        }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .wholeBible: "All 66 books"
+            case .oldTestament: "39 books"
+            case .newTestament: "27 books"
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .wholeBible: "books.vertical.fill"
+            case .oldTestament: "scroll.fill"
+            case .newTestament: "book.closed.fill"
+            }
+        }
+
+        var sections: Set<QuizView.VerseSection> {
+            switch self {
+            case .wholeBible:
+                Set(QuizView.VerseSection.allCases)
+            case .oldTestament:
+                Set(QuizView.VerseSection.allCases.filter(\.isOldTestament))
+            case .newTestament:
+                Set(QuizView.VerseSection.allCases.filter { !$0.isOldTestament })
+            }
+        }
+    }
+
     @Binding var selection: Set<QuizView.VerseSection>
 
-    private var oldTestament: Set<QuizView.VerseSection> {
-        Set(QuizView.VerseSection.allCases.filter(\.isOldTestament))
-    }
-
-    private var newTestament: Set<QuizView.VerseSection> {
-        Set(QuizView.VerseSection.allCases.filter { !$0.isOldTestament })
-    }
-
     var body: some View {
-        HStack(spacing: 8) {
-            pick("Whole Bible", sections: Set(QuizView.VerseSection.allCases))
-            pick("Old Testament", sections: oldTestament)
-            pick("New Testament", sections: newTestament)
+        HStack(alignment: .top, spacing: 8) {
+            ForEach(Scope.allCases) { scope in
+                let isSelected = selection == scope.sections
+
+                Button {
+                    selection = scope.sections
+                } label: {
+                    scopeCard(scope, isSelected: isSelected)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(scope.title)
+                .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+            }
         }
     }
 
-    private func pick(_ title: LocalizedStringKey, sections: Set<QuizView.VerseSection>) -> some View {
-        let isSelected = selection == sections
-        return Button {
-            selection = sections
-        } label: {
-            Text(title)
-                .font(.footnote.weight(.semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-                .frame(maxWidth: .infinity)
+    private func scopeCard(_ scope: Scope, isSelected: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Image(systemName: scope.icon)
+                .foregroundStyle(isSelected ? .white : tint)
+            Text(scope.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isSelected ? .white : .primary)
+            Text(scope.detail)
+                .font(.caption2)
+                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .buttonStyle(.bordered)
-        .buttonBorderShape(.capsule)
-        .tint(isSelected ? .accentColor : .secondary)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            isSelected ? tint : tint.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(isSelected ? tint : .clear, lineWidth: 2)
+        }
     }
 }
 

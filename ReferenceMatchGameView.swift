@@ -85,6 +85,22 @@ struct VerseMatchGameView: View {
             case .any: "Any verse"
             }
         }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .wellKnown: "Popular passages"
+            case .favorites: "Your saved verses"
+            case .any: "Any eligible passage"
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .wellKnown: "star.fill"
+            case .favorites: "heart.fill"
+            case .any: "shuffle"
+            }
+        }
     }
 
     typealias VerseSection = QuizView.VerseSection
@@ -202,6 +218,28 @@ struct VerseMatchGameView: View {
         }
     }
 
+    private var selectedCategorySummary: String {
+        let sections = displayedSelectedSections
+        let allSections = Set(VerseSection.allCases)
+        let oldTestament = Set(VerseSection.allCases.filter(\.isOldTestament))
+        let newTestament = Set(VerseSection.allCases.filter { !$0.isOldTestament })
+
+        if sections == allSections {
+            return String(localized: "Whole Bible")
+        }
+        if sections == oldTestament {
+            return String(localized: "Old Testament")
+        }
+        if sections == newTestament {
+            return String(localized: "New Testament")
+        }
+
+        return VerseSection.allCases
+            .filter { sections.contains($0) }
+            .map { String(localized: $0.title) }
+            .formatted()
+    }
+
     private var current: MatchQuestion? {
         history.indices.contains(currentIndex) ? history[currentIndex] : nil
     }
@@ -292,14 +330,17 @@ struct VerseMatchGameView: View {
         } configuration: {
             VerseMatchSetupControls(
                 pool: $pool,
-                poolDetail: poolDetail
+                poolDetail: poolDetail,
+                isFavoritesAvailable: !preferredVerses.isEmpty,
+                categorySummary: selectedCategorySummary
             )
 
             VStack(alignment: .leading, spacing: 8) {
-                QuizCategoryQuickPicks(selection: sectionSelection)
+                QuizCategoryQuickPicks(tint: .orange, selection: sectionSelection)
 
                 GameStartMultiPickerCard(
-                    title: "Biblical Categories",
+                    title: "Refine Categories",
+                    tint: .orange,
                     selection: sectionSelection,
                     options: VerseSection.allCases
                 ) { section in
@@ -590,29 +631,99 @@ struct VerseMatchGameView: View {
 private struct VerseMatchSetupControls: View {
     @Binding var pool: VerseMatchGameView.VersePool
     let poolDetail: String
+    let isFavoritesAvailable: Bool
+    let categorySummary: String
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Verses")
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: 16) {
+            VerseMatchVerseSourceCards(
+                selection: $pool,
+                isFavoritesAvailable: isFavoritesAvailable
+            )
 
-                Picker("Verses", selection: $pool) {
-                    ForEach(VerseMatchGameView.VersePool.allCases) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
+            VStack(alignment: .leading, spacing: 6) {
+                Label("Your round", systemImage: "slider.horizontal.3")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.orange)
+
+                Text("\(String(localized: pool.title)) · \(categorySummary)")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
 
                 Text(poolDetail)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
-
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.orange.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
+    }
+}
+
+private struct VerseMatchVerseSourceCards: View {
+    @Binding var selection: VerseMatchGameView.VersePool
+    let isFavoritesAvailable: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Choose verses", systemImage: "text.quote")
+                .font(.headline)
+                .foregroundStyle(.orange)
+
+            HStack(alignment: .top, spacing: 8) {
+                ForEach(VerseMatchGameView.VersePool.allCases) { option in
+                    let isSelected = selection == option
+                    let isEnabled = option != .favorites || isFavoritesAvailable
+
+                    Button {
+                        selection = option
+                    } label: {
+                        sourceCard(option, isSelected: isSelected)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!isEnabled)
+                    .accessibilityLabel(option.title)
+                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                    .accessibilityHint(
+                        isEnabled
+                            ? ""
+                            : "Save favorite verses while reading to unlock this option."
+                    )
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                }
+            }
+        }
+    }
+
+    private func sourceCard(
+        _ option: VerseMatchGameView.VersePool,
+        isSelected: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Image(systemName: option.icon)
+                .foregroundStyle(isSelected ? .white : .orange)
+            Text(option.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isSelected ? .white : .primary)
+            Text(option.detail)
+                .font(.caption2)
+                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            isSelected ? Color.orange : Color.orange.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(isSelected ? Color.orange : .clear, lineWidth: 2)
+        }
     }
 }
 

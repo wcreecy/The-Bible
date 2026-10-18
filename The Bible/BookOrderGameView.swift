@@ -527,30 +527,76 @@ private struct BookOrderSetupControls: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Part of the Bible", systemImage: "books.vertical.fill")
+                .font(.headline)
+                .foregroundStyle(.purple)
+
+            HStack(alignment: .top, spacing: 8) {
+                ForEach(Self.testamentOptions) { option in
+                    let isSelected = source == option
+
+                    Button {
+                        source = option
+                    } label: {
+                        testamentCard(option, isSelected: isSelected)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(option.title)
+                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                }
+            }
+
             HStack {
-                Text("Part of the Bible")
-                    .font(.headline)
+                Text("Book Group")
+                    .font(.subheadline.weight(.semibold))
 
                 Spacer()
 
-                Picker("Part of the Bible", selection: $source) {
-                    ForEach(Self.testamentOptions) { option in
+                Picker("Book Group", selection: $source) {
+                    ForEach(Self.categoryOptions) { option in
                         Text(option.title).tag(option)
-                    }
-
-                    Section("Book Groups") {
-                        ForEach(Self.categoryOptions) { option in
-                            Text(option.title).tag(option)
-                        }
                     }
                 }
                 .pickerStyle(.menu)
             }
-
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
+    }
+
+    private func testamentCard(_ option: BookSourceScope, isSelected: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Image(systemName: icon(for: option))
+                .foregroundStyle(isSelected ? .white : .purple)
+            Text(option.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isSelected ? .white : .primary)
+            Text("\(option.bookNames.count) books")
+                .font(.caption2)
+                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            isSelected ? Color.purple : Color.purple.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(isSelected ? Color.purple : .clear, lineWidth: 2)
+        }
+    }
+
+    private func icon(for option: BookSourceScope) -> String {
+        switch option {
+        case .both: "books.vertical.fill"
+        case .ot: "scroll.fill"
+        case .nt: "book.closed.fill"
+        default: "book.fill"
+        }
     }
 }
 

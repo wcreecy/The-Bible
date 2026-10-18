@@ -17,6 +17,30 @@ final class WordSearchViewModel {
         case favorites
 
         var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .popular: "Popular"
+            case .random: "Any verse"
+            case .favorites: "Favorites"
+            }
+        }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .popular: "Well-known verses"
+            case .random: "Any eligible passage"
+            case .favorites: "Your saved verses"
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .popular: "star.fill"
+            case .random: "shuffle"
+            case .favorites: "heart.fill"
+            }
+        }
     }
     var verseSource: VerseSource = .popular
 

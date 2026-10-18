@@ -24,6 +24,13 @@ final class WhoAmIGameViewModel {
             case .nameToClue: "See a name and pick the clue that describes them."
             }
         }
+
+        var icon: String {
+            switch self {
+            case .clueToName: "text.quote"
+            case .nameToClue: "person.fill"
+            }
+        }
     }
 
     enum Difficulty: String, CaseIterable, Identifiable {

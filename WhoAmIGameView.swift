@@ -395,27 +395,64 @@ private struct WhoAmISetupControls: View {
     @Binding var mode: WhoAmIGameViewModel.Mode
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Play")
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Choose how to play", systemImage: "person.text.rectangle")
+                .font(.headline)
+                .foregroundStyle(.brown)
 
-                Picker("Play", selection: $mode) {
-                    ForEach(WhoAmIGameViewModel.Mode.allCases) { option in
-                        Text(option.title).tag(option)
+            HStack(alignment: .top, spacing: 8) {
+                ForEach(WhoAmIGameViewModel.Mode.allCases) { option in
+                    let isSelected = mode == option
+
+                    Button {
+                        mode = option
+                    } label: {
+                        modeCard(option, isSelected: isSelected)
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(option.title)
+                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
-                .pickerStyle(.segmented)
-
-                Text(mode.detail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
             }
 
+            Text(mode.detail)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.brown.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
+    }
+
+    private func modeCard(
+        _ option: WhoAmIGameViewModel.Mode,
+        isSelected: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Image(systemName: option.icon)
+                .foregroundStyle(isSelected ? .white : .brown)
+            Text(option.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isSelected ? .white : .primary)
+            Text(option.detail)
+                .font(.caption2)
+                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            isSelected ? Color.brown : Color.brown.opacity(0.09),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(isSelected ? Color.brown : .clear, lineWidth: 2)
+        }
     }
 }
 

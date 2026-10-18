@@ -1012,19 +1012,73 @@ private struct BeatTheClockSetupControls: View {
     @Binding var category: BeatTheClockGameView.Category
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Question Subject")
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Question Subject")
+                .font(.headline)
 
-                Picker("Question Subject", selection: $category) {
-                    ForEach(BeatTheClockGameView.Category.allCases) { option in
-                        Text(option.title).tag(option)
+            HStack(alignment: .top, spacing: 8) {
+                ForEach(BeatTheClockGameView.Category.allCases) { option in
+                    BeatTheClockSubjectOption(
+                        category: option,
+                        isSelected: category == option
+                    ) {
+                        category = option
                     }
                 }
-                .pickerStyle(.segmented)
             }
         }
+    }
+}
+
+private struct BeatTheClockSubjectOption: View {
+    let category: BeatTheClockGameView.Category
+    let isSelected: Bool
+    let action: () -> Void
+
+    private var systemImage: String {
+        switch category {
+        case .people: "person.fill"
+        case .places: "mappin.and.ellipse"
+        case .both: "square.grid.2x2.fill"
+        }
+    }
+
+    private var detail: LocalizedStringKey {
+        switch category {
+        case .people: "Questions about Bible people."
+        case .places: "Questions about Bible places."
+        case .both: "A mixed round of people and places."
+        }
+    }
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 5) {
+                Image(systemName: systemImage)
+                    .foregroundStyle(isSelected ? .white : .indigo)
+                Text(category.title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : .primary)
+                Text(detail)
+                    .font(.caption2)
+                    .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
+            .background(
+                isSelected ? Color.indigo : Color.indigo.opacity(0.09),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(isSelected ? Color.indigo : .clear, lineWidth: 2)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(category.title)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
