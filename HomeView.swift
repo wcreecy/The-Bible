@@ -767,8 +767,9 @@ struct HomeView: View {
                     NavigationLink {
                         layoutEditor(usesDashboard: true)
                     } label: {
-                        Label("Customize Home", systemImage: "slider.horizontal.3")
+                        Image(systemName: "slider.horizontal.3")
                     }
+                    .accessibilityLabel("Customize Home")
                 }
             }
         }
@@ -921,9 +922,9 @@ private struct EditHomeToolbarButton: View {
                             .accessibilityHidden(true)
                             .allowsHitTesting(false)
                     }
-                Text("Edit Home")
             }
         }
+        .accessibilityLabel("Edit Home")
         .accessibilityIdentifier("homeEditButton")
     }
 }
