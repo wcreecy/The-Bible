@@ -200,15 +200,6 @@ struct GameExperienceStandardsCard: View {
                 }
             }
 
-            Divider()
-
-            Label("Timers appear only in a labeled Time Attack round and pause for interruptions.", systemImage: "timer")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-
-            Label("After every answer: result, correct answer, Scripture context, then Next. Current and best streaks stay separate.", systemImage: "checkmark.message.fill")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
         }
     }
 
