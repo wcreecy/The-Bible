@@ -318,15 +318,16 @@ struct SetupChecklistCard: View {
             icon: focus?.systemImage ?? HomeCardID.setup.systemImage,
             tint: .orange,
             trailingAccessory: {
-                Button("Reset Card", role: .destructive) {
-                    isShowingResetConfirmation = true
+                if focus == nil {
+                    Button("Reset Card", role: .destructive) {
+                        isShowingResetConfirmation = true
+                    }
+                    .font(.caption2.weight(.semibold))
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
                 }
-                .font(.caption.weight(.semibold))
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .opacity(focus == nil ? 1 : 0)
-                .allowsHitTesting(focus == nil)
-            }
+            },
+            titleFont: focus == nil ? .headline : .subheadline
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 if focus != nil {
@@ -402,16 +403,16 @@ struct SetupChecklistCard: View {
 
     private var headerTitle: String {
         guard let focus else { return String(localized: "Welcome to The Bible") }
-        return String(localized: "Your next steps") + " · " + String(localized: focus.title)
+        return String(localized: "Next steps") + " · " + String(localized: focus.title)
     }
 
     private var subtitle: String {
         if focus == nil {
-            String(localized: "Choose how you’d like to begin.")
+            String(localized: "Choose your path")
         } else if isAllComplete {
             String(localized: "Your reading space is ready.")
         } else {
-            String(localized: "A few small steps, tailored to your device.")
+            String(localized: "A few steps for your device.")
         }
     }
 
@@ -655,9 +656,13 @@ private struct OnboardingFocusPicker: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(focus.title)
                                 .font(.subheadline.weight(.semibold))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.82)
                             Text(focus.detail)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.78)
                         }
 
                         Spacer(minLength: 8)

@@ -51,7 +51,7 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         tint: Color = .accentColor,
         backgroundColor: Color? = nil,
         strokeColor: Color? = nil,
-        trailingAccessory: @escaping () -> TrailingAccessory,
+        @ViewBuilder trailingAccessory: @escaping () -> TrailingAccessory,
         titleFont: Font = .headline,
         titleFontWeight: Font.Weight = .bold,
         centerHeader: Bool = false,
