@@ -92,9 +92,12 @@ private struct SettingsAppLinksSection: View {
 
 private struct SettingsReadingAndPrayerLinksSection: View {
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
+    @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes = 30
     @AppStorage("verseOfDayScope") private var verseScopeRaw = "whole"
+    @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw = VOTDRefreshFrequency.custom.rawValue
+    @AppStorage("votdRefreshNotificationsEnabled") private var verseOfDayNotificationsEnabled = false
     @AppStorage("timerSoundSelection") private var timerSoundSelection = TimerSound.default.rawValue
 
     var body: some View {
@@ -105,6 +108,7 @@ private struct SettingsReadingAndPrayerLinksSection: View {
                 SettingsNavigationRow(
                     title: "Bible Reader",
                     subtitle: bibleReaderSummary,
+                    status: bibleReaderStatus,
                     systemImage: "book"
                 )
             }
@@ -126,6 +130,7 @@ private struct SettingsReadingAndPrayerLinksSection: View {
                 SettingsNavigationRow(
                     title: "Verse of the Day",
                     subtitle: verseOfTheDaySummary,
+                    status: verseOfTheDayStatus,
                     systemImage: "book.pages"
                 )
             }
@@ -152,6 +157,13 @@ private struct SettingsReadingAndPrayerLinksSection: View {
         }
     }
 
+    private var bibleReaderStatus: String {
+        String(
+            localized: "Focus \(settingStatus(focusReadingEnabled)) · Progress \(settingStatus(showsReadProgress)) · Markers \(settingStatus(showsVerseMarkers))",
+            comment: "Bible Reader settings summary; the values are whether Focus Reading, reading progress, and verse markers are enabled."
+        )
+    }
+
     private var verseOfTheDaySummary: LocalizedStringResource {
         switch verseScopeRaw {
         case "old": "Old Testament"
@@ -159,6 +171,34 @@ private struct SettingsReadingAndPrayerLinksSection: View {
         case "book": "A selected book"
         default: "Whole Bible"
         }
+    }
+
+    private var verseOfTheDayStatus: String {
+        String(
+            localized: "\(verseOfTheDayScopeStatus) · \(refreshFrequencyStatus) · Alerts \(settingStatus(verseOfDayNotificationsEnabled))",
+            comment: "Verse of the Day settings summary; the values are the selected source, refresh schedule, and whether refresh alerts are enabled."
+        )
+    }
+
+    private var verseOfTheDayScopeStatus: String {
+        switch verseScopeRaw {
+        case "old": String(localized: "Old Testament")
+        case "new": String(localized: "New Testament")
+        case "book": String(localized: "Selected Book")
+        default: String(localized: "Whole Bible")
+        }
+    }
+
+    private var refreshFrequencyStatus: String {
+        switch VOTDRefreshFrequency(rawValue: refreshFrequencyRaw) ?? .custom {
+        case .custom: String(localized: "Twice Daily")
+        case .hourly: String(localized: "Hourly")
+        case .daily: String(localized: "Daily")
+        }
+    }
+
+    private func settingStatus(_ isEnabled: Bool) -> String {
+        isEnabled ? String(localized: "On") : String(localized: "Off")
     }
 
     private var prayerTimerSummary: LocalizedStringResource {
@@ -710,6 +750,7 @@ private enum DeveloperSettingsReset {
 private struct SettingsNavigationRow: View {
     let title: LocalizedStringResource
     let subtitle: LocalizedStringResource
+    var status: String? = nil
     let systemImage: String
     var value: Int? = nil
 
@@ -721,10 +762,16 @@ private struct SettingsNavigationRow: View {
                     Text("\(value) minutes per day", comment: "Daily Goal summary; the value is the configured number of minutes.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                } else if let status {
+                    Text(status)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 } else {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
             }
         } icon: {
