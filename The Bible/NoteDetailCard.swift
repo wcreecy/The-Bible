@@ -4,7 +4,6 @@ import SwiftUI
 struct NoteDetailCard: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedScriptureReference: ScriptureRef?
-    @State private var isShowingChapterInsights = false
 
     let item: NotesListItem?
     let editAction: () -> Void
@@ -19,7 +18,6 @@ struct NoteDetailCard: View {
                     shareText: item.shareText,
                     favoriteAction: { item.toggleFavorite(in: modelContext) },
                     openBibleAction: item.bibleLocation == nil ? nil : { item.openInBible() },
-                    chapterInsightsAction: hasSourceChapter(item) ? { isShowingChapterInsights = true } : nil,
                     editAction: editAction
                 )
                 ScrollView {
@@ -68,18 +66,6 @@ struct NoteDetailCard: View {
         .sheet(item: $selectedScriptureReference) { reference in
             ScriptureReferencePreview(reference: reference)
         }
-        .sheet(isPresented: $isShowingChapterInsights) {
-            if case .user(let note) = item, note.hasSourceChapter {
-                NavigationStack {
-                    ChapterInsightsView(bookName: note.sourceBookName, chapterNumber: note.sourceChapterNumber)
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { isShowingChapterInsights = false }
-                            }
-                        }
-                }
-            }
-        }
     }
 
     /// The type, plus the passage for a personal note (a Scripture note shows its verses below).
@@ -88,15 +74,7 @@ struct NoteDetailCard: View {
         guard item.hasNoteText else { return nil }
         var parts: [String] = []
         if let category = item.category { parts.append(String(localized: category.title)) }
-        if case .user(let note) = item, note.hasSourceChapter {
-            parts.append("\(note.sourceBookName) \(note.sourceChapterNumber)")
-        }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
-    }
-
-    private func hasSourceChapter(_ item: NotesListItem) -> Bool {
-        if case .user(let note) = item { return note.hasSourceChapter }
-        return false
     }
 
     @ViewBuilder
@@ -188,7 +166,6 @@ struct NoteDetailHeader: View {
     let shareText: String
     let favoriteAction: () -> Void
     let openBibleAction: (() -> Void)?
-    var chapterInsightsAction: (() -> Void)?
     let editAction: () -> Void
 
     var body: some View {
@@ -209,13 +186,6 @@ struct NoteDetailHeader: View {
                         Image(systemName: "book.closed")
                     }
                     .accessibilityLabel("Open in Bible")
-                }
-
-                if let chapterInsightsAction {
-                    Button(action: chapterInsightsAction) {
-                        Image(systemName: "text.book.closed")
-                    }
-                    .accessibilityLabel("Open Chapter Insights")
                 }
 
                 Button(action: favoriteAction) {

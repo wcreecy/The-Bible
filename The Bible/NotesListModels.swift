@@ -178,7 +178,6 @@ enum NotesFilter: String, CaseIterable, Identifiable {
     case sermon
     case personal
     case scripture
-    case chapterInsights
 
     var id: String { rawValue }
 
@@ -197,7 +196,6 @@ enum NotesFilter: String, CaseIterable, Identifiable {
         case .sermon: "person.wave.2"
         case .personal: "person.crop.circle"
         case .scripture: "book.closed"
-        case .chapterInsights: "text.book.closed"
         }
     }
 
@@ -207,7 +205,6 @@ enum NotesFilter: String, CaseIterable, Identifiable {
         case .sermon: .sermon
         case .personal: .personal
         case .scripture: .scripture
-        case .chapterInsights: .chapterInsights
         }
     }
 }
@@ -242,11 +239,14 @@ enum NotesListItem: Identifiable {
         NoteCategory(rawValue: categoryRawValue)
     }
 
+    /// Former Chapter Insights reflections now appear with Personal Notes.
     var categoryRawValue: String {
+        let rawValue: String
         switch self {
-        case .scripture(let note): note.categoryRawValue
-        case .user(let note): note.categoryRawValue
+        case .scripture(let note): rawValue = note.categoryRawValue
+        case .user(let note): rawValue = note.categoryRawValue
         }
+        return rawValue == "chapterInsights" ? NoteCategory.personal.rawValue : rawValue
     }
 
     var content: String {

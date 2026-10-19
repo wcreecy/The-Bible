@@ -5,7 +5,6 @@ enum NoteCategory: String, CaseIterable, Identifiable {
     case sermon
     case personal
     case scripture
-    case chapterInsights
 
     var id: String { rawValue }
 
@@ -14,7 +13,6 @@ enum NoteCategory: String, CaseIterable, Identifiable {
         case .sermon: "Sermon Notes"
         case .personal: "Personal Notes"
         case .scripture: "Scripture Notes"
-        case .chapterInsights: "Chapter Insights"
         }
     }
 
@@ -24,7 +22,6 @@ enum NoteCategory: String, CaseIterable, Identifiable {
         case .sermon: "Sermon"
         case .personal: "Personal"
         case .scripture: "Scripture"
-        case .chapterInsights: "Chapter Insights"
         }
     }
 }
@@ -94,7 +91,7 @@ final class UserNote {
     /// Encoded `AttributedString` data. `content` remains the searchable plain-text copy.
     var formattedContent: Data?
     var categoryRawValue: String = NoteCategory.personal.rawValue
-    /// The chapter this reflection came from. Empty/zero means a regular personal note.
+    /// Legacy chapter context retained for existing synced notes.
     var sourceBookName: String = ""
     var sourceChapterNumber: Int = 0
     /// A passage the note is about, such as a sermon's text ("John 3:1-21"). Empty means none.
@@ -112,7 +109,4 @@ final class UserNote {
         createdAt = Date()
         updatedAt = Date()
     }
-
-    /// Whether this is a Chapter Insights reflection that can open its source chapter.
-    var hasSourceChapter: Bool { !sourceBookName.isEmpty && sourceChapterNumber > 0 }
 }

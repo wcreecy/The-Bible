@@ -53,7 +53,7 @@ struct ChapterInsightsView: View {
 
     // Ordered the way a reader takes in a chapter: where it falls in the story, what happens,
     // who is involved, the world behind it, what it means, where Scripture picks it up, then
-    // a response and the way on to the next chapter.
+    // the way on to the next chapter.
     private func insightsContent(_ insights: ChapterInsights) -> some View {
         let context = insights.readingContext
         let content = ChapterContentFilter(insights: insights, context: context)
@@ -123,12 +123,6 @@ struct ChapterInsightsView: View {
                     )
                 }
 
-                ChapterReflectionSection(
-                    bookName: bookName,
-                    chapterNumber: chapterNumber,
-                    whyItMatters: content.whyItMatters
-                )
-
                 ChapterNavigationSection(
                     location: location,
                     next: next,
@@ -139,7 +133,7 @@ struct ChapterInsightsView: View {
             }
             .padding()
         }
-        // A new chapter starts fresh: scrolled to the top, with its own reflection loaded.
+        // A new chapter starts fresh, scrolled to the top.
         .id(location)
         .background(AppBackgroundView(tab: .bible))
         .environment(\.scriptureContextBook, bookName)
@@ -205,11 +199,10 @@ struct ChapterLocation: Hashable {
     }
 }
 
-/// Some imported text repeats another field word for word (the summary, "why it matters").
+/// Some imported text repeats another field word for word (the summary).
 /// This keeps only text the page doesn't already show, so each piece appears once.
 private struct ChapterContentFilter {
     let narrativePlacement: String
-    let whyItMatters: String
     let backgroundRows: [ChapterBackgroundSection.Row]
 
     init(insights: ChapterInsights, context: ChapterReadingContext?) {
@@ -222,9 +215,6 @@ private struct ChapterContentFilter {
 
         _ = claim(insights.overallSummary)
         narrativePlacement = claim(context?.narrativePlacement ?? "")
-
-        // Reserved for the reflection card, which is where it is most useful.
-        whyItMatters = claim(insights.whyItMatters)
 
         var rows: [ChapterBackgroundSection.Row] = []
         let moment = claim(context?.firstCenturyMoment ?? "")
@@ -521,136 +511,6 @@ private struct NeighborChapterLink: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Shows insights for \(location.title)")
-    }
-}
-
-private struct ChapterReflectionSection: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var userNotes: [UserNote]
-
-    let bookName: String
-    let chapterNumber: Int
-    private let whyItMatters: String
-    @State private var response = ""
-    @State private var hasLoadedResponse = false
-    @State private var showsSavedConfirmation = false
-
-    init(bookName: String, chapterNumber: Int, whyItMatters: String) {
-        self.bookName = bookName
-        self.chapterNumber = chapterNumber
-        self.whyItMatters = whyItMatters
-    }
-
-    var body: some View {
-        HeroCard(title: "Reflect & Respond", icon: "square.and.pencil") {
-            VStack(alignment: .leading, spacing: 12) {
-                if !whyItMatters.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Label("Why It Matters", systemImage: "heart.text.square")
-                            .font(.headline)
-                        LinkedScriptureText(whyItMatters)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                    }
-                    Divider()
-                }
-
-                Text(prompt)
-                    .font(.body)
-
-                TextEditor(text: $response)
-                    .frame(minHeight: 110)
-                    .padding(8)
-                    .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
-                    .accessibilityLabel("Personal reflection")
-
-                HStack(spacing: 12) {
-                    Button {
-                        saveReflection()
-                    } label: {
-                        Label("Save Reflection", systemImage: "square.and.arrow.down")
-                    }
-                    .buttonStyle(.borderedProminent)
-
-                    if showsSavedConfirmation {
-                        Label("Saved", systemImage: "checkmark.circle.fill")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.green)
-                            .accessibilityLabel("Reflection saved")
-                    }
-                }
-            }
-        }
-        .onChange(of: response) { _, _ in
-            showsSavedConfirmation = false
-        }
-        .task(id: "\(bookName)-\(chapterNumber)") {
-            loadOrMigrateResponse()
-        }
-    }
-
-    private var chapterNote: UserNote? {
-        userNotes.first {
-            $0.categoryRawValue == NoteCategory.chapterInsights.rawValue &&
-                $0.sourceBookName == bookName &&
-                $0.sourceChapterNumber == chapterNumber
-        }
-    }
-
-    private var legacyResponseKey: String {
-        "chapterReflection.\(bookName).\(chapterNumber)"
-    }
-
-    private func loadOrMigrateResponse() {
-        guard !hasLoadedResponse else { return }
-        if let chapterNote {
-            response = chapterNote.content
-        } else if let legacyResponse = UserDefaults.standard.string(forKey: legacyResponseKey),
-                  !legacyResponse.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let note = UserNote()
-            note.title = "\(bookName) \(chapterNumber)"
-            note.content = legacyResponse
-            note.categoryRawValue = NoteCategory.chapterInsights.rawValue
-            note.sourceBookName = bookName
-            note.sourceChapterNumber = chapterNumber
-            modelContext.insert(note)
-            // Keep the legacy copy until the note is safely saved.
-            if modelContext.saveLoggingErrors() {
-                UserDefaults.standard.removeObject(forKey: legacyResponseKey)
-            }
-            response = legacyResponse
-        }
-        hasLoadedResponse = true
-    }
-
-    private func saveReflection() {
-        let trimmedResponse = response.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedResponse.isEmpty else { return }
-
-        let note = chapterNote ?? UserNote()
-        note.title = "\(bookName) \(chapterNumber)"
-        note.content = trimmedResponse
-        note.categoryRawValue = NoteCategory.chapterInsights.rawValue
-        note.sourceBookName = bookName
-        note.sourceChapterNumber = chapterNumber
-        note.updatedAt = Date()
-        if chapterNote == nil {
-            modelContext.insert(note)
-        }
-        do {
-            try modelContext.save()
-            showsSavedConfirmation = true
-            Haptics.success()
-        } catch {
-            showsSavedConfirmation = false
-        }
-    }
-
-    private var prompt: String {
-        if !whyItMatters.isEmpty {
-            return "What stands out to you in light of why this chapter matters?"
-        }
-        return "What does this chapter show you about God, people, or faithful living?"
     }
 }
 

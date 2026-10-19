@@ -1,8 +1,8 @@
 import Foundation
 import OSLog
 
-private nonisolated(unsafe) let bibleDataLogger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+nonisolated private let bibleDataLogger = Logger(
+    subsystem: "The Bible",
     category: "BibleData"
 )
 
