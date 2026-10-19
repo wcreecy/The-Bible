@@ -6,65 +6,14 @@ struct BibleStatsCard: View {
     let onOpenReadingStats: () -> Void
     let onOpenGameStats: () -> Void
 
-    // Reading time is active reading in the Bible reader (the same source as Stats and
-    // the daily goal). Game time is time spent with a game open. Both sync per device.
     @State private var todayGameSeconds = 0
-    @State private var allTimeGameSeconds = 0
-
-    @ViewBuilder
-    private var statsButtons: some View {
-        Button(action: onOpenReadingStats) {
-            Label("Reading Stats", systemImage: "book.pages")
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .heroCardSurface()
-        }
-        .buttonStyle(.plain)
-
-        Button(action: onOpenGameStats) {
-            Label("Game Stats", systemImage: "gamecontroller")
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .heroCardSurface()
-        }
-        .buttonStyle(.plain)
-    }
-
-    /// Progress through the Bible, this week's reading, and the most-read book, which
-    /// the Stats page charts in full.
-    @ViewBuilder
-    private var highlights: some View {
-        StatHighlightTile(
-            title: "Bible Read",
-            value: "\(bibleVM.completionPercent)%",
-            caption: "\(bibleVM.visitedCount) of \(bibleVM.totalChapters) chapters",
-            systemImage: "book.closed.fill",
-            tint: .teal
-        )
-
-        StatHighlightTile(
-            title: "This Week",
-            value: StatHighlightTile.formattedDuration(bibleVM.thisWeekSeconds),
-            caption: "Reading time",
-            systemImage: "calendar",
-            tint: .blue
-        )
-
-        StatHighlightTile(
-            title: "Top Book",
-            value: bibleVM.topBooks.first?.book ?? "—",
-            caption: "Most time read",
-            systemImage: "star.fill",
-            tint: .orange
-        )
-    }
+    @State private var todayGameAnswered = 0
+    @State private var todayGameAccuracy = 0
 
     var body: some View {
         HeroCard(
             title: HomeCardID.bibleStats.title,
-            subtitle: "Reading progress and activity",
+            subtitle: "A quick look at today's reading and games",
             icon: HomeCardID.bibleStats.systemImage,
             tint: .teal,
             trailingAccessory: {
@@ -78,103 +27,57 @@ struct BibleStatsCard: View {
                 .accessibilityLabel("See all stats")
             }
         ) {
-            VStack(alignment: .leading, spacing: 14) {
-                // Three across when there's room; stacked in a narrow dashboard column.
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .top, spacing: 10) { highlights }
-                    VStack(spacing: 10) { highlights }
-                }
-
-                ActivityTimeGraph(
-                    title: "Today",
+            VStack(alignment: .leading, spacing: 12) {
+                DailyActivityTimeCard(
                     readingSeconds: bibleVM.todaySeconds,
                     gameSeconds: todayGameSeconds
                 )
 
-                ActivityTimeGraph(
-                    title: "All Time",
-                    readingSeconds: bibleVM.totalSeconds,
-                    gameSeconds: allTimeGameSeconds
+                ReadingActivitySummary(
+                    seconds: bibleVM.todaySeconds,
+                    lastReadBookChapter: bibleVM.lastReadBookChapter,
+                    lastReadRelativeTime: bibleVM.lastReadRelativeTime
                 )
 
-                // Side by side when there's room; stacked in a narrow dashboard column.
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 10) { statsButtons }
-                    VStack(spacing: 10) { statsButtons }
-                }
+                GameActivitySummary(
+                    seconds: todayGameSeconds,
+                    answered: todayGameAnswered,
+                    accuracy: todayGameAccuracy
+                )
+
+                StatsDestinationButtons(
+                    onOpenReadingStats: onOpenReadingStats,
+                    onOpenGameStats: onOpenGameStats
+                )
             }
             .onAppear {
-                bibleVM.refresh()
-                refreshGameTime()
+                refreshActivity()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
-                    bibleVM.refresh()
-                    refreshGameTime()
+                    refreshActivity()
                 }
             }
             .onNotification(.gameStatsExternallyUpdated) {
-                refreshGameTime()
+                refreshGameActivity()
             }
         }
     }
 
-    private func refreshGameTime() {
+    private func refreshActivity() {
+        bibleVM.refresh()
+        refreshGameActivity()
+    }
+
+    private func refreshGameActivity() {
+        let gameStats = GameStats.shared.todayStats()
         todayGameSeconds = GameStats.shared.playSeconds()
-        allTimeGameSeconds = GameStats.shared.allTimePlaySeconds
+        todayGameAnswered = gameStats.answered
+        todayGameAccuracy = Int(gameStats.pct.rounded())
     }
 }
 
-private struct StatHighlightTile: View {
-    let title: LocalizedStringResource
-    let value: String
-    let caption: LocalizedStringResource
-    let systemImage: String
-    let tint: Color
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Label(title, systemImage: systemImage)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(tint)
-                .lineLimit(1)
-
-            Text(value)
-                .font(.title3.weight(.bold))
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-
-            Text(caption)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-        .frame(minWidth: 96, maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(tint.opacity(0.08))
-        )
-        .accessibilityElement(children: .combine)
-    }
-
-    /// "45s", "12m", or "1h 5m".
-    static func formattedDuration(_ seconds: Int) -> String {
-        let safeSeconds = max(0, seconds)
-        if safeSeconds < 60 {
-            return "\(safeSeconds)s"
-        }
-
-        let hours = safeSeconds / 3_600
-        let minutes = (safeSeconds % 3_600) / 60
-        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
-    }
-}
-
-private struct ActivityTimeGraph: View {
-    let title: LocalizedStringResource
+private struct DailyActivityTimeCard: View {
     let readingSeconds: Int
     let gameSeconds: Int
 
@@ -191,7 +94,7 @@ private struct ActivityTimeGraph: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             HStack {
-                Label(title, systemImage: "chart.bar.xaxis")
+                Label("Today", systemImage: "chart.bar.xaxis")
                     .font(.subheadline.weight(.semibold))
 
                 Spacer()
@@ -200,8 +103,6 @@ private struct ActivityTimeGraph: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
             }
 
             GeometryReader { proxy in
@@ -232,13 +133,18 @@ private struct ActivityTimeGraph: View {
             .frame(height: 12)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(
-                "\(title). Reading \(formattedUsage(reading)). Games \(formattedUsage(games))."
+                "Today. Reading (formattedUsage(reading)). Games (formattedUsage(games))."
             )
 
-            // Side by side when there's room; stacked in a narrow dashboard column.
             ViewThatFits(in: .horizontal) {
-                HStack(spacing: 8) { legends }
-                VStack(alignment: .leading, spacing: 4) { legends }
+                HStack(spacing: 8) {
+                    ActivityTimeLegend(title: "Reading", seconds: reading, tint: .blue)
+                    ActivityTimeLegend(title: "Games", seconds: games, tint: .indigo)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    ActivityTimeLegend(title: "Reading", seconds: reading, tint: .blue)
+                    ActivityTimeLegend(title: "Games", seconds: games, tint: .indigo)
+                }
             }
         }
         .padding(12)
@@ -252,21 +158,60 @@ private struct ActivityTimeGraph: View {
         )
     }
 
-    @ViewBuilder
-    private var legends: some View {
-        ActivityTimeLegend(
+    private func formattedUsage(_ seconds: Int) -> String {
+        let safeSeconds = max(0, seconds)
+        if safeSeconds < 60 {
+            return "\(safeSeconds)s"
+        }
+
+        let hours = safeSeconds / 3_600
+        let minutes = (safeSeconds % 3_600) / 60
+        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
+    }
+}
+
+private struct ReadingActivitySummary: View {
+    let seconds: Int
+    let lastReadBookChapter: String
+    let lastReadRelativeTime: String
+
+    var body: some View {
+        ActivitySummaryRow(
             title: "Reading",
-            seconds: reading,
-            fraction: readingFraction,
-            showsPercentage: total > 0,
+            detail: seconds > 0 ? "\(formattedUsage(seconds)) today" : "No reading time yet",
+            context: lastReadBookChapter == "—"
+                ? nil
+                : "Last read \(lastReadBookChapter) \(lastReadRelativeTime)",
+            systemImage: "book.pages",
             tint: .blue
         )
+    }
 
-        ActivityTimeLegend(
+    private func formattedUsage(_ seconds: Int) -> String {
+        let safeSeconds = max(0, seconds)
+        if safeSeconds < 60 {
+            return "\(safeSeconds)s"
+        }
+
+        let hours = safeSeconds / 3_600
+        let minutes = (safeSeconds % 3_600) / 60
+        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
+    }
+}
+
+private struct GameActivitySummary: View {
+    let seconds: Int
+    let answered: Int
+    let accuracy: Int
+
+    var body: some View {
+        ActivitySummaryRow(
             title: "Games",
-            seconds: games,
-            fraction: gameFraction,
-            showsPercentage: total > 0,
+            detail: answered > 0
+                ? "\(answered) answers · \(accuracy)% correct"
+                : "No answers yet",
+            context: seconds > 0 ? "\(formattedUsage(seconds)) played" : nil,
+            systemImage: "gamecontroller",
             tint: .indigo
         )
     }
@@ -283,11 +228,90 @@ private struct ActivityTimeGraph: View {
     }
 }
 
+private struct ActivitySummaryRow: View {
+    let title: LocalizedStringResource
+    let detail: String
+    let context: String?
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(tint)
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                if let context {
+                    Text(context)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(tint.opacity(0.08))
+        )
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct StatsDestinationButtons: View {
+    let onOpenReadingStats: () -> Void
+    let onOpenGameStats: () -> Void
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 10) {
+                readingButton
+                gameButton
+            }
+            VStack(spacing: 10) {
+                readingButton
+                gameButton
+            }
+        }
+    }
+
+    private var readingButton: some View {
+        Button(action: onOpenReadingStats) {
+            Label("Reading Stats", systemImage: "book.pages")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .heroCardSurface()
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var gameButton: some View {
+        Button(action: onOpenGameStats) {
+            Label("Game Stats", systemImage: "gamecontroller")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .heroCardSurface()
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 private struct ActivityTimeLegend: View {
     let title: LocalizedStringResource
     let seconds: Int
-    let fraction: Double
-    let showsPercentage: Bool
     let tint: Color
 
     var body: some View {
@@ -299,23 +323,10 @@ private struct ActivityTimeLegend: View {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
 
             Text(formattedUsage)
                 .font(.caption.weight(.semibold))
                 .monospacedDigit()
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
-
-            if showsPercentage {
-                Text("\(Int(round(fraction * 100)))%")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-            }
         }
         .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -329,6 +340,6 @@ private struct ActivityTimeLegend: View {
 
         let hours = safeSeconds / 3_600
         let minutes = (safeSeconds % 3_600) / 60
-        return hours > 0 ? "\(hours)h\u{00A0}\(minutes)m" : "\(minutes)m"
+        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
     }
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2C02723630863DB000EDFEE5 /* BibleTriviaGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */; };
+		2C02723A3086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */; };
 		2C04929F3082AC5800123668 /* SavedVersesHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */; };
 		2C0DFA21306E9C5A00E114A5 /* NotesAndHighlightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */; };
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
@@ -204,6 +205,7 @@
 
 /* Begin PBXFileReference section */
 		2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleTriviaGameView.swift; sourceTree = "<group>"; };
+		2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingAndGamesComparisonCard.swift; sourceTree = "<group>"; };
 		2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedVersesHomeCard.swift; sourceTree = "<group>"; };
 		2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesAndHighlightsView.swift; sourceTree = "<group>"; };
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
@@ -608,6 +610,7 @@
 				2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */,
 				2C78EFA13083B6CE008941C3 /* SetupChecklistCard.swift */,
 				2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */,
+				2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -877,6 +880,7 @@
 				2C2A44F02EEE261B00FE8C2F /* Notifications.swift in Sources */,
 				2C27657E2EE8ECB400A321FE /* StreaksViewModel.swift in Sources */,
 				2CA7DBB5307B249E009CE9AC /* UITestSupport.swift in Sources */,
+				2C02723A3086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift in Sources */,
 				2C4F30982ED9150E006C8DFD /* ReadingTimeTracker.swift in Sources */,
 				2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */,
 				2C2A45022EEE347F00FE8C2F /* HomeLayoutEditorView.swift in Sources */,

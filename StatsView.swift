@@ -342,6 +342,8 @@ struct StatsView: View {
 
     private var bibleContent: some View {
         VStack(spacing: 16) {
+            ReadingAndGamesComparisonCard()
+
             ReadingStatsSections(
                 usesWideLayout: usesWideStatsLayout,
                 progress: progressCard,
