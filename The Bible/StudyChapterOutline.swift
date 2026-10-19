@@ -13,8 +13,17 @@ enum ChapterListLayout: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .simple: "Simple"
-        case .detailed: "Detailed"
+        case .simple: "Chapter Grid"
+        case .detailed: "By Theme"
+        }
+    }
+
+    var helperText: String {
+        switch self {
+        case .simple:
+            "Quickly jump to a chapter number."
+        case .detailed:
+            "Browse chapters by key themes and book sections."
         }
     }
 

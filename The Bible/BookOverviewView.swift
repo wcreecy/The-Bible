@@ -20,7 +20,7 @@ struct BookOverviewView: View {
                 )
             }
         }
-        .navigationTitle("About \(bookName)")
+        .navigationTitle("Explore \(bookName)")
         .navigationBarTitleDisplayMode(.inline)
         .task(id: bookName, loadOverview)
     }

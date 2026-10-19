@@ -298,6 +298,7 @@ enum BibleStudyMetadata {
         case "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Acts":
             .history
         case "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon":
+
             .poetry
         case "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel":
             .majorProphets
@@ -471,7 +472,7 @@ struct StudyBookView: View {
 
                 HeroCard(title: "Chapter Insights", icon: "lightbulb.max") {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Choose a chapter to explore its themes, people, background, and cross references.")
+                        Text(chapterLayout.helperText)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
@@ -547,6 +548,7 @@ struct StudyBookView: View {
                 .accessibilityLabel("Chapter \(chapter.number) insights")
             }
         }
+
     }
 
     private var themedChapters: some View {
@@ -596,7 +598,7 @@ private struct StudyBookHeader: View {
             }
 
             Button(action: onOpenOverview) {
-                Label("Read the Book Overview", systemImage: "book.closed.fill")
+                Label("Explore \(bookName)", systemImage: "book.closed.fill")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
@@ -618,8 +620,8 @@ private struct StudyBookHeader: View {
     }
 }
 
-/// A one-row version of `StudyBookHeader` that stays pinned once the full header
-/// scrolls away, keeping the book overview one tap away. Also used by `ChaptersView`.
+/// A one-row version of StudyBookHeader that stays pinned once the full header
+/// scrolls away, keeping the book overview one tap away. Also used by ChaptersView.
 struct CompactStudyBookHeader: View {
     let bookName: String
     let onOpenOverview: () -> Void
@@ -638,12 +640,12 @@ struct CompactStudyBookHeader: View {
 
             Spacer(minLength: 8)
 
-            Button("Overview", systemImage: "book.closed.fill", action: onOpenOverview)
+            Button("Explore \(bookName)", systemImage: "book.closed.fill", action: onOpenOverview)
                 .font(.subheadline.weight(.semibold))
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.capsule)
                 .controlSize(.small)
-                .accessibilityLabel("About \(bookName)")
+                .accessibilityLabel("Explore \(bookName)")
                 .accessibilityHint("Opens the book overview")
         }
         .padding(.horizontal, 14)

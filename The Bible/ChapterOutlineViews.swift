@@ -117,19 +117,19 @@ struct ChapterThemeRow: View {
     }
 }
 
-/// The toolbar menu that switches the Study chapter list between the number grid and themed rows.
+/// The toolbar menu that switches the Study chapter view between a number grid and themed rows.
 struct ChapterLayoutMenu: View {
     @Binding var layout: ChapterListLayout
 
     var body: some View {
         Menu {
-            Picker("Chapter Layout", selection: $layout) {
+            Picker("Chapter View", selection: $layout) {
                 ForEach(ChapterListLayout.allCases) { layout in
                     Label(layout.title, systemImage: layout.systemImage).tag(layout)
                 }
             }
         } label: {
-            Label("Chapter layout", systemImage: layout.systemImage)
+            Label("Chapter view", systemImage: layout.systemImage)
         }
     }
 }
