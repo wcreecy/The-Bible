@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C02723630863DB000EDFEE5 /* BibleTriviaGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */; };
 		2C04929F3082AC5800123668 /* SavedVersesHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */; };
 		2C0DFA21306E9C5A00E114A5 /* NotesAndHighlightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */; };
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
@@ -202,6 +203,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleTriviaGameView.swift; sourceTree = "<group>"; };
 		2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedVersesHomeCard.swift; sourceTree = "<group>"; };
 		2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesAndHighlightsView.swift; sourceTree = "<group>"; };
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
@@ -605,6 +607,7 @@
 				2CA7DBB4307B249E009CE9AC /* UITestSupport.swift */,
 				2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */,
 				2C78EFA13083B6CE008941C3 /* SetupChecklistCard.swift */,
+				2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -893,6 +896,7 @@
 				2C3A48EB2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift in Sources */,
 				2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */,
 				2C98EBE03071360B00FBAED3 /* FeedbackView.swift in Sources */,
+				2C02723630863DB000EDFEE5 /* BibleTriviaGameView.swift in Sources */,
 				2C2A44D62EEE151700FE8C2F /* WordSearchEngine.swift in Sources */,
 				2C2A44D82EEE151E00FE8C2F /* WordSearchViewModel.swift in Sources */,
 				2C2A45082EEE351E00FE8C2F /* SettingsResetDataSection.swift in Sources */,
