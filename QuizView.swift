@@ -376,6 +376,11 @@ struct QuizView: View {
         GameSplashLaunchLayout(
             tint: .blue,
             experienceLevel: experienceLevel,
+            experienceDetails: GameExperienceDetails(
+                learn: "Untimed; wrong choices come from other Bible sections.",
+                standard: "15 seconds; wrong choices come from your categories.",
+                challenge: "12 seconds; wrong choices stay in the same Bible section."
+            ),
             isStartEnabled: isFilterReady,
             startAction: startQuiz
         ) {
@@ -385,7 +390,7 @@ struct QuizView: View {
                 QuizCategoryQuickPicks(tint: .blue, selection: sectionSelection)
 
                 GameStartMultiPickerCard(
-                    title: "Biblical Categories",
+                    title: "Fine-tune Categories",
                     tint: .blue,
                     selection: sectionSelection,
                     options: VerseSection.allCases

@@ -11,7 +11,7 @@ struct BookOrderGameView: View {
                 switch vm.difficulty {
                 case .easy: .learn
                 case .normal: .standard
-                case .hard, .all: .challenge
+                case .hard, .fullBible: .challenge
                 }
             },
             set: { level in
@@ -38,12 +38,20 @@ struct BookOrderGameView: View {
 
                         GameSplashLaunchLayout(
                             tint: .purple,
-                            experienceLevel: experienceLevel,
+                            experienceLevel: vm.difficulty == .fullBible ? nil : experienceLevel,
+                            experienceDetails: GameExperienceDetails(
+                                learn: "Arrange up to 5 books in order.",
+                                standard: "Arrange up to 10 books in order.",
+                                challenge: "Arrange up to 15 books in order."
+                            ),
                             startAction: startGame
                         ) {
                             GameLobbyPreview(kind: .bookOrder, bookOrderBooks: vm.source.previewBookNames)
                         } configuration: {
-                            BookOrderSetupControls(source: $vm.source)
+                            BookOrderSetupControls(
+                                source: $vm.source,
+                                difficulty: $vm.difficulty
+                            )
                         } facts: {
                             GameSplashFacts(
                                 first: ("books.vertical", "\(vm.roundBookCount)", String(localized: "Books")),
@@ -513,6 +521,7 @@ private struct BookOrderResultSummary: View {
 
 private struct BookOrderSetupControls: View {
     @Binding var source: BookSourceScope
+    @Binding var difficulty: BookOrderDifficulty
 
     private static let testamentOptions = BookSourceScope.allCases.filter { !$0.isCategory }
     private static let categoryOptions = BookSourceScope.allCases.filter(\.isCategory)
@@ -526,44 +535,129 @@ private struct BookOrderSetupControls: View {
         }
     }
 
+    private var isFullBibleMode: Bool {
+        difficulty == .fullBible
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Part of the Bible", systemImage: "books.vertical.fill")
+            Label("Round Type", systemImage: "rectangle.3.group.fill")
                 .font(.headline)
                 .foregroundStyle(.purple)
 
             HStack(alignment: .top, spacing: 8) {
-                ForEach(Self.testamentOptions) { option in
-                    let isSelected = source == option
+                modeCard(
+                    title: "Quick Rounds",
+                    detail: "Choose a part of the Bible and arrange a shorter run.",
+                    systemImage: "arrow.triangle.2.circlepath",
+                    isSelected: !isFullBibleMode
+                ) {
+                    difficulty = .normal
+                }
 
-                    Button {
-                        source = option
-                    } label: {
-                        testamentCard(option, isSelected: isSelected)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(option.title)
-                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                modeCard(
+                    title: "Full Bible Order",
+                    detail: "Arrange all 66 books in canonical order.",
+                    systemImage: "books.vertical.fill",
+                    isSelected: isFullBibleMode
+                ) {
+                    source = .both
+                    difficulty = .fullBible
                 }
             }
 
-            HStack {
-                Text("Book Group")
-                    .font(.subheadline.weight(.semibold))
+            if !isFullBibleMode {
+                Label("Part of the Bible", systemImage: "books.vertical.fill")
+                    .font(.headline)
+                    .foregroundStyle(.purple)
 
-                Spacer()
+                HStack(alignment: .top, spacing: 8) {
+                    ForEach(Self.testamentOptions) { option in
+                        let isSelected = source == option
 
-                Picker("Book Group", selection: $source) {
-                    ForEach(Self.categoryOptions) { option in
-                        Text(option.title).tag(option)
+                        Button {
+                            difficulty = .normal
+                            source = option
+                        } label: {
+                            testamentCard(option, isSelected: isSelected)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(option.title)
+                        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
                     }
                 }
-                .pickerStyle(.menu)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("Fine-tune Book Group", systemImage: "slider.horizontal.3")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.purple)
+
+                    HStack {
+                        Text("Book Group")
+                            .font(.subheadline.weight(.medium))
+
+                        Spacer()
+
+                        Picker("Book Group", selection: $source) {
+                            ForEach(Self.categoryOptions) { option in
+                                Text(option.title).tag(option)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .onChange(of: source) {
+                            difficulty = .normal
+                        }
+                    }
+                }
+                .padding(12)
+                .background(
+                    Color.purple.opacity(0.09),
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                }
             }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
+    }
+
+    private func modeCard(
+        title: LocalizedStringResource,
+        detail: LocalizedStringResource,
+        systemImage: String,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 5) {
+                Image(systemName: systemImage)
+                    .foregroundStyle(isSelected ? .white : .purple)
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : .primary)
+                Text(detail)
+                    .font(.caption2)
+                    .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
+            .background(
+                isSelected ? Color.purple : Color.purple.opacity(0.09),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(isSelected ? Color.purple : .clear, lineWidth: 2)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private func testamentCard(_ option: BookSourceScope, isSelected: Bool) -> some View {

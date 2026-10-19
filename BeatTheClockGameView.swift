@@ -51,7 +51,7 @@ struct BeatTheClockGameView: View {
             switch self {
             case .people: "People"
             case .places: "Places"
-            case .both: "Both"
+            case .both: "Mixed"
             }
         }
     }
@@ -196,7 +196,7 @@ struct BeatTheClockGameView: View {
                     VStack(spacing: 16) {
                         switch phase {
                         case .setup:
-                            setupContent(isWide: geometry.size.width >= 700)
+                            setupContent
                         case .playing:
                             if usesSplitLayout {
                                 dashboard(availableHeight: geometry.size.height - 32)
@@ -305,35 +305,44 @@ struct BeatTheClockGameView: View {
     // MARK: - Setup
 
     @ViewBuilder
-    private func setupContent(isWide: Bool) -> some View {
+    private var setupContent: some View {
         Spacer(minLength: 32)
         Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
             .gameStartDescriptionStyle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
 
-        GameLobbyPreview(kind: .beatTheClock)
+        GameSplashLaunchLayout(
+            tint: .indigo,
+            experienceLevel: experienceLevel,
+            experienceDetails: GameExperienceDetails(
+                learn: "Well-known names, 25 seconds, and each clue is shown.",
+                standard: "More names, 15 seconds; clues cost 3 seconds.",
+                challenge: "Every name, 10 seconds; clues cost 3 seconds."
+            ),
+            isStartEnabled: !isLoadingData,
+            startAction: startGame
+        ) {
+            GameLobbyPreview(kind: .beatTheClock)
+        } configuration: {
+            BeatTheClockSetupControls(category: $category)
+                .frame(maxWidth: 620)
+                .padding(.horizontal)
 
-        GameExperienceStandardsCard(tint: .indigo, selection: experienceLevel)
-
-        if isWide {
-            HStack(alignment: .top, spacing: 16) {
-                BeatTheClockConfigurationCard(
-                    difficulty: $difficulty,
-                    category: $category,
-                    minimumHeight: 300
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                BeatTheClockStartButton(isLoading: isLoadingData, action: startGame)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 300)
+            if isLoadingData {
+                Label("Loading questions…", systemImage: "hourglass")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
             }
-        } else {
-            BeatTheClockConfigurationCard(
-                difficulty: $difficulty,
-                category: $category
+        } facts: {
+            GameSplashFacts(
+                first: ("number", "\(Self.questionsPerGame)", String(localized: "Questions")),
+                second: ("timer", "\(difficulty.roundTime) sec", String(localized: "Per question")),
+                third: (
+                    "lightbulb",
+                    difficulty.showsClueAutomatically ? String(localized: "Shown") : String(localized: "−\(Self.hintCost) sec"),
+                    String(localized: "Clues")
+                )
             )
-
-            BeatTheClockStartButton(isLoading: isLoadingData, action: startGame)
         }
 
         Spacer(minLength: 32)
@@ -1013,8 +1022,9 @@ private struct BeatTheClockSetupControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Question Subject")
+            Label("Question Subject", systemImage: "person.2.fill")
                 .font(.headline)
+                .foregroundStyle(.indigo)
 
             HStack(alignment: .top, spacing: 8) {
                 ForEach(BeatTheClockGameView.Category.allCases) { option in

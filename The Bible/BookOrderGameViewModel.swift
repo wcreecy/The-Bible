@@ -4,8 +4,8 @@ import SwiftUI
 
 enum BookOrderDifficulty: String, CaseIterable, Identifiable {
     case easy, normal, hard
-    /// Expert: every book in the chosen part. Stored as "all" in existing settings and streaks.
-    case all
+    /// All 66 books in canonical order. Stored as "all" to preserve existing settings and streaks.
+    case fullBible = "all"
 
     var id: String { rawValue }
 
@@ -14,17 +14,17 @@ enum BookOrderDifficulty: String, CaseIterable, Identifiable {
         case .easy: "Easy"
         case .normal: "Normal"
         case .hard: "Hard"
-        case .all: "Expert"
+        case .fullBible: "Full Bible"
         }
     }
 
-    /// Books in a row per puzzle, or nil for every book in the chosen part.
+    /// Books in a round, or nil for the full Bible mode.
     var runLength: Int? {
         switch self {
         case .easy: 5
         case .normal: 10
         case .hard: 15
-        case .all: nil
+        case .fullBible: nil
         }
     }
 
@@ -33,7 +33,7 @@ enum BookOrderDifficulty: String, CaseIterable, Identifiable {
         case .easy: .easy
         case .normal: .normal
         case .hard: .hard
-        case .all: .none // recorded under "expert" by GameStats
+        case .fullBible: .none
         }
     }
 }

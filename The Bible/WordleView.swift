@@ -458,11 +458,6 @@ struct WordleView: View {
             ) {
                 GameLobbyPreview(kind: .wordle)
             } configuration: {
-                WordSetupCard(
-                    mode: mode,
-                    hardModeEnabled: hardModeEnabled
-                )
-
                 WordSetupControls(
                     mode: $mode,
                     hardModeEnabled: $hardModeEnabled
@@ -1460,69 +1455,6 @@ struct WordleView: View {
       return String(format: "%d:%02d", m, sec)
     }
   }
-}
-
-private struct WordSetupCard: View {
-    let mode: WordleView.Mode
-    let hardModeEnabled: Bool
-
-    private var difficultyTitle: LocalizedStringResource {
-        hardModeEnabled ? "Hard" : "Normal"
-    }
-
-    private var gameTypeTitle: LocalizedStringResource {
-        switch mode {
-        case .daily: "Daily"
-        case .practice: "Practice"
-        }
-    }
-
-    private var summary: LocalizedStringResource {
-        switch (mode, hardModeEnabled) {
-        case (.daily, false):
-            "Solve today’s five-letter word in six guesses. Normal difficulty has no required-letter restrictions. Daily can be played once per day, and your score is recorded."
-        case (.daily, true):
-            "Solve today’s five-letter word in six guesses. Hard difficulty requires green letters to stay fixed and yellow letters to be reused. Daily can be played once per day, and your score is recorded."
-        case (.practice, false):
-            "Solve a five-letter word in six guesses. Normal difficulty has no required-letter restrictions. Practice offers unlimited games, and results are tracked separately from Daily in your stats."
-        case (.practice, true):
-            "Solve a five-letter word in six guesses. Hard difficulty requires green letters to stay fixed and yellow letters to be reused. Practice offers unlimited games, and results are tracked separately from Daily in your stats."
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Your Game", systemImage: "checklist")
-                .font(.headline)
-                .foregroundStyle(.tint)
-
-            Text(summary)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Divider()
-
-            LabeledContent("Difficulty") {
-                Text(difficultyTitle)
-                    .fontWeight(.semibold)
-            }
-
-            LabeledContent("Game Type") {
-                Text(gameTypeTitle)
-                    .fontWeight(.semibold)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: 620, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .padding(.horizontal)
-        .accessibilityElement(children: .contain)
-    }
 }
 
 private struct WordSetupControls: View {

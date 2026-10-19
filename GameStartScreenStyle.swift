@@ -108,11 +108,26 @@ enum GameExperienceLevel: String, CaseIterable, Identifiable {
     }
 }
 
+struct GameExperienceDetails {
+    let learn: LocalizedStringKey
+    let standard: LocalizedStringKey
+    let challenge: LocalizedStringKey
+
+    func detail(for level: GameExperienceLevel) -> LocalizedStringKey {
+        switch level {
+        case .learn: learn
+        case .standard: standard
+        case .challenge: challenge
+        }
+    }
+}
+
 struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let tint: Color
     let experienceLevel: Binding<GameExperienceLevel>?
+    let experienceDetails: GameExperienceDetails?
     let isStartEnabled: Bool
     let startAction: () -> Void
     @ViewBuilder let preview: Preview
@@ -122,6 +137,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
     init(
         tint: Color,
         experienceLevel: Binding<GameExperienceLevel>? = nil,
+        experienceDetails: GameExperienceDetails? = nil,
         isStartEnabled: Bool = true,
         startAction: @escaping () -> Void,
         @ViewBuilder preview: () -> Preview,
@@ -130,6 +146,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
     ) {
         self.tint = tint
         self.experienceLevel = experienceLevel
+        self.experienceDetails = experienceDetails
         self.isStartEnabled = isStartEnabled
         self.startAction = startAction
         self.preview = preview()
@@ -145,7 +162,11 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                 HStack(alignment: .top, spacing: 16) {
                     GameSplashConfigurationCard(minimumHeight: 360) {
                         if let experienceLevel {
-                            GameExperienceStandardsCard(tint: tint, selection: experienceLevel)
+                            GameExperienceStandardsCard(
+                                tint: tint,
+                                selection: experienceLevel,
+                                details: experienceDetails
+                            )
                         }
                         configuration
                         facts
@@ -163,7 +184,11 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
             } else {
                 GameSplashConfigurationCard {
                     if let experienceLevel {
-                        GameExperienceStandardsCard(tint: tint, selection: experienceLevel)
+                        GameExperienceStandardsCard(
+                            tint: tint,
+                            selection: experienceLevel,
+                            details: experienceDetails
+                        )
                     }
                     configuration
                     facts
@@ -179,6 +204,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
 struct GameExperienceStandardsCard: View {
     let tint: Color
     @Binding var selection: GameExperienceLevel
+    let details: GameExperienceDetails?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -210,7 +236,7 @@ struct GameExperienceStandardsCard: View {
             Text(level.title)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(selection == level ? .white : .primary)
-            Text(level.detail)
+            Text(details?.detail(for: level) ?? level.detail)
                 .font(.caption2)
                 .foregroundStyle(selection == level ? .white.opacity(0.9) : .secondary)
                 .fixedSize(horizontal: false, vertical: true)

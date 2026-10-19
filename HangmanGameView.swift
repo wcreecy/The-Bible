@@ -335,6 +335,11 @@ struct HangmanGameView: View {
         GameSplashLaunchLayout(
             tint: .teal,
             experienceLevel: experienceLevel,
+            experienceDetails: GameExperienceDetails(
+                learn: "Well-known names, 8 mistakes, and a clue for every word.",
+                standard: "More names, 6 mistakes; a clue costs one mistake.",
+                challenge: "Every name, 5 mistakes, and no clues."
+            ),
             isStartEnabled: !loadedPeople.isEmpty && !loadedPlaces.isEmpty,
             startAction: startGame
         ) {

@@ -31,11 +31,11 @@ struct WordSearchStartScreen: View {
         )
     }
 
-    private var verseSourceTitle: String {
-        switch verseSource {
-        case .popular: "Popular"
-        case .random: "Any verse"
-        case .favorites: "Favorites"
+    private var gridSize: Int {
+        switch difficulty {
+        case .easy: 10
+        case .medium: 12
+        case .hard, .expert: 14
         }
     }
 
@@ -48,33 +48,30 @@ struct WordSearchStartScreen: View {
             GameSplashLaunchLayout(
                 tint: .green,
                 experienceLevel: experienceLevel,
+                experienceDetails: GameExperienceDetails(
+                    learn: "10×10 grid with 3–6 words in forward directions.",
+                    standard: "12×12 grid with 4–7 words in forward directions.",
+                    challenge: "14×14 grid with 5–8 words in any direction."
+                ),
                 isStartEnabled: !needsFavorites,
                 startAction: onStart
             ) {
                 GameLobbyPreview(kind: .wordSearch)
             } configuration: {
-                WordSearchSetupCard(
-                    difficulty: difficulty,
-                    verseSource: verseSource,
-                    isBlindMode: isBlindMode,
-                    isTimedMode: isTimedMode,
-                    timePerWord: timePerWord
-                )
-
                 WordSearchSetupControls(
                     verseSource: $verseSource,
                     hasFavorites: hasFavorites
                 )
 
-                VStack(spacing: 10) {
-                    WordSearchOptionToggle(title: "Blind", systemImage: "eye.slash", tint: .purple, isOn: $isBlindMode)
-                    WordSearchOptionToggle(title: "Timed Mode", systemImage: "timer", tint: .orange, isOn: $isTimedMode)
-                }
+                WordSearchPuzzleOptionsCard(
+                    isBlindMode: $isBlindMode,
+                    isTimedMode: $isTimedMode
+                )
             } facts: {
                 GameSplashFacts(
-                    first: ("square.grid.3x3", "\(wordCountRange.lowerBound)–\(wordCountRange.upperBound)", "Words"),
-                    second: ("timer", isTimedMode ? timePerWord : "Untimed", "Time limit"),
-                    third: ("text.quote", verseSourceTitle, "Verses")
+                    first: ("square.grid.3x3", "\(gridSize)×\(gridSize)", "Grid"),
+                    second: ("text.word.spacing", "\(wordCountRange.lowerBound)–\(wordCountRange.upperBound)", "Words"),
+                    third: ("timer", isTimedMode ? timePerWord : "Untimed", "Time limit")
                 )
             }
 
@@ -84,77 +81,35 @@ struct WordSearchStartScreen: View {
     }
 }
 
-private struct WordSearchOptionToggle: View {
-    let title: LocalizedStringResource
-    let systemImage: String
-    let tint: Color
-    @Binding var isOn: Bool
-
-    var body: some View {
-        Toggle(isOn: $isOn) {
-            Label(title, systemImage: systemImage)
-                .font(.headline)
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(Capsule(style: .continuous).fill(tint.opacity(0.10)))
-        .overlay(Capsule(style: .continuous).stroke(tint.opacity(0.25), lineWidth: 1))
-        .frame(maxWidth: 620)
-        .padding(.horizontal)
-    }
-}
-
-private struct WordSearchSetupCard: View {
-    let difficulty: WordSearchEngine.Difficulty
-    let verseSource: WordSearchViewModel.VerseSource
-    let isBlindMode: Bool
-    let isTimedMode: Bool
-    let timePerWord: String
-
-    private var difficultySummary: LocalizedStringResource {
-        switch difficulty {
-        case .easy:
-            "Easy: a 10×10 grid with 3–6 words running forward across, down, or diagonally."
-        case .medium:
-            "Normal: a 12×12 grid with 4–7 words running forward across, down, or diagonally."
-        case .hard:
-            "Hard: a 14×14 grid with 5–8 words running in any direction, including backwards."
-        case .expert:
-            "Expert: a 14×14 grid with 6–10 words in any direction. Words can cross and share a letter, and look-alike fragments are hidden among them."
-        }
-    }
-
-    private var verseSummary: LocalizedStringResource {
-        switch verseSource {
-        case .popular: "Puzzles come from well-known verses."
-        case .random: "Puzzles come from any verse in the Bible."
-        case .favorites: "Puzzles come from your saved favorite verses."
-        }
-    }
-
-    private var timerSummary: LocalizedStringResource {
-        isTimedMode
-            ? "You get \(timePerWord) to finish."
-            : "There is no time limit."
-    }
+private struct WordSearchPuzzleOptionsCard: View {
+    @Binding var isBlindMode: Bool
+    @Binding var isTimedMode: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Your Game", systemImage: "checklist")
+            Label("Puzzle Options", systemImage: "slider.horizontal.3")
                 .font(.headline)
-                .foregroundStyle(.tint)
+                .foregroundStyle(.green)
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(difficultySummary)
-                Text(verseSummary)
-                if isBlindMode {
-                    Text("Blind hides the word list and the verse until you finish. You can show the list if you get stuck.")
+            HStack(alignment: .top, spacing: 8) {
+                WordSearchOptionCard(
+                    title: "Blind Mode",
+                    detail: "Hide the verse and word list.",
+                    systemImage: "eye.slash",
+                    isSelected: isBlindMode
+                ) {
+                    isBlindMode.toggle()
                 }
-                Text(timerSummary)
+
+                WordSearchOptionCard(
+                    title: "Timed Mode",
+                    detail: "Race against the clock.",
+                    systemImage: "timer",
+                    isSelected: isTimedMode
+                ) {
+                    isTimedMode.toggle()
+                }
             }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
         }
         .padding(16)
         .frame(maxWidth: 620, alignment: .leading)
@@ -164,7 +119,44 @@ private struct WordSearchSetupCard: View {
                 .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
         }
         .padding(.horizontal)
-        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct WordSearchOptionCard: View {
+    let title: LocalizedStringResource
+    let detail: LocalizedStringResource
+    let systemImage: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 5) {
+                Image(systemName: systemImage)
+                    .foregroundStyle(isSelected ? .white : .green)
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white : .primary)
+                Text(detail)
+                    .font(.caption2)
+                    .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
+            .background(
+                isSelected ? Color.green : Color.green.opacity(0.09),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(isSelected ? Color.green : .clear, lineWidth: 2)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

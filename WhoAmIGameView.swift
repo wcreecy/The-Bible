@@ -91,6 +91,11 @@ struct WhoAmIGameView: View {
         GameSplashLaunchLayout(
             tint: .brown,
             experienceLevel: experienceLevel,
+            experienceDetails: GameExperienceDetails(
+                learn: "Well-known people, no timer, and choices from anywhere.",
+                standard: "More people, 30 seconds; choices stay in the same testament.",
+                challenge: "Everyone, 15 seconds; choices stay in the same books."
+            ),
             isStartEnabled: vm.isReady,
             startAction: vm.startGame
         ) {
