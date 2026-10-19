@@ -34,40 +34,21 @@ struct GameScoreboardCard: View {
     var body: some View {
         let allTime = stats.scorecardStats(for: game, wordMode: wordMode)
 
-        if style == .dashboard {
+        switch style {
+        case .compact:
+            GameScoreboardCompactContent(
+                currentCorrect: currentCorrect,
+                currentAnswered: currentAnswered,
+                currentStreak: currentStreak,
+                currentAccuracy: percentString(correct: currentCorrect, answered: currentAnswered),
+                allTimeCorrect: allTime.correct,
+                allTimeAnswered: allTime.attempts,
+                allTimeBestStreak: allTime.bestStreak,
+                allTimeAccuracy: percentString(correct: allTime.correct, answered: allTime.attempts)
+            )
+        case .dashboard:
             dashboardScoreboard(allTime: allTime)
-        } else {
-            compactScoreboard(allTime: allTime)
         }
-    }
-
-    private func compactScoreboard(allTime: GameStats.ScorecardStats) -> some View {
-        VStack(spacing: 0) {
-            scoreSection(
-                title: "This Game",
-                systemImage: "play.fill",
-                correct: currentCorrect,
-                attempts: currentAnswered,
-                streak: currentStreak,
-                percent: percentString(correct: currentCorrect, answered: currentAnswered),
-                highlightedStreak: currentStreak >= max(1, allTime.bestStreak)
-            )
-
-            Divider()
-                .padding(.leading, 32)
-
-            scoreSection(
-                title: "All Time",
-                systemImage: "trophy.fill",
-                correct: allTime.correct,
-                attempts: allTime.attempts,
-                streak: allTime.bestStreak,
-                percent: percentString(correct: allTime.correct, answered: allTime.attempts),
-                usesPlaceholderForEmptyStreak: true
-            )
-        }
-        .padding(.horizontal, 12)
-        .heroCardSurface()
     }
 
     private func dashboardScoreboard(allTime: GameStats.ScorecardStats) -> some View {
@@ -122,67 +103,122 @@ struct GameScoreboardCard: View {
         .accessibilityValue(value)
     }
 
-    private func scoreSection(
-        title: LocalizedStringKey,
-        systemImage: String,
-        correct: Int,
-        attempts: Int,
-        streak: Int,
-        percent: String,
-        highlightedStreak: Bool = false,
-        usesPlaceholderForEmptyStreak: Bool = false
-    ) -> some View {
-        HStack(spacing: 8) {
-            Label(title, systemImage: systemImage)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .labelStyle(.iconOnly)
-                .frame(width: 20)
-                .accessibilityLabel(title)
-
-            stat(title: "Correct", value: "\(correct)")
-
-            stat(title: "Attempts", value: "\(attempts)")
-
-            stat(
-                title: "Streak",
-                value: usesPlaceholderForEmptyStreak && streak == 0 ? "—" : "\(streak)",
-                valueColor: highlightedStreak ? .green : .primary
-            )
-
-            stat(title: "Percent", value: percent)
-        }
-        .padding(.vertical, 9)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(title)
-    }
-
-    private func stat(
-        title: LocalizedStringKey,
-        value: String,
-        valueColor: Color = .primary
-    ) -> some View {
-        VStack(spacing: 1) {
-            Text(value)
-                .font(.headline.weight(.semibold))
-                .monospacedDigit()
-                .foregroundStyle(valueColor)
-                .lineLimit(1)
-
-            Text(title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-        }
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
-    }
-
     private func percentString(correct: Int, answered: Int) -> String {
         guard answered > 0 else { return "—" }
         let raw = (Double(correct) / Double(answered)) * 100.0
         let clamped = min(100.0, max(0.0, raw))
         return "\(Int(round(clamped)))%"
+    }
+}
+
+private struct GameScoreboardCompactContent: View {
+    let currentCorrect: Int
+    let currentAnswered: Int
+    let currentStreak: Int
+    let currentAccuracy: String
+    let allTimeCorrect: Int
+    let allTimeAnswered: Int
+    let allTimeBestStreak: Int
+    let allTimeAccuracy: String
+
+    var body: some View {
+        VStack(spacing: 12) {
+            GameScoreboardRoundSummary(
+                correct: currentCorrect,
+                answered: currentAnswered,
+                streak: currentStreak,
+                accuracy: currentAccuracy
+            )
+
+            Divider()
+
+            GameScoreboardAllTimeSummary(
+                correct: allTimeCorrect,
+                answered: allTimeAnswered,
+                bestStreak: allTimeBestStreak,
+                accuracy: allTimeAccuracy
+            )
+        }
+        .padding(12)
+        .heroCardSurface()
+    }
+}
+
+private struct GameScoreboardRoundSummary: View {
+    let correct: Int
+    let answered: Int
+    let streak: Int
+    let accuracy: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("This Round", systemImage: "play.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            if answered == 0 {
+                Text("No answers yet")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("\(correct) / \(answered) correct")
+                        .font(.title3.weight(.bold))
+                        .monospacedDigit()
+
+                    Spacer()
+
+                    Text("\(accuracy) accuracy")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            if streak > 0 {
+                Label("\(streak) in a row", systemImage: "flame.fill")
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(.orange)
+                    .monospacedDigit()
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct GameScoreboardAllTimeSummary: View {
+    let correct: Int
+    let answered: Int
+    let bestStreak: Int
+    let accuracy: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Label("All Time", systemImage: "trophy.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            if answered == 0 {
+                Text("No answers yet")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(accuracy) accuracy · \(correct) correct")
+                        .font(.footnote.weight(.medium))
+                        .monospacedDigit()
+
+                    if bestStreak > 0 {
+                        Text("Best streak \(bestStreak)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 
