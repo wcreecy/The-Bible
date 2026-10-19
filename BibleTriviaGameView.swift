@@ -530,7 +530,6 @@ private struct BibleTriviaPlayScreen: View {
 
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
-    @State private var selectedScriptureReference: ScriptureRef?
 
     private var timerTint: Color {
         let fraction = Double(remainingSeconds) / Double(max(1, timerSeconds))
@@ -565,13 +564,12 @@ private struct BibleTriviaPlayScreen: View {
                                 questionCount: questionCount,
                                 score: score,
                                 answered: answered,
+                                outcome: outcome,
+                                reference: question.reference,
                                 selectedAnswer: selectedAnswer,
                                 isAnswered: isAnswered,
                                 isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
-                                onPreviewReference: BibleReferenceLinker.parse(question.reference).map { reference in
-                                    { selectedScriptureReference = reference }
-                                },
                                 canGoPrevious: canGoPrevious,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
@@ -590,13 +588,12 @@ private struct BibleTriviaPlayScreen: View {
                                 answered: answered,
                                 remainingSeconds: remainingSeconds,
                                 timerTint: timerTint,
+                                outcome: outcome,
+                                reference: question.reference,
                                 selectedAnswer: selectedAnswer,
                                 isAnswered: isAnswered,
                                 isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
-                                onPreviewReference: BibleReferenceLinker.parse(question.reference).map { reference in
-                                    { selectedScriptureReference = reference }
-                                },
                                 canGoPrevious: canGoPrevious,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
@@ -638,11 +635,6 @@ private struct BibleTriviaPlayScreen: View {
             }
         }
         .background(AppBackgroundView(tab: .games))
-        .sheet(item: $selectedScriptureReference) { reference in
-            ScriptureReferencePreview(reference: reference)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-        }
     }
 }
 
@@ -656,11 +648,12 @@ private struct BibleTriviaCompactBoard: View {
     let answered: Int
     let remainingSeconds: Int
     let timerTint: Color
+    let outcome: BibleTriviaAnswerOutcome?
+    let reference: String
     let selectedAnswer: String?
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
-    let onPreviewReference: (() -> Void)?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
@@ -687,11 +680,14 @@ private struct BibleTriviaCompactBoard: View {
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
-                onChoose: onChoose,
-                onPreviewReference: onPreviewReference
+                onChoose: onChoose
             )
 
             if isAnswered {
+                if let outcome {
+                    BibleTriviaAnswerReveal(outcome: outcome, reference: reference)
+                }
+
                 BibleTriviaNavigationButtons(
                     canGoPrevious: canGoPrevious,
                     canGoNext: canGoNext,
@@ -714,11 +710,12 @@ private struct BibleTriviaDashboard: View {
     let questionCount: Int
     let score: Int
     let answered: Int
+    let outcome: BibleTriviaAnswerOutcome?
+    let reference: String
     let selectedAnswer: String?
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
-    let onPreviewReference: (() -> Void)?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
@@ -746,11 +743,14 @@ private struct BibleTriviaDashboard: View {
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
-                onChoose: onChoose,
-                onPreviewReference: onPreviewReference
+                onChoose: onChoose
             )
 
             if isAnswered {
+                if let outcome {
+                    BibleTriviaAnswerReveal(outcome: outcome, reference: reference)
+                }
+
                 BibleTriviaNavigationButtons(
                     canGoPrevious: canGoPrevious,
                     canGoNext: canGoNext,
@@ -779,7 +779,6 @@ private struct BibleTriviaQuestionBoard: View {
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
-    let onPreviewReference: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -816,9 +815,9 @@ private struct BibleTriviaQuestionBoard: View {
                     BibleTriviaAnswerOption(
                         title: option,
                         isCorrect: isAnswered && option == correctAnswer,
+                        isSelected: option == selectedAnswer,
                         isIncorrectSelection: isAnswered && option == selectedAnswer && option != correctAnswer,
-                        isDisabled: isAnswered || isViewingPrevious,
-                        onPreviewReference: option == correctAnswer ? onPreviewReference : nil
+                        isDisabled: isAnswered || isViewingPrevious
                     ) {
                         onChoose(option)
                     }
@@ -832,46 +831,38 @@ private struct BibleTriviaQuestionBoard: View {
 private struct BibleTriviaAnswerOption: View {
     let title: String
     let isCorrect: Bool
+    let isSelected: Bool
     let isIncorrectSelection: Bool
     let isDisabled: Bool
-    let onPreviewReference: (() -> Void)?
     let action: () -> Void
 
-    private var glass: Glass {
-        if isCorrect { return .regular.tint(.green.opacity(0.28)) }
-        if isIncorrectSelection { return .regular.tint(.red.opacity(0.28)) }
+    private var backgroundColor: Color {
+        guard isDisabled, isSelected else { return .clear }
+        if isCorrect { return .green.opacity(0.3) }
+        if isIncorrectSelection { return .red.opacity(0.3) }
         return .clear
-    }
-
-    private var icon: String {
-        if isCorrect { return "checkmark.circle.fill" }
-        if isIncorrectSelection { return "xmark.circle.fill" }
-        return "circle"
-    }
-
-    private var opensReferencePreview: Bool {
-        isCorrect && onPreviewReference != nil
     }
 
     var body: some View {
         Button {
-            if let onPreviewReference, isCorrect {
-                onPreviewReference()
-            } else {
-                action()
-            }
+            action()
         } label: {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                Text(title)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
-            }
-            .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
+            Text(title)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .foregroundStyle(.primary)
         }
-        .buttonStyle(.glass(glass))
-        .disabled(isDisabled && !opensReferencePreview)
-        .accessibilityHint(opensReferencePreview ? "Opens the supporting Scripture passage." : "")
+        .disabled(isDisabled)
+        .background(backgroundColor)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(
+                    isCorrect && isDisabled ? Color.green : Color.black.opacity(0.15),
+                    lineWidth: isCorrect && isDisabled ? 3 : 1
+                )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .font(.body)
     }
 }
 
@@ -924,6 +915,59 @@ private enum BibleTriviaAnswerOutcome {
 
     var tint: Color {
         self == .correct ? .green : .red
+    }
+}
+
+private struct BibleTriviaAnswerReveal: View {
+    let outcome: BibleTriviaAnswerOutcome
+    let reference: String
+
+    private var verseActionReference: VerseActionReference? {
+        guard let parsedReference = BibleReferenceLinker.parse(reference),
+              let verseText = BibleData.books
+                .first(where: { $0.name == parsedReference.bookName })?
+                .chapters.first(where: { $0.number == parsedReference.chapter })?
+                .verses.first(where: { $0.number == parsedReference.startVerse })?
+                .text else {
+            return nil
+        }
+
+        return VerseActionReference(
+            bookName: parsedReference.bookName,
+            chapterNumber: parsedReference.chapter,
+            verseNumber: parsedReference.startVerse,
+            verseText: verseText
+        )
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: outcome.systemImage)
+                .font(.title2.weight(.bold))
+                .foregroundStyle(outcome.tint)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(outcome.title)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(outcome.tint)
+
+                if !reference.isEmpty {
+                    Text(reference)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.primary)
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            if let verseActionReference {
+                VerseActionMenu(verse: verseActionReference)
+            }
+        }
+        .padding(.horizontal, 16)
+        .frame(minHeight: 64)
+        .glassEffect(.regular.tint(outcome.tint.opacity(0.35)), in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
+        .accessibilityElement(children: .combine)
     }
 }
 
