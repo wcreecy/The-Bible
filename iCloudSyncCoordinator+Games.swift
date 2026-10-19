@@ -144,10 +144,20 @@ extension iCloudSyncCoordinator {
         "quizPerBookCorrectMap"
     ]
 
+    static let triviaPerBookMapKeys: [String] = [
+        "triviaPerBookAnsweredMap",
+        "triviaPerBookCorrectMap"
+    ]
+
     // Per-book daily maps used by the detailed Quiz statistics screen.
     static let quizPerBookDailyMapKeys: [String] = [
         "quizPerBookDailyAnswered",
         "quizPerBookDailyCorrect"
+    ]
+
+    static let triviaPerBookDailyMapKeys: [String] = [
+        "triviaPerBookDailyAnswered",
+        "triviaPerBookDailyCorrect"
     ]
 
     // Per-book daily maps used by the detailed Verse Match statistics screen.
@@ -225,8 +235,8 @@ extension iCloudSyncCoordinator {
                 + whoAmIKeys + wordleKeys + wordSearchKeys
                 + bibleTriviaProgressKeys
                 + gamePlayTimeCounterKeys + gamePlayTimeMapKeys
-                + gameDailyAndLastPlayedKeys + quizPerBookMapKeys
-                + quizPerBookDailyMapKeys + verseMatchPerBookDailyMapKeys
+                + gameDailyAndLastPlayedKeys + quizPerBookMapKeys + triviaPerBookMapKeys
+                + quizPerBookDailyMapKeys + triviaPerBookDailyMapKeys + verseMatchPerBookDailyMapKeys
                 + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys
                 + hangmanPerCategoryMapKeys + perGameDailyMapKeys
                 + wordleSolvedMapKeys + wordleDailyResultKeys
@@ -386,7 +396,8 @@ extension iCloudSyncCoordinator {
 
     private static let gamesDomainKeySet: Set<String> = {
         gameCounterKeySet.union(
-            gameDailyAndLastPlayedKeys + quizPerBookMapKeys + quizPerBookDailyMapKeys
+            gameDailyAndLastPlayedKeys + quizPerBookMapKeys + triviaPerBookMapKeys
+                + quizPerBookDailyMapKeys + triviaPerBookDailyMapKeys
                 + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys + hangmanPerCategoryMapKeys
                 + perGameDailyMapKeys + wordleSolvedMapKeys + wordleDailyResultKeys
                 + wordleDailyFlagKeys + bibleTriviaProgressKeys
@@ -426,7 +437,9 @@ extension iCloudSyncCoordinator {
 
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.triviaPerBookMapKeys.contains(key)
             || Self.quizPerBookDailyMapKeys.contains(key)
+            || Self.triviaPerBookDailyMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
             || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.verseMatchPerBookMapKeys.contains(key)
@@ -437,10 +450,12 @@ extension iCloudSyncCoordinator {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                 "triviaPerBookAnsweredMap", "triviaPerBookCorrectMap",
                  "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
                  "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
                  "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
                  "quizPerBookDailyAnswered", "quizPerBookDailyCorrect",
+                 "triviaPerBookDailyAnswered", "triviaPerBookDailyCorrect",
                  // per-game daily maps
                  _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays",
@@ -537,7 +552,7 @@ extension iCloudSyncCoordinator {
         }
 
         // Legacy values without timestamps retain their existing merge behavior.
-        if Self.quizPerBookDailyMapKeys.contains(key) {
+        if Self.quizPerBookDailyMapKeys.contains(key) || Self.triviaPerBookDailyMapKeys.contains(key) {
             if let remoteData = kvs.object(forKey: key) as? Data {
                 let local = decode(defaults.data(forKey: key), as: [String: [String: Int]].self) ?? [:]
                 let remote = decode(remoteData, as: [String: [String: Int]].self) ?? [:]
@@ -558,7 +573,9 @@ extension iCloudSyncCoordinator {
 
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.triviaPerBookMapKeys.contains(key)
             || Self.quizPerBookDailyMapKeys.contains(key)
+            || Self.triviaPerBookDailyMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
             || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.verseMatchPerBookMapKeys.contains(key)
@@ -569,6 +586,7 @@ extension iCloudSyncCoordinator {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                 "triviaPerBookAnsweredMap", "triviaPerBookCorrectMap",
                  "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
                  "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
                  "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
@@ -787,12 +805,14 @@ extension iCloudSyncCoordinator {
 
         // 2c) Clear analytics maps locally
         for key in ["quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                    "triviaPerBookAnsweredMap", "triviaPerBookCorrectMap",
                     "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
                     "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
                     "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
                     "wordleDailySolvedDays", "wordleDailyResultMap",
                     "wordleDailyCompletedDay", "wordleDailyTarget",
                     "quizPerBookDailyAnswered", "quizPerBookDailyCorrect",
+                    "triviaPerBookDailyAnswered", "triviaPerBookDailyCorrect",
                     "versematchPerBookDailyAnswered", "versematchPerBookDailyCorrect"] {
             defaults.removeObject(forKey: key)
         }
@@ -853,15 +873,19 @@ extension iCloudSyncCoordinator {
         }
 
         // 2c) Clear Bible Quiz per-book analytics (all-time maps mirrored, daily nested local-only)
-        for key in ["quizPerBookAnsweredMap", "quizPerBookCorrectMap"] {
+        for key in ["quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                    "triviaPerBookAnsweredMap", "triviaPerBookCorrectMap"] {
             defaults.removeObject(forKey: key)
             kvs.removeObject(forKey: key)
         }
         defaults.removeObject(forKey: "quizPerBookDailyAnswered")
         defaults.removeObject(forKey: "quizPerBookDailyCorrect")
+        defaults.removeObject(forKey: "triviaPerBookDailyAnswered")
+        defaults.removeObject(forKey: "triviaPerBookDailyCorrect")
         defaults.removeObject(forKey: "versematchPerBookDailyAnswered")
         defaults.removeObject(forKey: "versematchPerBookDailyCorrect")
-        enqueueKeysForSync(["quizPerBookAnsweredMap", "quizPerBookCorrectMap"])
+        enqueueKeysForSync(["quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                            "triviaPerBookAnsweredMap", "triviaPerBookCorrectMap"])
 
         // 2c.1) Clear Hangman per-category analytics (all-time maps mirrored)
         for key in ["hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap"] {

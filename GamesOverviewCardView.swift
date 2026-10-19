@@ -370,8 +370,10 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    if selectedGame == "Bible Quiz" {
-                        let summary = GameStats.shared.quizOTNTSummary()
+                    if selectedGame == "Bible Quiz" || selectedGame == "Bible Trivia" {
+                        let summary = selectedGame == "Bible Trivia"
+                            ? GameStats.shared.triviaOTNTSummary()
+                            : GameStats.shared.quizOTNTSummary()
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Accuracy by Testament (OT vs NT)")
                                 .font(.subheadline)
@@ -391,8 +393,10 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    if selectedGame == "Bible Quiz" {
-                        let rows = GameStats.shared.quizAccuracyByGenre()
+                    if selectedGame == "Bible Quiz" || selectedGame == "Bible Trivia" {
+                        let rows = selectedGame == "Bible Trivia"
+                            ? GameStats.shared.triviaAccuracyByGenre()
+                            : GameStats.shared.quizAccuracyByGenre()
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Accuracy by Genre")
                                 .font(.subheadline)
@@ -549,7 +553,7 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    if selectedGame == "Bible Quiz" {
+                    if selectedGame == "Bible Quiz" || selectedGame == "Bible Trivia" {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("Top Weak Books")
@@ -578,11 +582,13 @@ struct GamesOverviewCardView: View {
                             }
 
                             let days = (weakBooksScope == 0) ? 30 : 60
-                            let allRows = GameStats.shared.quizWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
+                            let allRows = selectedGame == "Bible Trivia"
+                                ? GameStats.shared.triviaWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
+                                : GameStats.shared.quizWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
                             let rows = Array(allRows.prefix(5))
 
                             if rows.isEmpty {
-                                Text("Not enough recent Bible Quiz activity.")
+                                Text("Not enough recent \(selectedGame) activity.")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             } else {
@@ -644,11 +650,13 @@ struct GamesOverviewCardView: View {
                             }
 
                             let daysStrong = (weakBooksScope == 0) ? 30 : 60
-                            let allStrong = GameStats.shared.quizStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
+                            let allStrong = selectedGame == "Bible Trivia"
+                                ? GameStats.shared.triviaStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
+                                : GameStats.shared.quizStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
                             let strongRows = Array(allStrong.prefix(5))
 
                             if strongRows.isEmpty {
-                                Text("Not enough recent Bible Quiz activity.")
+                                Text("Not enough recent \(selectedGame) activity.")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             } else {
@@ -976,7 +984,9 @@ struct GamesOverviewCardView: View {
                                 .listStyle(.insetGrouped)
                             }
                         } else {
-                            let rows = GameStats.shared.quizAccuracyByBook(inGenre: g)
+                            let rows = selectedGame == "Bible Trivia"
+                                ? GameStats.shared.triviaAccuracyByBook(inGenre: g)
+                                : GameStats.shared.quizAccuracyByBook(inGenre: g)
                             if rows.isEmpty {
                                 ContentUnavailableView("No data for \(g)", systemImage: "book")
                             } else {

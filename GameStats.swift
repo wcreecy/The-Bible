@@ -542,6 +542,44 @@ final class GameStats {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
+    func recordTriviaPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
+        let trimmed = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+
+        var answeredMap: [String: Int] = loadJSONMap(forKey: "triviaPerBookAnsweredMap")
+        if addAnswered != 0 {
+            answeredMap[trimmed, default: 0] = max(0, (answeredMap[trimmed] ?? 0) + max(0, addAnswered))
+            saveJSONMap(answeredMap, forKey: "triviaPerBookAnsweredMap")
+            iCloudSyncCoordinator.shared.pushKey("triviaPerBookAnsweredMap")
+        }
+
+        var correctMap: [String: Int] = loadJSONMap(forKey: "triviaPerBookCorrectMap")
+        if addCorrect != 0 {
+            correctMap[trimmed, default: 0] = max(0, (correctMap[trimmed] ?? 0) + max(0, addCorrect))
+            saveJSONMap(correctMap, forKey: "triviaPerBookCorrectMap")
+            iCloudSyncCoordinator.shared.pushKey("triviaPerBookCorrectMap")
+        }
+
+        let dayKey = Self.localDayKey(for: Date())
+        var dailyAnswered: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyAnswered")
+        var answersToday = dailyAnswered[dayKey] ?? [:]
+        if addAnswered != 0 {
+            answersToday[trimmed, default: 0] = max(0, (answersToday[trimmed] ?? 0) + max(0, addAnswered))
+            dailyAnswered[dayKey] = answersToday
+            saveNestedJSONMap(dailyAnswered, forKey: "triviaPerBookDailyAnswered")
+        }
+
+        var dailyCorrect: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyCorrect")
+        var correctToday = dailyCorrect[dayKey] ?? [:]
+        if addCorrect != 0 {
+            correctToday[trimmed, default: 0] = max(0, (correctToday[trimmed] ?? 0) + max(0, addCorrect))
+            dailyCorrect[dayKey] = correctToday
+            saveNestedJSONMap(dailyCorrect, forKey: "triviaPerBookDailyCorrect")
+        }
+
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     // UPDATED: Verse Match per-book maps writer — now writes all-time + daily nested maps
     func recordVerseMatchPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
         let trimmed = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1485,6 +1523,18 @@ final class GameStats {
         return (a, c)
     }
 
+    private func loadTriviaPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
+        let a: [String: Int] = loadJSONMap(forKey: "triviaPerBookAnsweredMap")
+        let c: [String: Int] = loadJSONMap(forKey: "triviaPerBookCorrectMap")
+        return (a, c)
+    }
+
+    private func loadTriviaPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
+        let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyAnswered")
+        let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyCorrect")
+        return (a, c)
+    }
+
     private func isOT(bookName: String) -> Bool? {
         let books = BibleData.books
         let indexMap = Dictionary(uniqueKeysWithValues: books.enumerated().map { ($1.name, $0) })
@@ -1492,6 +1542,107 @@ final class GameStats {
             return nil
         }
         return idx < mattIdx
+    }
+
+    private func perBookTestamentSummary(
+        answeredMap: [String: Int],
+        correctMap: [String: Int]
+    ) -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
+        var otA = 0, otC = 0, ntA = 0, ntC = 0
+        for book in Set(answeredMap.keys).union(correctMap.keys) {
+            let answered = max(0, answeredMap[book] ?? 0)
+            let correct = max(0, correctMap[book] ?? 0)
+            if isOT(bookName: book) == true {
+                otA += answered; otC += correct
+            } else if isOT(bookName: book) == false {
+                ntA += answered; ntC += correct
+            }
+        }
+        let otPct = otA > 0 ? (Double(otC) / Double(otA)) * 100 : 0
+        let ntPct = ntA > 0 ? (Double(ntC) / Double(ntA)) * 100 : 0
+        return (otA, otC, ntA, ntC, otPct, ntPct)
+    }
+
+    private func perBookGenreAccuracy(
+        answeredMap: [String: Int],
+        correctMap: [String: Int]
+    ) -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
+        var buckets: [StatsSeriesBuilder.Genre: (answered: Int, correct: Int)] = [:]
+        for book in Set(answeredMap.keys).union(correctMap.keys) {
+            let answered = max(0, answeredMap[book] ?? 0)
+            guard answered > 0, BibleData.books.contains(where: { $0.name == book }) else { continue }
+            var bucket = buckets[StatsSeriesBuilder.genreForBook(book)] ?? (0, 0)
+            bucket.answered += answered
+            bucket.correct += max(0, correctMap[book] ?? 0)
+            buckets[StatsSeriesBuilder.genreForBook(book)] = bucket
+        }
+        let order: [StatsSeriesBuilder.Genre] = [.Law, .History, .Poetry, .MajorProphets, .MinorProphets, .Gospels, .Acts, .Epistles, .Apocalypse]
+        return order.map { genre in
+            let values = buckets[genre] ?? (0, 0)
+            let pct = values.answered > 0 ? (Double(values.correct) / Double(values.answered)) * 100 : 0
+            return (genre.rawValue, values.answered, values.correct, pct)
+        }
+    }
+
+    private func rankedPerBookRows(
+        dailyAnswered: [String: [String: Int]],
+        dailyCorrect: [String: [String: Int]],
+        lastNDays: Int,
+        minAttempts: Int,
+        strongestFirst: Bool
+    ) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        var calendar = Calendar.autoupdatingCurrent
+        calendar.timeZone = .autoupdatingCurrent
+        let start = calendar.startOfDay(for: Date())
+        var answered: [String: Int] = [:]
+        var correct: [String: Int] = [:]
+        for dayOffset in stride(from: lastNDays - 1, through: 0, by: -1) {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: start) else { continue }
+            let key = Self.localDayKey(for: date, calendar: calendar)
+            dailyAnswered[key]?.forEach { answered[$0.key, default: 0] += max(0, $0.value) }
+            dailyCorrect[key]?.forEach { correct[$0.key, default: 0] += max(0, $0.value) }
+        }
+        return Set(answered.keys).union(correct.keys).compactMap { book in
+            let count = max(0, answered[book] ?? 0)
+            guard count >= minAttempts else { return nil }
+            let correctCount = max(0, correct[book] ?? 0)
+            return (book, count, correctCount, (Double(correctCount) / Double(count)) * 100)
+        }
+        .sorted {
+            if $0.pct == $1.pct { return $0.book < $1.book }
+            return strongestFirst ? $0.pct > $1.pct : $0.pct < $1.pct
+        }
+    }
+
+    func triviaOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
+        let maps = loadTriviaPerBookMaps()
+        return perBookTestamentSummary(answeredMap: maps.answered, correctMap: maps.correct)
+    }
+
+    func triviaAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
+        let maps = loadTriviaPerBookMaps()
+        return perBookGenreAccuracy(answeredMap: maps.answered, correctMap: maps.correct)
+    }
+
+    func triviaWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let maps = loadTriviaPerBookDailyMaps()
+        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: false)
+    }
+
+    func triviaStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let maps = loadTriviaPerBookDailyMaps()
+        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: true)
+    }
+
+    func triviaAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let maps = loadTriviaPerBookMaps()
+        return BibleData.books.compactMap { book in
+            guard StatsSeriesBuilder.genreForBook(book.name).rawValue == genreName else { return nil }
+            let answered = max(0, maps.answered[book.name] ?? 0)
+            let correct = max(0, maps.correct[book.name] ?? 0)
+            let pct = answered > 0 ? (Double(correct) / Double(answered)) * 100 : 0
+            return (book.name, answered, correct, pct)
+        }
     }
 
     func quizOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
@@ -1973,12 +2124,16 @@ final class GameStats {
     }
 
     func accuracyByDifficulty() -> [(difficulty: String, answered: Int, correct: Int, pct: Double)] {
-        ["easy", "normal", "hard"].map { difficulty in
+        [
+            (key: "easy", title: String(localized: "Learn")),
+            (key: "normal", title: String(localized: "Standard")),
+            (key: "hard", title: String(localized: "Challenge"))
+        ].map { difficulty in
             let prefixes = ["quiz", "hangman", "versematch", "beatclock", "bookorder", "whoami"]
-            let answered = prefixes.reduce(0) { $0 + max(0, readInt("\($1)AllTimeAnswered_\(difficulty)")) }
-            let correct = prefixes.reduce(0) { $0 + max(0, readInt("\($1)AllTimeCorrect_\(difficulty)")) }
+            let answered = prefixes.reduce(0) { $0 + max(0, readInt("\($1)AllTimeAnswered_\(difficulty.key)")) }
+            let correct = prefixes.reduce(0) { $0 + max(0, readInt("\($1)AllTimeCorrect_\(difficulty.key)")) }
             let pct = answered > 0 ? Double(correct) / Double(answered) * 100 : 0
-            return (difficulty.capitalized, answered, correct, pct)
+            return (difficulty.title, answered, correct, pct)
         }
     }
 }

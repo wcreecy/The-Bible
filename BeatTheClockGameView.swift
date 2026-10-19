@@ -1055,8 +1055,8 @@ private struct BeatTheClockSubjectOption: View {
 
     private var detail: LocalizedStringKey {
         switch category {
-        case .people: "Questions about Bible people."
-        case .places: "Questions about Bible places."
+        case .people: "Questions about people in the Bible."
+        case .places: "Questions about Biblical places."
         case .both: "A mixed round of people and places."
         }
     }

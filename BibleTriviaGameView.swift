@@ -147,6 +147,7 @@ final class BibleTriviaGameModel {
     }
 
     private static let questionsPerRound = 10
+    private static let bestScoreKeyPrefix = "bibleTriviaBestScore"
 
     private struct RoundQuestion: Identifiable {
         let question: BibleTriviaQuestion
@@ -166,6 +167,7 @@ final class BibleTriviaGameModel {
     private var furthestPresentedIndex = 0
     private(set) var score = 0
     private(set) var answered = 0
+    private(set) var bestScore = 0
     private(set) var remainingSeconds = 0
     @ObservationIgnored private var timerTask: Task<Void, Never>?
 
@@ -257,15 +259,7 @@ final class BibleTriviaGameModel {
             return
         }
 
-        var progress = progressStore.progress(for: difficulty)
-        let remainingPool = eligible.filter { !progress.completedQuestionIDs.contains($0.id) }
-        if remainingPool.isEmpty {
-            progressStore.resetCompletedPool(for: difficulty)
-            progress = progressStore.progress(for: difficulty)
-        }
-
-        let available = eligible.filter { !progress.completedQuestionIDs.contains($0.id) }
-        round = Array(available.shuffled().prefix(Self.questionsPerRound)).map(makeRoundQuestion)
+        round = Array(eligible.shuffled().prefix(Self.questionsPerRound)).map(makeRoundQuestion)
         guard round.count == Self.questionsPerRound else {
             phase = .unavailable
             return
@@ -275,6 +269,7 @@ final class BibleTriviaGameModel {
         furthestPresentedIndex = 0
         score = 0
         answered = 0
+        bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
         phase = .playing
         prepareCurrentQuestion()
     }
@@ -289,6 +284,7 @@ final class BibleTriviaGameModel {
         if isViewingPrevious {
             currentIndex += 1
         } else if isLastQuestion {
+            savePersonalBest()
             phase = .results
         } else {
             currentIndex += 1
@@ -347,6 +343,13 @@ final class BibleTriviaGameModel {
             answered: 1,
             currentBestStreak: 0
         )
+        if let bookName = BibleReferenceLinker.parse(question.reference)?.bookName {
+            GameStats.shared.recordTriviaPerBook(
+                bookName: bookName,
+                answered: 1,
+                correct: isCorrect ? 1 : 0
+            )
+        }
     }
 
     private func makeRoundQuestion(_ question: BibleTriviaQuestion) -> RoundQuestion {
@@ -355,6 +358,17 @@ final class BibleTriviaGameModel {
             question: question,
             options: (Array(distractors.shuffled().prefix(3)) + [question.correctAnswer]).shuffled()
         )
+    }
+
+    private var bestScoreKey: String {
+        "\(Self.bestScoreKeyPrefix).\(difficulty.rawValue)"
+    }
+
+    private func savePersonalBest() {
+        guard score > bestScore else { return }
+        bestScore = score
+        UserDefaults.standard.set(score, forKey: bestScoreKey)
+        iCloudSyncCoordinator.shared.pushKey(bestScoreKey)
     }
 }
 
@@ -371,7 +385,6 @@ struct BibleTriviaGameView: View {
                     difficulty: $model.difficulty,
                     questionsPerRound: 10,
                     eligibleQuestionCount: model.eligibleQuestions.count,
-                    progressStore: model.progressStore,
                     onStart: model.startRound
                 )
             case .playing:
@@ -402,9 +415,7 @@ struct BibleTriviaGameView: View {
                     questionCount: model.roundCount,
                     accuracy: model.accuracy,
                     difficulty: model.difficulty,
-                    completedInPool: model.completedInPool,
-                    totalInPool: model.eligibleQuestions.count,
-                    progressStore: model.progressStore,
+                    bestScore: model.bestScore,
                     onPlayAgain: model.startRound,
                     onBackToSetup: model.returnToSetup
                 )
@@ -435,7 +446,6 @@ private struct BibleTriviaSetupScreen: View {
     @Binding var difficulty: BibleTriviaDifficulty
     let questionsPerRound: Int
     let eligibleQuestionCount: Int
-    let progressStore: BibleTriviaProgressStore
     let onStart: () -> Void
 
     private var experienceLevel: Binding<GameExperienceLevel> {
@@ -458,100 +468,41 @@ private struct BibleTriviaSetupScreen: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
-            Spacer(minLength: 24)
+        ScrollView {
+            VStack(spacing: 16) {
+                Spacer(minLength: 24)
 
-            Text("Answer Bible knowledge questions with Scripture support after every answer.")
-                .gameStartDescriptionStyle(
-                    title: "Bible Trivia",
-                    systemImage: "questionmark.text.page.fill",
-                    tint: .cyan
-                )
+                Text("Answer Bible knowledge questions with Scripture support after every answer.")
+                    .gameStartDescriptionStyle(
+                        title: "Bible Trivia",
+                        systemImage: "questionmark.text.page.fill",
+                        tint: .cyan
+                    )
 
-            GameSplashLaunchLayout(
-                tint: .cyan,
-                experienceLevel: experienceLevel,
-                experienceDetails: GameExperienceDetails(
-                    learn: "Easy questions with 30 seconds for each answer.",
-                    standard: "Easy and normal questions with 15 seconds each.",
-                    challenge: "All questions with 10 seconds for each answer."
-                ),
-                startAction: onStart
-            ) {
-                GameLobbyPreview(kind: .trivia)
-            } configuration: {
-                BibleTriviaProgressCard(
-                    progressStore: progressStore,
-                    selectedDifficulty: difficulty
-                )
-                .padding(.horizontal)
-            } facts: {
-                GameSplashFacts(
-                    first: ("number", "\(questionsPerRound)", "Questions"),
-                    second: ("timer", "\(difficulty.timerSeconds) sec", "Per question"),
-                    third: ("square.stack.3d.up", "\(eligibleQuestionCount)", "Question pool")
-                )
-            }
-
-            Spacer(minLength: 24)
-        }
-        .gameStartScreenStyle()
-    }
-}
-
-private struct BibleTriviaProgressCard: View {
-    let progressStore: BibleTriviaProgressStore
-    let selectedDifficulty: BibleTriviaDifficulty
-
-    private let poolSizes: [BibleTriviaDifficulty: Int] = [
-        .easy: 300,
-        .normal: 1_050,
-        .hard: 1_500
-    ]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Progress by Difficulty", systemImage: "chart.bar.fill")
-                .font(.headline)
-                .foregroundStyle(.cyan)
-
-            ForEach(BibleTriviaDifficulty.allCases) { difficulty in
-                let progress = progressStore.progress(for: difficulty)
-                let stats = GameStats.shared.triviaCounts(difficulty: difficulty.statsDifficulty)
-                let poolSize = poolSizes[difficulty, default: 0]
-                let accuracy = stats.answered > 0
-                    ? Int((Double(stats.correct) / Double(stats.answered) * 100).rounded())
-                    : 0
-
-                HStack(spacing: 12) {
-                    Image(systemName: difficulty == selectedDifficulty ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(difficulty == selectedDifficulty ? .cyan : .secondary)
-
-                    Text(difficulty.title)
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    Text("\(stats.answered) answered")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    Text("\(accuracy)%")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.cyan)
+                GameSplashLaunchLayout(
+                    tint: .cyan,
+                    experienceLevel: experienceLevel,
+                    experienceDetails: GameExperienceDetails(
+                        learn: "Easy questions with 30 seconds for each answer.",
+                        standard: "Easy and normal questions with 15 seconds each.",
+                        challenge: "All questions with 10 seconds for each answer."
+                    ),
+                    startAction: onStart
+                ) {
+                    GameLobbyPreview(kind: .trivia)
+                } configuration: {
+                    EmptyView()
+                } facts: {
+                    GameSplashFacts(
+                        first: ("number", "\(questionsPerRound)", "Questions"),
+                        second: ("timer", "\(difficulty.timerSeconds) sec", "Per question"),
+                        third: ("square.stack.3d.up", "\(eligibleQuestionCount)", "Question pool")
+                    )
                 }
 
-                ProgressView(value: Double(progress.completedQuestionIDs.count), total: Double(poolSize))
-                    .tint(.cyan)
-                    .accessibilityLabel("\(difficulty.title) pool progress")
-                    .accessibilityValue("\(progress.completedQuestionIDs.count) of \(poolSize) completed")
+                Spacer(minLength: 24)
             }
-        }
-        .padding(16)
-        .frame(maxWidth: 620, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+            .gameStartScreenStyle()
         }
     }
 }
@@ -579,6 +530,7 @@ private struct BibleTriviaPlayScreen: View {
 
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
+    @State private var selectedScriptureReference: ScriptureRef?
 
     private var timerTint: Color {
         let fraction = Double(remainingSeconds) / Double(max(1, timerSeconds))
@@ -617,8 +569,9 @@ private struct BibleTriviaPlayScreen: View {
                                 isAnswered: isAnswered,
                                 isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
-                                revealedQuestion: isAnswered ? question : nil,
-                                timedOut: timedOut,
+                                onPreviewReference: BibleReferenceLinker.parse(question.reference).map { reference in
+                                    { selectedScriptureReference = reference }
+                                },
                                 canGoPrevious: canGoPrevious,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
@@ -641,8 +594,9 @@ private struct BibleTriviaPlayScreen: View {
                                 isAnswered: isAnswered,
                                 isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
-                                revealedQuestion: isAnswered ? question : nil,
-                                timedOut: timedOut,
+                                onPreviewReference: BibleReferenceLinker.parse(question.reference).map { reference in
+                                    { selectedScriptureReference = reference }
+                                },
                                 canGoPrevious: canGoPrevious,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
@@ -684,6 +638,11 @@ private struct BibleTriviaPlayScreen: View {
             }
         }
         .background(AppBackgroundView(tab: .games))
+        .sheet(item: $selectedScriptureReference) { reference in
+            ScriptureReferencePreview(reference: reference)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
     }
 }
 
@@ -701,8 +660,7 @@ private struct BibleTriviaCompactBoard: View {
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
-    let revealedQuestion: BibleTriviaQuestion?
-    let timedOut: Bool
+    let onPreviewReference: (() -> Void)?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
@@ -724,18 +682,16 @@ private struct BibleTriviaCompactBoard: View {
                 questionNumber: questionNumber,
                 questionCount: questionCount,
                 options: options,
+                remainingSeconds: isAnswered ? nil : remainingSeconds,
+                timerTint: timerTint,
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
-                onChoose: onChoose
+                onChoose: onChoose,
+                onPreviewReference: onPreviewReference
             )
 
-            if !isAnswered {
-                GameTimerCard(remainingSeconds: remainingSeconds, tint: timerTint, isPulsing: false)
-            }
-
-            if let revealedQuestion {
-                BibleTriviaRevealCard(question: revealedQuestion, timedOut: timedOut)
+            if isAnswered {
                 BibleTriviaNavigationButtons(
                     canGoPrevious: canGoPrevious,
                     canGoNext: canGoNext,
@@ -762,8 +718,7 @@ private struct BibleTriviaDashboard: View {
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
-    let revealedQuestion: BibleTriviaQuestion?
-    let timedOut: Bool
+    let onPreviewReference: (() -> Void)?
     let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
@@ -786,14 +741,16 @@ private struct BibleTriviaDashboard: View {
                 questionNumber: questionNumber,
                 questionCount: questionCount,
                 options: options,
+                remainingSeconds: nil,
+                timerTint: .cyan,
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
-                onChoose: onChoose
+                onChoose: onChoose,
+                onPreviewReference: onPreviewReference
             )
 
-            if let revealedQuestion {
-                BibleTriviaRevealCard(question: revealedQuestion, timedOut: timedOut)
+            if isAnswered {
                 BibleTriviaNavigationButtons(
                     canGoPrevious: canGoPrevious,
                     canGoNext: canGoNext,
@@ -816,10 +773,13 @@ private struct BibleTriviaQuestionBoard: View {
     let questionNumber: Int
     let questionCount: Int
     let options: [String]
+    let remainingSeconds: Int?
+    let timerTint: Color
     let selectedAnswer: String?
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
+    let onPreviewReference: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -847,13 +807,18 @@ private struct BibleTriviaQuestionBoard: View {
             .padding(20)
             .background(.cyan.opacity(0.08), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
 
+            if let remainingSeconds, !isAnswered {
+                GameTimerCard(remainingSeconds: remainingSeconds, tint: timerTint, isPulsing: false)
+            }
+
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 ForEach(options, id: \.self) { option in
                     BibleTriviaAnswerOption(
                         title: option,
                         isCorrect: isAnswered && option == correctAnswer,
                         isIncorrectSelection: isAnswered && option == selectedAnswer && option != correctAnswer,
-                        isDisabled: isAnswered || isViewingPrevious
+                        isDisabled: isAnswered || isViewingPrevious,
+                        onPreviewReference: option == correctAnswer ? onPreviewReference : nil
                     ) {
                         onChoose(option)
                     }
@@ -869,6 +834,7 @@ private struct BibleTriviaAnswerOption: View {
     let isCorrect: Bool
     let isIncorrectSelection: Bool
     let isDisabled: Bool
+    let onPreviewReference: (() -> Void)?
     let action: () -> Void
 
     private var glass: Glass {
@@ -883,8 +849,18 @@ private struct BibleTriviaAnswerOption: View {
         return "circle"
     }
 
+    private var opensReferencePreview: Bool {
+        isCorrect && onPreviewReference != nil
+    }
+
     var body: some View {
-        Button(action: action) {
+        Button {
+            if let onPreviewReference, isCorrect {
+                onPreviewReference()
+            } else {
+                action()
+            }
+        } label: {
             HStack(spacing: 8) {
                 Image(systemName: icon)
                 Text(title)
@@ -894,7 +870,8 @@ private struct BibleTriviaAnswerOption: View {
             .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
         }
         .buttonStyle(.glass(glass))
-        .disabled(isDisabled)
+        .disabled(isDisabled && !opensReferencePreview)
+        .accessibilityHint(opensReferencePreview ? "Opens the supporting Scripture passage." : "")
     }
 }
 
@@ -1032,48 +1009,12 @@ private struct BibleTriviaLargeTimerView: View {
     }
 }
 
-private struct BibleTriviaRevealCard: View {
-    let question: BibleTriviaQuestion
-    let timedOut: Bool
-    @State private var showsExplanation = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(
-                timedOut ? "Time’s up" : "Answer revealed",
-                systemImage: timedOut ? "timer" : "checkmark.seal.fill"
-            )
-            .font(.headline)
-            .foregroundStyle(timedOut ? .orange : .green)
-
-            Text(question.correctAnswer)
-                .font(.title3.weight(.bold))
-
-            Label(question.reference, systemImage: "book.closed.fill")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.cyan)
-
-            DisclosureGroup("Why this is correct", isExpanded: $showsExplanation) {
-                Text("\(question.reference) supports “\(question.correctAnswer).”")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 6)
-            }
-
-        }
-        .padding(16)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-}
-
 private struct BibleTriviaResultsScreen: View {
     let score: Int
     let questionCount: Int
     let accuracy: Int
     let difficulty: BibleTriviaDifficulty
-    let completedInPool: Int
-    let totalInPool: Int
-    let progressStore: BibleTriviaProgressStore
+    let bestScore: Int
     let onPlayAgain: () -> Void
     let onBackToSetup: () -> Void
 
@@ -1092,18 +1033,10 @@ private struct BibleTriviaResultsScreen: View {
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(.secondary)
 
-            VStack(spacing: 10) {
-                Label("\(completedInPool) of \(totalInPool) questions completed in this pool", systemImage: "chart.bar.fill")
-                ProgressView(value: Double(completedInPool), total: Double(totalInPool))
-                    .tint(.cyan)
-            }
-            .padding(16)
-            .frame(maxWidth: 520)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-
-            BibleTriviaProgressCard(
-                progressStore: progressStore,
-                selectedDifficulty: difficulty
+            BibleTriviaPersonalBestCard(
+                score: bestScore,
+                questionCount: questionCount,
+                difficulty: difficulty
             )
 
             HStack {
@@ -1119,6 +1052,30 @@ private struct BibleTriviaResultsScreen: View {
         }
         .padding()
         .tabBarContentClearance()
+    }
+}
+
+private struct BibleTriviaPersonalBestCard: View {
+    let score: Int
+    let questionCount: Int
+    let difficulty: BibleTriviaDifficulty
+
+    private var accuracy: Int {
+        guard questionCount > 0 else { return 0 }
+        return Int((Double(score) / Double(questionCount) * 100).rounded())
+    }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Label("Personal Best · \(Text(difficulty.title))", systemImage: "trophy.fill")
+                .font(.headline)
+                .foregroundStyle(.cyan)
+            Text("\(score) of \(questionCount) correct · \(accuracy)% accuracy")
+                .font(.title3.weight(.semibold))
+        }
+        .padding(16)
+        .frame(maxWidth: 520)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
 

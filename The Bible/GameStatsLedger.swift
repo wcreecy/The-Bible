@@ -79,6 +79,7 @@ final class GameStatsLedger {
             ["gamesDailyAnswered", "gamesDailyCorrect"]
                 + iCloudSyncCoordinator.perGameDailyMapKeys
                 + iCloudSyncCoordinator.quizPerBookMapKeys
+                + iCloudSyncCoordinator.triviaPerBookMapKeys
                 + iCloudSyncCoordinator.verseMatchPerBookMapKeys
                 + iCloudSyncCoordinator.hangmanPerCategoryMapKeys
                 + iCloudSyncCoordinator.beatClockPerTypeMapKeys
@@ -93,7 +94,11 @@ final class GameStatsLedger {
 
     /// `[String: [String: Int]]` maps summed per inner entry.
     static var nestedMapKeys: Set<String> {
-        Set(iCloudSyncCoordinator.quizPerBookDailyMapKeys + iCloudSyncCoordinator.verseMatchPerBookDailyMapKeys)
+        Set(
+            iCloudSyncCoordinator.quizPerBookDailyMapKeys
+                + iCloudSyncCoordinator.triviaPerBookDailyMapKeys
+                + iCloudSyncCoordinator.verseMatchPerBookDailyMapKeys
+        )
     }
 
     /// Maps keyed by `yyyy-MM-dd` day (outer key for nested maps). Days older than the

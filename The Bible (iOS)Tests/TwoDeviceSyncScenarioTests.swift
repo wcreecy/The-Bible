@@ -53,6 +53,52 @@ struct TwoDeviceSyncScenarioTests {
     }
 
     @Test
+    func concurrentTriviaBookStatsFromTwoDevicesAreAddedExactlyOnce() {
+        let day = "2026-10-18"
+        let phone = GameStatsLedger.Payload(
+            epoch: gameEpoch,
+            baseline: .init(),
+            contributions: .init(
+                maps: [
+                    "triviaPerBookAnsweredMap": ["John": 2],
+                    "triviaPerBookCorrectMap": ["John": 1]
+                ],
+                nestedMaps: [
+                    "triviaPerBookDailyAnswered": [day: ["John": 2]],
+                    "triviaPerBookDailyCorrect": [day: ["John": 1]]
+                ]
+            )
+        )
+        let tablet = GameStatsLedger.Payload(
+            epoch: gameEpoch,
+            baseline: .init(),
+            contributions: .init(
+                maps: [
+                    "triviaPerBookAnsweredMap": ["John": 3],
+                    "triviaPerBookCorrectMap": ["John": 3]
+                ],
+                nestedMaps: [
+                    "triviaPerBookDailyAnswered": [day: ["John": 3]],
+                    "triviaPerBookDailyCorrect": [day: ["John": 3]]
+                ]
+            )
+        )
+
+        let totals = GameStatsLedger.mergedTotals(
+            payloads: [phone, tablet],
+            epoch: gameEpoch,
+            cutoff: cutoff
+        )
+
+        #expect(GameStatsLedger.sumMapKeys.contains("triviaPerBookAnsweredMap"))
+        #expect(GameStatsLedger.nestedMapKeys.contains("triviaPerBookDailyAnswered"))
+        #expect(totals.maps["triviaPerBookAnsweredMap"]?["John"] == 5)
+        #expect(totals.maps["triviaPerBookCorrectMap"]?["John"] == 4)
+        #expect(totals.nestedMaps["triviaPerBookDailyAnswered"]?[day]?["John"] == 5)
+        #expect(totals.nestedMaps["triviaPerBookDailyCorrect"]?[day]?["John"] == 4)
+    }
+
+    @Test
     func resetEpochExcludesStaleGamePayloadsFromAnOfflineDevice() {
         let preResetOfflinePhone = gamePayload(epoch: gameEpoch - 1, answered: 100, correct: 90)
         let postResetTablet = gamePayload(epoch: gameEpoch, answered: 2, correct: 2)
