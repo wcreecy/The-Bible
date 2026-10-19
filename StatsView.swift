@@ -340,8 +340,35 @@ struct StatsView: View {
         !dynamicTypeSize.isAccessibilitySize && (hSizeClass == .regular || vSizeClass == .compact)
     }
 
+    private var topBookThisWeek: String? {
+        guard let topBook = model.perBookLast7Totals.max(by: { lhs, rhs in
+            if lhs.value == rhs.value { return lhs.key > rhs.key }
+            return lhs.value < rhs.value
+        }), topBook.value > 0 else {
+            return nil
+        }
+
+        return topBook.key
+    }
+
+    private var activeReadingDaysThisWeek: Int {
+        model.last7Daily.reduce(into: 0) { count, day in
+            if day.seconds > 0 {
+                count += 1
+            }
+        }
+    }
+
     private var bibleContent: some View {
         VStack(spacing: 16) {
+            WeeklyReadingSummaryCard(
+                thisWeekSeconds: model.thisWeekSeconds,
+                lastWeekSeconds: model.lastWeekSeconds,
+                activeDays: activeReadingDaysThisWeek,
+                topBook: topBookThisWeek,
+                formatSeconds: { BibleStatsStore.shared.format($0) }
+            )
+
             ReadingAndGamesComparisonCard()
 
             ReadingStatsSections(
@@ -360,7 +387,10 @@ struct StatsView: View {
     }
 
     private var gameContent: some View {
-        GameStatsSections(usesWideLayout: usesWideStatsLayout)
+        VStack(spacing: 16) {
+            GameWeekSummaryCardView()
+            GameStatsSections(usesWideLayout: usesWideStatsLayout)
+        }
     }
 
     // Extracted card views for reuse in both layouts

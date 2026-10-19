@@ -105,6 +105,8 @@
 		2C514D0C3075AB4F000CFC0D /* TodayChallengeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C514D0A3075AB4F000CFC0D /* TodayChallengeStore.swift */; };
 		2C514D0E3075CFBE000CFC0D /* ReadingHistoryCalendarCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C514D0D3075CFBE000CFC0D /* ReadingHistoryCalendarCard.swift */; };
 		2C556D422EF3620E0044426E /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C556D412EF3620E0044426E /* AppTab.swift */; };
+		2C6A63DF3086B8D70052CC23 /* WeeklyReadingSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A63DE3086B8D70052CC23 /* WeeklyReadingSummaryCard.swift */; };
+		2C6A63E13086D0F80052CC23 /* GameWeekSummaryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A63E03086D0F80052CC23 /* GameWeekSummaryCardView.swift */; };
 		2C6BB64B2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB64A2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift */; };
 		2C6BB64D2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB64C2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift */; };
 		2C6BB64F2EF1FF340010D769 /* BibleStatsStore+PerBookTotals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB64E2EF1FF340010D769 /* BibleStatsStore+PerBookTotals.swift */; };
@@ -292,6 +294,8 @@
 		2C514D0A3075AB4F000CFC0D /* TodayChallengeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayChallengeStore.swift; sourceTree = "<group>"; };
 		2C514D0D3075CFBE000CFC0D /* ReadingHistoryCalendarCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingHistoryCalendarCard.swift; sourceTree = "<group>"; };
 		2C556D412EF3620E0044426E /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
+		2C6A63DE3086B8D70052CC23 /* WeeklyReadingSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyReadingSummaryCard.swift; sourceTree = "<group>"; };
+		2C6A63E03086D0F80052CC23 /* GameWeekSummaryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWeekSummaryCardView.swift; sourceTree = "<group>"; };
 		2C6BB64A2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+Totals.swift"; sourceTree = "<group>"; };
 		2C6BB64C2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+DailyTotals.swift"; sourceTree = "<group>"; };
 		2C6BB64E2EF1FF340010D769 /* BibleStatsStore+PerBookTotals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+PerBookTotals.swift"; sourceTree = "<group>"; };
@@ -614,6 +618,8 @@
 				2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */,
 				2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */,
 				2C02723B3086B2B800EDFEE5 /* HomeLayoutPreset.swift */,
+				2C6A63DE3086B8D70052CC23 /* WeeklyReadingSummaryCard.swift */,
+				2C6A63E03086D0F80052CC23 /* GameWeekSummaryCardView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -819,6 +825,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C6A63DF3086B8D70052CC23 /* WeeklyReadingSummaryCard.swift in Sources */,
 				2CC853AF2EF05DDB00753104 /* ScriptureRefExtractor.swift in Sources */,
 				2C49CF482EBE100D0006FF79 /* Note.swift in Sources */,
 				2C3395312EEDCB4300E8CA41 /* BookChaptersDetailView.swift in Sources */,
@@ -853,6 +860,7 @@
 				2C2765762EE8E30D00A321FE /* FocusViewModel.swift in Sources */,
 				2C3F38102EC4042D002CA795 /* Styles.swift in Sources */,
 				2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */,
+				2C6A63E13086D0F80052CC23 /* GameWeekSummaryCardView.swift in Sources */,
 				2CD9C7A3306AEF6E0077D777 /* SettingsPermissionsSection.swift in Sources */,
 				2C1400FC2EF2BFA200A93CA9 /* StatsViewModel.swift in Sources */,
 				2C8E13F830725E0600A43970 /* SettingsLaunchTabSection.swift in Sources */,
