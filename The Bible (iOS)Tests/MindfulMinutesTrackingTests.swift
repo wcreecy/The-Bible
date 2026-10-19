@@ -23,20 +23,20 @@ struct MindfulMinutesTrackingTests {
     }
 
     @Test
-    func singleSourceClosesItsMindfulSessionWhenActivityEnds() throws {
+    func singleSourceClosesItsMindfulSessionWhenActivityEnds() {
         var coordinator = MindfulMinutesSessionCoordinator()
         let start = Date(timeIntervalSince1970: 1_000)
         let end = start.addingTimeInterval(90)
 
         coordinator.start(.bibleTab, at: start)
-        let session = try #require(coordinator.stop(.bibleTab, at: end))
+        let session = coordinator.stop(.bibleTab, at: end)
 
-        #expect(session.start == start)
-        #expect(session.end == end)
+        #expect(session?.start == start)
+        #expect(session?.end == end)
     }
 
     @Test
-    func overlappingSourcesProduceOneCombinedSession() throws {
+    func overlappingSourcesProduceOneCombinedSession() {
         var coordinator = MindfulMinutesSessionCoordinator()
         let start = Date(timeIntervalSince1970: 2_000)
         let gameStart = start.addingTimeInterval(15)
@@ -47,14 +47,14 @@ struct MindfulMinutesTrackingTests {
         coordinator.start(.game, at: gameStart)
 
         #expect(coordinator.stop(.bibleTab, at: bibleEnd) == nil)
-        let session = try #require(coordinator.stop(.game, at: gameEnd))
+        let session = coordinator.stop(.game, at: gameEnd)
 
-        #expect(session.start == start)
-        #expect(session.end == gameEnd)
+        #expect(session?.start == start)
+        #expect(session?.end == gameEnd)
     }
 
     @Test
-    func repeatedSourceStartDoesNotRestartTheSession() throws {
+    func repeatedSourceStartDoesNotRestartTheSession() {
         var coordinator = MindfulMinutesSessionCoordinator()
         let start = Date(timeIntervalSince1970: 3_000)
         let repeatedStart = start.addingTimeInterval(30)
@@ -62,9 +62,9 @@ struct MindfulMinutesTrackingTests {
 
         coordinator.start(.prayerTimer, at: start)
         coordinator.start(.prayerTimer, at: repeatedStart)
-        let session = try #require(coordinator.stop(.prayerTimer, at: end))
+        let session = coordinator.stop(.prayerTimer, at: end)
 
-        #expect(session.start == start)
-        #expect(session.end == end)
+        #expect(session?.start == start)
+        #expect(session?.end == end)
     }
 }

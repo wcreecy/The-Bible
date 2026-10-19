@@ -138,6 +138,7 @@ struct ContentView: View {
         }
         .onChange(of: gamesPath) { _, _ in
             updateGameTimeTracking()
+            updateMindfulMinutesTracking()
         }
         // CloudKit imports can deliver a favorite or note for a verse that already has
         // one from this device; resolve those duplicates after each import settles.
@@ -201,6 +202,7 @@ struct ContentView: View {
 
         UserDefaults.standard.removeObject(forKey: "lastBackgroundedAt")
         updateGameTimeTracking()
+        updateMindfulMinutesTracking()
 
         // Initialize previousTab at launch
         previousTab = selectedTab
@@ -260,6 +262,7 @@ struct ContentView: View {
 
     private func handleSelectedTabChange(from oldValue: AppTab, to newValue: AppTab) {
         updateGameTimeTracking()
+        updateMindfulMinutesTracking()
 
         // Leaving Games ends any active round and returns its navigation stack to the game list.
         if oldValue == .games && newValue != .games {
@@ -355,10 +358,13 @@ struct ContentView: View {
 
             SwiftDataDeduplicator.run(in: modelContext)
             updateGameTimeTracking()
+            updateMindfulMinutesTracking()
         case .inactive:
             updateGameTimeTracking()
+            updateMindfulMinutesTracking()
         case .background:
             updateGameTimeTracking()
+            updateMindfulMinutesTracking()
             ReadingPositionStore.shared.flush()
             // Backgrounding ends an active game round so returning to Games shows its selection screen.
             returnToGameSelection()
@@ -467,6 +473,25 @@ struct ContentView: View {
 
     private var isPlayingGame: Bool {
         scenePhase == .active && selectedTab == .games && !gamesPath.isEmpty
+    }
+
+    private var isOnBibleTab: Bool {
+        scenePhase == .active && selectedTab == .bible
+    }
+
+    /// Keeps Health mindful-session tracking in sync with foreground Bible and game activity.
+    private func updateMindfulMinutesTracking() {
+        if isOnBibleTab {
+            MindfulMinutesTracker.shared.start(.bibleTab)
+        } else {
+            MindfulMinutesTracker.shared.stop(.bibleTab)
+        }
+
+        if isPlayingGame {
+            MindfulMinutesTracker.shared.start(.game)
+        } else {
+            MindfulMinutesTracker.shared.stop(.game)
+        }
     }
 
     /// Starts or stops counting game time to match whether a game screen is open.

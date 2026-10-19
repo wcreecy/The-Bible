@@ -4,7 +4,6 @@ import UserNotifications
 import ActivityKit
 import AudioToolbox
 import SwiftUI
-import HealthKit
 
 /// The app's single prayer timer. Shared because restoring a timer has side effects
 /// (resuming the ticker, finishing an expired session), which must happen only once.
@@ -44,7 +43,6 @@ final class PrayerTimerController {
     @ObservationIgnored @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
     @ObservationIgnored @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
     @ObservationIgnored @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
-    @ObservationIgnored @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
     @ObservationIgnored @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @ObservationIgnored @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
     /// The most recent duration started, offered as a preset on the card.
@@ -114,10 +112,9 @@ final class PrayerTimerController {
             }
         }
 
-        // A mindful session can only be open while the timer is actively counting down.
-        // Discard any start date left behind by an earlier launch.
-        if !storedRunning || storedPaused {
-            mindfulStartDate = 0
+        // Resume Mindful Minutes tracking when an active timer is restored.
+        if storedRunning, !storedPaused {
+            MindfulMinutesTracker.shared.start(.prayerTimer)
         }
         // Same for prayer stats: an open stretch only makes sense while counting down.
         if !storedRunning {
@@ -502,28 +499,13 @@ final class PrayerTimerController {
 
     // MARK: - HealthKit mindful logging
 
-    // A mindful session covers only the time the timer is actively counting down:
-    // it opens on start/resume and closes on pause, stop, or finish.
+    // Prayer-timer activity is one source of the shared mindful session.
     private func beginMindfulSession(at date: Date) {
-        guard HealthKitManager.shared.isMindfulMinutesEnabled,
-              HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .sharingAuthorized else {
-            mindfulStartDate = 0
-            return
-        }
-        mindfulStartDate = date.timeIntervalSince1970
+        MindfulMinutesTracker.shared.start(.prayerTimer, at: date)
     }
 
     private func endMindfulSession(at endDate: Date) {
-        defer { mindfulStartDate = 0 }
-        guard mindfulStartDate > 0,
-              HealthKitManager.shared.isMindfulMinutesEnabled,
-              HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .sharingAuthorized else {
-            return
-        }
-        let startDate = Date(timeIntervalSince1970: mindfulStartDate)
-        if endDate > startDate {
-            HealthKitManager.shared.saveMindfulSession(start: startDate, end: endDate, completion: nil)
-        }
+        MindfulMinutesTracker.shared.stop(.prayerTimer, at: endDate)
     }
 
     // MARK: - Notifications

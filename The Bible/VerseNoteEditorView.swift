@@ -79,12 +79,10 @@ struct VerseNoteEditorView: View {
                     NoteEditorShowFieldsButton { areFieldsCollapsed = false }
                 } else {
                     Group {
-                        NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
-
-                        if contextualTipsEnabled {
-                            ScriptureReferenceLinkTip()
-                            CustomNoteTagsTip()
-                        }
+                        VerseNoteOptionsBar(
+                            category: $selectedCategory,
+                            highlight: $selectedColor
+                        )
 
                         ScriptureEditorReferenceCard(
                             reference: reference,
@@ -94,10 +92,12 @@ struct VerseNoteEditorView: View {
                             endVerse: $endVerse
                         )
 
-                        VerseNoteOptionsBar(
-                            category: $selectedCategory,
-                            highlight: $selectedColor
-                        )
+                        if contextualTipsEnabled {
+                            ScriptureReferenceLinkTip()
+                            CustomNoteTagsTip()
+                        }
+
+                        NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
                     }
                     .transition(.move(edge: .top).combined(with: .opacity))
                 }

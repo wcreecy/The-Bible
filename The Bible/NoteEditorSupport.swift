@@ -127,7 +127,13 @@ struct NoteEditorTitleField: View {
         TextField(placeholder, text: $title, axis: .vertical)
             .font(.title2.bold())
             .textFieldStyle(.plain)
-            .padding(.horizontal, 2)
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.1))
+            }
             .accessibilityLabel("Note title")
     }
 }

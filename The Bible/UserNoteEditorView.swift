@@ -74,18 +74,18 @@ struct UserNoteEditorView: View {
                 NoteEditorShowFieldsButton { areFieldsCollapsed = false }
             } else {
                 Group {
-                    NoteEditorTitleField(title: $title, placeholder: "Note title")
+                    optionsBar
+
+                    if selectedCategory == .sermon {
+                        sermonDetails
+                    }
 
                     if contextualTipsEnabled {
                         ScriptureReferenceLinkTip()
                         CustomNoteTagsTip()
                     }
 
-                    optionsBar
-
-                    if selectedCategory == .sermon {
-                        sermonDetails
-                    }
+                    NoteEditorTitleField(title: $title, placeholder: "Note title")
                 }
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
