@@ -109,6 +109,22 @@ extension iCloudSyncCoordinator {
     ]
 
     // Game keys: Quiz — now includes combined "all" variants for shared all-time stats
+    /// Game keys: Bible Trivia — per-difficulty and combined all-time statistics.
+    static let bibleTriviaKeys: [String] = {
+        let diffs = ["easy", "normal", "hard", "all"]
+        var keys: [String] = []
+        for difficulty in diffs {
+            keys.append("triviaAllTimeCorrect_\(difficulty)")
+            keys.append("triviaAllTimeAnswered_\(difficulty)")
+            keys.append("triviaAllTimeBestStreak_\(difficulty)")
+        }
+        return keys
+    }()
+
+    /// Bible Trivia completion state. This is union-merged so completed questions never reappear
+    /// after the same account has used another device.
+    static let bibleTriviaProgressKeys = ["bibleTriviaProgress"]
+
     static let quizKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "all"]
         var keys: [String] = []
@@ -205,8 +221,9 @@ extension iCloudSyncCoordinator {
     private static let allKnownGameDataKeySet: Set<String> = {
         Set(
             hangmanKeys + beatClockKeys + refMatchKeys
-                + verseMatchKeys + quizKeys + bookOrderKeys
+                + verseMatchKeys + quizKeys + bibleTriviaKeys + bookOrderKeys
                 + whoAmIKeys + wordleKeys + wordSearchKeys
+                + bibleTriviaProgressKeys
                 + gamePlayTimeCounterKeys + gamePlayTimeMapKeys
                 + gameDailyAndLastPlayedKeys + quizPerBookMapKeys
                 + quizPerBookDailyMapKeys + verseMatchPerBookDailyMapKeys
@@ -307,7 +324,7 @@ extension iCloudSyncCoordinator {
 
     // Per-game (and per-WORD-mode) daily maps (JSON [String:Int]) — now mirrored via KVS
     static let perGameDailyMapKeys: [String] = {
-        let gameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
+        let gameKeys = ["quiz","trivia","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
         var keys: [String] = []
         for g in gameKeys {
             keys.append("gamesDailyAnswered_\(g)")
@@ -356,7 +373,7 @@ extension iCloudSyncCoordinator {
     private static let gameCounterKeySet: Set<String> = {
         Set(
             allPersistentStreakKeys + hangmanKeys + beatClockKeys + refMatchKeys
-                + verseMatchKeys + quizKeys + bookOrderKeys + whoAmIKeys
+                + verseMatchKeys + quizKeys + bibleTriviaKeys + bookOrderKeys + whoAmIKeys
                 + wordleKeys + wordSearchKeys
         )
     }()
@@ -372,7 +389,7 @@ extension iCloudSyncCoordinator {
             gameDailyAndLastPlayedKeys + quizPerBookMapKeys + quizPerBookDailyMapKeys
                 + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys + hangmanPerCategoryMapKeys
                 + perGameDailyMapKeys + wordleSolvedMapKeys + wordleDailyResultKeys
-                + wordleDailyFlagKeys
+                + wordleDailyFlagKeys + bibleTriviaProgressKeys
         )
     }()
 
@@ -381,6 +398,20 @@ extension iCloudSyncCoordinator {
         // Counters and maps are published through per-device ledgers. Their legacy
         // shared keys stay frozen so devices migrating later read a stable baseline.
         guard !GameStatsLedger.isManaged(key) else { return }
+
+        if Self.bibleTriviaProgressKeys.contains(key) {
+            let merged = BibleTriviaProgressStore.mergedData(
+                local: defaults.data(forKey: key),
+                remote: kvs.object(forKey: key) as? Data
+            )
+            if let merged {
+                defaults.set(merged, forKey: key)
+                kvs.set(merged, forKey: key)
+            } else {
+                kvs.removeObject(forKey: key)
+            }
+            return
+        }
 
         let localTimestamp = readLocalTimestamp(for: key)
         let remoteTimestamp = readRemoteTimestamp(for: key)
@@ -469,6 +500,24 @@ extension iCloudSyncCoordinator {
     func mergeGamesIncoming(forKey key: String) {
         // Ledger-managed values are rebuilt from every device's ledger instead.
         guard !GameStatsLedger.isManaged(key) else { return }
+
+        if Self.bibleTriviaProgressKeys.contains(key) {
+            let merged = BibleTriviaProgressStore.mergedData(
+                local: defaults.data(forKey: key),
+                remote: kvs.object(forKey: key) as? Data
+            )
+            if let merged {
+                defaults.set(merged, forKey: key)
+                if kvs.object(forKey: key) as? Data != merged {
+                    kvs.set(merged, forKey: key)
+                    enqueueKeyForSync(key)
+                }
+            } else {
+                defaults.removeObject(forKey: key)
+            }
+            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            return
+        }
 
         let remoteTimestamp = readRemoteTimestamp(for: key)
         let localTimestamp = readLocalTimestamp(for: key)
@@ -670,6 +719,7 @@ extension iCloudSyncCoordinator {
             + Self.refMatchKeys
             + Self.verseMatchKeys
             + Self.quizKeys
+            + Self.bibleTriviaKeys
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys
@@ -708,6 +758,7 @@ extension iCloudSyncCoordinator {
             + Self.refMatchKeys
             + Self.verseMatchKeys
             + Self.quizKeys
+            + Self.bibleTriviaKeys
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys

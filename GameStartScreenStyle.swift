@@ -356,6 +356,7 @@ enum GameLobbyPreviewKind {
     case wordSearch
     case whoAmI
     case wordle
+    case trivia
 }
 
 struct GameLobbyPreview: View {
@@ -452,6 +453,15 @@ struct GameLobbyPreview: View {
                 wordleRow(["G", "R", "A", "C", "E"], colors: [.green, .secondary, .yellow, .secondary, .green])
                 wordleRow(["F", "A", "I", "T", "H"], colors: Array(repeating: .secondary, count: 5))
                 wordleRow(["", "", "", "", ""], colors: Array(repeating: .secondary, count: 5))
+            }
+        case .trivia:
+            HStack(spacing: 24) {
+                previewPrompt(icon: "questionmark.text.page.fill", title: "Who built the ark?", subtitle: "Choose the correct answer")
+                VStack(spacing: 8) {
+                    previewChoice("Abraham")
+                    previewChoice("Noah", selected: true)
+                    previewChoice("Moses")
+                }
             }
         }
     }

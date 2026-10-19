@@ -17,6 +17,7 @@ struct AllGamesComparisonCardView: View {
     fileprivate struct Row: Identifiable, Equatable {
         var id: String { name }
         let name: String
+        let chartName: String
         let played: Int
         let accuracy: Double? // nil until the game has an attempt
     }
@@ -65,7 +66,12 @@ struct AllGamesComparisonCardView: View {
                     let rows: [Row] = entries.map { e in
                         let played = max(0, e.answered)
                         let acc: Double? = played > 0 ? min(100, max(0, (Double(max(0, e.correct)) / Double(played)) * 100.0)) : nil
-                        return Row(name: e.name, played: played, accuracy: acc)
+                        return Row(
+                            name: e.name,
+                            chartName: compactChartName(for: e.name),
+                            played: played,
+                            accuracy: acc
+                        )
                     }
 
                     if dynamicTypeSize.isAccessibilitySize {
@@ -94,6 +100,19 @@ struct AllGamesComparisonCardView: View {
                 }
             }
             .padding(.top, 2)
+        }
+    }
+
+    private func compactChartName(for name: String) -> String {
+        switch name {
+        case "Bible Quiz": "Quiz"
+        case "Bible Trivia": "Trivia"
+        case "Beat the Clock": "Clock"
+        case "Verse Match": "Verse"
+        case "Book Order": "Order"
+        case "Who am I?": "Who?"
+        case "Word Search": "Search"
+        default: name
         }
     }
 }
@@ -176,7 +195,7 @@ fileprivate extension AllGamesComparisonCardView {
                 ForEach(sortedRows) { row in
                     // Bars (Attempts)
                     BarMark(
-                        x: .value("Game", row.name),
+                        x: .value("Game", row.chartName),
                         y: .value("Attempts", row.played)
                     )
                     .foregroundStyle(Color.accentColor.opacity(0.85))
@@ -192,7 +211,7 @@ fileprivate extension AllGamesComparisonCardView {
 
                     if let accuracy = row.accuracy {
                         PointMark(
-                            x: .value("Game", row.name),
+                            x: .value("Game", row.chartName),
                             y: .value("Accuracy (scaled)", accuracy * scale)
                         )
                         .symbolSize(55)

@@ -52,6 +52,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     case wordSearch
     case whoAmI
     case wordle
+    case trivia
 
     var id: String { rawValue }
 
@@ -65,6 +66,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .wordSearch: "Word Search"
         case .whoAmI: "Who am I?"
         case .wordle: "WORD"
+        case .trivia: "Bible Trivia"
         }
     }
 
@@ -78,6 +80,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .wordSearch: "Word Search"
         case .whoAmI: "Who am I?"
         case .wordle: "WORD"
+        case .trivia: "Bible Trivia"
         }
     }
 
@@ -91,6 +94,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .wordSearch: "Notice key words in Scripture"
         case .whoAmI: "Learn people and their roles in the Bible"
         case .wordle: "Return each day for a short Scripture word challenge"
+        case .trivia: "Answer Bible knowledge questions with Scripture support"
         }
     }
 
@@ -104,6 +108,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .wordSearch: "square.grid.3x3.topleft.filled"
         case .whoAmI: "person.text.rectangle"
         case .wordle: "square.grid.3x3.fill"
+        case .trivia: "questionmark.text.page.fill"
         }
     }
 
@@ -117,6 +122,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .wordSearch: .green
         case .whoAmI: .brown
         case .wordle: .mint
+        case .trivia: .cyan
         }
     }
 }
@@ -147,7 +153,7 @@ private enum GameLearningGroup: CaseIterable, Identifiable {
     var routes: [GameRoute] {
         switch self {
         case .daily: [.wordle]
-        case .learn: [.beatTheClock, .quiz, .bookOrder, .verseMatch, .whoAmI]
+        case .learn: [.beatTheClock, .quiz, .trivia, .bookOrder, .verseMatch, .whoAmI]
         case .wordGames: [.hangman, .wordSearch]
         }
     }
@@ -342,6 +348,7 @@ struct GamesView: View {
             case .wordSearch: WordSearchGameView()
             case .whoAmI: WhoAmIGameView()
             case .wordle: WordleView()
+            case .trivia: BibleTriviaGameView()
             }
         }
     }

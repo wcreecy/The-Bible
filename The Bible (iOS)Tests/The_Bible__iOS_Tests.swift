@@ -444,7 +444,7 @@ struct The_Bible__iOS_Tests {
         #expect(BookOrderDifficulty.easy.runLength == 5)
         #expect(BookOrderDifficulty.normal.runLength == 10)
         #expect(BookOrderDifficulty.hard.runLength == 15)
-        #expect(BookOrderDifficulty.all.runLength == nil)
+        #expect(BookOrderDifficulty.fullBible.runLength == nil)
         #expect(BookSourceScope.ot.bookNames.count == 39)
         #expect(BookSourceScope.nt.bookNames.count == 27)
         #expect(BookSourceScope.gospels.bookNames == ["Matthew", "Mark", "Luke", "John"])

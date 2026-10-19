@@ -13,6 +13,7 @@ final class GameStats {
 
     enum GameID {
         case quiz
+        case trivia
         case hangman
         case beatclock
         case versematch
@@ -371,6 +372,7 @@ final class GameStats {
 
     func breakdownSnapshot() -> GameBreakdown {
         let q = quiz
+        let t = trivia
         let h = hangman
         let r = versematch
         let b = beatclock
@@ -391,6 +393,7 @@ final class GameStats {
 
         let entries: [GameBreakdown.Entry] = [
             .init(name: "Bible Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
+            .init(name: "Bible Trivia", correct: t.correct, answered: t.answered, bestStreak: t.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
             .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
@@ -413,6 +416,7 @@ final class GameStats {
         let stat: GameStat
         switch game {
         case .quiz: stat = quiz
+        case .trivia: stat = trivia
         case .hangman: stat = hangman
         case .beatclock: stat = beatclock
         case .versematch: stat = versematch
@@ -442,6 +446,7 @@ final class GameStats {
     private static func storageKey(for game: GameID) -> String {
         switch game {
         case .quiz: return "quiz"
+        case .trivia: return "trivia"
         case .hangman: return "hangman"
         case .beatclock: return "beatclock"
         case .versematch: return "versematch"
@@ -455,6 +460,7 @@ final class GameStats {
     private static func storageKey(forDisplayName name: String) -> String? {
         switch name {
         case "Bible Quiz": return "quiz"
+        case "Bible Trivia": return "trivia"
         case "Hangman": return "hangman"
         case "Verse Match": return "versematch"
         case "Beat the Clock": return "beatclock"
@@ -608,7 +614,7 @@ final class GameStats {
                 case .hard: return "hard"
                 case .medium, .none: return nil
                 }
-            case .hangman, .beatclock, .versematch, .wordsearch:
+            case .trivia, .hangman, .beatclock, .versematch, .wordsearch:
                 switch difficulty {
                 case .easy: return "easy"
                 case .normal: return "normal"
@@ -642,6 +648,15 @@ final class GameStats {
         let suf = suffix(for: game, difficulty: difficulty)
 
         switch game {
+        case .trivia:
+            guard let s = suf else { return }
+            incInt("triviaAllTimeCorrect_\(s)", by: addCorrect)
+            incInt("triviaAllTimeAnswered_\(s)", by: addAnswered)
+            maxInt("triviaAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            incInt("triviaAllTimeCorrect_all", by: addCorrect)
+            incInt("triviaAllTimeAnswered_all", by: addAnswered)
+            maxInt("triviaAllTimeBestStreak_all", candidate: currentBestStreak)
+
         case .quiz:
             guard let s = suf else { return }
             // Keep per-difficulty keys for back-compat/analytics
@@ -916,6 +931,31 @@ final class GameStats {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
+    private var trivia: GameStat {
+        let correct = max(0, readInt("triviaAllTimeCorrect_all"))
+        let answered = max(0, readInt("triviaAllTimeAnswered_all"))
+        let bestStreak = max(0, readInt("triviaAllTimeBestStreak_all"))
+        return GameStat(
+            correct: correct,
+            answered: answered,
+            bestStreak: bestStreak == 0 ? nil : bestStreak
+        )
+    }
+
+    func triviaCounts(difficulty: Difficulty) -> (correct: Int, answered: Int) {
+        let suffix: String
+        switch difficulty {
+        case .easy: suffix = "easy"
+        case .normal, .medium: suffix = "normal"
+        case .hard: suffix = "hard"
+        case .none: suffix = "all"
+        }
+        return (
+            max(0, readInt("triviaAllTimeCorrect_\(suffix)")),
+            max(0, readInt("triviaAllTimeAnswered_\(suffix)"))
+        )
+    }
+
     private var hangman: GameStat {
         // Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
         let combinedC = max(0, readInt("hangmanAllTimeCorrect_all"))
@@ -1164,6 +1204,7 @@ final class GameStats {
     private static func gameDisplayName(for id: GameID) -> String {
         switch id {
         case .quiz: return "Bible Quiz"
+        case .trivia: return "Bible Trivia"
         case .hangman: return "Hangman"
         case .beatclock: return "Beat the Clock"
         case .versematch: return "Verse Match"

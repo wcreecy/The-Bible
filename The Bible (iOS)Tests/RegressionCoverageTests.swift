@@ -397,6 +397,27 @@ struct NotesTabTests {
     }
 
     @Test
+    func bibleTriviaProgressMergesQuestionCompletionAcrossDevices() throws {
+        let local = [
+            "easy": BibleTriviaDifficultyProgress(completedQuestionIDs: [1, 2]),
+            "normal": BibleTriviaDifficultyProgress(completedQuestionIDs: [10])
+        ]
+        let remote = [
+            "easy": BibleTriviaDifficultyProgress(completedQuestionIDs: [2, 3]),
+            "hard": BibleTriviaDifficultyProgress(completedQuestionIDs: [100])
+        ]
+
+        let localData = try JSONEncoder().encode(local)
+        let remoteData = try JSONEncoder().encode(remote)
+        let mergedData = try #require(BibleTriviaProgressStore.mergedData(local: localData, remote: remoteData))
+        let merged = try JSONDecoder().decode([String: BibleTriviaDifficultyProgress].self, from: mergedData)
+
+        #expect(merged["easy"]?.completedQuestionIDs == Set([1, 2, 3]))
+        #expect(merged["normal"]?.completedQuestionIDs == Set([10]))
+        #expect(merged["hard"]?.completedQuestionIDs == Set([100]))
+    }
+
+    @Test
     func exportIncludesEveryNoteNewestFirst() {
         let older = userNote(title: "Older", content: "First", passage: "Romans 8:28", updated: 0)
         let newer = verseNote("John", 3, 16, title: "Newer", content: "Second", updated: 100)

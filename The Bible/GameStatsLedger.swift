@@ -64,6 +64,7 @@ final class GameStatsLedger {
                 + iCloudSyncCoordinator.refMatchKeys
                 + iCloudSyncCoordinator.verseMatchKeys
                 + iCloudSyncCoordinator.quizKeys
+                + iCloudSyncCoordinator.bibleTriviaKeys
                 + iCloudSyncCoordinator.bookOrderKeys
                 + iCloudSyncCoordinator.whoAmIKeys
                 + iCloudSyncCoordinator.wordleKeys
