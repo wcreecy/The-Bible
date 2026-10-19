@@ -64,10 +64,31 @@ struct HomeLayoutEditorView: View {
         hiddenSet.isSuperset(of: Set(HomeCardID.allCases)) && !bibleReaderVisible
     }
 
-    private func useMinimalHome() {
-        hiddenSet = Set(HomeCardID.allCases)
-        bibleReaderVisible = false
+    private func apply(_ preset: HomeLayoutPreset) {
+        let orderedCards = preset.orderedCards()
+        let visibleCards = preset.visibleCards(usesDashboard: usesDashboard)
+        let hiddenCards = Set(HomeCardID.allCases).subtracting(visibleCards)
+        let readerVisible = preset.showsTodayReadingPanel
+        let readerColumn: HomeColumn? = readerVisible ? HomeLayoutStore.defaultBibleReaderColumn : nil
+
+        withAnimation(.snappy) {
+            order = orderedCards
+            hiddenSet = hiddenCards
+            bibleReaderVisible = readerVisible
+            bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
+            columns = HomeColumnLayout.seeded(
+                from: orderedCards,
+                hidden: hiddenCards,
+                readerColumn: readerColumn
+            )
+            highlightedCards = visibleCards
+            reorderConfirmation = "\(preset.title) layout applied"
+        }
+
         onDone()
+        Haptics.success()
+        AccessibilityNotification.Announcement("\(preset.title) layout applied. You can customize it below.").post()
+        scheduleReorderFeedbackReset()
     }
 
     private func moveCard(_ id: HomeCardID, by offset: Int) {
@@ -474,6 +495,12 @@ struct HomeLayoutEditorView: View {
                 .listRowSeparator(.hidden)
             }
 
+            HomeLayoutPresetSection(
+                usesDashboard: usesDashboard,
+                onApply: apply,
+                onRestoreDefault: resetToDefault
+            )
+
             if usesDashboard {
                 dashboardSections
             } else {
@@ -515,28 +542,6 @@ struct HomeLayoutEditorView: View {
                 Label("Card Visibility", systemImage: "eye")
             } footer: {
                 Text("Show or hide every Home card at once. You can still adjust individual cards above.")
-            }
-
-            Section {
-                VStack(alignment: .leading, spacing: 10) {
-                    if usesDashboard {
-                        footerButton(
-                            title: "Use Minimal Home",
-                            systemImage: "rectangle.3.group",
-                            disabled: isMinimalHome
-                        ) {
-                            useMinimalHome()
-                        }
-                    }
-                    footerButton(title: "Restore Default Layout", systemImage: "arrow.counterclockwise") {
-                        resetToDefault()
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            } header: {
-                Label("Layout Presets", systemImage: "rectangle.3.group")
-            } footer: {
-                Text(usesDashboard ? "Minimal Home replaces dashboard cards with Read, Continue Reading, and Search actions." : "Restore the original Home card arrangement and visibility.")
             }
 
             Section {
@@ -589,6 +594,61 @@ struct HomeLayoutEditorView: View {
         } message: {
             Text("Your previous saved layout will be replaced with the current arrangement.")
         }
+    }
+}
+
+private struct HomeLayoutPresetSection: View {
+    let usesDashboard: Bool
+    let onApply: (HomeLayoutPreset) -> Void
+    let onRestoreDefault: () -> Void
+
+    var body: some View {
+        Section {
+            ForEach(HomeLayoutPreset.allCases) { preset in
+                Button {
+                    onApply(preset)
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: preset.systemImage)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.tint)
+                            .frame(width: 28)
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(preset.title)
+                                .font(.body.weight(.semibold))
+
+                            Text(detail(for: preset))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.leading)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Applies this layout. You can customize it below.")
+            }
+
+            Button("Restore Default Layout", systemImage: "arrow.counterclockwise", action: onRestoreDefault)
+        } header: {
+            Label("Home Layout Presets", systemImage: "rectangle.3.group")
+        } footer: {
+            Text("A preset changes your card visibility and order. You can customize any layout below.")
+        }
+    }
+
+    private func detail(for preset: HomeLayoutPreset) -> String {
+        if preset == .minimal && !usesDashboard {
+            return "Continue Reading and Search Scripture only."
+        }
+
+        return preset.detail
     }
 }
 
