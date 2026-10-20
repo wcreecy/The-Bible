@@ -378,7 +378,8 @@ struct GamesView: View {
         }
 
         let accuracy = Int((Double(entry.correct) / Double(entry.answered) * 100).rounded())
-        if let bestStreak = entry.bestStreak, bestStreak > 0 {
+        let bestStreak = max(0, entry.bestStreak ?? 0)
+        if route == .trivia || bestStreak > 0 {
             return "\(accuracy)% · Best \(bestStreak)"
         }
         return "\(accuracy)% · \(entry.answered) played"

@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 /// Home header shared by iPhone and iPad: a time-of-day greeting, today's reading goal
@@ -17,6 +18,21 @@ struct TitleCardView: View {
 
     private var goalSeconds: Int { max(1, goalMinutes) * 60 }
     private var readingMinutes: Int { max(0, todayReadingSeconds) / 60 }
+
+    private var readingProgressValue: String {
+        let seconds = max(0, todayReadingSeconds)
+        guard seconds < 60 else { return "\(readingMinutes)" }
+        return "0:\(String(format: "%02d", seconds))"
+    }
+
+    private var readingProgressAccessibilityValue: String {
+        let seconds = max(0, todayReadingSeconds)
+        if seconds < 60 {
+            return "\(seconds) seconds"
+        }
+        return "\(readingMinutes) minutes"
+    }
+
     private var isGoalMet: Bool { todayReadingSeconds >= goalSeconds }
 
     // Progress fraction 0...1 toward today's goal
@@ -118,7 +134,7 @@ struct TitleCardView: View {
             }
         } else if streak > 0 {
             Label {
-                Text("\(streak)-day streak · \(readingMinutes) of \(goalMinutes) min today")
+                Text("\(streak)-day streak · \(readingProgressValue) of \(goalMinutes) min today")
             } icon: {
                 Image(systemName: "flame.fill")
                     .foregroundStyle(.orange)
@@ -126,7 +142,7 @@ struct TitleCardView: View {
         } else {
             // A zero streak is left out rather than shown as discouraging feedback.
             Label {
-                Text("\(readingMinutes) of \(goalMinutes) min today")
+                Text("\(readingProgressValue) of \(goalMinutes) min today")
             } icon: {
                 Image(systemName: "book")
                     .foregroundStyle(Color.accentColor)
@@ -139,7 +155,7 @@ struct TitleCardView: View {
     }
 
     private var goalAccessibilityLabel: String {
-        var parts = ["\(readingMinutes) of \(goalMinutes) minutes read today"]
+        var parts = ["\(readingProgressAccessibilityValue) of \(goalMinutes) minutes read today"]
         if isGoalMet { parts.insert("Daily goal met", at: 0) }
         if streak > 0 { parts.append("\(streak) day streak") }
         return parts.joined(separator: ". ")

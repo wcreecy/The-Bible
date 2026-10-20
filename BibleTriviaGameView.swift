@@ -168,6 +168,8 @@ final class BibleTriviaGameModel {
     private(set) var score = 0
     private(set) var answered = 0
     private(set) var bestScore = 0
+    private(set) var currentStreak = 0
+    private(set) var currentBestStreak = 0
     private(set) var remainingSeconds = 0
     @ObservationIgnored private var timerTask: Task<Void, Never>?
 
@@ -234,6 +236,10 @@ final class BibleTriviaGameModel {
         isViewingPrevious || isAnswered
     }
 
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "trivia", variant: difficulty.rawValue)
+    }
+
     func load() {
         guard questions.isEmpty else {
             phase = .setup
@@ -270,6 +276,8 @@ final class BibleTriviaGameModel {
         score = 0
         answered = 0
         bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
+        currentStreak = persistentStreak.current
+        currentBestStreak = persistentStreak.best
         phase = .playing
         prepareCurrentQuestion()
     }
@@ -335,13 +343,21 @@ final class BibleTriviaGameModel {
         answered += 1
         let isCorrect = answer == question.correctAnswer
         score += isCorrect ? 1 : 0
+        if isCorrect {
+            let streak = persistentStreak.recordWin()
+            currentStreak = streak.current
+            currentBestStreak = max(currentBestStreak, streak.best)
+        } else {
+            persistentStreak.reset()
+            currentStreak = 0
+        }
         progressStore.record(questionID: question.id, difficulty: difficulty)
         GameStats.shared.recordRound(
             game: .trivia,
             difficulty: difficulty.statsDifficulty,
             correct: isCorrect ? 1 : 0,
             answered: 1,
-            currentBestStreak: 0
+            currentBestStreak: currentBestStreak
         )
         if let bookName = BibleReferenceLinker.parse(question.reference)?.bookName {
             GameStats.shared.recordTriviaPerBook(
@@ -395,6 +411,7 @@ struct BibleTriviaGameView: View {
                     questionCount: model.roundCount,
                     score: model.score,
                     answered: model.answered,
+                    currentStreak: model.currentStreak,
                     accuracy: model.accuracy,
                     remainingSeconds: model.remainingSeconds,
                     timerSeconds: model.difficulty.timerSeconds,
@@ -514,6 +531,7 @@ private struct BibleTriviaPlayScreen: View {
     let questionCount: Int
     let score: Int
     let answered: Int
+    let currentStreak: Int
     let accuracy: Int
     let remainingSeconds: Int
     let timerSeconds: Int
@@ -564,6 +582,7 @@ private struct BibleTriviaPlayScreen: View {
                                 questionCount: questionCount,
                                 score: score,
                                 answered: answered,
+                                currentStreak: currentStreak,
                                 outcome: outcome,
                                 reference: question.reference,
                                 selectedAnswer: selectedAnswer,
@@ -586,6 +605,7 @@ private struct BibleTriviaPlayScreen: View {
                                 questionCount: questionCount,
                                 score: score,
                                 answered: answered,
+                                currentStreak: currentStreak,
                                 remainingSeconds: remainingSeconds,
                                 timerTint: timerTint,
                                 outcome: outcome,
@@ -646,6 +666,7 @@ private struct BibleTriviaCompactBoard: View {
     let questionCount: Int
     let score: Int
     let answered: Int
+    let currentStreak: Int
     let remainingSeconds: Int
     let timerTint: Color
     let outcome: BibleTriviaAnswerOutcome?
@@ -665,7 +686,7 @@ private struct BibleTriviaCompactBoard: View {
             GameScoreboardCard(
                 currentCorrect: score,
                 currentAnswered: answered,
-                currentStreak: 0,
+                currentStreak: currentStreak,
                 game: .trivia
             )
 
@@ -710,6 +731,7 @@ private struct BibleTriviaDashboard: View {
     let questionCount: Int
     let score: Int
     let answered: Int
+    let currentStreak: Int
     let outcome: BibleTriviaAnswerOutcome?
     let reference: String
     let selectedAnswer: String?
@@ -727,7 +749,7 @@ private struct BibleTriviaDashboard: View {
             GameScoreboardCard(
                 currentCorrect: score,
                 currentAnswered: answered,
-                currentStreak: 0,
+                currentStreak: currentStreak,
                 game: .trivia,
                 style: .dashboard
             )
