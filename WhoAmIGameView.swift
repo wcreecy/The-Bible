@@ -450,6 +450,7 @@ private struct WhoAmISetupControls: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
+        .gameSplashOptionCardSize()
         .background(
             isSelected ? Color.brown : Color.brown.opacity(0.09),
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)

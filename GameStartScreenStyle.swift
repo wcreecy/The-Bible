@@ -12,6 +12,26 @@ struct GameStartScreenStyle: ViewModifier {
     }
 }
 
+private struct GameSplashOptionCardSize: ViewModifier {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    func body(content: Content) -> some View {
+        content.frame(
+            maxWidth: .infinity,
+            minHeight: 132,
+            maxHeight: dynamicTypeSize.isAccessibilitySize ? nil : 132,
+            alignment: .topLeading
+        )
+    }
+}
+
+extension View {
+    /// Keeps splash-screen option cards visually consistent without constraining accessibility text.
+    func gameSplashOptionCardSize() -> some View {
+        modifier(GameSplashOptionCardSize())
+    }
+}
+
 struct GameStartDescriptionStyle: ViewModifier {
     let title: LocalizedStringKey
     let systemImage: String
@@ -239,10 +259,12 @@ struct GameExperienceStandardsCard: View {
             Text(details?.detail(for: level) ?? level.detail)
                 .font(.caption2)
                 .foregroundStyle(selection == level ? .white.opacity(0.9) : .secondary)
+                .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
+        .gameSplashOptionCardSize()
         .background(
             selection == level ? tint : tint.opacity(0.09),
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)

@@ -144,6 +144,7 @@ private struct WordSearchOptionCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(10)
+            .gameSplashOptionCardSize()
             .background(
                 isSelected ? Color.green : Color.green.opacity(0.09),
                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -220,6 +221,7 @@ private struct WordSearchSetupControls: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
+        .gameSplashOptionCardSize()
         .background(
             isSelected ? Color.green : Color.green.opacity(0.09),
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)

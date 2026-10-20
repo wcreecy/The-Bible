@@ -314,9 +314,9 @@ struct BeatTheClockGameView: View {
             tint: .indigo,
             experienceLevel: experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Well-known names, 25 seconds, and each clue is shown.",
-                standard: "More names, 15 seconds; clues cost 3 seconds.",
-                challenge: "Every name, 10 seconds; clues cost 3 seconds."
+                learn: "Known names • 25 sec • clue shown.",
+                standard: "More names • 15 sec • clue −3 sec.",
+                challenge: "All names • 10 sec • clue −3 sec."
             ),
             isStartEnabled: !isLoadingData,
             startAction: startGame
@@ -1085,6 +1085,7 @@ private struct BeatTheClockSubjectOption: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(10)
+            .gameSplashOptionCardSize()
             .background(
                 isSelected ? Color.indigo : Color.indigo.opacity(0.09),
                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)

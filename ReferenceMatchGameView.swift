@@ -667,6 +667,7 @@ private struct VerseMatchVerseSourceCards: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
+        .gameSplashOptionCardSize()
         .background(
             isSelected ? Color.orange : Color.orange.opacity(0.09),
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)
