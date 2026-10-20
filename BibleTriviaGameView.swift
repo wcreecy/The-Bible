@@ -359,11 +359,20 @@ final class BibleTriviaGameModel {
             answered: 1,
             currentBestStreak: currentBestStreak
         )
-        if let bookName = BibleReferenceLinker.parse(question.reference)?.bookName {
+        let scriptureReference = BibleReferenceLinker.parse(question.reference)
+        if let bookName = scriptureReference?.bookName {
             GameStats.shared.recordTriviaPerBook(
                 bookName: bookName,
                 answered: 1,
                 correct: isCorrect ? 1 : 0
+            )
+        }
+        if !isCorrect {
+            MissedGameQuestionStore.shared.record(
+                game: .bibleTrivia,
+                bookNames: scriptureReference.map { [$0.bookName] } ?? [],
+                chapterNumber: scriptureReference?.chapter,
+                topic: "Bible trivia"
             )
         }
     }

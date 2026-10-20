@@ -286,6 +286,13 @@ final class WhoAmIGameViewModel {
             answered: 1,
             currentBestStreak: currentBestStreak
         )
+        if !correct, let current {
+            MissedGameQuestionStore.shared.record(
+                game: .whoAmI,
+                bookNames: current.books,
+                topic: "Bible people"
+            )
+        }
     }
 
     private func finishGame() {

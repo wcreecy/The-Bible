@@ -208,7 +208,16 @@ struct GamesView: View {
                 title: "Continue today’s challenge",
                 detail: challenge.title,
                 systemImage: "checklist",
-                route: route
+                destination: .game(route)
+            )
+        }
+
+        if let studyRecommendation {
+            return GameRecommendation(
+                title: "Study \(studyRecommendation.bookName)",
+                detail: "You missed \(studyRecommendation.missedCount) questions about this book. Explore its overview.",
+                systemImage: "text.book.closed",
+                destination: .bookOverview(studyRecommendation.bookName)
             )
         }
 
@@ -217,16 +226,7 @@ struct GamesView: View {
                 title: "Review saved verses",
                 detail: "Practice matching verses you’ve saved with their references.",
                 systemImage: "bookmark.fill",
-                route: .verseMatch
-            )
-        }
-
-        if weakestBookName != nil {
-            return GameRecommendation(
-                title: "Practice books you miss most",
-                detail: "Use Bible Quiz to revisit the areas that need more practice.",
-                systemImage: "arrow.triangle.2.circlepath",
-                route: .quiz
+                destination: .game(.verseMatch)
             )
         }
 
@@ -234,11 +234,11 @@ struct GamesView: View {
             title: "Start with Bible Quiz",
             detail: "Build a baseline and get a personalized recommendation as you play.",
             systemImage: "questionmark.circle.fill",
-            route: .quiz
+            destination: .game(.quiz)
         )
     }
 
-    private var weakestBookName: String? {
+    private var studyRecommendation: (bookName: String, missedCount: Int)? {
         let defaults = UserDefaults.standard
         let answeredKeys = ["quizPerBookAnsweredMap", "versematchPerBookAnsweredMap"]
         let correctKeys = ["quizPerBookCorrectMap", "versematchPerBookCorrectMap"]
@@ -253,12 +253,19 @@ struct GamesView: View {
             }
         }
 
-        return totals
-            .filter { $0.value.answered >= 3 }
-            .min { lhs, rhs in
-                Double(lhs.value.correct) / Double(lhs.value.answered) < Double(rhs.value.correct) / Double(rhs.value.answered)
-            }?
-            .key
+        guard let weakestBook = totals
+            .map({ (bookName: $0.key, answered: $0.value.answered, missedCount: max(0, $0.value.answered - $0.value.correct)) })
+            .filter({ $0.answered >= 3 && $0.missedCount >= 3 })
+            .max(by: { lhs, rhs in
+                if lhs.missedCount != rhs.missedCount {
+                    return lhs.missedCount < rhs.missedCount
+                }
+                return lhs.bookName.localizedStandardCompare(rhs.bookName) == .orderedAscending
+            }) else {
+            return nil
+        }
+
+        return (weakestBook.bookName, weakestBook.missedCount)
     }
 
     var body: some View {
@@ -313,7 +320,8 @@ struct GamesView: View {
             usesExpandedLayout: horizontalSizeClass == .regular,
             progress: { progressByRoute[$0] ?? "Not played" },
             recommendation: recommendation,
-            onSelect: present
+            onSelect: present,
+            onSelectRecommendation: selectRecommendation
         )
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
@@ -389,6 +397,17 @@ struct GamesView: View {
         path.append(route)
     }
 
+    private func selectRecommendation(_ destination: GameRecommendationDestination) {
+        switch destination {
+        case .game(let route):
+            present(route)
+        case .bookOverview(let bookName):
+            UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
+            UserDefaults.standard.set(true, forKey: "openLastStudiedBookOverview")
+            AppRouter.shared.open(.bibleStudy)
+        }
+    }
+
     /// Opens a game requested from outside the Games tab, replacing any open game.
     private func openPendingGameIfNeeded() {
         guard let name = GameLaunchRequest.consume(),
@@ -421,6 +440,7 @@ private struct GameCollectionCard: View {
     let progress: (GameRoute) -> String
     let recommendation: GameRecommendation
     let onSelect: (GameRoute) -> Void
+    let onSelectRecommendation: (GameRecommendationDestination) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -429,7 +449,7 @@ private struct GameCollectionCard: View {
                 .padding(.bottom, usesExpandedLayout ? 12 : 8)
 
             GameRecommendationRow(recommendation: recommendation) {
-                onSelect(recommendation.route)
+                onSelectRecommendation(recommendation.destination)
             }
             .padding(.bottom, 10)
 
@@ -471,11 +491,25 @@ private struct GameCollectionCard: View {
     }
 }
 
+private enum GameRecommendationDestination {
+    case game(GameRoute)
+    case bookOverview(String)
+
+    var accessibilityHint: String {
+        switch self {
+        case .game(let route):
+            "Opens \(route.displayName)"
+        case .bookOverview(let bookName):
+            "Opens the \(bookName) book overview"
+        }
+    }
+}
+
 private struct GameRecommendation {
     let title: String
     let detail: String
     let systemImage: String
-    let route: GameRoute
+    let destination: GameRecommendationDestination
 }
 
 private struct GameRecommendationRow: View {
@@ -514,7 +548,7 @@ private struct GameRecommendationRow: View {
             .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
-        .accessibilityHint("Opens \(recommendation.route.displayName)")
+        .accessibilityHint(recommendation.destination.accessibilityHint)
     }
 }
 

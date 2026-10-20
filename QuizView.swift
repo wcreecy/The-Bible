@@ -834,6 +834,14 @@ struct QuizView: View {
             currentBestStreak: bestStreak
         )
         GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
+        if !correct {
+            MissedGameQuestionStore.shared.record(
+                game: .bibleQuiz,
+                bookNames: [current.correctBook],
+                chapterNumber: current.chapter,
+                topic: "Book identification"
+            )
+        }
 
         #if canImport(UIKit)
         switch outcome {

@@ -762,6 +762,15 @@ struct BeatTheClockGameView: View {
             answered: 1,
             correct: correct ? 1 : 0
         )
+        if !correct {
+            let scriptureReference = currentQuestion.scriptureReference.flatMap(BibleReferenceLinker.parse)
+            MissedGameQuestionStore.shared.record(
+                game: .beatTheClock,
+                bookNames: scriptureReference.map { [$0.bookName] } ?? Array(currentQuestion.acceptableBooks),
+                chapterNumber: scriptureReference?.chapter,
+                topic: currentQuestion.subject == .person ? "Bible people" : "Bible places"
+            )
+        }
 
         UINotificationFeedbackGenerator().notificationOccurred(correct ? .success : .error)
     }

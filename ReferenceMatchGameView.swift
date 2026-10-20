@@ -494,6 +494,14 @@ struct VerseMatchGameView: View {
             currentBestStreak: currentBestStreak
         )
         GameStats.shared.recordVerseMatchPerBook(bookName: current.verse.bookName, answered: 1, correct: isCorrect ? 1 : 0)
+        if !isCorrect {
+            MissedGameQuestionStore.shared.record(
+                game: .verseMatch,
+                bookNames: [current.verse.bookName],
+                chapterNumber: current.verse.chapterNumber,
+                topic: "Verse matching"
+            )
+        }
     }
 
     // MARK: - Verses
