@@ -163,9 +163,9 @@ enum DeveloperSampleData {
 
         let lastGame = games.randomElement()?.dailyKey ?? "quiz"
         let displayNames = [
-            "quiz": "Bible Quiz",
+            "quiz": "Quiz",
             "hangman": "Hangman",
-            "beatclock": "Beat the Clock",
+            "beatclock": "Countdown",
             "versematch": "Verse Match",
             "bookorder": "Book Order",
             "whoami": "Who am I?",

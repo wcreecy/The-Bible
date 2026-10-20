@@ -76,11 +76,13 @@ struct HomeLayoutEditorView: View {
             hiddenSet = hiddenCards
             bibleReaderVisible = readerVisible
             bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
-            columns = HomeColumnLayout.seeded(
-                from: orderedCards,
-                hidden: hiddenCards,
-                readerColumn: readerColumn
-            )
+            columns = usesDashboard
+                ? preset.dashboardColumns
+                : HomeColumnLayout.seeded(
+                    from: orderedCards,
+                    hidden: hiddenCards,
+                    readerColumn: readerColumn
+                )
             highlightedCards = visibleCards
             reorderConfirmation = "\(preset.title) layout applied"
         }

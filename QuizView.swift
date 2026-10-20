@@ -342,7 +342,7 @@ struct QuizView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if phase != .setup {
-                    GameNavigationTitle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
+                    GameNavigationTitle(title: "Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
                 }
             }
         }
@@ -371,7 +371,7 @@ struct QuizView: View {
     @ViewBuilder
     private var setupContent: some View {
         Text("Test your knowledge by guessing the book of the Bible from a given verse.")
-            .gameStartDescriptionStyle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
+            .gameStartDescriptionStyle(title: "Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
 
         GameSplashLaunchLayout(
             tint: .blue,

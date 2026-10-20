@@ -142,7 +142,7 @@ private struct TodayChallengeCatalog: Decodable {
     }
 
     private static let fallback = Self(
-        gameNames: ["Bible Quiz"],
+        gameNames: ["Quiz"],
         prayerMinutes: PrayerMinutes(minimum: 2, maximum: 20),
         prayerFocuses: ["peace"],
         reflectionTasks: [
@@ -563,7 +563,7 @@ final class TodayChallengeStore {
     }
 
     private func makeGameChallenge(using picker: inout FreshPicker) -> TodayChallenge {
-        let gameName = picker.pick(from: catalog.gameNames, key: HistoryKey.game) ?? "Bible Quiz"
+        let gameName = picker.pick(from: catalog.gameNames, key: HistoryKey.game) ?? "Quiz"
 
         return TodayChallenge(
             id: UUID(),

@@ -250,7 +250,7 @@ struct BeatTheClockGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if phase != .setup {
-                    GameNavigationTitle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
+                    GameNavigationTitle(title: "Countdown", systemImage: "hourglass", tint: .indigo)
                 }
             }
         }
@@ -308,7 +308,7 @@ struct BeatTheClockGameView: View {
     private var setupContent: some View {
         Spacer(minLength: 32)
         Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
-            .gameStartDescriptionStyle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
+            .gameStartDescriptionStyle(title: "Countdown", systemImage: "hourglass", tint: .indigo)
 
         GameSplashLaunchLayout(
             tint: .indigo,
@@ -1136,7 +1136,7 @@ private struct BeatTheClockStartButton: View {
         .opacity(isLoading ? 0.7 : 1)
         .disabled(isLoading)
         .accessibilityLabel("Start Game")
-        .accessibilityHint("Begins a Beat the Clock game")
+        .accessibilityHint("Begins a Countdown game")
     }
 }
 

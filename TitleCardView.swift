@@ -14,6 +14,7 @@ struct TitleCardView: View {
     let onOpenGoal: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .largeTitle) private var iPadGreetingFontSize = 42
 
     private var goalSeconds: Int { max(1, goalMinutes) * 60 }
     private var readingMinutes: Int { max(0, todayReadingSeconds) / 60 }
@@ -115,7 +116,8 @@ struct TitleCardView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
+        .padding(.horizontal, 20)
+        .padding(.vertical, isPad ? 28 : 20)
         .foregroundStyle(.white)
         .background {
             Image(greetingScene.imageName)
@@ -157,7 +159,11 @@ struct TitleCardView: View {
 
     private var greetingText: some View {
         Text(greeting)
-            .font(.largeTitle.weight(.black))
+            .font(
+                isPad
+                    ? .system(size: iPadGreetingFontSize, weight: .black)
+                    : .largeTitle.weight(.black)
+            )
             .lineLimit(1)
             .minimumScaleFactor(0.8)
             .accessibilityAddTraits(.isHeader)

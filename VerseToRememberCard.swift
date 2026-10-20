@@ -74,10 +74,6 @@ struct VerseToRememberCard: View {
                         .font((usesExpandedLayout ? Font.headline : Font.subheadline).weight(.semibold))
                         .foregroundStyle(.secondary)
 
-                    if usesExpandedLayout {
-                        Spacer(minLength: 16)
-                    }
-
                     HStack(spacing: 8) {
                         actionButton(
                             title: allWordsRevealed ? "Reset" : "Reveal",
@@ -109,7 +105,7 @@ struct VerseToRememberCard: View {
                 }
                 .frame(
                     maxWidth: .infinity,
-                    minHeight: usesExpandedLayout ? 500 : nil,
+                    minHeight: nil,
                     alignment: .topLeading
                 )
             } else {
@@ -124,7 +120,7 @@ struct VerseToRememberCard: View {
                 }
                 .frame(
                     maxWidth: .infinity,
-                    minHeight: usesExpandedLayout ? 500 : nil,
+                    minHeight: nil,
                     alignment: .topLeading
                 )
             }

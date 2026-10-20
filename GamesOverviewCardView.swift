@@ -14,10 +14,10 @@ struct GamesOverviewCardView: View {
     private func gameIcon(for name: String) -> String {
         switch name {
         case "All Games":    return "sparkles"
-        case "Bible Quiz":   return "questionmark.circle"
+        case "Quiz":   return "questionmark.circle"
         case "Hangman":      return "figure"
         case "Verse Match":  return "text.quote"
-        case "Beat the Clock": return "timer"
+        case "Countdown": return "timer"
         case "Book Order":   return "books.vertical"
         case "Who am I?":    return "person.crop.circle.badge.questionmark"
         case "WORD":         return "square.grid.3x3"
@@ -370,8 +370,8 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    if selectedGame == "Bible Quiz" || selectedGame == "Bible Trivia" {
-                        let summary = selectedGame == "Bible Trivia"
+                    if selectedGame == "Quiz" || selectedGame == "Trivia" {
+                        let summary = selectedGame == "Trivia"
                             ? GameStats.shared.triviaOTNTSummary()
                             : GameStats.shared.quizOTNTSummary()
                         VStack(alignment: .leading, spacing: 8) {
@@ -393,8 +393,8 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    if selectedGame == "Bible Quiz" || selectedGame == "Bible Trivia" {
-                        let rows = selectedGame == "Bible Trivia"
+                    if selectedGame == "Quiz" || selectedGame == "Trivia" {
+                        let rows = selectedGame == "Trivia"
                             ? GameStats.shared.triviaAccuracyByGenre()
                             : GameStats.shared.quizAccuracyByGenre()
                         VStack(alignment: .leading, spacing: 8) {
@@ -464,7 +464,7 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    if selectedGame == "Beat the Clock" {
+                    if selectedGame == "Countdown" {
                         let rows = GameStats.shared.beatclockAccuracyByType()
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Accuracy by Type")
@@ -553,7 +553,7 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    if selectedGame == "Bible Quiz" || selectedGame == "Bible Trivia" {
+                    if selectedGame == "Quiz" || selectedGame == "Trivia" {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("Top Weak Books")
@@ -582,7 +582,7 @@ struct GamesOverviewCardView: View {
                             }
 
                             let days = (weakBooksScope == 0) ? 30 : 60
-                            let allRows = selectedGame == "Bible Trivia"
+                            let allRows = selectedGame == "Trivia"
                                 ? GameStats.shared.triviaWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
                                 : GameStats.shared.quizWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
                             let rows = Array(allRows.prefix(5))
@@ -650,7 +650,7 @@ struct GamesOverviewCardView: View {
                             }
 
                             let daysStrong = (weakBooksScope == 0) ? 30 : 60
-                            let allStrong = selectedGame == "Bible Trivia"
+                            let allStrong = selectedGame == "Trivia"
                                 ? GameStats.shared.triviaStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
                                 : GameStats.shared.quizStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
                             let strongRows = Array(allStrong.prefix(5))
@@ -984,7 +984,7 @@ struct GamesOverviewCardView: View {
                                 .listStyle(.insetGrouped)
                             }
                         } else {
-                            let rows = selectedGame == "Bible Trivia"
+                            let rows = selectedGame == "Trivia"
                                 ? GameStats.shared.triviaAccuracyByBook(inGenre: g)
                                 : GameStats.shared.quizAccuracyByBook(inGenre: g)
                             if rows.isEmpty {

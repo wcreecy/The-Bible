@@ -458,7 +458,7 @@ struct BibleTriviaGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if model.phase == .playing || model.phase == .results {
-                    GameNavigationTitle(title: "Bible Trivia", systemImage: "questionmark.text.page.fill", tint: .cyan)
+                    GameNavigationTitle(title: "Trivia", systemImage: "questionmark.text.page.fill", tint: .cyan)
                 }
             }
         }
@@ -500,7 +500,7 @@ private struct BibleTriviaSetupScreen: View {
 
                 Text("Answer Bible knowledge questions with Scripture support after every answer.")
                     .gameStartDescriptionStyle(
-                        title: "Bible Trivia",
+                        title: "Trivia",
                         systemImage: "questionmark.text.page.fill",
                         tint: .cyan
                     )

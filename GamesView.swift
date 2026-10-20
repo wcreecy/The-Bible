@@ -58,29 +58,29 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
 
     var title: LocalizedStringResource {
         switch self {
-        case .quiz: "Bible Quiz"
+        case .quiz: "Quiz"
         case .hangman: "Hangman"
-        case .beatTheClock: "Beat the Clock"
+        case .beatTheClock: "Countdown"
         case .verseMatch: "Verse Match"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .whoAmI: "Who am I?"
         case .wordle: "WORD"
-        case .trivia: "Bible Trivia"
+        case .trivia: "Trivia"
         }
     }
 
     var displayName: String {
         switch self {
-        case .quiz: "Bible Quiz"
+        case .quiz: "Quiz"
         case .hangman: "Hangman"
-        case .beatTheClock: "Beat the Clock"
+        case .beatTheClock: "Countdown"
         case .verseMatch: "Verse Match"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .whoAmI: "Who am I?"
         case .wordle: "WORD"
-        case .trivia: "Bible Trivia"
+        case .trivia: "Trivia"
         }
     }
 
@@ -88,7 +88,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         switch self {
         case .quiz: "Build recall of Bible facts and passages"
         case .hangman: "Strengthen recognition of people, places, and books"
-        case .beatTheClock: "Practice quick recall of Bible books"
+        case .beatTheClock: "Quick recall of people, places and books"
         case .verseMatch: "Connect Scripture passages with their references"
         case .bookOrder: "Learn the sequence of the Bible’s books"
         case .wordSearch: "Notice key words in Scripture"
@@ -153,7 +153,7 @@ private enum GameLearningGroup: CaseIterable, Identifiable {
     var routes: [GameRoute] {
         switch self {
         case .daily: [.wordle]
-        case .learn: [.beatTheClock, .quiz, .trivia, .bookOrder, .verseMatch, .whoAmI]
+        case .learn: [.bookOrder, .beatTheClock, .quiz, .trivia, .verseMatch, .whoAmI]
         case .wordGames: [.hangman, .wordSearch]
         }
     }
@@ -243,7 +243,7 @@ struct GamesView: View {
         }
 
         return GameRecommendation(
-            title: "Start with Bible Quiz",
+            title: "Start with Quiz",
             detail: "Build a baseline and get a personalized recommendation as you play.",
             systemImage: "questionmark.circle.fill",
             destination: .game(.quiz)
@@ -290,6 +290,7 @@ struct GamesView: View {
                 if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                     HStack(alignment: .top, spacing: 16) {
                         gameCollectionCard
+
                         verseToRememberCard
                     }
                 } else {

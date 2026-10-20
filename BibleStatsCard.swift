@@ -6,6 +6,7 @@ struct BibleStatsCard: View {
     let onOpenReadingStats: () -> Void
     let onOpenGameStats: () -> Void
 
+    @State private var todayStudySeconds = 0
     @State private var todayGameSeconds = 0
     @State private var todayGameAnswered = 0
     @State private var todayGameAccuracy = 0
@@ -13,7 +14,7 @@ struct BibleStatsCard: View {
     var body: some View {
         HeroCard(
             title: HomeCardID.bibleStats.title,
-            subtitle: "A quick look at today's reading and games",
+            subtitle: "A quick look at today's reading, study, and games",
             icon: HomeCardID.bibleStats.systemImage,
             tint: .teal,
             trailingAccessory: {
@@ -30,6 +31,7 @@ struct BibleStatsCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 DailyActivityTimeCard(
                     readingSeconds: bibleVM.todaySeconds,
+                    studySeconds: todayStudySeconds,
                     gameSeconds: todayGameSeconds
                 )
 
@@ -38,6 +40,8 @@ struct BibleStatsCard: View {
                     lastReadBookChapter: bibleVM.lastReadBookChapter,
                     lastReadRelativeTime: bibleVM.lastReadRelativeTime
                 )
+
+                StudyActivitySummary(seconds: todayStudySeconds)
 
                 GameActivitySummary(
                     seconds: todayGameSeconds,
@@ -61,12 +65,20 @@ struct BibleStatsCard: View {
             .onNotification(.gameStatsExternallyUpdated) {
                 refreshGameActivity()
             }
+            .onNotification(.studyTimeUpdated) {
+                refreshStudyActivity()
+            }
         }
     }
 
     private func refreshActivity() {
         bibleVM.refresh()
+        refreshStudyActivity()
         refreshGameActivity()
+    }
+
+    private func refreshStudyActivity() {
+        todayStudySeconds = StudyTimeTracker.shared.seconds()
     }
 
     private func refreshGameActivity() {
@@ -79,13 +91,18 @@ struct BibleStatsCard: View {
 
 private struct DailyActivityTimeCard: View {
     let readingSeconds: Int
+    let studySeconds: Int
     let gameSeconds: Int
 
     private var reading: Int { max(0, readingSeconds) }
+    private var study: Int { max(0, studySeconds) }
     private var games: Int { max(0, gameSeconds) }
-    private var total: Int { reading + games }
+    private var total: Int { reading + study + games }
     private var readingFraction: Double {
         total > 0 ? Double(reading) / Double(total) : 0
+    }
+    private var studyFraction: Double {
+        total > 0 ? Double(study) / Double(total) : 0
     }
     private var gameFraction: Double {
         total > 0 ? Double(games) / Double(total) : 0
@@ -106,15 +123,24 @@ private struct DailyActivityTimeCard: View {
             }
 
             GeometryReader { proxy in
-                let hasBothCategories = reading > 0 && games > 0
-                let spacing: CGFloat = hasBothCategories ? 3 : 0
-                let availableWidth = max(0, proxy.size.width - spacing)
+                let activeCategoryCount = [reading, study, games].filter { $0 > 0 }.count
+                let spacing: CGFloat = activeCategoryCount > 1 ? 3 : 0
+                let availableWidth = max(
+                    0,
+                    proxy.size.width - (spacing * CGFloat(max(0, activeCategoryCount - 1)))
+                )
 
                 HStack(spacing: spacing) {
                     if reading > 0 {
                         Rectangle()
                             .fill(Color.blue.gradient)
                             .frame(width: availableWidth * readingFraction)
+                    }
+
+                    if study > 0 {
+                        Rectangle()
+                            .fill(Color.mint.gradient)
+                            .frame(width: availableWidth * studyFraction)
                     }
 
                     if games > 0 {
@@ -133,16 +159,18 @@ private struct DailyActivityTimeCard: View {
             .frame(height: 12)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(
-                "Today. Reading (formattedUsage(reading)). Games (formattedUsage(games))."
+                "Today. Reading (formattedUsage(reading)). Study (formattedUsage(study)). Games (formattedUsage(games))."
             )
 
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 8) {
                     ActivityTimeLegend(title: "Reading", seconds: reading, tint: .blue)
+                    ActivityTimeLegend(title: "Study", seconds: study, tint: .mint)
                     ActivityTimeLegend(title: "Games", seconds: games, tint: .indigo)
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     ActivityTimeLegend(title: "Reading", seconds: reading, tint: .blue)
+                    ActivityTimeLegend(title: "Study", seconds: study, tint: .mint)
                     ActivityTimeLegend(title: "Games", seconds: games, tint: .indigo)
                 }
             }
@@ -184,6 +212,31 @@ private struct ReadingActivitySummary: View {
                 : "Last read \(lastReadBookChapter) \(lastReadRelativeTime)",
             systemImage: "book.pages",
             tint: .blue
+        )
+    }
+
+    private func formattedUsage(_ seconds: Int) -> String {
+        let safeSeconds = max(0, seconds)
+        if safeSeconds < 60 {
+            return "\(safeSeconds)s"
+        }
+
+        let hours = safeSeconds / 3_600
+        let minutes = (safeSeconds % 3_600) / 60
+        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
+    }
+}
+
+private struct StudyActivitySummary: View {
+    let seconds: Int
+
+    var body: some View {
+        ActivitySummaryRow(
+            title: "Study",
+            detail: seconds > 0 ? "\(formattedUsage(seconds)) today" : "No study time yet",
+            context: nil,
+            systemImage: "text.book.closed",
+            tint: .mint
         )
     }
 

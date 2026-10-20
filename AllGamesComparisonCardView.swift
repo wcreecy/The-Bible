@@ -114,9 +114,9 @@ struct AllGamesComparisonCardView: View {
 
     private func compactChartName(for name: String) -> String {
         switch name {
-        case "Bible Quiz": "Quiz"
-        case "Bible Trivia": "Trivia"
-        case "Beat the Clock": "Clock"
+        case "Quiz": "Quiz"
+        case "Trivia": "Trivia"
+        case "Countdown": "Countdown"
         case "Verse Match": "Verse"
         case "Book Order": "Order"
         case "Who am I?": "Who?"

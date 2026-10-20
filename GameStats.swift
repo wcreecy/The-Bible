@@ -392,11 +392,11 @@ final class GameStats {
         )
 
         let entries: [GameBreakdown.Entry] = [
-            .init(name: "Bible Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
-            .init(name: "Bible Trivia", correct: t.correct, answered: t.answered, bestStreak: t.bestStreak),
+            .init(name: "Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
+            .init(name: "Trivia", correct: t.correct, answered: t.answered, bestStreak: t.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
             .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
-            .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
+            .init(name: "Countdown", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
             .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
             .init(name: "Word Search", correct: ws.correct, answered: ws.answered, bestStreak: ws.bestStreak),
@@ -459,11 +459,11 @@ final class GameStats {
 
     private static func storageKey(forDisplayName name: String) -> String? {
         switch name {
-        case "Bible Quiz": return "quiz"
-        case "Bible Trivia": return "trivia"
+        case "Quiz": return "quiz"
+        case "Trivia": return "trivia"
         case "Hangman": return "hangman"
         case "Verse Match": return "versematch"
-        case "Beat the Clock": return "beatclock"
+        case "Countdown": return "beatclock"
         case "Book Order": return "bookorder"
         case "Who am I?": return "whoami"
         case "Word Search": return "wordsearch"
@@ -1241,10 +1241,10 @@ final class GameStats {
 
     private static func gameDisplayName(for id: GameID) -> String {
         switch id {
-        case .quiz: return "Bible Quiz"
-        case .trivia: return "Bible Trivia"
+        case .quiz: return "Quiz"
+        case .trivia: return "Trivia"
         case .hangman: return "Hangman"
-        case .beatclock: return "Beat the Clock"
+        case .beatclock: return "Countdown"
         case .versematch: return "Verse Match"
         case .bookorder: return "Book Order"
         case .whoami: return "Who am I?"

@@ -613,7 +613,7 @@ struct SetupChecklistCard: View {
             }
             AppRouter.shared.open(.tab(.home))
         case .playGame:
-            GameLaunchRequest.open(gameName: "Bible Quiz")
+            GameLaunchRequest.open(gameName: "Quiz")
         case .viewReadingStats:
             readingStatsViewed = true
             AppRouter.shared.open(.stats(.reading))
