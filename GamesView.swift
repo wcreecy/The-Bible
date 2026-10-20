@@ -53,6 +53,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     case whoAmI
     case wordle
     case trivia
+    case reviewRound
 
     var id: String { rawValue }
 
@@ -67,6 +68,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .whoAmI: "Who am I?"
         case .wordle: "WORD"
         case .trivia: "Trivia"
+        case .reviewRound: "Review Round"
         }
     }
 
@@ -81,6 +83,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .whoAmI: "Who am I?"
         case .wordle: "WORD"
         case .trivia: "Trivia"
+        case .reviewRound: "Review Round"
         }
     }
 
@@ -95,6 +98,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .whoAmI: "Learn people and their roles in the Bible"
         case .wordle: "Return each day for a short Scripture word challenge"
         case .trivia: "Answer Bible knowledge questions with Scripture support"
+        case .reviewRound: "Practice questions you previously missed"
         }
     }
 
@@ -109,6 +113,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .whoAmI: "person.text.rectangle"
         case .wordle: "square.grid.3x3.fill"
         case .trivia: "questionmark.text.page.fill"
+        case .reviewRound: "arrow.clockwise.heart.fill"
         }
     }
 
@@ -123,6 +128,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .whoAmI: .brown
         case .wordle: .mint
         case .trivia: .cyan
+        case .reviewRound: .purple
         }
     }
 }
@@ -191,13 +197,34 @@ struct GamesView: View {
             from: calendar.startOfDay(for: reference),
             to: calendar.startOfDay(for: Date())
         ).day ?? 0
-        let favorite = favorites[(day + verseToRememberOffset) % favorites.count]
+
+        // Rank each favorite by a hash of (day, verse) and show the top one. The order looks
+        // shuffled from day to day, stays fixed within a day, and adding or removing other
+        // favorites doesn't change today's pick unless the new one outranks it.
+        // "Another" walks down the ranking, so it repeats only after cycling the whole list.
+        let ranked = favorites
+            .map { favorite -> (score: UInt64, key: String, favorite: Favorite) in
+                let key = "\(favorite.bookName)|\(favorite.chapterNumber)|\(favorite.verseNumber)"
+                return (Self.stableHash("\(day)|\(key)"), key, favorite)
+            }
+            .sorted { $0.score != $1.score ? $0.score > $1.score : $0.key < $1.key }
+        let favorite = ranked[verseToRememberOffset % ranked.count].favorite
         return HomeVerseRef(
             bookName: favorite.bookName,
             chapterNumber: favorite.chapterNumber,
             verseNumber: favorite.verseNumber,
             verseText: favorite.verseText
         )
+    }
+
+    /// FNV-1a. Swift's `Hasher` is reseeded every launch, so it can't give a stable daily pick.
+    private static func stableHash(_ string: String) -> UInt64 {
+        var hash: UInt64 = 0xcbf2_9ce4_8422_2325
+        for byte in string.utf8 {
+            hash ^= UInt64(byte)
+            hash &*= 0x0000_0100_0000_01b3
+        }
+        return hash
     }
 
     private var recommendation: GameRecommendation {
@@ -334,6 +361,7 @@ struct GamesView: View {
     private var gameCollectionCard: some View {
         GameCollectionCard(
             groups: GameLearningGroup.allCases,
+            reviewIsAvailable: !MissedGameQuestionStore.shared.reviewableGames().isEmpty,
             usesExpandedLayout: horizontalSizeClass == .regular,
             progress: { progressByRoute[$0] ?? "Not played" },
             recommendation: recommendation,
@@ -374,6 +402,7 @@ struct GamesView: View {
             case .whoAmI: WhoAmIGameView()
             case .wordle: WordleView()
             case .trivia: BibleTriviaGameView()
+            case .reviewRound: ReviewRoundView()
             }
         }
     }
@@ -459,6 +488,7 @@ struct GamesView: View {
 
 private struct GameCollectionCard: View {
     let groups: [GameLearningGroup]
+    let reviewIsAvailable: Bool
     let usesExpandedLayout: Bool
     let progress: (GameRoute) -> String
     let recommendation: GameRecommendation
@@ -475,6 +505,13 @@ private struct GameCollectionCard: View {
                 onSelectRecommendation(recommendation.destination)
             }
             .padding(.bottom, 10)
+
+            if reviewIsAvailable {
+                GameCollectionReviewSection(
+                    usesExpandedLayout: usesExpandedLayout,
+                    onSelect: { onSelect(.reviewRound) }
+                )
+            }
 
             ForEach(groups) { group in
                 VStack(alignment: .leading, spacing: 0) {
@@ -511,6 +548,32 @@ private struct GameCollectionCard: View {
         )
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
+    }
+}
+
+private struct GameCollectionReviewSection: View {
+    let usesExpandedLayout: Bool
+    let onSelect: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Review")
+                    .font(.subheadline.weight(.bold))
+                Text("Strengthen the areas that need another pass.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.top, 10)
+            .padding(.bottom, 6)
+
+            GameNavigationRow(
+                route: .reviewRound,
+                progress: "Ready",
+                usesExpandedLayout: usesExpandedLayout,
+                onSelect: onSelect
+            )
+        }
     }
 }
 

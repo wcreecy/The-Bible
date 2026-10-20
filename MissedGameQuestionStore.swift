@@ -7,7 +7,7 @@ final class MissedGameQuestionStore {
     static let shared = MissedGameQuestionStore()
 
     struct Entry: Codable, Identifiable, Hashable {
-        enum Game: String, Codable {
+        enum Game: String, Codable, CaseIterable {
             case beatTheClock
             case bibleQuiz
             case bibleTrivia
@@ -22,7 +22,27 @@ final class MissedGameQuestionStore {
         /// Present only when the question has a specific Scripture reference.
         let chapterNumber: Int?
         let topic: String
+        /// A stable identifier that allows the original game to rebuild this question for review.
+        let questionID: String?
         let date: Date
+
+        init(
+            id: UUID,
+            game: Game,
+            bookNames: [String],
+            chapterNumber: Int?,
+            topic: String,
+            questionID: String? = nil,
+            date: Date
+        ) {
+            self.id = id
+            self.game = game
+            self.bookNames = bookNames
+            self.chapterNumber = chapterNumber
+            self.topic = topic
+            self.questionID = questionID
+            self.date = date
+        }
     }
 
     struct ChapterRecommendation: Hashable {
@@ -52,10 +72,14 @@ final class MissedGameQuestionStore {
         bookNames: [String],
         chapterNumber: Int? = nil,
         topic: String,
+        questionID: String? = nil,
         date: Date = Date()
     ) {
         let canonicalBooks = Array(Set(bookNames.filter { !$0.isEmpty }))
             .sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+        if let questionID {
+            entries.removeAll { $0.game == game && $0.questionID == questionID }
+        }
         entries.append(
             Entry(
                 id: UUID(),
@@ -63,10 +87,40 @@ final class MissedGameQuestionStore {
                 bookNames: canonicalBooks,
                 chapterNumber: chapterNumber,
                 topic: topic,
+                questionID: questionID,
                 date: date
             )
         )
         prune()
+        save()
+    }
+
+    /// The review feature works with distinct, replayable questions only. Older history entries
+    /// without an identifier remain available for study recommendations but cannot be replayed.
+    func reviewCount(for game: Entry.Game) -> Int {
+        Set(entries.compactMap { entry in
+            entry.game == game ? entry.questionID : nil
+        }).count
+    }
+
+    func reviewableGames(minimumQuestions: Int = 10) -> [Entry.Game] {
+        Entry.Game.allCases.filter { reviewCount(for: $0) >= minimumQuestions }
+    }
+
+    func questionIDsForReview(game: Entry.Game, count: Int = 10) -> [String] {
+        Array(
+            Set(entries.compactMap { entry in
+                entry.game == game ? entry.questionID : nil
+            })
+        )
+        .shuffled()
+        .prefix(count)
+        .map(\.self)
+    }
+
+    /// A correct answer in a review round retires that question from future review rounds.
+    func resolveReviewQuestion(game: Entry.Game, questionID: String) {
+        entries.removeAll { $0.game == game && $0.questionID == questionID }
         save()
     }
 

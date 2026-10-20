@@ -99,6 +99,12 @@ final class WhoAmIGameViewModel {
     }
 
     static let questionsPerGame = 10
+
+    private let reviewQuestionIDs: Set<String>
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        self.reviewQuestionIDs = reviewQuestionIDs
+    }
     private static let modeKey = "whoamiMode"
     private static let difficultyKey = "whoamiDifficulty"
 
@@ -123,7 +129,13 @@ final class WhoAmIGameViewModel {
         entries.filter { $0.matchesDifficulty(difficulty) }
     }
 
-    var isReady: Bool { eligibleEntries.count >= 4 }
+    var isReady: Bool {
+        reviewQuestionIDs.isEmpty ? eligibleEntries.count >= 4 : reviewEntries.count >= Self.questionsPerGame
+    }
+
+    private var reviewEntries: [Entry] {
+        entries.filter { reviewQuestionIDs.contains(String(describing: $0.id)) }
+    }
 
     // Current round
     private(set) var current: Entry?
@@ -218,7 +230,8 @@ final class WhoAmIGameViewModel {
         sessionBestStreak = 0
         isNewBestGame = false
         currentBestStreak = max(currentBestStreak, persistentStreak.best)
-        questionQueue = Array(eligibleEntries.shuffled().prefix(Self.questionsPerGame))
+        let candidates = reviewQuestionIDs.isEmpty ? eligibleEntries : reviewEntries
+        questionQueue = Array(candidates.shuffled().prefix(Self.questionsPerGame))
         totalQuestions = questionQueue.count
         questionNumber = 0
         isComplete = false
@@ -286,11 +299,17 @@ final class WhoAmIGameViewModel {
             answered: 1,
             currentBestStreak: currentBestStreak
         )
-        if !correct, let current {
+        if correct, !reviewQuestionIDs.isEmpty, let current {
+            MissedGameQuestionStore.shared.resolveReviewQuestion(
+                game: .whoAmI,
+                questionID: String(describing: current.id)
+            )
+        } else if !correct, let current {
             MissedGameQuestionStore.shared.record(
                 game: .whoAmI,
                 bookNames: current.books,
-                topic: "Bible people"
+                topic: "Bible people",
+                questionID: String(describing: current.id)
             )
         }
     }

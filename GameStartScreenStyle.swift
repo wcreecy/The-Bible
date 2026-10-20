@@ -148,6 +148,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
     let tint: Color
     let experienceLevel: Binding<GameExperienceLevel>?
     let experienceDetails: GameExperienceDetails?
+    let experienceTitle: LocalizedStringKey
+    let isConfigurationEnabled: Bool
     let isStartEnabled: Bool
     let startAction: () -> Void
     @ViewBuilder let preview: Preview
@@ -158,6 +160,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         tint: Color,
         experienceLevel: Binding<GameExperienceLevel>? = nil,
         experienceDetails: GameExperienceDetails? = nil,
+        experienceTitle: LocalizedStringKey = "How you’ll play",
+        isConfigurationEnabled: Bool = true,
         isStartEnabled: Bool = true,
         startAction: @escaping () -> Void,
         @ViewBuilder preview: () -> Preview,
@@ -167,6 +171,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         self.tint = tint
         self.experienceLevel = experienceLevel
         self.experienceDetails = experienceDetails
+        self.experienceTitle = experienceTitle
+        self.isConfigurationEnabled = isConfigurationEnabled
         self.isStartEnabled = isStartEnabled
         self.startAction = startAction
         self.preview = preview()
@@ -185,10 +191,12 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                             GameExperienceStandardsCard(
                                 tint: tint,
                                 selection: experienceLevel,
-                                details: experienceDetails
+                                details: experienceDetails,
+                                title: experienceTitle
                             )
                         }
                         configuration
+                            .disabled(!isConfigurationEnabled)
                         facts
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -207,10 +215,12 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                         GameExperienceStandardsCard(
                             tint: tint,
                             selection: experienceLevel,
-                            details: experienceDetails
+                            details: experienceDetails,
+                            title: experienceTitle
                         )
                     }
                     configuration
+                        .disabled(!isConfigurationEnabled)
                     facts
                 }
 
@@ -225,10 +235,11 @@ struct GameExperienceStandardsCard: View {
     let tint: Color
     @Binding var selection: GameExperienceLevel
     let details: GameExperienceDetails?
+    let title: LocalizedStringKey
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("How you’ll play", systemImage: "gamecontroller.fill")
+            Label(title, systemImage: "gamecontroller.fill")
                 .font(.headline)
                 .foregroundStyle(tint)
 

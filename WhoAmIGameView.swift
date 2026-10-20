@@ -2,10 +2,16 @@ import SwiftUI
 
 struct WhoAmIGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @State private var vm = WhoAmIGameViewModel()
+    @State private var vm: WhoAmIGameViewModel
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        isReviewRound = !reviewQuestionIDs.isEmpty
+        _vm = State(initialValue: WhoAmIGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
+    }
     @State private var maxChoiceHeight: CGFloat = 0
     @State private var timerOnLeading = false
     @State private var usesMutedTimerStyle = false
+    private let isReviewRound: Bool
 
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
@@ -96,6 +102,8 @@ struct WhoAmIGameView: View {
                 standard: "More people, 30 seconds; choices stay in the same testament.",
                 challenge: "Everyone, 15 seconds; choices stay in the same books."
             ),
+            experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
+            isConfigurationEnabled: !isReviewRound,
             isStartEnabled: vm.isReady,
             startAction: vm.startGame
         ) {

@@ -149,6 +149,12 @@ final class BibleTriviaGameModel {
     private static let questionsPerRound = 10
     private static let bestScoreKeyPrefix = "bibleTriviaBestScore"
 
+    private let reviewQuestionIDs: Set<String>
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        self.reviewQuestionIDs = reviewQuestionIDs
+    }
+
     private struct RoundQuestion: Identifiable {
         let question: BibleTriviaQuestion
         let options: [String]
@@ -204,7 +210,10 @@ final class BibleTriviaGameModel {
     }
 
     var eligibleQuestions: [BibleTriviaQuestion] {
-        questions.filter(difficulty.includes)
+        guard !reviewQuestionIDs.isEmpty else {
+            return questions.filter(difficulty.includes)
+        }
+        return questions.filter { reviewQuestionIDs.contains(String($0.id)) }
     }
 
     var completedInPool: Int {
@@ -367,12 +376,18 @@ final class BibleTriviaGameModel {
                 correct: isCorrect ? 1 : 0
             )
         }
-        if !isCorrect {
+        if isCorrect, !reviewQuestionIDs.isEmpty {
+            MissedGameQuestionStore.shared.resolveReviewQuestion(
+                game: .bibleTrivia,
+                questionID: String(question.id)
+            )
+        } else if !isCorrect {
             MissedGameQuestionStore.shared.record(
                 game: .bibleTrivia,
                 bookNames: scriptureReference.map { [$0.bookName] } ?? [],
                 chapterNumber: scriptureReference?.chapter,
-                topic: "Bible trivia"
+                topic: "Bible trivia",
+                questionID: String(question.id)
             )
         }
     }
@@ -398,7 +413,13 @@ final class BibleTriviaGameModel {
 }
 
 struct BibleTriviaGameView: View {
-    @State private var model = BibleTriviaGameModel()
+    @State private var model: BibleTriviaGameModel
+    private let isReviewRound: Bool
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        isReviewRound = !reviewQuestionIDs.isEmpty
+        _model = State(initialValue: BibleTriviaGameModel(reviewQuestionIDs: reviewQuestionIDs))
+    }
 
     var body: some View {
         Group {
@@ -410,6 +431,7 @@ struct BibleTriviaGameView: View {
                     difficulty: $model.difficulty,
                     questionsPerRound: 10,
                     eligibleQuestionCount: model.eligibleQuestions.count,
+                    isReviewRound: isReviewRound,
                     onStart: model.startRound
                 )
             case .playing:
@@ -472,6 +494,7 @@ private struct BibleTriviaSetupScreen: View {
     @Binding var difficulty: BibleTriviaDifficulty
     let questionsPerRound: Int
     let eligibleQuestionCount: Int
+    let isReviewRound: Bool
     let onStart: () -> Void
 
     private var experienceLevel: Binding<GameExperienceLevel> {
@@ -513,6 +536,8 @@ private struct BibleTriviaSetupScreen: View {
                         standard: "Easy and normal questions with 15 seconds each.",
                         challenge: "All questions with 10 seconds for each answer."
                     ),
+                    experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
+                    isConfigurationEnabled: !isReviewRound,
                     startAction: onStart
                 ) {
                     GameLobbyPreview(kind: .trivia)

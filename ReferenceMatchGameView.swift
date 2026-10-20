@@ -109,6 +109,12 @@ struct VerseMatchGameView: View {
     /// "Any verse" skips longer verses so four choices stay readable.
     static let maximumWords = 50
 
+    private let reviewQuestionIDs: Set<String>
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        self.reviewQuestionIDs = reviewQuestionIDs
+    }
+
     private enum Phase {
         case setup
         case playing
@@ -290,6 +296,8 @@ struct VerseMatchGameView: View {
                 standard: "Wrong choices come from your categories.",
                 challenge: "Every choice comes from the same book."
             ),
+            experienceTitle: reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
+            isConfigurationEnabled: reviewQuestionIDs.isEmpty,
             isStartEnabled: canStart,
             startAction: startGame
         ) {
@@ -416,6 +424,12 @@ struct VerseMatchGameView: View {
         guard canStart else { return }
         anyVersesByBook = buildAnyVerses()
         questionBag = buildQuestionBag()
+        if !reviewQuestionIDs.isEmpty {
+            let reviewPool = uniqueByReference(
+                wellKnownVerses + buildAnyVerses().values.flatMap { $0 }
+            )
+            questionBag = reviewPool.filter { reviewQuestionIDs.contains($0.reference) }.shuffled()
+        }
         guard !questionBag.isEmpty else { return }
         totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
@@ -494,12 +508,18 @@ struct VerseMatchGameView: View {
             currentBestStreak: currentBestStreak
         )
         GameStats.shared.recordVerseMatchPerBook(bookName: current.verse.bookName, answered: 1, correct: isCorrect ? 1 : 0)
-        if !isCorrect {
+        if isCorrect, !reviewQuestionIDs.isEmpty {
+            MissedGameQuestionStore.shared.resolveReviewQuestion(
+                game: .verseMatch,
+                questionID: current.verse.reference
+            )
+        } else if !isCorrect {
             MissedGameQuestionStore.shared.record(
                 game: .verseMatch,
                 bookNames: [current.verse.bookName],
                 chapterNumber: current.verse.chapterNumber,
-                topic: "Verse matching"
+                topic: "Verse matching",
+                questionID: current.verse.reference
             )
         }
     }

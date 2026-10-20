@@ -59,6 +59,12 @@ struct BeatTheClockGameView: View {
     static let questionsPerGame = 10
     static let hintCost = 3
 
+    private let reviewQuestionIDs: Set<String>
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        self.reviewQuestionIDs = reviewQuestionIDs
+    }
+
     private enum Phase {
         case setup
         case playing
@@ -318,6 +324,8 @@ struct BeatTheClockGameView: View {
                 standard: "More names • 15 sec • clue −3 sec.",
                 challenge: "All names • 10 sec • clue −3 sec."
             ),
+            experienceTitle: reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
+            isConfigurationEnabled: reviewQuestionIDs.isEmpty,
             isStartEnabled: !isLoadingData,
             startAction: startGame
         ) {
@@ -566,7 +574,10 @@ struct BeatTheClockGameView: View {
 
     private func startGame() {
         guard !isLoadingData else { return }
-        let deck = Array(makeQuestionDeck().prefix(Self.questionsPerGame))
+        let availableQuestions = reviewQuestionIDs.isEmpty
+            ? makeQuestionDeck()
+            : makeQuestionDeck().filter { reviewQuestionIDs.contains($0.id) }
+        let deck = Array(availableQuestions.prefix(Self.questionsPerGame))
         guard !deck.isEmpty else { return }
         questionDeck = deck
         totalQuestions = deck.count
@@ -664,7 +675,9 @@ struct BeatTheClockGameView: View {
     }
 
     private func makeQuestionDeck() -> [Question] {
-        let people = peopleForSelectedDifficulty.map { entry in
+        let sourcePeople = reviewQuestionIDs.isEmpty ? peopleForSelectedDifficulty : loadedPeople
+        let sourcePlaces = reviewQuestionIDs.isEmpty ? placesForSelectedDifficulty : loadedPlaces
+        let people = sourcePeople.map { entry in
             Question(
                 id: "person-\(entry.id)",
                 subject: .person,
@@ -674,7 +687,7 @@ struct BeatTheClockGameView: View {
                 scriptureReference: nil
             )
         }
-        let places = placesForSelectedDifficulty.map { entry in
+        let places = sourcePlaces.map { entry in
             // The reference book always counts, even when the KJV spells the name differently.
             var books = placeBooks?[entry.id] ?? []
             if let referenceBook = parseBookName(from: entry.scriptureMentioned) {
@@ -762,13 +775,16 @@ struct BeatTheClockGameView: View {
             answered: 1,
             correct: correct ? 1 : 0
         )
-        if !correct {
+        if correct, !reviewQuestionIDs.isEmpty {
+            MissedGameQuestionStore.shared.resolveReviewQuestion(game: .beatTheClock, questionID: currentQuestion.id)
+        } else if !correct {
             let scriptureReference = currentQuestion.scriptureReference.flatMap(BibleReferenceLinker.parse)
             MissedGameQuestionStore.shared.record(
                 game: .beatTheClock,
                 bookNames: scriptureReference.map { [$0.bookName] } ?? Array(currentQuestion.acceptableBooks),
                 chapterNumber: scriptureReference?.chapter,
-                topic: currentQuestion.subject == .person ? "Bible people" : "Bible places"
+                topic: currentQuestion.subject == .person ? "Bible people" : "Bible places",
+                questionID: currentQuestion.id
             )
         }
 

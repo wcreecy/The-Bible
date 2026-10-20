@@ -122,6 +122,12 @@ struct QuizView: View {
     static let questionsPerGame = 10
     static let contextCost = 3
 
+    private let reviewQuestionIDs: Set<String>
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        self.reviewQuestionIDs = reviewQuestionIDs
+    }
+
     private enum Phase {
         case setup
         case playing
@@ -381,6 +387,8 @@ struct QuizView: View {
                 standard: "15 seconds; wrong choices come from your categories.",
                 challenge: "12 seconds; wrong choices stay in the same Bible section."
             ),
+            experienceTitle: reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
+            isConfigurationEnabled: reviewQuestionIDs.isEmpty,
             isStartEnabled: isFilterReady,
             startAction: startQuiz
         ) {
@@ -654,7 +662,7 @@ struct QuizView: View {
 
     private func buildQuestionBag() -> [VerseCandidate] {
         let pool = poolBookNames
-        let difficultyKey = difficulty.rawValue
+        let difficultyKey = reviewQuestionIDs.isEmpty ? difficulty.rawValue : Difficulty.hard.rawValue
         return BibleData.books
             .filter { pool.contains($0.name) }
             .flatMap { book in
@@ -730,6 +738,11 @@ struct QuizView: View {
     private func startQuiz() {
         guard isFilterReady else { return }
         questionBag = buildQuestionBag()
+        if !reviewQuestionIDs.isEmpty {
+            questionBag = questionBag.filter {
+                reviewQuestionIDs.contains("\($0.bookName)|\($0.chapter)|\($0.verse)")
+            }
+        }
         guard !questionBag.isEmpty else { return }
         totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
@@ -834,12 +847,18 @@ struct QuizView: View {
             currentBestStreak: bestStreak
         )
         GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
-        if !correct {
+        if correct, !reviewQuestionIDs.isEmpty {
+            MissedGameQuestionStore.shared.resolveReviewQuestion(
+                game: .bibleQuiz,
+                questionID: "\(current.correctBook)|\(current.chapter)|\(current.verse)"
+            )
+        } else if !correct {
             MissedGameQuestionStore.shared.record(
                 game: .bibleQuiz,
                 bookNames: [current.correctBook],
                 chapterNumber: current.chapter,
-                topic: "Book identification"
+                topic: "Book identification",
+                questionID: "\(current.correctBook)|\(current.chapter)|\(current.verse)"
             )
         }
 
