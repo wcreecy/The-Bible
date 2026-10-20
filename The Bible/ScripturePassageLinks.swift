@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 import UIKit
 
@@ -480,6 +481,8 @@ private struct ScripturePassagePreviewModifier: ViewModifier {
 /// Preview of a cited passage with Copy, Share, and Open in Bible.
 struct ScripturePassageSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [Favorite]
 
     let reference: PassageReference
 
@@ -496,6 +499,27 @@ struct ScripturePassageSheet: View {
     @State private var isTruncated = false
     @State private var isLoading = true
     @State private var didCopy = false
+    @State private var persistenceFailure: PersistenceFailure?
+
+    private var favoriteTarget: VerseActionReference? {
+        guard let section = sections.first, let verse = section.verses.first else { return nil }
+        return VerseActionReference(
+            bookName: reference.bookName,
+            chapterNumber: section.chapter,
+            verseNumber: verse.number,
+            verseText: verse.text
+        )
+    }
+
+    private var isFavorite: Bool {
+        guard let favoriteTarget else { return false }
+        return !FavoriteVerses.matching(
+            favorites,
+            bookName: favoriteTarget.bookName,
+            chapterNumber: favoriteTarget.chapterNumber,
+            verseNumber: favoriteTarget.verseNumber
+        ).isEmpty
+    }
 
     var body: some View {
         NavigationStack {
@@ -556,6 +580,7 @@ struct ScripturePassageSheet: View {
             .navigationTitle(reference.displayTitle)
             .navigationBarTitleDisplayMode(.inline)
             .task(id: reference.id) { await load() }
+            .persistenceFailureAlert(failure: $persistenceFailure)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
@@ -567,6 +592,17 @@ struct ScripturePassageSheet: View {
                 }
 
                 ToolbarItemGroup(placement: .confirmationAction) {
+                    Button(action: toggleFavorite) {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .foregroundStyle(isFavorite ? .red : .primary)
+                    }
+                    .accessibilityLabel(
+                        isFavorite
+                            ? "Remove \(favoriteTarget?.bookName ?? reference.bookName) from Favorites"
+                            : "Add \(favoriteTarget?.bookName ?? reference.bookName) to Favorites"
+                    )
+                    .disabled(favoriteTarget == nil)
+
                     Button {
                         UIPasteboard.general.string = shareText
                         Haptics.selection()
@@ -594,6 +630,28 @@ struct ScripturePassageSheet: View {
         }
         .joined(separator: "\n\n")
         return "\(reference.displayTitle)\n\n\(body)"
+    }
+
+    private func toggleFavorite() {
+        guard let favoriteTarget else { return }
+
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                _ = try FavoriteVerses.toggle(
+                    bookName: favoriteTarget.bookName,
+                    chapterNumber: favoriteTarget.chapterNumber,
+                    verseNumber: favoriteTarget.verseNumber,
+                    verseText: favoriteTarget.verseText,
+                    favorites: favorites,
+                    in: modelContext
+                )
+            },
+            onSuccess: {
+                Haptics.success()
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
     }
 
     private func load() async {
