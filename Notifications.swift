@@ -9,6 +9,9 @@ extension Notification.Name {
     // Posted when game counters merge via KVS; UI scoreboards can refresh.
     static let gameStatsExternallyUpdated = Notification.Name("gameStatsExternallyUpdated")
 
+    // Posted when foreground study time changes, so the usage comparison can refresh.
+    static let studyTimeUpdated = Notification.Name("studyTimeUpdated")
+
     // Posted when chapter read/verse progress changes anywhere in the app.
     static let chapterProgressChanged = Notification.Name("chapterProgressChanged")
 

@@ -3,14 +3,18 @@ import SwiftUI
 struct ReadingAndGamesComparisonCard: View {
     private struct Snapshot: Equatable {
         let todayReadingSeconds: Int
+        let todayStudySeconds: Int
         let todayGameSeconds: Int
         let allTimeReadingSeconds: Int
+        let allTimeStudySeconds: Int
         let allTimeGameSeconds: Int
 
         static let empty = Snapshot(
             todayReadingSeconds: 0,
+            todayStudySeconds: 0,
             todayGameSeconds: 0,
             allTimeReadingSeconds: 0,
+            allTimeStudySeconds: 0,
             allTimeGameSeconds: 0
         )
     }
@@ -19,7 +23,7 @@ struct ReadingAndGamesComparisonCard: View {
 
     var body: some View {
         HeroCard(
-            title: "Reading & Games",
+            title: "Reading, Study & Games",
             subtitle: "How your time is divided",
             icon: "chart.bar.xaxis",
             tint: .teal
@@ -28,12 +32,14 @@ struct ReadingAndGamesComparisonCard: View {
                 ActivityUsageBar(
                     title: "Today",
                     readingSeconds: snapshot.todayReadingSeconds,
+                    studySeconds: snapshot.todayStudySeconds,
                     gameSeconds: snapshot.todayGameSeconds
                 )
 
                 ActivityUsageBar(
                     title: "All Time",
                     readingSeconds: snapshot.allTimeReadingSeconds,
+                    studySeconds: snapshot.allTimeStudySeconds,
                     gameSeconds: snapshot.allTimeGameSeconds
                 )
             }
@@ -44,6 +50,9 @@ struct ReadingAndGamesComparisonCard: View {
                 refresh()
             }
             .onNotification(.gameStatsExternallyUpdated) {
+                refresh()
+            }
+            .onNotification(.studyTimeUpdated) {
                 refresh()
             }
         }
@@ -58,8 +67,10 @@ struct ReadingAndGamesComparisonCard: View {
 
         snapshot = Snapshot(
             todayReadingSeconds: max(0, dailyReadingTotals[todayKey, default: 0]),
+            todayStudySeconds: StudyTimeTracker.shared.seconds(on: now),
             todayGameSeconds: GameStats.shared.playSeconds(on: now),
             allTimeReadingSeconds: dailyReadingTotals.values.reduce(0) { $0 + max(0, $1) },
+            allTimeStudySeconds: StudyTimeTracker.shared.allTimeSeconds,
             allTimeGameSeconds: GameStats.shared.allTimePlaySeconds
         )
     }
@@ -68,13 +79,18 @@ struct ReadingAndGamesComparisonCard: View {
 private struct ActivityUsageBar: View {
     let title: LocalizedStringResource
     let readingSeconds: Int
+    let studySeconds: Int
     let gameSeconds: Int
 
     private var reading: Int { max(0, readingSeconds) }
+    private var study: Int { max(0, studySeconds) }
     private var games: Int { max(0, gameSeconds) }
-    private var total: Int { reading + games }
+    private var total: Int { reading + study + games }
     private var readingFraction: Double {
         total > 0 ? Double(reading) / Double(total) : 0
+    }
+    private var studyFraction: Double {
+        total > 0 ? Double(study) / Double(total) : 0
     }
     private var gameFraction: Double {
         total > 0 ? Double(games) / Double(total) : 0
@@ -95,15 +111,24 @@ private struct ActivityUsageBar: View {
             }
 
             GeometryReader { proxy in
-                let hasBothCategories = reading > 0 && games > 0
-                let spacing: CGFloat = hasBothCategories ? 3 : 0
-                let availableWidth = max(0, proxy.size.width - spacing)
+                let activeCategoryCount = [reading, study, games].filter { $0 > 0 }.count
+                let spacing: CGFloat = activeCategoryCount > 1 ? 3 : 0
+                let availableWidth = max(
+                    0,
+                    proxy.size.width - (spacing * CGFloat(max(0, activeCategoryCount - 1)))
+                )
 
                 HStack(spacing: spacing) {
                     if reading > 0 {
                         Rectangle()
                             .fill(Color.blue.gradient)
                             .frame(width: availableWidth * readingFraction)
+                    }
+
+                    if study > 0 {
+                        Rectangle()
+                            .fill(Color.mint.gradient)
+                            .frame(width: availableWidth * studyFraction)
                     }
 
                     if games > 0 {
@@ -122,17 +147,19 @@ private struct ActivityUsageBar: View {
             .frame(height: 12)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(
-                "\(title). Reading \(formattedUsage(reading)). Games \(formattedUsage(games))."
+                "\(title). Reading \(formattedUsage(reading)). Study \(formattedUsage(study)). Games \(formattedUsage(games))."
             )
 
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 8) {
                     ActivityUsageLegend(title: "Reading", seconds: reading, tint: .blue)
+                    ActivityUsageLegend(title: "Study", seconds: study, tint: .mint)
                     ActivityUsageLegend(title: "Games", seconds: games, tint: .indigo)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
                     ActivityUsageLegend(title: "Reading", seconds: reading, tint: .blue)
+                    ActivityUsageLegend(title: "Study", seconds: study, tint: .mint)
                     ActivityUsageLegend(title: "Games", seconds: games, tint: .indigo)
                 }
             }

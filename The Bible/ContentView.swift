@@ -481,6 +481,8 @@ struct ContentView: View {
 
     /// Keeps Health mindful-session tracking in sync with foreground Bible and game activity.
     private func updateMindfulMinutesTracking() {
+        StudyTimeTracker.shared.setApplicationActive(scenePhase == .active)
+
         if isOnBibleTab {
             MindfulMinutesTracker.shared.start(.bibleTab)
         } else {

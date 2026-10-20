@@ -5,6 +5,7 @@ struct BookOverviewView: View {
 
     @State private var overview: BibleBookOverview?
     @State private var isLoading = true
+    @State private var studyTimeSourceID = UUID()
 
     var body: some View {
         Group {
@@ -23,6 +24,12 @@ struct BookOverviewView: View {
         .navigationTitle("Explore \(bookName)")
         .navigationBarTitleDisplayMode(.inline)
         .task(id: bookName, loadOverview)
+        .onAppear {
+            StudyTimeTracker.shared.start(studyTimeSourceID)
+        }
+        .onDisappear {
+            StudyTimeTracker.shared.stop(studyTimeSourceID)
+        }
     }
 
     private func overviewContent(_ overview: BibleBookOverview) -> some View {

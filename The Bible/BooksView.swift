@@ -120,6 +120,7 @@ struct StudyBibleView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var requestedChapter: StudyChapterRequest?
     @State private var requestedBookOverview: StudyBookOverviewRequest?
+    @State private var studyTimeSourceID = UUID()
     @State private var searchText = ""
     @State private var testamentFilter: StudyTestamentFilter = .all
     @AppStorage("studyBooksSortAlphabetical") private var sortAlphabetically = false
@@ -214,6 +215,8 @@ struct StudyBibleView: View {
             BookOverviewView(bookName: request.bookName)
         }
         .onAppear {
+            StudyTimeTracker.shared.start(studyTimeSourceID)
+
             if shouldOpenLastStudiedBookOverview, !lastStudiedBook.isEmpty {
                 shouldOpenLastStudiedBookOverview = false
                 requestedBookOverview = StudyBookOverviewRequest(bookName: lastStudiedBook)
@@ -224,6 +227,9 @@ struct StudyBibleView: View {
                     chapterNumber: lastStudiedChapter
                 )
             }
+        }
+        .onDisappear {
+            StudyTimeTracker.shared.stop(studyTimeSourceID)
         }
     }
 }

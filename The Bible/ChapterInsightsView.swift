@@ -9,6 +9,7 @@ struct ChapterInsightsView: View {
     @State private var insights: ChapterInsights?
     @State private var neighborSummaries: [ChapterLocation: String] = [:]
     @State private var isLoading = true
+    @State private var studyTimeSourceID = UUID()
     /// The chapter `insights` was loaded for; returning from a pushed page shouldn't reload.
     @State private var loadedLocation: ChapterLocation?
     @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
@@ -48,6 +49,12 @@ struct ChapterInsightsView: View {
         .onChange(of: location, initial: true) { _, newLocation in
             lastStudiedBook = newLocation.bookName
             lastStudiedChapter = newLocation.chapterNumber
+        }
+        .onAppear {
+            StudyTimeTracker.shared.start(studyTimeSourceID)
+        }
+        .onDisappear {
+            StudyTimeTracker.shared.stop(studyTimeSourceID)
         }
     }
 
