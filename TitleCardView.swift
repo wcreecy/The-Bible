@@ -44,6 +44,7 @@ struct TitleCardView: View {
     private enum GreetingScene {
         case sunrise
         case afternoon
+        case evening
         case night
 
         var greeting: String {
@@ -52,6 +53,8 @@ struct TitleCardView: View {
                 "Good Morning"
             case .afternoon:
                 "Good Afternoon"
+            case .evening:
+                "Good Evening"
             case .night:
                 "Good Night"
             }
@@ -63,6 +66,8 @@ struct TitleCardView: View {
                 "GreetingSunrise"
             case .afternoon:
                 "GreetingAfternoon"
+            case .evening:
+                "GreetingEvening"
             case .night:
                 "GreetingNight"
             }
@@ -72,7 +77,7 @@ struct TitleCardView: View {
             switch self {
             case .afternoon:
                 .black
-            case .sunrise, .night:
+            case .sunrise, .evening, .night:
                 .white
             }
         }
@@ -81,7 +86,7 @@ struct TitleCardView: View {
             switch self {
             case .afternoon:
                 .white.opacity(0.72)
-            case .sunrise, .night:
+            case .sunrise, .evening, .night:
                 .black.opacity(0.52)
             }
         }
@@ -95,6 +100,8 @@ struct TitleCardView: View {
             return .sunrise
         case 12..<18:
             return .afternoon
+        case 18..<21:
+            return .evening
         default:
             return .night
         }
