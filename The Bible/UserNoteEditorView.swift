@@ -124,11 +124,28 @@ struct UserNoteEditorView: View {
     private var optionsBar: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                NoteCategoryMenu(category: $selectedCategory)
-                Spacer()
-                Text(existingNote == nil ? "New note" : "Editing")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if isSermon {
+                    Label("Sermon Note", systemImage: "person.wave.2")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tint)
+                    Spacer()
+                    Button("Remove Sermon Details") {
+                        selectedCategory = .personal
+                    }
+                    .font(.caption.weight(.semibold))
+                } else {
+                    Button {
+                        selectedCategory = .sermon
+                        isShowingSermonDetails = true
+                    } label: {
+                        Label("Add Sermon Details", systemImage: "person.wave.2")
+                    }
+                    .font(.caption.weight(.semibold))
+                    Spacer()
+                    Text(existingNote == nil ? "New note" : "Editing")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(minHeight: 32)
 

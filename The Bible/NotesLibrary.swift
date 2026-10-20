@@ -69,7 +69,7 @@ struct NotesLibrary {
 
         let matching = items.filter { item in
             let itemTags = tagsByID[item.id] ?? []
-            return (filters.category == .all || item.categoryRawValue == filters.category.rawValue) &&
+            return filters.category.matches(item) &&
                 (filters.tag.map(itemTags.contains) ?? true) &&
                 item.matchesSearch(filters.search, tags: itemTags)
         }
@@ -133,9 +133,12 @@ struct NotesLibrary {
         case .created:
             return dateSection(for: item.createdAt, now: now, calendar: calendar)
         case .tag:
-            let filter = NotesFilter(rawValue: item.categoryRawValue)
-            let title = item.category.map { String(localized: $0.title) } ?? String(localized: "Other")
-            return NotesListSection(id: "type.\(item.categoryRawValue)", title: title, systemImage: filter?.systemImage, items: [])
+            return NotesListSection(
+                id: "kind.\(item.isSermon ? "sermon" : item.isScriptureLinked ? "scripture" : "note")",
+                title: String(localized: item.smartKindTitle),
+                systemImage: item.smartKindSystemImage,
+                items: []
+            )
         case .bibleOrder:
             guard let book = item.bibleLocation?.bookName else {
                 return NotesListSection(id: "book.none", title: String(localized: "No Passage"), systemImage: "note.text", items: [])
@@ -251,8 +254,8 @@ struct NotesLibrary {
         case .title:
             return lhs.title.localizedStandardCompare(rhs.title)
         case .tag:
-            let left = lhs.category.map { String(localized: $0.title) } ?? lhs.categoryRawValue
-            let right = rhs.category.map { String(localized: $0.title) } ?? rhs.categoryRawValue
+            let left = String(localized: lhs.smartKindTitle)
+            let right = String(localized: rhs.smartKindTitle)
             return left.localizedStandardCompare(right)
         }
     }

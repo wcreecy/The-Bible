@@ -160,26 +160,6 @@ struct CustomNoteTagsTip: View {
     }
 }
 
-struct NoteCategoryMenu: View {
-    @Binding var category: NoteCategory
-
-    var body: some View {
-        Menu {
-            Picker("Type", selection: $category) {
-                ForEach(NoteCategory.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-        } label: {
-            Label(category.title, systemImage: "square.stack.fill")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.tint)
-        }
-        .accessibilityLabel("Note type")
-        .accessibilityValue(Text(category.title))
-    }
-}
-
 struct HighlightColorPicker: View {
     @Binding var selection: VerseHighlightColor?
 

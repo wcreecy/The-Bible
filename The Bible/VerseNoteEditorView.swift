@@ -18,7 +18,6 @@ struct VerseNoteEditorView: View {
     @State private var noteText: AttributedString
     @State private var noteSelection = AttributedTextSelection()
     @State private var selectedColor: VerseHighlightColor?
-    @State private var selectedCategory: NoteCategory
     @State private var endVerse: Int
     @State private var formattingChanged = false
     @State private var restoredDraftDate: Date?
@@ -52,7 +51,7 @@ struct VerseNoteEditorView: View {
         let saved = NoteDraft(
             title: existingNote?.title ?? "",
             body: existingNote?.formattedContent ?? (try? JSONEncoder().encode(AttributedString(existingNote?.content ?? ""))) ?? Data(),
-            category: existingNote?.categoryRawValue ?? NoteCategory.scripture.rawValue,
+            category: NoteCategory.scripture.rawValue,
             highlightColor: existingNote?.highlightColor ?? "",
             endVerseNumber: existingNote?.lastVerseNumber ?? verse.verseNumber
         )
@@ -68,7 +67,6 @@ struct VerseNoteEditorView: View {
             fallback: existingNote?.content ?? ""
         ))
         _selectedColor = State(initialValue: VerseHighlightColor(rawValue: initial.highlightColor))
-        _selectedCategory = State(initialValue: NoteCategory(rawValue: initial.category) ?? .scripture)
         _endVerse = State(initialValue: max(initial.endVerseNumber, start.verseNumber))
     }
 
@@ -79,10 +77,7 @@ struct VerseNoteEditorView: View {
                     NoteEditorShowFieldsButton { areFieldsCollapsed = false }
                 } else {
                     Group {
-                        VerseNoteOptionsBar(
-                            category: $selectedCategory,
-                            highlight: $selectedColor
-                        )
+                        VerseNoteOptionsBar(highlight: $selectedColor)
 
                         ScriptureEditorReferenceCard(
                             reference: reference,
@@ -166,7 +161,6 @@ struct VerseNoteEditorView: View {
         formattingChanged ||
             title != saved.title ||
             String(noteText.characters) != String(saved.bodyText.characters) ||
-            selectedCategory.rawValue != saved.category ||
             (selectedColor?.rawValue ?? "") != saved.highlightColor ||
             endVerse != saved.endVerseNumber
     }
@@ -175,7 +169,7 @@ struct VerseNoteEditorView: View {
         NoteDraft(
             title: title,
             body: (try? JSONEncoder().encode(noteText)) ?? Data(),
-            category: selectedCategory.rawValue,
+            category: NoteCategory.scripture.rawValue,
             highlightColor: selectedColor?.rawValue ?? "",
             endVerseNumber: endVerse
         )
@@ -184,7 +178,6 @@ struct VerseNoteEditorView: View {
     private func resetToSaved() {
         title = saved.title
         noteText = saved.bodyText
-        selectedCategory = NoteCategory(rawValue: saved.category) ?? .scripture
         selectedColor = VerseHighlightColor(rawValue: saved.highlightColor)
         endVerse = max(saved.endVerseNumber, start.verseNumber)
         formattingChanged = false
@@ -240,7 +233,7 @@ struct VerseNoteEditorView: View {
                 note.content = trimmedNote
                 note.formattedContent = try JSONEncoder().encode(noteText)
                 note.highlightColor = selectedColor?.rawValue ?? ""
-                note.categoryRawValue = selectedCategory.rawValue
+                note.categoryRawValue = NoteCategory.scripture.rawValue
                 note.endVerseNumber = endVerse > start.verseNumber ? endVerse : 0
                 note.verseText = rangeText
                 note.updatedAt = Date()
@@ -344,30 +337,13 @@ private struct ScriptureEditorReferenceCard: View {
 }
 
 private struct VerseNoteOptionsBar: View {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
-    @Binding var category: NoteCategory
     @Binding var highlight: VerseHighlightColor?
 
     var body: some View {
-        Group {
-            if horizontalSizeClass == .compact {
-                VStack(alignment: .leading, spacing: 8) {
-                    NoteCategoryMenu(category: $category)
-                    Divider()
-                    ScriptureHighlightPicker(selection: $highlight)
-                }
-            } else {
-                HStack(spacing: 12) {
-                    NoteCategoryMenu(category: $category)
-                    Divider().frame(height: 28)
-                    ScriptureHighlightPicker(selection: $highlight)
-                }
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        ScriptureHighlightPicker(selection: $highlight)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 

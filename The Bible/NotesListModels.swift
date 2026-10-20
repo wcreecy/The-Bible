@@ -128,7 +128,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     case modified
     case created
     case title
-    /// Sorts by the note's type. The raw value stays "tag" so saved preferences carry over.
+    /// Sorts by automatic note metadata. The raw value stays "tag" so saved preferences carry over.
     case tag
     /// By the note's passage, Genesis to Revelation, then chapter and verse.
     case bibleOrder
@@ -140,7 +140,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .modified: "Date Modified"
         case .created: "Date Created"
         case .title: "Title"
-        case .tag: "Type"
+        case .tag: "Note Kind"
         case .bibleOrder: "Bible Order"
         }
     }
@@ -172,39 +172,43 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     }
 }
 
-/// Filters notes by their type (category).
+/// Smart filters for note metadata. Custom tags remain the primary way to organize notes.
 enum NotesFilter: String, CaseIterable, Identifiable {
     case all
     case sermon
-    case personal
     case scripture
 
     var id: String { rawValue }
 
     var title: LocalizedStringResource {
-        noteCategory?.shortTitle ?? "All"
+        switch self {
+        case .all: "All"
+        case .sermon: "Sermons"
+        case .scripture: "Scripture-linked"
+        }
     }
 
-    /// The list heading for this filter: "All Notes" or the type's full name.
     var libraryTitle: LocalizedStringResource {
-        noteCategory?.title ?? "All Notes"
+        switch self {
+        case .all: "All Notes"
+        case .sermon: "Sermon Notes"
+        case .scripture: "Scripture-linked Notes"
+        }
     }
 
     var systemImage: String {
         switch self {
         case .all: "square.grid.2x2"
         case .sermon: "person.wave.2"
-        case .personal: "person.crop.circle"
         case .scripture: "book.closed"
         }
     }
 
-    var noteCategory: NoteCategory? {
+    func matches(_ item: NotesListItem) -> Bool {
         switch self {
-        case .all: nil
-        case .sermon: .sermon
-        case .personal: .personal
-        case .scripture: .scripture
+        case .all: true
+        case .sermon: item.isSermon
+        case .scripture: item.isScriptureLinked
         }
     }
 }
@@ -239,7 +243,7 @@ enum NotesListItem: Identifiable {
         NoteCategory(rawValue: categoryRawValue)
     }
 
-    /// Former Chapter Insights reflections now appear with Personal Notes.
+    /// Legacy category metadata retained for existing notes and sermon details.
     var categoryRawValue: String {
         let rawValue: String
         switch self {
@@ -247,6 +251,27 @@ enum NotesListItem: Identifiable {
         case .user(let note): rawValue = note.categoryRawValue
         }
         return rawValue == "chapterInsights" ? NoteCategory.personal.rawValue : rawValue
+    }
+
+    var isSermon: Bool {
+        categoryRawValue == NoteCategory.sermon.rawValue
+    }
+
+    /// A note is Scripture-linked when it is attached to a verse or has a valid passage.
+    var isScriptureLinked: Bool {
+        bibleLocation != nil
+    }
+
+    var smartKindTitle: LocalizedStringResource {
+        if isSermon { return "Sermon Notes" }
+        if isScriptureLinked { return "Scripture-linked Notes" }
+        return "Notes"
+    }
+
+    var smartKindSystemImage: String {
+        if isSermon { return "person.wave.2" }
+        if isScriptureLinked { return "book.closed" }
+        return "note.text"
     }
 
     var content: String {

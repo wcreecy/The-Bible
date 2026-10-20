@@ -1,13 +1,14 @@
 import SwiftData
 import SwiftUI
 
-/// The Notes page's filters in one row: type and custom tags. Tags open a second row
-/// listing each tag with how many notes use it.
+/// The Notes page's filters in one row: smart metadata and custom tags. Tags open a
+/// second row listing each tag with how many notes use it.
 struct NotesFilterBar: View {
     @Binding var filters: NotesFilters
 
     let tags: [NotesLibrary.TagCount]
     let manageTagsAction: () -> Void
+    let clearFiltersAction: (() -> Void)?
 
     @State private var isShowingTags = false
 
@@ -17,7 +18,7 @@ struct NotesFilterBar: View {
                 HStack(spacing: 8) {
                     ForEach(NotesFilter.allCases) { filter in
                         FilterChip(isSelected: filters.category == filter) {
-                            update { $0.category = filter }
+                            update { $0.category = $0.category == filter ? .all : filter }
                         } label: {
                             Label { Text(filter.title) } icon: { Image(systemName: filter.systemImage) }
                         }
@@ -45,6 +46,15 @@ struct NotesFilterBar: View {
             if isShowingTags {
                 tagRow
                     .transition(.move(edge: .top).combined(with: .opacity))
+            }
+
+            if let clearFiltersAction {
+                NotesActiveFiltersSummary(
+                    category: filters.category,
+                    tag: filters.tag,
+                    search: filters.search,
+                    clearAction: clearFiltersAction
+                )
             }
         }
     }
@@ -87,6 +97,50 @@ struct NotesFilterBar: View {
 
     private func update(_ change: (inout NotesFilters) -> Void) {
         withAnimation(.snappy) { change(&filters) }
+    }
+}
+
+/// States exactly what is narrowing the list, with the reset action where it is needed.
+struct NotesActiveFiltersSummary: View {
+    let category: NotesFilter
+    let tag: String?
+    let search: String
+    let clearAction: () -> Void
+
+    private var activeDescription: String {
+        var parts = [String]()
+        if category != .all {
+            parts.append(String(localized: category.title))
+        }
+        if let tag {
+            parts.append("#\(tag)")
+        }
+        let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedSearch.isEmpty {
+            parts.append("“\(trimmedSearch)”")
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text("Showing: \(activeDescription)")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+
+            Spacer(minLength: 8)
+
+            Button("Clear filters", systemImage: "xmark.circle", action: clearAction)
+                .font(.subheadline.weight(.semibold))
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityLabel("Clear all filters")
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(.tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -197,15 +251,6 @@ struct NotesListCard: View {
 
             Spacer(minLength: 8)
 
-            if showsClearFiltersAction {
-                // Icon-only when sharing the header with the New Note button.
-                if newNoteAction == nil {
-                    clearFiltersButton.labelStyle(.titleAndIcon)
-                } else {
-                    clearFiltersButton.labelStyle(.iconOnly)
-                }
-            }
-
             if let newNoteAction {
                 Button("New Note", systemImage: "plus", action: newNoteAction)
                     .font(.caption.weight(.semibold))
@@ -214,16 +259,6 @@ struct NotesListCard: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var clearFiltersButton: some View {
-        Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
-            clearFiltersAction()
-        }
-        .font(.caption.weight(.semibold))
-        .buttonStyle(.bordered)
-        .controlSize(.small)
-        .accessibilityLabel("Clear all filters")
     }
 
     private func groupHeader(_ section: NotesListSection, title: String) -> some View {

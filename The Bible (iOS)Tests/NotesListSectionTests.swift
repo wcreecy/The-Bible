@@ -104,7 +104,36 @@ struct NotesListSectionTests {
             [userNote(title: "Sunday", category: .sermon), userNote(title: "Journal")],
             sort: .tag
         )
-        #expect(headings(byType) == ["Personal Notes", "Scripture Notes", "Sermon Notes"])
+        #expect(headings(byType) == ["Notes", "Scripture-linked Notes", "Sermon Notes"])
+    }
+
+    @Test
+    func smartFiltersUseSermonAndScriptureMetadata() {
+        let scripture = verseNote("John", 3, 16, content: "Love")
+        let sermon = userNote(title: "Sunday", category: .sermon)
+        let general = userNote(title: "Journal")
+
+        let sermonNotes = NotesLibrary(
+            scriptureNotes: [scripture],
+            userNotes: [sermon, general],
+            filters: NotesFilters(category: .sermon),
+            sort: .title,
+            ascending: true,
+            now: now,
+            calendar: calendar
+        )
+        let scriptureLinkedNotes = NotesLibrary(
+            scriptureNotes: [scripture],
+            userNotes: [sermon, general],
+            filters: NotesFilters(category: .scripture),
+            sort: .title,
+            ascending: true,
+            now: now,
+            calendar: calendar
+        )
+
+        #expect(sermonNotes.visibleItems.map(\.title) == ["Sunday"])
+        #expect(scriptureLinkedNotes.visibleItems.map(\.title) == ["John 3:16"])
     }
 
     @Test

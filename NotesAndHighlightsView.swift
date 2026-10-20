@@ -17,6 +17,7 @@ struct NotesAndHighlightsView: View {
     @State private var isSearchPresented = false
     @State private var selectedID: NotesListItem.ID?
     @State private var isCreatingNote = false
+    @State private var newNoteCategory: NoteCategory = .personal
     @State private var isEditingSelection = false
     @State private var isShowingCompactDetail = false
     @State private var isManagingTags = false
@@ -65,20 +66,26 @@ struct NotesAndHighlightsView: View {
                     }
                 )
 
-                Button {
-                    isCreatingNote = true
+                Menu {
+                    Button("New Note", systemImage: "note.text") {
+                        createNote(category: .personal)
+                    }
+                    .keyboardShortcut("n", modifiers: .command)
+
+                    Button("Sermon Note", systemImage: "person.wave.2") {
+                        createNote(category: .sermon)
+                    }
                 } label: {
                     Image(systemName: "plus")
                 }
                 .accessibilityLabel("Create note")
-                .keyboardShortcut("n", modifiers: .command)
             }
         }
         .fullScreenCover(isPresented: $isCreatingNote) {
             NavigationStack {
                 UserNoteEditorView(
                     existingNote: nil,
-                    defaultCategory: filters.category.noteCategory ?? .personal
+                    defaultCategory: newNoteCategory
                 )
             }
         }
@@ -132,6 +139,11 @@ struct NotesAndHighlightsView: View {
         .onChange(of: sortAscending) { _, _ in selectFirstVisibleNoteIfNeeded() }
     }
 
+    private func createNote(category: NoteCategory) {
+        newNoteCategory = category
+        isCreatingNote = true
+    }
+
     private var library: NotesLibrary {
         NotesLibrary(
             scriptureNotes: scriptureNotes,
@@ -164,7 +176,8 @@ struct NotesAndHighlightsView: View {
         NotesFilterBar(
             filters: $filters,
             tags: library.tags,
-            manageTagsAction: { isManagingTags = true }
+            manageTagsAction: { isManagingTags = true },
+            clearFiltersAction: filters.isActive ? { clearFilters() } : nil
         )
     }
 
@@ -194,7 +207,7 @@ struct NotesAndHighlightsView: View {
             ResizableNotesColumns(listColumnFraction: $listColumnFraction) {
                 notesList(
                     library,
-                    newNoteAction: { isCreatingNote = true },
+                    newNoteAction: { createNote(category: .personal) },
                     selectAction: { selectedID = $0.id }
                 )
                 .padding(.horizontal, 2)
@@ -233,7 +246,7 @@ struct NotesAndHighlightsView: View {
             ContextualTipView(
                 id: "notes.quickActions",
                 title: "Browse and manage notes",
-                message: "Filter by type, or tap #Tags to filter by your own tags. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
+                message: "Use #Tags to organize notes. Smart filters can show sermon notes or notes linked to Scripture. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
                 systemImage: "hand.point.up.left"
             )
         }
@@ -252,7 +265,7 @@ struct NotesAndHighlightsView: View {
             showsClearFiltersAction: filters.isActive,
             clearFiltersAction: clearFilters,
             newNoteAction: newNoteAction,
-            createFirstNoteAction: { isCreatingNote = true },
+            createFirstNoteAction: { createNote(category: .personal) },
             selectAction: selectAction,
             editAction: { item in
                 selectedID = item.id
