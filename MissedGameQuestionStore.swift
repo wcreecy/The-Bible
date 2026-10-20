@@ -25,6 +25,12 @@ final class MissedGameQuestionStore {
         let date: Date
     }
 
+    struct ChapterRecommendation: Hashable {
+        let bookName: String
+        let chapterNumber: Int
+        let missedCount: Int
+    }
+
     private static let storageKey = "missedGameQuestionHistory"
     private static let maximumEntries = 500
     private static let retentionInterval: TimeInterval = 180 * 24 * 60 * 60
@@ -59,6 +65,33 @@ final class MissedGameQuestionStore {
         save()
     }
 
+    /// Returns the most frequently missed referenced chapter once it has enough misses to be actionable.
+    func mostMissedChapter(minimumMisses: Int = 3) -> ChapterRecommendation? {
+        var missedCounts: [ChapterKey: Int] = [:]
+
+        for entry in entries {
+            guard let chapterNumber = entry.chapterNumber else { continue }
+            for bookName in entry.bookNames {
+                missedCounts[ChapterKey(bookName: bookName, chapterNumber: chapterNumber), default: 0] += 1
+            }
+        }
+
+        return missedCounts
+            .map { ChapterRecommendation(bookName: $0.key.bookName, chapterNumber: $0.key.chapterNumber, missedCount: $0.value) }
+            .filter { $0.missedCount >= minimumMisses }
+            .sorted { lhs, rhs in
+                if lhs.missedCount != rhs.missedCount {
+                    return lhs.missedCount > rhs.missedCount
+                }
+                let bookOrder = lhs.bookName.localizedStandardCompare(rhs.bookName)
+                if bookOrder != .orderedSame {
+                    return bookOrder == .orderedAscending
+                }
+                return lhs.chapterNumber < rhs.chapterNumber
+            }
+            .first
+    }
+
     private func prune(now: Date = Date()) {
         let cutoff = now.addingTimeInterval(-Self.retentionInterval)
         entries = entries
@@ -67,6 +100,11 @@ final class MissedGameQuestionStore {
         if entries.count > Self.maximumEntries {
             entries.removeLast(entries.count - Self.maximumEntries)
         }
+    }
+
+    private struct ChapterKey: Hashable {
+        let bookName: String
+        let chapterNumber: Int
     }
 
     private static func load() -> [Entry] {

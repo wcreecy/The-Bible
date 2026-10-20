@@ -212,6 +212,18 @@ struct GamesView: View {
             )
         }
 
+        if let chapterStudyRecommendation {
+            return GameRecommendation(
+                title: "Study \(chapterStudyRecommendation.bookName) \(chapterStudyRecommendation.chapterNumber)",
+                detail: "You missed \(chapterStudyRecommendation.missedCount) questions about this chapter. Explore its insights.",
+                systemImage: "text.book.closed",
+                destination: .chapterInsights(
+                    bookName: chapterStudyRecommendation.bookName,
+                    chapterNumber: chapterStudyRecommendation.chapterNumber
+                )
+            )
+        }
+
         if let studyRecommendation {
             return GameRecommendation(
                 title: "Study \(studyRecommendation.bookName)",
@@ -236,6 +248,10 @@ struct GamesView: View {
             systemImage: "questionmark.circle.fill",
             destination: .game(.quiz)
         )
+    }
+
+    private var chapterStudyRecommendation: MissedGameQuestionStore.ChapterRecommendation? {
+        MissedGameQuestionStore.shared.mostMissedChapter()
     }
 
     private var studyRecommendation: (bookName: String, missedCount: Int)? {
@@ -405,6 +421,11 @@ struct GamesView: View {
             UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
             UserDefaults.standard.set(true, forKey: "openLastStudiedBookOverview")
             AppRouter.shared.open(.bibleStudy)
+        case .chapterInsights(let bookName, let chapterNumber):
+            UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
+            UserDefaults.standard.set(chapterNumber, forKey: "lastStudiedChapter")
+            UserDefaults.standard.set(true, forKey: "openLastStudiedChapter")
+            AppRouter.shared.open(.bibleStudy)
         }
     }
 
@@ -494,6 +515,7 @@ private struct GameCollectionCard: View {
 private enum GameRecommendationDestination {
     case game(GameRoute)
     case bookOverview(String)
+    case chapterInsights(bookName: String, chapterNumber: Int)
 
     var accessibilityHint: String {
         switch self {
@@ -501,6 +523,8 @@ private enum GameRecommendationDestination {
             "Opens \(route.displayName)"
         case .bookOverview(let bookName):
             "Opens the \(bookName) book overview"
+        case .chapterInsights(let bookName, let chapterNumber):
+            "Opens insights for \(bookName) \(chapterNumber)"
         }
     }
 }
