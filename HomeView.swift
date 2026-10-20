@@ -55,7 +55,9 @@ struct HomeView: View {
     private var verseCardTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
     private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
 
-    private var isPad: Bool { horizontalSizeClass == .regular }
+    /// A landscape iPhone can report a regular horizontal size class, but the customizable
+    /// three-column dashboard is designed for iPad's wider canvas.
+    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     // Newest first; synced devices can briefly hold more than one bookmark.
     @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
     @Query private var favorites: [Favorite]
@@ -698,7 +700,7 @@ struct HomeView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let usesDashboard = proxy.size.width >= 700
+            let usesDashboard = isPad && proxy.size.width >= 700
             let horizontalPadding: CGFloat = usesDashboard ? 24 : 16
             let contentWidth = max(0, proxy.size.width - (horizontalPadding * 2))
 
@@ -726,7 +728,7 @@ struct HomeView: View {
             )
         }
         .onGeometryChange(for: Bool.self) { proxy in
-            proxy.size.width >= 700
+            isPad && proxy.size.width >= 700
         } action: { showsDashboard in
             isShowingDashboard = showsDashboard
             // Edit Home arranges the dashboard; leave it if the dashboard goes away.
