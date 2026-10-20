@@ -307,6 +307,10 @@ struct SetupChecklistCard: View {
         return "\(completedCount)/\(pathSteps.count)"
     }
 
+    private var completedStepCount: Int {
+        steps.count - incompleteSteps.count
+    }
+
     private var isAllComplete: Bool {
         focus != nil && incompleteSteps.isEmpty
     }
@@ -333,7 +337,7 @@ struct SetupChecklistCard: View {
             icon: focus?.systemImage ?? HomeCardID.setup.systemImage,
             tint: .orange,
             trailingAccessory: {
-                if focus == nil {
+                if focus != nil, completedStepCount > 0 {
                     Button("Reset Card", role: .destructive) {
                         isShowingResetConfirmation = true
                     }
@@ -346,7 +350,7 @@ struct SetupChecklistCard: View {
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 if focus != nil {
-                    ProgressView(value: Double(steps.count - incompleteSteps.count), total: Double(steps.count))
+                    ProgressView(value: Double(completedStepCount), total: Double(steps.count))
                         .tint(isAllComplete ? .green : .orange)
                         .accessibilityHidden(true)
 
@@ -447,10 +451,10 @@ struct SetupChecklistCard: View {
 
             Spacer(minLength: 8)
 
-            Button(isAllComplete ? "Remove Card" : "Hide Card", action: onDismiss)
+            Button(isAllComplete ? "Remove Card" : "Not now", action: onDismiss)
                 .font(.subheadline.weight(.semibold))
                 .tint(isAllComplete ? .green : .orange)
-                .accessibilityHint("Hides the Get Started card from Home")
+                .accessibilityHint("Removes the Get Started card from Home")
         }
     }
 
@@ -699,8 +703,7 @@ private struct OnboardingFocusPicker: View {
                             Text(focus.detail)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.78)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
 
                         Spacer(minLength: 8)
