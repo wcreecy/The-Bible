@@ -67,6 +67,24 @@ struct TitleCardView: View {
                 "GreetingNight"
             }
         }
+
+        var quickActionForeground: Color {
+            switch self {
+            case .afternoon:
+                .black
+            case .sunrise, .night:
+                .white
+            }
+        }
+
+        var quickActionBackdrop: Color {
+            switch self {
+            case .afternoon:
+                .white.opacity(0.72)
+            case .sunrise, .night:
+                .black.opacity(0.52)
+            }
+        }
     }
 
     private var greetingScene: GreetingScene {
@@ -219,14 +237,45 @@ struct TitleCardView: View {
                 Label("Search", systemImage: "magnifyingglass")
                     .lineLimit(1)
             }
-            .buttonStyle(SubtlePillButtonStyle(emphasized: false))
+            .buttonStyle(
+                PhotoAwareQuickActionButtonStyle(
+                    foreground: greetingScene.quickActionForeground,
+                    backdrop: greetingScene.quickActionBackdrop
+                )
+            )
 
             Button(action: onFavorites) {
                 Label("Favorites", systemImage: "heart")
                     .lineLimit(1)
             }
-            .buttonStyle(SubtlePillButtonStyle(emphasized: false))
+            .buttonStyle(
+                PhotoAwareQuickActionButtonStyle(
+                    foreground: greetingScene.quickActionForeground,
+                    backdrop: greetingScene.quickActionBackdrop
+                )
+            )
         }
+    }
+}
+
+private struct PhotoAwareQuickActionButtonStyle: ButtonStyle {
+    let foreground: Color
+    let backdrop: Color
+
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(foreground)
+            .padding(.horizontal, 12)
+            .frame(minHeight: 36)
+            .background(backdrop, in: Capsule())
+            .glassEffect(.regular.interactive(isEnabled), in: .capsule)
+            .contentShape(Capsule(style: .continuous))
+            .opacity(isEnabled ? 1 : 0.72)
+            .scaleEffect(configuration.isPressed && isEnabled ? 0.97 : 1)
+            .animation(.spring(response: 0.22, dampingFraction: 0.9), value: configuration.isPressed)
     }
 }
 
