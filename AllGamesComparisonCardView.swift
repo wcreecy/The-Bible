@@ -24,6 +24,9 @@ struct AllGamesComparisonCardView: View {
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var showsAllGames = false
+
     private var segmentedTint: Color {
         colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
     }
@@ -76,6 +79,12 @@ struct AllGamesComparisonCardView: View {
 
                     if dynamicTypeSize.isAccessibilitySize {
                         AccessibleComparisonView(rows: rows, sort: sort)
+                    } else if horizontalSizeClass == .compact {
+                        RankedComparisonView(
+                            rows: rows,
+                            sort: sort,
+                            showsAllGames: $showsAllGames
+                        )
                     } else {
                         // Add breathing room between header line and chart
                         ChartView(rows: rows, sort: sort, version: stats.version)
@@ -118,6 +127,83 @@ struct AllGamesComparisonCardView: View {
 }
 
 fileprivate extension AllGamesComparisonCardView {
+    struct RankedComparisonView: View {
+        let rows: [Row]
+        let sort: Sort
+        @Binding var showsAllGames: Bool
+
+        private var sortedRows: [Row] {
+            switch sort {
+            case .name:
+                return rows.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            case .played:
+                return rows.sorted {
+                    $0.played == $1.played ? $0.name < $1.name : $0.played > $1.played
+                }
+            case .accuracy:
+                return rows.sorted {
+                    $0.accuracy == $1.accuracy ? $0.name < $1.name : ($0.accuracy ?? -1) > ($1.accuracy ?? -1)
+                }
+            }
+        }
+
+        private var visibleRows: [Row] {
+            showsAllGames ? sortedRows : Array(sortedRows.prefix(4))
+        }
+
+        private var maxPlayed: Int {
+            max(1, rows.map(\.played).max() ?? 1)
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(visibleRows) { row in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(row.name)
+                                .font(.subheadline.weight(.semibold))
+
+                            Spacer()
+
+                            Text("\(row.played) attempts")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .monospacedDigit()
+                        }
+
+                        ProgressView(value: Double(row.played), total: Double(maxPlayed))
+                            .tint(Color.accentColor)
+
+                        HStack {
+                            Text("Accuracy")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+
+                            Spacer()
+
+                            Text(row.accuracy.map { "\(Int(round($0)))%" } ?? "—")
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.secondary)
+                                .monospacedDigit()
+                        }
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(row.name), \(row.played) attempts, accuracy \(row.accuracy.map { "\(Int(round($0))) percent" } ?? "not available")")
+                }
+
+                if sortedRows.count > 4 {
+                    Button(showsAllGames ? "Show top 4" : "View all games") {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showsAllGames.toggle()
+                        }
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+    }
+
     struct AccessibleComparisonView: View {
         let rows: [Row]
         let sort: Sort

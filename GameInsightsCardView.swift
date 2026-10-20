@@ -1,7 +1,27 @@
 import SwiftUI
 
 struct GameInsightsCardView: View {
+    private struct Badge: Identifiable {
+        let symbol: String
+        let name: String
+        let earningDetail: String
+
+        var id: String { name }
+    }
+
     private var stats = GameStats.shared
+    @State private var selectedBadge: Badge?
+
+    private var badgeDetailsPresented: Binding<Bool> {
+        Binding(
+            get: { selectedBadge != nil },
+            set: { isPresented in
+                if !isPresented {
+                    selectedBadge = nil
+                }
+            }
+        )
+    }
 
     private var entries: [GameStats.GameBreakdown.Entry] {
         stats.breakdownSnapshot().entries
@@ -60,14 +80,48 @@ struct GameInsightsCardView: View {
         stats.dailySeriesLast(days: 84)
     }
 
-    private var earnedBadges: [(String, String)] {
+    private var earnedBadges: [Badge] {
         let snapshot = stats.breakdownSnapshot()
         let streak = stats.activityStreaks().longest
-        var badges: [(String, String)] = []
-        if snapshot.totalAnswered >= 10 { badges.append(("gamecontroller.fill", "Getting Started")) }
-        if snapshot.totalCorrect >= 100 { badges.append(("star.fill", "Century")) }
-        if streak >= 7 { badges.append(("flame.fill", "Seven-Day Streak")) }
-        if entries.allSatisfy({ $0.answered > 0 }) { badges.append(("square.grid.2x2.fill", "Well Rounded")) }
+        var badges: [Badge] = []
+
+        if snapshot.totalAnswered >= 10 {
+            badges.append(
+                Badge(
+                    symbol: "gamecontroller.fill",
+                    name: "Getting Started",
+                    earningDetail: "You completed \(snapshot.totalAnswered) attempts. This badge unlocks at 10 attempts."
+                )
+            )
+        }
+        if snapshot.totalCorrect >= 100 {
+            badges.append(
+                Badge(
+                    symbol: "star.fill",
+                    name: "Century",
+                    earningDetail: "You answered \(snapshot.totalCorrect) questions correctly. This badge unlocks at 100 correct answers."
+                )
+            )
+        }
+        if streak >= 7 {
+            badges.append(
+                Badge(
+                    symbol: "flame.fill",
+                    name: "Seven-Day Streak",
+                    earningDetail: "Your longest game-playing streak is \(streak) days. This badge unlocks at 7 days."
+                )
+            )
+        }
+        if entries.allSatisfy({ $0.answered > 0 }) {
+            badges.append(
+                Badge(
+                    symbol: "square.grid.2x2.fill",
+                    name: "Well Rounded",
+                    earningDetail: "You have played all \(entries.count) games at least once."
+                )
+            )
+        }
+
         return badges
     }
 
@@ -104,6 +158,11 @@ struct GameInsightsCardView: View {
                 difficultySection
                 badgeSection
             }
+        }
+        .alert(selectedBadge?.name ?? "Badge", isPresented: badgeDetailsPresented) {
+            Button("Done", role: .cancel) {}
+        } message: {
+            Text(selectedBadge?.earningDetail ?? "")
         }
     }
 
@@ -170,12 +229,18 @@ struct GameInsightsCardView: View {
                     .foregroundStyle(.secondary)
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 8)], alignment: .leading, spacing: 8) {
-                    ForEach(earnedBadges, id: \.1) { badge in
-                        Label(badge.1, systemImage: badge.0)
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 7)
-                            .background(Color.purple.opacity(0.1), in: Capsule())
+                    ForEach(earnedBadges) { badge in
+                        Button {
+                            selectedBadge = badge
+                        } label: {
+                            Label(badge.name, systemImage: badge.symbol)
+                                .font(.caption.weight(.semibold))
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 7)
+                                .background(Color.purple.opacity(0.1), in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint("Shows how you earned this badge")
                     }
                 }
             }
