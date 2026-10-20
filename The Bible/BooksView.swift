@@ -114,8 +114,8 @@ struct StudyBibleView: View {
     var onSelectBook: ((Book) -> Void)?
     var requestedDestination: AppRouter.StudyDestination? = nil
 
-    @AppStorage(AppPreferenceKey.lastStudiedBook.rawValue) private var lastStudiedBook = ""
-    @AppStorage(AppPreferenceKey.lastStudiedChapter.rawValue) private var lastStudiedChapter = 0
+    @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
+    @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var requestedChapter: StudyChapterRequest?
     @State private var requestedBookOverview: StudyBookOverviewRequest?
