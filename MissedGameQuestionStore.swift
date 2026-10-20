@@ -31,7 +31,7 @@ final class MissedGameQuestionStore {
         let missedCount: Int
     }
 
-    private static let storageKey = "missedGameQuestionHistory"
+    private static let storageKey = AppPreferenceKey.missedGameQuestionHistory.rawValue
     private static let maximumEntries = 500
     private static let retentionInterval: TimeInterval = 180 * 24 * 60 * 60
 
@@ -39,6 +39,11 @@ final class MissedGameQuestionStore {
 
     private init() {
         entries = Self.load()
+        prune()
+    }
+
+    init(entries: [Entry]) {
+        self.entries = entries
         prune()
     }
 

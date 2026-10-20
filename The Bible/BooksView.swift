@@ -112,11 +112,10 @@ struct StudyBibleView: View {
     /// Set by the iPad split view so a chosen book is also selected in the Books pane;
     /// otherwise each book pushes its study page.
     var onSelectBook: ((Book) -> Void)?
+    var requestedDestination: AppRouter.StudyDestination? = nil
 
-    @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
-    @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
-    @AppStorage("openLastStudiedChapter") private var shouldOpenLastStudiedChapter = false
-    @AppStorage("openLastStudiedBookOverview") private var shouldOpenLastStudiedBookOverview = false
+    @AppStorage(AppPreferenceKey.lastStudiedBook.rawValue) private var lastStudiedBook = ""
+    @AppStorage(AppPreferenceKey.lastStudiedChapter.rawValue) private var lastStudiedChapter = 0
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var requestedChapter: StudyChapterRequest?
     @State private var requestedBookOverview: StudyBookOverviewRequest?
@@ -217,15 +216,16 @@ struct StudyBibleView: View {
         .onAppear {
             StudyTimeTracker.shared.start(studyTimeSourceID)
 
-            if shouldOpenLastStudiedBookOverview, !lastStudiedBook.isEmpty {
-                shouldOpenLastStudiedBookOverview = false
-                requestedBookOverview = StudyBookOverviewRequest(bookName: lastStudiedBook)
-            } else if shouldOpenLastStudiedChapter, !lastStudiedBook.isEmpty, lastStudiedChapter > 0 {
-                shouldOpenLastStudiedChapter = false
+            switch requestedDestination {
+            case .bookOverview(let bookName):
+                requestedBookOverview = StudyBookOverviewRequest(bookName: bookName)
+            case .chapterInsights(let bookName, let chapterNumber):
                 requestedChapter = StudyChapterRequest(
-                    bookName: lastStudiedBook,
-                    chapterNumber: lastStudiedChapter
+                    bookName: bookName,
+                    chapterNumber: chapterNumber
                 )
+            case nil:
+                break
             }
         }
         .onDisappear {

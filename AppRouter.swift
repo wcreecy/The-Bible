@@ -17,6 +17,11 @@ final class AppRouter {
         case games = "Game Stats"
     }
 
+    enum StudyDestination: Equatable, Hashable {
+        case bookOverview(bookName: String)
+        case chapterInsights(bookName: String, chapterNumber: Int)
+    }
+
     enum Destination: Equatable {
         case tab(AppTab)
         case favorites
@@ -26,6 +31,7 @@ final class AppRouter {
         case bibleReference(BibleReaderLocation)
         case bibleSearch
         case bibleStudy
+        case bibleStudyDestination(StudyDestination)
         /// The person opened a Verse of the Day notification.
         case verseOfDayNotification
         /// A scripture link was tapped while a note editor is open.
@@ -38,7 +44,7 @@ final class AppRouter {
             switch self {
             case .tab(let tab): tab
             case .favorites, .settings, .stats: .more
-            case .bibleReference, .bibleSearch, .bibleStudy: .bible
+            case .bibleReference, .bibleSearch, .bibleStudy, .bibleStudyDestination: .bible
             case .gameStart: .games
             case .verseOfDayNotification, .scripturePreview: nil
             }

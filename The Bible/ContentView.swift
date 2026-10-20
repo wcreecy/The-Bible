@@ -26,6 +26,7 @@ struct ContentView: View {
     @State private var tabViewRecoveryID = 0
     @State private var bibleSearchRequestID: Int = 0
     @State private var bibleStudyRequestID: Int = 0
+    @State private var bibleStudyDestination: AppRouter.StudyDestination?
     @State private var launchBibleLocation: BibleReaderLocation?
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
@@ -74,6 +75,7 @@ struct ContentView: View {
                 BibleSplitView(
                     searchRequestID: bibleSearchRequestID,
                     studyRequestID: bibleStudyRequestID,
+                    studyDestination: bibleStudyDestination,
                     initialReaderLocation: launchBibleLocation
                 )
                     .tabItem { Label("Bible", systemImage: "book") }
@@ -236,12 +238,9 @@ struct ContentView: View {
         case .bibleSearch:
             openBibleSearch()
         case .bibleStudy:
-            selectedTab = .bible
-            if usesWideLayout {
-                bibleStudyRequestID += 1
-            } else {
-                bibleCoordinator.path = [.study]
-            }
+            openBibleStudy()
+        case .bibleStudyDestination(let destination):
+            openBibleStudy(destination: destination)
         case .verseOfDayNotification:
             handlePendingVerseOfDayNotification()
         case .gameStart:
@@ -250,6 +249,16 @@ struct ContentView: View {
         case .scripturePreview:
             // Shown by the open note editor.
             break
+        }
+    }
+
+    private func openBibleStudy(destination: AppRouter.StudyDestination? = nil) {
+        selectedTab = .bible
+        if usesWideLayout {
+            bibleStudyDestination = destination
+            bibleStudyRequestID += 1
+        } else {
+            bibleCoordinator.path = [.study(destination)]
         }
     }
 

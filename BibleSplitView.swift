@@ -5,6 +5,7 @@ import SwiftUI
 struct BibleSplitView: View {
     let searchRequestID: Int
     let studyRequestID: Int
+    let studyDestination: AppRouter.StudyDestination?
     let initialReaderLocation: BibleReaderLocation?
 
     @State private var handledSearchRequestID: Int = 0
@@ -22,11 +23,6 @@ struct BibleSplitView: View {
 
     // Shared preference for sort mode across iPhone/iPad
     @AppStorage("bibleBooksSortAlphabetical") private var sortAlphabetically: Bool = false
-    @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
-    @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
-    @AppStorage("openLastStudiedChapter") private var shouldOpenLastStudiedChapter = false
-    @AppStorage("openLastStudiedBookOverview") private var shouldOpenLastStudiedBookOverview = false
-
     private struct ReadingRoute: Hashable {
         let bookName: String
         let chapterNumber: Int
@@ -47,11 +43,6 @@ struct BibleSplitView: View {
     private struct ChapterInsightsRoute: Hashable {
         let bookName: String
         let chapterNumber: Int
-    }
-
-    private enum StudyShortcut {
-        case bookOverview(bookName: String)
-        case chapterInsights(bookName: String, chapterNumber: Int)
     }
 
     private var books: [Book] { BibleData.books }
@@ -76,7 +67,7 @@ struct BibleSplitView: View {
         guard studyRequestID > handledStudyRequestID else { return }
         handledStudyRequestID = studyRequestID
 
-        guard let shortcut = consumeStudyShortcut() else {
+        guard let studyDestination else {
             setStudyMode(true)
             return
         }
@@ -90,7 +81,7 @@ struct BibleSplitView: View {
         Task { @MainActor in
             await Task.yield()
             var path = NavigationPath()
-            switch shortcut {
+            switch studyDestination {
             case .bookOverview(let bookName):
                 path.append(OverviewRoute(bookName: bookName))
             case .chapterInsights(let bookName, let chapterNumber):
@@ -98,25 +89,6 @@ struct BibleSplitView: View {
             }
             detailPath = path
         }
-    }
-
-    private func consumeStudyShortcut() -> StudyShortcut? {
-        defer {
-            shouldOpenLastStudiedBookOverview = false
-            shouldOpenLastStudiedChapter = false
-        }
-
-        guard !lastStudiedBook.isEmpty else { return nil }
-
-        if shouldOpenLastStudiedBookOverview {
-            return .bookOverview(bookName: lastStudiedBook)
-        }
-
-        if shouldOpenLastStudiedChapter, lastStudiedChapter > 0 {
-            return .chapterInsights(bookName: lastStudiedBook, chapterNumber: lastStudiedChapter)
-        }
-
-        return nil
     }
 
     /// Switches modes, keeping the selected book: its study page and its chapter grid
@@ -503,6 +475,7 @@ private struct SurfaceStyle: ViewModifier {
     BibleSplitView(
         searchRequestID: 0,
         studyRequestID: 0,
+        studyDestination: nil,
         initialReaderLocation: nil
     )
 }

@@ -282,17 +282,18 @@ struct StudyHomeCard: View {
 
     private func openChapterInsights() {
         Haptics.selection()
-        UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
-        UserDefaults.standard.set(chapterNumber, forKey: "lastStudiedChapter")
-        UserDefaults.standard.set(true, forKey: "openLastStudiedChapter")
-        AppRouter.shared.open(.bibleStudy)
+        AppRouter.shared.open(
+            .bibleStudyDestination(
+                .chapterInsights(bookName: bookName, chapterNumber: chapterNumber)
+            )
+        )
     }
 
     private func openBookOverview() {
         Haptics.selection()
-        UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
-        UserDefaults.standard.set(true, forKey: "openLastStudiedBookOverview")
-        AppRouter.shared.open(.bibleStudy)
+        AppRouter.shared.open(
+            .bibleStudyDestination(.bookOverview(bookName: bookName))
+        )
     }
 
     private var loadingPlaceholder: some View {

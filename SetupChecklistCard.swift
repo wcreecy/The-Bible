@@ -582,20 +582,20 @@ struct SetupChecklistCard: View {
             }
         case .firstStudy:
             studyOpened = true
-            UserDefaults.standard.set(
-                verseOfDayBook.isEmpty ? "Genesis" : verseOfDayBook,
-                forKey: "lastStudiedBook"
+            AppRouter.shared.open(
+                .bibleStudyDestination(
+                    .bookOverview(bookName: verseOfDayBook.isEmpty ? "Genesis" : verseOfDayBook)
+                )
             )
-            UserDefaults.standard.set(true, forKey: "openLastStudiedBookOverview")
-            AppRouter.shared.open(.bibleStudy)
         case .studyChapter:
             chapterStudyOpened = true
             let bookName = verseOfDayBook.isEmpty ? "Genesis" : verseOfDayBook
             let chapterNumber = verseOfDayChapter > 0 ? verseOfDayChapter : 1
-            UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
-            UserDefaults.standard.set(chapterNumber, forKey: "lastStudiedChapter")
-            UserDefaults.standard.set(true, forKey: "openLastStudiedChapter")
-            AppRouter.shared.open(.bibleStudy)
+            AppRouter.shared.open(
+                .bibleStudyDestination(
+                    .chapterInsights(bookName: bookName, chapterNumber: chapterNumber)
+                )
+            )
         case .saveVerse, .highlightVerse, .favoriteVerse:
             AppRouter.shared.openBibleReference(book: "John", chapter: 3, verse: 16)
         case .refreshVerseOfDay:

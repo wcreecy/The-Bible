@@ -458,4 +458,79 @@ struct The_Bible__iOS_Tests {
         #expect(ColorSchemePreference.dark.colorScheme == .dark)
         #expect(ColorSchemePreference.allCases.map(\.id) == ["system", "light", "dark"])
     }
+
+    @Test
+    func recommendsTheMostFrequentlyMissedReferencedChapter() {
+        let store = MissedGameQuestionStore(entries: [
+            missedQuestion(bookName: "John", chapterNumber: 3),
+            missedQuestion(bookName: "John", chapterNumber: 3),
+            missedQuestion(bookName: "John", chapterNumber: 3),
+            missedQuestion(bookName: "Acts", chapterNumber: 2),
+            missedQuestion(bookName: "Acts", chapterNumber: 2),
+            missedQuestion(bookName: "Acts", chapterNumber: 2),
+            missedQuestion(bookName: "Acts", chapterNumber: 2)
+        ])
+
+        #expect(
+            store.mostMissedChapter() == .init(
+                bookName: "Acts",
+                chapterNumber: 2,
+                missedCount: 4
+            )
+        )
+    }
+
+    @Test
+    func chapterRecommendationIgnoresMissesWithoutAScriptureReference() {
+        let store = MissedGameQuestionStore(entries: [
+            missedQuestion(bookName: "John", chapterNumber: nil),
+            missedQuestion(bookName: "John", chapterNumber: nil),
+            missedQuestion(bookName: "John", chapterNumber: nil)
+        ])
+
+        #expect(store.mostMissedChapter() == nil)
+    }
+
+    @Test
+    func chapterRecommendationBreaksTiesByChapterNumber() {
+        let store = MissedGameQuestionStore(entries: [
+            missedQuestion(bookName: "John", chapterNumber: 4),
+            missedQuestion(bookName: "John", chapterNumber: 4),
+            missedQuestion(bookName: "John", chapterNumber: 4),
+            missedQuestion(bookName: "John", chapterNumber: 3),
+            missedQuestion(bookName: "John", chapterNumber: 3),
+            missedQuestion(bookName: "John", chapterNumber: 3)
+        ])
+
+        #expect(
+            store.mostMissedChapter() == .init(
+                bookName: "John",
+                chapterNumber: 3,
+                missedCount: 3
+            )
+        )
+    }
+
+    @Test
+    func chapterStudyDestinationTargetsTheBibleTab() {
+        let destination = AppRouter.Destination.bibleStudyDestination(
+            .chapterInsights(bookName: "John", chapterNumber: 3)
+        )
+
+        #expect(destination.targetTab == .bible)
+    }
+
+    private func missedQuestion(
+        bookName: String,
+        chapterNumber: Int?
+    ) -> MissedGameQuestionStore.Entry {
+        MissedGameQuestionStore.Entry(
+            id: UUID(),
+            game: .verseMatch,
+            bookNames: [bookName],
+            chapterNumber: chapterNumber,
+            topic: "Verse matching",
+            date: .now
+        )
+    }
 }

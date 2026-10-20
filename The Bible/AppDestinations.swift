@@ -35,8 +35,11 @@ extension View {
                 case .search:
                     SearchView()
 
-                case .study:
-                    StudyBibleView(books: BibleData.books)
+                case .study(let destination):
+                    StudyBibleView(
+                        books: BibleData.books,
+                        requestedDestination: destination
+                    )
                 }
             }
     }

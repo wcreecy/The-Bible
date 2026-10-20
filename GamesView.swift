@@ -418,14 +418,15 @@ struct GamesView: View {
         case .game(let route):
             present(route)
         case .bookOverview(let bookName):
-            UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
-            UserDefaults.standard.set(true, forKey: "openLastStudiedBookOverview")
-            AppRouter.shared.open(.bibleStudy)
+            AppRouter.shared.open(
+                .bibleStudyDestination(.bookOverview(bookName: bookName))
+            )
         case .chapterInsights(let bookName, let chapterNumber):
-            UserDefaults.standard.set(bookName, forKey: "lastStudiedBook")
-            UserDefaults.standard.set(chapterNumber, forKey: "lastStudiedChapter")
-            UserDefaults.standard.set(true, forKey: "openLastStudiedChapter")
-            AppRouter.shared.open(.bibleStudy)
+            AppRouter.shared.open(
+                .bibleStudyDestination(
+                    .chapterInsights(bookName: bookName, chapterNumber: chapterNumber)
+                )
+            )
         }
     }
 
