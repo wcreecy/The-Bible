@@ -452,12 +452,6 @@ struct HomeView: View {
             // Only computed when the header actually shows it.
             streak: showsGoalSummary ? StreakTracker.currentStreak : 0,
             showsGoalSummary: showsGoalSummary,
-            onSearch: {
-                coordinator.push(.search)
-            },
-            onFavorites: {
-                AppRouter.shared.open(.favorites)
-            },
             onOpenGoal: openReadingStats
         )
     }

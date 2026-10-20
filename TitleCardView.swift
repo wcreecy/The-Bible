@@ -11,8 +11,6 @@ struct TitleCardView: View {
     var date: Date = .now
     /// Hidden while the Reading Streak card is on screen, so the same numbers aren't shown twice.
     var showsGoalSummary: Bool = true
-    let onSearch: () -> Void
-    let onFavorites: () -> Void
     let onOpenGoal: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -115,9 +113,6 @@ struct TitleCardView: View {
             if showsGoalSummary {
                 goalSummary
             }
-            if !isPad {
-                actionButtons
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -150,14 +145,12 @@ struct TitleCardView: View {
             VStack(alignment: .leading, spacing: 4) {
                 greetingText
                 dateText
-                if isPad { actionButtons }
             }
         } else {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 greetingText
                 Spacer(minLength: 8)
                 dateText
-                if isPad { actionButtons }
             }
         }
     }
@@ -236,55 +229,8 @@ struct TitleCardView: View {
         return parts.joined(separator: ". ")
     }
 
-    // MARK: - Quick actions
-
-    private var actionButtons: some View {
-        HStack(spacing: 12) {
-            Button(action: onSearch) {
-                Label("Search", systemImage: "magnifyingglass")
-                    .lineLimit(1)
-            }
-            .buttonStyle(
-                PhotoAwareQuickActionButtonStyle(
-                    foreground: greetingScene.quickActionForeground,
-                    backdrop: greetingScene.quickActionBackdrop
-                )
-            )
-
-            Button(action: onFavorites) {
-                Label("Favorites", systemImage: "heart")
-                    .lineLimit(1)
-            }
-            .buttonStyle(
-                PhotoAwareQuickActionButtonStyle(
-                    foreground: greetingScene.quickActionForeground,
-                    backdrop: greetingScene.quickActionBackdrop
-                )
-            )
-        }
-    }
 }
 
-private struct PhotoAwareQuickActionButtonStyle: ButtonStyle {
-    let foreground: Color
-    let backdrop: Color
-
-    @Environment(\.isEnabled) private var isEnabled
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(foreground)
-            .padding(.horizontal, 12)
-            .frame(minHeight: 36)
-            .background(backdrop, in: Capsule())
-            .glassEffect(.regular.interactive(isEnabled), in: .capsule)
-            .contentShape(Capsule(style: .continuous))
-            .opacity(isEnabled ? 1 : 0.72)
-            .scaleEffect(configuration.isPressed && isEnabled ? 0.97 : 1)
-            .animation(.spring(response: 0.22, dampingFraction: 0.9), value: configuration.isPressed)
-    }
-}
 
 #Preview("In progress") {
     TitleCardView(
@@ -292,8 +238,6 @@ private struct PhotoAwareQuickActionButtonStyle: ButtonStyle {
         goalMinutes: 30,
         todayReadingSeconds: 12 * 60,
         streak: 4,
-        onSearch: {},
-        onFavorites: {},
         onOpenGoal: {}
     )
     .padding()
@@ -305,8 +249,6 @@ private struct PhotoAwareQuickActionButtonStyle: ButtonStyle {
         goalMinutes: 30,
         todayReadingSeconds: 34 * 60,
         streak: 5,
-        onSearch: {},
-        onFavorites: {},
         onOpenGoal: {}
     )
     .padding()
@@ -319,8 +261,6 @@ private struct PhotoAwareQuickActionButtonStyle: ButtonStyle {
         todayReadingSeconds: 12 * 60,
         streak: 4,
         date: greetingPreviewDate(hour: 14),
-        onSearch: {},
-        onFavorites: {},
         onOpenGoal: {}
     )
     .padding()
@@ -333,8 +273,6 @@ private struct PhotoAwareQuickActionButtonStyle: ButtonStyle {
         todayReadingSeconds: 12 * 60,
         streak: 4,
         date: greetingPreviewDate(hour: 21),
-        onSearch: {},
-        onFavorites: {},
         onOpenGoal: {}
     )
     .padding()
