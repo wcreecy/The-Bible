@@ -117,30 +117,9 @@ struct ScriptureNoteQuotation: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Label(reference, systemImage: "quote.opening")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.tint)
-
-                Spacer(minLength: 8)
-
-                // The Notes list leaves highlights out, so the note says it plainly.
-                if let highlight {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(highlight.color)
-                            .frame(width: 10, height: 10)
-                        Text("Highlighted · \(Text(highlight.name))")
-                    }
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(highlight.color.opacity(0.18), in: Capsule())
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text("Highlighted \(Text(highlight.name))"))
-                }
-            }
+            Label(reference, systemImage: "quote.opening")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.tint)
             Text(verseText)
                 .font(.title3)
                 .italic()
