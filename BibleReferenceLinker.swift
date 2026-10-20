@@ -9,6 +9,11 @@ struct ScriptureRef: Equatable, Identifiable {
     var id: String {
         "\(bookName)|\(chapter)|\(startVerse)|\(endVerse ?? startVerse)"
     }
+
+    var formattedReference: String {
+        let range = endVerse.map { "-\($0)" } ?? ""
+        return "\(bookName) \(chapter):\(startVerse)\(range)"
+    }
 }
 
 enum BibleReferenceLinker {
@@ -273,6 +278,12 @@ enum BibleReferenceLinker {
             }
         }
         return nil
+    }
+
+    /// Resolves an entire user-entered reference and returns its canonical Bible spelling.
+    /// This shares the same abbreviation and range handling used for links in note text.
+    static func canonicalReference(for text: String) -> String? {
+        parse(text)?.formattedReference
     }
 
     static func parse(_ text: String) -> ScriptureRef? {

@@ -14,6 +14,12 @@ struct RegressionCoverageTests {
     }
 
     @Test
+    func notePassageReferencesCanonicalizeBookAbbreviations() {
+        #expect(BibleReferenceLinker.canonicalReference(for: "ex 3:1") == "Exodus 3:1")
+        #expect(BibleReferenceLinker.canonicalReference(for: "jn 3:16-17") == "John 3:16-17")
+    }
+
+    @Test
     func searchModelNormalizesQueryTokensAndTracksRecentSearches() {
         UserDefaults.standard.removeObject(forKey: "bibleRecentSearches")
         defer { UserDefaults.standard.removeObject(forKey: "bibleRecentSearches") }

@@ -159,14 +159,19 @@ struct UserNoteEditorView: View {
                     .font(.subheadline)
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled()
+                    .onSubmit(normalizePassageReference)
                     .accessibilityLabel("Passage")
             }
             .frame(minHeight: 32)
 
-            if !trimmedPassage.isEmpty, BibleReferenceLinker.parse(trimmedPassage) == nil {
+            if !trimmedPassage.isEmpty, recognizedPassageReference == nil {
                 Text("Not a recognized verse reference. Use a book, chapter, and verse, such as Romans 8:28.")
                     .font(.caption)
                     .foregroundStyle(.orange)
+            } else if let recognizedPassageReference, recognizedPassageReference != trimmedPassage {
+                Label("Recognized as \(recognizedPassageReference)", systemImage: "checkmark.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.green)
             }
         }
         .padding(.horizontal, 12)
@@ -207,6 +212,12 @@ struct UserNoteEditorView: View {
     private var trimmedTitle: String { title.trimmingCharacters(in: .whitespacesAndNewlines) }
     private var trimmedNote: String { String(noteText.characters).trimmingCharacters(in: .whitespacesAndNewlines) }
     private var trimmedPassage: String { passage.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var recognizedPassageReference: String? {
+        BibleReferenceLinker.canonicalReference(for: trimmedPassage)
+    }
+    private var savedPassageReference: String {
+        recognizedPassageReference ?? trimmedPassage
+    }
 
     private var isSermon: Bool { selectedCategory == .sermon }
 
@@ -215,7 +226,7 @@ struct UserNoteEditorView: View {
             title != saved.title ||
             String(noteText.characters) != String(saved.bodyText.characters) ||
             selectedCategory.rawValue != saved.category ||
-            trimmedPassage != saved.passageReference ||
+            savedPassageReference != saved.passageReference ||
             (isSermon && (speaker != saved.sermonSpeaker || location != saved.sermonLocation || sermonDateChanged))
     }
 
@@ -223,12 +234,17 @@ struct UserNoteEditorView: View {
         !Calendar.current.isDate(initialSermonDate, inSameDayAs: sermonDate)
     }
 
+    private func normalizePassageReference() {
+        guard let recognizedPassageReference else { return }
+        passage = recognizedPassageReference
+    }
+
     private func currentDraft() -> NoteDraft {
         NoteDraft(
             title: title,
             body: (try? JSONEncoder().encode(noteText)) ?? Data(),
             category: selectedCategory.rawValue,
-            passageReference: trimmedPassage,
+            passageReference: savedPassageReference,
             sermonSpeaker: speaker,
             sermonLocation: location,
             sermonDate: isSermon ? sermonDate : nil
@@ -257,7 +273,7 @@ struct UserNoteEditorView: View {
                 note.content = trimmedNote
                 note.formattedContent = try JSONEncoder().encode(noteText)
                 note.categoryRawValue = selectedCategory.rawValue
-                note.passageReference = trimmedPassage
+                note.passageReference = savedPassageReference
                 note.sermonSpeaker = isSermon ? speaker.trimmingCharacters(in: .whitespacesAndNewlines) : ""
                 note.sermonLocation = isSermon ? location.trimmingCharacters(in: .whitespacesAndNewlines) : ""
                 note.sermonDate = isSermon ? sermonDate : nil
