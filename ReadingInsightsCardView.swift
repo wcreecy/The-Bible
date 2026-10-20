@@ -4,7 +4,7 @@ struct ReadingInsightsCardView: View {
     let insights: ReadingInsights
     let formatSeconds: (Int) -> String
 
-    private let heatColumns = Array(repeating: GridItem(.fixed(12), spacing: 3), count: 13)
+    private let heatColumns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 14)
 
     var body: some View {
         GroupBox {
@@ -31,11 +31,11 @@ struct ReadingInsightsCardView: View {
                             .foregroundStyle(.secondary)
                     }
 
-                    LazyVGrid(columns: heatColumns, spacing: 3) {
+                    LazyVGrid(columns: heatColumns, spacing: 4) {
                         ForEach(insights.heatMapDays) { day in
-                            RoundedRectangle(cornerRadius: 2)
+                            RoundedRectangle(cornerRadius: 3)
                                 .fill(heatColor(seconds: day.seconds))
-                                .frame(width: 12, height: 12)
+                                .aspectRatio(1, contentMode: .fit)
                                 .accessibilityLabel("\(day.date.formatted(date: .abbreviated, time: .omitted)), \(formatSeconds(day.seconds))")
                         }
                     }

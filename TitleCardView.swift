@@ -8,6 +8,7 @@ struct TitleCardView: View {
     let goalMinutes: Int
     let todayReadingSeconds: Int
     let streak: Int
+    var date: Date = .now
     /// Hidden while the Reading Streak card is on screen, so the same numbers aren't shown twice.
     var showsGoalSummary: Bool = true
     let onSearch: () -> Void
@@ -40,17 +41,48 @@ struct TitleCardView: View {
         min(1.0, Double(max(0, todayReadingSeconds)) / Double(goalSeconds))
     }
 
-    private var greeting: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        switch hour {
-        case 5..<12:
-            return "Good Morning"
-        case 12..<18:
-            return "Good Afternoon"
-        default:
-            return "Good Evening"
+    private enum GreetingScene {
+        case sunrise
+        case afternoon
+        case night
+
+        var greeting: String {
+            switch self {
+            case .sunrise:
+                "Good Morning"
+            case .afternoon:
+                "Good Afternoon"
+            case .night:
+                "Good Night"
+            }
+        }
+
+        var imageName: String {
+            switch self {
+            case .sunrise:
+                "GreetingSunrise"
+            case .afternoon:
+                "GreetingAfternoon"
+            case .night:
+                "GreetingNight"
+            }
         }
     }
+
+    private var greetingScene: GreetingScene {
+        let hour = Calendar.current.component(.hour, from: date)
+
+        switch hour {
+        case 5..<12:
+            return .sunrise
+        case 12..<18:
+            return .afternoon
+        default:
+            return .night
+        }
+    }
+
+    private var greeting: String { greetingScene.greeting }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -63,8 +95,26 @@ struct TitleCardView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(20)
+        .foregroundStyle(.white)
+        .background {
+            Image(greetingScene.imageName)
+                .resizable()
+                .scaledToFill()
+                .overlay {
+                    LinearGradient(
+                        colors: [.black.opacity(0.58), .black.opacity(0.18)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(.white.opacity(0.18), lineWidth: 1)
+        }
         .padding(.top, 4)
-        .adaptiveBackgroundForeground(tab: .home)
     }
 
     // MARK: - Greeting row
@@ -96,7 +146,7 @@ struct TitleCardView: View {
     }
 
     private var dateText: some View {
-        Text(Date(), format: .dateTime.weekday(.abbreviated).month(.abbreviated).day())
+        Text(date, format: .dateTime.weekday(.abbreviated).month(.abbreviated).day())
             .font(.subheadline.weight(.medium))
             .foregroundStyle(.secondary)
     }
@@ -204,4 +254,41 @@ struct TitleCardView: View {
         onOpenGoal: {}
     )
     .padding()
+}
+
+#Preview("Afternoon greeting") {
+    TitleCardView(
+        isPad: false,
+        goalMinutes: 30,
+        todayReadingSeconds: 12 * 60,
+        streak: 4,
+        date: greetingPreviewDate(hour: 14),
+        onSearch: {},
+        onFavorites: {},
+        onOpenGoal: {}
+    )
+    .padding()
+}
+
+#Preview("Night greeting") {
+    TitleCardView(
+        isPad: false,
+        goalMinutes: 30,
+        todayReadingSeconds: 12 * 60,
+        streak: 4,
+        date: greetingPreviewDate(hour: 21),
+        onSearch: {},
+        onFavorites: {},
+        onOpenGoal: {}
+    )
+    .padding()
+}
+
+private func greetingPreviewDate(hour: Int) -> Date {
+    Calendar.current.date(
+        bySettingHour: hour,
+        minute: 0,
+        second: 0,
+        of: .now
+    ) ?? .now
 }

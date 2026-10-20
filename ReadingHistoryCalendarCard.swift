@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ReadingHistoryCalendarCard: View {
+    let usesCompactLayout: Bool
     @State private var monthAnchor = Date()
 
     private var calendar: Calendar {
@@ -41,6 +42,14 @@ struct ReadingHistoryCalendarCard: View {
         return weeks
     }
 
+    private var dayCellHeight: CGFloat {
+        usesCompactLayout ? 28 : 38
+    }
+
+    private var calendarRowSpacing: CGFloat {
+        usesCompactLayout ? 4 : 6
+    }
+
     var body: some View {
         // Loaded once per render so each day cell doesn't reload history.
         let summary = StreakTracker.summary()
@@ -51,7 +60,7 @@ struct ReadingHistoryCalendarCard: View {
             icon: "calendar",
             tint: .orange
         ) {
-            VStack(spacing: 12) {
+            VStack(spacing: usesCompactLayout ? 8 : 12) {
                 HStack {
                     Button {
                         changeMonth(by: -1)
@@ -85,18 +94,19 @@ struct ReadingHistoryCalendarCard: View {
                     }
                 }
 
-                VStack(spacing: 6) {
+                VStack(spacing: calendarRowSpacing) {
                     ForEach(daysGrid.indices, id: \.self) { row in
                         HStack(spacing: 4) {
                             ForEach(0..<7, id: \.self) { column in
                                 if let date = daysGrid[row][column] {
                                     ReadingHistoryDay(
                                         date: date,
-                                        status: StreaksViewModel.status(for: date, summary: summary, calendar: calendar)
+                                        status: StreaksViewModel.status(for: date, summary: summary, calendar: calendar),
+                                        minimumHeight: dayCellHeight
                                     )
                                 } else {
                                     Color.clear
-                                        .frame(maxWidth: .infinity, minHeight: 38)
+                                        .frame(maxWidth: .infinity, minHeight: dayCellHeight)
                                 }
                             }
                         }
@@ -114,6 +124,7 @@ struct ReadingHistoryCalendarCard: View {
 private struct ReadingHistoryDay: View {
     let date: Date
     let status: ReadingWeekStatus
+    let minimumHeight: CGFloat
 
     var body: some View {
         ZStack {
@@ -136,7 +147,7 @@ private struct ReadingHistoryDay: View {
                     .offset(x: 8, y: -8)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 38)
+        .frame(maxWidth: .infinity, minHeight: minimumHeight)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
     }

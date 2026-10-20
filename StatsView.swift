@@ -2,6 +2,7 @@ import SwiftUI
 import Charts
 
 private struct ReadingStatsSections<
+    ReadingAndGames: View,
     Progress: View,
     Insights: View,
     Totals: View,
@@ -13,6 +14,7 @@ private struct ReadingStatsSections<
     Prayer: View
 >: View {
     let usesWideLayout: Bool
+    let readingAndGames: ReadingAndGames
     let progress: Progress
     let insights: Insights
     let totals: Totals
@@ -30,6 +32,7 @@ private struct ReadingStatsSections<
                 // stretch across the full width on iPad.
                 HStack(alignment: .top, spacing: 16) {
                     VStack(spacing: 16) {
+                        readingAndGames
                         progress
                         insights
                         topBooks
@@ -48,6 +51,7 @@ private struct ReadingStatsSections<
                 }
             } else {
                 VStack(spacing: 16) {
+                    readingAndGames
                     progress
                     insights
                     totals
@@ -369,10 +373,9 @@ struct StatsView: View {
                 formatSeconds: { BibleStatsStore.shared.format($0) }
             )
 
-            ReadingAndGamesComparisonCard()
-
             ReadingStatsSections(
                 usesWideLayout: usesWideStatsLayout,
+                readingAndGames: ReadingAndGamesComparisonCard(),
                 progress: progressCard,
                 insights: readingInsightsCard,
                 totals: totalsCard,
@@ -380,10 +383,14 @@ struct StatsView: View {
                 genre: genreCard,
                 averageSession: avgSessionCard,
                 topBooks: topBooksThisMonthCard,
-                history: ReadingHistoryCalendarCard(),
+                history: readingHistoryCard,
                 prayer: PrayerStatsCard()
             )
         }
+    }
+
+    private var readingHistoryCard: some View {
+        ReadingHistoryCalendarCard(usesCompactLayout: usesWideStatsLayout)
     }
 
     private var gameContent: some View {
