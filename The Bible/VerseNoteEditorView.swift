@@ -328,7 +328,9 @@ private struct ScriptureEditorReferenceCard: View {
             Text(verseText)
                 .font(.body)
                 .foregroundStyle(.secondary)
-                .lineLimit(4)
+                // A range can span many verses; keep it as a quick reminder above the note title.
+                .lineLimit(endVerse > startVerse ? 2 : 4)
+                .truncationMode(.tail)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
