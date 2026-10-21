@@ -121,9 +121,9 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    /// Bible Trivia completion state. This is union-merged so completed questions never reappear
-    /// after the same account has used another device.
-    static let bibleTriviaProgressKeys = ["bibleTriviaProgress"]
+    /// Bible Trivia completion state. Within a cycle this is union-merged so completed questions
+    /// don't reappear after the same account has used another device.
+    static let bibleTriviaProgressKeys = [BibleTriviaProgressStore.storageKey]
 
     static let quizKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "all"]

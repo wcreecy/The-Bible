@@ -57,9 +57,14 @@ final class MissedGameQuestionStore {
 
     private var entries: [Entry]
 
+    /// Bump when the trivia question set is replaced and its IDs no longer refer to the same questions.
+    private static let triviaQuestionSetVersion = 2
+    private static let triviaQuestionSetVersionKey = "missedGameQuestionHistory.triviaQuestionSetVersion"
+
     private init() {
         entries = Self.load()
         prune()
+        migrateTriviaQuestionSetIfNeeded()
     }
 
     init(entries: [Entry]) {
@@ -159,6 +164,28 @@ final class MissedGameQuestionStore {
         if entries.count > Self.maximumEntries {
             entries.removeLast(entries.count - Self.maximumEntries)
         }
+    }
+
+    /// Misses recorded against an older trivia question set keep their book and chapter for study
+    /// recommendations, but lose their question ID so review rounds can't replay a different question.
+    private func migrateTriviaQuestionSetIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard defaults.integer(forKey: Self.triviaQuestionSetVersionKey) < Self.triviaQuestionSetVersion else { return }
+
+        entries = entries.map { entry in
+            guard entry.game == .bibleTrivia, entry.questionID != nil else { return entry }
+            return Entry(
+                id: entry.id,
+                game: entry.game,
+                bookNames: entry.bookNames,
+                chapterNumber: entry.chapterNumber,
+                topic: entry.topic,
+                questionID: nil,
+                date: entry.date
+            )
+        }
+        save()
+        defaults.set(Self.triviaQuestionSetVersion, forKey: Self.triviaQuestionSetVersionKey)
     }
 
     private struct ChapterKey: Hashable {

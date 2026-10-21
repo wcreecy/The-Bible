@@ -56,6 +56,20 @@ enum BibleTriviaDifficulty: String, CaseIterable, Identifiable, Codable {
 
 struct BibleTriviaDifficultyProgress: Codable, Equatable {
     var completedQuestionIDs: Set<Int> = []
+    /// Increments each time every question in the pool has been asked and the pool restarts.
+    /// Merges keep the higher cycle so a restart on one device isn't undone by another's history.
+    var cycle = 0
+
+    init(completedQuestionIDs: Set<Int> = [], cycle: Int = 0) {
+        self.completedQuestionIDs = completedQuestionIDs
+        self.cycle = cycle
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        completedQuestionIDs = try container.decodeIfPresent(Set<Int>.self, forKey: .completedQuestionIDs) ?? []
+        cycle = try container.decodeIfPresent(Int.self, forKey: .cycle) ?? 0
+    }
 }
 
 @MainActor
@@ -63,7 +77,8 @@ struct BibleTriviaDifficultyProgress: Codable, Equatable {
 final class BibleTriviaProgressStore {
     static let shared = BibleTriviaProgressStore()
 
-    private static let storageKey = "bibleTriviaProgress"
+    // V2: question IDs were reassigned when the question set was replaced, so the old history is ignored.
+    nonisolated static let storageKey = "bibleTriviaProgressV2"
 
     private var progressByDifficulty: [String: BibleTriviaDifficultyProgress]
     @ObservationIgnored private var observer: NSObjectProtocol?
@@ -102,9 +117,14 @@ final class BibleTriviaProgressStore {
         for key in keys {
             let localValue = localProgress[key] ?? BibleTriviaDifficultyProgress()
             let remoteValue = remoteProgress[key] ?? BibleTriviaDifficultyProgress()
-            merged[key] = BibleTriviaDifficultyProgress(
-                completedQuestionIDs: localValue.completedQuestionIDs.union(remoteValue.completedQuestionIDs)
-            )
+            if localValue.cycle == remoteValue.cycle {
+                merged[key] = BibleTriviaDifficultyProgress(
+                    completedQuestionIDs: localValue.completedQuestionIDs.union(remoteValue.completedQuestionIDs),
+                    cycle: localValue.cycle
+                )
+            } else {
+                merged[key] = localValue.cycle > remoteValue.cycle ? localValue : remoteValue
+            }
         }
 
         return try? JSONEncoder().encode(merged)
@@ -124,6 +144,7 @@ final class BibleTriviaProgressStore {
     func resetCompletedPool(for difficulty: BibleTriviaDifficulty) {
         var progress = progress(for: difficulty)
         progress.completedQuestionIDs = []
+        progress.cycle += 1
         progressByDifficulty[difficulty.rawValue] = progress
         save()
     }
@@ -169,6 +190,7 @@ final class BibleTriviaGameModel {
     var difficulty: BibleTriviaDifficulty = .normal
     private(set) var questions: [BibleTriviaQuestion] = []
     private var round: [RoundQuestion] = []
+    private var carryoverQuestionIDs: Set<Int> = []
     private(set) var currentIndex = 0
     private var furthestPresentedIndex = 0
     private(set) var score = 0
@@ -274,7 +296,7 @@ final class BibleTriviaGameModel {
             return
         }
 
-        round = Array(eligible.shuffled().prefix(Self.questionsPerRound)).map(makeRoundQuestion)
+        round = selectRoundQuestions(from: eligible).map(makeRoundQuestion)
         guard round.count == Self.questionsPerRound else {
             phase = .unavailable
             return
@@ -289,6 +311,27 @@ final class BibleTriviaGameModel {
         currentBestStreak = persistentStreak.best
         phase = .playing
         prepareCurrentQuestion()
+    }
+
+    /// Draws questions at random from those not yet asked in the current cycle. When fewer than a
+    /// round's worth remain, the leftovers are used, the pool restarts, and the round is topped up
+    /// from the rest so no question repeats until every question in the pool has been asked.
+    private func selectRoundQuestions(from eligible: [BibleTriviaQuestion]) -> [BibleTriviaQuestion] {
+        carryoverQuestionIDs = []
+        guard reviewQuestionIDs.isEmpty else {
+            return Array(eligible.shuffled().prefix(Self.questionsPerRound))
+        }
+
+        let completed = progressStore.progress(for: difficulty).completedQuestionIDs
+        var selected = Array(eligible.filter { !completed.contains($0.id) }.shuffled().prefix(Self.questionsPerRound))
+        guard selected.count < Self.questionsPerRound else { return selected }
+
+        // Leftovers belong to the finished cycle, so they aren't recorded against the new one.
+        carryoverQuestionIDs = Set(selected.map(\.id))
+        progressStore.resetCompletedPool(for: difficulty)
+        let refill = eligible.filter { !carryoverQuestionIDs.contains($0.id) }.shuffled()
+        selected += refill.prefix(Self.questionsPerRound - selected.count)
+        return selected.shuffled()
     }
 
     func choose(_ answer: String) {
@@ -360,7 +403,9 @@ final class BibleTriviaGameModel {
             persistentStreak.reset()
             currentStreak = 0
         }
-        progressStore.record(questionID: question.id, difficulty: difficulty)
+        if !carryoverQuestionIDs.contains(question.id) {
+            progressStore.record(questionID: question.id, difficulty: difficulty)
+        }
         GameStats.shared.recordRound(
             game: .trivia,
             difficulty: difficulty.statsDifficulty,
