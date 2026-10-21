@@ -123,7 +123,14 @@ struct BibleSplitView: View {
     private var sidebarView: some View {
         VStack(spacing: 0) {
             HStack {
-                BibleBookSortMenu(alphabetical: $sortAlphabetically)
+                Button {
+                    sortAlphabetically.toggle()
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down")
+                }
+                .accessibilityLabel("Toggle book sort order")
+                .accessibilityValue(sortAlphabetically ? "Alphabetical" : "Canonical")
+                .accessibilityHint("Switches to \(sortAlphabetically ? "canonical" : "alphabetical") order")
                     .frame(width: 44, height: 44)
 
                 Spacer()

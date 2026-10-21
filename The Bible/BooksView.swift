@@ -50,7 +50,14 @@ struct BooksView: View {
                 }
                 .accessibilityLabel("Search Bible text")
 
-                BibleBookSortMenu(alphabetical: $sortAlphabetically)
+                Button {
+                    sortAlphabetically.toggle()
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down")
+                }
+                .accessibilityLabel("Toggle book sort order")
+                .accessibilityValue(sortAlphabetically ? "Alphabetical" : "Canonical")
+                .accessibilityHint("Switches to \(sortAlphabetically ? "canonical" : "alphabetical") order")
             }
         }
     }
@@ -193,7 +200,14 @@ struct StudyBibleView: View {
             .searchable(text: $searchText, prompt: "Find a book")
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    BibleBookSortMenu(alphabetical: $sortAlphabetically)
+                    Button {
+                        sortAlphabetically.toggle()
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+                    .accessibilityLabel("Toggle book sort order")
+                    .accessibilityValue(sortAlphabetically ? "Alphabetical" : "Canonical")
+                    .accessibilityHint("Switches to \(sortAlphabetically ? "canonical" : "alphabetical") order")
 
                     Menu {
                         Picker("Books", selection: $testamentFilter) {
