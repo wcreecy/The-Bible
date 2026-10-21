@@ -18,7 +18,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .search: return "Search Scripture"
         case .streaks: return "Reading Streak"
         case .bibleStats: return "Your Stats"
-        case .setup: return "Get Started"
+        case .setup: return "Welcome"
         }
     }
 

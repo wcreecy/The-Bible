@@ -186,7 +186,7 @@ struct HomeView: View {
     @State private var isShowingDashboard = false
     /// Incremented by the Search card to ask Home to scroll it into view while typing.
     @State private var searchScrollRequest = 0
-    /// Set by the Get Started card's Customize Home step.
+    /// Set by the Welcome card's Make Home Yours step.
     @State private var showsSetupLayoutEditor = false
     @State private var showsEditHomeOnboardingCue = false
     @State private var isEditHomeCueDismissalEnabled = false
@@ -266,7 +266,7 @@ struct HomeView: View {
         Haptics.selection()
     }
 
-    /// Hides a card from its own controls (such as Get Started's Dismiss); Customize Home can show it again.
+    /// Hides a card from its own controls (such as the Welcome card's Hide); Customize Home can show it again.
     private func hideCard(_ id: HomeCardID) {
         guard !hiddenCards.contains(id) else { return }
         toggleCardHidden(id)
@@ -412,7 +412,6 @@ struct HomeView: View {
             )
         case .setup:
             SetupChecklistCard(
-                onCustomizeHome: { showsSetupLayoutEditor = true },
                 onEditHome: {
                     if isPad && isShowingDashboard {
                         showEditHomeOnboardingCue()

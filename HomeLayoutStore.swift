@@ -59,7 +59,7 @@ struct HomeLayoutStore {
         }
 
         // iPhone: get back into the text and what it's about first, then the daily verse and challenges.
-        // Search, Your Stats and Daily Focus are opt-in. Get Started leads until it's dismissed.
+        // Search, Your Stats and Daily Focus are opt-in. The Welcome card leads until it's hidden.
         return [
             .setup,
             .resumeReading,
