@@ -253,7 +253,7 @@ struct VerseMatchGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if phase != .setup {
-                    GameNavigationTitle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
+                    GameNavigationTitle(title: "Verses", systemImage: "text.quote", tint: .orange)
                 }
             }
         }
@@ -286,7 +286,7 @@ struct VerseMatchGameView: View {
     private var setupContent: some View {
         Spacer(minLength: 32)
         Text("Choose the verse text that matches the reference.")
-            .gameStartDescriptionStyle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
+            .gameStartDescriptionStyle(title: "Verses", systemImage: "text.quote", tint: .orange)
 
         GameSplashLaunchLayout(
             tint: .orange,

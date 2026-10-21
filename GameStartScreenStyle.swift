@@ -474,7 +474,7 @@ struct GameLobbyPreview: View {
             }
         case .whoAmI:
             HStack(spacing: 24) {
-                previewPrompt(icon: "person.crop.circle.fill", title: "Who am I?", subtitle: "I built an ark before the flood.")
+                previewPrompt(icon: "person.crop.circle.fill", title: "Who?", subtitle: "I built an ark before the flood.")
                 VStack(spacing: 8) {
                     previewChoice("Abraham")
                     previewChoice("Noah", selected: true)

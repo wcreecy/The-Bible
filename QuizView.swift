@@ -930,7 +930,7 @@ private enum QuizOutcome {
 
 // MARK: - Setup views
 
-/// One-tap shortcuts for the whole Bible or one Testament. Also used by Verse Match.
+/// One-tap shortcuts for the whole Bible or one Testament. Also used by Verses.
 struct QuizCategoryQuickPicks: View {
     let tint: Color
 

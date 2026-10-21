@@ -46,8 +46,8 @@ final class GameStats {
         migrateQuizCombinedIfNeeded()
         migrateBookOrderCombinedIfNeeded()
         migrateHangmanCombinedIfNeeded() // backfill combined “_all” for Hangman
-        migrateVerseMatchCombinedIfNeeded() // backfill combined “_all” for Verse Match
-        migrateWhoAmICombinedIfNeeded() // backfill combined “_all” for Who am I?
+        migrateVerseMatchCombinedIfNeeded() // backfill combined “_all” for Verses
+        migrateWhoAmICombinedIfNeeded() // backfill combined “_all” for Who?
 
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -244,14 +244,14 @@ final class GameStats {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // One-time migration: combine existing per-difficulty Verse Match stats into combined "_all" keys.
+    // One-time migration: combine existing per-difficulty Verses stats into combined "_all" keys.
     private func migrateVerseMatchCombinedIfNeeded() {
         let defaults = UserDefaults.standard
         guard !defaults.bool(forKey: Self.verseMatchCombinedMigrationFlagKey) else { return }
 
         func readInt(_ key: String) -> Int { max(0, defaults.integer(forKey: key)) }
 
-        // New Verse Match keys
+        // New Verses keys
         let cEasy = readInt("versematchAllTimeCorrect_easy")
         let cNorm = readInt("versematchAllTimeCorrect_normal")
         let cMed  = readInt("versematchAllTimeCorrect_medium")
@@ -297,7 +297,7 @@ final class GameStats {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // One-time migration: combine existing per-difficulty Who am I? stats into combined "_all" keys.
+    // One-time migration: combine existing per-difficulty Who? stats into combined "_all" keys.
     private func migrateWhoAmICombinedIfNeeded() {
         let defaults = UserDefaults.standard
         guard !defaults.bool(forKey: Self.whoamiCombinedMigrationFlagKey) else { return }
@@ -395,10 +395,10 @@ final class GameStats {
             .init(name: "Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Trivia", correct: t.correct, answered: t.answered, bestStreak: t.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
-            .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
+            .init(name: "Verses", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Countdown", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
-            .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
+            .init(name: "Who?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
             .init(name: "Word Search", correct: ws.correct, answered: ws.answered, bestStreak: ws.bestStreak),
             .init(name: "WORD", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
         ]
@@ -462,10 +462,10 @@ final class GameStats {
         case "Quiz": return "quiz"
         case "Trivia": return "trivia"
         case "Hangman": return "hangman"
-        case "Verse Match": return "versematch"
+        case "Verses": return "versematch"
         case "Countdown": return "beatclock"
         case "Book Order": return "bookorder"
-        case "Who am I?": return "whoami"
+        case "Who?": return "whoami"
         case "Word Search": return "wordsearch"
         case "WORD": return "word"
         default: return nil
@@ -580,7 +580,7 @@ final class GameStats {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // UPDATED: Verse Match per-book maps writer — now writes all-time + daily nested maps
+    // UPDATED: Verses per-book maps writer — now writes all-time + daily nested maps
     func recordVerseMatchPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
         let trimmed = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
@@ -1245,9 +1245,9 @@ final class GameStats {
         case .trivia: return "Trivia"
         case .hangman: return "Hangman"
         case .beatclock: return "Countdown"
-        case .versematch: return "Verse Match"
+        case .versematch: return "Verses"
         case .bookorder: return "Book Order"
-        case .whoami: return "Who am I?"
+        case .whoami: return "Who?"
         case .wordsearch: return "Word Search"
         case .wordle: return "WORD"
         }
@@ -1943,7 +1943,7 @@ final class GameStats {
         return (a, c)
     }
 
-    // Verse Match daily nested per-book maps loader
+    // Verses daily nested per-book maps loader
     private func loadVerseMatchPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
         let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyAnswered")
         let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyCorrect")
@@ -2015,7 +2015,7 @@ final class GameStats {
         return rows
     }
 
-    // Verse Match weak/strong books over last N days (mirrors Quiz)
+    // Verses weak/strong books over last N days (mirrors Quiz)
     func verseMatchWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let (dailyA, dailyC) = loadVerseMatchPerBookDailyMaps()
 

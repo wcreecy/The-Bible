@@ -77,7 +77,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Verse Match (new)
+    // Game keys: Verses (new)
     static let verseMatchKeys: [String] = {
         // Include "easy/normal/medium/hard" and combined "all" to match UI's aggregated reads
         let diffs = ["easy", "normal", "medium", "hard", "all"]
@@ -92,7 +92,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Verse Match persistent streak keys (local-only; used by VerseMatchGameView)
+    // Verses persistent streak keys (local-only; used by VerseMatchGameView)
     static let verseMatchPersistentStreakKeys: [String] = {
         var keys: [String] = []
         for d in ["easy","normal","hard"] {
@@ -102,7 +102,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Verse Match per-book maps mirrored via KVS (JSON [String:Int])
+    // Verses per-book maps mirrored via KVS (JSON [String:Int])
     static let verseMatchPerBookMapKeys: [String] = [
         "versematchPerBookAnsweredMap",
         "versematchPerBookCorrectMap"
@@ -160,7 +160,7 @@ extension iCloudSyncCoordinator {
         "triviaPerBookDailyCorrect"
     ]
 
-    // Per-book daily maps used by the detailed Verse Match statistics screen.
+    // Per-book daily maps used by the detailed Verses statistics screen.
     static let verseMatchPerBookDailyMapKeys: [String] = [
         "versematchPerBookDailyAnswered",
         "versematchPerBookDailyCorrect"
@@ -787,7 +787,7 @@ extension iCloudSyncCoordinator {
             defaults.removeObject(forKey: tsKey(for: key))
         }
 
-        // 1b) Clear local-only persistent streak caches (Beat the Clock + Verse Match + Hangman + Book Order)
+        // 1b) Clear local-only persistent streak caches (Beat the Clock + Verses + Hangman + Book Order)
         for key in Self.allPersistentStreakKeys {
             defaults.removeObject(forKey: key)
         }
@@ -833,7 +833,7 @@ extension iCloudSyncCoordinator {
         // 1) Reset all-time counters (includes WORD extras)
         resetAllGameCountersToZero()
 
-        // 1b) Clear any local-only persistent streak caches (Beat the Clock + Verse Match + Hangman + Book Order)
+        // 1b) Clear any local-only persistent streak caches (Beat the Clock + Verses + Hangman + Book Order)
         for key in Self.allPersistentStreakKeys {
             defaults.removeObject(forKey: key)
             // Not mirrored to KVS; these keys are local-only
@@ -901,7 +901,7 @@ extension iCloudSyncCoordinator {
         }
         enqueueKeysForSync(["beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap"])
 
-        // 2c.3) Clear Verse Match per-book analytics (all-time maps mirrored)
+        // 2c.3) Clear Verses per-book analytics (all-time maps mirrored)
         for key in ["versematchPerBookAnsweredMap", "versematchPerBookCorrectMap"] {
             defaults.removeObject(forKey: key)
             kvs.removeObject(forKey: key)
@@ -970,7 +970,7 @@ extension iCloudSyncCoordinator {
         // Beat the Clock — include normal, medium (legacy), and combined "all"
         repairSuffixed(prefix: "beatclock", diffs: ["easy","normal","medium","hard","all"])
 
-        // Verse Match (new) + Reference Match (legacy) — include combined "all"
+        // Verses (new) + Reference Match (legacy) — include combined "all"
         repairSuffixed(prefix: "versematch", diffs: ["easy","normal","medium","hard","all"])
         repairSuffixed(prefix: "refmatch", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "refmatchAllTimeCorrect", answeredKey: "refmatchAllTimeAnswered")
