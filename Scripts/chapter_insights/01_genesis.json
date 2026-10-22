@@ -1,21 +1,21 @@
 {
   "Genesis 1": {
-    "summary": "Genesis opens with God creating the heavens and the earth. God brings light, sky, land, vegetation, heavenly lights, sea and flying creatures, land animals, and finally humanity into an ordered, fruitful world. God creates human beings—male and female—in his image, blesses them, and gives them responsibility to fill and care for the earth. God declares the completed creation very good (Genesis 1:1–31). The chapter shows God as the maker of everything and gives people both worth and the job of caring for his world.",
+    "summary": "Genesis opens with God creating the heaven and the earth (Genesis 1:1–2). Over six days God brings light, sky, land and plants, the sun, moon, and stars, sea creatures and birds, and land animals into an ordered, fruitful world (Genesis 1:3–25). God creates human beings, male and female, in his image, blesses them, and gives them the job of filling and caring for the earth (Genesis 1:26–30). God looks at everything he has made, \"and, behold, it was very good\" (Genesis 1:31). The chapter shows God as the maker of everything and gives every person worth.",
     "whereWeAre": "This is the first page of the Bible. Before there are any people, places, or kings, God creates the heavens and the earth in six days. He rests on the seventh day at the start of chapter 2, which then tells the story of the first man and woman up close.",
     "keyFigures": [
       {
         "name": "God",
-        "role": "Creator who speaks, orders, blesses, and evaluates creation."
+        "role": "Speaks the world into being, fills it with life, and calls it good."
       },
       {
-        "name": "Humanity—male and female",
-        "role": "Created in God’s image and entrusted with fruitfulness and responsible rule over living creatures."
+        "name": "The first man and woman",
+        "role": "Made in God's image and given the job of filling and caring for the earth."
       }
     ],
     "keyThemes": [
       {
         "theme": "God is the Creator",
-        "explanation": "Everything depicted owes its existence and order to God; the chapter emphasizes divine initiative rather than rival creators.",
+        "explanation": "Everything exists because God made it. No other power shares the work.",
         "references": [
           "Genesis 1:1",
           "Genesis 1:3",
@@ -24,7 +24,7 @@
       },
       {
         "theme": "Creation is ordered and good",
-        "explanation": "The repeated pattern of forming, filling, and declaring goodness portrays a purposeful world.",
+        "explanation": "Day by day God shapes and fills the world, and each time he sees that it is good.",
         "references": [
           "Genesis 1:4",
           "Genesis 1:10",
@@ -34,14 +34,14 @@
       },
       {
         "theme": "Human dignity",
-        "explanation": "Both male and female bear God’s image; the text grants this status to humanity, not an elite group.",
+        "explanation": "Both male and female are made in God's image, so every person has worth.",
         "references": [
           "Genesis 1:26-27"
         ]
       },
       {
-        "theme": "Stewardship and fruitfulness",
-        "explanation": "Human rule and multiplication are presented as responsibilities within God’s good creation.",
+        "theme": "Caring for the earth",
+        "explanation": "God gives people the task of filling the earth and ruling over its creatures with care.",
         "references": [
           "Genesis 1:28-30"
         ]
@@ -66,42 +66,42 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Completes creation, provides the garden, gives the command, and forms the woman."
+        "role": "Rests on the seventh day, plants the garden, gives the one command, and makes the woman."
       },
       {
-        "name": "The man",
-        "role": "Formed from dust; tasked with tending the garden and naming animals; later called Adam in the narrative."
+        "name": "Adam",
+        "role": "Formed from the dust, he tends the garden and names the animals."
       },
       {
         "name": "The woman",
-        "role": "Formed as a suitable partner to the man; later named Eve in Genesis 3:20."
+        "role": "Made from Adam's rib to be his partner. She is named Eve in chapter 3."
       }
     ],
     "keyThemes": [
       {
         "theme": "Holy rest",
-        "explanation": "God blesses the seventh day after completing his work; later Sabbath teaching draws on this pattern.",
+        "explanation": "God blesses the seventh day and makes it holy. Israel's Sabbath follows this pattern.",
         "references": [
           "Genesis 2:2-3"
         ]
       },
       {
-        "theme": "Life depends on God",
-        "explanation": "The man’s life and place in the garden are gifts, not self-created achievements.",
+        "theme": "Life is a gift",
+        "explanation": "God breathes life into the man and gives him a home. None of it is his own doing.",
         "references": [
           "Genesis 2:7-8"
         ]
       },
       {
         "theme": "Freedom and limits",
-        "explanation": "The garden includes generous provision and one explicitly stated prohibition.",
+        "explanation": "The man may eat from every tree but one. That one limit tests whether he will trust God.",
         "references": [
           "Genesis 2:16-17"
         ]
       },
       {
-        "theme": "Human companionship",
-        "explanation": "The woman is introduced as a corresponding partner, and marriage as a profound union.",
+        "theme": "Made for each other",
+        "explanation": "God says it is not good for the man to be alone. Marriage joins husband and wife as \"one flesh.\"",
         "references": [
           "Genesis 2:18",
           "Genesis 2:21-24"
@@ -147,46 +147,46 @@
     "keyFigures": [
       {
         "name": "The serpent",
-        "role": "A crafty creature that contradicts the divine warning and tempts the woman; its identification with Satan comes from later biblical interpretation, not an explicit statement here."
+        "role": "A crafty creature that questions God's word and tempts the woman. Later Scripture calls Satan \"that old serpent\" (Revelation 12:9)."
       },
       {
-        "name": "The woman (Eve)",
-        "role": "Eats the forbidden fruit, gives it to the man, and receives a judgment; named Eve in 3:20."
+        "name": "Eve",
+        "role": "Eats the forbidden fruit and gives some to her husband."
       },
       {
-        "name": "The man (Adam)",
-        "role": "Eats the forbidden fruit and receives a judgment concerning toil and mortality."
+        "name": "Adam",
+        "role": "Eats the fruit, hides from God, and blames his wife."
       },
       {
         "name": "God",
-        "role": "Questions the humans, announces consequences, clothes them, and excludes them from Eden."
+        "role": "Questions them, tells them what their sin will bring, clothes them, and sends them out of Eden."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Temptation and distrust",
-        "explanation": "The serpent challenges the truth and goodness of God’s command.",
+        "theme": "Temptation",
+        "explanation": "The serpent makes God's command sound unfair and his warning sound false.",
         "references": [
           "Genesis 3:1-5"
         ]
       },
       {
-        "theme": "Disobedience and shame",
-        "explanation": "Eating the fruit leads to fear, hiding, and fractured relationships.",
+        "theme": "Shame and hiding",
+        "explanation": "Sin brings fear and blame. The man and woman hide from God and point at each other.",
         "references": [
           "Genesis 3:6-13"
         ]
       },
       {
-        "theme": "Consequences of sin",
-        "explanation": "The judgments affect human labor, relationships, and mortal life.",
+        "theme": "The cost of sin",
+        "explanation": "Pain, hard work, and death enter the world because of this choice.",
         "references": [
           "Genesis 3:14-19"
         ]
       },
       {
-        "theme": "Judgment alongside provision",
-        "explanation": "God makes garments even as the humans must leave the garden.",
+        "theme": "Mercy in judgment",
+        "explanation": "Even as he sends them out of the garden, God makes clothes to cover them.",
         "references": [
           "Genesis 3:21-24"
         ]
@@ -195,64 +195,57 @@
     "explainedReferences": []
   },
   "Genesis 4": {
-    "summary": "Eve bears Cain and Abel. Cain, a farmer, becomes angry when God regards Abel and his offering but not Cain and his; God warns Cain that sin desires to master him (Genesis 4:1–7). Cain murders Abel and is judged to a restless life, though God places a protective sign on him (Genesis 4:8–16). Cain’s descendants establish a city and develop herding, music, and metalworking; Lamech boasts of violence (Genesis 4:17–24). Adam and Eve also have Seth, and the chapter ends by mentioning Enosh and the practice of calling on the LORD’s name (Genesis 4:25–26).",
+    "summary": "Eve bears Cain and Abel. Cain, a farmer, becomes angry when God regards Abel and his offering but not Cain and his; God warns Cain that sin desires to master him (Genesis 4:1–7). Cain murders Abel and is judged to a restless life, though God places a protective sign on him (Genesis 4:8–16). Cain’s descendants establish a city and develop herding, music, and metalworking; Lamech boasts of violence (Genesis 4:17–24). Adam and Eve also have Seth, and the chapter ends by mentioning Enos and the practice of calling on the LORD’s name (Genesis 4:25–26).",
     "whereWeAre": "Adam and Eve now live outside the garden, and sin moves fast. In the very next generation, one brother kills another. The chapter ends with a new son, Seth, whose family line is traced in chapter 5.",
     "keyFigures": [
       {
         "name": "Cain",
-        "role": "First named son of Adam and Eve; farmer who murders Abel and receives judgment."
+        "role": "Adam and Eve's firstborn, a farmer, who kills his brother in anger."
       },
       {
         "name": "Abel",
-        "role": "Brother of Cain and keeper of flocks whose offering receives divine regard."
+        "role": "Cain's younger brother, a shepherd, whose offering God accepts."
       },
       {
         "name": "God",
-        "role": "Warns Cain, confronts the murder, judges him, and provides a mark of protection."
+        "role": "Warns Cain, confronts him after the murder, and puts a mark on him for protection."
       },
       {
         "name": "Lamech",
-        "role": "Descendant of Cain who boasts of retaliatory violence."
+        "role": "One of Cain's descendants, who brags about killing a man."
       },
       {
-        "name": "Seth and Enosh",
-        "role": "Later family line introduced as the narrative turns toward worship and subsequent genealogies."
+        "name": "Seth",
+        "role": "Adam and Eve's third son, born to take Abel's place."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Worship and the heart",
-        "explanation": "The text reports different responses to the offerings without explaining every reason for them.",
+        "theme": "Worship from the heart",
+        "explanation": "God accepts Abel's offering but not Cain's. Hebrews says, \"By faith Abel offered unto God a more excellent sacrifice than Cain\" (Hebrews 11:4).",
         "references": [
           "Genesis 4:3-5"
         ]
       },
       {
-        "theme": "Sin and personal responsibility",
-        "explanation": "Cain is warned to resist sin before acting violently.",
+        "theme": "Sin at the door",
+        "explanation": "God warns Cain that \"sin lieth at the door\" and that he must rule over it.",
         "references": [
           "Genesis 4:6-7"
         ]
       },
       {
-        "theme": "Sanctity of life and accountability",
-        "explanation": "Abel’s blood cries out, and Cain answers for his brother’s death.",
+        "theme": "Life is precious",
+        "explanation": "Abel's blood cries out to God from the ground, and Cain must answer for his brother's death.",
         "references": [
           "Genesis 4:8-12"
         ]
       },
       {
         "theme": "Mercy within judgment",
-        "explanation": "Cain is punished but also receives protection against retaliatory killing.",
+        "explanation": "Cain is driven away, yet God protects him from anyone who might kill him.",
         "references": [
           "Genesis 4:13-16"
-        ]
-      },
-      {
-        "theme": "Culture and moral ambiguity",
-        "explanation": "Skills and settlement grow alongside further violence in Cain’s line.",
-        "references": [
-          "Genesis 4:17-24"
         ]
       }
     ],
@@ -264,40 +257,40 @@
     "keyFigures": [
       {
         "name": "Adam",
-        "role": "Starting ancestor in the genealogy that remembers humanity’s creation."
+        "role": "The first man. The family list begins with him."
       },
       {
         "name": "Seth",
-        "role": "Son through whom this genealogical line continues."
+        "role": "Adam's son, through whom this family line runs."
       },
       {
         "name": "Enoch",
-        "role": "Ancestor known for walking with God and being taken by God."
+        "role": "Walks with God and is taken by God without dying."
       },
       {
         "name": "Methuselah",
-        "role": "Long-lived ancestor within the line from Enoch to Lamech."
+        "role": "Enoch's son, who lives 969 years, the longest life in the Bible."
       },
       {
         "name": "Lamech",
-        "role": "Father who names Noah and voices hope for comfort."
+        "role": "Noah's father, who hopes his son will bring comfort from hard work."
       },
       {
         "name": "Noah",
-        "role": "Descendant introduced before the flood narrative."
+        "role": "Born at the end of the list. He will be at the center of the flood story."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Humanity bears God’s likeness",
-        "explanation": "The genealogy explicitly recalls creation and divine blessing.",
+        "theme": "Made in God's likeness",
+        "explanation": "The list begins by remembering that God made humanity in his likeness and blessed them.",
         "references": [
           "Genesis 5:1-2"
         ]
       },
       {
-        "theme": "Mortality",
-        "explanation": "The repeated report of death marks the human condition.",
+        "theme": "Death comes to all",
+        "explanation": "Again and again the list ends with \"and he died.\" God's warning in Eden has come true.",
         "references": [
           "Genesis 5:5",
           "Genesis 5:8",
@@ -306,14 +299,14 @@
       },
       {
         "theme": "Walking with God",
-        "explanation": "Enoch’s life is distinguished by close relationship with God.",
+        "explanation": "Enoch breaks the pattern. He walks with God, and God takes him.",
         "references": [
           "Genesis 5:22-24"
         ]
       },
       {
         "theme": "Hope amid toil",
-        "explanation": "Noah’s naming recalls the hardship of work on the cursed ground.",
+        "explanation": "Lamech names his son Noah, hoping he will bring rest from the hard work of the cursed ground.",
         "references": [
           "Genesis 5:28-29"
         ]
@@ -322,53 +315,53 @@
     "explainedReferences": []
   },
   "Genesis 6": {
-    "summary": "As humanity multiplies, Genesis describes unions between the 'sons of God' and 'daughters of men,' mentions the Nephilim, and reports the spread of human wickedness (Genesis 6:1–5). God grieves over the corruption and announces judgment, yet Noah finds favor (Genesis 6:6–8). Noah is described as righteous in his generation. God tells him that the earth is full of violence and commands him to construct an ark, preserve his family, and bring representatives of living creatures aboard (Genesis 6:9–22). The chapter moves from a world full of evil to God’s plan to save Noah’s family.",
+    "summary": "As humanity multiplies, Genesis tells how \"the sons of God saw the daughters of men\" and took them as wives, mentions the \"giants in the earth,\" and reports the spread of human wickedness (Genesis 6:1–5). God grieves over the corruption and announces judgment, yet Noah finds favor (Genesis 6:6–8). Noah is described as righteous in his generation. God tells him that the earth is full of violence and commands him to construct an ark, preserve his family, and bring representatives of living creatures aboard (Genesis 6:9–22). The chapter moves from a world full of evil to God’s plan to save Noah’s family.",
     "whereWeAre": "The world has filled with people since Adam, but it has also filled with evil. This chapter tells why God sends the flood and how he plans to save Noah's family. The flood itself begins in chapter 7.",
     "keyFigures": [
       {
         "name": "God",
-        "role": "Sees violence and wickedness, announces judgment, and instructs Noah."
+        "role": "Sees the evil on the earth, decides to send a flood, and tells Noah to build an ark."
       },
       {
         "name": "Noah",
-        "role": "Righteous man who receives instructions and acts in obedience."
+        "role": "A righteous man who walks with God and does everything God commands."
       },
       {
-        "name": "Noah’s wife, sons, and sons’ wives",
-        "role": "Family members designated to enter the ark; the sons are Shem, Ham, and Japheth."
+        "name": "Noah's family",
+        "role": "His wife, his sons Shem, Ham, and Japheth, and their wives, who will be saved in the ark."
       },
       {
-        "name": "Sons of God, daughters of men, and Nephilim",
-        "role": "Groups mentioned in a difficult passage whose precise identities are disputed."
+        "name": "The sons of God and the giants",
+        "role": "The \"sons of God\" take wives from the \"daughters of men,\" and \"giants\" live on the earth in those days."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Widespread violence",
-        "explanation": "Corruption and violence are stated reasons for judgment.",
+        "theme": "A world full of violence",
+        "explanation": "Every thought of the human heart has become evil, and violence fills the earth.",
         "references": [
           "Genesis 6:5",
           "Genesis 6:11-13"
         ]
       },
       {
-        "theme": "Divine grief and justice",
-        "explanation": "God responds to human evil rather than treating it as insignificant.",
+        "theme": "God grieves over sin",
+        "explanation": "Human evil grieves God's heart, and he does not ignore it.",
         "references": [
           "Genesis 6:5-7",
           "Genesis 6:13"
         ]
       },
       {
-        "theme": "Favor and integrity",
-        "explanation": "Noah finds favor and is described as walking with God.",
+        "theme": "Grace for Noah",
+        "explanation": "\"But Noah found grace in the eyes of the LORD.\" Noah walks with God in a wicked world.",
         "references": [
           "Genesis 6:8-9"
         ]
       },
       {
         "theme": "Faithful obedience",
-        "explanation": "Noah follows the detailed instructions for preservation.",
+        "explanation": "Noah builds the ark exactly as God tells him.",
         "references": [
           "Genesis 6:14-22"
         ]
@@ -382,47 +375,43 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Orders entry into the ark and sends the floodwaters."
+        "role": "Tells Noah to enter the ark, shuts the door, and sends the flood."
       },
       {
         "name": "Noah",
-        "role": "Obeys the command and enters the ark with his household."
+        "role": "Obeys God and goes into the ark with his family and the animals."
       },
       {
-        "name": "Noah’s family",
-        "role": "His wife, sons Shem, Ham, and Japheth, and their wives survive with him."
-      },
-      {
-        "name": "Living creatures",
-        "role": "Animals taken into the ark are preserved; creatures outside it perish in the narrative."
+        "name": "Noah's family",
+        "role": "His wife, his sons Shem, Ham, and Japheth, and their wives, who are kept safe in the ark."
       }
     ],
     "keyThemes": [
       {
         "theme": "Obedience",
-        "explanation": "Noah does what God commands when the danger is imminent.",
+        "explanation": "Noah does all that God commands, before the first drop of rain falls.",
         "references": [
           "Genesis 7:1-5"
         ]
       },
       {
         "theme": "Judgment",
-        "explanation": "The flood is narrated as comprehensive destruction of land-dwelling life outside the ark.",
+        "explanation": "The waters cover the whole earth, and every living thing outside the ark dies.",
         "references": [
           "Genesis 7:17-23"
         ]
       },
       {
-        "theme": "Preservation",
-        "explanation": "God provides safety for Noah’s household and animal representatives.",
+        "theme": "Saved by God",
+        "explanation": "God keeps Noah, his family, and the animals alive through the flood.",
         "references": [
           "Genesis 7:7-9",
           "Genesis 7:23"
         ]
       },
       {
-        "theme": "Dependence on God",
-        "explanation": "The LORD shuts Noah in, highlighting preservation beyond human effort alone.",
+        "theme": "God shuts the door",
+        "explanation": "The LORD himself shuts Noah in. Noah's safety is God's doing, not his own.",
         "references": [
           "Genesis 7:16"
         ]
@@ -436,46 +425,42 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Brings the waters down, commands departure, and declares his purpose concerning the earth."
+        "role": "Remembers Noah, dries up the waters, and promises never again to destroy every living thing."
       },
       {
         "name": "Noah",
-        "role": "Observes the recession, sends birds, leads the exit, and offers worship."
+        "role": "Sends out a raven and a dove, leaves the ark when God says, and builds an altar."
       },
       {
-        "name": "Noah’s family",
-        "role": "Leaves the ark with Noah to begin life after the flood."
-      },
-      {
-        "name": "Living creatures",
-        "role": "Emerge from the ark and are told to multiply on earth."
+        "name": "Noah's family",
+        "role": "Steps out of the ark with Noah to begin life again."
       }
     ],
     "keyThemes": [
       {
         "theme": "God remembers",
-        "explanation": "Divine remembrance signals action to preserve Noah and living creatures.",
+        "explanation": "God has not forgotten Noah. He sends a wind, and the waters begin to go down.",
         "references": [
           "Genesis 8:1"
         ]
       },
       {
-        "theme": "Patient discernment",
-        "explanation": "Noah tests the changing conditions before leaving under God’s command.",
+        "theme": "Waiting on God",
+        "explanation": "Noah tests the land with birds, but he leaves the ark only when God tells him to.",
         "references": [
           "Genesis 8:6-19"
         ]
       },
       {
-        "theme": "Worship and gratitude",
-        "explanation": "Noah responds to deliverance by building an altar and offering sacrifice.",
+        "theme": "Worship after rescue",
+        "explanation": "Noah's first act on dry land is to build an altar and worship.",
         "references": [
           "Genesis 8:20"
         ]
       },
       {
-        "theme": "Continuing creation",
-        "explanation": "God declares the ongoing rhythm of seasons and daily cycles.",
+        "theme": "The seasons will go on",
+        "explanation": "God promises that seedtime and harvest, summer and winter, and day and night will not stop.",
         "references": [
           "Genesis 8:21-22"
         ]
@@ -489,51 +474,47 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Blesses Noah’s family and establishes the covenant marked by the rainbow."
+        "role": "Blesses Noah's family and makes a covenant with every living thing, marked by the rainbow."
       },
       {
         "name": "Noah",
-        "role": "Recipient of the covenant and father involved in the later family incident."
+        "role": "Receives the covenant, plants a vineyard, and later blesses and curses his sons' families."
       },
       {
         "name": "Shem and Japheth",
-        "role": "Sons who respectfully cover their father."
+        "role": "Cover their father's shame without looking."
       },
       {
         "name": "Ham",
-        "role": "Son who sees his father’s nakedness; identified as Canaan’s father."
-      },
-      {
-        "name": "Canaan",
-        "role": "Ham’s son specifically named in Noah’s curse, not every descendant of Ham."
+        "role": "Sees his father's nakedness and tells his brothers."
       }
     ],
     "keyThemes": [
       {
         "theme": "Life is sacred",
-        "explanation": "Human bloodshed is singled out because people are made in God’s image.",
+        "explanation": "Murder is a grave wrong because every person is made in God's image.",
         "references": [
           "Genesis 9:5-6"
         ]
       },
       {
-        "theme": "Covenant faithfulness",
-        "explanation": "God pledges a lasting restraint on flood destruction to all living creatures.",
+        "theme": "God keeps his covenant",
+        "explanation": "God promises never again to destroy the earth by a flood, and the rainbow is the sign.",
         "references": [
           "Genesis 9:8-17"
         ]
       },
       {
-        "theme": "Fruitfulness after judgment",
-        "explanation": "God renews the charge to multiply across the earth.",
+        "theme": "A fresh start",
+        "explanation": "God repeats his first blessing: be fruitful, multiply, and fill the earth.",
         "references": [
           "Genesis 9:1",
           "Genesis 9:7"
         ]
       },
       {
-        "theme": "Family honor and conflict",
-        "explanation": "Noah’s household experiences shame, covering, and an oracle about descendants.",
+        "theme": "Shame in the family",
+        "explanation": "Even after the flood, sin shows up in Noah's own tent.",
         "references": [
           "Genesis 9:20-27"
         ]
@@ -542,42 +523,38 @@
     "explainedReferences": []
   },
   "Genesis 10": {
-    "summary": "Genesis 10 presents the descendants of Noah’s sons Japheth, Ham, and Shem after the flood. It lists peoples, lands, languages, and clan relationships, including the account of Nimrod as a powerful figure associated with several Mesopotamian cities (Genesis 10:1–32). The chapter is often called the Table of Nations. It shows humanity spreading out into many peoples and prepares for the story of Babel and, later, Abraham’s family.",
+    "summary": "After the flood, Noah's sons Shem, Ham, and Japheth have families that grow into nations (Genesis 10:1). Japheth's descendants spread out to the isles (Genesis 10:2–5). Ham's line includes Cush, Mizraim (Egypt), and Canaan, and the mighty hunter Nimrod, whose kingdom begins at Babel in the land of Shinar (Genesis 10:6–20). Shem's line runs through Eber and Peleg toward Abraham's family (Genesis 10:21–31). The chapter, often called the Table of Nations, shows humanity spreading out by families, languages, and lands (Genesis 10:32).",
     "whereWeAre": "After the flood, Noah's three sons have families, and those families grow into nations. This chapter is a map of the world as Israel knew it. Chapter 11 goes back and tells how those nations were scattered at Babel.",
     "keyFigures": [
       {
         "name": "Japheth",
-        "role": "One of Noah’s sons whose descendants are listed."
+        "role": "Noah's son whose descendants spread to the isles."
       },
       {
         "name": "Ham",
-        "role": "Son whose descendant lines include Cush, Egypt, Put, and Canaan."
+        "role": "Noah's son whose line includes Cush, Egypt, and Canaan."
       },
       {
         "name": "Nimrod",
-        "role": "Descendant of Cush characterized as a mighty man and linked to kingdoms and cities."
+        "role": "\"A mighty hunter before the LORD,\" whose kingdom begins at Babel."
       },
       {
         "name": "Shem",
-        "role": "Son whose descendants include the line leading toward Eber and later Abraham."
-      },
-      {
-        "name": "Peleg",
-        "role": "Descendant named with a notice that the earth was divided in his days; the precise meaning is not explained."
+        "role": "Noah's son whose line runs through Eber toward Abraham."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Shared human ancestry",
-        "explanation": "Many peoples are traced through one family after the flood.",
+        "theme": "One human family",
+        "explanation": "Every nation on the list comes from Noah's three sons.",
         "references": [
           "Genesis 10:1",
           "Genesis 10:32"
         ]
       },
       {
-        "theme": "Diversity of nations",
-        "explanation": "Families, languages, lands, and nations organize the list.",
+        "theme": "Many nations",
+        "explanation": "The peoples spread out, each with its own land, language, and family.",
         "references": [
           "Genesis 10:5",
           "Genesis 10:20",
@@ -585,15 +562,15 @@
         ]
       },
       {
-        "theme": "Emergence of kingdoms",
-        "explanation": "Nimrod’s account names cities and a kingdom in Mesopotamia.",
+        "theme": "The first kingdoms",
+        "explanation": "Nimrod builds the first kingdom, with cities like Babel in the land of Shinar.",
         "references": [
           "Genesis 10:8-12"
         ]
       },
       {
-        "theme": "Preparing the family story",
-        "explanation": "Shem’s descendants direct attention to later genealogies.",
+        "theme": "Setting up Abraham's story",
+        "explanation": "Shem's line is traced with care, because Abraham will come from it.",
         "references": [
           "Genesis 10:21-31"
         ]
@@ -607,54 +584,50 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Confuses language and scatters the builders."
+        "role": "Comes down, confuses the builders' language, and scatters them."
       },
       {
-        "name": "The builders at Babel",
-        "role": "A united community seeking a city, tower, and lasting reputation."
-      },
-      {
-        "name": "Shem",
-        "role": "Starting ancestor in the genealogy following Babel."
+        "name": "The builders of Babel",
+        "role": "People who try to build a tower to heaven and make a name for themselves."
       },
       {
         "name": "Terah",
-        "role": "Father of Abram, Nahor, and Haran; leads a household migration."
+        "role": "Abram's father, who moves his family from Ur toward Canaan but stops at Haran."
       },
       {
         "name": "Abram and Sarai",
-        "role": "Married couple introduced before the call in Genesis 12; Sarai is unable to bear children."
+        "role": "Introduced at the end of the chapter. Sarai has no children."
       },
       {
         "name": "Lot",
-        "role": "Son of Haran and Abram’s nephew, introduced in the family account."
+        "role": "Abram's nephew, whose father Haran has died."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Human pride and security",
-        "explanation": "The builders seek self-made status and protection from dispersal.",
+        "theme": "Pride",
+        "explanation": "The builders want to make a name for themselves and stay together instead of filling the earth.",
         "references": [
           "Genesis 11:3-4"
         ]
       },
       {
-        "theme": "Limits of collective power",
-        "explanation": "God disrupts an effort that the narrative views as overreaching.",
+        "theme": "God limits human pride",
+        "explanation": "God stops the tower by confusing the builders' language.",
         "references": [
           "Genesis 11:5-9"
         ]
       },
       {
-        "theme": "Peoples and languages",
-        "explanation": "Language diversity and scattering are explained within the narrative.",
+        "theme": "Where languages come from",
+        "explanation": "The chapter explains how one people became many peoples with many languages.",
         "references": [
           "Genesis 11:7-9"
         ]
       },
       {
-        "theme": "From nations to a family",
-        "explanation": "The genealogy narrows attention from dispersed peoples to Abram.",
+        "theme": "From the nations to one family",
+        "explanation": "The family list narrows the whole story down to Abram.",
         "references": [
           "Genesis 11:10-32"
         ]
@@ -668,50 +641,50 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Calls Abram and promises land, descendants, and blessing."
+        "role": "Calls Abram to leave home and promises him land, a great nation, and a blessing for all families."
       },
       {
         "name": "Abram",
-        "role": "Leaves Haran, worships in Canaan, and later acts fearfully in Egypt."
+        "role": "Leaves Haran at seventy-five, builds altars in Canaan, then lies about his wife in Egypt."
       },
       {
         "name": "Sarai",
-        "role": "Abram’s wife, placed in danger by his deception."
+        "role": "Abram's wife, taken into Pharaoh's house because of Abram's lie."
       },
       {
         "name": "Lot",
-        "role": "Abram’s nephew who accompanies the journey."
+        "role": "Abram's nephew, who travels with him."
       },
       {
         "name": "Pharaoh",
-        "role": "Egyptian ruler who confronts Abram after plagues affect his household."
+        "role": "King of Egypt, who sends Abram away after plagues strike his house."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Faith and response",
-        "explanation": "Abram goes as God commands, despite not yet possessing the promised land.",
+        "theme": "Faith that goes",
+        "explanation": "Abram leaves everything familiar because God tells him to.",
         "references": [
           "Genesis 12:1-5"
         ]
       },
       {
-        "theme": "Blessing for the nations",
-        "explanation": "God’s purpose for Abram extends beyond one family.",
+        "theme": "A blessing for the nations",
+        "explanation": "God's plan for Abram reaches \"all families of the earth.\"",
         "references": [
           "Genesis 12:2-3"
         ]
       },
       {
-        "theme": "Promise and worship",
-        "explanation": "Divine appearances and altars mark the journey in Canaan.",
+        "theme": "Worship along the way",
+        "explanation": "Wherever God appears to him, Abram builds an altar.",
         "references": [
           "Genesis 12:6-9"
         ]
       },
       {
-        "theme": "Fear and its consequences",
-        "explanation": "Abram’s misleading account endangers Sarai and others.",
+        "theme": "Fear leads to lies",
+        "explanation": "Afraid for his life, Abram lies about Sarai and puts her in danger.",
         "references": [
           "Genesis 12:10-20"
         ]
@@ -741,46 +714,46 @@
     "keyFigures": [
       {
         "name": "Abram",
-        "role": "Seeks peace with Lot, gives him choice, and receives renewed promises."
+        "role": "Makes peace with Lot, lets him choose first, and receives God's promise again."
       },
       {
         "name": "Lot",
-        "role": "Chooses the well-watered Jordan district near Sodom."
+        "role": "Chooses the green Jordan plain and moves toward Sodom."
       },
       {
         "name": "God",
-        "role": "Reaffirms land and descendant promises."
+        "role": "Promises Abram all the land he can see and children as many as the dust."
       },
       {
-        "name": "Herders of Abram and Lot",
-        "role": "Their dispute occasions the separation."
+        "name": "The herdsmen",
+        "role": "Abram's and Lot's herdsmen, whose quarrel leads to the split."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Peacemaking",
-        "explanation": "Abram seeks separation without hostility.",
+        "theme": "Making peace",
+        "explanation": "Abram ends the quarrel by giving Lot first choice of the land.",
         "references": [
           "Genesis 13:7-9"
         ]
       },
       {
-        "theme": "Choices and appearances",
-        "explanation": "Lot selects a desirable region that carries moral danger.",
+        "theme": "Choosing by sight",
+        "explanation": "Lot picks the land that looks best, near the wicked city of Sodom.",
         "references": [
           "Genesis 13:10-13"
         ]
       },
       {
-        "theme": "Trust in promises",
-        "explanation": "God renews the land and offspring promise after Lot leaves.",
+        "theme": "Trusting God's promise",
+        "explanation": "Right after Lot leaves, God promises Abram all the land he can see.",
         "references": [
           "Genesis 13:14-17"
         ]
       },
       {
         "theme": "Worship",
-        "explanation": "Abram builds an altar near Hebron.",
+        "explanation": "Abram settles at Hebron and builds an altar.",
         "references": [
           "Genesis 13:18"
         ]
@@ -794,50 +767,50 @@
     "keyFigures": [
       {
         "name": "Abram",
-        "role": "Leads a rescue, honors Melchizedek, and refuses personal enrichment from Sodom."
+        "role": "Rescues Lot, honors Melchizedek, and refuses the king of Sodom's riches."
       },
       {
         "name": "Lot",
-        "role": "Captive whose plight prompts Abram’s intervention."
+        "role": "Captured when the eastern kings raid Sodom."
       },
       {
         "name": "Melchizedek",
-        "role": "King of Salem and priest of God Most High who blesses Abram."
+        "role": "King of Salem and \"the priest of the most high God,\" who blesses Abram."
       },
       {
-        "name": "King of Sodom",
-        "role": "Offers Abram goods following the battle."
+        "name": "The king of Sodom",
+        "role": "Offers Abram the goods taken in battle."
       },
       {
-        "name": "Coalition kings",
-        "role": "Warring rulers whose campaign produces Lot’s captivity."
+        "name": "Chedorlaomer and his allies",
+        "role": "Four eastern kings whose raid carries Lot away."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Family loyalty",
-        "explanation": "Abram acts to rescue his nephew and others.",
+        "theme": "Loyal to family",
+        "explanation": "Abram risks his life to rescue his nephew.",
         "references": [
           "Genesis 14:12-16"
         ]
       },
       {
-        "theme": "God as giver of victory",
-        "explanation": "Melchizedek blesses Abram by God Most High.",
+        "theme": "God gives the victory",
+        "explanation": "Melchizedek blesses God for handing Abram's enemies over to him.",
         "references": [
           "Genesis 14:18-20"
         ]
       },
       {
-        "theme": "Worship and honor",
-        "explanation": "Abram gives a tenth to Melchizedek.",
+        "theme": "Giving a tenth",
+        "explanation": "Abram gives Melchizedek a tenth of everything.",
         "references": [
           "Genesis 14:20"
         ]
       },
       {
-        "theme": "Integrity with possessions",
-        "explanation": "Abram refuses wealth that might compromise his testimony.",
+        "theme": "Not for sale",
+        "explanation": "Abram refuses Sodom's riches so no one can say a king made him rich.",
         "references": [
           "Genesis 14:21-24"
         ]
@@ -851,46 +824,38 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Promises descendants and land and establishes the covenant."
+        "role": "Promises Abram a son, children like the stars, and the land, and seals it with a covenant."
       },
       {
         "name": "Abram",
-        "role": "Raises questions about childlessness and land, then trusts the promise."
-      },
-      {
-        "name": "Eliezer of Damascus",
-        "role": "Member of Abram’s household mentioned as a potential heir, not an actual heir."
-      },
-      {
-        "name": "Abram’s future descendants",
-        "role": "Foretold to experience alien residence, oppression, and eventual return."
+        "role": "Asks how God's promise can come true, then believes him."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Faith and righteousness",
-        "explanation": "Abram trusts the promise despite childlessness.",
+        "theme": "Faith counted as righteousness",
+        "explanation": "Abram believes God, and God counts it to him as righteousness.",
         "references": [
           "Genesis 15:5-6"
         ]
       },
       {
-        "theme": "God’s covenant initiative",
-        "explanation": "The dramatic covenant scene emphasizes divine commitment.",
+        "theme": "God binds himself",
+        "explanation": "Only the fire of God's presence passes between the pieces. God alone makes the promise.",
         "references": [
           "Genesis 15:17-21"
         ]
       },
       {
-        "theme": "Waiting and future hardship",
-        "explanation": "The promise includes a period of affliction before return.",
+        "theme": "Hard years ahead",
+        "explanation": "God tells Abram his family will suffer as strangers for four hundred years before coming home.",
         "references": [
           "Genesis 15:13-16"
         ]
       },
       {
-        "theme": "Land and inheritance",
-        "explanation": "God identifies the land promised to Abram’s offspring.",
+        "theme": "The promised land",
+        "explanation": "God names the land he will give to Abram's children.",
         "references": [
           "Genesis 15:7",
           "Genesis 15:18-21"
@@ -931,50 +896,46 @@
     "keyFigures": [
       {
         "name": "Sarai",
-        "role": "Abram’s wife who proposes the arrangement and mistreats Hagar."
+        "role": "Gives Hagar to Abram, then treats her harshly."
       },
       {
         "name": "Abram",
-        "role": "Fathers Ishmael with Hagar."
+        "role": "Takes Hagar as a wife and lets Sarai deal with her as she pleases."
       },
       {
         "name": "Hagar",
-        "role": "Egyptian servant who flees abuse and encounters divine attention."
+        "role": "Sarai's Egyptian servant, who runs away and is found by God."
       },
       {
-        "name": "Angel of the LORD",
-        "role": "Speaks to Hagar, giving direction and a promise."
-      },
-      {
-        "name": "Ishmael",
-        "role": "Son born to Hagar and Abram; his name is linked with God hearing."
+        "name": "The angel of the LORD",
+        "role": "Finds Hagar by a spring, sends her back, and promises her many descendants."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Impatience under promise",
-        "explanation": "Sarai and Abram attempt to address childlessness by their own arrangement.",
+        "theme": "Running ahead of God",
+        "explanation": "Sarai and Abram try to get the promised child their own way.",
         "references": [
           "Genesis 16:1-4"
         ]
       },
       {
-        "theme": "Power and mistreatment",
-        "explanation": "The narrative openly depicts Hagar’s affliction.",
+        "theme": "Mistreatment",
+        "explanation": "Sarai treats Hagar so harshly that she runs away.",
         "references": [
           "Genesis 16:5-6"
         ]
       },
       {
-        "theme": "God hears the vulnerable",
-        "explanation": "Hagar’s suffering is seen and her son is named accordingly.",
+        "theme": "God sees",
+        "explanation": "God finds Hagar in the wilderness, and she calls him \"Thou God seest me.\"",
         "references": [
           "Genesis 16:7-13"
         ]
       },
       {
-        "theme": "Promise beyond the main line",
-        "explanation": "Hagar receives a specific promise of descendants.",
+        "theme": "A promise for Hagar",
+        "explanation": "God promises Hagar that her son will have too many descendants to count.",
         "references": [
           "Genesis 16:10-12"
         ]
@@ -988,51 +949,47 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Defines covenant promises and the sign of circumcision."
+        "role": "Gives Abram a new name, renews his covenant, and gives circumcision as its sign."
       },
       {
         "name": "Abraham",
-        "role": "Receives a new name, promises, and covenant responsibilities."
+        "role": "Falls on his face before God and circumcises his whole household."
       },
       {
         "name": "Sarah",
-        "role": "Receives a new name and promise of Isaac’s birth."
+        "role": "Given a new name and the promise that she will have a son."
       },
       {
         "name": "Ishmael",
-        "role": "Abraham’s son who is promised blessing, though the covenant line is specified through Isaac."
-      },
-      {
-        "name": "Isaac",
-        "role": "Promised son named before his birth."
+        "role": "Abraham's thirteen-year-old son, blessed by God and circumcised with his father."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Covenant identity",
-        "explanation": "Names and obligations mark a renewed family mission.",
+        "theme": "A new name",
+        "explanation": "Abram becomes Abraham, \"a father of many nations,\" and Sarai becomes Sarah.",
         "references": [
           "Genesis 17:4-8",
           "Genesis 17:15-16"
         ]
       },
       {
-        "theme": "Circumcision as sign",
-        "explanation": "A bodily sign marks membership in the covenant household.",
+        "theme": "The sign of the covenant",
+        "explanation": "Every male in Abraham's household is circumcised as a mark of belonging to God.",
         "references": [
           "Genesis 17:9-14"
         ]
       },
       {
-        "theme": "Promise despite age",
-        "explanation": "God promises a son to Sarah despite the couple’s circumstances.",
+        "theme": "Never too old for God",
+        "explanation": "God promises a son to a man of a hundred and a woman of ninety.",
         "references": [
           "Genesis 17:15-19"
         ]
       },
       {
-        "theme": "Distinct blessings",
-        "explanation": "Ishmael receives blessing while Isaac is designated covenant heir.",
+        "theme": "Two sons, two blessings",
+        "explanation": "God blesses Ishmael but makes his covenant with Isaac.",
         "references": [
           "Genesis 17:19-21"
         ]
@@ -1052,50 +1009,46 @@
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Appears, renews the birth promise, and discusses Sodom’s judgment."
+        "role": "Visits Abraham, promises Sarah a son, and tells Abraham his plan for Sodom."
       },
       {
         "name": "Abraham",
-        "role": "Hosts visitors and intercedes for Sodom."
+        "role": "Welcomes the three visitors and pleads with the LORD for Sodom."
       },
       {
         "name": "Sarah",
-        "role": "Overhears the promise and laughs."
+        "role": "Laughs when she overhears that she will have a son."
       },
       {
-        "name": "Three visitors",
-        "role": "Men who appear in the narrative; the relationship of the visitors to the divine appearance is interpreted differently."
-      },
-      {
-        "name": "People of Sodom and Gomorrah",
-        "role": "Cities whose grave wrongdoing prompts investigation and judgment."
+        "name": "The three visitors",
+        "role": "Men who come to Abraham's tent as the LORD appears to him."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Hospitality",
-        "explanation": "Abraham welcomes strangers with food and care.",
+        "theme": "Welcoming strangers",
+        "explanation": "Abraham hurries to serve his guests with water, bread, and a calf.",
         "references": [
           "Genesis 18:1-8"
         ]
       },
       {
-        "theme": "God’s ability to fulfill promises",
-        "explanation": "Sarah’s doubts meet a renewed assurance of a son.",
+        "theme": "Nothing is too hard",
+        "explanation": "When Sarah laughs, the LORD asks, \"Is any thing too hard for the LORD?\"",
         "references": [
           "Genesis 18:9-15"
         ]
       },
       {
-        "theme": "Justice and mercy",
-        "explanation": "Abraham appeals to God’s justice while pleading for people in danger.",
+        "theme": "Bold prayer",
+        "explanation": "Abraham pleads for Sodom, asking, \"Shall not the Judge of all the earth do right?\"",
         "references": [
           "Genesis 18:22-33"
         ]
       },
       {
-        "theme": "Accountability for evil",
-        "explanation": "The outcry against the cities is treated seriously.",
+        "theme": "Evil is noticed",
+        "explanation": "The cry against Sodom is great, and the LORD goes down to see it for himself.",
         "references": [
           "Genesis 18:20-21"
         ]
@@ -1110,61 +1063,57 @@
     ]
   },
   "Genesis 19": {
-    "summary": "Two angels arrive at Sodom, where Lot hosts them. A mob surrounds his house and demands to assault the visitors. The angels protect the household and warn Lot to flee (Genesis 19:1–17). Lot hesitates but is led out; Sodom and Gomorrah are destroyed. Lot’s wife looks back and becomes a pillar of salt (Genesis 19:18–29). Lot then lives in a cave with his daughters, who make him drunk and conceive sons, Moab and Ben-ammi, ancestors of the Moabites and Ammonites (Genesis 19:30–38).",
+    "summary": "Two angels arrive at Sodom, where Lot hosts them. A mob surrounds his house and demands to assault the visitors. The angels protect the household and warn Lot to flee (Genesis 19:1–17). Lot hesitates but is led out; Sodom and Gomorrah are destroyed. Lot’s wife looks back and becomes a pillar of salt (Genesis 19:18–29). Lot then lives in a cave with his daughters, who make him drunk and conceive sons, Moab and Benammi, ancestors of the Moabites and Ammonites (Genesis 19:30–38).",
     "whereWeAre": "Chapter 18 ended with Abraham praying for Sodom. Now two angels arrive and find the city as wicked as its outcry. Lot's family is rescued, and chapter 20 returns to Abraham.",
     "keyFigures": [
       {
         "name": "Lot",
-        "role": "Resident of Sodom who hosts the visitors and escapes the city."
+        "role": "Takes in the two angels, tries to protect them, and is led out of Sodom."
       },
       {
-        "name": "Two angels",
-        "role": "Visitors who warn and rescue Lot and his family."
+        "name": "The two angels",
+        "role": "Strike the mob blind and lead Lot's family out of the city."
       },
       {
-        "name": "Men of Sodom",
-        "role": "Mob depicted attempting grave violence against the visitors."
+        "name": "The men of Sodom",
+        "role": "Surround Lot's house and try to attack his guests."
       },
       {
-        "name": "Lot’s wife",
-        "role": "Flees but looks back and suffers judgment."
+        "name": "Lot's wife",
+        "role": "Looks back at the burning city and becomes a pillar of salt."
       },
       {
-        "name": "Lot’s daughters",
-        "role": "Initiate incestuous encounters after the destruction; mothers of Moab and Ben-ammi."
-      },
-      {
-        "name": "Abraham",
-        "role": "Remembered by God in connection with Lot’s rescue (19:29)."
+        "name": "Lot's daughters",
+        "role": "Make their father drunk and become the mothers of Moab and Benammi."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Wickedness and judgment",
-        "explanation": "The mob’s violence displays the city’s evil, and destruction follows.",
+        "theme": "Judgment on Sodom",
+        "explanation": "The mob shows how wicked the city is, and fire falls from heaven.",
         "references": [
           "Genesis 19:4-13",
           "Genesis 19:24-25"
         ]
       },
       {
-        "theme": "Mercy amid danger",
-        "explanation": "Lot’s household is physically led away despite hesitation.",
+        "theme": "Mercy for Lot",
+        "explanation": "Lot lingers, but the angels take him by the hand and lead him out, \"the LORD being merciful unto him.\"",
         "references": [
           "Genesis 19:15-17"
         ]
       },
       {
-        "theme": "The danger of looking back",
-        "explanation": "Lot’s wife disobeys the warning.",
+        "theme": "Don't look back",
+        "explanation": "Lot's wife disobeys the warning and becomes a pillar of salt.",
         "references": [
           "Genesis 19:17",
           "Genesis 19:26"
         ]
       },
       {
-        "theme": "Human brokenness after escape",
-        "explanation": "The cave episode records a disturbing family outcome without approving it.",
+        "theme": "Sin follows them",
+        "explanation": "Even after the rescue, Lot's family falls into shameful sin.",
         "references": [
           "Genesis 19:30-38"
         ]
@@ -1178,47 +1127,47 @@
     "keyFigures": [
       {
         "name": "Abraham",
-        "role": "Misrepresents his marriage out of fear and later prays for healing."
+        "role": "Lies again that Sarah is his sister, then prays for Abimelech's household."
       },
       {
         "name": "Sarah",
-        "role": "Abraham’s wife taken into Abimelech’s household, then returned."
+        "role": "Taken into Abimelech's house and returned untouched."
       },
       {
         "name": "Abimelech",
-        "role": "King of Gerar who responds to a divine warning."
+        "role": "King of Gerar, warned by God in a dream."
       },
       {
         "name": "God",
-        "role": "Warns the king and restores his household after Abraham’s prayer."
+        "role": "Protects Sarah and heals Abimelech's household after Abraham prays."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Fear and deception",
-        "explanation": "Abraham’s conduct places others at risk.",
+        "theme": "Old fears return",
+        "explanation": "Abraham repeats the lie he told in Egypt years before.",
         "references": [
           "Genesis 20:2",
           "Genesis 20:11-13"
         ]
       },
       {
-        "theme": "Divine protection",
-        "explanation": "God intervenes before Abimelech approaches Sarah.",
+        "theme": "God protects",
+        "explanation": "God warns Abimelech before he can touch Sarah.",
         "references": [
           "Genesis 20:3-7"
         ]
       },
       {
-        "theme": "Moral accountability",
-        "explanation": "Abimelech is warned and seeks to act with integrity.",
+        "theme": "An honest king",
+        "explanation": "Abimelech pleads his innocence and asks Abraham why he lied.",
         "references": [
           "Genesis 20:4-10"
         ]
       },
       {
-        "theme": "Prayer and restoration",
-        "explanation": "Abraham’s intercession is followed by healing.",
+        "theme": "Prayer and healing",
+        "explanation": "Abraham prays, and God heals Abimelech's household.",
         "references": [
           "Genesis 20:17-18"
         ]
@@ -1231,55 +1180,51 @@
     "whereWeAre": "Twenty-five years after God first called Abram, the promised son is finally born. Isaac's birth leads to Hagar and Ishmael being sent away. Next, in chapter 22, God tests Abraham with the son he waited for so long.",
     "keyFigures": [
       {
-        "name": "Isaac",
-        "role": "Promised son of Abraham and Sarah."
+        "name": "God",
+        "role": "Gives Sarah her son and hears Ishmael crying in the desert."
       },
       {
         "name": "Sarah",
-        "role": "Mother of Isaac who asks for Hagar and Ishmael’s departure."
+        "role": "Gives birth to Isaac and asks Abraham to send Hagar and Ishmael away."
       },
       {
         "name": "Abraham",
-        "role": "Father who obeys concerning both sons and makes a well agreement."
+        "role": "Circumcises Isaac, sends Hagar away, and makes a treaty at Beersheba."
       },
       {
         "name": "Hagar and Ishmael",
-        "role": "Expelled mother and son whom God preserves."
+        "role": "Sent into the wilderness, where God saves them."
       },
       {
-        "name": "God",
-        "role": "Fulfills the Isaac promise and hears Ishmael in distress."
-      },
-      {
-        "name": "Abimelech and Phicol",
-        "role": "King and army commander involved in the Beersheba agreement."
+        "name": "Abimelech and Phichol",
+        "role": "The king of Gerar and the captain of his army, who make a treaty with Abraham."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Promises fulfilled",
-        "explanation": "Isaac’s birth matches God’s earlier word.",
+        "theme": "God keeps his word",
+        "explanation": "Isaac is born at the very time God said.",
         "references": [
           "Genesis 21:1-7"
         ]
       },
       {
-        "theme": "God hears the distressed",
-        "explanation": "Hagar and Ishmael receive provision in the wilderness.",
+        "theme": "God hears",
+        "explanation": "In the desert, God hears the boy crying and shows Hagar a well.",
         "references": [
           "Genesis 21:14-20"
         ]
       },
       {
-        "theme": "Painful family division",
-        "explanation": "Inheritance and household conflict have serious human costs.",
+        "theme": "A painful split",
+        "explanation": "Sending Hagar and Ishmael away grieves Abraham deeply.",
         "references": [
           "Genesis 21:8-14"
         ]
       },
       {
-        "theme": "Peaceful agreements",
-        "explanation": "The well dispute is addressed through oath and witness.",
+        "theme": "Making peace",
+        "explanation": "Abraham and Abimelech settle a quarrel over a well with an oath.",
         "references": [
           "Genesis 21:22-32"
         ]
@@ -1309,50 +1254,46 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Tests Abraham and reaffirms covenant promises."
+        "role": "Tests Abraham, then renews his promise."
       },
       {
         "name": "Abraham",
-        "role": "Responds to the test and is stopped from harming Isaac."
+        "role": "Takes Isaac to Moriah and is ready to offer him."
       },
       {
         "name": "Isaac",
-        "role": "Promised son placed at the center of the test."
+        "role": "Carries the wood and asks where the lamb is."
       },
       {
-        "name": "Angel of the LORD",
-        "role": "Intervenes to prevent Isaac’s death and speaks a promise."
-      },
-      {
-        "name": "Nahor’s family",
-        "role": "Relatives named in a genealogy that introduces Rebekah."
+        "name": "The angel of the LORD",
+        "role": "Calls from heaven to stop Abraham and repeats God's promise."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Testing and trust",
-        "explanation": "The story identifies the command as a test and depicts Abraham’s response.",
+        "theme": "A test of trust",
+        "explanation": "God asks Abraham to give up the son he waited for, and Abraham obeys.",
         "references": [
           "Genesis 22:1-3"
         ]
       },
       {
-        "theme": "God provides",
-        "explanation": "The ram takes the place of Isaac as the offering.",
+        "theme": "God will provide",
+        "explanation": "God provides a ram in Isaac's place, and Abraham names the place Jehovahjireh.",
         "references": [
           "Genesis 22:11-14"
         ]
       },
       {
-        "theme": "Protection of Isaac",
-        "explanation": "The angel expressly forbids harming the boy.",
+        "theme": "Isaac spared",
+        "explanation": "The angel stops Abraham's hand before he can harm the boy.",
         "references": [
           "Genesis 22:11-12"
         ]
       },
       {
-        "theme": "Covenant blessing",
-        "explanation": "Promises of offspring and blessing to the nations are repeated.",
+        "theme": "The promise renewed",
+        "explanation": "Because Abraham obeyed, God promises that all nations will be blessed through his seed.",
         "references": [
           "Genesis 22:15-18"
         ]
@@ -1377,51 +1318,51 @@
     ]
   },
   "Genesis 23": {
-    "summary": "Sarah dies at 127 in Kiriath-arba (Hebron), and Abraham mourns her (Genesis 23:1–2). Though he is a resident foreigner, he negotiates with the Hittites for a burial site. Ephron offers the cave of Machpelah and its field, and Abraham pays the stated price before witnesses at the city gate (Genesis 23:3–18). He buries Sarah there (Genesis 23:19–20). The purchase gives Abraham his first piece of the promised land, a family grave, while the rest of the promise is still to come.",
+    "summary": "Sarah dies at 127 in Kirjatharba, which is Hebron, and Abraham mourns her (Genesis 23:1–2). Though he is a resident foreigner, he negotiates with the Hittites for a burial site. Ephron offers the cave of Machpelah and its field, and Abraham pays the stated price before witnesses at the city gate (Genesis 23:3–18). He buries Sarah there (Genesis 23:19–20). The purchase gives Abraham his first piece of the promised land, a family grave, while the rest of the promise is still to come.",
     "whereWeAre": "Years have passed since Abraham's test on Mount Moriah, and now Sarah dies. Abraham owns no land in Canaan, so he must buy a place to bury her. With Sarah gone, chapter 24 turns to finding a wife for Isaac.",
     "keyFigures": [
       {
         "name": "Sarah",
-        "role": "Abraham’s wife whose death prompts burial arrangements."
+        "role": "Dies at 127 in Hebron."
       },
       {
         "name": "Abraham",
-        "role": "Mourning husband who legally acquires a burial property."
+        "role": "Mourns Sarah and buys a cave to bury her."
       },
       {
         "name": "Ephron",
-        "role": "Hittite seller of the cave and field."
+        "role": "The Hittite who sells Abraham the cave and field."
       },
       {
-        "name": "Hittites/sons of Heth",
-        "role": "Local community witnessing the negotiation."
+        "name": "The Hittites (sons of Heth)",
+        "role": "The townspeople who witness the sale at the city gate."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Grief and dignity",
-        "explanation": "Abraham mourns Sarah and seeks a proper burial.",
+        "theme": "Grief",
+        "explanation": "Abraham mourns and weeps for Sarah.",
         "references": [
           "Genesis 23:1-4"
         ]
       },
       {
-        "theme": "Life as a sojourner",
-        "explanation": "Abraham identifies himself as a foreign resident.",
+        "theme": "A stranger in the land",
+        "explanation": "Abraham calls himself \"a stranger and a sojourner\" in the land God promised him.",
         "references": [
           "Genesis 23:4"
         ]
       },
       {
-        "theme": "Honest transactions",
-        "explanation": "The purchase is publicly settled and weighed out.",
+        "theme": "An honest deal",
+        "explanation": "Abraham pays the full price in front of witnesses.",
         "references": [
           "Genesis 23:10-18"
         ]
       },
       {
-        "theme": "Promise and patient waiting",
-        "explanation": "The burial plot is a small holding within the promised land.",
+        "theme": "A first piece of the promise",
+        "explanation": "The cave becomes the family's first land in Canaan.",
         "references": [
           "Genesis 23:19-20"
         ]
@@ -1435,51 +1376,51 @@
     "keyFigures": [
       {
         "name": "Abraham",
-        "role": "Arranges a marriage search rooted in the family’s covenant future."
+        "role": "Sends his servant to find a wife for Isaac from his own family."
       },
       {
-        "name": "Abraham’s servant",
-        "role": "Unnamed emissary who prays, negotiates, and reports events faithfully."
+        "name": "Abraham's servant",
+        "role": "Prays for guidance, finds Rebekah, and brings her home."
       },
       {
         "name": "Rebekah",
-        "role": "Relative who offers hospitality and consents to travel and marry Isaac."
+        "role": "Waters the servant's camels and agrees to go and marry Isaac."
       },
       {
         "name": "Laban and Bethuel",
-        "role": "Rebekah’s brother and father, named in the family negotiations."
+        "role": "Rebekah's brother and father, who agree to the marriage."
       },
       {
         "name": "Isaac",
-        "role": "Abraham’s son who marries Rebekah."
+        "role": "Marries Rebekah and loves her."
       }
     ],
     "keyThemes": [
       {
         "theme": "Prayer and guidance",
-        "explanation": "The servant asks for help and responds with worship.",
+        "explanation": "The servant prays for a sign, and God answers before he finishes praying.",
         "references": [
           "Genesis 24:12-14",
           "Genesis 24:26-27"
         ]
       },
       {
-        "theme": "Generosity",
-        "explanation": "Rebekah’s actions show hospitality and hard work.",
+        "theme": "Generous kindness",
+        "explanation": "Rebekah gives water not only to the servant but to all ten of his camels.",
         "references": [
           "Genesis 24:17-20"
         ]
       },
       {
-        "theme": "Family and consent",
-        "explanation": "The narrative includes family negotiations and Rebekah’s answer.",
+        "theme": "Her own choice",
+        "explanation": "Rebekah's family asks her, and she says, \"I will go.\"",
         "references": [
           "Genesis 24:50-58"
         ]
       },
       {
-        "theme": "Continuity of promise",
-        "explanation": "Isaac’s marriage continues Abraham’s family line.",
+        "theme": "The promise continues",
+        "explanation": "Isaac's marriage carries God's promise into the next generation.",
         "references": [
           "Genesis 24:3-4",
           "Genesis 24:67"
@@ -1494,55 +1435,55 @@
     "keyFigures": [
       {
         "name": "Abraham",
-        "role": "Ancestor who dies and is buried by his sons."
-      },
-      {
-        "name": "Keturah",
-        "role": "Woman whose sons with Abraham are listed."
-      },
-      {
-        "name": "Isaac and Rebekah",
-        "role": "Parents of Esau and Jacob; Isaac prays for children."
+        "role": "Leaves everything to Isaac and dies at 175."
       },
       {
         "name": "Ishmael",
-        "role": "Burial participant and ancestor of listed tribes."
+        "role": "Helps Isaac bury their father. His twelve sons are listed."
+      },
+      {
+        "name": "Isaac",
+        "role": "Prays for his wife, who has no children."
+      },
+      {
+        "name": "Rebekah",
+        "role": "Gives birth to twins after God tells her two nations are in her womb."
       },
       {
         "name": "Esau",
-        "role": "Older twin who sells his birthright."
+        "role": "The firstborn twin, who sells his birthright for stew."
       },
       {
         "name": "Jacob",
-        "role": "Younger twin who obtains the birthright in exchange for food."
+        "role": "The younger twin, who buys the birthright."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Generations and succession",
-        "explanation": "The story passes from Abraham toward Isaac and the twins.",
+        "theme": "One generation to the next",
+        "explanation": "The story passes from Abraham to Isaac and his twin sons.",
         "references": [
           "Genesis 25:5-11",
           "Genesis 25:19-26"
         ]
       },
       {
-        "theme": "Prayer amid infertility",
-        "explanation": "Isaac prays and Rebekah conceives.",
+        "theme": "Prayer for a child",
+        "explanation": "Like Sarah, Rebekah cannot have children until Isaac prays for her.",
         "references": [
           "Genesis 25:21"
         ]
       },
       {
-        "theme": "God’s purposes beyond convention",
-        "explanation": "The oracle announces an unexpected relationship between two peoples.",
+        "theme": "God's surprising choice",
+        "explanation": "Before the twins are born, God says \"the elder shall serve the younger.\"",
         "references": [
           "Genesis 25:22-23"
         ]
       },
       {
-        "theme": "Value of inheritance",
-        "explanation": "Esau’s rash exchange shows disregard for his birthright.",
+        "theme": "Despising a gift",
+        "explanation": "Esau trades his birthright for a bowl of stew. \"Thus Esau despised his birthright.\"",
         "references": [
           "Genesis 25:29-34"
         ]
@@ -1556,51 +1497,51 @@
     "keyFigures": [
       {
         "name": "Isaac",
-        "role": "Receives promises, faces fear and conflict, digs wells, and makes peace."
+        "role": "Stays in Gerar, lies about Rebekah, digs wells, and makes peace with Abimelech."
       },
       {
         "name": "Rebekah",
-        "role": "Isaac’s wife placed at risk by his deception."
+        "role": "Isaac's wife, put at risk by his lie."
       },
       {
         "name": "God",
-        "role": "Reaffirms covenant promises and presence."
+        "role": "Gives Isaac the promise he made to Abraham."
       },
       {
         "name": "Abimelech",
-        "role": "King of the Philistines in Gerar who warns others and later makes an agreement."
+        "role": "King of the Philistines in Gerar, who uncovers the lie and later makes a treaty."
       },
       {
         "name": "Esau",
-        "role": "Son whose marriages cause parental grief."
+        "role": "Marries two Hittite women, which grieves his parents."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Covenant continuity",
-        "explanation": "God repeats promises concerning land, descendants, and blessing.",
+        "theme": "The promise passed down",
+        "explanation": "God gives Isaac the same promise he gave Abraham.",
         "references": [
           "Genesis 26:2-5",
           "Genesis 26:24"
         ]
       },
       {
-        "theme": "Fear versus truth",
-        "explanation": "Isaac repeats his father’s deceptive pattern.",
+        "theme": "Like father, like son",
+        "explanation": "Isaac tells the same lie about his wife that his father told.",
         "references": [
           "Genesis 26:7-11"
         ]
       },
       {
-        "theme": "Peace under pressure",
-        "explanation": "Isaac moves rather than perpetually fight over contested wells.",
+        "theme": "Peace over quarrels",
+        "explanation": "Isaac keeps moving rather than fighting over wells, until \"the LORD hath made room for us.\"",
         "references": [
           "Genesis 26:18-22"
         ]
       },
       {
         "theme": "Worship and trust",
-        "explanation": "Isaac builds an altar after God’s reassurance.",
+        "explanation": "At Beersheba God tells Isaac not to fear, and Isaac builds an altar.",
         "references": [
           "Genesis 26:23-25"
         ]
@@ -1614,52 +1555,48 @@
     "keyFigures": [
       {
         "name": "Isaac",
-        "role": "Aging father who intends to bless Esau but is deceived."
+        "role": "Old and blind, he plans to bless Esau but blesses Jacob instead."
       },
       {
         "name": "Rebekah",
-        "role": "Mother who plans Jacob’s impersonation and later arranges his departure."
+        "role": "Plans the trick, then sends Jacob away to save his life."
       },
       {
         "name": "Jacob",
-        "role": "Younger son who obtains Isaac’s blessing deceitfully."
+        "role": "Pretends to be Esau and steals his blessing."
       },
       {
         "name": "Esau",
-        "role": "Older son who loses the intended blessing and plots revenge."
-      },
-      {
-        "name": "Laban",
-        "role": "Rebekah’s brother mentioned as a refuge for Jacob, but not present in the scene."
+        "role": "Loses the blessing and plans to kill his brother."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Deception and consequences",
-        "explanation": "The family’s scheme produces grief and danger.",
+        "theme": "Lies have a cost",
+        "explanation": "The trick works, but it tears the family apart.",
         "references": [
           "Genesis 27:6-29",
           "Genesis 27:30-41"
         ]
       },
       {
-        "theme": "Weight of spoken blessing",
-        "explanation": "Isaac treats his pronouncement as binding and consequential.",
+        "theme": "The power of a blessing",
+        "explanation": "Once Isaac speaks the blessing, it cannot be taken back.",
         "references": [
           "Genesis 27:33-38"
         ]
       },
       {
-        "theme": "Family favoritism",
-        "explanation": "The story exposes divided loyalties between parents and sons.",
+        "theme": "Favorites",
+        "explanation": "Isaac favors Esau and Rebekah favors Jacob, and both sons suffer for it.",
         "references": [
           "Genesis 27:1-17",
           "Genesis 27:41-46"
         ]
       },
       {
-        "theme": "Conflict and flight",
-        "explanation": "Jacob must leave because Esau threatens him.",
+        "theme": "Running for his life",
+        "explanation": "Esau's anger forces Jacob to flee.",
         "references": [
           "Genesis 27:41-45"
         ]
@@ -1673,50 +1610,50 @@
     "keyFigures": [
       {
         "name": "Isaac",
-        "role": "Sends and blesses Jacob."
+        "role": "Blesses Jacob and sends him to find a wife among his mother's family."
       },
       {
         "name": "Jacob",
-        "role": "Traveling son who receives a divine dream and responds with a vow."
+        "role": "Dreams of a ladder to heaven and makes a vow to God."
       },
       {
         "name": "God",
-        "role": "Reaffirms family promises and promises to accompany Jacob."
+        "role": "Stands above the ladder and promises to be with Jacob."
       },
       {
         "name": "Esau",
-        "role": "Marries again after seeing his parents’ concerns."
+        "role": "Marries a daughter of Ishmael to please his father."
       },
       {
-        "name": "Angelic messengers",
-        "role": "Seen ascending and descending in Jacob’s dream."
+        "name": "The angels of God",
+        "role": "Seen going up and down the ladder in Jacob's dream."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God’s presence on the road",
-        "explanation": "The LORD promises Jacob protection and return.",
+        "theme": "God goes with him",
+        "explanation": "God promises, \"I am with thee, and will keep thee in all places whither thou goest.\"",
         "references": [
           "Genesis 28:13-15"
         ]
       },
       {
-        "theme": "Promise across generations",
-        "explanation": "Land and worldwide blessing echo God’s word to Abraham.",
+        "theme": "The same promise",
+        "explanation": "God gives Jacob the promise of land, children, and blessing first given to Abraham.",
         "references": [
           "Genesis 28:13-14"
         ]
       },
       {
-        "theme": "Encounter and worship",
-        "explanation": "Jacob recognizes the sacredness of the place and marks it.",
+        "theme": "The house of God",
+        "explanation": "Jacob realizes God is in this place and names it Bethel.",
         "references": [
           "Genesis 28:16-19"
         ]
       },
       {
-        "theme": "A developing response of faith",
-        "explanation": "Jacob makes a conditional vow after receiving the promise.",
+        "theme": "A first step of faith",
+        "explanation": "Jacob vows that if God keeps him safe, the LORD will be his God.",
         "references": [
           "Genesis 28:20-22"
         ]
@@ -1730,50 +1667,50 @@
     "keyFigures": [
       {
         "name": "Jacob",
-        "role": "Works for Laban and marries Leah and Rachel."
+        "role": "Works fourteen years for Laban and marries Leah and Rachel."
       },
       {
         "name": "Rachel",
-        "role": "Laban’s younger daughter whom Jacob loves."
+        "role": "Laban's younger daughter, whom Jacob loves."
       },
       {
         "name": "Leah",
-        "role": "Older daughter married first; mother of four sons in this chapter."
+        "role": "Laban's older daughter, unloved by Jacob, who has four sons."
       },
       {
         "name": "Laban",
-        "role": "Uncle and employer who deceives Jacob about the wedding."
+        "role": "Jacob's uncle, who tricks him on his wedding night."
       },
       {
         "name": "God",
-        "role": "Sees Leah’s distress and grants her children."
+        "role": "Sees that Leah is unloved and gives her children."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Deception returns",
-        "explanation": "Jacob experiences a reversal when Laban tricks him.",
+        "theme": "The trickster is tricked",
+        "explanation": "Jacob, who deceived his father, is now deceived by his uncle.",
         "references": [
           "Genesis 29:21-26"
         ]
       },
       {
-        "theme": "Love and unequal treatment",
-        "explanation": "Favoritism causes suffering within the family.",
+        "theme": "Love and favoritism",
+        "explanation": "Jacob loves Rachel more than Leah, and the whole family suffers.",
         "references": [
           "Genesis 29:30-33"
         ]
       },
       {
-        "theme": "God sees the overlooked",
-        "explanation": "Leah’s pain is explicitly noticed.",
+        "theme": "God sees the unloved",
+        "explanation": "The LORD sees that Leah is unloved and gives her sons.",
         "references": [
           "Genesis 29:31-35"
         ]
       },
       {
-        "theme": "Praise in hardship",
-        "explanation": "Leah’s naming of Judah expresses praise to the LORD.",
+        "theme": "Praise in pain",
+        "explanation": "Leah names her fourth son Judah, saying, \"Now will I praise the LORD.\"",
         "references": [
           "Genesis 29:35"
         ]
@@ -1787,54 +1724,54 @@
     "keyFigures": [
       {
         "name": "Rachel",
-        "role": "Jacob’s wife who struggles with infertility and later bears Joseph."
+        "role": "Envies her sister, gives Jacob her servant, and at last has Joseph."
       },
       {
         "name": "Leah",
-        "role": "Jacob’s wife who bears additional children, including Dinah."
-      },
-      {
-        "name": "Jacob",
-        "role": "Father of the children and shepherd negotiating his wages."
+        "role": "Has more sons and a daughter, Dinah."
       },
       {
         "name": "Bilhah and Zilpah",
-        "role": "Servants made secondary wives who bear sons for the household."
+        "role": "The servants of Rachel and Leah, who bear four of Jacob's sons."
+      },
+      {
+        "name": "Jacob",
+        "role": "Has eleven sons and a daughter and builds large flocks."
       },
       {
         "name": "Laban",
-        "role": "Jacob’s employer and father-in-law in the livestock agreement."
+        "role": "Jacob's uncle, who agrees to pay him with spotted and speckled animals."
       },
       {
         "name": "God",
-        "role": "Remembered as the one who opens Rachel’s womb."
+        "role": "Remembers Rachel and lets her have a child."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Longing and rivalry",
-        "explanation": "Competition over children strains family relationships.",
+        "theme": "Rivalry",
+        "explanation": "Rachel and Leah compete for children and for Jacob's love.",
         "references": [
           "Genesis 30:1-24"
         ]
       },
       {
-        "theme": "God and fertility",
-        "explanation": "The narrative attributes Rachel’s eventual conception to God.",
+        "theme": "God gives children",
+        "explanation": "Rachel finally has a son when \"God remembered Rachel.\"",
         "references": [
           "Genesis 30:22-24"
         ]
       },
       {
-        "theme": "Complicated households",
-        "explanation": "Servants and wives are affected by reproductive expectations and power differences.",
+        "theme": "A complicated family",
+        "explanation": "The sisters give their servants to Jacob as wives in their contest for children.",
         "references": [
           "Genesis 30:3-13"
         ]
       },
       {
-        "theme": "Work and material provision",
-        "explanation": "Jacob seeks compensation and his flocks increase.",
+        "theme": "God blesses Jacob's work",
+        "explanation": "Jacob's flocks grow large, even while Laban tries to cheat him.",
         "references": [
           "Genesis 30:25-43"
         ]
@@ -1848,52 +1785,52 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Directs Jacob’s return and warns Laban in a dream."
+        "role": "Tells Jacob to go home and warns Laban in a dream."
       },
       {
         "name": "Jacob",
-        "role": "Leaves with his household and confronts Laban over years of service."
+        "role": "Leaves Laban secretly and stands up to him when he catches up."
       },
       {
         "name": "Rachel",
-        "role": "Takes the household gods without Jacob’s knowledge."
+        "role": "Steals her father's household idols and hides them."
       },
       {
         "name": "Leah",
-        "role": "Agrees with Rachel about leaving their father’s house."
+        "role": "Agrees with Rachel to leave their father."
       },
       {
         "name": "Laban",
-        "role": "Pursues Jacob and enters a nonaggression agreement."
+        "role": "Chases Jacob, searches for his idols, and makes a treaty with him."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Divine guidance",
-        "explanation": "Jacob’s return is initiated by a divine command.",
+        "theme": "Time to go home",
+        "explanation": "God tells Jacob to return to the land of his fathers.",
         "references": [
           "Genesis 31:3",
           "Genesis 31:11-13"
         ]
       },
       {
-        "theme": "Exploitation and justice",
-        "explanation": "Jacob protests prolonged changes to his wages.",
+        "theme": "God sees injustice",
+        "explanation": "Laban changed Jacob's wages again and again, but God protected him.",
         "references": [
           "Genesis 31:36-42"
         ]
       },
       {
-        "theme": "Hidden loyalties",
-        "explanation": "Rachel’s theft complicates the departure.",
+        "theme": "Hidden idols",
+        "explanation": "Rachel's theft shows that idols still have a hold on Jacob's family.",
         "references": [
           "Genesis 31:19",
           "Genesis 31:30-35"
         ]
       },
       {
-        "theme": "Boundaries and peace",
-        "explanation": "The parties mark a covenant intended to prevent harm.",
+        "theme": "A boundary of peace",
+        "explanation": "Jacob and Laban set up a heap of stones and promise not to harm each other.",
         "references": [
           "Genesis 31:44-54"
         ]
@@ -1906,51 +1843,51 @@
     "whereWeAre": "Jacob has left Laban for good, but ahead of him is Esau, the brother who wanted to kill him twenty years ago. He hears Esau is coming with four hundred men. The night before they meet, Jacob wrestles until dawn, and in chapter 33 the brothers finally face each other.",
     "keyFigures": [
       {
-        "name": "Jacob/Israel",
-        "role": "Fearful returning brother who prays and wrestles, receiving a new name."
+        "name": "Jacob (Israel)",
+        "role": "Prays for help, wrestles until dawn, and is given the name Israel."
       },
       {
         "name": "Esau",
-        "role": "Brother approaching with four hundred men; not yet reconciled in this chapter."
+        "role": "Comes to meet Jacob with four hundred men."
       },
       {
         "name": "God",
-        "role": "Addressed in Jacob’s prayer and associated with the mysterious encounter."
+        "role": "Hears Jacob's prayer. Jacob says he has seen God face to face."
       },
       {
-        "name": "The unnamed wrestler",
-        "role": "Figure who struggles with Jacob and gives him the name Israel; the text calls him a man and Jacob interprets the encounter as seeing God."
+        "name": "The man who wrestles Jacob",
+        "role": "Wrestles with him all night, touches his hip, and blesses him with a new name."
       },
       {
-        "name": "Angels of God",
-        "role": "Meet Jacob at the beginning of the chapter."
+        "name": "The angels of God",
+        "role": "Meet Jacob as he travels home."
       }
     ],
     "keyThemes": [
       {
         "theme": "Fear and prayer",
-        "explanation": "Jacob asks God for rescue while acknowledging his unworthiness.",
+        "explanation": "Afraid of Esau, Jacob prays, \"I am not worthy of the least of all the mercies.\"",
         "references": [
           "Genesis 32:9-12"
         ]
       },
       {
-        "theme": "Peacemaking preparations",
-        "explanation": "Jacob sends gifts before meeting Esau.",
+        "theme": "Gifts for peace",
+        "explanation": "Jacob sends hundreds of animals ahead to calm his brother.",
         "references": [
           "Genesis 32:13-21"
         ]
       },
       {
-        "theme": "Struggle and transformation",
-        "explanation": "The wrestling ends in injury, blessing, and a new name.",
+        "theme": "A new name",
+        "explanation": "Jacob wrestles, is wounded, and is renamed Israel.",
         "references": [
           "Genesis 32:24-30"
         ]
       },
       {
-        "theme": "Dependence rather than control",
-        "explanation": "Jacob cannot ensure safety by strategy alone.",
+        "theme": "Holding on to God",
+        "explanation": "Jacob's plans cannot save him, so he clings to God and will not let go.",
         "references": [
           "Genesis 32:7-12",
           "Genesis 32:24-31"
@@ -1960,52 +1897,48 @@
     "explainedReferences": []
   },
   "Genesis 33": {
-    "summary": "Jacob meets Esau, bowing repeatedly as he approaches. Instead of attacking, Esau runs to embrace him, and the brothers weep (Genesis 33:1–4). Jacob introduces his family and urges Esau to accept gifts. Esau offers to travel together, but Jacob declines and proceeds at a different pace (Genesis 33:5–17). Jacob reaches Shechem in Canaan, buys land, pitches his tent, and builds an altar named El-Elohe-Israel (Genesis 33:18–20).",
+    "summary": "Jacob meets Esau, bowing repeatedly as he approaches. Instead of attacking, Esau runs to embrace him, and the brothers weep (Genesis 33:1–4). Jacob introduces his family and urges Esau to accept gifts. Esau offers to travel together, but Jacob declines and proceeds at a different pace (Genesis 33:5–17). Jacob reaches Shechem in Canaan, buys land, pitches his tent, and builds an altar named Elelohe-Israel (Genesis 33:18–20).",
     "whereWeAre": "After a night of wrestling in chapter 32, Jacob limps out to meet Esau. Instead of the attack he feared, Esau runs to hug him. Jacob then settles near Shechem, where the tragedy of chapter 34 happens.",
     "keyFigures": [
       {
         "name": "Jacob",
-        "role": "Seeks reconciliation, offers gifts, and settles near Shechem."
+        "role": "Bows before Esau, gives him gifts, and settles near Shechem."
       },
       {
         "name": "Esau",
-        "role": "Receives Jacob warmly and accepts his gift."
+        "role": "Runs to hug Jacob and forgives him."
       },
       {
-        "name": "Leah, Rachel, and their children",
-        "role": "Members of Jacob’s household presented to Esau."
-      },
-      {
-        "name": "Jacob’s servants",
-        "role": "Accompany the family and appear in the meeting procession."
+        "name": "Leah, Rachel, and the children",
+        "role": "Come forward and bow to Esau."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Reconciliation",
-        "explanation": "The brothers embrace after years of estrangement.",
+        "theme": "Brothers at peace",
+        "explanation": "Esau runs to meet Jacob, and they weep together.",
         "references": [
           "Genesis 33:1-4"
         ]
       },
       {
         "theme": "Humility",
-        "explanation": "Jacob bows and speaks respectfully to Esau.",
+        "explanation": "Jacob bows seven times and calls himself Esau's servant.",
         "references": [
           "Genesis 33:3",
           "Genesis 33:8-11"
         ]
       },
       {
-        "theme": "Generosity and acceptance",
-        "explanation": "Gifts help mark the restored relationship.",
+        "theme": "A gift received",
+        "explanation": "Esau accepts Jacob's gift, a sign that the old wrong is forgiven.",
         "references": [
           "Genesis 33:10-11"
         ]
       },
       {
         "theme": "Worship in the land",
-        "explanation": "Jacob erects an altar after returning to Canaan.",
+        "explanation": "Jacob buys land near Shechem and builds an altar.",
         "references": [
           "Genesis 33:18-20"
         ]
@@ -2019,54 +1952,54 @@
     "keyFigures": [
       {
         "name": "Dinah",
-        "role": "Jacob and Leah’s daughter whose assault drives the chapter’s conflict."
+        "role": "Jacob's daughter, attacked by Shechem."
       },
       {
         "name": "Shechem",
-        "role": "Hamor’s son who violates Dinah and seeks marriage."
+        "role": "A prince who rapes Dinah, then wants to marry her."
       },
       {
         "name": "Hamor",
-        "role": "Shechem’s father who proposes a marriage and trade arrangement."
+        "role": "Shechem's father, who asks for the marriage and a treaty."
       },
       {
         "name": "Simeon and Levi",
-        "role": "Dinah’s brothers who carry out the killings."
+        "role": "Dinah's brothers, who kill the men of the city."
       },
       {
         "name": "Jacob",
-        "role": "Father distressed by the assault and later by the threat of retaliation."
+        "role": "Says nothing at first, then rebukes his sons for putting the family in danger."
       },
       {
-        "name": "Jacob’s other sons",
-        "role": "Join the deceitful proposal and the plundering of the city."
+        "name": "Jacob's other sons",
+        "role": "Join in the trick and loot the city."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Sexual wrongdoing",
-        "explanation": "The violation of Dinah is central to the account.",
+        "theme": "A terrible wrong",
+        "explanation": "Shechem's attack on Dinah is called \"folly in Israel.\"",
         "references": [
           "Genesis 34:1-7"
         ]
       },
       {
-        "theme": "Deception and vengeance",
-        "explanation": "A religious sign is manipulated to enable a massacre.",
+        "theme": "Revenge by trickery",
+        "explanation": "The brothers use circumcision, the sign of God's covenant, to trap and kill.",
         "references": [
           "Genesis 34:13-29"
         ]
       },
       {
-        "theme": "Family honor and moral failure",
-        "explanation": "The brothers’ outrage does not establish that their violence was just.",
+        "theme": "Two wrongs",
+        "explanation": "Dinah was wronged, but her brothers' revenge is also wrong, as Jacob later says (Genesis 49:5–7).",
         "references": [
           "Genesis 34:25-31"
         ]
       },
       {
-        "theme": "Consequences for the vulnerable",
-        "explanation": "The aftermath includes plunder and captivity of others.",
+        "theme": "The innocent suffer",
+        "explanation": "Women, children, and flocks are taken in the looting.",
         "references": [
           "Genesis 34:27-29"
         ]
@@ -2080,51 +2013,47 @@
     "keyFigures": [
       {
         "name": "God",
-        "role": "Calls Jacob back to Bethel and renews covenant promises."
+        "role": "Sends Jacob back to Bethel and confirms the name Israel."
       },
       {
-        "name": "Jacob/Israel",
-        "role": "Leads household purification, worships, and buries family members."
+        "name": "Jacob (Israel)",
+        "role": "Has his household give up their idols and worships at Bethel."
       },
       {
         "name": "Rachel",
-        "role": "Dies in childbirth after naming her son Ben-oni."
+        "role": "Dies giving birth to Benjamin."
       },
       {
         "name": "Benjamin",
-        "role": "Newborn son renamed by Jacob."
+        "role": "Jacob's twelfth son, named Benoni by his mother and renamed by his father."
       },
       {
-        "name": "Reuben and Bilhah",
-        "role": "Involved in a prohibited sexual act reported without approval."
+        "name": "Reuben",
+        "role": "Sleeps with Bilhah, his father's concubine."
       },
       {
         "name": "Isaac and Esau",
-        "role": "Isaac dies and is buried by his two sons."
-      },
-      {
-        "name": "Deborah",
-        "role": "Rebekah’s nurse whose death and burial are recorded."
+        "role": "Isaac dies at 180, and Esau and Jacob bury him."
       }
     ],
     "keyThemes": [
       {
         "theme": "Putting away idols",
-        "explanation": "Jacob calls for household purification before worship.",
+        "explanation": "Before going to Bethel, Jacob's household buries its foreign gods.",
         "references": [
           "Genesis 35:2-4"
         ]
       },
       {
-        "theme": "Covenant renewal",
-        "explanation": "God repeats Israel’s name and land and descendant promises.",
+        "theme": "The promise renewed",
+        "explanation": "God confirms Jacob's new name and promises nations and kings.",
         "references": [
           "Genesis 35:9-15"
         ]
       },
       {
-        "theme": "Grief and continuity",
-        "explanation": "Deaths accompany the growing family line.",
+        "theme": "Grief and new life",
+        "explanation": "Deborah, Rachel, and Isaac die, but Benjamin is born.",
         "references": [
           "Genesis 35:8",
           "Genesis 35:16-20",
@@ -2132,8 +2061,8 @@
         ]
       },
       {
-        "theme": "Family disorder",
-        "explanation": "Reuben’s act reveals continuing fractures.",
+        "theme": "Trouble in the family",
+        "explanation": "Reuben's sin shows that the family still has deep problems.",
         "references": [
           "Genesis 35:22"
         ]
@@ -2146,49 +2075,49 @@
     "whereWeAre": "Esau and Jacob buried their father together at the end of chapter 35. This chapter lists Esau's family, who became the nation of Edom. It closes Esau's part in Genesis before chapter 37 turns to Jacob's son Joseph.",
     "keyFigures": [
       {
-        "name": "Esau/Edom",
-        "role": "Ancestor whose descendants and territorial lineages dominate the chapter."
+        "name": "Esau (Edom)",
+        "role": "Jacob's brother, who moves to mount Seir and becomes the father of the Edomites."
       },
       {
-        "name": "Esau’s wives and sons",
-        "role": "Family members named as the founders of subsequent lines."
+        "name": "Esau's wives and sons",
+        "role": "The founders of Edom's clans."
       },
       {
-        "name": "Seir and the Horites",
-        "role": "Earlier regional lineages listed in Edom."
+        "name": "The Horites",
+        "role": "The people who lived in Seir before Esau's family."
       },
       {
-        "name": "Edomite kings and chiefs",
-        "role": "Rulers and clan heads named in the lists."
+        "name": "The kings and dukes of Edom",
+        "role": "Rulers from Edom's early history."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Related nations",
-        "explanation": "Esau’s descendants form a distinct people related to Jacob’s line.",
+        "theme": "A related nation",
+        "explanation": "Esau's family becomes Edom, a nation related to Israel.",
         "references": [
           "Genesis 36:1",
           "Genesis 36:8-9"
         ]
       },
       {
-        "theme": "Family growth",
-        "explanation": "Multiple branches and chiefs portray expansion over generations.",
+        "theme": "A growing family",
+        "explanation": "Esau's sons and grandsons become clan chiefs.",
         "references": [
           "Genesis 36:10-19"
         ]
       },
       {
-        "theme": "Land and identity",
-        "explanation": "Edom and Seir become organizing geographic labels.",
+        "theme": "Land and name",
+        "explanation": "Esau settles in mount Seir, and Edom becomes the name of the land.",
         "references": [
           "Genesis 36:8",
           "Genesis 36:20-30"
         ]
       },
       {
-        "theme": "Political organization",
-        "explanation": "Kings and chiefs are listed as part of Edom’s history.",
+        "theme": "Kings before Israel",
+        "explanation": "Edom has kings long before Israel does.",
         "references": [
           "Genesis 36:31-43"
         ]
@@ -2202,58 +2131,54 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Favored son and dreamer sold into slavery."
+        "role": "Jacob's favorite son, a dreamer, sold into slavery by his brothers."
       },
       {
-        "name": "Jacob/Israel",
-        "role": "Father who favors Joseph and mourns his supposed death."
+        "name": "Jacob",
+        "role": "Favors Joseph and mourns him when he thinks he is dead."
       },
       {
-        "name": "Joseph’s brothers",
-        "role": "Envious siblings who sell him and deceive their father."
+        "name": "Joseph's brothers",
+        "role": "Hate Joseph, sell him, and lie to their father."
       },
       {
         "name": "Reuben",
-        "role": "Attempts to prevent Joseph’s death."
+        "role": "Tries to save Joseph from being killed."
       },
       {
         "name": "Judah",
-        "role": "Proposes selling Joseph rather than killing him."
+        "role": "Suggests selling Joseph instead of killing him."
       },
       {
-        "name": "Potiphar",
-        "role": "Egyptian official who buys Joseph."
-      },
-      {
-        "name": "Traders",
-        "role": "People who transport Joseph toward Egypt; the passage uses Ishmaelite and Midianite descriptions."
+        "name": "The traders",
+        "role": "Ishmeelite and Midianite traders who buy Joseph and take him to Egypt."
       }
     ],
     "keyThemes": [
       {
         "theme": "Favoritism and envy",
-        "explanation": "Family partiality and hatred set tragedy in motion.",
+        "explanation": "Jacob's favoritism and Joseph's dreams make his brothers hate him.",
         "references": [
           "Genesis 37:3-11"
         ]
       },
       {
-        "theme": "Betrayal",
-        "explanation": "The brothers reject and sell Joseph.",
+        "theme": "Betrayed by brothers",
+        "explanation": "The brothers throw Joseph into a pit and sell him for twenty pieces of silver.",
         "references": [
           "Genesis 37:18-28"
         ]
       },
       {
-        "theme": "Deception and grief",
-        "explanation": "The robe becomes evidence used to mislead Jacob.",
+        "theme": "A father deceived",
+        "explanation": "The brothers use Joseph's bloody coat to trick Jacob, as Jacob once tricked his own father with goatskins.",
         "references": [
           "Genesis 37:31-35"
         ]
       },
       {
-        "theme": "Unfinished purposes",
-        "explanation": "Joseph’s dreams introduce a future reversal not yet realized.",
+        "theme": "Dreams not yet come true",
+        "explanation": "Joseph's dreams point to a future no one in the family can see yet.",
         "references": [
           "Genesis 37:5-11"
         ]
@@ -2262,56 +2187,56 @@
     "explainedReferences": []
   },
   "Genesis 38": {
-    "summary": "Judah leaves his brothers and marries a Canaanite woman. His sons Er and Onan die; Onan had refused to provide offspring for his brother’s widow Tamar (Genesis 38:1–11). Judah withholds his remaining son Shelah from Tamar. Disguised, Tamar has an encounter with Judah and conceives; when she is accused of immorality, she produces Judah’s signet, cord, and staff, exposing his responsibility (Genesis 38:12–26). Judah acknowledges that she is more righteous than he in this matter. Tamar bears twins Perez and Zerah (Genesis 38:27–30).",
+    "summary": "Judah leaves his brothers and marries a Canaanite woman. His sons Er and Onan die; Onan had refused to provide offspring for his brother’s widow Tamar (Genesis 38:1–11). Judah withholds his remaining son Shelah from Tamar. Disguised, Tamar has an encounter with Judah and conceives; when she is accused of immorality, she produces Judah’s signet, cord, and staff, exposing his responsibility (Genesis 38:12–26). Judah acknowledges that she is more righteous than he in this matter. Tamar bears twins Pharez and Zarah (Genesis 38:27–30).",
     "whereWeAre": "Joseph has just been sold into Egypt at the end of chapter 37. The story pauses here to follow Judah, the brother who suggested selling him. In chapter 39 it returns to Joseph in Egypt.",
     "keyFigures": [
       {
         "name": "Judah",
-        "role": "Father and father-in-law who fails Tamar and later acknowledges his wrongdoing."
+        "role": "Breaks his promise to Tamar, then admits he was wrong."
       },
       {
         "name": "Tamar",
-        "role": "Widowed daughter-in-law who acts to secure her denied family position."
+        "role": "Judah's daughter-in-law, who disguises herself to claim what she was owed."
       },
       {
         "name": "Er, Onan, and Shelah",
-        "role": "Judah’s sons whose deaths and withheld marriage shape the crisis."
+        "role": "Judah's sons. The LORD takes the lives of Er and Onan for their wickedness."
       },
       {
         "name": "Hirah",
-        "role": "Judah’s Adullamite companion who assists in the attempt to retrieve the pledge."
+        "role": "Judah's Adullamite friend, who tries to deliver Judah's payment."
       },
       {
-        "name": "Perez and Zerah",
-        "role": "Twins born to Tamar and Judah."
+        "name": "Pharez and Zarah",
+        "role": "Tamar's twin sons."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Responsibility to the vulnerable",
-        "explanation": "Judah fails to fulfill an obligation toward Tamar.",
+        "theme": "A promise broken",
+        "explanation": "Judah keeps his third son from Tamar and leaves her with no future.",
         "references": [
           "Genesis 38:8-11",
           "Genesis 38:24-26"
         ]
       },
       {
-        "theme": "Concealment and exposure",
-        "explanation": "Personal items reveal Judah’s participation.",
+        "theme": "The truth comes out",
+        "explanation": "Judah's own seal, cord, and staff show that he is the father.",
         "references": [
           "Genesis 38:17-26"
         ]
       },
       {
-        "theme": "Moral acknowledgment",
-        "explanation": "Judah admits Tamar has acted more rightly than he.",
+        "theme": "Owning up",
+        "explanation": "Judah admits, \"She hath been more righteous than I.\"",
         "references": [
           "Genesis 38:26"
         ]
       },
       {
-        "theme": "Family continuity",
-        "explanation": "The chapter traces offspring despite misconduct and loss.",
+        "theme": "God's plan goes on",
+        "explanation": "Pharez, born out of this troubled story, becomes an ancestor of King David (Ruth 4:18–22).",
         "references": [
           "Genesis 38:27-30"
         ]
@@ -2325,51 +2250,51 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Enslaved household manager who resists coercion and later serves in prison."
+        "role": "A slave in Potiphar's house who refuses his master's wife and ends up in prison."
       },
       {
         "name": "Potiphar",
-        "role": "Egyptian official who purchases Joseph and later confines him."
+        "role": "The Egyptian officer who buys Joseph, trusts him, then puts him in prison."
       },
       {
-        "name": "Potiphar’s wife",
-        "role": "Unnamed woman who harasses Joseph and falsely accuses him."
+        "name": "Potiphar's wife",
+        "role": "Tries again and again to seduce Joseph, then falsely accuses him."
       },
       {
         "name": "The LORD",
-        "role": "Portrayed as present with Joseph during both prosperity and injustice."
+        "role": "Is with Joseph and makes him prosper, in the house and in prison."
       },
       {
-        "name": "Prison keeper",
-        "role": "Official who delegates responsibility to Joseph."
+        "name": "The keeper of the prison",
+        "role": "Puts Joseph in charge of the other prisoners."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Integrity under pressure",
-        "explanation": "Joseph refuses sexual wrongdoing despite personal cost.",
+        "theme": "Saying no",
+        "explanation": "Joseph refuses to sin against God and his master, even though it costs him his freedom.",
         "references": [
           "Genesis 39:7-12"
         ]
       },
       {
-        "theme": "Misuse of power",
-        "explanation": "A powerful household member retaliates with a false accusation.",
+        "theme": "Falsely accused",
+        "explanation": "Potiphar's wife lies, and Joseph is punished for doing right.",
         "references": [
           "Genesis 39:13-20"
         ]
       },
       {
-        "theme": "God’s presence in adversity",
-        "explanation": "The text repeats that the LORD is with Joseph in slavery and prison.",
+        "theme": "God is with him",
+        "explanation": "In the house and in the prison, \"the LORD was with Joseph.\"",
         "references": [
           "Genesis 39:2-3",
           "Genesis 39:21-23"
         ]
       },
       {
-        "theme": "Faithful service",
-        "explanation": "Joseph responsibly manages work entrusted to him.",
+        "theme": "Faithful work",
+        "explanation": "Joseph works so well that everything is put into his hands.",
         "references": [
           "Genesis 39:4-6",
           "Genesis 39:22-23"
@@ -2384,51 +2309,47 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Prisoner who explains two dreams and asks to be remembered."
+        "role": "Explains two prisoners' dreams and asks to be remembered."
       },
       {
-        "name": "Pharaoh’s cupbearer",
-        "role": "Official restored to service who forgets Joseph."
+        "name": "The chief butler",
+        "role": "Pharaoh's cupbearer, who is set free and forgets Joseph."
       },
       {
-        "name": "Pharaoh’s chief baker",
-        "role": "Official whose dream foretells his execution."
+        "name": "The chief baker",
+        "role": "Pharaoh's baker, whose dream means his death."
       },
       {
         "name": "Pharaoh",
-        "role": "Egyptian king whose birthday actions fulfill the interpretations."
-      },
-      {
-        "name": "God",
-        "role": "Named by Joseph as the source of interpretation."
+        "role": "Restores the butler and hangs the baker on his birthday."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God as source of wisdom",
-        "explanation": "Joseph refuses to claim independent control of dream interpretation.",
+        "theme": "Wisdom from God",
+        "explanation": "Joseph says, \"Do not interpretations belong to God?\"",
         "references": [
           "Genesis 40:8"
         ]
       },
       {
-        "theme": "Different outcomes",
-        "explanation": "The two dreams foretell opposite judgments.",
+        "theme": "Two dreams, two endings",
+        "explanation": "One dream means freedom, and the other means death.",
         "references": [
           "Genesis 40:12-19"
         ]
       },
       {
-        "theme": "Injustice and delay",
-        "explanation": "Joseph remains confined and forgotten despite his request.",
+        "theme": "Forgotten",
+        "explanation": "Joseph asks the butler to remember him, but he forgets.",
         "references": [
           "Genesis 40:14-15",
           "Genesis 40:23"
         ]
       },
       {
-        "theme": "Reliability of the interpretations",
-        "explanation": "Both reported outcomes occur on the third day.",
+        "theme": "It happens as he said",
+        "explanation": "Both dreams come true on the third day, just as Joseph explained.",
         "references": [
           "Genesis 40:20-22"
         ]
@@ -2442,55 +2363,55 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Interprets Pharaoh’s dreams and administers grain preparations."
+        "role": "Explains Pharaoh's dreams and is put in charge of Egypt."
       },
       {
         "name": "Pharaoh",
-        "role": "Egyptian ruler who appoints Joseph to high authority."
+        "role": "Dreams of cows and grain and makes Joseph second only to himself."
       },
       {
-        "name": "Chief cupbearer",
-        "role": "Remembers Joseph’s interpretation after a delay."
+        "name": "The chief butler",
+        "role": "Finally remembers Joseph."
       },
       {
         "name": "Asenath",
-        "role": "Joseph’s Egyptian wife and mother of his sons."
+        "role": "Joseph's Egyptian wife, mother of his two sons."
       },
       {
         "name": "Manasseh and Ephraim",
-        "role": "Joseph’s sons, given names tied to his experience."
+        "role": "Joseph's sons, born before the famine."
       },
       {
         "name": "God",
-        "role": "Credited as the one who reveals what will happen."
+        "role": "Shows Pharaoh what he is about to do."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Wisdom with practical planning",
-        "explanation": "Interpretation is followed by concrete preparation.",
+        "theme": "Wisdom and planning",
+        "explanation": "Joseph explains the dreams and gives Pharaoh a plan to store food.",
         "references": [
           "Genesis 41:25-36"
         ]
       },
       {
-        "theme": "Providence and opportunity",
-        "explanation": "Joseph’s imprisonment gives way to public responsibility.",
+        "theme": "From prison to palace",
+        "explanation": "In one day Joseph goes from the prison to ruling Egypt.",
         "references": [
           "Genesis 41:14",
           "Genesis 41:39-44"
         ]
       },
       {
-        "theme": "Stewardship amid abundance",
-        "explanation": "Food is stored during the seven plentiful years.",
+        "theme": "Saving in good times",
+        "explanation": "Joseph stores so much grain that he stops counting it.",
         "references": [
           "Genesis 41:47-49"
         ]
       },
       {
-        "theme": "Provision during crisis",
-        "explanation": "The stored grain becomes vital during widespread famine.",
+        "theme": "Food for the world",
+        "explanation": "When the famine comes, people from every land come to Egypt to buy grain.",
         "references": [
           "Genesis 41:53-57"
         ]
@@ -2504,55 +2425,51 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Governor who recognizes and tests the brothers."
+        "role": "Recognizes his brothers and tests them."
       },
       {
-        "name": "Jacob/Israel",
-        "role": "Father anxious about Benjamin and Simeon."
+        "name": "Jacob",
+        "role": "Sends ten sons to Egypt but keeps Benjamin at home."
       },
       {
-        "name": "Joseph’s ten visiting brothers",
-        "role": "Buy grain and confront guilt about their earlier betrayal."
+        "name": "Joseph's brothers",
+        "role": "Bow before Joseph without knowing him and remember their guilt."
       },
       {
         "name": "Simeon",
-        "role": "Brother held in Egypt pending the others’ return."
+        "role": "Kept in prison in Egypt."
       },
       {
         "name": "Reuben",
-        "role": "Recalls his earlier warning and offers to guarantee Benjamin’s return."
-      },
-      {
-        "name": "Benjamin",
-        "role": "Youngest son kept at home, whose presence Joseph requires."
+        "role": "Reminds his brothers that he warned them, and offers his own two sons as a pledge for Benjamin."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Unresolved guilt",
-        "explanation": "The brothers connect their distress with their treatment of Joseph.",
+        "theme": "Guilt that won't go away",
+        "explanation": "The brothers say, \"We are verily guilty concerning our brother.\"",
         "references": [
           "Genesis 42:21-22"
         ]
       },
       {
-        "theme": "Dreams and reversal",
-        "explanation": "The brothers bow before Joseph as his earlier dreams anticipated.",
+        "theme": "The dreams come true",
+        "explanation": "The brothers bow before Joseph, just as his dreams said they would.",
         "references": [
           "Genesis 42:6",
           "Genesis 42:9"
         ]
       },
       {
-        "theme": "Testing of character",
-        "explanation": "Joseph demands proof of their account and a return with Benjamin.",
+        "theme": "A test",
+        "explanation": "Joseph tests whether his brothers are honest by telling them to bring Benjamin.",
         "references": [
           "Genesis 42:14-20"
         ]
       },
       {
-        "theme": "Fear and family loss",
-        "explanation": "Jacob resists risking Benjamin after prior grief.",
+        "theme": "A father's fear",
+        "explanation": "Jacob has lost Joseph and Simeon, and he refuses to risk Benjamin.",
         "references": [
           "Genesis 42:36-38"
         ]
@@ -2566,54 +2483,50 @@
     "keyFigures": [
       {
         "name": "Judah",
-        "role": "Guarantees Benjamin’s safe return and persuades Jacob."
+        "role": "Promises to keep Benjamin safe and convinces his father."
       },
       {
-        "name": "Jacob/Israel",
-        "role": "Reluctantly sends Benjamin and gifts."
+        "name": "Jacob",
+        "role": "Lets Benjamin go and sends gifts for the ruler."
       },
       {
         "name": "Benjamin",
-        "role": "Youngest brother whose appearance deeply moves Joseph."
+        "role": "Comes to Egypt with his brothers and is given five times as much food."
       },
       {
         "name": "Joseph",
-        "role": "Governor who hosts and quietly observes his brothers."
+        "role": "Feasts with his brothers and hides his tears."
       },
       {
-        "name": "Joseph’s steward",
-        "role": "Reassures visitors concerning their returned payment."
-      },
-      {
-        "name": "Simeon",
-        "role": "Released and reunited with his brothers."
+        "name": "Joseph's steward",
+        "role": "Calms the brothers' fears and brings Simeon out."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Responsibility for family",
-        "explanation": "Judah assumes personal responsibility for Benjamin.",
+        "theme": "Taking responsibility",
+        "explanation": "Judah promises, \"I will be surety for him.\"",
         "references": [
           "Genesis 43:8-10"
         ]
       },
       {
-        "theme": "Fear and reassurance",
-        "explanation": "The brothers expect punishment but are welcomed.",
+        "theme": "Fear turned to welcome",
+        "explanation": "The brothers expect to be punished but are given a feast instead.",
         "references": [
           "Genesis 43:18-23"
         ]
       },
       {
-        "theme": "Hidden compassion",
-        "explanation": "Joseph’s tears reveal strong feeling before disclosure.",
+        "theme": "Hidden tears",
+        "explanation": "Seeing Benjamin, Joseph has to leave the room to weep.",
         "references": [
           "Genesis 43:29-31"
         ]
       },
       {
-        "theme": "Testing favoritism",
-        "explanation": "Benjamin’s larger portion introduces another unequal treatment situation.",
+        "theme": "A test of envy",
+        "explanation": "Benjamin gets five times as much food, and Joseph watches to see whether the brothers will be jealous.",
         "references": [
           "Genesis 43:33-34"
         ]
@@ -2627,54 +2540,50 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Arranges the cup test and announces a penalty for its possessor."
+        "role": "Hides his cup in Benjamin's sack to give his brothers one last test."
+      },
+      {
+        "name": "Joseph's steward",
+        "role": "Chases the brothers and finds the cup."
       },
       {
         "name": "Benjamin",
-        "role": "Youngest brother framed by the cup planted in his bag."
+        "role": "Accused of stealing the cup."
       },
       {
         "name": "Judah",
-        "role": "Spokesman who asks to substitute himself for Benjamin."
-      },
-      {
-        "name": "Joseph’s steward",
-        "role": "Carries out the search and accusation."
+        "role": "Begs to become a slave in Benjamin's place."
       },
       {
         "name": "The other brothers",
-        "role": "Return with Benjamin rather than abandon him."
-      },
-      {
-        "name": "Jacob",
-        "role": "Absent father whose potential grief is central to Judah’s plea."
+        "role": "Tear their clothes and go back with Benjamin."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Test of loyalty",
-        "explanation": "The brothers must decide whether to leave Benjamin behind.",
+        "theme": "A test of loyalty",
+        "explanation": "Will the brothers leave Benjamin behind, as they once left Joseph?",
         "references": [
           "Genesis 44:10-17"
         ]
       },
       {
-        "theme": "Confession of helplessness",
-        "explanation": "Judah acknowledges the family’s distress before Joseph.",
+        "theme": "Guilt confessed",
+        "explanation": "Judah says, \"God hath found out the iniquity of thy servants.\"",
         "references": [
           "Genesis 44:16"
         ]
       },
       {
-        "theme": "Self-giving responsibility",
-        "explanation": "Judah offers himself rather than lose Benjamin.",
+        "theme": "In his brother's place",
+        "explanation": "Judah offers himself as a slave so that Benjamin can go home.",
         "references": [
           "Genesis 44:30-34"
         ]
       },
       {
-        "theme": "Change from former betrayal",
-        "explanation": "Their response contrasts with abandoning Joseph in chapter 37.",
+        "theme": "Changed men",
+        "explanation": "The brothers who sold Joseph now refuse to abandon Benjamin.",
         "references": [
           "Genesis 44:13-14",
           "Genesis 44:33-34"
@@ -2689,51 +2598,51 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Reveals his identity and offers provision and reconciliation."
+        "role": "Tells his brothers who he is and forgives them."
       },
       {
-        "name": "Joseph’s brothers",
-        "role": "Receive the unexpected disclosure and invitation."
-      },
-      {
-        "name": "Jacob/Israel",
-        "role": "Father who revives in hope on learning Joseph lives."
-      },
-      {
-        "name": "Pharaoh",
-        "role": "Welcomes Joseph’s family to Egypt and offers resources."
+        "name": "Joseph's brothers",
+        "role": "Are stunned, then go home to bring their father."
       },
       {
         "name": "Benjamin",
-        "role": "Joseph’s full brother, embraced in the reunion."
+        "role": "Weeps on Joseph's neck."
+      },
+      {
+        "name": "Pharaoh",
+        "role": "Invites Jacob's family to Egypt and sends wagons."
+      },
+      {
+        "name": "Jacob",
+        "role": "Cannot believe the news until he sees the wagons, then decides to go."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Reconciliation",
-        "explanation": "Joseph embraces those who previously betrayed him.",
+        "theme": "Forgiveness",
+        "explanation": "Joseph hugs and kisses the brothers who sold him.",
         "references": [
           "Genesis 45:1-4",
           "Genesis 45:14-15"
         ]
       },
       {
-        "theme": "Providence without excusing harm",
-        "explanation": "Joseph distinguishes the brothers’ harmful act from God’s life-preserving purpose.",
+        "theme": "God's hand in it all",
+        "explanation": "Joseph says, \"God did send me before you to preserve life,\" without pretending his brothers did no wrong.",
         "references": [
           "Genesis 45:5-8"
         ]
       },
       {
-        "theme": "Preservation of life",
-        "explanation": "Joseph’s position allows the family to survive the famine.",
+        "theme": "Saved from famine",
+        "explanation": "Joseph will provide for the whole family through the five years of famine still to come.",
         "references": [
           "Genesis 45:9-11"
         ]
       },
       {
         "theme": "Hope restored",
-        "explanation": "Jacob receives news that changes his grief.",
+        "explanation": "Jacob's spirit revives when he learns that Joseph is alive.",
         "references": [
           "Genesis 45:25-28"
         ]
@@ -2746,55 +2655,51 @@
     "whereWeAre": "Jacob has just learned that Joseph is alive. Now he leaves Canaan with his whole family to move to Egypt. This move sets up the book of Exodus, where Jacob's family grows into a nation and is later rescued from slavery.",
     "keyFigures": [
       {
-        "name": "Jacob/Israel",
-        "role": "Family patriarch assured by God and reunited with Joseph."
+        "name": "Jacob",
+        "role": "Offers sacrifices at Beersheba and moves his family to Egypt."
       },
       {
         "name": "God",
-        "role": "Promises presence and future return from Egypt."
+        "role": "Tells Jacob not to fear and promises to go with him."
       },
       {
         "name": "Joseph",
-        "role": "Receives Jacob and plans the family’s settlement."
+        "role": "Rides out to meet his father and plans where the family will live."
       },
       {
         "name": "Judah",
-        "role": "Sent ahead to guide the family toward Goshen."
+        "role": "Goes ahead to show the way to Goshen."
       },
       {
-        "name": "Jacob’s descendants",
-        "role": "The extended household listed as the family entering Egypt."
-      },
-      {
-        "name": "Pharaoh",
-        "role": "Egyptian ruler Joseph plans to approach; he is not directly encountered here."
+        "name": "Jacob's family",
+        "role": "Seventy people in all, who go down to Egypt."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Guidance amid change",
-        "explanation": "God reassures Jacob at a major geographical transition.",
+        "theme": "Do not fear",
+        "explanation": "God tells Jacob, \"fear not to go down into Egypt.\"",
         "references": [
           "Genesis 46:1-4"
         ]
       },
       {
-        "theme": "God’s presence beyond Canaan",
-        "explanation": "The promise accompanies the family into Egypt.",
+        "theme": "God goes too",
+        "explanation": "God promises to go down with Jacob and to bring his family back.",
         "references": [
           "Genesis 46:3-4"
         ]
       },
       {
-        "theme": "Family continuity",
-        "explanation": "The genealogy records the household that will grow into Israel.",
+        "theme": "The start of a nation",
+        "explanation": "The list names everyone who goes to Egypt, the family that will become Israel.",
         "references": [
           "Genesis 46:8-27"
         ]
       },
       {
-        "theme": "Joyful reunion",
-        "explanation": "Jacob and Joseph are finally reunited.",
+        "theme": "Together again",
+        "explanation": "Joseph falls on his father's neck and weeps a long time.",
         "references": [
           "Genesis 46:29-30"
         ]
@@ -2808,50 +2713,50 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Manages the settlement and Egypt’s famine food economy."
+        "role": "Settles his family in Goshen and manages Egypt through the famine."
       },
       {
-        "name": "Jacob/Israel",
-        "role": "Meets Pharaoh and requests burial in Canaan."
+        "name": "Jacob",
+        "role": "Blesses Pharaoh and makes Joseph promise to bury him in Canaan."
       },
       {
         "name": "Pharaoh",
-        "role": "Grants settlement and receives agricultural revenue."
+        "role": "Gives Jacob's family the best of the land."
       },
       {
-        "name": "Joseph’s brothers",
-        "role": "Present themselves as shepherds seeking residence."
+        "name": "Joseph's brothers",
+        "role": "Tell Pharaoh they are shepherds."
       },
       {
-        "name": "Egyptian population and priests",
-        "role": "People affected differently by the grain and land arrangements."
+        "name": "The people of Egypt",
+        "role": "Sell their money, animals, land, and themselves for food."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Provision through crisis",
-        "explanation": "Joseph distributes grain amid severe famine.",
+        "theme": "Food in famine",
+        "explanation": "Joseph keeps Egypt alive by selling grain.",
         "references": [
           "Genesis 47:13-17"
         ]
       },
       {
-        "theme": "Power and its costs",
-        "explanation": "State control of land increases as people seek food.",
+        "theme": "The cost of survival",
+        "explanation": "The people sell everything they have, until the land belongs to Pharaoh.",
         "references": [
           "Genesis 47:18-26"
         ]
       },
       {
-        "theme": "Family flourishing",
-        "explanation": "Israel’s household settles and multiplies in Goshen.",
+        "theme": "The family grows",
+        "explanation": "In Goshen, Jacob's family grows and multiplies greatly.",
         "references": [
           "Genesis 47:27"
         ]
       },
       {
-        "theme": "Attachment to promised land",
-        "explanation": "Jacob insists on burial with his ancestors.",
+        "theme": "Home is Canaan",
+        "explanation": "Jacob makes Joseph swear to bury him with his fathers.",
         "references": [
           "Genesis 47:29-31"
         ]
@@ -2864,52 +2769,48 @@
     "whereWeAre": "Jacob is near death in Egypt and has made Joseph promise to bury him in Canaan. Now Joseph brings his two sons to be blessed. In chapter 49 Jacob blesses all twelve of his own sons.",
     "keyFigures": [
       {
-        "name": "Jacob/Israel",
-        "role": "Patriarch who adopts and blesses Joseph’s sons."
+        "name": "Jacob",
+        "role": "Adopts Joseph's two sons and blesses them."
       },
       {
         "name": "Joseph",
-        "role": "Presents his sons and challenges the crossed-hand blessing."
+        "role": "Brings his sons and tries to uncross his father's hands."
       },
       {
         "name": "Ephraim",
-        "role": "Younger son who receives precedence in the blessing."
+        "role": "The younger son, who receives the greater blessing."
       },
       {
         "name": "Manasseh",
-        "role": "Firstborn son who also receives blessing."
-      },
-      {
-        "name": "God",
-        "role": "Remembered as shepherd, redeemer, and giver of land promises."
+        "role": "The older son, who is also blessed."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Blessing across generations",
-        "explanation": "Jacob passes on covenant-related hopes to his grandchildren.",
+        "theme": "Blessing passed on",
+        "explanation": "Jacob passes God's promise on to his grandsons.",
         "references": [
           "Genesis 48:3-7",
           "Genesis 48:15-16"
         ]
       },
       {
-        "theme": "Unexpected order",
-        "explanation": "The younger Ephraim is deliberately placed ahead of Manasseh.",
+        "theme": "The younger first",
+        "explanation": "Jacob crosses his hands to put Ephraim ahead of Manasseh.",
         "references": [
           "Genesis 48:13-20"
         ]
       },
       {
-        "theme": "God’s lifelong care",
-        "explanation": "Jacob recalls God’s shepherding and deliverance.",
+        "theme": "God my shepherd",
+        "explanation": "Jacob speaks of \"the God which fed me all my life long.\"",
         "references": [
           "Genesis 48:15-16"
         ]
       },
       {
-        "theme": "Hope of return",
-        "explanation": "Jacob anticipates the family’s movement back to Canaan.",
+        "theme": "Going home someday",
+        "explanation": "Jacob tells Joseph that God will bring the family back to Canaan.",
         "references": [
           "Genesis 48:21"
         ]
@@ -2922,59 +2823,51 @@
     "whereWeAre": "Jacob has just blessed Joseph's sons in chapter 48. Now he gathers all twelve sons and speaks over each one. He dies at the end of the chapter, and Genesis closes with his burial in chapter 50.",
     "keyFigures": [
       {
-        "name": "Jacob/Israel",
-        "role": "Dying patriarch delivering sayings and burial instructions."
-      },
-      {
-        "name": "The twelve sons of Jacob",
-        "role": "Recipients of distinctive words linked to later tribal identities."
-      },
-      {
-        "name": "Judah",
-        "role": "Son associated with royal or ruling imagery."
-      },
-      {
-        "name": "Joseph",
-        "role": "Son given extended blessing after suffering and opposition."
+        "name": "Jacob",
+        "role": "Speaks to each of his sons and dies."
       },
       {
         "name": "Reuben, Simeon, and Levi",
-        "role": "Sons explicitly reproved for earlier conduct."
+        "role": "Rebuked for their past sins."
+      },
+      {
+        "name": "Judah",
+        "role": "Promised that kings will come from his line."
+      },
+      {
+        "name": "Joseph",
+        "role": "Given a long blessing as \"a fruitful bough.\""
+      },
+      {
+        "name": "Jacob's other sons",
+        "role": "Each hears a short word about his future."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Actions carry consequences",
-        "explanation": "Earlier failures of Reuben, Simeon, and Levi shape their pronouncements.",
+        "theme": "Actions have consequences",
+        "explanation": "Reuben, Simeon, and Levi lose their place because of what they did.",
         "references": [
           "Genesis 49:3-7"
         ]
       },
       {
-        "theme": "Leadership and promise",
-        "explanation": "Judah receives prominent ruling imagery, whose details are interpreted differently.",
+        "theme": "The royal tribe",
+        "explanation": "Judah is promised that \"The sceptre shall not depart from Judah.\"",
         "references": [
           "Genesis 49:8-12"
         ]
       },
       {
         "theme": "Strength through hardship",
-        "explanation": "Joseph’s words recall hostility and enduring help.",
+        "explanation": "Joseph, attacked by archers, is made strong \"by the hands of the mighty God of Jacob.\"",
         "references": [
           "Genesis 49:22-26"
         ]
       },
       {
-        "theme": "Generational identity",
-        "explanation": "The sons are addressed as progenitors of tribes.",
-        "references": [
-          "Genesis 49:1-2",
-          "Genesis 49:28"
-        ]
-      },
-      {
         "theme": "Hope beyond Egypt",
-        "explanation": "Jacob again directs burial in ancestral Canaan.",
+        "explanation": "Jacob asks to be buried in Canaan with his fathers.",
         "references": [
           "Genesis 49:29-33"
         ]
@@ -2988,54 +2881,46 @@
     "keyFigures": [
       {
         "name": "Joseph",
-        "role": "Mourns his father, reassures his brothers, and dies trusting in future deliverance."
+        "role": "Buries his father, forgives his brothers again, and dies trusting God's promise."
       },
       {
-        "name": "Jacob/Israel",
-        "role": "Deceased patriarch taken for burial in Canaan."
-      },
-      {
-        "name": "Joseph’s brothers",
-        "role": "Fear revenge and receive reassurance."
+        "name": "Joseph's brothers",
+        "role": "Fear revenge and beg for forgiveness."
       },
       {
         "name": "Pharaoh",
-        "role": "Authorizes Jacob’s burial procession."
+        "role": "Lets Joseph go to Canaan to bury his father."
       },
       {
-        "name": "Ephraim and Manasseh’s descendants",
-        "role": "Later generations mentioned in Joseph’s closing years."
-      },
-      {
-        "name": "God",
-        "role": "Identified by Joseph as the one who can turn intended harm toward preservation and will visit his people."
+        "name": "The Egyptians",
+        "role": "Mourn Jacob for seventy days and travel with the funeral."
       }
     ],
     "keyThemes": [
       {
         "theme": "Grief and honor",
-        "explanation": "Jacob receives extensive mourning and burial.",
+        "explanation": "Joseph weeps over his father and carries him home to Canaan for burial.",
         "references": [
           "Genesis 50:1-14"
         ]
       },
       {
         "theme": "Forgiveness instead of revenge",
-        "explanation": "Joseph refuses to retaliate against his brothers.",
+        "explanation": "Joseph asks, \"am I in the place of God?\" and promises to care for his brothers.",
         "references": [
           "Genesis 50:15-21"
         ]
       },
       {
-        "theme": "Providence amid evil",
-        "explanation": "Joseph names their intent as evil yet sees a good outcome through God.",
+        "theme": "God meant it for good",
+        "explanation": "Joseph sees that God used his brothers' evil to save many lives.",
         "references": [
           "Genesis 50:19-20"
         ]
       },
       {
         "theme": "Hope beyond death",
-        "explanation": "Joseph anticipates God’s future rescue from Egypt.",
+        "explanation": "Joseph dies sure that God will bring Israel out of Egypt.",
         "references": [
           "Genesis 50:24-26"
         ]

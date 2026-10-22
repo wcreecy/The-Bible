@@ -60,7 +60,7 @@ struct ChapterInsightsView: View {
 
     // Ordered the way a reader takes in a chapter: where it falls in the story, what happens,
     // who is involved, the world behind it, what it means, where Scripture picks it up, then
-    // the way on to the next chapter.
+    // the way on to the chapters around it.
     private func insightsContent(_ insights: ChapterInsights) -> some View {
         let context = insights.readingContext
         let content = ChapterContentFilter(insights: insights, context: context)
@@ -69,12 +69,7 @@ struct ChapterInsightsView: View {
 
         return ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                WhereWeAreSection(
-                    narrativePlacement: content.narrativePlacement,
-                    previous: previous,
-                    previousSummary: previous.flatMap { neighborSummaries[$0] },
-                    onSelect: { location = $0 }
-                )
+                WhereWeAreSection(narrativePlacement: content.narrativePlacement)
 
                 ChapterSummaryCard(
                     bookName: bookName,
@@ -132,6 +127,8 @@ struct ChapterInsightsView: View {
 
                 ChapterNavigationSection(
                     location: location,
+                    previous: previous,
+                    previousSummary: previous.flatMap { neighborSummaries[$0] },
                     next: next,
                     nextSummary: next.flatMap { neighborSummaries[$0] },
                     onSelect: { location = $0 },
@@ -249,37 +246,18 @@ private struct ChapterContentFilter {
     }
 }
 
-/// Where the chapter falls in the book's story, with a link back to the chapter before it.
+/// Where the chapter falls in the book's story. The text itself recalls the chapter before,
+/// so the link to it sits with the other chapter navigation at the bottom of the page.
 private struct WhereWeAreSection: View {
     let narrativePlacement: String
-    let previous: ChapterLocation?
-    let previousSummary: String?
-    let onSelect: (ChapterLocation) -> Void
 
     var body: some View {
-        if !narrativePlacement.isEmpty || previous != nil {
+        if !narrativePlacement.isEmpty {
             HeroCard(title: "Where We Are", icon: "mappin.and.ellipse") {
-                VStack(alignment: .leading, spacing: 12) {
-                    if !narrativePlacement.isEmpty {
-                        LinkedScriptureText(narrativePlacement)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if let previous {
-                        if !narrativePlacement.isEmpty {
-                            Divider()
-                        }
-                        NeighborChapterLink(
-                            label: "Just Before",
-                            location: previous,
-                            summary: previousSummary,
-                            icon: "chevron.left",
-                            action: { onSelect(previous) }
-                        )
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                LinkedScriptureText(narrativePlacement)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -443,9 +421,11 @@ private struct ChapterBackgroundSection: View {
     }
 }
 
-/// Opens the chapter in the reader, previews the next chapter, and links to the book overview.
+/// Opens the chapter in the reader, previews the chapters before and after, and links to the book overview.
 private struct ChapterNavigationSection: View {
     let location: ChapterLocation
+    let previous: ChapterLocation?
+    let previousSummary: String?
     let next: ChapterLocation?
     let nextSummary: String?
     let onSelect: (ChapterLocation) -> Void
@@ -462,14 +442,30 @@ private struct ChapterNavigationSection: View {
             .buttonStyle(.borderedProminent)
             .accessibilityHint("Opens this chapter in the reader")
 
-            if let next {
-                NeighborChapterLink(
-                    label: "Up Next",
-                    location: next,
-                    summary: nextSummary,
-                    icon: "chevron.right",
-                    action: { onSelect(next) }
-                )
+            if previous != nil || next != nil {
+                VStack(alignment: .leading, spacing: 12) {
+                    if let next {
+                        NeighborChapterLink(
+                            label: "Up Next",
+                            location: next,
+                            summary: nextSummary,
+                            icon: "chevron.right",
+                            action: { onSelect(next) }
+                        )
+                    }
+                    if let previous {
+                        if next != nil {
+                            Divider()
+                        }
+                        NeighborChapterLink(
+                            label: "Previous",
+                            location: previous,
+                            summary: previousSummary,
+                            icon: "chevron.left",
+                            action: { onSelect(previous) }
+                        )
+                    }
+                }
                 .padding(AppDesignMetrics.cardPadding)
                 .heroCardSurface()
             }

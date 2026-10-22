@@ -35,7 +35,8 @@ struct BookOverviewView: View {
     private func overviewContent(_ overview: BibleBookOverview) -> some View {
         ScrollView {
             // Ordered to build context before reading: what the book is, who wrote it
-            // and why, the world it came from, how to approach it, then what's inside.
+            // and why, the world it came from, how to approach it, what's inside, how it
+            // fits the rest of the Bible, then the full story.
             VStack(alignment: .leading, spacing: 20) {
                 AtAGlanceSection(overview: overview)
 
@@ -47,10 +48,6 @@ struct BookOverviewView: View {
 
                 LabeledRowsSection(title: "Setting", icon: "map", rows: settingRows(overview))
 
-                if !overview.connections.isEmpty {
-                    ConnectionsSection(connections: overview.connections)
-                }
-
                 BookReadingGuideSection(bookName: bookName, tips: overview.readingTips)
 
                 if !overview.story.isEmpty {
@@ -59,6 +56,10 @@ struct BookOverviewView: View {
 
                 if !overview.keyFigures.isEmpty {
                     KeyFiguresSection(keyFigures: overview.keyFigures)
+                }
+
+                if !overview.connections.isEmpty {
+                    ConnectionsSection(connections: overview.connections)
                 }
 
                 if !overview.story.isEmpty {
