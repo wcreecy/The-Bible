@@ -1,6 +1,6 @@
 {
   "Psalms 51": {
-    "audience": "The title links this psalm to David \"when Nathan the prophet came unto him, after he had gone in to Bathsheba\" (2 Samuel 12). It became one of the church's Penitential Psalms.",
+    "audience": "Later worshipers, including after the exile, inherited this as David's own confession and prayed it as a model for anyone caught in sin. The church came to count it among the Penitential Psalms, prayed in seasons of repentance.",
     "culture": [
       {
         "title": "Purge me with hyssop",
@@ -30,7 +30,7 @@
     ]
   },
   "Psalms 53": {
-    "audience": "Titled \"upon Mahalath, Maschil, A Psalm of David.\" It is nearly identical to Psalm 14, but uses \"God\" (Elohim) instead of \"the LORD,\" as most psalms in Book II do.",
+    "audience": "Readers who already knew Psalm 14 from Book One would recognize this as the same song reworked for Book Two's preference for \"God\" over \"the LORD\"; both psalms taught Israel that denying God spreads corruption, with hope that God would one day restore his people's fortunes (Psalm 53:6).",
     "culture": [
       {
         "title": "Mahalath",
@@ -70,7 +70,7 @@
     ]
   },
   "Psalms 56": {
-    "audience": "The title links this psalm to the time \"when the Philistines took him in Gath\" (1 Samuel 21:10–15). It is titled Michtam and \"upon Jonathelemrechokim,\" which the KJV margin renders ‘the dumb dove in far places,’ probably a tune.",
+    "audience": "The title links this psalm to the time \"when the Philistines took him in Gath\" (1 Samuel 21:10–15). It is titled Michtam and \"upon Jonathelemrechokim,\" which the KJV margin explains means 'the dumb dove in far places,' probably a tune name.",
     "culture": [
       {
         "title": "Tears in a bottle",
@@ -85,7 +85,7 @@
       {
         "title": "Awaking the dawn",
         "reference": "Psalms 57:8",
-        "text": "\"I myself will awake early\"—in the Hebrew, ‘I will awaken the dawn,’ rising before sunrise to praise."
+        "text": "\"I myself will awake early\"—in Hebrew, this means 'I will awaken the dawn,' rising before sunrise to praise."
       },
       {
         "title": "Lions and fiery men",
@@ -110,7 +110,7 @@
     ]
   },
   "Psalms 59": {
-    "audience": "The title links this psalm to the night \"when Saul sent, and they watched the house to kill him\" (1 Samuel 19:11).",
+    "audience": "Worshipers who knew the story of Saul's growing jealousy of David (1 Samuel 18–19) would recognize this as David's prayer on the night assassins watched his house; its refrain comparing enemies to snarling dogs roaming the city gave later readers words for any threatening mob.",
     "culture": [
       {
         "title": "Dogs prowling the city",
@@ -120,7 +120,7 @@
     ]
   },
   "Psalms 60": {
-    "audience": "The title links this psalm to David's wars against Aram-naharaim and Aram-zobah, \"when Joab returned, and smote of Edom in the valley of salt twelve thousand\" (2 Samuel 8:13).",
+    "audience": "Readers familiar with David's wars in 2 Samuel 8 would recognize the victory oracle naming Israel's own tribes and claiming Moab, Edom, and Philistia as God's possessions; later generations kept praying its words for help long after the particular battles were forgotten.",
     "culture": [
       {
         "title": "Tribal names as God's possessions",
@@ -270,7 +270,7 @@
     ]
   },
   "Psalms 70": {
-    "audience": "Titled \"A Psalm of David, to bring to remembrance.\" It repeats, with small changes, Psalm 40:13–17.",
+    "audience": "Readers who already knew Psalm 40 would recognize these verses as its ending reused on its own—a reminder that part of a longer psalm of thanksgiving could also stand alone as a short, urgent cry for help.",
     "culture": [
       {
         "title": "Aha, aha",
@@ -280,7 +280,7 @@
     ]
   },
   "Psalms 71": {
-    "audience": "Psalm 71 has no title. It is the prayer of an older person: \"Cast me not off in the time of old age\" (Psalm 71:9).",
+    "audience": "With no title naming an author or occasion, this psalm let any older believer pray it as their own: \"Cast me not off in the time of old age\" (Psalm 71:9).",
     "culture": [
       {
         "title": "Praise on the psaltery",
@@ -290,7 +290,7 @@
     ]
   },
   "Psalms 72": {
-    "audience": "Titled \"A Psalm for Solomon,\" it prays for the king's just rule. It ends Book II with a doxology and the note, \"The prayers of David the son of Jesse are ended\" (Psalm 72:20).",
+    "audience": "Readers would recognize this as a prayer for Solomon's reign that later generations, Jewish and Christian alike, read as pointing beyond Solomon to a greater king whose rule would bring the justice and worldwide blessing it describes.",
     "culture": [
       {
         "title": "Kings of Tarshish and Sheba",
@@ -515,7 +515,7 @@
     ]
   },
   "Psalms 86": {
-    "audience": "Titled \"A Prayer of David,\" the only psalm with that title in Book III. It draws heavily on phrases from other psalms and from Exodus 34:6.",
+    "audience": "Readers who already knew other psalms would recognize many of its lines woven together, especially \"merciful and gracious, longsuffering, and abundant in goodness and truth\" from Exodus 34:6 — a believer's prayer assembled almost entirely from Israel's existing worship.",
     "culture": [
       {
         "title": "The son of thine handmaid",
