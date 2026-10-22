@@ -13,6 +13,18 @@ struct The_Bible__iOS_Tests {
     )
 
     @Test
+    func bibleSearchTokenizerKeepsWordsSeparate() {
+        let verseWords = Set(BibleSearchTokenizer.tokens(in: "the dread of you shall be upon every beast"))
+        let queryWords = BibleSearchTokenizer.tokens(in: "red sea")
+
+        #expect(!BibleSearchTokenizer.matches(queryWords, verseWords: verseWords))
+        #expect(BibleSearchTokenizer.matches(
+            BibleSearchTokenizer.tokens(in: "bre"),
+            verseWords: Set(BibleSearchTokenizer.tokens(in: "bread and breath"))
+        ))
+    }
+
+    @Test
     func verseRequiresContinuousVisibilityForTheFullDwell() async throws {
         var commits: [Set<SeenVerseUpdate>] = []
         let tracker = VerseReadingTracker(

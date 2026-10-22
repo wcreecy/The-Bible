@@ -418,16 +418,10 @@ def main():
     audiences = {
         7: "Readers who already knew the father's earlier warnings about the adulterous woman (chapters 2, 5, and 6) would recognize this scene as that same danger acted out in vivid, memorable detail rather than as a report of one identified incident.",
         8: "Later readers, Jewish and Christian alike, treasured this chapter for how it ties everyday wisdom to creation itself; many Christian readers have also heard an echo of Christ in Wisdom's nearness to God before the world began.",
-        10: "Readers moving from chapters 1–9 into this new heading would recognize the shift from one sustained father's appeal to a long series of independent, two-line sayings meant to be weighed one at a time rather than read as a single argument.",
+        10: "Readers moving from the sustained father-to-son appeal of chapters 1–9 would notice the different literary form here: brief, two-line observations meant to be weighed one at a time rather than followed as a single continuous argument.",
         25: "Readers in and after Hezekiah's reign, a time of religious reform and renewed interest in Judah's written heritage, would have recognized this heading as evidence that older royal wisdom was still being gathered and valued generations after Solomon.",
         29: "Readers who had followed the sayings on rulers and the poor since chapter 25 would hear this chapter's close as the climax of that theme, tying a ruler's justice and a people's trust in the LORD together one final time.",
         31: "Readers familiar with Hebrew acrostic poems, such as several psalms, would recognize the alphabetic structure of verses 10–31 as a deliberate literary form meant to present the capable woman as a complete, well-rounded picture from A to Z.",
-    }
-
-    explained_references_overrides = {
-        16: [
-            {"verse": 20, "reference": "", "explanation": ""},
-        ],
     }
 
     for chapter in range(1, 32):
@@ -441,12 +435,6 @@ def main():
         ]
         if chapter in audiences:
             context[key]["audience"] = audiences[chapter]
-
-    # explainedReferences is untouched except where noted; drop the placeholder entry above.
-    del explained_references_overrides
-
-    # Fix the run-together citation in Proverbs 16's summary was already handled by writing
-    # the summary text above with a semicolon-separated parenthetical.
 
     save(insights_path, insights)
     save(context_path, context)

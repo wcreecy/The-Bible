@@ -1,11 +1,11 @@
 {
   "Ecclesiastes 1": {
     "summary": "The opening identifies the speaker as the Preacher, son of David and king in Jerusalem, and poses the question of lasting gain from life’s toil (Ecclesiastes 1:1–3). Generations pass, the sun, winds and rivers follow recurring courses, and human appetite and memory remain unsatisfied (Ecclesiastes 1:4–11). The speaker turns to his royal quest to explore all that is done under heaven, but discovers frustration even in extensive learning: what is crooked cannot simply be straightened, and increased knowledge can bring grief (Ecclesiastes 1:12–18). The repeated term often translated “vanity” carries the imagery of breath or vapor, underscoring transience and elusiveness rather than declaring that nothing matters.",
-    "whereWeAre": "The poem surveys recurring natural processes and the social pursuit of work and knowledge, not a separately datable event. The royal research voice introduces the book’s larger examination of the value and limits of life under the sun.",
+    "whereWeAre": "Proverbs ended with the praise of a capable woman and its repeated call to fear the LORD. Ecclesiastes opens with a different wisdom voice, the Preacher, who tests whether any amount of toil or learning leaves lasting gain under the sun. Chapter 2 continues the search, turning from general observation to the Preacher's own experiments with pleasure and achievement.",
     "keyFigures": [
       {
-        "name": "The Preacher (Qoheleth)",
-        "role": "Royal-sounding first-person voice who investigates work and wisdom. He poses the book’s governing questions (1:1,12–18)."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Royal-sounding first-person voice who investigates work and wisdom. He poses the book's governing questions (1:1,12–18)."
       },
       {
         "name": "Generations of people",
@@ -14,8 +14,8 @@
     ],
     "keyThemes": [
       {
-        "theme": "Life’s transience",
-        "explanation": "",
+        "theme": "Life's transience",
+        "explanation": "Generations rise and pass while the sun, wind, and rivers keep repeating the same courses, showing how brief a single lifetime looks against the natural world's endless cycles.",
         "references": [
           "Ecclesiastes 1:1–4",
           "Ecclesiastes 1:8–11"
@@ -23,7 +23,7 @@
       },
       {
         "theme": "Limits of human achievement",
-        "explanation": "",
+        "explanation": "Even a king's determined, wide-ranging research cannot straighten what is already crooked, showing that effort and resources alone cannot force the world to make full sense.",
         "references": [
           "Ecclesiastes 1:3",
           "Ecclesiastes 1:12–15"
@@ -31,7 +31,7 @@
       },
       {
         "theme": "Wisdom and sorrow",
-        "explanation": "",
+        "explanation": "Gaining more wisdom and knowledge is shown to increase grief rather than remove it, since clearer sight of the world's problems does not solve them.",
         "references": [
           "Ecclesiastes 1:16–18"
         ]
@@ -41,15 +41,15 @@
   },
   "Ecclesiastes 2": {
     "summary": "The speaker tests pleasure, laughter, wine, building projects, vineyards, gardens, property, servants, livestock, wealth, music and sexual delight, yet finds none provides enduring gain (Ecclesiastes 2:1–11). He acknowledges that wisdom is preferable to folly, as light is to darkness, but both wise and foolish die and are eventually forgotten (Ecclesiastes 2:12–16). He grieves over toil whose products may be handed to successors who have not earned them (Ecclesiastes 2:17–23). The chapter ends with a counterpoint: enjoying food, drink and satisfaction in work is described as a gift from God rather than a secure human achievement (Ecclesiastes 2:24–26).",
-    "whereWeAre": "The catalogue invokes royal-scale building, estates, servants and wealth, but it cannot be independently linked to a specific monarch’s construction record. These examples test the assumption that royal privilege and achievement can overcome life’s uncertainties.",
+    "whereWeAre": "Chapter 1 found that increased knowledge brings grief rather than lasting answers. Here the Preacher tests pleasure, building projects, and wealth on a royal scale, and still finds no enduring gain, though he commends simple enjoyment of food and work as a gift from God. Chapter 3 turns from the Preacher's own experiments to a wider reflection on God's timing for every event.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Tests pleasure, building projects, and wealth on a royal scale, then commends simple enjoyment of food and work as a gift from God (2:1–11, 24–26)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Named as the giver of the enjoyment and satisfaction that toil alone cannot produce (2:24–26)."
       },
       {
         "name": "The wise and the fool",
@@ -57,27 +57,27 @@
       },
       {
         "name": "A future successor",
-        "role": "Unidentified inheritor of the speaker’s labor. The possibility of inheritance heightens anxiety about lasting control (2:18–21)."
+        "role": "Unidentified inheritor of the speaker's labor. The possibility of inheritance heightens anxiety about lasting control (2:18–21)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Pleasure and possessions",
-        "explanation": "",
+        "explanation": "Testing laughter, wine, building projects, and every luxury a king could gather still ends in the same verdict: none of it provides lasting gain.",
         "references": [
           "Ecclesiastes 2:1–11"
         ]
       },
       {
         "theme": "Wisdom and mortality",
-        "explanation": "",
+        "explanation": "Wisdom is granted a real advantage over folly, like light over darkness, but that advantage disappears at death, since the wise and the fool are both eventually forgotten.",
         "references": [
           "Ecclesiastes 2:12–16"
         ]
       },
       {
         "theme": "Work, legacy and enjoyment",
-        "explanation": "",
+        "explanation": "Grief over leaving one's labor to an unproven successor is set against the closing counsel that ordinary enjoyment of food and work is itself a gift from God.",
         "references": [
           "Ecclesiastes 2:18–26"
         ]
@@ -87,15 +87,15 @@
   },
   "Ecclesiastes 3": {
     "summary": "An extended poem names contrasting times for birth and death, planting and uprooting, mourning and dancing, silence and speech, war and peace (Ecclesiastes 3:1–8). The speaker asks what gain toil brings and says God makes things appropriate in their time, while human beings cannot grasp the whole of God’s work (Ecclesiastes 3:9–15). He notices injustice in places where justice should prevail and declares that God will judge (Ecclesiastes 3:16–17). Both humans and animals die and return to dust; he asks who can know the final destination of their spirit and concludes that one should rejoice in one’s work, since the future remains hidden (Ecclesiastes 3:18–22).",
-    "whereWeAre": "The chapter mentions agricultural seasons, mourning, relationships and judicial corruption without recording one identifiable incident. The ordinary rhythms of life sharpen the contrast between God’s purposes and humanity’s limited vantage point.",
+    "whereWeAre": "Chapter 2 ended by calling enjoyment of one's labor a gift from God. Here the Preacher's famous poem names a fitting time for every human activity and admits that people cannot grasp the whole of God's work, even as he trusts God will judge injustice. Chapter 4 turns from these cosmic reflections to very ordinary abuses: oppression, envy, and loneliness.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Names a fitting time for every human activity and affirms that God, not human effort, judges the righteous and the wicked (3:1–17)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Said to make everything fitting in its time and to judge the righteous and the wicked, even when human courts fail to (3:11,17)."
       },
       {
         "name": "Human beings and animals",
@@ -109,21 +109,21 @@
     "keyThemes": [
       {
         "theme": "Seasons of life",
-        "explanation": "",
+        "explanation": "The poem's fourteen paired opposites show that contrasting experiences, from birth to death and war to peace, all have their appointed place rather than being signs that something has gone wrong.",
         "references": [
           "Ecclesiastes 3:1–8"
         ]
       },
       {
         "theme": "Divine time and human limits",
-        "explanation": "",
+        "explanation": "God is said to make everything fitting in its time, but people cannot grasp the whole of that design, so toil is received as a gift rather than fully explained.",
         "references": [
           "Ecclesiastes 3:9–15"
         ]
       },
       {
         "theme": "Justice and mortality",
-        "explanation": "",
+        "explanation": "Corrupt courts raise the question of justice, which the speaker answers by trusting God to judge, even as the shared mortality of humans and animals keeps the future hidden.",
         "references": [
           "Ecclesiastes 3:16–22"
         ]
@@ -133,11 +133,11 @@
   },
   "Ecclesiastes 4": {
     "summary": "The speaker examines oppression and sees victims weeping without comfort while power rests with their oppressors (Ecclesiastes 4:1–3). He observes that rivalry drives toil, yet total idleness is also foolish (Ecclesiastes 4:4–6). The solitary worker who never asks for whom he labors illustrates the emptiness of wealth without companionship (Ecclesiastes 4:7–8). Two companions can support, warm and defend one another, while a threefold cord is hard to break (Ecclesiastes 4:9–12). The final scene contrasts a poor but wise youth with an old foolish king and notes how quickly crowds cease to celebrate a new ruler (Ecclesiastes 4:13–16).",
-    "whereWeAre": "The speaker describes oppression, competitive labor and succession politics as social observations, not as one documented reign. The chapter moves from abuses of power to the ways companionship responds to human vulnerability.",
+    "whereWeAre": "Chapter 3 affirmed that God judges even when courts fail to. Here the Preacher looks at oppression, competitive toil, and the isolation of working without companionship, while praising the strength two people have together. Chapter 5 turns from these social observations to counsel about approaching God and money with the same clear-eyed caution.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Observes oppression, competitive toil, and isolation, then praises the practical strength two companions have together (4:1–12)."
       },
       {
         "name": "Oppressed people and oppressors",
@@ -159,28 +159,28 @@
     "keyThemes": [
       {
         "theme": "Oppression without comfort",
-        "explanation": "",
+        "explanation": "The tears of the oppressed go unanswered because power rests entirely with their oppressors, leaving no one positioned to comfort them.",
         "references": [
           "Ecclesiastes 4:1–3"
         ]
       },
       {
         "theme": "Ambition, rest and isolation",
-        "explanation": "",
+        "explanation": "Rivalry is named as the hidden engine behind much hard work, yet the solitary worker who never asks for whom he labors shows that ambition without companionship produces only emptiness.",
         "references": [
           "Ecclesiastes 4:4–8"
         ]
       },
       {
         "theme": "Value of companionship",
-        "explanation": "",
+        "explanation": "Two companions can lift, warm, and defend each other in ways a solitary person cannot manage alone, and a third person makes that support even harder to break.",
         "references": [
           "Ecclesiastes 4:9–12"
         ]
       },
       {
         "theme": "Fragility of popularity",
-        "explanation": "",
+        "explanation": "A poor but wise youth can rise above an old foolish king, yet the chapter notes how quickly a new ruler's admirers move on, showing that public approval never lasts long.",
         "references": [
           "Ecclesiastes 4:13–16"
         ]
@@ -190,15 +190,15 @@
   },
   "Ecclesiastes 5": {
     "summary": "The speaker urges caution when approaching God’s house: listening is better than hasty sacrifice, careless speech or unfulfilled vows (Ecclesiastes 5:1–7). He warns against surprise at official oppression, since layers of authorities can oversee one another, and emphasizes the land’s importance to everyone, including the king (Ecclesiastes 5:8–9). A lover of money is never satisfied; added goods produce dependents and anxiety, while riches can disappear and cannot be taken into death (Ecclesiastes 5:10–17). Again he commends eating, drinking and receiving enjoyment from one’s labor as God’s gift during the few days allotted to a person (Ecclesiastes 5:18–20).",
-    "whereWeAre": "The chapter presupposes temple worship, vow-making, layered administration and agrarian production without fixing a specific historical incident. Worship and economics are paired as areas where human excess and misplaced confidence appear.",
+    "whereWeAre": "Chapter 4 praised companionship as a defense against isolation and hard labor. Here the Preacher warns against careless words and unpaid vows in worship, and against trusting wealth that cannot satisfy or be carried into death. Chapter 6 continues the theme of wealth's limits with the sharper case of someone who has riches but cannot enjoy them.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Warns against careless vows in worship and against trusting riches that cannot satisfy or be carried into death (5:1–17)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "The one approached in worship and named as the giver of the days and enjoyment a person receives (5:1–7,18–20)."
       },
       {
         "name": "Worshipers who make vows",
@@ -210,34 +210,34 @@
       },
       {
         "name": "The wealthy person",
-        "role": "Representative owner whose riches can produce anxiety or be lost. His vulnerability reveals wealth’s insecurity (5:10–17)."
+        "role": "Representative owner whose riches can produce anxiety or be lost. His vulnerability reveals wealth's insecurity (5:10–17)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Reverence in worship",
-        "explanation": "",
+        "explanation": "Listening carefully and keeping vows are valued over quick words or careless sacrifices, since rash promises made to God still have to be paid.",
         "references": [
           "Ecclesiastes 5:1–7"
         ]
       },
       {
         "theme": "Oppression in public life",
-        "explanation": "",
+        "explanation": "Seeing one official oversee another is not a reason for shock, since layered authority can both restrain and enable the oppression it is meant to prevent.",
         "references": [
           "Ecclesiastes 5:8–9"
         ]
       },
       {
         "theme": "Limits of money",
-        "explanation": "",
+        "explanation": "A lover of money is never satisfied, and growing wealth brings growing anxiety and dependents rather than security, since none of it can be carried into death.",
         "references": [
           "Ecclesiastes 5:10–17"
         ]
       },
       {
         "theme": "Enjoyment as gift",
-        "explanation": "",
+        "explanation": "Finding real satisfaction in one's food, drink, and work is presented as something God gives rather than something wealth can guarantee on its own.",
         "references": [
           "Ecclesiastes 5:18–20"
         ]
@@ -247,15 +247,15 @@
   },
   "Ecclesiastes 6": {
     "summary": "The speaker describes the tragedy of someone given wealth, possessions and honor but not the ability to enjoy them; another enjoys the benefits instead (Ecclesiastes 6:1–2). Even a very large family and long life bring no advantage when the person is deprived of satisfaction or proper burial (Ecclesiastes 6:3–6). Human labor feeds appetite without fully satisfying desire; practical advantages of wisdom or poverty do not erase the difficulty (Ecclesiastes 6:7–9). The argument concludes that people cannot contend successfully with one stronger than they, and cannot know completely what is good for their fleeting lives or what happens after them (Ecclesiastes 6:10–12).",
-    "whereWeAre": "The examples draw on ancient expectations around children, long life, inheritance and burial; no particular family is identified. Conventional signs of blessing become test cases for Qoheleth’s claim that gifts do not automatically produce joy.",
+    "whereWeAre": "Chapter 5 warned that wealth cannot buy lasting satisfaction. Here the Preacher sharpens that point with the case of a man given riches, children, and long life who still cannot enjoy any of it. Chapter 7 turns from this specific case to a string of proverb-like comparisons about wisdom, mourning, and patience.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Presents the sharpened case of a man given wealth, children, and long life who still cannot enjoy any of it (6:1–6)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Named as the one who gives riches and honor, yet withholds the power to enjoy them in this chapter's example (6:2)."
       },
       {
         "name": "A wealthy but unsatisfied person",
@@ -273,21 +273,21 @@
     "keyThemes": [
       {
         "theme": "Possession versus enjoyment",
-        "explanation": "",
+        "explanation": "Having wealth, possessions, and honor is shown to mean little when a person lacks the power to actually enjoy them, since someone else ends up receiving the benefit instead.",
         "references": [
           "Ecclesiastes 6:1–2"
         ]
       },
       {
         "theme": "Quantity of life and quality of life",
-        "explanation": "",
+        "explanation": "Many children and a long life, the ancient world's clearest signs of blessing, are judged worthless next to a stillborn child if they never bring real satisfaction.",
         "references": [
           "Ecclesiastes 6:3–6"
         ]
       },
       {
         "theme": "Unfulfilled appetite and uncertainty",
-        "explanation": "",
+        "explanation": "Labor keeps feeding appetite without ever fully satisfying it, and since no one can know what is truly good for their short life, even wisdom and poverty offer only limited help.",
         "references": [
           "Ecclesiastes 6:7–12"
         ]
@@ -297,15 +297,15 @@
   },
   "Ecclesiastes 7": {
     "summary": "The chapter strings together counterintuitive comparisons: a good reputation is better than costly perfume, mourning can instruct more than feasting, correction from the wise surpasses fools’ laughter, and patience surpasses arrogance (Ecclesiastes 7:1–10). The speaker values wisdom as protection but admits that no human can straighten everything God has made (Ecclesiastes 7:11–14). He sees the righteous perish and the wicked prolong life, warns against self-righteousness and excess, and notes that nobody is without sin (Ecclesiastes 7:15–22). The final inquiry finds wisdom hard to grasp and describes snares, moral failure and humanity’s many schemes (Ecclesiastes 7:23–29). The negative comparison involving women in verse 28 is the speaker’s limited rhetorical claim, not an established judgment about all women.",
-    "whereWeAre": "The contrasts reflect proverbial instruction and social practices of mourning and feasting rather than a narrated incident. The book’s theme of uncertain outcomes becomes sharper as the speaker questions easy connections between character and fortune.",
+    "whereWeAre": "Chapter 6 showed that even a long, full life proves nothing if it brings no enjoyment. Here the Preacher strings together proverbs that often reverse ordinary expectations, praising mourning over feasting and patience over pride, while admitting wisdom has real limits. Chapter 8 turns from these general proverbs to the specific test case of living wisely under a king's authority.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Strings together proverbs that reverse ordinary expectations and admits that complete wisdom and moral fairness both lie beyond human reach (7:1–29)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Said to have made humanity upright and to set prosperity and adversity over against each other (7:14,29)."
       },
       {
         "name": "The wise and fools",
@@ -317,34 +317,34 @@
       },
       {
         "name": "A woman portrayed as a snare",
-        "role": "Negative poetic figure in the speaker’s frustrated search. The language reflects the argument’s perspective and cannot justify a universal assertion about women (7:26–28)."
+        "role": "Negative poetic figure in the speaker's frustrated search. The language reflects the argument's perspective and cannot justify a universal assertion about women (7:26–28)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Learning through adversity",
-        "explanation": "",
+        "explanation": "A house of mourning is said to teach more than a house of feasting, since facing death and correction seriously shapes character in ways celebration cannot.",
         "references": [
           "Ecclesiastes 7:1–6"
         ]
       },
       {
         "theme": "Patience and wisdom",
-        "explanation": "",
+        "explanation": "Wisdom functions like inherited property, offering real protection, yet the speaker admits that no one can straighten everything God has made crooked.",
         "references": [
           "Ecclesiastes 7:7–14"
         ]
       },
       {
         "theme": "Unpredictable moral outcomes",
-        "explanation": "",
+        "explanation": "Seeing the righteous perish while the wicked prolong their lives undercuts any simple formula connecting good behavior to good outcomes, and warns against both self-righteousness and excess.",
         "references": [
           "Ecclesiastes 7:15–22"
         ]
       },
       {
-        "theme": "Wisdom’s limits and human failure",
-        "explanation": "",
+        "theme": "Wisdom's limits and human failure",
+        "explanation": "A determined search for wisdom still falls short, since the speaker concludes that God made humanity upright, but people have pursued their own many schemes instead.",
         "references": [
           "Ecclesiastes 7:23–29"
         ]
@@ -354,15 +354,15 @@
   },
   "Ecclesiastes 8": {
     "summary": "The speaker commends wisdom for interpreting situations and counsels care around a king whose authority can be dangerous (Ecclesiastes 8:1–9). He then observes that the wicked may receive public honor and that delayed punishment can embolden wrongdoing (Ecclesiastes 8:10–11). Although he says it will be well with those who fear God, he also notes cases where righteous and wicked people receive apparently reversed outcomes (Ecclesiastes 8:12–14). This paradox leads him again to commend enjoying food, drink and work as part of one’s earthly life (Ecclesiastes 8:15). Even the wise cannot fully discover all that God does under the sun (Ecclesiastes 8:16–17).",
-    "whereWeAre": "The chapter evokes monarchy, public punishment and communal honor, but does not identify a specific king or trial. Its political scenes illustrate wisdom under power and sharpen the problem of apparently delayed justice.",
+    "whereWeAre": "Chapter 7 admitted that wisdom cannot straighten everything God has made crooked. Here the Preacher counsels careful discretion under a king's absolute power and wrestles with wrongdoing that goes unpunished for a time. Chapter 9 widens the lens from one king's court to the single fate, death, that comes to everyone.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Counsels discretion under a king's absolute power and wrestles with wrongdoing that goes unpunished for a time (8:1–14)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Said to make it well with those who fear him, even though his full work remains impossible to discover (8:12,17)."
       },
       {
         "name": "The king",
@@ -374,27 +374,27 @@
       },
       {
         "name": "The wise",
-        "role": "Those who seek explanations of events. Even their investigations cannot encompass God’s work (8:16–17)."
+        "role": "Those who seek explanations of events. Even their investigations cannot encompass God's work (8:16–17)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Wisdom under authority",
-        "explanation": "",
+        "explanation": "A wise person reads a king's commands carefully, since royal power carries real danger and few safe ways to object once a decision is made.",
         "references": [
           "Ecclesiastes 8:1–9"
         ]
       },
       {
         "theme": "Delayed justice",
-        "explanation": "",
+        "explanation": "Wicked people sometimes receive public honor while the righteous are treated as if they were wicked, a reversal that emboldens wrongdoing when punishment does not arrive quickly.",
         "references": [
           "Ecclesiastes 8:10–14"
         ]
       },
       {
         "theme": "Joy amid unanswered questions",
-        "explanation": "",
+        "explanation": "Even though the wise cannot fully discover everything God does under the sun, the speaker still commends ordinary enjoyment of food, drink, and work.",
         "references": [
           "Ecclesiastes 8:15–17"
         ]
@@ -404,15 +404,15 @@
   },
   "Ecclesiastes 9": {
     "summary": "The speaker says righteous and wise people are in God’s hand, yet humans cannot predict love or hatred from what lies ahead (Ecclesiastes 9:1). A common fate overtakes the righteous and wicked alike; death ends the living person’s earthly participation (Ecclesiastes 9:2–6). He urges readers to enjoy food, wine, clean garments, companionship and wholehearted work while they can (Ecclesiastes 9:7–10). Races and battles are not invariably won by the quickest or strongest, because unforeseen events intervene (Ecclesiastes 9:11–12). A closing story shows a poor wise man saving a small city from a powerful king, yet being forgotten; wisdom remains better than force, though it can be ignored or undermined (Ecclesiastes 9:13–18).",
-    "whereWeAre": "Family meals, clothing, labor and siege warfare supply the cultural imagery, but the anonymous city and king cannot be located historically. The closing example grounds the book’s contrast between genuine wisdom and uncertain recognition.",
+    "whereWeAre": "Chapter 8 wrestled with justice delayed under human authority. Here the Preacher insists that the same fate, death, comes to the righteous and the wicked alike, and urges full-hearted enjoyment of ordinary life while it lasts, closing with a story of wisdom that saves a city yet goes unrewarded. Chapter 10 continues with more of the short, proverb-style sayings the book has already used to test wisdom's practical value.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Insists that one fate, death, overtakes the righteous and the wicked alike, and urges whole-hearted enjoyment of ordinary life while it lasts (9:1–10)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Named as the one in whose hand the righteous and the wise already rest (9:1)."
       },
       {
         "name": "The living and the dead",
@@ -420,7 +420,7 @@
       },
       {
         "name": "A poor wise man",
-        "role": "Unidentified figure in the closing example. His overlooked rescue illustrates society’s failure to honor wisdom (9:14–16)."
+        "role": "Unidentified figure in the closing example. His overlooked rescue illustrates society's failure to honor wisdom (9:14–16)."
       },
       {
         "name": "A great king and a besieged city",
@@ -430,28 +430,28 @@
     "keyThemes": [
       {
         "theme": "Mortality shared by all",
-        "explanation": "",
+        "explanation": "Death overtakes the righteous and the wicked, the clean and the unclean, alike, ending every living person's part in what happens under the sun.",
         "references": [
           "Ecclesiastes 9:1–6"
         ]
       },
       {
         "theme": "Everyday joy and purposeful work",
-        "explanation": "",
+        "explanation": "Because death comes to all, the speaker urges enjoying food, clean clothing, marriage, and wholehearted work now, while the chance to act still exists.",
         "references": [
           "Ecclesiastes 9:7–10"
         ]
       },
       {
         "theme": "Chance and fragile success",
-        "explanation": "",
+        "explanation": "Even the swiftest racer or strongest fighter can lose, since unforeseen events intervene in ways that no skill alone can guarantee against.",
         "references": [
           "Ecclesiastes 9:11–12"
         ]
       },
       {
         "theme": "Wisdom unrecognized",
-        "explanation": "",
+        "explanation": "A poor wise man saves his city yet is quickly forgotten, showing that wisdom can accomplish real good even while society fails to honor the person who supplied it.",
         "references": [
           "Ecclesiastes 9:13–18"
         ]
@@ -461,11 +461,11 @@
   },
   "Ecclesiastes 10": {
     "summary": "A little folly can spoil a valued reputation just as a dead fly spoils perfume (Ecclesiastes 10:1). The speaker continues with contrasts between the wise and the fool, including poor judgment in the presence of rulers (Ecclesiastes 10:2–7). Digging pits, breaking walls, cutting wood and using dull tools illustrate risks that foresight may reduce (Ecclesiastes 10:8–11). Speech can betray folly through reckless words and endless talk (Ecclesiastes 10:12–15). He contrasts careless and disciplined leadership, warns that neglected structures decay, observes the practical force of money, and cautions against privately cursing a king because words may travel (Ecclesiastes 10:16–20).",
-    "whereWeAre": "Images come from agrarian crafts, royal courts, household maintenance and public authority without identifying particular rulers. Concrete workplace and leadership examples portray wisdom as observable conduct rather than abstract cleverness.",
+    "whereWeAre": "Chapter 9 closed with a poor wise man whose rescue of a city was quickly forgotten. Here the sayings continue in the same short, two-line style, warning that a little folly can undo a great reputation and exposing careless rulers and reckless speech. Chapter 11 turns from these warnings about folly to a final call toward generous, diligent action despite an uncertain future.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Continues the book's short, two-line sayings, warning that a little folly can spoil a great reputation (10:1–20)."
       },
       {
         "name": "The wise and fools",
@@ -483,21 +483,21 @@
     "keyThemes": [
       {
         "theme": "Small folly, large consequences",
-        "explanation": "",
+        "explanation": "A dead fly spoiling a jar of perfume pictures how a small lapse can undo a reputation built on real wisdom, especially when fools end up in positions of honor.",
         "references": [
           "Ecclesiastes 10:1–7"
         ]
       },
       {
         "theme": "Skill and preparation",
-        "explanation": "",
+        "explanation": "Digging, wall-breaking, and woodcutting all carry ordinary risks that foresight and a sharpened tool can reduce, making preparation itself a form of wisdom.",
         "references": [
           "Ecclesiastes 10:8–11"
         ]
       },
       {
         "theme": "Responsible speech",
-        "explanation": "",
+        "explanation": "Words can reveal or ruin a person, since endless talk exposes folly and even a private curse against a king is warned against because words have a way of traveling.",
         "references": [
           "Ecclesiastes 10:12–15",
           "Ecclesiastes 10:20"
@@ -505,7 +505,7 @@
       },
       {
         "theme": "Public leadership and neglect",
-        "explanation": "",
+        "explanation": "A land suffers under rulers who feast carelessly in the morning, while neglected houses and roofs show what happens when ordinary maintenance is ignored.",
         "references": [
           "Ecclesiastes 10:16–19"
         ]
@@ -514,16 +514,16 @@
     "explainedReferences": []
   },
   "Ecclesiastes 11": {
-    "summary": "The speaker urges generous, active conduct despite uncertainty: send bread upon the waters, share portions widely, and do not let unpredictable weather stop all sowing (Ecclesiastes 11:1–6). Since no one knows how God’s work unfolds, the wise response is to act diligently in the morning and evening while results remain unknown. Light and years of life are pleasant, yet dark days must be remembered (Ecclesiastes 11:7–8). Young people are invited to rejoice in their youth while remembering that God will bring conduct into judgment (Ecclesiastes 11:9–10). The precise meaning of sending bread upon the waters is debated; the passage should not be reduced to a guaranteed return on an investment.",
-    "whereWeAre": "The chapter uses agricultural cycles, trade-like imagery and the uncertainties of life, but names no specific journey or commercial practice. Work and generosity provide the constructive counterpart to the book’s repeated admission of human ignorance.",
+    "summary": "The speaker urges generous, active conduct despite uncertainty: send bread upon the waters, share portions widely, and do not let unpredictable weather stop all sowing (Ecclesiastes 11:1–6). Since no one knows how God's work unfolds, the wise response is to act diligently in the morning and evening while results remain unknown (Ecclesiastes 11:6). Light and years of life are pleasant, yet dark days must be remembered (Ecclesiastes 11:7–8). Young people are invited to rejoice in their youth while remembering that God will bring conduct into judgment (Ecclesiastes 11:9–10).",
+    "whereWeAre": "Chapter 10 warned how a little folly can spoil a lifetime of wisdom. Here the Preacher urges generous, diligent action even without full knowledge of outcomes, and calls the young to enjoy life while remembering that God will judge their conduct. Chapter 12 closes the book with a poem on aging and death and a final summons to fear God.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Urges generous, diligent action despite uncertainty and calls the young to enjoy life while remembering coming judgment (11:1–10)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Named as the one whose work cannot be fully known in advance and who will bring every youthful choice into judgment (11:5,9)."
       },
       {
         "name": "The sower",
@@ -531,27 +531,27 @@
       },
       {
         "name": "The young person",
-        "role": "Person addressed in the closing exhortation Youthful enjoyment is paired with moral accountability (11:9–10)."
+        "role": "Person addressed in the closing exhortation. Youthful enjoyment is paired with moral accountability (11:9–10)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Generosity and risk",
-        "explanation": "",
+        "explanation": "Sending bread upon the waters and sharing with several people pictures generosity offered without any guarantee of when, or whether, it will return.",
         "references": [
           "Ecclesiastes 11:1–2"
         ]
       },
       {
         "theme": "Act without full knowledge",
-        "explanation": "",
+        "explanation": "Since no one can explain how a body is formed in the womb, the speaker concludes that people should keep working morning and evening rather than waiting for certainty about outcomes.",
         "references": [
           "Ecclesiastes 11:3–6"
         ]
       },
       {
         "theme": "Enjoyment and accountability",
-        "explanation": "",
+        "explanation": "Years of light and youth are called genuinely pleasant, but that enjoyment is paired with the reminder that God will bring every choice into judgment.",
         "references": [
           "Ecclesiastes 11:7–10"
         ]
@@ -561,54 +561,54 @@
   },
   "Ecclesiastes 12": {
     "summary": "The speaker calls readers to remember their Creator in youth before aging brings declining strength and pleasure (Ecclesiastes 12:1). An extended series of images—darkened lights, trembling keepers, failing grinders, shut doors and broken household objects—depicts the approach of death (Ecclesiastes 12:2–7). Dust returns to earth and the spirit returns to God who gave it (Ecclesiastes 12:7). The refrain about life’s fleeting character returns (Ecclesiastes 12:8). A closing voice describes the Preacher as one who carefully taught and arranged sayings, compares wise words to goads, cautions against endless study, and concludes with fearing God and keeping his commandments because God judges every deed (Ecclesiastes 12:9–14).",
-    "whereWeAre": "The final chapter blends a poetic portrayal of aging with an editorial-style closing frame; neither passage yields a securely dated biography. The epilogue places the speaker’s unsettling observations within a closing summons to reverence and accountability.",
+    "whereWeAre": "Chapter 11 called the young to enjoy life while remembering coming judgment. Here a poem pictures the body's decline in old age, dust returning to earth and the spirit to God, before a closing voice sums up the Preacher's search with a final charge to fear God and keep his commandments. The next book, Song of Solomon, turns from this search for meaning to a single sustained love poem between a bride and her beloved.",
     "keyFigures": [
       {
-        "name": "Qoheleth (the Preacher/Teacher)",
-        "role": "The reflective speaker whose observations organize the chapter. His perspective is the subject of the book; his identity as Solomon is a traditional identification rather than a securely established historical fact."
+        "name": "Qoheleth (the Preacher)",
+        "role": "Pictures the body's decline in old age and is then described by a closing voice as one who taught the people knowledge with care (12:1–12)."
       },
       {
         "name": "God",
-        "role": "The divine creator and giver described in the reflections God’s relation to time, gifts, judgment and human limitations shapes the argument."
+        "role": "Named as the Creator to be remembered in youth and as the one to whom the departing spirit returns (12:1,7)."
       },
       {
         "name": "The young person",
-        "role": "Person urged to remember the Creator Early attention to mortality and responsibility frames the final poem (12:1)."
+        "role": "Person urged to remember the Creator. Early attention to mortality and responsibility frames the final poem (12:1)."
       },
       {
-        "name": "The closing narrator/editor",
-        "role": "Voice speaking about the Preacher in the third person. He evaluates the teachings and provides the book’s concluding admonition (12:9–14)."
+        "name": "The closing narrator",
+        "role": "Voice speaking about the Preacher in the third person. He evaluates the teachings and provides the book's concluding admonition (12:9–14)."
       },
       {
         "name": "The aged person",
-        "role": "Poetic figure represented through bodily and household imagery. The imagery evokes mortality without requiring every symbol to identify one exact body part (12:2–7)."
+        "role": "A poetic figure built from bodily and household images, such as trembling keepers and a broken bowl, that pictures the approach of death (12:2–7)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Remembering the Creator",
-        "explanation": "",
+        "explanation": "The call to remember the Creator in youth urges a response to God before the body's strength and the mind's pleasure begin to fade with age.",
         "references": [
           "Ecclesiastes 12:1–2"
         ]
       },
       {
         "theme": "Aging and death",
-        "explanation": "",
+        "explanation": "A series of images, trembling keepers, failing grinders, and a broken bowl, pictures the body's decline until dust returns to the earth and the spirit returns to God.",
         "references": [
           "Ecclesiastes 12:3–8"
         ]
       },
       {
         "theme": "Wise teaching and discernment",
-        "explanation": "",
+        "explanation": "The Preacher is remembered as someone who carefully taught and arranged true sayings, which are compared to goads that prod a reader toward action rather than endless, wearying study.",
         "references": [
           "Ecclesiastes 12:9–12"
         ]
       },
       {
         "theme": "Reverence and accountability",
-        "explanation": "",
+        "explanation": "The book's search ends with a single charge, to fear God and keep his commandments, because God will judge every deed, however hidden.",
         "references": [
           "Ecclesiastes 12:13–14"
         ]

@@ -1,5 +1,22 @@
 import SwiftUI
 
+/// Normalizes search text into complete words for both indexing and querying.
+enum BibleSearchTokenizer {
+    nonisolated static func tokens(in text: String) -> [String] {
+        text
+            .lowercased()
+            .split { $0.isWhitespace || $0.isPunctuation }
+            .map(String.init)
+            .filter { !$0.isEmpty }
+    }
+
+    nonisolated static func matches(_ queryTokens: [String], verseWords: Set<String>) -> Bool {
+        queryTokens.allSatisfy { queryToken in
+            verseWords.contains { $0.hasPrefix(queryToken) }
+        }
+    }
+}
+
 /// Which part of the Bible a text search covers.
 enum BibleSearchScope: String, CaseIterable, Identifiable {
     case all = "OT & NT"
@@ -75,7 +92,7 @@ final class BibleSearchModel {
     /// A book scope with no book chosen yet has nothing to search.
     var needsBookSelection: Bool { scope == .book && scopeBook == nil }
 
-    var tokens: [String] { Self.tokens(in: query) }
+    var tokens: [String] { BibleSearchTokenizer.tokens(in: query) }
 
     var statusText: String {
         if isSearching { return "Searching…" }
@@ -129,7 +146,7 @@ final class BibleSearchModel {
         let scope = scope
         let scopeBookName = scopeBook?.name
 
-        guard !Self.tokens(in: query).isEmpty else {
+        guard !BibleSearchTokenizer.tokens(in: query).isEmpty else {
             results = []
             hasMoreResults = false
             isSearching = false
@@ -186,20 +203,13 @@ final class BibleSearchModel {
 
         // One extra result reveals whether the list was cut off.
         let found = await BibleSearchIndex.shared.search(
-            tokens: tokens(in: query),
+            tokens: BibleSearchTokenizer.tokens(in: query),
             allowedBookIndices: allowedBookIndices,
             maxResults: maxResults + 1
         )
         return (Array(found.prefix(maxResults)), found.count > maxResults)
     }
 
-    private static func tokens(in query: String) -> [String] {
-        query
-            .lowercased()
-            .split { $0.isWhitespace || $0.isPunctuation }
-            .map(String.init)
-            .filter { !$0.isEmpty }
-    }
 }
 
 /// Suggestions, progress, empty states, and results for a `BibleSearchModel`.

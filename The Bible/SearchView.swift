@@ -252,7 +252,7 @@ actor BibleSearchIndex {
         let chapterNumber: Int
         let verseNumber: Int
         let verseText: String
-        let normalizedText: String
+        let words: Set<String>
     }
 
     private var entries: [Entry]?
@@ -273,7 +273,7 @@ actor BibleSearchIndex {
             if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
                 continue
             }
-            guard searchTokens.allSatisfy(entry.normalizedText.contains) else { continue }
+            guard BibleSearchTokenizer.matches(searchTokens, verseWords: entry.words) else { continue }
 
             results.append(SearchResult(
                 bookIndex: entry.bookIndex,
@@ -308,7 +308,7 @@ actor BibleSearchIndex {
                                 chapterNumber: chapter.number,
                                 verseNumber: verse.number,
                                 verseText: verse.text,
-                                normalizedText: verse.text.lowercased()
+                                words: Set(BibleSearchTokenizer.tokens(in: verse.text))
                             )
                         }
                     }

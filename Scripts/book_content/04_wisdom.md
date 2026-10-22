@@ -90,17 +90,17 @@ Psalm 34 was written after David pretended to be insane in front of the Philisti
 
 Psalm 39 asks, “LORD, make me to know mine end, and the measure of my days.” Psalm 40 begins, “I waited patiently for the LORD; and he inclined unto me, and heard my cry. He brought me up also out of an horrible pit, out of the miry clay, and set my feet upon a rock.” In Psalm 41, David grieves that “mine own familiar friend, in whom I trusted, which did eat of my bread, hath lifted up his heel against me.” Jesus quoted this about Judas. Book One ends, “Blessed be the LORD God of Israel from everlasting, and to everlasting. Amen, and Amen.”
 
-**Longing for God During Trouble and Exile (Psalms 42:1–49:20)** — Worshipers long for God's presence while celebrating His protection, kingship, and power over nations.
+**Longing for God During Trouble and Exile (Psalms 42:1–49:20)** — Worshipers long for God's presence while celebrating his protection, kingship, and power over nations.
 
 Book Two begins with a group of psalms by the sons of Korah, a family of temple singers. In Psalm 42, the writer is far from the temple, longing for God: “As the hart panteth after the water brooks, so panteth my soul after thee, O God.” A hart is a deer. He talks to himself: “Why art thou cast down, O my soul? and why art thou disquieted in me? hope thou in God.” Psalm 45 is a song for a royal wedding. It even calls the king God: “Thy throne, O God, is for ever and ever.” Hebrews 1 applies this to Jesus.
 
-Psalm 46 is a song of confidence in the middle of disaster: “God is our refuge and strength, a very present help in trouble. Therefore will not we fear, though the earth be removed, and though the mountains be carried into the midst of the sea.” Then God Himself speaks: “Be still, and know that I am God.” Martin Luther based his hymn A Mighty Fortress Is Our God on this psalm.
+Psalm 46 is a song of confidence in the middle of disaster: “God is our refuge and strength, a very present help in trouble. Therefore will not we fear, though the earth be removed, and though the mountains be carried into the midst of the sea.” Then God himself speaks: “Be still, and know that I am God.” Martin Luther based his hymn A Mighty Fortress Is Our God on this psalm.
 
 Psalm 47 calls, “O clap your hands, all ye people; shout unto God with the voice of triumph.” Psalm 48 praises Jerusalem: “Great is the LORD, and greatly to be praised in the city of our God.” Psalm 49 warns that no one can buy his way out of death, no matter how rich he is.
 
-**God Desires Sincere Worship and Repentance (Psalms 50:1–60:12)** — God calls His people to genuine obedience while David's prayers show confession, humility, and dependence in conflict.
+**God Desires Sincere Worship and Repentance (Psalms 50:1–60:12)** — God calls his people to genuine obedience while David's prayers show confession, humility, and dependence in conflict.
 
-In Psalm 50, God says He does not need animal sacrifices, “For every beast of the forest is mine, and the cattle upon a thousand hills.” What He wants is thankful, obedient hearts.
+In Psalm 50, God says he does not need animal sacrifices, “For every beast of the forest is mine, and the cattle upon a thousand hills.” What he wants is thankful, obedient hearts.
 
 Psalm 51 is David's prayer after the prophet Nathan confronted him about Bathsheba. It is the Bible's great prayer of repentance. “Have mercy upon me, O God, according to thy lovingkindness.” “Wash me throughly from mine iniquity, and cleanse me from my sin.” “Against thee, thee only, have I sinned.” He asks for more than forgiveness. He asks for a new heart: “Create in me a clean heart, O God; and renew a right spirit within me. Cast me not away from thy presence; and take not thy holy spirit from me. Restore unto me the joy of thy salvation.” He knows what God really wants: “The sacrifices of God are a broken spirit: a broken and a contrite heart, O God, thou wilt not despise.”
 
@@ -110,17 +110,17 @@ Several psalms in this section have titles that connect them to David's life on 
 
 David prays in Psalm 61, “lead me to the rock that is higher than I.” In Psalm 62 he waits quietly for God: “Truly my soul waiteth upon God: from him cometh my salvation. He only is my rock.” Psalm 63 was written in the desert of Judah: “O God, thou art my God; early will I seek thee: my soul thirsteth for thee... in a dry and thirsty land, where no water is.” “Because thy lovingkindness is better than life, my lips shall praise thee.”
 
-Psalm 67 asks God to bless Israel so that all nations will know Him: “God be merciful unto us, and bless us; and cause his face to shine upon us.” Psalm 68 praises God as “A father of the fatherless, and a judge of the widows.” In Psalm 69, a suffering man says, “in my thirst they gave me vinegar to drink,” another detail that happened at the cross. In Psalm 71, an old man prays, “now also when I am old and grayheaded, O God, forsake me not.”
+Psalm 67 asks God to bless Israel so that all nations will know him: “God be merciful unto us, and bless us; and cause his face to shine upon us.” Psalm 68 praises God as “A father of the fatherless, and a judge of the widows.” In Psalm 69, a suffering man says, “in my thirst they gave me vinegar to drink,” another detail that happened at the cross. In Psalm 71, an old man prays, “now also when I am old and grayheaded, O God, forsake me not.”
 
 Book Two ends with Psalm 72, a prayer for Solomon. It describes the perfect king who defends the poor and rules justly: “He shall have dominion also from sea to sea, and from the river unto the ends of the earth.” All nations will call him blessed. The book closes with the note, “The prayers of David the son of Jesse are ended.”
 
-**The Prosperity of the Wicked Challenges Faith (Psalms 73:1–83:18)** — Asaph and other worshipers wrestle with injustice, remember Israel's history, and call on God to defend His people.
+**The Prosperity of the Wicked Challenges Faith (Psalms 73:1–83:18)** — Asaph and other worshipers wrestle with injustice, remember Israel's history, and call on God to defend his people.
 
 Book Three begins with psalms by Asaph, one of David's chief musicians. In Psalm 73, Asaph admits that he almost lost his faith: “But as for me, my feet were almost gone... For I was envious at the foolish, when I saw the prosperity of the wicked.” They seem healthy, rich, and carefree, while he suffers. Then everything changes: “Until I went into the sanctuary of God; then understood I their end.” Their success will not last. He ends, “Whom have I in heaven but thee? and there is none upon earth that I desire beside thee. My flesh and my heart faileth: but God is the strength of my heart, and my portion for ever.”
 
-Several of these psalms come from Israel's darkest days. Psalm 74 mourns the destruction of the temple by enemies. In Psalm 77, the writer asks, “Will the Lord cast off for ever?” Then he remembers how God led His people through the Red Sea, and he finds hope. Psalm 78 retells Israel's history so that “the generation to come might know them, even the children which should be born.”
+Several of these psalms come from Israel's darkest days. Psalm 74 mourns the destruction of the temple by enemies. In Psalm 77, the writer asks, “Will the Lord cast off for ever?” Then he remembers how God led his people through the Red Sea, and he finds hope. Psalm 78 retells Israel's history so that “the generation to come might know them, even the children which should be born.”
 
-Psalm 80 pictures Israel as a vine God brought out of Egypt and planted, now torn down. Three times it prays, “Turn us again, O God, and cause thy face to shine; and we shall be saved.” Psalm 82 shows God judging unjust rulers. It says, “I have said, Ye are gods,” a verse Jesus quoted when people accused Him of claiming to be God (John 10:34).
+Psalm 80 pictures Israel as a vine God brought out of Egypt and planted, now torn down. Three times it prays, “Turn us again, O God, and cause thy face to shine; and we shall be saved.” Psalm 82 shows God judging unjust rulers. It says, “I have said, Ye are gods,” a verse Jesus quoted when people accused him of claiming to be God (John 10:34).
 
 **God's Dwelling Place and Covenant Faithfulness (Psalms 84:1–89:52)** — These psalms celebrate worship in God's presence, seek restoration, and struggle with the apparent failure of promises to David.
 
@@ -150,9 +150,9 @@ Psalm 104 is a hymn about creation. It describes God stretching out the heavens 
 
 Psalm 110 is the psalm quoted most often in the New Testament. David writes, “The LORD said unto my Lord, Sit thou at my right hand, until I make thine enemies thy footstool.” Jesus asked the Pharisees how David's son could also be David's Lord. The psalm also says, “Thou art a priest for ever after the order of Melchizedek,” which Hebrews applies to Christ. Psalm 111 teaches that “The fear of the LORD is the beginning of wisdom.”
 
-Psalms 113 through 118 were sung at Passover. Jesus and His disciples likely sang them after the Last Supper (Matthew 26:30). Psalm 114 remembers the Exodus: “The sea saw it, and fled.” Psalm 115 mocks idols: “They have mouths, but they speak not: eyes have they, but they see not.” In Psalm 116, someone rescued from death says, “Precious in the sight of the LORD is the death of his saints.” Psalm 117 is the shortest chapter in the Bible, just two verses calling all nations to praise the LORD.
+Psalms 113 through 118 were sung at Passover. Jesus and his disciples likely sang them after the Last Supper (Matthew 26:30). Psalm 114 remembers the Exodus: “The sea saw it, and fled.” Psalm 115 mocks idols: “They have mouths, but they speak not: eyes have they, but they see not.” In Psalm 116, someone rescued from death says, “Precious in the sight of the LORD is the death of his saints.” Psalm 117 is the shortest chapter in the Bible, just two verses calling all nations to praise the LORD.
 
-Psalm 118 is a song of victory. “The stone which the builders refused is become the head stone of the corner.” Jesus applied this verse to Himself. It continues, “This is the day which the LORD hath made; we will rejoice and be glad in it.” And the crowd's shout on Palm Sunday comes from this psalm: “Blessed be he that cometh in the name of the LORD.”
+Psalm 118 is a song of victory. “The stone which the builders refused is become the head stone of the corner.” Jesus applied this verse to himself. It continues, “This is the day which the LORD hath made; we will rejoice and be glad in it.” And the crowd's shout on Palm Sunday comes from this psalm: “Blessed be he that cometh in the name of the LORD.”
 
 **God's Word Guides the Faithful Through Every Trial (Psalms 119:1–176)** — An extended meditation celebrates God's law and promises as wisdom, comfort, guidance, and hope.
 
@@ -168,13 +168,13 @@ Psalm 124 asks where Israel would be “If it had not been the LORD who was on o
 
 Psalm 130 cries, “Out of the depths have I cried unto thee, O LORD,” and waits for God “more than they that watch for the morning.” Psalm 131 compares a quiet, trusting soul to a weaned child resting with its mother. Psalm 133 celebrates God's people together: “Behold, how good and how pleasant it is for brethren to dwell together in unity!”
 
-**God's Greatness Is Remembered Through History (Psalms 135:1–139:24)** — Worshipers praise God's authority, remember mercy through history, and reflect on His complete knowledge of every person.
+**God's Greatness Is Remembered Through History (Psalms 135:1–139:24)** — Worshipers praise God's authority, remember mercy through history, and reflect on his complete knowledge of every person.
 
 Psalm 136 retells the story of creation and of Israel's rescue from Egypt. After every line, the people answer with the same refrain: “for his mercy endureth for ever.” It repeats twenty-six times.
 
 Psalm 137 comes from the Babylonian exile. “By the rivers of Babylon, there we sat down, yea, we wept, when we remembered Zion. We hanged our harps upon the willows.” Their captors demand a happy song, but they ask, “How shall we sing the LORD'S song in a strange land?” “If I forget thee, O Jerusalem, let my right hand forget her cunning.” The psalm ends with a shocking cry for revenge against Babylon for what it did to Jerusalem's children: “Happy shall he be, that taketh and dasheth thy little ones against the stones.” The psalms honestly show the raw pain of God's people, even when it is ugly.
 
-Psalm 139 marvels that God knows everything about us. “O LORD, thou hast searched me, and known me.” No one can escape His presence: “Whither shall I go from thy spirit? or whither shall I flee from thy presence? If I ascend up into heaven, thou art there: if I make my bed in hell, behold, thou art there.” God formed the writer in his mother's womb: “I will praise thee; for I am fearfully and wonderfully made.” It ends with a prayer: “Search me, O God, and know my heart: try me, and know my thoughts.”
+Psalm 139 marvels that God knows everything about us. “O LORD, thou hast searched me, and known me.” No one can escape his presence: “Whither shall I go from thy spirit? or whither shall I flee from thy presence? If I ascend up into heaven, thou art there: if I make my bed in hell, behold, thou art there.” God formed the writer in his mother's womb: “I will praise thee; for I am fearfully and wonderfully made.” It ends with a prayer: “Search me, O God, and know my heart: try me, and know my thoughts.”
 
 **David Seeks Deliverance and Teaches Dependence on God (Psalms 140:1–145:21)** — David seeks rescue and guidance before turning to praise for God's goodness and everlasting kingdom.
 
@@ -182,11 +182,11 @@ These are some of David's last psalms. He prays for protection from violent and 
 
 Psalm 145 is David's great song of praise, another acrostic. “Great is the LORD, and greatly to be praised; and his greatness is unsearchable.” “One generation shall praise thy works to another.” “The LORD is gracious, and full of compassion; slow to anger, and of great mercy.” God cares for every creature: “The eyes of all wait upon thee; and thou givest them their meat in due season. Thou openest thine hand, and satisfiest the desire of every living thing.”
 
-**All Creation Is Called to Praise the Lord (Psalms 146:1–150:6)** — The final songs celebrate God's justice, care, power, and greatness, calling every living creature to praise Him.
+**All Creation Is Called to Praise the Lord (Psalms 146:1–150:6)** — The final songs celebrate God's justice, care, power, and greatness, calling every living creature to praise him.
 
 The book of Psalms ends with five songs of pure praise. Each one begins and ends with “Praise ye the LORD,” which in Hebrew is Hallelujah. Psalm 146 warns, “Put not your trust in princes,” and praises the God who feeds the hungry, frees prisoners, and opens the eyes of the blind. Psalm 147 says, “He healeth the broken in heart, and bindeth up their wounds. He telleth the number of the stars; he calleth them all by their names.”
 
-In Psalm 148, everything in creation is called to praise God: angels, the sun, moon, and stars, sea creatures, fire, hail, snow, mountains, trees, animals, kings, young men and women, old people and children. Psalm 149 calls God's people to “sing unto the LORD a new song” and praise Him with dancing.
+In Psalm 148, everything in creation is called to praise God: angels, the sun, moon, and stars, sea creatures, fire, hail, snow, mountains, trees, animals, kings, young men and women, old people and children. Psalm 149 calls God's people to “sing unto the LORD a new song” and praise him with dancing.
 
 The last psalm turns everything into one great song. God should be praised with the trumpet, harp, tambourine, strings, and loud cymbals. Then comes the final line of the whole book: “Let every thing that hath breath praise the LORD. Praise ye the LORD.”
 
@@ -198,7 +198,7 @@ The world at the time: Collections of wise sayings were common across the ancien
 
 **Wisdom Begins with Reverence for God (Proverbs 1:1–2:22)** — Solomon introduces wisdom as righteous living that begins with reverence for the Lord. Wisdom warns against violence and folly, guards the upright, and leads away from destructive paths.
 
-“The proverbs of Solomon the son of David, king of Israel; To know wisdom and instruction.” A proverb is a short, wise saying that is easy to remember. The book says its purpose is to give good sense to the simple and understanding to the young. Then it states its main idea: “The fear of the LORD is the beginning of knowledge: but fools despise wisdom and instruction.” To fear the LORD means to honor and trust Him with deep respect.
+“The proverbs of Solomon the son of David, king of Israel; To know wisdom and instruction.” A proverb is a short, wise saying that is easy to remember. The book says its purpose is to give good sense to the simple and understanding to the young. Then it states its main idea: “The fear of the LORD is the beginning of knowledge: but fools despise wisdom and instruction.” To fear the LORD means to honor and trust him with deep respect.
 
 The first nine chapters are mostly a father's speeches to his son. “My son, hear the instruction of thy father, and forsake not the law of thy mother.” The father's first warning is about bad company: “My son, if sinners entice thee, consent thou not.” He describes a gang that plans to ambush and rob innocent people. But their plan backfires: “they lay wait for their own blood.”
 
@@ -254,9 +254,9 @@ Several speak of friendship: “A friend loveth at all times, and a brother is b
 
 **Integrity Matters More Than Wealth or Status (Proverbs 19:1–21:31)** — Integrity, compassion, responsibility, justice, and wise planning are valued above wealth and ambition. Preparation matters, but victory belongs to the Lord.
 
-Kindness to the poor is like making a loan to God Himself: “He that hath pity upon the poor lendeth unto the LORD; and that which he hath given will he pay him again.” Drunkenness is foolish: “Wine is a mocker, strong drink is raging: and whosoever is deceived thereby is not wise.” Character shows early: “Even a child is known by his doings, whether his work be pure, and whether it be right.”
+Kindness to the poor is like making a loan to God himself: “He that hath pity upon the poor lendeth unto the LORD; and that which he hath given will he pay him again.” Drunkenness is foolish: “Wine is a mocker, strong drink is raging: and whosoever is deceived thereby is not wise.” Character shows early: “Even a child is known by his doings, whether his work be pure, and whether it be right.”
 
-God rules even over kings: “The king's heart is in the hand of the LORD, as the rivers of water: he turneth it whithersoever he will.” And He cares more about how we live than about religious ceremonies: “To do justice and judgment is more acceptable to the LORD than sacrifice.”
+God rules even over kings: “The king's heart is in the hand of the LORD, as the rivers of water: he turneth it whithersoever he will.” And he cares more about how we live than about religious ceremonies: “To do justice and judgment is more acceptable to the LORD than sacrifice.”
 
 Some proverbs are humorous but true: “It is better to dwell in a corner of the housetop, than with a brawling woman in a wide house.” Others are sobering: “Whoso stoppeth his ears at the cry of the poor, he also shall cry himself, but shall not be heard.” The section ends with a reminder that no matter how well people prepare, “The horse is prepared against the day of battle: but safety is of the LORD.”
 
@@ -324,7 +324,7 @@ But when he looks at everything he has done, “behold, all was vanity and vexat
 
 Yet the chapter ends with a hint of hope. “There is nothing better for a man, than that he should eat and drink, and that he should make his soul enjoy good in his labour. This also I saw, that it was from the hand of God.” Simple pleasures can be enjoyed as gifts from God.
 
-**God Appoints a Time for Every Purpose (Ecclesiastes 3:1–22)** — Life has changing seasons under God's authority. People cannot discover all His work, so they are encouraged to do good and receive their labor as God's gift while revering Him.
+**God Appoints a Time for Every Purpose (Ecclesiastes 3:1–22)** — Life has changing seasons under God's authority. People cannot discover all his work, so they are encouraged to do good and receive their labor as God's gift while revering him.
 
 Chapter 3 contains the Preacher's most famous poem. “To every thing there is a season, and a time to every purpose under the heaven: A time to be born, and a time to die; a time to plant, and a time to pluck up that which is planted; A time to kill, and a time to heal; a time to break down, and a time to build up; A time to weep, and a time to laugh; a time to mourn, and a time to dance.” It goes on through fourteen pairs of opposites, ending, “A time to love, and a time to hate; a time of war, and a time of peace.”
 
@@ -342,7 +342,7 @@ Finally he notes that popularity does not last: “Better is a poor and a wise c
 
 **Approaching God with Reverence and Honesty (Ecclesiastes 5:1–20)** — Careless worship and unfulfilled vows are warned against. Wealth cannot satisfy or follow a person into death, yet the ability to enjoy honest work and possessions is God's gift.
 
-The Preacher gives advice about worship. “Keep thy foot when thou goest to the house of God,” meaning be careful how you approach Him. It is better to listen than to offer the careless sacrifices of fools. “Be not rash with thy mouth... for God is in heaven, and thou upon earth: therefore let thy words be few.” Keep your promises to God: “When thou vowest a vow unto God, defer not to pay it.”
+The Preacher gives advice about worship. “Keep thy foot when thou goest to the house of God,” meaning be careful how you approach him. It is better to listen than to offer the careless sacrifices of fools. “Be not rash with thy mouth... for God is in heaven, and thou upon earth: therefore let thy words be few.” Keep your promises to God: “When thou vowest a vow unto God, defer not to pay it.”
 
 Then he turns to money. “He that loveth silver shall not be satisfied with silver.” The more you have, the more people come to use it up. And wealth brings worry: “The sleep of a labouring man is sweet, whether he eat little or much: but the abundance of the rich will not suffer him to sleep.” Riches can be lost in a bad business deal. And no one takes anything with him at death: “As he came forth of his mother's womb, naked shall he return.”
 
@@ -362,7 +362,7 @@ He warns against living in the past: “Say not thou, What is the cause that the
 
 The Preacher warns against both pride in one's own goodness and reckless sin: “Be not righteous over much.” No one is perfect: “For there is not a just man upon earth, that doeth good, and sinneth not.” He searches for wisdom and finds it hard to find. He finds that a woman who sets traps is more bitter than death. He has found only one upright man among a thousand, and no upright woman among that many. In the end, he concludes that the problem is with all humanity: “God hath made man upright; but they have sought out many inventions,” many schemes of their own.
 
-**Human Authority Remains Under God's Judgment (Ecclesiastes 8:1–17)** — Wisdom guides responses to rulers, but no authority controls death or guarantees immediate justice. The Preacher maintains reverence for God while admitting His work cannot be fully discovered.
+**Human Authority Remains Under God's Judgment (Ecclesiastes 8:1–17)** — Wisdom guides responses to rulers, but no authority controls death or guarantees immediate justice. The Preacher maintains reverence for God while admitting his work cannot be fully discovered.
 
 Wisdom brings light: “a man's wisdom maketh his face to shine.” The Preacher advises obeying the king, because “Where the word of a king is, there is power.” But no one has power over the day of death.
 
@@ -396,7 +396,7 @@ Since no one knows the future, the Preacher urges bold generosity and hard work.
 
 Life ends “Or ever the silver cord be loosed, or the golden bowl be broken, or the pitcher be broken at the fountain.” Then “shall the dust return to the earth as it was: and the spirit shall return unto God who gave it.” The poem ends where the book began: “Vanity of vanities, saith the preacher; all is vanity.”
 
-**The Final Duty of Humanity Is Revealed (Ecclesiastes 12:9–14)** — The conclusion calls humanity to fear God and keep His commandments, for God will judge every work. Life is brief and understanding limited, but God's gifts are to be received gratefully and responsibly.
+**The Final Duty of Humanity Is Revealed (Ecclesiastes 12:9–14)** — The conclusion calls humanity to fear God and keep his commandments, for God will judge every work. Life is brief and understanding limited, but God's gifts are to be received gratefully and responsibly.
 
 In the epilogue, someone describes the Preacher's work. He was wise and taught the people knowledge. He carefully studied and arranged many proverbs, and “sought to find out acceptable words,” words that were both pleasing and true. “The words of the wise are as goads,” like the sharp sticks used to drive cattle, and they come “from one shepherd.” He adds a warning that students today still quote: “of making many books there is no end; and much study is a weariness of the flesh.”
 

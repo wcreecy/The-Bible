@@ -163,12 +163,12 @@
     ]
   },
   "Ecclesiastes": {
-    "author": "Attributed to 'Qoheleth' or 'the Teacher,' traditionally identified with Solomon; many scholars debate that identification.",
-    "audience": "Readers confronting life's brevity, frustration, and apparent unpredictability.",
-    "purpose": "To expose the limits of life pursued 'under the sun' and to direct readers toward humble enjoyment of God's gifts and reverence for God.",
+    "author": "Solomon is the traditional author, writing as \"the Preacher, the son of David, king in Jerusalem\" (Ecclesiastes 1:1) and called Qoheleth in Hebrew; many scholars instead date the book's Hebrew style to a later writer composing in Solomon's voice.",
+    "audience": "Israelites and other readers wrestling with life's brevity, frustration, and unpredictability.",
+    "purpose": "To expose the limits of life pursued \"under the sun\" and to direct readers toward humble enjoyment of God's gifts and reverence for God.",
     "theme": "Life is fleeting and often puzzling; receive God's gifts gratefully, live wisely, and fear God.",
     "summary": "Ecclesiastes tests pleasure, achievement, wealth, and wisdom and finds that none can defeat death or guarantee lasting control. It counsels realistic joy and reverence before God.",
-    "keyVerse": "Ecclesiastes 3:1",
+    "keyVerse": "Ecclesiastes 12:13",
     "movements": [
       {
         "title": "The Teacher's Search",
@@ -195,21 +195,21 @@
     "keyFigures": [
       {
         "name": "Qoheleth (the Teacher)",
-        "description": "The main speaker, described as a son of David and king in Jerusalem, who searches for meaning 'under the sun.'"
+        "description": "The main speaker, described as a son of David and king in Jerusalem, who searches for meaning \"under the sun.\""
       },
       {
         "name": "The frame narrator",
-        "description": "The voice that introduces the Teacher and closes the book with the call to fear God and keep His commandments."
+        "description": "The voice that introduces the Teacher and closes the book with the call to fear God and keep his commandments."
       }
     ]
   },
   "Song of Solomon": {
-    "author": "Traditionally associated with Solomon; the collection may include multiple poetic voices.",
+    "author": "Solomon is the traditional author, as \"the song of songs, which is Solomon's\" (Song of Solomon 1:1) states; the collection of poems may gather multiple voices performed under his name.",
     "audience": "Israel and later Jewish and Christian readers reflecting on love, desire, and marriage.",
     "purpose": "To celebrate romantic love, mutual desire, beauty, and committed affection.",
     "theme": "Human romantic love is powerful, beautiful, and worthy of honor when expressed with mutuality and commitment.",
     "summary": "Song of Solomon is a collection of poems celebrating attraction, longing, delight, separation, reunion, and the strength of love.",
-    "keyVerse": "Song of Solomon 2:10",
+    "keyVerse": "Song of Solomon 8:6",
     "movements": [
       {
         "title": "Courtship and Desire",

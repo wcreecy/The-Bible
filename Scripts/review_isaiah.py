@@ -124,7 +124,7 @@ THEMES = {
         ("Cost of reliance on empire", "Calling in Assyria for help backfires: the chapter warns that the very empire Ahaz might lean on will become the instrument of grievous consequences for Judah itself.")],
     8: [("Prophetic signs", "A child's own name becomes a public prophecy, repeated every time someone calls him by it, long before events catch up with the warning."),
         ("Trust over panic", "Isaiah tells his followers not to call conspiracy what the frightened crowd calls conspiracy, modeling a trust in God that refuses to be swept up in collective fear."),
-        ("Rejecting spirit consultation", "Turning to mediums and wizards who 'peep and mutter' is rejected in favor of turning to God's own instruction and testimony, even when the future looks dark.")],
+        ("Rejecting spirit consultation", "Turning to mediums and wizards who 'that peep, and that mutter' is rejected in favor of turning to God's own instruction and testimony, even when the future looks dark.")],
     9: [("Light and deliverance", "People walking in darkness see a great light, turning the chapter's opening image into a direct promise that gloom will not have the last word."),
         ("Righteous kingship", "Titles like 'Wonderful, Counsellor, The mighty God' describe a ruler whose government will be established with judgment and justice forever, not just for one reign."),
         ("Persistent unrepentance", "The refrain 'his hand is stretched out still,' repeated after each disaster, shows a people who keep absorbing judgment without ever turning back to God.")],
@@ -160,7 +160,7 @@ THEMES = {
          ("Reconciliation of former enemies", "A shared highway linking Egypt, Assyria, and Israel turns three historic rivals into a single blessed community, a future reconciliation the present chapter's judgments do not yet show.")],
     20: [("Embodied prophecy", "Isaiah does not just announce Egypt's coming humiliation, he wears it on his own body for three years, making the warning impossible for Judah to ignore or forget."),
          ("Reliance on foreign powers", "Judah's hope that Egypt and Cush could shield it from Assyria is exposed as misplaced before those very powers are led away captive themselves."),
-         ("Humiliation of captivity", "Describing captives led away 'naked and barefoot, with their buttocks uncovered' makes captivity's shame vivid rather than abstract.")],
+         ("Humiliation of captivity", "Describing captives led away 'naked and barefoot, even with their buttocks uncovered' makes captivity's shame vivid rather than abstract.")],
     21: [("Watchfulness amid upheaval", "The watchman stationed to report exactly what he sees models alert attention during a crisis whose outcome is not yet settled."),
          ("Incomplete certainty", "A cryptic exchange about the night, 'the morning cometh, and also the night,' leaves real ambiguity about what comes next rather than offering tidy resolution."),
          ("Hospitality to refugees", "Fleeing people from Kedar are met with the practical instruction to bring them bread and water, grounding a prophetic oracle in basic human care.")],
@@ -193,12 +193,12 @@ THEMES = {
          ("Restoration after distress", "A promised teacher who will no longer be hidden, and bread and water in time of affliction, show relief arriving precisely during hardship, not only after it ends.")],
     31: [("Limits of military alliances", "Egypt's horses are called 'flesh, and not spirit,' a blunt reminder that even the era's most advanced military technology cannot substitute for God's own strength."),
          ("God's protection", "The image of the Lord 'as birds flying' to defend Jerusalem pairs real tenderness with real power, protection pictured as both gentle and effective."),
-         ("Repentance and idolatry", "The call to throw away idols 'which your own hands have made for a sin' ties genuine repentance to a concrete, physical act, not just a change of feeling.")],
-    32: [("Just leadership", "A king who reigns in righteousness is compared to 'a hiding place from the wind' and 'rivers of water in a dry place,' describing good leadership in terms of basic relief and shelter, not just fair rulings."),
+         ("Repentance and idolatry", "The call to throw away idols 'which your own hands have made unto you for a sin' ties genuine repentance to a concrete, physical act, not just a change of feeling.")],
+    32: [("Just leadership", "A king who reigns in righteousness is compared to 'an hiding place from the wind' and 'rivers of water in a dry place,' describing good leadership in terms of basic relief and shelter, not just fair rulings."),
          ("Complacency challenged", "Women 'at ease' are warned that fields and vineyards can fail within a single year, challenging comfort that assumes today's security will simply continue."),
          ("Spirit and peace", "The Spirit poured out 'from on high' is directly credited with turning the wilderness fruitful and producing peace, tying the chapter's hope for justice to God's own initiative rather than human reform alone.")],
     33: [("Justice for treachery", "A destroyer who has not yet been dealt treacherously with is still promised the same treatment it has dealt out, insisting that betrayal eventually meets its own kind of justice."),
-         ("Holy living", "The question 'who shall dwell with the devouring fire' is answered with a list of honest, uncorrupted conduct, tying the ability to stand before God to how a person actually lives."),
+         ("Holy living", "The question 'who among us shall dwell with the devouring fire' is answered with a list of honest, uncorrupted conduct, tying the ability to stand before God to how a person actually lives."),
          ("Secure Zion", "Zion is pictured as 'a quiet habitation' whose stakes will never be removed, promising a stability that present danger has not yet delivered.")],
     34: [("Judgment beyond Judah", "Turning this judgment onto 'all nations' and 'all their armies' shows that Isaiah's warnings were never meant to apply to Judah's enemies alone."),
          ("Edom as symbol of hostility", "Edom, a nation with a long history of hostility toward Israel, becomes a specific, concrete example of what judgment against persistent enmity actually looks like."),
@@ -212,7 +212,7 @@ THEMES = {
     37: [("Prayer under threat", "Hezekiah's first response to Assyria's threats is to go to the temple and pray, not to issue a counter-threat, modeling where he actually places his trust under pressure."),
          ("Divine answer to arrogance", "God's response directly quotes Assyria's own boasts back at it before promising to humble them, answering arrogance on its own terms before overturning it."),
          ("Deliverance and limits of sources", "The narrative reports Jerusalem's deliverance and Sennacherib's death without fully explaining how, a reminder that even this book's own historical accounts leave some details to other sources.")],
-    38: [("Prayer and mortality", "Hezekiah's prayer while facing death, 'I shall not see the LORD... in the land of the living,' voices mortality's fear honestly rather than with practiced composure."),
+    38: [("Prayer and mortality", "Hezekiah's prayer while facing death, "I shall not see the LORD... in the land of the living," voices mortality's fear honestly rather than with practiced composure."),
          ("Mercy and signs", "The shadow moving backward on the sundial gives Hezekiah a visible, physical confirmation that God's promised extra years are real and not just comforting words."),
          ("Gratitude for restored life", "Hezekiah's own written song of thanksgiving turns his recovery into worship, preserving his gratitude in his own words rather than only a narrator's report.")],
     39: [("Danger of displaying power", "Hezekiah shows Babylon's envoys 'all that was found in his treasures,' holding nothing back from visitors whose nation would later carry that same wealth away."),
@@ -272,7 +272,7 @@ THEMES = {
     57: [("Ignored righteousness", "The righteous perishing while 'no man layeth it to heart' names a community too distracted to notice its own real losses."),
          ("Idolatry and betrayal", "Describing idolatry as adultery, 'thou hast discovered thyself to another than me,' frames unfaithfulness to God in the same terms as betrayal of a marriage."),
          ("Healing the contrite", "God's promise to dwell 'with him also that is of a contrite and humble spirit' pairs his own high and lofty dwelling with deliberate nearness to the lowest and most broken.")],
-    58: [("Empty fasting", "A fast where people 'afflict their soul' while still striking others 'with the fist of wickedness' exposes a religious practice that coexists comfortably with ongoing cruelty."),
+    58: [("Empty fasting", "A fast where people ask 'have we afflicted our soul, and thou takest no knowledge?' while still striking others 'with the fist of wickedness' exposes a religious practice that coexists comfortably with ongoing cruelty."),
          ("Practical justice", "The fast God chooses is defined almost entirely in physical, practical terms, undoing bonds, sharing bread, housing the homeless, rather than religious ritual alone."),
          ("Sabbath as delight", "Calling the Sabbath 'a delight' rather than a burden reframes a commanded rest as something to be genuinely enjoyed, not merely endured.")],
     59: [("Sin blocks fellowship", "Insisting that God's 'hand is not shortened' redirects blame away from any limit on God's power and onto sins that have actively come between the people and him."),
@@ -298,7 +298,7 @@ THEMES = {
          ("Flourishing and peace", "Long life, lasting homes, and a wolf feeding 'with the lamb' combine human flourishing and peace among animals into one unified picture of restoration.")],
     66: [("True reverence", "God's preference for 'him that is poor and of a contrite spirit' over any temple, however impressive, redefines true reverence as humility rather than architecture."),
          ("Comfort and new birth", "Zion giving birth 'before her pain came' pictures restoration arriving with startling, almost impossible suddenness rather than slow recovery."),
-         ("Universal gathering and judgment", "Nations gathered 'to see my glory' alongside a closing image of unending judgment holds the book's hope and warning together right up to its final verse.")],
+         ("Universal gathering and judgment", "Nations gathered to 'come, and see my glory' alongside a closing image of unending judgment holds the book's hope and warning together right up to its final verse.")],
 }
 
 SUMMARY_OVERRIDES = {
@@ -321,7 +321,7 @@ SUMMARY_OVERRIDES = {
 
 AUDIENCE_OVERRIDES = {
     6: "Jesus and Paul later quoted the commission given in this vision (Matthew 13:14–15; Acts 28:25–27), applying Isaiah's call to hardened hearing in their own day.",
-    8: "Readers who knew Hebrew naming customs would recognize Mahershalalhashbaz's name itself as a walking prophecy, proclaiming ‘swift is the plunder, speedy is the prey’ every time it was spoken.",
+    8: "Readers who knew Hebrew naming customs would recognize Mahershalalhashbaz's name itself as a walking prophecy of swift plunder, repeated every time someone spoke it aloud.",
     12: "Readers would recognize this as a psalm-like response meant for communal singing, similar in form to Israel's temple songs of thanksgiving.",
     14: "Readers familiar with royal funeral taunts in the ancient Near East would recognize the mocking tone toward a fallen king as a deliberate reversal of the honor such kings expected in death.",
     15: "Readers who knew Moab as a familiar neighboring kingdom across the Dead Sea, often at odds with Judah, would recognize each named town as a real place whose fall meant real devastation, not abstract poetry.",
@@ -342,7 +342,7 @@ AUDIENCE_OVERRIDES = {
     50: "Readers following the servant's story across these chapters would recognize his submission to violence here as a turning point, preparing for the fuller description of his suffering in chapter 53.",
     61: "Readers in the synagogue at Nazareth, familiar with this passage's hope for release and restoration, would have been startled when Jesus applied its fulfillment to himself in their own hearing (Luke 4:21).",
     63: "Readers who remembered Edom's long hostility toward Israel would recognize the garments red not with dye but with the blood of judgment, a vivid image of a reckoning finally arriving.",
-    65: "Later readers, including the author of Revelation, returned to this promise of new heavens and a new earth (Revelation 21:1) as the clearest Old Testament anticipation of a creation remade rather than merely repaired.",
+    65: "Later readers, including the author of Revelation, returned to this vision of a re-created world (Revelation 21:1) as the clearest Old Testament anticipation of a creation remade rather than merely repaired.",
 }
 
 
@@ -421,7 +421,6 @@ def fix_story_pronouns(section):
          "fire to judge the wicked. he will gather all nations"),
         ("they will see His glory. He will send messengers",
          "they will see his glory. he will send messengers"),
-        ("“as birds flying,” and Assyria will fall", "“as birds flying,” and Assyria will fall"),
         ("God Himself will defend Jerusalem", "God himself will defend Jerusalem"),
         ("the Lord Himself acts in righteousness", "the Lord himself acts in righteousness"),
     ]

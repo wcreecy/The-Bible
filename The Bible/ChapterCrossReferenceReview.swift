@@ -117,6 +117,111 @@ enum ChapterCrossReferenceReview {
             sourceVerse: 49,
             relatedReference: "Genesis 47:29",
             reason: "The passages reuse a formal phrase but concern unrelated requests."
+        ),
+        Entry(
+            bookName: "Exodus",
+            chapterNumber: 14,
+            sourceVerse: 13,
+            relatedReference: "2 Chronicles 20:17",
+            reason: "Both call Israel to stand still for deliverance, but they address distinct crises without a direct historical or literary development."
+        ),
+        Entry(
+            bookName: "Exodus",
+            chapterNumber: 14,
+            sourceVerse: 13,
+            relatedReference: "Lamentations 3:26",
+            reason: "The link rests on a general exhortation to wait quietly for salvation rather than a connection to the sea deliverance."
+        ),
+        Entry(
+            bookName: "Exodus",
+            chapterNumber: 15,
+            sourceVerse: 26,
+            relatedReference: "Deuteronomy 13:18",
+            reason: "Both urge obedience to the Lord, but the passages govern different covenant situations without a specific development between them."
+        ),
+        Entry(
+            bookName: "Exodus",
+            chapterNumber: 19,
+            sourceVerse: 18,
+            relatedReference: "Genesis 19:28",
+            reason: "The smoke imagery is a shared simile; Sinai's theophany and Sodom's destruction are otherwise unrelated."
+        ),
+        Entry(
+            bookName: "Exodus",
+            chapterNumber: 24,
+            sourceVerse: 16,
+            relatedReference: "Numbers 16:42",
+            reason: "Both mention the glory-cloud at the tent, but neither passage interprets or develops the other's event."
+        ),
+        Entry(
+            bookName: "Exodus",
+            chapterNumber: 35,
+            sourceVerse: 35,
+            relatedReference: "2 Chronicles 2:14",
+            reason: "Both describe skilled artisans, but Hiram's worker does not continue or interpret Bezalel and Oholiab's work."
+        ),
+        Entry(
+            bookName: "Exodus",
+            chapterNumber: 36,
+            sourceVerse: 1,
+            relatedReference: "Numbers 7:9",
+            reason: "The passages share sanctuary-service context but do not connect the craftsmen's appointment with the Kohathites' transport duty."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 5,
+            sourceVerse: 12,
+            relatedReference: "Numbers 5:26",
+            reason: "Both involve a priest taking a memorial portion of flour, but the sin offering and jealousy ordeal have no direct contextual relationship."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 10,
+            sourceVerse: 9,
+            relatedReference: "Luke 1:15",
+            reason: "The priestly prohibition against wine during sanctuary service is unrelated to John's lifelong abstinence."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 14,
+            sourceVerse: 10,
+            relatedReference: "Numbers 6:14",
+            reason: "The passages list offerings with similar flour and oil measures but govern unrelated restoration and Nazirite rites."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 14,
+            sourceVerse: 10,
+            relatedReference: "Leviticus 23:13",
+            reason: "The shared grain-offering measure does not create a substantive link between cleansing a leper and firstfruits worship."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 23,
+            sourceVerse: 13,
+            relatedReference: "Leviticus 14:10",
+            reason: "The shared grain-offering measure does not connect the firstfruits offering to the leper's cleansing rite."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 26,
+            sourceVerse: 46,
+            relatedReference: "Leviticus 27:34",
+            reason: "Both are editorial closing formulas for Sinai legislation, not a contextual relationship between their respective laws."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 26,
+            sourceVerse: 46,
+            relatedReference: "Deuteronomy 12:1",
+            reason: "The passages share a formula introducing or closing statutes, but Sinai's covenant terms do not directly develop Deuteronomy's land laws."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 27,
+            sourceVerse: 34,
+            relatedReference: "Leviticus 26:46",
+            reason: "Both are editorial closing formulas for Sinai legislation, not a contextual relationship between their respective laws."
         )
     ]
 
