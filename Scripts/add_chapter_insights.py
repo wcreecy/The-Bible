@@ -5,7 +5,6 @@ The content is in Scripts/chapter_insights/*.json, one file per book and one obj
 
     "Ruth 1": {
       "summary": "…",
-      "whyItMatters": "…",
       "whereWeAre": "Where the chapter falls in the book's story…",
       "keyFigures": [{"name": "Naomi", "role": "…"}],
       "keyThemes": [{"theme": "…", "explanation": "…", "references": ["Ruth 1:16-17"]}],
@@ -37,7 +36,7 @@ from insights_common import DATABASE, KJV
 
 
 CONTENT = Path(__file__).resolve().parent / "chapter_insights"
-FIELDS = {"summary", "whyItMatters", "whereWeAre", "keyFigures", "keyThemes", "explainedReferences"}
+FIELDS = {"summary", "whereWeAre", "keyFigures", "keyThemes", "explainedReferences"}
 CHAPTER_KEY = re.compile(r"^(.+) (\d+)$")
 EXPLAINED_VOTES = 0
 
@@ -66,7 +65,7 @@ def validate(chapters, chapters_by_book):
             continue
         book, chapter = CHAPTER_KEY.match(key).group(1, 2)
         verse_count = len(chapters_by_book[book][int(chapter) - 1])
-        texts = [entry["summary"], entry["whyItMatters"], entry["whereWeAre"]]
+        texts = [entry["summary"], entry["whereWeAre"]]
         for figure in entry["keyFigures"]:
             if set(figure) != {"name", "role"}:
                 problems.append(f"{key}: malformed key figure {figure}")
@@ -105,8 +104,8 @@ def write_chapters(database, chapters):
         book, chapter = CHAPTER_KEY.match(key).group(1, 2)
         chapter = int(chapter)
         database.execute(
-            "INSERT INTO chapter_insights (book_name, chapter_number, overall_summary, why_it_matters) VALUES (?, ?, ?, ?)",
-            (book, chapter, entry["summary"], entry["whyItMatters"]),
+            "INSERT INTO chapter_insights (book_name, chapter_number, overall_summary) VALUES (?, ?, ?)",
+            (book, chapter, entry["summary"]),
         )
         # The other reading-context fields come from add_chapter_context.py.
         database.execute(

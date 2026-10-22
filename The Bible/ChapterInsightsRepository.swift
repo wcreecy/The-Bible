@@ -4,7 +4,6 @@ import SQLite3
 struct ChapterInsights: Equatable, Sendable {
     let overallSummary: String
     let readingContext: ChapterReadingContext?
-    let whyItMatters: String
     let keyFigures: [ChapterKeyFigure]
     let keyThemes: [ChapterKeyTheme]
     let relatedVerses: [ChapterRelatedVerse]
@@ -39,7 +38,7 @@ actor ChapterInsightsRepository {
     func insights(forBookNamed bookName: String, chapterNumber: Int) -> ChapterInsights? {
         withDatabase { database in
             let query = """
-            SELECT overall_summary, why_it_matters
+            SELECT overall_summary
             FROM chapter_insights
             WHERE book_name = ? AND chapter_number = ?
             LIMIT 1;
@@ -64,7 +63,6 @@ actor ChapterInsightsRepository {
                     chapterNumber: chapterNumber,
                     database: database
                 ),
-                whyItMatters: Self.columnText(statement, at: 1),
                 keyFigures: loadKeyFigures(
                     forBookNamed: bookName,
                     chapterNumber: chapterNumber,

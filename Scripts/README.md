@@ -19,7 +19,7 @@ Rebuild the app afterwards to include the new database.
 | `book_overviews/*.json` | Each book's author, audience, purpose, theme, summary, key verse, movements, and key figures | `add_book_overviews.py` |
 | `book_content/*.md` | Each book's When & Where section and story | `add_book_content.py` |
 | `book_guides/*.json` | Book reading tips and connections | `add_book_guides.py` |
-| `chapter_insights/*.json` | Each chapter's summary, "why it matters", Where We Are text, key figures, key themes, and explained cross references | `add_chapter_insights.py` |
+| `chapter_insights/*.json` | Each chapter's summary, Where We Are text, key figures, key themes, and explained cross references | `add_chapter_insights.py` |
 | `chapter_context/*.json` | Chapter original audience and cultural background | `add_chapter_context.py` |
 | `historical_moments/*.json` | Chapter "Historical Moment" text | `add_chapter_context.py` |
 | `data/openbible_cross_references.zip` | OpenBible.info cross-reference dataset (CC-BY; see `data/README.md`) | `add_strict_cross_references.py` |
