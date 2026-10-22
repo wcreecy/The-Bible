@@ -42,7 +42,6 @@ struct HomeView: View {
     @State private var verseActionToastText: String = "Copied to Clipboard"
     @State private var verseActionToastTint: Color = .accentColor
     @State private var lastVerseAutoRefreshToken: String = ""
-    @State private var savedVersePreviewOffset: Int = 0
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -60,55 +59,11 @@ struct HomeView: View {
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     // Newest first; synced devices can briefly hold more than one bookmark.
     @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
-    @Query private var favorites: [Favorite]
-    @Query(filter: #Predicate<VerseNote> { $0.highlightColor != "" }) private var highlights: [VerseNote]
-    @AppStorage("homeSavedVersePinID") private var savedVersePinID: String = ""
-    @AppStorage("homeSavedVersePinDay") private var savedVersePinDay: Int = 0
 
     /// The verse the reader bookmarked; the single source for Continue Reading.
     /// (The automatic last-read position only drives where the Bible tab opens.)
     private var bookmark: Bookmark? {
         bookmarks.first
-    }
-
-    /// Every saved favorite and highlight, rotated through one per day.
-    private var savedVersePreviews: [SavedVerseHomePreview] {
-        favorites.map { favorite in
-            SavedVerseHomePreview(
-                reference: "\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)",
-                text: favorite.verseText,
-                kind: .favorite,
-                date: favorite.createdAt,
-                bookName: favorite.bookName,
-                chapterNumber: favorite.chapterNumber,
-                verseNumber: favorite.verseNumber,
-                highlightColor: nil
-            )
-        } + highlights.map { highlight in
-            // createdAt, not updatedAt: editing a highlight's note shouldn't change when it was highlighted.
-            SavedVerseHomePreview(
-                reference: highlight.reference,
-                text: highlight.verseText,
-                kind: .highlight,
-                date: highlight.createdAt ?? highlight.updatedAt ?? .distantPast,
-                bookName: highlight.bookName,
-                chapterNumber: highlight.chapterNumber,
-                verseNumber: highlight.verseNumber,
-                highlightColor: VerseHighlightColor(rawValue: highlight.highlightColor)
-            )
-        }
-    }
-
-    private var savedVersePin: SavedVerseHomePreview.DailyPin? {
-        savedVersePinID.isEmpty ? nil : .init(id: savedVersePinID, day: savedVersePinDay)
-    }
-
-    /// Records today's pick so it stays put until tomorrow.
-    private func pinSavedVerse(_ preview: SavedVerseHomePreview?) {
-        let day = SavedVerseHomePreview.dayIndex(for: .now)
-        guard let preview, preview.pinID != savedVersePinID || day != savedVersePinDay else { return }
-        savedVersePinID = preview.pinID
-        savedVersePinDay = day
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
@@ -359,23 +314,8 @@ struct HomeView: View {
                 }
             )
         case .savedVerses:
-            let preview = SavedVerseHomePreview.dailyPreview(
-                from: savedVersePreviews,
-                rotationOffset: savedVersePreviewOffset,
-                pinned: savedVersePin
-            )
-            SavedVersesHomeCard(
-                preview: preview,
-                favoriteCount: favorites.count,
-                highlightCount: highlights.count,
-                onOpenSavedVerses: {
-                    AppRouter.shared.open(.favorites)
-                },
-                onRefresh: {
-                    // Debug only: skip the pin and step to the next verse in the rotation.
-                    savedVersePinID = ""
-                    savedVersePreviewOffset += 1
-                },
+            SavedVersesHomeCardContainer(
+                onOpenSavedVerses: { AppRouter.shared.open(.favorites) },
                 onOpenVerse: { preview in
                     openBibleReference(
                         book: preview.bookName,
@@ -384,9 +324,6 @@ struct HomeView: View {
                     )
                 }
             )
-            .onChange(of: "\(preview?.pinID ?? "")|\(SavedVerseHomePreview.dayIndex(for: .now))", initial: true) {
-                pinSavedVerse(preview)
-            }
         case .study:
             let target = studyTarget
             StudyHomeCard(bookName: target.bookName, chapterNumber: target.chapterNumber, source: target.source) {
@@ -794,9 +731,12 @@ struct HomeView: View {
             timerController.onAppear()
             _ = timerController.handlePendingActionIfAny()
 
-            // Initial load of Bible Stats. The view model intentionally waits for
-            // appearance so construction and appearance do not refresh twice.
-            bibleVM.refresh()
+            // The stats card can populate just after the initial frame. Keeping the
+            // aggregation out of this appearance pass makes Home immediately tappable.
+            Task { @MainActor in
+                await Task.yield()
+                bibleVM.refresh()
+            }
             }
         }
         .onNotification(.homeLayoutChanged) {
@@ -865,6 +805,79 @@ struct HomeView: View {
         }
     }
 
+}
+
+/// Keeps saved-verse queries and preview construction out of the large Home view's
+/// invalidation boundary. Changes to saved verses now update this card alone.
+private struct SavedVersesHomeCardContainer: View {
+    @Query private var favorites: [Favorite]
+    @Query(filter: #Predicate<VerseNote> { $0.highlightColor != "" }) private var highlights: [VerseNote]
+    @AppStorage("homeSavedVersePinID") private var savedVersePinID = ""
+    @AppStorage("homeSavedVersePinDay") private var savedVersePinDay = 0
+    @State private var previewOffset = 0
+
+    let onOpenSavedVerses: () -> Void
+    let onOpenVerse: (SavedVerseHomePreview) -> Void
+
+    private var previews: [SavedVerseHomePreview] {
+        favorites.map { favorite in
+            SavedVerseHomePreview(
+                reference: "\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)",
+                text: favorite.verseText,
+                kind: .favorite,
+                date: favorite.createdAt,
+                bookName: favorite.bookName,
+                chapterNumber: favorite.chapterNumber,
+                verseNumber: favorite.verseNumber,
+                highlightColor: nil
+            )
+        } + highlights.map { highlight in
+            SavedVerseHomePreview(
+                reference: highlight.reference,
+                text: highlight.verseText,
+                kind: .highlight,
+                date: highlight.createdAt ?? highlight.updatedAt ?? .distantPast,
+                bookName: highlight.bookName,
+                chapterNumber: highlight.chapterNumber,
+                verseNumber: highlight.verseNumber,
+                highlightColor: VerseHighlightColor(rawValue: highlight.highlightColor)
+            )
+        }
+    }
+
+    private var pinnedPreview: SavedVerseHomePreview.DailyPin? {
+        savedVersePinID.isEmpty ? nil : .init(id: savedVersePinID, day: savedVersePinDay)
+    }
+
+    var body: some View {
+        let preview = SavedVerseHomePreview.dailyPreview(
+            from: previews,
+            rotationOffset: previewOffset,
+            pinned: pinnedPreview
+        )
+
+        SavedVersesHomeCard(
+            preview: preview,
+            favoriteCount: favorites.count,
+            highlightCount: highlights.count,
+            onOpenSavedVerses: onOpenSavedVerses,
+            onRefresh: {
+                savedVersePinID = ""
+                previewOffset += 1
+            },
+            onOpenVerse: onOpenVerse
+        )
+        .onChange(of: "\(preview?.pinID ?? "")|\(SavedVerseHomePreview.dayIndex(for: .now))", initial: true) {
+            pin(preview)
+        }
+    }
+
+    private func pin(_ preview: SavedVerseHomePreview?) {
+        let day = SavedVerseHomePreview.dayIndex(for: .now)
+        guard let preview, preview.pinID != savedVersePinID || day != savedVersePinDay else { return }
+        savedVersePinID = preview.pinID
+        savedVersePinDay = day
+    }
 }
 
 private struct PrayerTimerFinishedAlert: ViewModifier {

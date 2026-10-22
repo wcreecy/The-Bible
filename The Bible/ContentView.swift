@@ -165,6 +165,7 @@ struct ContentView: View {
     private func handleAppear() {
         // The only place iCloud key-value sync starts; stats pull and merge on launch.
         iCloudSyncCoordinator.shared.start()
+        ReadingSessionsStore.shared.prewarm()
 
         // One-time cleanup of deprecated keys
         UserDefaults.standard.removeObject(forKey: "fontFamilyPreference")
@@ -184,7 +185,7 @@ struct ContentView: View {
         ReadingPositionStore.shared.migrateIfNeeded(modelContext: modelContext)
         Bookmark.mirrorToWidget(in: modelContext)
         openBibleReaderAtLaunchIfNeeded()
-        SwiftDataDeduplicator.run(in: modelContext)
+        scheduleInitialDataMaintenance()
         // Repairing saved verse numbers needs the Bible text, which may still be loading.
         Task { @MainActor in
             _ = await BibleRepository.shared.loadAllBooks()
@@ -214,6 +215,17 @@ struct ContentView: View {
         // at launch) is still waiting in the router.
         if let pending = router.latest {
             handle(pending)
+        }
+    }
+
+    /// SwiftData cleanup can fetch every saved record. It is important for data quality,
+    /// but not for displaying the first screen, so let the initial frame render first.
+    private func scheduleInitialDataMaintenance() {
+        Task { @MainActor in
+            await Task.yield()
+            AppPerformance.measure("InitialDataMaintenance") {
+                SwiftDataDeduplicator.run(in: modelContext)
+            }
         }
     }
 

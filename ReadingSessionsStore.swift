@@ -1,7 +1,38 @@
 import Foundation
 
-// Stores lightweight reading sessions and caches them in memory.
-// All access is main-actor to keep it simple for SwiftUI callers.
+/// The sole owner of the reading-session JSON payload. Actor isolation keeps decoding
+/// and encoding off the main actor while preserving write order.
+private actor ReadingSessionsRepository {
+    private let key: String
+    private let defaults: UserDefaults
+    private var lastPersistedRevision = 0
+
+    init(key: String, defaults: UserDefaults = .standard) {
+        self.key = key
+        self.defaults = defaults
+    }
+
+    func load() -> [ReadingSessionsStore.Session] {
+        guard let data = defaults.data(forKey: key) else { return [] }
+        return (try? JSONDecoder().decode([ReadingSessionsStore.Session].self, from: data)) ?? []
+    }
+
+    func save(_ sessions: [ReadingSessionsStore.Session], revision: Int) {
+        guard revision >= lastPersistedRevision else { return }
+        guard let data = try? JSONEncoder().encode(sessions) else { return }
+        defaults.set(data, forKey: key)
+        lastPersistedRevision = revision
+    }
+
+    func clear(revision: Int) {
+        guard revision >= lastPersistedRevision else { return }
+        defaults.removeObject(forKey: key)
+        lastPersistedRevision = revision
+    }
+}
+
+/// Stores lightweight reading sessions with a main-actor cache for SwiftUI callers.
+/// The archive itself is decoded and encoded by `ReadingSessionsRepository`.
 @MainActor
 final class ReadingSessionsStore {
     static let shared = ReadingSessionsStore()
@@ -18,11 +49,14 @@ final class ReadingSessionsStore {
 
     @objc
     private func handleExternalUpdate() {
-        // We are already on the main actor due to @MainActor type
+        // We are already on the main actor due to @MainActor type.
+        revision += 1
+        loadTask?.cancel()
+        loadTask = nil
         cacheAllSessions = nil
     }
 
-    struct Session: Codable, Equatable {
+    struct Session: Codable, Equatable, Sendable {
         let readingSessionID: UUID?
         let start: Date
         let end: Date
@@ -43,8 +77,14 @@ final class ReadingSessionsStore {
         static var provider: UserDefaults { UserDefaults.standard }
     }
 
-    // In-memory cache, lazily loaded
+    private let repository = ReadingSessionsRepository(key: Defaults.key)
+
+    // In-memory cache. A load begins eagerly when a consumer first asks for sessions.
     private var cacheAllSessions: [Session]?
+    private var pendingAppends: [Session] = []
+    private var loadTask: Task<Void, Never>?
+    private var revision = 0
+    private var persistenceRevision = 0
 
     // MARK: - Public API
 
@@ -56,7 +96,11 @@ final class ReadingSessionsStore {
         let validSessions = sessions.filter(Self.isValid)
         guard !validSessions.isEmpty else { return }
 
-        var all = loadAll()
+        ensureLoaded()
+        guard var all = cacheAllSessions else {
+            pendingAppends.append(contentsOf: validSessions)
+            return
+        }
         all.append(contentsOf: validSessions)
         saveAll(all)
     }
@@ -70,7 +114,8 @@ final class ReadingSessionsStore {
     }
 
     func allSessions() -> [Session] {
-        loadAll()
+        ensureLoaded()
+        return loadAll()
     }
 
     // Normalize to local start-of-day boundaries for rolling day windows.
@@ -102,41 +147,67 @@ final class ReadingSessionsStore {
 
     // Clear all stored sessions (used by debug tools)
     func clearAll() {
+        revision += 1
+        loadTask?.cancel()
+        loadTask = nil
         cacheAllSessions = []
-        let defaults = Defaults.provider
-        defaults.removeObject(forKey: Defaults.key)
+        pendingAppends = []
+        let repository = repository
+        persistenceRevision += 1
+        let persistenceRevision = persistenceRevision
+        Task {
+            await repository.clear(revision: persistenceRevision)
+            iCloudSyncCoordinator.shared.pushKey(Defaults.key)
+        }
         // Push sessions key removal to iCloud KVS for cross-device sync and notify listeners
-        iCloudSyncCoordinator.shared.pushKey(Defaults.key)
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     // MARK: - Persistence + cache
 
+    /// Starts background hydration without requiring callers to await it.
+    func prewarm() {
+        ensureLoaded()
+    }
+
     private func loadAll() -> [Session] {
-        if let cached = cacheAllSessions { return cached }
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.key) else {
-            cacheAllSessions = []
-            return []
+        cacheAllSessions ?? []
+    }
+
+    private func ensureLoaded() {
+        guard cacheAllSessions == nil, loadTask == nil else { return }
+
+        let repository = repository
+        let revision = revision
+        loadTask = Task { [weak self] in
+            let loaded = await repository.load()
+            guard let self, !Task.isCancelled, self.revision == revision else { return }
+
+            let all = loaded + self.pendingAppends
+            let hadPendingAppends = !self.pendingAppends.isEmpty
+            self.pendingAppends = []
+            self.cacheAllSessions = all
+            self.loadTask = nil
+
+            if hadPendingAppends {
+                self.saveAll(all)
+            }
+            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
         }
-        if let arr = try? JSONDecoder().decode([Session].self, from: data) {
-            cacheAllSessions = arr
-            return arr
-        }
-        cacheAllSessions = []
-        return []
     }
 
     private func saveAll(_ arr: [Session]) {
         cacheAllSessions = arr
-        let defaults = Defaults.provider
-        if let data = try? JSONEncoder().encode(arr) {
-            defaults.set(data, forKey: Defaults.key)
-        } else {
-            defaults.removeObject(forKey: Defaults.key)
+        let repository = repository
+        persistenceRevision += 1
+        let persistenceRevision = persistenceRevision
+        Task {
+            await repository.save(arr, revision: persistenceRevision)
+            iCloudSyncCoordinator.shared.pushKey(Defaults.key)
         }
-        // Push sessions to iCloud KVS for cross-device sync and refresh listeners
-        iCloudSyncCoordinator.shared.pushKey(Defaults.key)
+
+        // Views read the cache immediately; other local consumers refresh without
+        // waiting for the background encoder to finish.
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 }
