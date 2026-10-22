@@ -1,217 +1,206 @@
 {
   "Job 1": {
-    "summary": "Job of Uz is introduced as upright, wealthy, and concerned for his children's spiritual welfare. In a heavenly scene the LORD permits the accuser to test Job's integrity within limits. In rapid succession Job loses livestock, servants, and all ten children through raids and disasters. Job tears his robe, shaves his head, worships, and refuses to accuse God of wrongdoing. Readers know about the heavenly dialogue, but Job does not; the contrast makes simplistic explanations of suffering inadequate (Job 1:1–22).",
-    "whereWeAre": "In Job 1, household wealth is counted in flocks, herds, and servants This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job of Uz is \"perfect and upright,\" with seven sons, three daughters, and great wealth, and he offers sacrifices for his children (Job 1:1–5). When the sons of God come before the LORD, Satan asks, \"Doth Job fear God for nought?\" and the LORD lets him touch all that Job has, but not Job himself (Job 1:6–12). In one day messengers report that Job's oxen, sheep, camels, servants, and all his children are gone (Job 1:13–19). Job tears his mantle, worships, and says, \"the LORD gave, and the LORD hath taken away; blessed be the name of the LORD\" (Job 1:20–22).",
+    "whereWeAre": "Esther ended the history books with Mordecai honored in Persia. Job begins the books of poetry with a man in the land of Uz, \"perfect and upright\" (Job 1:1), who loses his wealth and all ten children in one day yet blesses the LORD. In chapter 2 Satan is allowed to strike Job's body.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 1)."
+        "role": "A man of Uz who loses everything and still blesses the LORD."
       },
       {
-        "name": "the LORD",
-        "role": "Speaker or addressed participant the LORD contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 1)."
+        "name": "The LORD",
+        "role": "Points to Job's integrity and lets Satan test him."
       },
       {
-        "name": "the accuser (Satan)",
-        "role": "Person, group, or figure mentioned or described in the chapter the accuser (Satan) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 1)."
+        "name": "Satan",
+        "role": "Claims Job serves God only for what he gets."
       },
       {
-        "name": "Job's sons and daughters",
-        "role": "Person, group, or figure mentioned or described in the chapter Job's sons and daughters contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 1)."
-      },
-      {
-        "name": "the messengers",
-        "role": "Person, group, or figure mentioned or described in the chapter the messengers contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 1)."
+        "name": "The messengers",
+        "role": "Bring Job four reports of disaster in one day."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Integrity beyond prosperity",
-        "explanation": "",
+        "theme": "Faith not for gain",
+        "explanation": "Satan claims Job serves God only for blessings, and the test will show otherwise.",
         "references": [
-          "Job 1:1–5"
+          "Job 1:9-11"
         ]
       },
       {
-        "theme": "The testing of motives",
-        "explanation": "",
+        "theme": "Worship in loss",
+        "explanation": "Job blesses the LORD's name after losing everything.",
         "references": [
-          "Job 1:8–12"
+          "Job 1:20-21"
         ]
       },
       {
-        "theme": "Grief without renouncing God",
-        "explanation": "",
+        "theme": "Limits on evil",
+        "explanation": "Satan can go only as far as the LORD allows.",
         "references": [
-          "Job 1:20–22"
+          "Job 1:12"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 2": {
-    "summary": "A second heavenly scene permits the accuser to afflict Job's body but not kill him. Job develops painful sores and sits among ashes, scraping himself with a pottery fragment. His wife urges him to curse God and die, but he refuses, asking whether people should accept good and not adversity. Eliphaz, Bildad, and Zophar come to comfort him; shocked by his suffering, they weep and sit silently for seven days. The narrative stresses the depth of Job's ordeal before anyone attempts to explain it (Job 2:1–13).",
-    "whereWeAre": "In Job 2, ashes and torn garments are customary expressions of mourning This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Satan comes before the LORD again, and the LORD lets him strike Job's body but spare his life (Job 2:1–6). Satan covers Job with boils, and Job sits among the ashes and scrapes himself with a potsherd (Job 2:7–8). His wife says, \"curse God, and die,\" but Job answers, \"shall we receive good at the hand of God, and shall we not receive evil?\" (Job 2:9–10). Eliphaz, Bildad, and Zophar come to comfort him and sit with him seven days and nights without a word (Job 2:11–13).",
+    "whereWeAre": "Job lost his wealth and children in chapter 1 without sinning. Now Satan strikes him with boils, his wife tells him to curse God, and three friends come and sit with him in silence for seven days. In chapter 3 Job finally speaks.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 2)."
+        "role": "Struck with boils, yet does not sin with his lips."
       },
       {
-        "name": "the LORD",
-        "role": "Speaker or addressed participant the LORD contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 2)."
+        "name": "The LORD",
+        "role": "Lets Satan strike Job's body but spare his life."
       },
       {
-        "name": "the accuser (Satan)",
-        "role": "Person, group, or figure mentioned or described in the chapter the accuser (Satan) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 2)."
+        "name": "Satan",
+        "role": "Covers Job with sore boils."
       },
       {
         "name": "Job's wife",
-        "role": "Person, group, or figure mentioned or described in the chapter Job's wife contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 2)."
+        "role": "Tells Job, \"curse God, and die.\""
       },
       {
-        "name": "Eliphaz",
-        "role": "Speaker or addressed participant Eliphaz contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 2)."
-      },
-      {
-        "name": "Bildad",
-        "role": "Speaker or addressed participant Bildad contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 2)."
-      },
-      {
-        "name": "Zophar",
-        "role": "Speaker or addressed participant Zophar contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 2)."
+        "name": "Eliphaz, Bildad, and Zophar",
+        "role": "Job's friends, who come to comfort him and sit in silence."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Limits placed on the ordeal",
-        "explanation": "",
+        "theme": "Integrity under pain",
+        "explanation": "Job holds to his integrity even when his own body is struck.",
         "references": [
-          "Job 2:3–6"
+          "Job 2:3",
+          "Job 2:9-10"
         ]
       },
       {
-        "theme": "Faith amid bodily suffering",
-        "explanation": "",
+        "theme": "Good and evil from God's hand",
+        "explanation": "Job accepts trouble as well as blessing from God.",
         "references": [
-          "Job 2:7–10"
+          "Job 2:10"
         ]
       },
       {
-        "theme": "Presence before explanations",
-        "explanation": "",
+        "theme": "Silent comfort",
+        "explanation": "The friends' best comfort is seven days of sitting with Job in silence.",
         "references": [
-          "Job 2:11–13"
+          "Job 2:11-13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 3": {
-    "summary": "Job breaks the silence by cursing the day of his birth—not God. He wishes the day and night of his conception could disappear, imagines the rest of the grave, and asks why life is given to those in bitter misery. His words express unrelieved anguish rather than a settled doctrine about death. The chapter begins the poetic dialogue and makes room for the suffering person's voice, complicating the earlier portrait of Job's restrained response (Job 3:1–26).",
-    "whereWeAre": "In Job 3, ancient Hebrew lament employs curses and poetic images This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job breaks his silence and curses the day he was born: \"Let the day perish wherein I was born\" (Job 3:1–10). He asks why he did not die at birth, where he would now be at rest with kings and prisoners alike (Job 3:11–19). He asks why light is given to those who long for death, and says, \"the thing which I greatly feared is come upon me\" (Job 3:20–26).",
+    "whereWeAre": "Job's friends sat with him seven days in silence at the end of chapter 2. Now Job curses the day he was born and asks why the suffering are kept alive. In chapter 4 Eliphaz begins the first round of speeches.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 3)."
+        "role": "Curses the day of his birth and asks why he still lives."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Lament voiced openly",
-        "explanation": "",
+        "theme": "Honest grief",
+        "explanation": "Job pours out his pain without hiding it.",
         "references": [
-          "Job 3:1–10"
+          "Job 3:1-10"
         ]
       },
       {
-        "theme": "Death imagined as rest",
-        "explanation": "",
+        "theme": "Longing for rest",
+        "explanation": "Job pictures the grave as a place where the weary rest.",
         "references": [
-          "Job 3:11–19"
+          "Job 3:13-19"
         ]
       },
       {
-        "theme": "Questions without easy answers",
-        "explanation": "",
+        "theme": "Why?",
+        "explanation": "Job asks why life is given to those who long for death.",
         "references": [
-          "Job 3:20–26"
+          "Job 3:20-23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 4": {
-    "summary": "Eliphaz speaks first, acknowledging that Job once strengthened the weak but asking why he now falters. He argues that the innocent do not ordinarily perish and that trouble comes from wrongdoing, citing his observations. He then recounts an unsettling night vision stressing the frailty of mortals before their Maker. These are Eliphaz's claims, not the book's final assessment of Job: the opening narrative has already called Job upright (Job 4:1–21).",
-    "whereWeAre": "In Job 4, this is a formal wisdom speech using observation and a claimed vision This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Eliphaz the Temanite reminds Job that his words once strengthened others, but now he faints when trouble comes to him (Job 4:1–6). He asks, \"who ever perished, being innocent?\" and says those who sow wickedness reap the same (Job 4:7–11). He tells of a spirit in the night that asked, \"Shall mortal man be more just than God?\" (Job 4:12–21).",
+    "whereWeAre": "Job cursed the day of his birth in chapter 3. Now Eliphaz, the first friend to speak, reminds Job that \"who ever perished, being innocent?\" (Job 4:7) and tells of a vision in the night. He continues in chapter 5.",
     "keyFigures": [
       {
         "name": "Eliphaz",
-        "role": "Speaker or addressed participant Eliphaz contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 4)."
+        "role": "The Temanite, who says the innocent do not perish and tells of a night vision."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 4)."
+        "name": "Job",
+        "role": "The one Eliphaz is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "A friend's diagnosis",
-        "explanation": "",
+        "theme": "Reap what you sow",
+        "explanation": "Eliphaz believes suffering always comes from sin.",
         "references": [
-          "Job 4:1–6"
+          "Job 4:7-8"
         ]
       },
       {
-        "theme": "Retribution asserted",
-        "explanation": "",
+        "theme": "Human frailty",
+        "explanation": "Mortal man cannot be more just than God.",
         "references": [
-          "Job 4:7–11"
+          "Job 4:17-19"
         ]
       },
       {
-        "theme": "Human frailty in a vision",
-        "explanation": "",
+        "theme": "Comfort that wounds",
+        "explanation": "Eliphaz's words, though partly true, do not fit Job's case.",
         "references": [
-          "Job 4:12–21"
+          "Job 4:3-6"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 5": {
-    "summary": "Eliphaz continues by arguing that resentment destroys the foolish and that human life inevitably brings trouble. He advises Job to seek God, praising God's power to reverse the plight of the poor, frustrate schemers, and heal those he disciplines. The speech ends with confident promises of security, long life, and descendants if Job accepts correction. Although it contains familiar biblical wisdom, its diagnosis and assurances cannot simply be applied to Job as established facts (Job 5:1–27).",
-    "whereWeAre": "In Job 5, eliphaz speaks in the style of traditional counsel, pairing moral cause with expected earthly consequence This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Eliphaz says wrath kills the foolish and that \"man is born unto trouble, as the sparks fly upward\" (Job 5:1–7). He tells Job to seek God, who does great things and saves the poor (Job 5:8–16). He says, \"happy is the man whom God correcteth,\" and promises Job safety, children, and long life if he accepts it (Job 5:17–27).",
+    "whereWeAre": "Eliphaz began his speech in chapter 4. Here he tells Job to seek God and accept his correction, promising that God will restore him. In chapter 6 Job answers that his friends have failed him.",
     "keyFigures": [
       {
         "name": "Eliphaz",
-        "role": "Speaker or addressed participant Eliphaz contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 5)."
+        "role": "Tells Job to seek God and accept his correction."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 5)."
+        "name": "Job",
+        "role": "The one Eliphaz is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Trouble and human frailty",
-        "explanation": "",
+        "theme": "Trouble is common",
+        "explanation": "Eliphaz says trouble is as natural as sparks flying upward.",
         "references": [
-          "Job 5:6–7"
+          "Job 5:6-7"
         ]
       },
       {
-        "theme": "God's concern for the lowly",
-        "explanation": "",
+        "theme": "God lifts the lowly",
+        "explanation": "God saves the poor and brings down the crafty.",
         "references": [
-          "Job 5:8–16"
+          "Job 5:11-16"
         ]
       },
       {
-        "theme": "Discipline and confident promises",
-        "explanation": "",
+        "theme": "Correction",
+        "explanation": "Eliphaz says the man God corrects is happy, if he accepts it.",
         "references": [
-          "Job 5:17–27"
+          "Job 5:17-18"
         ]
       }
     ],
@@ -224,856 +213,742 @@
     ]
   },
   "Job 6": {
-    "summary": "Job answers Eliphaz, saying that his anguish is heavier than sand and that his words are therefore desperate. He wishes God would end his life rather than prolong his torment. Job criticizes his friends as unreliable streams that fail travelers in the dry season and asks them to identify any actual wrong rather than condemn distressed speech. The chapter distinguishes a sufferer's cry from proof of sin and challenges the ethics of careless consolation (Job 6:1–30).",
-    "whereWeAre": "In Job 6, caravan and seasonal-stream imagery evokes travel in arid lands This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job answers that his grief would be heavier than the sand of the sea, for \"the arrows of the Almighty are within me\" (Job 6:1–7). He wishes God would cut him off (Job 6:8–13). He says his friends have failed him like streams that vanish in the heat (Job 6:14–23). He asks them to show him where he has gone wrong (Job 6:24–30).",
+    "whereWeAre": "Eliphaz told Job to accept God's correction in chapters 4–5. Job answers that his grief is heavier than the sand and that his friends are like streams that dry up. In chapter 7 he turns from them to speak to God.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 6)."
-      },
-      {
-        "name": "Eliphaz and the friends (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Eliphaz and the friends (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 6)."
+        "role": "Says his grief is heavy and his friends have failed him."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The weight of anguish",
-        "explanation": "",
+        "theme": "The weight of grief",
+        "explanation": "Job's pain is too heavy to measure.",
         "references": [
-          "Job 6:1–7"
+          "Job 6:2-4"
         ]
       },
       {
-        "theme": "Despair without concealment",
-        "explanation": "",
+        "theme": "Friends who fail",
+        "explanation": "Job's friends are like streams that dry up when needed.",
         "references": [
-          "Job 6:8–13"
+          "Job 6:14-21"
         ]
       },
       {
-        "theme": "Compassion and honest evidence",
-        "explanation": "",
+        "theme": "Show me my wrong",
+        "explanation": "Job asks to be shown his error instead of being accused.",
         "references": [
-          "Job 6:14–30"
+          "Job 6:24"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 7": {
-    "summary": "Job compares human life to exhausting labor and sleepless nights, describing bodily decline and the shortness of life. Turning from his friends to God, he asks why he is watched so closely, what he has done, and why pardon seems withheld. His anguish produces questions and protests, not a clear explanation of the heavenly events described in the prologue. The lament emphasizes human vulnerability and the urgency of unanswered prayer (Job 7:1–21).",
-    "whereWeAre": "In Job 7, references to hired workers, slaves, watches of the night, and disease make the poetry recognizable within ordinary ancient labor and suffering. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says his life is like the hard days of a hired servant, with nights of tossing and flesh covered with worms (Job 7:1–5). \"My days are swifter than a weaver's shuttle,\" he says, and he will not keep silent (Job 7:6–11). He asks God why he frightens him with dreams and will not let him alone (Job 7:12–19). He ends, \"why dost thou not pardon my transgression?\" (Job 7:20–21).",
+    "whereWeAre": "Job told his friends they had failed him in chapter 6. Now he speaks to God about how short and hard life is and asks why God will not leave him alone. In chapter 8 Bildad answers.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 7)."
-      },
-      {
-        "name": "God (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 7)."
+        "role": "Speaks to God about the shortness and pain of life."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Life's exhausting brevity",
-        "explanation": "",
+        "theme": "Life is short",
+        "explanation": "Job says his days are swifter than a weaver's shuttle.",
         "references": [
-          "Job 7:1–10"
+          "Job 7:6-7"
         ]
       },
       {
-        "theme": "The freedom to lament",
-        "explanation": "",
+        "theme": "Speaking freely",
+        "explanation": "Job will not hold back the anguish of his spirit.",
         "references": [
-          "Job 7:11–16"
+          "Job 7:11"
         ]
       },
       {
-        "theme": "Questions about divine attention",
-        "explanation": "",
+        "theme": "What is man?",
+        "explanation": "Job asks why God pays such close attention to man.",
         "references": [
-          "Job 7:17–21"
+          "Job 7:17-21"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 8": {
-    "summary": "Bildad rebukes Job and asserts that God does not pervert justice. He claims Job's children died for their sin, a conclusion the narrative never confirms. Appealing to former generations, he compares those who forget God to marsh plants without water and insists that God will not reject a blameless person. The speech reveals how a rigid belief in immediate retribution can turn into harsh judgments about others' grief (Job 8:1–22).",
-    "whereWeAre": "In Job 8, appeal to ancestral instruction reflects wisdom teaching passed across generations This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Bildad the Shuhite asks, \"Doth God pervert judgment?\" and says Job's children were cast away for their sin (Job 8:1–4). If Job is pure and seeks God, God will restore him (Job 8:5–7). Bildad tells Job to learn from the fathers that those who forget God wither like reeds without water (Job 8:8–19). God will not cast away a perfect man, he says, and will yet fill Job's mouth with laughing (Job 8:20–22).",
+    "whereWeAre": "Job asked God why he would not pardon him in chapter 7. Now Bildad asks, \"Doth God pervert judgment?\" (Job 8:3) and says Job's children died for their sin. In chapter 9 Job answers.",
     "keyFigures": [
       {
         "name": "Bildad",
-        "role": "Speaker or addressed participant Bildad contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 8)."
+        "role": "The Shuhite, who says God never perverts justice."
       },
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 8)."
-      },
-      {
-        "name": "Job's children (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job's children (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 8)."
+        "role": "The one Bildad is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The claim that God is just",
-        "explanation": "",
+        "theme": "God is just",
+        "explanation": "Bildad insists that God never perverts judgment.",
         "references": [
-          "Job 8:1–7"
+          "Job 8:3"
         ]
       },
       {
-        "theme": "Appeals to inherited wisdom",
-        "explanation": "",
+        "theme": "The wisdom of the fathers",
+        "explanation": "Bildad appeals to what earlier generations taught.",
         "references": [
-          "Job 8:8–10"
+          "Job 8:8-10"
         ]
       },
       {
-        "theme": "Fragile security portrayed",
-        "explanation": "",
+        "theme": "Rootless hope",
+        "explanation": "Those who forget God wither like reeds without water.",
         "references": [
-          "Job 8:11–22"
+          "Job 8:11-13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 9": {
-    "summary": "Job agrees that no human can easily be righteous in a dispute with God, whose works in creation and command over the heavens exceed human power. He laments that there is no impartial arbiter to mediate his case and that even innocent conduct seems unable to free him from distress. Rather than offering a simple doctrine that justice is absent, Job describes how inaccessible justice feels from within suffering (Job 9:1–35).",
-    "whereWeAre": "In Job 9, courtroom vocabulary frames the debate as a lawsuit This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job asks, \"how should man be just with God?\" for God moves mountains and made Arcturus, Orion, and Pleiades (Job 9:1–13). Even if he were righteous, Job says, he could not answer God (Job 9:14–21). He says God destroys the perfect and the wicked alike, and his days flee away (Job 9:22–31). He wishes there were \"any daysman betwixt us,\" someone to stand between him and God (Job 9:32–35).",
+    "whereWeAre": "Bildad insisted in chapter 8 that God never perverts justice. Job agrees that no one can win an argument with God and wishes for a \"daysman\" to stand between them. He keeps speaking to God in chapter 10.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 9)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 9)."
+        "role": "Says no one can argue with God and wishes for a daysman."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Divine power beyond dispute",
-        "explanation": "",
+        "theme": "God's greatness",
+        "explanation": "God moves mountains and made the stars.",
         "references": [
-          "Job 9:1–13"
+          "Job 9:4-10"
         ]
       },
       {
-        "theme": "The sufferer's struggle for justice",
-        "explanation": "",
+        "theme": "No way to win",
+        "explanation": "Job feels he cannot be justified in God's court.",
         "references": [
-          "Job 9:14–24"
+          "Job 9:2-3",
+          "Job 9:20"
         ]
       },
       {
-        "theme": "Longing for an arbiter",
-        "explanation": "",
+        "theme": "Need for a mediator",
+        "explanation": "Job longs for a daysman to stand between him and God.",
         "references": [
-          "Job 9:32–35"
+          "Job 9:33"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 10": {
-    "summary": "Job addresses God directly, asking why his Maker oppresses what his hands formed. He recalls being shaped in the womb, sustained by life and care, yet feels pursued regardless of guilt or innocence. He wishes he had died before birth and asks for a little relief before going to the land of darkness. The chapter depicts personal protest within an ongoing relationship with God; Job does not know the reason for his suffering (Job 10:1–22).",
-    "whereWeAre": "In Job 10, pottery, womb formation, and darkness are traditional poetic images, not clinical descriptions or historical dating clues. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says, \"My soul is weary of my life,\" and asks God to show him why he contends with him (Job 10:1–7). He reminds God, \"Thine hands have made me and fashioned me,\" and asks why God would now destroy him (Job 10:8–17). He asks why he was born and begs for a little comfort before he goes to the land of darkness (Job 10:18–22).",
+    "whereWeAre": "Job wished for someone to judge between him and God in chapter 9. Now he asks God why he would destroy the one his own hands made. In chapter 11 Zophar answers sharply.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 10)."
-      },
-      {
-        "name": "God (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 10)."
+        "role": "Asks God why he would destroy what his hands have made."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The creature questions the Creator",
-        "explanation": "",
+        "theme": "Made by God",
+        "explanation": "Job reminds God that his hands shaped him.",
         "references": [
-          "Job 10:1–7"
+          "Job 10:8-12"
         ]
       },
       {
-        "theme": "Life fashioned and sustained",
-        "explanation": "",
+        "theme": "Pleading with God",
+        "explanation": "Job asks God to show why he is contending with him.",
         "references": [
-          "Job 10:8–12"
+          "Job 10:2"
         ]
       },
       {
-        "theme": "A plea for respite",
-        "explanation": "",
+        "theme": "Asking for relief",
+        "explanation": "Job asks for a little comfort before he dies.",
         "references": [
-          "Job 10:18–22"
+          "Job 10:20-22"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 11": {
-    "summary": "Zophar speaks sharply, accusing Job of excessive words and suggesting he deserves even more punishment. He claims that God's wisdom exceeds human comprehension, then calls Job to put away iniquity and promises security if he does. His speech combines a true emphasis on human limits with an unsupported assumption that Job is hiding sin. It deepens the conflict between conventional moral reasoning and Job's actual circumstances (Job 11:1–20).",
-    "whereWeAre": "In Job 11, zophar uses legal-sounding accusation and conditional blessing typical of ancient moral exhortation This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Zophar the Naamathite says Job's many words should not go unanswered, and that God exacts less than his iniquity deserves (Job 11:1–6). He asks, \"Canst thou by searching find out God?\" (Job 11:7–12). If Job puts away his sin, Zophar says, he will forget his misery and live in safety (Job 11:13–20).",
+    "whereWeAre": "Job pleaded with his Maker in chapter 10. Now Zophar, the third friend, says Job deserves even more than he suffers and calls him to put away his sin. Job answers in chapters 12–14.",
     "keyFigures": [
       {
         "name": "Zophar",
-        "role": "Speaker or addressed participant Zophar contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 11)."
+        "role": "The Naamathite, who tells Job he deserves worse and must repent."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 11)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 11)."
+        "name": "Job",
+        "role": "The one Zophar is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Harsh speech as counsel",
-        "explanation": "",
+        "theme": "The depths of God",
+        "explanation": "No one can find out God by searching.",
         "references": [
-          "Job 11:1–6"
+          "Job 11:7-9"
         ]
       },
       {
-        "theme": "Wisdom beyond human reach",
-        "explanation": "",
+        "theme": "Harsh counsel",
+        "explanation": "Zophar says Job deserves even more than he suffers.",
         "references": [
-          "Job 11:7–12"
+          "Job 11:6"
         ]
       },
       {
-        "theme": "Repentance prescribed without evidence",
-        "explanation": "",
+        "theme": "Promise of restoration",
+        "explanation": "If Job puts away sin, Zophar says, he will be secure.",
         "references": [
-          "Job 11:13–20"
+          "Job 11:13-19"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 12": {
-    "summary": "Job replies with irony: his friends are not the only possessors of wisdom. He points to animals and the natural world as witnesses to divine power and describes God overturning leaders, advisers, judges, nations, and institutions. Job's point is that God's activity cannot be confined to his friends' tidy cause-and-effect categories. The chapter challenges arrogant certainty and portrays human rulers as vulnerable under divine sovereignty (Job 12:1–25).",
-    "whereWeAre": "In Job 12, royal, judicial, and priestly offices are used as examples in a wisdom poem This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job answers, \"No doubt but ye are the people, and wisdom shall die with you,\" and says he understands as much as they do (Job 12:1–6). He says even the beasts and the earth know that the LORD's hand has made all things (Job 12:7–12). God has wisdom and strength, and he brings down counsellors, judges, kings, and priests (Job 12:13–25).",
+    "whereWeAre": "Zophar told Job to repent in chapter 11. Job answers with scorn for his friends' wisdom and describes God's power over nature and kings. He continues in chapter 13.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 12)."
-      },
-      {
-        "name": "the friends (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter the friends (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 12)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 12)."
+        "role": "Mocks his friends' wisdom and describes God's power."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Critique of easy certainty",
-        "explanation": "",
+        "theme": "God's hand in all things",
+        "explanation": "The beasts and the earth know that God made them.",
         "references": [
-          "Job 12:1–6"
+          "Job 12:7-10"
         ]
       },
       {
-        "theme": "Creation as a witness",
-        "explanation": "",
+        "theme": "God over rulers",
+        "explanation": "God brings down counsellors, judges, and kings.",
         "references": [
-          "Job 12:7–13"
+          "Job 12:17-21"
         ]
       },
       {
-        "theme": "The instability of human power",
-        "explanation": "",
+        "theme": "False wisdom",
+        "explanation": "Job mocks his friends for thinking they alone are wise.",
         "references": [
-          "Job 12:14–25"
+          "Job 12:2-3"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 13": {
-    "summary": "Job accuses his friends of speaking falsely on God's behalf and asks them to be silent. He declares his intention to argue his case before God, even at great risk, and calls for a fair hearing in which charges are specified. He asks God to withdraw the terror of his presence and reveal his offenses. The chapter presents bold appeal and moral integrity in tension with fear, rather than a simple statement of untroubled confidence (Job 13:1–28).",
-    "whereWeAre": "In Job 13, legal metaphors and forensic appeals reflect ancient public disputation This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says he wants to speak to the Almighty, and calls his friends \"forgers of lies\" (Job 13:1–5). He asks whether they will speak wickedly for God (Job 13:6–12). He says, \"Though he slay me, yet will I trust in him,\" and declares that he has ordered his cause (Job 13:13–19). He asks God to show him his sins and asks why God hides his face (Job 13:20–28).",
+    "whereWeAre": "Job mocked his friends' wisdom in chapter 12. Now he tells them they speak lies for God and declares, \"Though he slay me, yet will I trust in him\" (Job 13:15). Chapter 14 ends his first answer to Zophar.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 13)."
-      },
-      {
-        "name": "the friends (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter the friends (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 13)."
-      },
-      {
-        "name": "God (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 13)."
+        "role": "Calls his friends forgers of lies and asks to plead his case with God."
       }
     ],
     "keyThemes": [
       {
-        "theme": "False defenses of God",
-        "explanation": "",
+        "theme": "Speaking falsely for God",
+        "explanation": "Job warns his friends not to lie in God's defense.",
         "references": [
-          "Job 13:1–12"
+          "Job 13:7-10"
         ]
       },
       {
-        "theme": "The determination to speak",
-        "explanation": "",
+        "theme": "Trust in the dark",
+        "explanation": "Job will trust God even if God slays him.",
         "references": [
-          "Job 13:13–19"
+          "Job 13:15"
         ]
       },
       {
-        "theme": "A demand for clear charges",
-        "explanation": "",
+        "theme": "A bold appeal",
+        "explanation": "Job asks God to tell him his sins.",
         "references": [
-          "Job 13:20–28"
+          "Job 13:23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 14": {
-    "summary": "Job reflects on the frailty of mortals, whose days are short like a flower's and whose life can be cut down. A felled tree may sprout again, but human death seems final from Job's earthly perspective. He briefly imagines being hidden until God's anger passes and asks whether the dead might live, before returning to images of erosion, fading hope, and grief. The chapter is a searching lament, not a settled systematic teaching on resurrection (Job 14:1–22).",
-    "whereWeAre": "In Job 14, ancient funeral experience and observation of the natural world provide the images This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says, \"Man that is born of a woman is of few days, and full of trouble\" (Job 14:1–6). A tree that is cut down may sprout again, but man dies and does not rise (Job 14:7–12). He asks, \"If a man die, shall he live again?\" and longs to be hidden until God's wrath is past (Job 14:13–17). As water wears away stones, he says, God destroys the hope of man (Job 14:18–22).",
+    "whereWeAre": "Job asked God to show him his sins in chapter 13. Now he mourns that man is \"of few days, and full of trouble\" (Job 14:1) and asks, \"If a man die, shall he live again?\" (Job 14:14). In chapter 15 Eliphaz opens the second round.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 14)."
-      },
-      {
-        "name": "God (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 14)."
+        "role": "Mourns that man's life is short and asks if the dead live again."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Life is brief and troubled",
-        "explanation": "",
+        "theme": "Few days, much trouble",
+        "explanation": "Human life is short and full of trouble.",
         "references": [
-          "Job 14:1–6"
+          "Job 14:1-2"
         ]
       },
       {
-        "theme": "The tree's contrasting hope",
-        "explanation": "",
+        "theme": "Hope of a tree",
+        "explanation": "A cut tree may sprout again, but man seems to have no such hope.",
         "references": [
-          "Job 14:7–12"
+          "Job 14:7-12"
         ]
       },
       {
-        "theme": "A tentative hope beyond death",
-        "explanation": "",
+        "theme": "Life after death?",
+        "explanation": "Job asks whether the dead will live again.",
         "references": [
-          "Job 14:13–17"
+          "Job 14:14-15"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 15": {
-    "summary": "Eliphaz begins a second round by denouncing Job's speech as empty and dangerous. He appeals to the experience of elders and insists that humans are impure before God. He then portrays the wicked as continually afraid, doomed to ruin because they defy God. These ominous descriptions imply that Job's distress is evidence against him, but the reader should hear them as Eliphaz's rhetoric rather than the narrator's verdict (Job 15:1–35).",
-    "whereWeAre": "In Job 15, a second cycle of wisdom disputation intensifies the accusation This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Eliphaz opens the second round, saying Job's own mouth condemns him (Job 15:1–6). He asks whether Job is wiser than the old men who are with them (Job 15:7–16). He describes the wicked man who lives in fear and darkness all his days (Job 15:17–35).",
+    "whereWeAre": "The first round of speeches ended with chapter 14. Now Eliphaz accuses Job of empty talk and describes the terrors of the wicked. In chapter 16 Job answers.",
     "keyFigures": [
       {
         "name": "Eliphaz",
-        "role": "Speaker or addressed participant Eliphaz contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 15)."
+        "role": "Says Job's own words condemn him."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 15)."
+        "name": "Job",
+        "role": "The one Eliphaz is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Arguments that silence sufferers",
-        "explanation": "",
+        "theme": "Words used against Job",
+        "explanation": "Eliphaz says Job's own mouth condemns him.",
         "references": [
-          "Job 15:1–13"
+          "Job 15:5-6"
         ]
       },
       {
-        "theme": "Tradition invoked as proof",
-        "explanation": "",
+        "theme": "The wisdom of age",
+        "explanation": "Eliphaz appeals to the gray-haired men among them.",
         "references": [
-          "Job 15:17–19"
+          "Job 15:10"
         ]
       },
       {
-        "theme": "A portrait of the wicked",
-        "explanation": "",
+        "theme": "The fear of the wicked",
+        "explanation": "The wicked live in constant fear.",
         "references": [
-          "Job 15:20–35"
+          "Job 15:20-24"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 16": {
-    "summary": "Job calls the friends miserable comforters and says that their many words only increase his pain. He vividly describes feeling assaulted and abandoned, speaking as though God has become his adversary. At the same time, he appeals to a witness or advocate in heaven who might attest to his innocence. The speech places grief, perceived divine hostility, and longing for vindication side by side without resolving their tension (Job 16:1–22).",
-    "whereWeAre": "In Job 16, the image of a heavenly witness uses courtroom language This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job answers, \"miserable comforters are ye all,\" and says he would comfort them if they were in his place (Job 16:1–5). He says God has worn him out and broken him (Job 16:6–17). Yet he says, \"my witness is in heaven,\" and he weeps to God (Job 16:18–22).",
+    "whereWeAre": "Eliphaz described the fate of the wicked in chapter 15. Job calls his friends \"miserable comforters\" (Job 16:2) and says his witness is in heaven. He continues in chapter 17.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 16)."
-      },
-      {
-        "name": "the friends (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter the friends (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 16)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 16)."
-      },
-      {
-        "name": "a heavenly witness (invoked)",
-        "role": "Person, group, or figure mentioned or described in the chapter a heavenly witness (invoked) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 16)."
+        "role": "Calls his friends miserable comforters and looks to his witness in heaven."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Words that wound",
-        "explanation": "",
+        "theme": "Poor comforters",
+        "explanation": "Job says his friends' words only add to his pain.",
         "references": [
-          "Job 16:1–5"
+          "Job 16:2-5"
         ]
       },
       {
-        "theme": "The language of devastation",
-        "explanation": "",
+        "theme": "Feeling attacked by God",
+        "explanation": "Job describes God as tearing and breaking him.",
         "references": [
-          "Job 16:6–17"
+          "Job 16:9-14"
         ]
       },
       {
-        "theme": "The hope for a witness",
-        "explanation": "",
+        "theme": "A witness in heaven",
+        "explanation": "Job hopes for someone in heaven to plead for him.",
         "references": [
-          "Job 16:18–22"
+          "Job 16:19-21"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 17": {
-    "summary": "Job continues his lament, saying his spirit is broken and the grave is near. He asks for a pledge of vindication, complains that others mock him, and declares that his hope seems to descend to the realm of the dead. The stark images should be read as a suffering person's assessment of his present situation. The chapter keeps the debate's emotional cost in view before Bildad resumes his accusations (Job 17:1–16).",
-    "whereWeAre": "In Job 17, pledges and hand-clasping evoke surety practices This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says his breath is corrupt and the graves are ready for him, and mockers surround him (Job 17:1–2). He asks God to be his surety, for he has become a byword (Job 17:3–9). \"My days are past,\" he says, and asks, \"where is now my hope?\" (Job 17:10–16).",
+    "whereWeAre": "Job looked for a witness in heaven in chapter 16. Now he says his spirit is broken and the grave is waiting for him. In chapter 18 Bildad answers.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 17)."
-      },
-      {
-        "name": "the friends and mockers (addressed or described)",
-        "role": "Person, group, or figure mentioned or described in the chapter the friends and mockers (addressed or described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 17)."
-      },
-      {
-        "name": "God (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 17)."
+        "role": "Says his spirit is broken and his hope is gone."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Brokenness and scorn",
-        "explanation": "",
+        "theme": "Broken spirit",
+        "explanation": "Job says his days are ended and the grave is ready.",
         "references": [
-          "Job 17:1–7"
+          "Job 17:1"
         ]
       },
       {
-        "theme": "Integrity amid humiliation",
-        "explanation": "",
+        "theme": "Mocked by others",
+        "explanation": "Job has become a byword among the people.",
         "references": [
-          "Job 17:8–10"
+          "Job 17:6"
         ]
       },
       {
-        "theme": "Hope under threat",
-        "explanation": "",
+        "theme": "Holding on",
+        "explanation": "The righteous will hold on to their way.",
         "references": [
-          "Job 17:11–16"
+          "Job 17:9"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 18": {
-    "summary": "Bildad answers angrily, demanding that Job stop treating the friends as fools. He unfolds a long picture of the wicked person's lamp going out, traps closing, terror pursuing, and memory disappearing from the land. The descriptions are meant to support a strong connection between wickedness and disaster. Since the book introduces Job as upright, Bildad's implied application to Job remains unproven (Job 18:1–21).",
-    "whereWeAre": "In Job 18, hunting traps and the extinguished household lamp were vivid cultural metaphors for vulnerability, disgrace, and erased family memory. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Bildad asks how long Job will go on and why the friends are counted as beasts (Job 18:1–4). He says the light of the wicked shall be put out, and traps catch his feet (Job 18:5–10). Terrors chase the wicked, and \"His remembrance shall perish from the earth\" (Job 18:11–21).",
+    "whereWeAre": "Job said in chapter 17 that his hope was gone. Now Bildad describes how the light of the wicked is put out and their name is forgotten. In chapter 19 Job answers with his great statement of hope.",
     "keyFigures": [
       {
         "name": "Bildad",
-        "role": "Speaker or addressed participant Bildad contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 18)."
+        "role": "Describes the terrible end of the wicked."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 18)."
-      },
-      {
-        "name": "the wicked person (poetic example)",
-        "role": "Person, group, or figure mentioned or described in the chapter the wicked person (poetic example) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 18)."
+        "name": "Job",
+        "role": "The one Bildad is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Anger in debate",
-        "explanation": "",
+        "theme": "The light put out",
+        "explanation": "Bildad says the light of the wicked will be put out.",
         "references": [
-          "Job 18:1–4"
+          "Job 18:5-6"
         ]
       },
       {
-        "theme": "The snare metaphor",
-        "explanation": "",
+        "theme": "Trapped by sin",
+        "explanation": "The wicked are caught in their own nets.",
         "references": [
-          "Job 18:5–14"
+          "Job 18:8-10"
         ]
       },
       {
-        "theme": "The loss of legacy",
-        "explanation": "",
+        "theme": "Forgotten",
+        "explanation": "The wicked leave no name or children behind.",
         "references": [
-          "Job 18:15–21"
+          "Job 18:17-19"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 19": {
-    "summary": "Job says the friends have tormented him and describes his alienation from relatives, servants, acquaintances, and even his household. He asks for his words to be permanently recorded and declares confidence that a redeemer or vindicator lives, though the Hebrew and the timing of vindication are debated. He warns the friends about judgment for their conduct. The chapter combines profound isolation with a contested but powerful expression of hope (Job 19:1–29).",
-    "whereWeAre": "In Job 19, inscribed stone or metal imagery concerns durable testimony This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job asks, \"How long will ye vex my soul?\" and says God has fenced up his way (Job 19:1–12). His brothers, friends, servants, and even his wife have turned from him (Job 19:13–22). He wishes his words were cut in rock and says, \"For I know that my redeemer liveth\" (Job 19:23–27). He warns his friends to fear the sword of judgment (Job 19:28–29).",
+    "whereWeAre": "Bildad described the end of the wicked in chapter 18. Job says everyone has turned against him, yet declares, \"I know that my redeemer liveth\" (Job 19:25). In chapter 20 Zophar answers.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 19)."
-      },
-      {
-        "name": "the friends (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter the friends (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 19)."
-      },
-      {
-        "name": "family and acquaintances (described)",
-        "role": "Person, group, or figure mentioned or described in the chapter family and acquaintances (described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 19)."
-      },
-      {
-        "name": "a redeemer/vindicator (invoked)",
-        "role": "Person, group, or figure mentioned or described in the chapter a redeemer/vindicator (invoked) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 19)."
+        "role": "Feels abandoned by all, yet says, \"I know that my redeemer liveth.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Isolation and abandonment",
-        "explanation": "",
+        "theme": "Alone",
+        "explanation": "Job's family and friends have all turned away from him.",
         "references": [
-          "Job 19:13–20"
+          "Job 19:13-19"
         ]
       },
       {
-        "theme": "The longing for lasting testimony",
-        "explanation": "",
+        "theme": "Words that last",
+        "explanation": "Job wishes his words were carved in stone.",
         "references": [
-          "Job 19:23–24"
+          "Job 19:23-24"
         ]
       },
       {
-        "theme": "Hope in a living vindicator",
-        "explanation": "",
+        "theme": "A living redeemer",
+        "explanation": "Job is sure that his redeemer lives and that he will see God.",
         "references": [
-          "Job 19:25–27"
+          "Job 19:25-27"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 20": {
-    "summary": "Zophar responds that the triumph of the wicked is brief, describing their riches and pleasures turning into poison and ruin. He says that those who oppress the poor eventually lose what they seize. The speech expresses a moral vision of wrongdoing's consequences, but Zophar presents it as a virtually automatic earthly pattern and leaves no room for the innocent suffering Job has described (Job 20:1–29).",
-    "whereWeAre": "In Job 20, images of food, wealth, and property seizure arise from ordinary ancient economic life This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Zophar says \"the triumphing of the wicked is short\" (Job 20:1–11). Though wickedness is sweet in his mouth, it turns to the poison of asps inside him (Job 20:12–22). God's wrath falls on him, and \"This is the portion of a wicked man from God\" (Job 20:23–29).",
+    "whereWeAre": "Job spoke of his redeemer in chapter 19. Now Zophar says the joy of the wicked is short and their riches turn to poison. In chapter 21 Job answers that the wicked often prosper.",
     "keyFigures": [
       {
         "name": "Zophar",
-        "role": "Speaker or addressed participant Zophar contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 20)."
+        "role": "Says the joy of the wicked is short."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 20)."
-      },
-      {
-        "name": "the wicked (poetic example)",
-        "role": "Person, group, or figure mentioned or described in the chapter the wicked (poetic example) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 20)."
+        "name": "Job",
+        "role": "The one Zophar is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "A fleeting triumph",
-        "explanation": "",
+        "theme": "Short-lived joy",
+        "explanation": "Zophar says the joy of the wicked lasts only a moment.",
         "references": [
-          "Job 20:4–11"
+          "Job 20:5"
         ]
       },
       {
-        "theme": "Greed becomes ruin",
-        "explanation": "",
+        "theme": "Sweet sin turns bitter",
+        "explanation": "Wickedness tastes sweet but turns to poison.",
         "references": [
-          "Job 20:12–22"
+          "Job 20:12-16"
         ]
       },
       {
-        "theme": "Retribution predicted",
-        "explanation": "",
+        "theme": "The wicked man's portion",
+        "explanation": "Zophar says God's wrath is the wicked man's portion.",
         "references": [
-          "Job 20:23–29"
+          "Job 20:23-29"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 21": {
-    "summary": "Job challenges his friends to look at what actually happens: some wicked people live long, enjoy security, and die without obvious calamity. He recognizes that outcomes differ and objects to the friends' insistence that calamity reliably exposes guilt. The chapter is a sustained challenge to simplistic retribution, asking why the prosperity of the wicked can be visible while the righteous suffer (Job 21:1–34).",
-    "whereWeAre": "In Job 21, observations of livestock, children, burial, and prosperous households connect the argument to social experience rather than a dated political event. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job asks his friends to listen to him, then let them mock (Job 21:1–6). He asks, \"Wherefore do the wicked live, become old, yea, are mighty in power?\" (Job 21:7–16). Their houses are safe and their children dance, though they tell God, \"Depart from us\" (Job 21:9–15). One man dies at ease and another in bitterness, and both lie in the dust (Job 21:17–26). Job says his friends' answers are false comfort (Job 21:27–34).",
+    "whereWeAre": "Zophar claimed in chapter 20 that the wicked soon fall. Job answers that many wicked people live long, grow rich, and die in peace. In chapter 22 Eliphaz opens the third round.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 21)."
-      },
-      {
-        "name": "the friends (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter the friends (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 21)."
-      },
-      {
-        "name": "the wicked (described)",
-        "role": "Person, group, or figure mentioned or described in the chapter the wicked (described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 21)."
+        "role": "Says the wicked often prosper and die in peace."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Listen before judging",
-        "explanation": "",
+        "theme": "The wicked prosper",
+        "explanation": "Job points out that many wicked people live long and well.",
         "references": [
-          "Job 21:1–6"
+          "Job 21:7-13"
         ]
       },
       {
-        "theme": "The prosperity of the wicked",
-        "explanation": "",
+        "theme": "Turning from God",
+        "explanation": "The prosperous wicked tell God to depart from them.",
         "references": [
-          "Job 21:7–16"
+          "Job 21:14-15"
         ]
       },
       {
-        "theme": "Unpredictable outcomes",
-        "explanation": "",
+        "theme": "Death comes to all",
+        "explanation": "The happy and the bitter both lie down in the dust.",
         "references": [
-          "Job 21:17–34"
+          "Job 21:23-26"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 22": {
-    "summary": "Eliphaz now makes explicit accusations: Job has allegedly oppressed the poor, withheld water and bread, and mistreated widows and orphans. The narrator supplies no evidence that these charges are true, and Job later denies such behavior. Eliphaz urges reconciliation with God and promises restoration, mixing an appeal to justice with an unsubstantiated prosecution of his suffering friend (Job 22:1–30).",
-    "whereWeAre": "In Job 22, hospitality and protection of vulnerable households were major ethical expectations This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Eliphaz asks, \"Is not thy wickedness great?\" (Job 22:1–5). He accuses Job of taking pledges, withholding bread and water, and sending widows away empty (Job 22:6–11). He says Job thinks God cannot see through the clouds (Job 22:12–20). He urges, \"Acquaint now thyself with him, and be at peace\" (Job 22:21–30).",
+    "whereWeAre": "Job ended the second round in chapter 21. Now Eliphaz accuses Job of specific sins against the poor and urges him to return to God. In chapter 23 Job answers.",
     "keyFigures": [
       {
         "name": "Eliphaz",
-        "role": "Speaker or addressed participant Eliphaz contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 22)."
+        "role": "Accuses Job of cruelty to the poor and urges him to return to God."
       },
       {
-        "name": "Job (accused)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (accused) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 22)."
-      },
-      {
-        "name": "widows, orphans, and the poor (in allegations)",
-        "role": "Person, group, or figure mentioned or described in the chapter widows, orphans, and the poor (in allegations) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 22)."
+        "name": "Job",
+        "role": "The one Eliphaz is accusing."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Unproven moral accusations",
-        "explanation": "",
+        "theme": "False charges",
+        "explanation": "Eliphaz accuses Job of sins Job never committed.",
         "references": [
-          "Job 22:1–11"
+          "Job 22:5-9"
         ]
       },
       {
-        "theme": "Misrepresenting God's distance",
-        "explanation": "",
+        "theme": "God sees",
+        "explanation": "Eliphaz says God is not blind behind the clouds.",
         "references": [
-          "Job 22:12–20"
+          "Job 22:12-14"
         ]
       },
       {
-        "theme": "Repentance and promised security",
-        "explanation": "",
+        "theme": "Return to God",
+        "explanation": "Eliphaz urges Job to make peace with God.",
         "references": [
-          "Job 22:21–30"
+          "Job 22:21-23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 23": {
-    "summary": "Job longs to find God and present his case, convinced that a just hearing would establish his integrity. Yet he cannot perceive God in any direction. He says that God knows his path and that he has not abandoned the divine command, while also admitting terror before God's purposes. His speech combines an appeal for justice, fidelity, and the pain of divine silence (Job 23:1–17).",
-    "whereWeAre": "In Job 23, a royal or judicial audience underlies the wish to plead a case, but no human courtroom scene is being narrated. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says, \"Oh that I knew where I might find him!\" and longs to lay his case before God (Job 23:1–7). He cannot find God anywhere, \"But he knoweth the way that I take: when he hath tried me, I shall come forth as gold\" (Job 23:8–12). He is troubled at God's presence, for God does what he wills (Job 23:13–17).",
+    "whereWeAre": "Eliphaz accused Job of cruelty in chapter 22. Job longs to find God and plead his case, sure that \"when he hath tried me, I shall come forth as gold\" (Job 23:10). He continues in chapter 24.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 23)."
-      },
-      {
-        "name": "God (sought and discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (sought and discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 23)."
+        "role": "Longs to find God and believes he will come forth as gold."
       }
     ],
     "keyThemes": [
       {
-        "theme": "A desire for a fair hearing",
-        "explanation": "",
+        "theme": "Seeking God",
+        "explanation": "Job longs to find God and lay his case before him.",
         "references": [
-          "Job 23:1–7"
+          "Job 23:3-4"
         ]
       },
       {
-        "theme": "Unseen but not forgotten",
-        "explanation": "",
+        "theme": "Tried as gold",
+        "explanation": "Job believes testing will prove him true.",
         "references": [
-          "Job 23:8–12"
+          "Job 23:10"
         ]
       },
       {
-        "theme": "Fear before divine purposes",
-        "explanation": "",
+        "theme": "Treasuring God's word",
+        "explanation": "Job values God's words more than his daily food.",
         "references": [
-          "Job 23:13–17"
+          "Job 23:12"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 24": {
-    "summary": "Job lists forms of injustice that appear unchecked: boundary stones moved, flocks stolen, laborers and the poor exploited, and the vulnerable exposed to hunger and cold. He also describes criminals operating in darkness and wrestles with the timing of their punishment. Some lines are difficult in Hebrew, so readers should avoid forcing every image into a uniform scheme. The chapter foregrounds social suffering and apparent delays of justice (Job 24:1–25).",
-    "whereWeAre": "In Job 24, property boundaries, debt, agricultural labor, and lack of protective clothing illustrate real social vulnerabilities in agrarian communities. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job asks why the wicked are not judged, as some move landmarks and take the flocks of the fatherless (Job 24:1–4). The poor go naked, hungry, and wet with rain while they work for others (Job 24:5–12). Murderers, adulterers, and thieves work in the dark (Job 24:13–17). Job says they are lifted up for a little while and then brought low (Job 24:18–25).",
+    "whereWeAre": "Job longed to find God in chapter 23. Now he describes how the poor are robbed and the wicked seem to go unpunished. In chapter 25 Bildad gives his last, short speech.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 24)."
-      },
-      {
-        "name": "poor laborers, widows, orphans, and oppressors (described)",
-        "role": "Person, group, or figure mentioned or described in the chapter poor laborers, widows, orphans, and oppressors (described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 24)."
+        "role": "Describes how the poor are oppressed while the wicked go free."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The vulnerable are exploited",
-        "explanation": "",
+        "theme": "Oppression of the poor",
+        "explanation": "The wicked rob the needy and the fatherless.",
         "references": [
-          "Job 24:1–12"
+          "Job 24:2-12"
         ]
       },
       {
-        "theme": "The hidden work of violent people",
-        "explanation": "",
+        "theme": "Deeds in the dark",
+        "explanation": "Murderers and thieves hide their work in darkness.",
         "references": [
-          "Job 24:13–17"
+          "Job 24:13-17"
         ]
       },
       {
-        "theme": "Judgment's disputed timing",
-        "explanation": "",
+        "theme": "Justice delayed",
+        "explanation": "Job asks why God seems slow to judge the wicked.",
         "references": [
-          "Job 24:18–25"
+          "Job 24:1",
+          "Job 24:24"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 25": {
-    "summary": "Bildad's final and very short speech praises God's dominion and purity and stresses how insignificant human beings are before him. He asks how anyone born of woman can be clean compared with the moon and stars. The speech contributes little direct engagement with Job's claim to have been treated unjustly. It illustrates the difference between affirming divine greatness and responsibly answering a suffering person's questions (Job 25:1–6).",
-    "whereWeAre": "In Job 25, the language of cosmic hierarchy belongs to ancient wisdom poetry This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Bildad says, \"Dominion and fear are with him\" (Job 25:1–3). He asks, \"How then can man be justified with God?\" for even the moon and stars are not pure in his sight, \"How much less man, that is a worm?\" (Job 25:4–6).",
+    "whereWeAre": "Job described the suffering of the poor in chapter 24. Bildad's short speech asks how any man can be clean before God. It is the friends' last word, and Job answers in chapter 26.",
     "keyFigures": [
       {
         "name": "Bildad",
-        "role": "Speaker or addressed participant Bildad contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 25)."
+        "role": "Asks how any man can be righteous before God."
       },
       {
-        "name": "Job (implicitly addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (implicitly addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 25)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 25)."
+        "name": "Job",
+        "role": "The one Bildad is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Divine dominion",
-        "explanation": "",
+        "theme": "God's rule",
+        "explanation": "Dominion and fear belong to God.",
         "references": [
-          "Job 25:1–3"
+          "Job 25:2-3"
         ]
       },
       {
-        "theme": "The question of righteousness",
-        "explanation": "",
+        "theme": "No one is clean",
+        "explanation": "Bildad asks how anyone born of a woman can be clean before God.",
         "references": [
           "Job 25:4"
         ]
       },
       {
-        "theme": "Human smallness before creation",
-        "explanation": "",
+        "theme": "Man is small",
+        "explanation": "Bildad compares man to a worm.",
         "references": [
-          "Job 25:5–6"
+          "Job 25:5-6"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 26": {
-    "summary": "Job mocks the inadequacy of Bildad's help to someone without strength, then offers his own majestic description of God's authority over the realm of the dead, the heavens, the sea, and the clouds. Yet he closes by saying these are only the outskirts of God's ways. He therefore agrees that God is powerful while denying that his friends' short explanations exhaust the mystery (Job 26:1–14).",
-    "whereWeAre": "In Job 26, poetic references to Rahab and a fleeing serpent reflect ancient cosmic imagery This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job asks how Bildad has helped the one who has no power (Job 26:1–4). He describes God's power: he \"hangeth the earth upon nothing,\" binds the waters in clouds, and divides the sea (Job 26:5–13). Yet \"these are parts of his ways\" — only a whisper of his power (Job 26:14).",
+    "whereWeAre": "Bildad's short speech in chapter 25 was the friends' last. Job answers with a picture of God's power over the heavens and the deep. He continues his closing words in chapter 27.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 26)."
-      },
-      {
-        "name": "Bildad (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Bildad (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 26)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 26)."
+        "role": "Answers Bildad and describes God's power over creation."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Comfort must fit the need",
-        "explanation": "",
+        "theme": "Help that does not help",
+        "explanation": "Job says Bildad's words have not helped him.",
         "references": [
-          "Job 26:1–4"
+          "Job 26:2-4"
         ]
       },
       {
-        "theme": "God's cosmic power",
-        "explanation": "",
+        "theme": "God over creation",
+        "explanation": "God hangs the earth on nothing and rules the waters.",
         "references": [
-          "Job 26:5–13"
+          "Job 26:7-12"
         ]
       },
       {
-        "theme": "The limits of what we hear",
-        "explanation": "",
+        "theme": "Only a whisper",
+        "explanation": "What we see of God is only a small part of his ways.",
         "references": [
           "Job 26:14"
         ]
@@ -1082,704 +957,605 @@
     "explainedReferences": []
   },
   "Job 27": {
-    "summary": "Job swears that he will not surrender his integrity or falsely confess wrong to satisfy his accusers. He says he will teach about the power of God, then depicts the eventual fate of the wicked, who cannot secure lasting prosperity through wealth. The speech is difficult to align with earlier debate positions, and scholars discuss its structure. Its clear emphasis is Job's refusal to testify falsely against himself (Job 27:1–23).",
-    "whereWeAre": "In Job 27, oaths and claims of innocence resemble judicial self-defense This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job swears, \"As God liveth,\" that he will not speak wickedness and will hold fast his righteousness (Job 27:1–6). He asks what hope the hypocrite has when God takes away his soul (Job 27:7–12). He describes \"the portion of a wicked man with God\": his children die, his silver goes to the just, and the east wind carries him away (Job 27:13–23).",
+    "whereWeAre": "Job described God's power in chapter 26. Now he swears he will hold on to his integrity as long as he lives and describes what the wicked receive from God. Chapter 28 asks where wisdom can be found.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 27)."
-      },
-      {
-        "name": "the friends (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter the friends (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 27)."
-      },
-      {
-        "name": "God (invoked)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (invoked) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 27)."
+        "role": "Swears he will hold fast his integrity."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Holding fast to integrity",
-        "explanation": "",
+        "theme": "Holding to integrity",
+        "explanation": "Job will not give up his integrity until he dies.",
         "references": [
-          "Job 27:1–6"
+          "Job 27:5-6"
         ]
       },
       {
-        "theme": "The emptiness of godlessness",
-        "explanation": "",
+        "theme": "The hypocrite's hope",
+        "explanation": "The godless have no hope when God takes their life.",
         "references": [
-          "Job 27:7–12"
+          "Job 27:8-10"
         ]
       },
       {
-        "theme": "Wealth does not last forever",
-        "explanation": "",
+        "theme": "Wealth that does not last",
+        "explanation": "The wicked man's silver goes to the just.",
         "references": [
-          "Job 27:13–23"
+          "Job 27:16-19"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 28": {
-    "summary": "The poem describes humanity's extraordinary ability to mine metals and uncover hidden treasures, then asks where true wisdom can be found. Neither the deep nor the sea can supply it, and it cannot be purchased with gold or precious stones. God alone knows its way, and the chapter concludes that fearing the Lord and turning from evil constitute wisdom for human beings. The speaker and placement are debated; the chapter functions as a turning point in the book's search for understanding (Job 28:1–28).",
-    "whereWeAre": "In Job 28, ancient mining and precious-metal trade provide the imagery This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Men dig deep into the earth for silver, gold, iron, and precious stones (Job 28:1–11). \"But where shall wisdom be found?\" It is not in the deep or the sea, and it cannot be bought with gold (Job 28:12–22). God alone knows its place, and he says to man, \"Behold, the fear of the Lord, that is wisdom; and to depart from evil is understanding\" (Job 28:23–28).",
+    "whereWeAre": "Job held to his integrity in chapter 27. This chapter describes men mining deep for silver and gold but finding no mine for wisdom, which comes only from \"the fear of the Lord\" (Job 28:28). In chapter 29 Job remembers his past.",
     "keyFigures": [
       {
-        "name": "Human miners (poetic description)",
-        "role": "Person, group, or figure mentioned or described in the chapter Human miners (poetic description) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 28)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 28)."
-      },
-      {
-        "name": "Job (possible speaker in the chapter's literary setting)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (possible speaker in the chapter's literary setting) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 28)."
+        "name": "Job",
+        "role": "Continues speaking, asking where wisdom can be found."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Human skill has limits",
-        "explanation": "",
+        "theme": "Human skill",
+        "explanation": "Men can dig deep into the earth for treasure.",
         "references": [
-          "Job 28:1–11"
+          "Job 28:1-11"
         ]
       },
       {
-        "theme": "Wisdom cannot be purchased",
-        "explanation": "",
+        "theme": "Wisdom cannot be bought",
+        "explanation": "No gold or jewel can buy wisdom.",
         "references": [
-          "Job 28:12–22"
+          "Job 28:12-19"
         ]
       },
       {
-        "theme": "Reverence and turning from evil",
-        "explanation": "",
+        "theme": "Fear of the Lord",
+        "explanation": "True wisdom is to fear the Lord and depart from evil.",
         "references": [
-          "Job 28:23–28"
+          "Job 28:28"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 29": {
-    "summary": "Job recalls the days when he experienced divine care, family fellowship, public respect, and an honored position at the city gate. He remembers rescuing the poor, assisting widows and orphans, and resisting oppressors. The memories show the kind of justice Job claims to have practiced and sharpen the contrast with his present humiliation. They are Job's testimony within the speech, not an independent archival report (Job 29:1–25).",
-    "whereWeAre": "In Job 29, the city gate served as a venue for public judgment and community affairs This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says, \"Oh that I were as in months past,\" when God watched over him and his children were around him (Job 29:1–6). When he went to the city gate, young men hid and princes stopped talking (Job 29:7–11). He helped the poor and the fatherless and says, \"I was eyes to the blind, and feet was I to the lame\" (Job 29:12–17). Men waited for his words, and he sat as a chief among them (Job 29:18–25).",
+    "whereWeAre": "Chapter 28 showed that wisdom is found only with God. Now Job remembers the days when he was honored at the city gate and helped the poor. Chapter 30 describes how everything has changed.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 29)."
-      },
-      {
-        "name": "God (remembered)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (remembered) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 29)."
-      },
-      {
-        "name": "the poor, widows, and orphans (remembered)",
-        "role": "Person, group, or figure mentioned or described in the chapter the poor, widows, and orphans (remembered) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 29)."
-      },
-      {
-        "name": "elders and nobles",
-        "role": "Person, group, or figure mentioned or described in the chapter elders and nobles contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 29)."
+        "role": "Remembers the honor and goodness of his former life."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Remembered intimacy and honor",
-        "explanation": "",
+        "theme": "Remembering better days",
+        "explanation": "Job remembers when God watched over him.",
         "references": [
-          "Job 29:1–11"
+          "Job 29:2-5"
         ]
       },
       {
-        "theme": "Justice for the vulnerable",
-        "explanation": "",
+        "theme": "Honored at the gate",
+        "explanation": "Young and old once respected Job.",
         "references": [
-          "Job 29:12–17"
+          "Job 29:7-11"
         ]
       },
       {
-        "theme": "Public leadership as service",
-        "explanation": "",
+        "theme": "Caring for the needy",
+        "explanation": "Job was eyes to the blind and a father to the poor.",
         "references": [
-          "Job 29:18–25"
+          "Job 29:12-16"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 30": {
-    "summary": "Job contrasts his former honor with mockery from younger and marginalized people. He reports relentless physical suffering, social rejection, and prayers that seem unanswered, addressing God as if God has become cruel. He had once cared for the poor but now receives no comfort. The chapter is a lament from someone who sees his world reversed; descriptions of persecutors should not be generalized into judgments on entire populations (Job 30:1–31).",
-    "whereWeAre": "In Job 30, status reversals, public shaming, and bodily lament explain the rhetoric This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Now men younger than Job, whose fathers he would not have set with his dogs, mock him (Job 30:1–15). His soul is poured out, his bones ache at night, and God has cast him into the mire (Job 30:16–19). \"I cry unto thee, and thou dost not hear me,\" he says (Job 30:20–23). He wept for the poor, but when he looked for good, evil came, and his harp turned to mourning (Job 30:24–31).",
+    "whereWeAre": "Job remembered his past honor in chapter 29. Now he describes the shame of being mocked even by outcasts, and his cries to God that go unanswered. In chapter 31 he makes his final oath of innocence.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 30)."
-      },
-      {
-        "name": "mockers and outcasts (described)",
-        "role": "Person, group, or figure mentioned or described in the chapter mockers and outcasts (described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 30)."
-      },
-      {
-        "name": "God (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 30)."
+        "role": "Describes being mocked and cries to God with no answer."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Humiliation after honor",
-        "explanation": "",
+        "theme": "Honor turned to shame",
+        "explanation": "Job is now mocked even by outcasts.",
         "references": [
-          "Job 30:1–15"
+          "Job 30:1-10"
         ]
       },
       {
-        "theme": "The experience of unanswered prayer",
-        "explanation": "",
+        "theme": "Unanswered prayer",
+        "explanation": "Job cries to God but feels unheard.",
         "references": [
-          "Job 30:16–23"
+          "Job 30:20"
         ]
       },
       {
-        "theme": "Compassion returned as pain",
-        "explanation": "",
+        "theme": "Mourning",
+        "explanation": "Job's music has turned to weeping.",
         "references": [
-          "Job 30:24–31"
+          "Job 30:31"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 31": {
-    "summary": "Job makes a detailed final oath of innocence, denying lust, deceit, exploitation of servants, disregard for the poor, trust in wealth, idolatry, hostility toward enemies, and concealment of wrongdoing. He invites judgment if his denials are false and longs for a written indictment from his accuser. The chapter does not claim that Job is universally sinless; it presents a specific ethical defense against his friends' allegations (Job 31:1–40).",
-    "whereWeAre": "In Job 31, conditional self-cursing is a known oath form This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says, \"I made a covenant with mine eyes,\" and denies lust and deceit (Job 31:1–12). He has not ignored his servants, the poor, the widow, or the fatherless (Job 31:13–23). He has not trusted in gold, worshiped the sun or moon, or rejoiced when his enemy fell (Job 31:24–34). He cries, \"Oh that one would hear me!\" and \"The words of Job are ended\" (Job 31:35–40).",
+    "whereWeAre": "Job described his present misery in chapter 30. Now he swears he has not lusted, lied, mistreated his servants, ignored the poor, or worshiped the sun. \"The words of Job are ended\" (Job 31:40), and in chapter 32 a young man named Elihu speaks.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 31)."
-      },
-      {
-        "name": "servants, poor people, widows, orphans, and strangers (in his oath)",
-        "role": "Person, group, or figure mentioned or described in the chapter servants, poor people, widows, orphans, and strangers (in his oath) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 31)."
-      },
-      {
-        "name": "God (invoked)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (invoked) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 31)."
+        "role": "Swears an oath of innocence and asks God to answer him."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Faithfulness in private conduct",
-        "explanation": "",
+        "theme": "Purity of heart",
+        "explanation": "Job made a covenant with his eyes.",
         "references": [
-          "Job 31:1–12"
+          "Job 31:1"
         ]
       },
       {
-        "theme": "Justice for dependents and the poor",
-        "explanation": "",
+        "theme": "Justice for others",
+        "explanation": "Job did not ignore the rights of his servants or the poor.",
         "references": [
-          "Job 31:13–23"
+          "Job 31:13-22"
         ]
       },
       {
-        "theme": "Integrity regarding wealth and enemies",
-        "explanation": "",
+        "theme": "Not trusting in riches",
+        "explanation": "Job did not make gold his hope.",
         "references": [
-          "Job 31:24–40"
+          "Job 31:24-28"
+        ]
+      },
+      {
+        "theme": "Asking for a hearing",
+        "explanation": "Job longs for God to answer him.",
+        "references": [
+          "Job 31:35"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 32": {
-    "summary": "The three friends stop answering because Job maintains his righteousness. Elihu, son of Barachel the Buzite, becomes angry both with Job and with the friends and explains why he had kept silent while his elders spoke. He argues that understanding does not belong only to the old and promises an impartial reply. This chapter introduces a new voice; the book does not expressly equate all of Elihu's later claims with God's own judgment (Job 32:1–22).",
-    "whereWeAre": "In Job 32, respect for elders helps explain Elihu's delayed entrance This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "The three friends stop answering Job, \"because he was righteous in his own eyes\" (Job 32:1). Elihu the son of Barachel is angry with Job for justifying himself rather than God, and with the friends for finding no answer (Job 32:2–5). He says he waited because he was young, but \"Great men are not always wise\" (Job 32:6–10). He says he is full of words and must speak without flattering anyone (Job 32:11–22).",
+    "whereWeAre": "Job's words ended in chapter 31, and the friends have nothing more to say. Now Elihu, a younger man, speaks up, angry at both Job and the friends. In chapter 33 he speaks to Job directly.",
     "keyFigures": [
       {
-        "name": "Elihu son of Barachel",
-        "role": "Person, group, or figure mentioned or described in the chapter Elihu son of Barachel contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 32)."
-      },
-      {
-        "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 32)."
+        "name": "Elihu",
+        "role": "The son of Barachel, a young man angry with Job and the friends."
       },
       {
         "name": "Eliphaz, Bildad, and Zophar",
-        "role": "Person, group, or figure mentioned or described in the chapter Eliphaz, Bildad, and Zophar contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 32)."
+        "role": "Stop answering Job."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Anger at failed explanations",
-        "explanation": "",
+        "theme": "Anger at both sides",
+        "explanation": "Elihu is angry with Job and with the friends.",
         "references": [
-          "Job 32:1–5"
+          "Job 32:2-3"
         ]
       },
       {
-        "theme": "Wisdom not guaranteed by age",
-        "explanation": "",
+        "theme": "Wisdom is not only for the old",
+        "explanation": "Elihu says the Spirit gives understanding, not age alone.",
         "references": [
-          "Job 32:6–10"
+          "Job 32:7-9"
         ]
       },
       {
-        "theme": "The responsibility to speak fairly",
-        "explanation": "",
+        "theme": "Speaking without flattery",
+        "explanation": "Elihu promises to speak honestly to everyone.",
         "references": [
-          "Job 32:11–22"
+          "Job 32:21-22"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 33": {
-    "summary": "Elihu addresses Job and urges him to listen, arguing that God may speak through dreams, pain, correction, and messengers even when people do not recognize it. He describes a sufferer restored through an intervening messenger and interprets suffering as a possible means of rescue from destruction. His proposal differs from the friends' automatic punishment theory, but it remains Elihu's explanation of Job's case (Job 33:1–33).",
-    "whereWeAre": "In Job 33, dreams and interpretive messengers appear in ancient Near Eastern religious discourse This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Elihu asks Job to listen, saying, \"The Spirit of God hath made me\" (Job 33:1–7). He quotes Job's claims to be clean and says, \"in this thou art not just\" (Job 33:8–13). God speaks in dreams and through pain to keep a man from the pit (Job 33:14–22). If a messenger speaks for him, God says, \"Deliver him from going down to the pit: I have found a ransom\" (Job 33:23–30). Elihu asks Job to answer or hold his peace (Job 33:31–33).",
+    "whereWeAre": "Elihu explained in chapter 32 why he had waited to speak. Now he tells Job that God speaks through dreams and through pain to turn people back from death. In chapter 34 he defends God's justice.",
     "keyFigures": [
       {
         "name": "Elihu",
-        "role": "Speaker or addressed participant Elihu contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 33)."
+        "role": "Tells Job that God speaks through dreams and pain."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 33)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 33)."
-      },
-      {
-        "name": "a messenger or mediator (illustrative)",
-        "role": "Person, group, or figure mentioned or described in the chapter a messenger or mediator (illustrative) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 33)."
+        "name": "Job",
+        "role": "The one Elihu is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "A call to hear another account",
-        "explanation": "",
+        "theme": "God speaks",
+        "explanation": "God speaks once or twice, though people do not notice.",
         "references": [
-          "Job 33:1–7"
+          "Job 33:14"
         ]
       },
       {
-        "theme": "Possible warnings through suffering",
-        "explanation": "",
+        "theme": "Pain as a warning",
+        "explanation": "Elihu says God uses pain to turn people from pride.",
         "references": [
-          "Job 33:14–22"
+          "Job 33:17-22"
         ]
       },
       {
-        "theme": "Restoration described",
-        "explanation": "",
+        "theme": "A ransom found",
+        "explanation": "God delivers the one for whom a ransom is found.",
         "references": [
-          "Job 33:23–30"
+          "Job 33:23-28"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 34": {
-    "summary": "Elihu challenges Job's complaints about injustice, arguing that God cannot do wrong and that a universal ruler must judge fairly. He cites God's knowledge of human conduct and condemns Job's words as rebellious. The chapter affirms a strong theology of divine justice while offering Elihu's critique, not a narrator-certified explanation for the specific losses in chapters 1–2 (Job 34:1–37).",
-    "whereWeAre": "In Job 34, the imagined circle of wise hearers and royal-justice imagery mirror public reasoning among teachers and judges. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Elihu calls on the wise men to hear him and says Job claims to be righteous (Job 34:1–9). He says, \"Yea, surely God will not do wickedly, neither will the Almighty pervert judgment\" (Job 34:10–15). God shows no partiality to princes, and his eyes see every step a man takes (Job 34:16–30). Elihu says, \"Job hath spoken without knowledge\" (Job 34:31–37).",
+    "whereWeAre": "Elihu told Job in chapter 33 that God warns people through suffering. Now he insists that \"God will not do wickedly\" (Job 34:12) and says Job has spoken without knowledge. He continues in chapter 35.",
     "keyFigures": [
       {
         "name": "Elihu",
-        "role": "Speaker or addressed participant Elihu contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 34)."
+        "role": "Defends God's justice and says Job spoke without knowledge."
       },
       {
-        "name": "Job (quoted and criticized)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (quoted and criticized) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 34)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 34)."
-      },
-      {
-        "name": "the wise listeners",
-        "role": "Person, group, or figure mentioned or described in the chapter the wise listeners contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 34)."
+        "name": "Job",
+        "role": "The one Elihu is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Elihu's charges against Job",
-        "explanation": "",
+        "theme": "God does no wrong",
+        "explanation": "Elihu insists the Almighty will not pervert judgment.",
         "references": [
-          "Job 34:1–9"
+          "Job 34:10-12"
         ]
       },
       {
-        "theme": "The impartiality of divine rule",
-        "explanation": "",
+        "theme": "God sees all",
+        "explanation": "No darkness can hide the wicked from God.",
         "references": [
-          "Job 34:10–19"
+          "Job 34:21-22"
         ]
       },
       {
-        "theme": "Human acts known to God",
-        "explanation": "",
+        "theme": "Speaking without knowledge",
+        "explanation": "Elihu says Job's words lack wisdom.",
         "references": [
-          "Job 34:21–30"
+          "Job 34:35"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 35": {
-    "summary": "Elihu asks how human righteousness or sin could change God, arguing that their immediate consequences are felt by other humans. He says many oppressed people cry out without recognizing the Maker and accuses Job of empty words. The speech explores divine transcendence and human conduct but risks flattening the emotional force of Job's unanswered prayer (Job 35:1–16).",
-    "whereWeAre": "In Job 35, elihu's examples of social oppression are general illustrations, not separately dated events or verified descriptions of Job. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Elihu asks what advantage Job thinks there is in being righteous (Job 35:1–4). He tells Job to look at the heavens and says his sin or righteousness does not change God (Job 35:5–8). The oppressed cry out, but none says, \"Where is God my maker, who giveth songs in the night?\" (Job 35:9–13). He says Job opens his mouth in vain (Job 35:14–16).",
+    "whereWeAre": "Elihu defended God's justice in chapter 34. Now he says that a person's sin or righteousness does not change God, and that Job's words are empty. Chapter 36 begins Elihu's last speech.",
     "keyFigures": [
       {
         "name": "Elihu",
-        "role": "Speaker or addressed participant Elihu contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 35)."
+        "role": "Says Job's righteousness does not change God."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 35)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 35)."
-      },
-      {
-        "name": "the oppressed (described)",
-        "role": "Person, group, or figure mentioned or described in the chapter the oppressed (described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 35)."
+        "name": "Job",
+        "role": "The one Elihu is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The question of advantage",
-        "explanation": "",
+        "theme": "God is above us",
+        "explanation": "Man's sin or righteousness does not change God.",
         "references": [
-          "Job 35:1–8"
+          "Job 35:5-8"
         ]
       },
       {
-        "theme": "The cry of the oppressed",
-        "explanation": "",
+        "theme": "Songs in the night",
+        "explanation": "God gives songs in the night to those who seek him.",
         "references": [
-          "Job 35:9–13"
+          "Job 35:10"
         ]
       },
       {
-        "theme": "The accusation of empty speech",
-        "explanation": "",
+        "theme": "Empty words",
+        "explanation": "Elihu says Job multiplies words without knowledge.",
         "references": [
-          "Job 35:14–16"
+          "Job 35:16"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 36": {
-    "summary": "Elihu continues to defend divine justice, arguing that God does not ignore the righteous or the afflicted and may use suffering to open ears to correction. He cautions Job against anger and turns to a celebration of God's greatness through rain, clouds, and storms. His teaching frames suffering as potentially instructive, but readers should not treat it as a proven explanation for every illness or loss (Job 36:1–33).",
-    "whereWeAre": "In Job 36, rain and seasonal storms shaped life in agrarian societies This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Elihu says he will speak on God's behalf (Job 36:1–4). God is mighty and despises no one; he opens the ears of the afflicted to correction (Job 36:5–15). Elihu warns Job not to turn to wickedness (Job 36:16–21). \"Behold, God is great, and we know him not,\" he says, and describes the rain and the clouds (Job 36:22–33).",
+    "whereWeAre": "Elihu called Job's words empty in chapter 35. Now he says God uses affliction to open people's ears and points to God's greatness in the rain and clouds. He finishes in chapter 37.",
     "keyFigures": [
       {
         "name": "Elihu",
-        "role": "Speaker or addressed participant Elihu contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 36)."
+        "role": "Says God uses affliction to teach and points to the rain."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 36)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 36)."
+        "name": "Job",
+        "role": "The one Elihu is answering."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God's concern for the afflicted",
-        "explanation": "",
+        "theme": "Teaching through trouble",
+        "explanation": "God opens the ears of the afflicted.",
         "references": [
-          "Job 36:5–15"
+          "Job 36:8-10",
+          "Job 36:15"
         ]
       },
       {
-        "theme": "A warning about easy conclusions",
-        "explanation": "",
+        "theme": "A warning",
+        "explanation": "Elihu warns Job not to choose sin over suffering.",
         "references": [
-          "Job 36:16–21"
+          "Job 36:21"
         ]
       },
       {
-        "theme": "Majesty displayed in weather",
-        "explanation": "",
+        "theme": "God is great",
+        "explanation": "We cannot fully know God or count his years.",
         "references": [
-          "Job 36:22–33"
+          "Job 36:26"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 37": {
-    "summary": "Elihu describes thunder, lightning, snow, winds, and clouds as demonstrations of divine greatness. He asks Job to consider how little humans control or understand the weather and concludes with reverence for God's awesome majesty. The speech prepares the reader for the LORD's answer from the whirlwind, although Elihu's account is still his own argument and not that answer itself (Job 37:1–24).",
-    "whereWeAre": "In Job 37, seasonal cold, rainfall, and agricultural rhythms give the meteorological descriptions everyday significance. This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Elihu's heart trembles at God's voice in the thunder and lightning (Job 37:1–5). God sends snow and rain, frost and whirlwind, as he wills (Job 37:6–13). He tells Job, \"stand still, and consider the wondrous works of God\" (Job 37:14–20). He ends, \"Touching the Almighty, we cannot find him out\" (Job 37:21–24).",
+    "whereWeAre": "Elihu began describing God's power in the storm in chapter 36. Now he describes thunder, snow, and the whirlwind and tells Job to \"stand still, and consider the wondrous works of God\" (Job 37:14). In chapter 38 God himself speaks.",
     "keyFigures": [
       {
         "name": "Elihu",
-        "role": "Speaker or addressed participant Elihu contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 37)."
+        "role": "Describes God's power in the storm."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 37)."
-      },
-      {
-        "name": "God (discussed)",
-        "role": "Person, group, or figure mentioned or described in the chapter God (discussed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 37)."
+        "name": "Job",
+        "role": "Told to stand still and consider God's works."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Wonder before storms",
-        "explanation": "",
+        "theme": "God's voice in the storm",
+        "explanation": "Thunder and lightning show God's power.",
         "references": [
-          "Job 37:1–5"
+          "Job 37:2-5"
         ]
       },
       {
-        "theme": "Nature beyond human control",
-        "explanation": "",
+        "theme": "Consider God's works",
+        "explanation": "Elihu tells Job to stand still and think on God's wonders.",
         "references": [
-          "Job 37:6–13"
+          "Job 37:14"
         ]
       },
       {
-        "theme": "Humility about knowledge",
-        "explanation": "",
+        "theme": "Beyond our reach",
+        "explanation": "No one can find out the Almighty.",
         "references": [
-          "Job 37:14–24"
+          "Job 37:23-24"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 38": {
-    "summary": "The LORD answers Job from a whirlwind, challenging him with questions about the foundation of the earth, boundaries of the sea, dawn, the depths, weather, stars, and animal provision. God does not disclose the heavenly conversation of the opening chapters or give a straightforward causal explanation for Job's suffering. The questions relocate the debate within the breadth and complexity of creation, exposing the limits of human knowledge (Job 38:1–41).",
-    "whereWeAre": "In Job 38, creation speeches use poetic architecture, storehouses, and cosmic boundaries This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "\"Then the LORD answered Job out of the whirlwind,\" telling him to gird up his loins and answer (Job 38:1–3). He asks, \"Where wast thou when I laid the foundations of the earth?\" when \"the morning stars sang together\" (Job 38:4–7). He asks who shut up the sea and who commands the morning (Job 38:8–15). He asks whether Job has seen the gates of death or the treasures of the snow (Job 38:16–30). He asks whether Job can bind the Pleiades or feed the lions and ravens (Job 38:31–41).",
+    "whereWeAre": "Elihu finished speaking in chapter 37 as a storm gathered. Now \"the LORD answered Job out of the whirlwind\" (Job 38:1), asking where Job was when he laid the foundations of the earth. Chapter 39 turns to the wild animals.",
     "keyFigures": [
       {
-        "name": "the LORD",
-        "role": "Speaker or addressed participant the LORD contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 38)."
+        "name": "The LORD",
+        "role": "Answers Job out of the whirlwind with questions about creation."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 38)."
-      },
-      {
-        "name": "lions and ravens (creature examples)",
-        "role": "Person, group, or figure mentioned or described in the chapter lions and ravens (creature examples) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 38)."
+        "name": "Job",
+        "role": "Asked to answer God like a man."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God speaks amid the storm",
-        "explanation": "",
+        "theme": "God speaks",
+        "explanation": "God answers Job at last, out of the whirlwind.",
         "references": [
-          "Job 38:1–3"
+          "Job 38:1"
         ]
       },
       {
-        "theme": "The ordering of creation",
-        "explanation": "",
+        "theme": "Where were you?",
+        "explanation": "God asks where Job was when the earth was made.",
         "references": [
-          "Job 38:4–21"
+          "Job 38:4-7"
         ]
       },
       {
-        "theme": "Knowledge and provision beyond humans",
-        "explanation": "",
+        "theme": "God's care for creation",
+        "explanation": "God sends the rain and feeds the lions and ravens.",
         "references": [
-          "Job 38:22–41"
+          "Job 38:25-27",
+          "Job 38:39-41"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 39": {
-    "summary": "The divine speech continues with questions about mountain goats, deer, wild donkeys, wild oxen, ostriches, warhorses, hawks, and eagles. Many creatures live and flourish beyond humanity's domestication or supervision. The selection portrays a world broader than human usefulness, pressing Job to recognize the limits of his perspective without belittling the reality of his loss (Job 39:1–30).",
-    "whereWeAre": "In Job 39, herding, hunting, and trained warhorses make the contrasts intelligible to ancient audiences This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "God asks whether Job knows when the wild goats give birth (Job 39:1–4). He asks who set the wild ass free and whether the unicorn will serve him (Job 39:5–12). He describes the ostrich, which leaves her eggs in the earth because God has deprived her of wisdom (Job 39:13–18). He describes the war horse that \"saith among the trumpets, Ha, ha\" (Job 39:19–25). He asks whether the hawk and the eagle fly by Job's wisdom (Job 39:26–30).",
+    "whereWeAre": "God asked Job about the earth, the sea, and the stars in chapter 38. Now he asks about wild goats, the wild ass, the ostrich, the warhorse, and the eagle. In chapter 40 God calls on Job to answer.",
     "keyFigures": [
       {
-        "name": "the LORD",
-        "role": "Speaker or addressed participant the LORD contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 39)."
+        "name": "The LORD",
+        "role": "Asks Job about the wild animals."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 39)."
-      },
-      {
-        "name": "wild creatures (examples)",
-        "role": "Person, group, or figure mentioned or described in the chapter wild creatures (examples) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 39)."
+        "name": "Job",
+        "role": "The one God is questioning."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Wild life outside human management",
-        "explanation": "",
+        "theme": "The wild belong to God",
+        "explanation": "God cares for animals that people never tame.",
         "references": [
-          "Job 39:1–12"
+          "Job 39:1-8"
         ]
       },
       {
-        "theme": "Unexpected patterns of creaturely life",
-        "explanation": "",
+        "theme": "Strength God gives",
+        "explanation": "The war horse's strength is a gift from God.",
         "references": [
-          "Job 39:13–18"
+          "Job 39:19-25"
         ]
       },
       {
-        "theme": "Strength and freedom in creation",
-        "explanation": "",
+        "theme": "Not by our wisdom",
+        "explanation": "The hawk and the eagle do not fly by Job's wisdom.",
         "references": [
-          "Job 39:19–30"
+          "Job 39:26-27"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 40": {
-    "summary": "The LORD challenges Job to answer, and Job acknowledges his smallness and puts his hand over his mouth. God then asks whether Job would invalidate divine justice to vindicate himself, inviting him to display the power to humble the proud. The LORD presents Behemoth as a formidable creature beyond human control. The animal's precise identification is debated, and the speech's chief force concerns the disparity between human and divine power (Job 40:1–24).",
-    "whereWeAre": "In Job 40, ancient royal claims to control enemies illuminate the challenge This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "God asks, \"Shall he that contendeth with the Almighty instruct him?\" (Job 40:1–2). Job answers, \"Behold, I am vile... I will lay mine hand upon my mouth\" (Job 40:3–5). God speaks again from the whirlwind: \"Wilt thou condemn me, that thou mayest be righteous?\" (Job 40:6–9). He tells Job to humble every proud one if he can (Job 40:10–14). He describes behemoth, whose bones are like bars of iron (Job 40:15–24).",
+    "whereWeAre": "God showed Job the wild animals in chapter 39. Now Job puts his hand over his mouth, and God speaks again, asking whether Job can rule like God and describing behemoth. Chapter 41 describes leviathan.",
     "keyFigures": [
       {
-        "name": "the LORD",
-        "role": "Speaker or addressed participant the LORD contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 40)."
+        "name": "The LORD",
+        "role": "Challenges Job and describes behemoth."
       },
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 40)."
-      },
-      {
-        "name": "Behemoth (creature described)",
-        "role": "Person, group, or figure mentioned or described in the chapter Behemoth (creature described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 40)."
+        "role": "Lays his hand on his mouth."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The limit of rebuttal",
-        "explanation": "",
+        "theme": "Silence before God",
+        "explanation": "Job lays his hand on his mouth.",
         "references": [
-          "Job 40:1–5"
+          "Job 40:4-5"
         ]
       },
       {
-        "theme": "Justice and power challenged",
-        "explanation": "",
+        "theme": "Do not condemn God",
+        "explanation": "God asks whether Job would make God wrong to make himself right.",
         "references": [
-          "Job 40:6–14"
+          "Job 40:8"
         ]
       },
       {
-        "theme": "Behemoth and human limits",
-        "explanation": "",
+        "theme": "The power of creation",
+        "explanation": "Behemoth shows the might of what God made.",
         "references": [
-          "Job 40:15–24"
+          "Job 40:15-19"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 41": {
-    "summary": "The LORD describes Leviathan, emphasizing its terrifying strength, defenses, and resistance to capture. No human can treat it as a pet, bargain over it, or master it by force. The passage culminates God's questions about creation's scale and power, challenging a human claim to comprehensive control. Interpreters disagree whether Leviathan is best understood as an animal, a mythic chaos image, or imagery drawing on both (Job 41:1–34).",
-    "whereWeAre": "In Job 41, fishing, weapons, and ancient monster imagery shape the poem This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "God asks, \"Canst thou draw out leviathan with an hook?\" (Job 41:1–9). No one dares stir him up, so who can stand before God (Job 41:10–11)? God describes leviathan's scales, his fiery breath, and his strong heart (Job 41:12–24). Swords, spears, and arrows cannot harm him, and \"he is a king over all the children of pride\" (Job 41:25–34).",
+    "whereWeAre": "God described behemoth in chapter 40. Now he describes leviathan, a creature no man can tame, and asks who then can stand before its Maker. In chapter 42 Job answers.",
     "keyFigures": [
       {
-        "name": "the LORD",
-        "role": "Speaker or addressed participant the LORD contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 41)."
+        "name": "The LORD",
+        "role": "Describes leviathan, whom no one can tame."
       },
       {
-        "name": "Job (addressed)",
-        "role": "Person, group, or figure mentioned or described in the chapter Job (addressed) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 41)."
-      },
-      {
-        "name": "Leviathan (creature described)",
-        "role": "Person, group, or figure mentioned or described in the chapter Leviathan (creature described) contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 41)."
+        "name": "Job",
+        "role": "The one God is questioning."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The impossibility of control",
-        "explanation": "",
+        "theme": "Beyond human control",
+        "explanation": "No one can catch or tame leviathan.",
         "references": [
-          "Job 41:1–11"
+          "Job 41:1-9"
         ]
       },
       {
-        "theme": "A fearsome creature portrayed",
-        "explanation": "",
+        "theme": "Who can stand before God?",
+        "explanation": "If no one dares stir leviathan, no one can stand against God.",
         "references": [
-          "Job 41:12–25"
+          "Job 41:10-11"
         ]
       },
       {
-        "theme": "Power that humbles pride",
-        "explanation": "",
+        "theme": "Pride brought low",
+        "explanation": "Leviathan is king over all the proud.",
         "references": [
-          "Job 41:26–34"
+          "Job 41:34"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Job 42": {
-    "summary": "Job replies that God can accomplish his purposes and admits he spoke beyond his understanding; the precise nuance of his response in dust and ashes is debated. The LORD then rebukes Eliphaz and the two other friends for not speaking rightly about him as Job has, directing them to offer sacrifices while Job prays for them. Job's fortunes are restored, his kin visit him, and he receives a renewed household and long life. The ending vindicates Job against the friends' accusations but does not teach that every sufferer will receive comparable earthly restoration (Job 42:1–17).",
-    "whereWeAre": "In Job 42, animal sacrifices and Job's intercessory prayer match the book's household religious world This cultural detail clarifies the specific imagery without proving a date for the action.",
+    "summary": "Job says to the LORD, \"I know that thou canst do every thing,\" and admits he spoke of things too wonderful for him (Job 42:1–3). \"I have heard of thee by the hearing of the ear: but now mine eye seeth thee,\" he says, and he repents in dust and ashes (Job 42:4–6). The LORD tells Eliphaz that the friends have not spoken of him \"the thing that is right,\" and Job prays for them (Job 42:7–9). The LORD gives Job twice as much as he had before, and his family comes to comfort him (Job 42:10–11). Job has seven sons and three daughters and lives 140 more years, dying \"old and full of days\" (Job 42:12–17).",
+    "whereWeAre": "God finished speaking in chapter 41. Job repents in dust and ashes, God rebukes the three friends, and Job's fortunes are restored twice over. Psalms follows, the book of Israel's songs and prayers, beginning with the blessing of the righteous man.",
     "keyFigures": [
       {
         "name": "Job",
-        "role": "Speaker or addressed participant Job contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 42)."
+        "role": "Repents, prays for his friends, and is restored."
       },
       {
-        "name": "the LORD",
-        "role": "Speaker or addressed participant the LORD contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 42)."
+        "name": "The LORD",
+        "role": "Rebukes the friends and blesses Job's latter end."
       },
       {
-        "name": "Eliphaz",
-        "role": "Speaker or addressed participant Eliphaz contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 42)."
+        "name": "Eliphaz, Bildad, and Zophar",
+        "role": "Offer sacrifices as the LORD commands."
       },
       {
-        "name": "Bildad",
-        "role": "Speaker or addressed participant Bildad contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 42)."
-      },
-      {
-        "name": "Zophar",
-        "role": "Speaker or addressed participant Zophar contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 42)."
-      },
-      {
-        "name": "Job's relatives",
-        "role": "Person, group, or figure mentioned or described in the chapter Job's relatives contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 42)."
-      },
-      {
-        "name": "Job's seven sons and three daughters",
-        "role": "Person, group, or figure mentioned or described in the chapter Job's seven sons and three daughters contributes to the chapter’s description or debate about suffering, faith, justice, and human understanding (Job 42)."
+        "name": "Job's family",
+        "role": "Come to comfort Job and bring him gifts."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Humility after encounter",
-        "explanation": "",
+        "theme": "Seeing God",
+        "explanation": "Job moves from hearing about God to seeing him.",
         "references": [
-          "Job 42:1–6"
+          "Job 42:5-6"
         ]
       },
       {
-        "theme": "The friends corrected",
-        "explanation": "",
+        "theme": "Speaking rightly",
+        "explanation": "God says the friends spoke wrongly and asks Job to pray for them.",
         "references": [
-          "Job 42:7–9"
+          "Job 42:7-9"
         ]
       },
       {
-        "theme": "Restoration and generous remembrance",
-        "explanation": "",
+        "theme": "Restoration",
+        "explanation": "God gives Job twice as much as before.",
         "references": [
-          "Job 42:10–17"
+          "Job 42:10-12"
         ]
       }
     ],
