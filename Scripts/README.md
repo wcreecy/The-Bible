@@ -30,6 +30,15 @@ After loading, the build collapses repeated parallel-passage cards
 every reference in every table exists in the KJV (`repair_bible_insight_references.py`), and
 confirms `book_content/*.md` matches the database (`export_book_content.py --check`).
 
+Last, `check_content_quality.py` checks the house style that the reference and quote checks
+can't: Where We Are text that places the chapter instead of filler, exact KJV wording even in
+single quotes, summaries with citations for the What Happens outline, explained themes, at
+most six Key People, distinct Historical Moment and Original Audience text, lowercase
+pronouns for God, and KJV spellings of names. Run `python3 Scripts/check_content_quality.py`
+for open issues by book, or add `--book Joshua` for every issue in one book. When a book has
+had a full review, add it to `quality_reviewed_books.json`; from then on any issue in that
+book fails the build.
+
 Each step can also be run on its own; they all write to the database `insights_common.py`
 names. Every content file is checked against `The Bible/kjv.json`: references must exist and
 double-quoted text must match the KJV wording.

@@ -77,9 +77,11 @@ struct BookOverviewView: View {
 
     private func settingRows(_ overview: BibleBookOverview) -> [LabeledRowsSection.Row] {
         guard let whenAndWhere = overview.whenAndWhere else { return [] }
+        // A letter's history describes when it was sent and how it came about, not events it narrates.
+        let isLetter = BibleStudyMetadata.genre(for: overview.name) == "Letter"
         return [
-            .init(title: "When It Happened", icon: "calendar", content: whenAndWhere.whenItHappened),
-            .init(title: "How It Was Written", icon: "scroll", content: whenAndWhere.whenItWasWritten),
+            .init(title: isLetter ? "When It Was Written" : "When It Happened", icon: "calendar", content: whenAndWhere.whenItHappened),
+            .init(title: isLetter ? "How It Came to Be" : "How It Was Written", icon: "scroll", content: whenAndWhere.whenItWasWritten),
             .init(title: "Where", icon: "mappin.and.ellipse", content: whenAndWhere.location),
             .init(title: "The World at the Time", icon: "globe.europe.africa", content: whenAndWhere.worldAtTheTime)
         ]

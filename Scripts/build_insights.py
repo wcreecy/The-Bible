@@ -22,6 +22,9 @@ it untouched. Steps, in order (see Scripts/README.md for each source):
  8. repair_bible_insight_references.py                 fixes known reference defects; every reference
                                                        in every table must exist in the KJV
  9. export_book_content.py --check                     book_content/*.md matches the database
+10. check_content_quality.py --summary                  house style: placement text, KJV wording,
+                                                       outlines, themes, Key People; issues fail the
+                                                       build only for quality_reviewed_books.json
 
 Then the build checks database integrity and foreign keys and lists, table by table, how
 many rows were added or removed compared with the bundled database.
@@ -57,6 +60,7 @@ STEPS = [
     ["collapse_repeated_cross_references.py"],
     ["repair_bible_insight_references.py"],
     ["export_book_content.py", "--check"],
+    ["check_content_quality.py", "--summary"],
 ]
 
 
