@@ -115,13 +115,15 @@ struct ReadingView: View {
                     }
                     .accessibilityLabel("Search Bible")
 
-                    Button {
-                        isChapterInsightsPresented = true
-                    } label: {
-                        Image(systemName: "lightbulb")
+                    if UIDevice.current.userInterfaceIdiom != .phone {
+                        Button {
+                            isChapterInsightsPresented = true
+                        } label: {
+                            Image(systemName: "lightbulb")
+                        }
+                        .accessibilityLabel("Study this chapter")
+                        .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
                     }
-                    .accessibilityLabel("Study this chapter")
-                    .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
 
                     Menu {
                         Button {
@@ -148,6 +150,16 @@ struct ReadingView: View {
                             presentFocusMode()
                         } label: {
                             Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
+                        }
+
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            Divider()
+
+                            Button {
+                                isChapterInsightsPresented = true
+                            } label: {
+                                Label("Chapter Insights", systemImage: "lightbulb")
+                            }
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
