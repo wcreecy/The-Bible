@@ -3719,70 +3719,70 @@
     "explainedReferences": []
   },
   "Psalms 90": {
-    "summary": "A prayer attributed to Moses contrasts God's eternity with brief human life and asks for wisdom, mercy, and enduring work. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 90:1–17).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A prayer attributed to Moses contrasts God's eternity with brief human life and asks for wisdom, mercy, and enduring work.",
+    "summary": "Moses declares, \"LORD, thou hast been our dwelling place in all generations,\" for God is God \"from everlasting to everlasting\" (Psalm 90:1-2). Human life is brief: \"The days of our years are threescore years and ten... it is soon cut off, and we fly away\" (Psalm 90:10). He prays, \"So teach us to number our days, that we may apply our hearts unto wisdom,\" asking God to \"establish thou the work of our hands\" (Psalm 90:12,17).",
+    "whereWeAre": "Psalm 89 ended Book Three asking where God's former lovingkindnesses had gone. Psalm 90, the only psalm attributed to Moses, opens Book Four by widening the lens: \"LORD, thou hast been our dwelling place in all generations,\" even though human life is brief, \"for it is soon cut off, and we fly away\" (Psalm 90:1,10). Psalm 91 answers with a song of refuge under God's wings.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 90)."
+        "name": "The LORD",
+        "role": "Has been Israel's dwelling place in every generation, existing from everlasting to everlasting (Psalm 90:1-2)."
       },
       {
         "name": "Moses",
-        "role": "Traditional attribution or association in the superscription, not a participant named in the poem itself. The heading links this psalm with the named figure or musical tradition; it does not independently establish the historical author."
+        "role": "Named in the title as the psalmist; the only psalm attributed to him. Contrasts God's eternity with the brevity of human life and asks for wisdom."
       }
     ],
     "keyThemes": [
       {
         "theme": "God's eternity",
-        "explanation": "",
+        "explanation": "God existed before the mountains were formed and remains from everlasting to everlasting.",
         "references": [
-          "Psalm 90:1–17"
+          "Psalm 90:1-2"
         ]
       },
       {
         "theme": "Human mortality",
-        "explanation": "",
+        "explanation": "Human life is compared to grass that flourishes in the morning and withers by evening.",
         "references": [
-          "Psalm 90:1–17"
+          "Psalm 90:5-6,10"
         ]
       },
       {
         "theme": "Wisdom for limited days",
-        "explanation": "",
+        "explanation": "Moses asks God to teach his people to number their days so they gain a wise heart.",
         "references": [
-          "Psalm 90:1–17"
+          "Psalm 90:12"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 91": {
-    "summary": "A song of trust depicts shelter under God's wings amid plague, enemies, and danger while voicing divine assurances. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 91:1–16).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A song of trust depicts shelter under God's wings amid plague, enemies, and danger while voicing divine assurances.",
+    "summary": "\"He that dwelleth in the secret place of the most High shall abide under the shadow of the Almighty,\" delivered \"from the snare of the fowler\" and the pestilence (Psalm 91:1,3). \"He shall give his angels charge over thee, to keep thee in all thy ways\" (Psalm 91:11) — words later quoted by the devil tempting Jesus (Matthew 4:6). God himself speaks the closing promise: \"Because he hath set his love upon me, therefore will I deliver him... with long life will I satisfy him, and shew him my salvation\" (Psalm 91:14,16).",
+    "whereWeAre": "Psalm 90 prayed for wisdom in a brief life. Psalm 91 answers with assurance: \"He that dwelleth in the secret place of the most High shall abide under the shadow of the Almighty,\" safe from \"the pestilence that walketh in darkness\" (Psalm 91:1,6) — words the devil later quotes when tempting Jesus (Psalm 91:11-12; Matthew 4:6). Psalm 92 follows with a sabbath song of thanksgiving.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 91)."
+        "name": "The LORD",
+        "role": "A refuge and fortress who gives his angels charge to protect the one who trusts him, and promises deliverance and long life (Psalm 91:2,11,14-16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Refuge in peril",
-        "explanation": "",
+        "explanation": "Whoever dwells in God's secret place abides safely under his protection.",
         "references": [
           "Psalm 91:1-2"
         ]
       },
       {
         "theme": "Trust amid danger",
-        "explanation": "",
+        "explanation": "God promises protection from hidden snares, plague, and attacking enemies.",
         "references": [
           "Psalm 91:3-13"
         ]
       },
       {
         "theme": "God's promised presence",
-        "explanation": "",
+        "explanation": "God speaks in the first person, promising to deliver and satisfy the one who loves him.",
         "references": [
           "Psalm 91:14-16"
         ]
@@ -3802,102 +3802,106 @@
     ]
   },
   "Psalms 92": {
-    "summary": "A Sabbath psalm gives thanks for steadfast love and contrasts the temporary growth of evildoers with flourishing righteous people. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 92:1–15).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A Sabbath psalm gives thanks for steadfast love and contrasts the temporary growth of evildoers with flourishing righteous people.",
+    "summary": "\"It is a good thing to give thanks unto the LORD,\" showing his lovingkindness \"in the morning\" and faithfulness \"every night\" (Psalm 92:1-2). Though \"the wicked spring as the grass... they shall be destroyed for ever,\" the psalmist's horn is exalted and he is \"anointed with fresh oil\" (Psalm 92:7,10). \"The righteous shall flourish like the palm tree: he shall grow like a cedar in Lebanon,\" still bringing forth fruit \"in old age\" (Psalm 92:12,14).",
+    "whereWeAre": "Psalm 91 promised protection for those who trust God. Psalm 92, the only psalm titled for the sabbath day, gives thanks that \"the wicked spring as the grass\" only to be \"destroyed for ever,\" while \"the righteous shall flourish like the palm tree\" (Psalm 92:7,12). Psalm 93 continues the praise, declaring, \"The LORD reigneth.\"",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 92)."
+        "name": "The LORD",
+        "role": "Destroys the wicked, who flourish only briefly, while causing the righteous to flourish like palm trees and cedars (Psalm 92:7,12)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Sabbath thanksgiving",
-        "explanation": "",
+        "explanation": "The psalm gives thanks for God's lovingkindness every morning and night.",
         "references": [
-          "Psalm 92:1–15"
+          "Psalm 92:1-3"
         ]
       },
       {
         "theme": "Transient wickedness",
-        "explanation": "",
+        "explanation": "The wicked flourish only briefly before being destroyed forever.",
         "references": [
-          "Psalm 92:1–15"
+          "Psalm 92:7,9"
         ]
       },
       {
         "theme": "Flourishing in righteousness",
-        "explanation": "",
+        "explanation": "The righteous are compared to palm trees and cedars that keep bearing fruit even in old age.",
         "references": [
-          "Psalm 92:1–15"
+          "Psalm 92:12-14"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 93": {
-    "summary": "The LORD reigns clothed in majesty; even the roaring floods cannot overturn his steadfast throne and trustworthy decrees. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 93:1–5).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: The LORD reigns clothed in majesty; even the roaring floods cannot overturn his steadfast throne and trustworthy decrees.",
+    "summary": "\"The LORD reigneth, he is clothed with majesty... the world also is stablished, that it cannot be moved\" (Psalm 93:1). \"The floods have lifted up... their voice,\" but \"the LORD on high is mightier than the noise of many waters\" (Psalm 93:3-4). \"Thy testimonies are very sure: holiness becometh thine house, O LORD, for ever\" (Psalm 93:5).",
+    "whereWeAre": "Psalm 92 gave thanks for God's enduring reign over the wicked. Psalm 93 opens a series of psalms celebrating God as king (Psalms 93, 96-99): \"The LORD reigneth, he is clothed with majesty,\" mightier than the roaring floods (Psalm 93:1,4). Psalm 94 turns from this kingship to a cry against injustice still unpunished on earth.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 93)."
+        "name": "The LORD",
+        "role": "Reigns clothed in majesty and strength, mightier than the roaring floods and the waves of the sea (Psalm 93:1,4)."
       }
     ],
     "keyThemes": [
       {
         "theme": "God's kingship",
-        "explanation": "",
+        "explanation": "God reigns, clothed with majesty, his throne established from everlasting.",
         "references": [
-          "Psalm 93:1–5"
+          "Psalm 93:1-2"
         ]
       },
       {
         "theme": "Power over chaos",
-        "explanation": "",
+        "explanation": "God is mightier than the roaring floods, an ancient symbol of chaos.",
         "references": [
-          "Psalm 93:1–5"
+          "Psalm 93:3-4"
         ]
       },
       {
         "theme": "Faithful holiness",
-        "explanation": "",
+        "explanation": "God's testimonies are sure, and holiness belongs to his house forever.",
         "references": [
-          "Psalm 93:1–5"
+          "Psalm 93:5"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 94": {
-    "summary": "The speaker cries against violent oppressors who misuse authority, trusting God's discipline, justice, and sustaining kindness. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 94:1–23).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: The speaker cries against violent oppressors who misuse authority, trusting God's discipline, justice, and sustaining kindness.",
+    "summary": "The psalmist asks, \"LORD, how long shall the wicked... triumph?\" for they slay \"the widow and the stranger\" and say, \"The LORD shall not see\" (Psalm 94:3,6-7). He answers, \"He that planted the ear, shall he not hear?\" and calls blessed \"the man whom thou chastenest, O LORD\" (Psalm 94:9,12). \"Unless the LORD had been my help, my soul had almost dwelt in silence,\" he confesses, \"the LORD is my defence; and my God is the rock of my refuge\" (Psalm 94:17,22).",
+    "whereWeAre": "Psalm 93 declared that God reigns. Psalm 94 asks how long the wicked will \"triumph,\" slaying \"the widow and the stranger\" while saying, \"The LORD shall not see\" (Psalm 94:3,6-7), before trusting, \"Unless the LORD had been my help, my soul had almost dwelt in silence\" (Psalm 94:17). Psalm 95 calls worshipers to come before this same God with singing.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 94)."
+        "name": "The LORD",
+        "role": "Hears and sees despite the wicked's denial, disciplines those he loves, and is the psalmist's defence and refuge (Psalm 94:9,12,22)."
+      },
+      {
+        "name": "The wicked",
+        "role": "Triumph for a time, slaying the widow, stranger, and fatherless, while denying that God sees (Psalm 94:3,6-7)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Oppression and injustice",
-        "explanation": "",
+        "explanation": "The wicked oppress the vulnerable while boasting that God does not see.",
         "references": [
-          "Psalm 94:1–23"
+          "Psalm 94:3,5-6"
         ]
       },
       {
         "theme": "Correction and wisdom",
-        "explanation": "",
+        "explanation": "God who made the ear and eye surely sees and disciplines those he loves.",
         "references": [
-          "Psalm 94:1–23"
+          "Psalm 94:9-10,12"
         ]
       },
       {
         "theme": "God sustains the anxious",
-        "explanation": "",
+        "explanation": "When the psalmist's foot nearly slips, God's mercy and comfort hold him up.",
         "references": [
-          "Psalm 94:1–23"
+          "Psalm 94:18-19,22"
         ]
       }
     ],
@@ -3910,34 +3914,34 @@
     ]
   },
   "Psalms 95": {
-    "summary": "A worship call remembers the LORD as maker and shepherd but warns against hardening hearts like Israel in the wilderness. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 95:1–11).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A worship call remembers the LORD as maker and shepherd but warns against hardening hearts like Israel in the wilderness.",
+    "summary": "\"O come, let us sing unto the LORD... let us kneel before the LORD our maker,\" for \"we are the people of his pasture, and the sheep of his hand\" (Psalm 95:1,6-7). \"To day if ye will hear his voice, harden not your heart, as in the provocation... in the wilderness,\" he warns, recalling how Israel's fathers \"tempted me, proved me, and saw my work\" (Psalm 95:7-9). God swore in his wrath concerning that generation, \"they should not enter into my rest\" (Psalm 95:11).",
+    "whereWeAre": "Psalm 94 trusted God as a refuge from injustice. Psalm 95 calls worshipers to \"come before his presence with thanksgiving\" and \"kneel before the LORD our maker,\" then warns, \"To day if ye will hear his voice, harden not your heart, as in the provocation\" at Meribah (Psalm 95:2,6-8) — a warning Hebrews later quotes at length (Hebrews 3-4). Psalm 96 answers with a new song calling all the earth to worship.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 95)."
+        "name": "The LORD",
+        "role": "Israel's maker and shepherd, who swore that the generation that hardened its heart in the wilderness would not enter his rest (Psalm 95:6-7,11)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Worship the maker",
-        "explanation": "",
+        "explanation": "Worshipers are called to sing and kneel before God as their maker.",
         "references": [
-          "Psalm 95:1–11"
+          "Psalm 95:1-2,6"
         ]
       },
       {
         "theme": "God's people as flock",
-        "explanation": "",
+        "explanation": "Israel is described as the sheep of God's own pasture and hand.",
         "references": [
-          "Psalm 95:1–11"
+          "Psalm 95:7"
         ]
       },
       {
         "theme": "Heeding the voice today",
-        "explanation": "",
+        "explanation": "The psalm warns against hardening the heart today as Israel did at Meribah.",
         "references": [
-          "Psalm 95:1–11"
+          "Psalm 95:7-9,11"
         ]
       }
     ],
@@ -3955,168 +3959,172 @@
     ]
   },
   "Psalms 96": {
-    "summary": "A new song summons the nations to proclaim God's glory and announces the LORD's coming righteous judgment. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 96:1–13).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A new song summons the nations to proclaim God's glory and announces the LORD's coming righteous judgment.",
+    "summary": "\"O sing unto the LORD a new song: sing unto the LORD, all the earth... declare his glory among the heathen\" (Psalm 96:1,3). \"All the gods of the nations are idols: but the LORD made the heavens,\" so the psalmist calls for an offering to be brought into his courts (Psalm 96:5,8). \"Say among the heathen that the LORD reigneth,\" and let all creation rejoice, \"for he cometh to judge the earth\" (Psalm 96:10,13).",
+    "whereWeAre": "Psalm 95 warned against hardening the heart. Psalm 96 answers with \"a new song,\" much of it sung when David brought the ark to Jerusalem (1 Chronicles 16:23-33), declaring, \"all the gods of the nations are idols: but the LORD made the heavens\" (Psalm 96:5). Psalm 97 continues celebrating God's reign with fire, lightning, and melting hills.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 96)."
+        "name": "The LORD",
+        "role": "Made the heavens, unlike the idols of the nations, and comes to judge the earth with righteousness (Psalm 96:5,13)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Worldwide worship",
-        "explanation": "",
+        "explanation": "All the earth and every family of peoples are called to sing to God.",
         "references": [
-          "Psalm 96:1–13"
+          "Psalm 96:1,3,7"
         ]
       },
       {
         "theme": "Rejecting idols",
-        "explanation": "",
+        "explanation": "The gods of the nations are called idols, unlike the LORD who made the heavens.",
         "references": [
-          "Psalm 96:1–13"
+          "Psalm 96:5"
         ]
       },
       {
         "theme": "Joy at righteous judgment",
-        "explanation": "",
+        "explanation": "Creation itself rejoices because God comes to judge the world in righteousness.",
         "references": [
-          "Psalm 96:1–13"
+          "Psalm 96:11,13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 97": {
-    "summary": "Creation rejoices because the LORD reigns; those who love God are called to hate evil and rejoice in his light. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 97:1–12).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: Creation rejoices because the LORD reigns; those who love God are called to hate evil and rejoice in his light.",
+    "summary": "\"The LORD reigneth; let the earth rejoice,\" for \"clouds and darkness are round about him\" and \"a fire goeth before him\" (Psalm 97:1-3). \"The hills melted like wax at the presence of the LORD,\" and \"confounded be all they that serve graven images\" (Psalm 97:5,7). \"Ye that love the LORD, hate evil,\" for \"light is sown for the righteous, and gladness for the upright in heart\" (Psalm 97:10-11).",
+    "whereWeAre": "Psalm 96 called all the earth to worship. Psalm 97 pictures that reign with the imagery of Sinai, clouds, fire, and lightning, as \"the hills melted like wax at the presence of the LORD,\" while idol-worshipers are put to shame (Psalm 97:5,7). Psalm 98 continues with a new song for the coming judge.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 97)."
+        "name": "The LORD",
+        "role": "Reigns with fire, lightning, and melting hills, putting idol-worshipers to shame while sowing light for the righteous (Psalm 97:3,5,7,11)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Divine reign",
-        "explanation": "",
+        "explanation": "The LORD's reign is pictured with clouds, darkness, and a throne built on righteousness.",
         "references": [
-          "Psalm 97:1–12"
+          "Psalm 97:1-2"
         ]
       },
       {
         "theme": "Opposition to idolatry",
-        "explanation": "",
+        "explanation": "Those who serve graven images are put to shame before God.",
         "references": [
-          "Psalm 97:1–12"
+          "Psalm 97:7"
         ]
       },
       {
         "theme": "Joy for the upright",
-        "explanation": "",
+        "explanation": "Light and gladness are sown for the righteous and upright in heart.",
         "references": [
-          "Psalm 97:1–12"
+          "Psalm 97:10-12"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 98": {
-    "summary": "A new song celebrates salvation, divine justice, and creation's joy before the coming judge. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 98:1–9).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A new song celebrates salvation, divine justice, and creation's joy before the coming judge.",
+    "summary": "\"O sing unto the LORD a new song; for he hath done marvellous things: his right hand, and his holy arm, hath gotten him the victory\" (Psalm 98:1). He \"hath remembered his mercy and his truth toward the house of Israel,\" so \"all the ends of the earth have seen the salvation of our God\" (Psalm 98:3). The psalm calls for trumpets and singing, \"let the floods clap their hands: let the hills be joyful together... for he cometh to judge the earth\" (Psalm 98:6,8-9).",
+    "whereWeAre": "Psalm 97 pictured God's reign in storm imagery. Psalm 98 answers with a gentler new song, for \"his right hand, and his holy arm, hath gotten him the victory,\" remembering \"his mercy and his truth toward the house of Israel\" (Psalm 98:1,3) — words Isaac Watts later drew on for the hymn Joy to the World. Psalm 99 continues the series of kingship psalms, now from the throne above the cherubim.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 98)."
+        "name": "The LORD",
+        "role": "Wins victory by his own right hand and remembers his mercy to Israel, coming to judge the earth with righteousness (Psalm 98:1,3,9)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Sing of deliverance",
-        "explanation": "",
+        "explanation": "A new song celebrates the victory God has won by his own strength.",
         "references": [
-          "Psalm 98:1–9"
+          "Psalm 98:1-2"
         ]
       },
       {
         "theme": "God's revealed justice",
-        "explanation": "",
+        "explanation": "God's righteousness and salvation are shown openly before all nations.",
         "references": [
-          "Psalm 98:1–9"
+          "Psalm 98:2-3,9"
         ]
       },
       {
         "theme": "Creation joins praise",
-        "explanation": "",
+        "explanation": "The sea, floods, and hills are pictured joining in joyful praise.",
         "references": [
-          "Psalm 98:1–9"
+          "Psalm 98:7-8"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 99": {
-    "summary": "The enthroned LORD is holy and just; Moses, Aaron, and Samuel illustrate worship and answered prayer. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 99:1–9).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: The enthroned LORD is holy and just; Moses, Aaron, and Samuel illustrate worship and answered prayer.",
+    "summary": "\"The LORD reigneth; let the people tremble: he sitteth between the cherubims,\" for \"the LORD is great in Zion\" (Psalm 99:1-2). \"Moses and Aaron among his priests, and Samuel among them that call upon his name... they called upon the LORD, and he answered them\" (Psalm 99:6). \"Thou answeredst them, O LORD our God: thou wast a God that forgavest them, though thou tookest vengeance of their inventions\" (Psalm 99:8).",
+    "whereWeAre": "Psalm 98 celebrated God's victory. Psalm 99 pictures him enthroned \"between the cherubims,\" naming \"Moses and Aaron among his priests, and Samuel among them that call upon his name\" as those who called on God and were answered (Psalm 99:1,6). Psalm 100 follows with a short, joyful call to thanksgiving.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 99)."
+        "name": "The LORD",
+        "role": "Enthroned between the cherubim, great in Zion, a God who answered Moses, Aaron, and Samuel when they called (Psalm 99:1-2,6)."
+      },
+      {
+        "name": "Moses, Aaron, and Samuel",
+        "role": "Named as those among God's priests and those who called on his name and were answered (Psalm 99:6)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Holy kingship",
-        "explanation": "",
+        "explanation": "God reigns enthroned between the cherubim, great and holy in Zion.",
         "references": [
-          "Psalm 99:1–9"
+          "Psalm 99:1-3"
         ]
       },
       {
         "theme": "Justice and equity",
-        "explanation": "",
+        "explanation": "The king's strength is tied to loving judgment and establishing equity in Jacob.",
         "references": [
-          "Psalm 99:1–9"
+          "Psalm 99:4"
         ]
       },
       {
         "theme": "Reverent worship",
-        "explanation": "",
+        "explanation": "Worshipers are called to exalt God and bow at his footstool and holy hill.",
         "references": [
-          "Psalm 99:1–9"
+          "Psalm 99:5,9"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 100": {
-    "summary": "A short thanksgiving invites all nations to joyful service, entering with praise because God's goodness endures. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 100:1–5).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A short thanksgiving invites all nations to joyful service, entering with praise because God's goodness endures.",
+    "summary": "\"Make a joyful noise unto the LORD, all ye lands. Serve the LORD with gladness: come before his presence with singing\" (Psalm 100:1-2). \"Know ye that the LORD he is God: it is he that hath made us, and not we ourselves; we are his people, and the sheep of his pasture\" (Psalm 100:3). \"Enter into his gates with thanksgiving... for the LORD is good; his mercy is everlasting; and his truth endureth to all generations\" (Psalm 100:4-5).",
+    "whereWeAre": "Psalm 99 named those God answered in ages past. Psalm 100, titled \"A Psalm of praise\" (in Hebrew, a psalm for thanksgiving), calls all lands to \"enter into his gates with thanksgiving,\" for \"the LORD he is God: it is he that hath made us\" (Psalm 100:3-4). Psalm 101 turns from corporate worship to a king's personal vow of integrity.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 100)."
+        "name": "The LORD",
+        "role": "Made his people, who are called the sheep of his pasture; his mercy is everlasting and his truth endures (Psalm 100:3,5)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Joyful service",
-        "explanation": "",
+        "explanation": "All lands are called to serve the LORD with gladness and singing.",
         "references": [
           "Psalm 100:1-2"
         ]
       },
       {
         "theme": "Belonging to God",
-        "explanation": "",
+        "explanation": "God's people belong to him as the sheep of his own pasture.",
         "references": [
           "Psalm 100:3"
         ]
       },
       {
         "theme": "Enduring faithfulness",
-        "explanation": "",
+        "explanation": "God's goodness, mercy, and truth endure to every generation.",
         "references": [
           "Psalm 100:4-5"
         ]
@@ -4125,80 +4133,72 @@
     "explainedReferences": []
   },
   "Psalms 101": {
-    "summary": "A royal pledge commits to integrity, rejects slander and wickedness, and seeks faithful servants in the house and city. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 101:1–8).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A royal pledge commits to integrity, rejects slander and wickedness, and seeks faithful servants in the house and city.",
+    "summary": "David vows, \"I will sing of mercy and judgment... I will behave myself wisely in a perfect way,\" walking within his own house \"with a perfect heart\" (Psalm 101:1-2). He resolves, \"Whoso privily slandereth his neighbour, him will I cut off,\" and, \"He that worketh deceit shall not dwell within my house\" (Psalm 101:5,7). He ends, \"I will early destroy all the wicked of the land; that I may cut off all wicked doers from the city of the LORD\" (Psalm 101:8).",
+    "whereWeAre": "Psalm 100 was a call to corporate worship. Psalm 101 turns personal: David, the king, vows, \"I will behave myself wisely in a perfect way... I will walk within my house with a perfect heart,\" rejecting slander and deceit from his court (Psalm 101:2-3,7). Psalm 102 follows with the very different voice of someone afflicted and overwhelmed.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 101)."
+        "name": "The LORD",
+        "role": "The one David sings to and whose city he vows to keep free of slander, deceit, and wickedness (Psalm 101:1,8)."
       },
       {
         "name": "David",
-        "role": "Traditional attribution or association in the superscription, not a participant named in the poem itself. The heading links this psalm with the named figure or musical tradition; it does not independently establish the historical author."
-      },
-      {
-        "name": "The king / anointed ruler",
-        "role": "Royal figure within the psalm Royal language connects governance and divine oversight; exact historical identification is not always available."
+        "role": "Named in the title as the king and psalmist. Vows personal integrity and promises to remove the wicked from his household and city."
       }
     ],
     "keyThemes": [
       {
         "theme": "Integrity in leadership",
-        "explanation": "",
+        "explanation": "David vows to walk with a perfect heart both personally and within his own house.",
         "references": [
-          "Psalm 101:1–8"
+          "Psalm 101:2-3"
         ]
       },
       {
         "theme": "Rejecting slander",
-        "explanation": "",
+        "explanation": "He resolves to cut off anyone who secretly slanders a neighbor.",
         "references": [
-          "Psalm 101:1–8"
+          "Psalm 101:5"
         ]
       },
       {
         "theme": "Justice in the household",
-        "explanation": "",
+        "explanation": "He will keep the deceitful and proud out of his own house and service.",
         "references": [
-          "Psalm 101:1–8"
+          "Psalm 101:6-7"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 102": {
-    "summary": "An afflicted speaker pours out weakness before God, contrasts short human life with the LORD's enduring reign, and hopes for Zion's restoration. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 102:1–28).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: An afflicted speaker pours out weakness before God, contrasts short human life with the LORD's enduring reign, and hopes for Zion's restoration.",
+    "summary": "The afflicted cries, \"Hear my prayer, O LORD... Hide not thy face from me in the day when I am in trouble\" (Psalm 102:1-2). He feels \"like a pelican of the wilderness... like an owl of the desert,\" his days \"consumed like smoke\" (Psalm 102:3,6). Yet he trusts, \"Thou shalt arise, and have mercy upon Zion: for the time to favour her... is come,\" for though the earth and heavens \"shall perish,\" God endures: \"thou art the same, and thy years shall have no end\" (Psalm 102:13,26-27).",
+    "whereWeAre": "Psalm 101 was a king's vow of integrity. Psalm 102, \"A Prayer of the afflicted, when he is overwhelmed,\" is the opposite: a sufferer who feels like \"a pelican of the wilderness\" and whose \"days are like a shadow,\" yet who trusts that God \"shalt arise, and have mercy upon Zion\" (Psalm 102:6,11,13). Psalm 103 answers with exuberant blessing instead of lament.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 102)."
-      },
-      {
-        "name": "Israel / Zion community",
-        "role": "People represented in collective memory, prayer, or lament. Collective language locates the poem among communal experiences of loss, worship, or restoration."
+        "name": "The LORD",
+        "role": "Endures forever even as heaven and earth wear out like a garment, and will arise to rebuild Zion (Psalm 102:13,26-27)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Prayer in affliction",
-        "explanation": "",
+        "explanation": "The afflicted cries out, comparing himself to a lonely pelican, owl, and sparrow.",
         "references": [
-          "Psalm 102:1–28"
+          "Psalm 102:1-2,6-7"
         ]
       },
       {
         "theme": "Zion's restoration",
-        "explanation": "",
+        "explanation": "He trusts that God will arise and have mercy on Zion in his own appointed time.",
         "references": [
-          "Psalm 102:1–28"
+          "Psalm 102:13,16"
         ]
       },
       {
         "theme": "God outlasts generations",
-        "explanation": "",
+        "explanation": "Heaven and earth wear out like a garment, but God's years have no end.",
         "references": [
-          "Psalm 102:1–28"
+          "Psalm 102:24,26-27"
         ]
       }
     ],
@@ -4211,36 +4211,36 @@
     ]
   },
   "Psalms 103": {
-    "summary": "An exuberant blessing recalls forgiveness, healing, compassion, and mercy while summoning heavenly hosts to praise. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 103:1–22).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: An exuberant blessing recalls forgiveness, healing, compassion, and mercy while summoning heavenly hosts to praise.",
+    "summary": "David calls, \"Bless the LORD, O my soul... who forgiveth all thine iniquities; who healeth all thy diseases,\" for \"the LORD is merciful and gracious, slow to anger, and plenteous in mercy\" (Psalm 103:1,3,8). \"As far as the east is from the west, so far hath he removed our transgressions from us,\" and \"like as a father pitieth his children, so the LORD pitieth them that fear him,\" for \"he knoweth our frame; he remembereth that we are dust\" (Psalm 103:12-14). He ends calling angels, hosts, and all God's works to \"bless the LORD, O my soul\" (Psalm 103:20-22).",
+    "whereWeAre": "Psalm 102 cried out in affliction. Psalm 103 answers with exuberant blessing: David calls his own soul to \"bless the LORD,\" who \"forgiveth all thine iniquities\" and is \"merciful and gracious, slow to anger, and plenteous in mercy,\" echoing God's own words to Moses (Psalm 103:1,3,8; Exodus 34:6). Psalm 104 widens that praise from God's mercy to his care over all creation.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 103)."
+        "name": "The LORD",
+        "role": "Merciful and gracious, forgiving iniquity and healing disease, pitying his people as a father pities his children (Psalm 103:3,8,13)."
       },
       {
         "name": "David",
-        "role": "Traditional attribution or association in the superscription, not a participant named in the poem itself. The heading links this psalm with the named figure or musical tradition; it does not independently establish the historical author."
+        "role": "Named in the title as the psalmist. Calls his own soul, and then all creation, to bless the LORD."
       }
     ],
     "keyThemes": [
       {
         "theme": "Forgiveness and mercy",
-        "explanation": "",
+        "explanation": "God forgives iniquity and removes transgressions as far as east is from west.",
         "references": [
           "Psalm 103:2-12"
         ]
       },
       {
         "theme": "Human fragility",
-        "explanation": "",
+        "explanation": "God remembers that human life is as brief and fragile as grass or a flower.",
         "references": [
           "Psalm 103:14-16"
         ]
       },
       {
         "theme": "Universal praise",
-        "explanation": "",
+        "explanation": "Angels, heavenly hosts, and all God's works everywhere are called to bless him.",
         "references": [
           "Psalm 103:19-22"
         ]
@@ -4249,34 +4249,34 @@
     "explainedReferences": []
   },
   "Psalms 104": {
-    "summary": "A creation hymn celebrates God's provision for earth, animals, seas, and human labor, ending in praise of divine wisdom. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 104:1–35).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A creation hymn celebrates God's provision for earth, animals, seas, and human labor, ending in praise of divine wisdom.",
+    "summary": "\"Bless the LORD, O my soul. O LORD my God, thou art very great,\" clothed with honour and majesty, stretching \"out the heavens like a curtain\" (Psalm 104:1-2). He sends springs to water wild donkeys, gives \"wine that maketh glad the heart of man\" and bread, and lets even \"the young lions roar after their prey\" seeking their food \"from God\" (Psalm 104:11,15,21). \"These wait all upon thee; that thou mayest give them their meat in due season,\" and the psalmist ends, \"I will sing unto the LORD as long as I live\" (Psalm 104:27,33).",
+    "whereWeAre": "Psalm 103 praised God's mercy toward his people. Psalm 104 widens that praise to all creation, picturing God who \"stretchest out the heavens like a curtain,\" sends springs for the wild donkeys, and gives even the young lions their food \"from God\" (Psalm 104:2,11,21). Psalm 105 turns from creation to Israel's own history, beginning with the covenant to Abraham.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 104)."
+        "name": "The LORD",
+        "role": "Clothed with honour and majesty, provides food, water, and shelter for every creature in due season (Psalm 104:1,21,27)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Creation's interdependence",
-        "explanation": "",
+        "explanation": "Springs, trees, and creatures depend on each other and on God's provision.",
         "references": [
-          "Psalm 104:1–35"
+          "Psalm 104:10-18"
         ]
       },
       {
         "theme": "Provision for creatures",
-        "explanation": "",
+        "explanation": "Even the young lions seek their food from God, who provides for all in due season.",
         "references": [
-          "Psalm 104:1–35"
+          "Psalm 104:21,27-28"
         ]
       },
       {
         "theme": "Praise for wisdom",
-        "explanation": "",
+        "explanation": "The psalmist marvels at God's wisdom in creation and resolves to keep singing praise.",
         "references": [
-          "Psalm 104:1–35"
+          "Psalm 104:24,33"
         ]
       }
     ],
@@ -4289,72 +4289,80 @@
     ]
   },
   "Psalms 105": {
-    "summary": "A historical hymn remembers promises to Abraham, Joseph's trials, and deliverance from Egypt to encourage covenant remembrance. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 105:1–45).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A historical hymn remembers promises to Abraham, Joseph's trials, and deliverance from Egypt to encourage covenant remembrance.",
+    "summary": "\"O give thanks unto the LORD... remember his marvellous works,\" for he \"hath remembered his covenant for ever,\" sworn to Abraham, Isaac, and Jacob (Psalm 105:1,5,8-10). He sent Joseph ahead into Egypt, \"whose feet they hurt with fetters,\" until \"the king sent and loosed him\" and \"made him lord of his house\" (Psalm 105:17-18,20-21). He sent Moses and Aaron with signs and plagues, then \"brought forth his people with joy,\" giving them the lands of the heathen, \"that they might observe his statutes, and keep his laws\" (Psalm 105:37,43-45).",
+    "whereWeAre": "Psalm 104 praised God's care over creation. Psalm 105 turns to history, retelling the covenant God \"remembered\" with Abraham, Isaac, and Jacob, Joseph's rise from prison to ruler in Egypt, and the plagues and exodus that followed (Psalm 105:8-10,17-22,27-36). Psalm 106 answers with the same history told as confession rather than praise.",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 105)."
+        "name": "The LORD",
+        "role": "Remembered his covenant with Abraham, Isaac, and Jacob, raised up Joseph, sent Moses and Aaron, and brought his people out of Egypt with joy (Psalm 105:8-10,26,43)."
+      },
+      {
+        "name": "Joseph",
+        "role": "Sold as a servant and imprisoned in fetters until the king freed him and made him ruler over his house (Psalm 105:17-18,20-21)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Remembering promises",
-        "explanation": "",
+        "explanation": "God remembered his covenant oath to Abraham, Isaac, and Jacob for a thousand generations.",
         "references": [
-          "Psalm 105:1–45"
+          "Psalm 105:8-10,42"
         ]
       },
       {
         "theme": "Providence through hardship",
-        "explanation": "",
+        "explanation": "Joseph's imprisonment in fetters became the path God used to save his family.",
         "references": [
-          "Psalm 105:1–45"
+          "Psalm 105:17-19"
         ]
       },
       {
         "theme": "Deliverance and obedience",
-        "explanation": "",
+        "explanation": "God brought his people out with joy so that they would keep his statutes.",
         "references": [
-          "Psalm 105:1–45"
+          "Psalm 105:43,45"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Psalms 106": {
-    "summary": "A communal confession retells Israel's repeated rebellion and God's mercies, ending with a plea to gather the people. The psalm invites readers to consider these words as poetry, prayer, or worship, rather than assume that every image describes a separately verifiable event (Psalm 106:1–48).",
-    "whereWeAre": "Its historical and literary setting helps explain its central movement: A communal confession retells Israel's repeated rebellion and God's mercies, ending with a plea to gather the people.",
+    "summary": "Israel confesses, \"We have sinned with our fathers, we have committed iniquity, we have done wickedly,\" recalling how their fathers \"provoked him at the sea\" yet God \"saved them for his name's sake\" (Psalm 106:6-8). In the wilderness they \"made a calf in Horeb,\" and later in Canaan \"sacrificed their sons and their daughters unto devils,\" so God \"gave them into the hand of the heathen\" (Psalm 106:19,37,41). Still, \"many times did he deliver them,\" for \"he remembered for them his covenant,\" and the psalm ends, \"Save us, O LORD our God, and gather us from among the heathen... Blessed be the LORD God of Israel from everlasting to everlasting\" (Psalm 106:43,45,47-48).",
+    "whereWeAre": "Psalm 105 told Israel's history as praise. Psalm 106 retells the same story as confession: \"We have sinned with our fathers, we have committed iniquity,\" from the Red Sea to the golden calf to child sacrifice in Canaan (Psalm 106:6,19,37-38). It ends Book Four asking God to \"gather us from among the heathen\" (Psalm 106:47). Book Five opens with Psalm 107's matching call, \"O give thanks unto the LORD, for he is good.\"",
     "keyFigures": [
       {
-        "name": "The LORD (God)",
-        "role": "The divine subject, addressee, or focus of the poem. The poem frames its prayers, praise, or moral claims in relation to God (Psalm 106)."
+        "name": "The LORD",
+        "role": "Saved Israel at the Red Sea for his own name's sake and kept delivering them despite their repeated rebellion (Psalm 106:8,43,45)."
       },
       {
-        "name": "Israel / Zion community",
-        "role": "People represented in collective memory, prayer, or lament. Collective language locates the poem among communal experiences of loss, worship, or restoration."
+        "name": "Israel",
+        "role": "Confesses generations of sin, from the golden calf to child sacrifice in Canaan, while pleading for God to gather them home (Psalm 106:6,19,37,47)."
+      },
+      {
+        "name": "Moses",
+        "role": "Stands in the breach to turn away God's wrath after the golden calf, sparing the people from destruction (Psalm 106:23)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Confession across generations",
-        "explanation": "",
+        "explanation": "Israel confesses sinning just as their fathers did in Egypt and at the Red Sea.",
         "references": [
-          "Psalm 106:1–48"
+          "Psalm 106:6-7"
         ]
       },
       {
         "theme": "Persistent divine mercy",
-        "explanation": "",
+        "explanation": "Despite repeated rebellion, God kept delivering his people and remembered his covenant.",
         "references": [
-          "Psalm 106:1–48"
+          "Psalm 106:43,45"
         ]
       },
       {
         "theme": "Hope for gathering",
-        "explanation": "",
+        "explanation": "The psalm ends praying for God to gather his scattered people from among the nations.",
         "references": [
-          "Psalm 106:1–48"
+          "Psalm 106:47"
         ]
       }
     ],
