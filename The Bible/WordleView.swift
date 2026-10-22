@@ -59,6 +59,7 @@ struct WordleView: View {
     // MARK: - State
     @State private var started: Bool = false
     @State private var mode: Mode = .practice
+    @State private var isAnswerBankPrepared: Bool = false
 
     @State private var target: String = ""
     @State private var guesses: [String] = Array(repeating: "", count: 6)
@@ -69,7 +70,7 @@ struct WordleView: View {
     @State private var roundOver: Bool = false
     @State private var message: String? = nil
     @State private var keyboardStates: [Character: KeyState] = [:]
-    private static let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    nonisolated private static let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
     // Pinned letters stay fixed in the active row until cleared with the × button.
     @State private var pinned: [[Character?]] = Array(repeating: Array(repeating: nil, count: 5), count: 6)
@@ -142,7 +143,7 @@ struct WordleView: View {
     #endif
 
     // MARK: - Answer verse
-    private struct VerseRefInfo {
+    private struct VerseRefInfo: Sendable {
         let bookName: String
         let chapter: Int
         let verse: Int
@@ -151,7 +152,7 @@ struct WordleView: View {
     }
 
     // The answer pool and a verse reference for each word.
-    private struct AnswerBank {
+    private struct AnswerBank: Sendable {
         let words: [String]
         let verseIndex: [String: VerseRefInfo]
     }
@@ -159,7 +160,7 @@ struct WordleView: View {
     // MARK: - Curated answers (WORDCuratedWordList.json)
 
     /// One entry in the bundled curated list; `verse_source` is editorial metadata and is ignored.
-    private struct CuratedWord: Decodable {
+    private struct CuratedWord: Decodable, Sendable {
         let word: String
         let reference: String
         let verse: String
@@ -167,7 +168,7 @@ struct WordleView: View {
 
     /// Hand-curated answers, each with a verse that contains the word. Nil when the file
     /// is missing or yields no usable entries.
-    private static let curatedAnswerBank: AnswerBank? = {
+    nonisolated private static let curatedAnswerBank: AnswerBank? = {
         guard let url = Bundle.main.url(forResource: "WORDCuratedWordList", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let entries = try? JSONDecoder().decode([CuratedWord].self, from: data) else {
@@ -190,7 +191,7 @@ struct WordleView: View {
     }()
 
     /// Parses "Book C:V" (e.g. "1 Timothy 2:9", "Song of Solomon 8:7").
-    private static func parseReference(_ reference: String, text: String) -> VerseRefInfo? {
+    nonisolated private static func parseReference(_ reference: String, text: String) -> VerseRefInfo? {
         guard let space = reference.lastIndex(of: " ") else { return nil }
         let bookName = String(reference[..<space])
         let parts = reference[reference.index(after: space)...].split(separator: ":")
@@ -212,6 +213,13 @@ struct WordleView: View {
     /// Every curated answer is accepted as a guess, so names like MOSES aren't rejected
     /// by the spell checker.
     private static let curatedWordSet = Set(answerBank.words)
+
+    /// Loads and indexes the bundled answer list before gameplay begins, off the main actor.
+    private static func prewarmAnswerBank() async {
+        _ = await Task.detached(priority: .userInitiated) {
+            curatedAnswerBank
+        }.value
+    }
 
     // State for showing reference button and navigating
     @State private var roundRef: VerseRefInfo? = nil
@@ -247,6 +255,7 @@ struct WordleView: View {
             startScreen()
           } else {
             #if canImport(UIKit)
+              if hardwareKeyboardConnected {
               KeyCaptureRepresentable(
                 onKey: { ch in tapLetter(ch) },
                 onBackspace: { deleteLetter() },
@@ -258,6 +267,7 @@ struct WordleView: View {
               )
               .frame(width: 0, height: 0)
               .accessibilityHidden(true)
+              }
             #endif
 
             WordGameResponsiveLayout(
@@ -273,9 +283,6 @@ struct WordleView: View {
               },
               swapCards: {
                 showsBoardCardSecond.toggle()
-              },
-              revealWord: {
-                confirmReveal = true
               }
             ) {
               GameScoreboardCard(
@@ -288,19 +295,6 @@ struct WordleView: View {
               )
             } board: {
               VStack(alignment: .trailing, spacing: 4) {
-                if usesCompactPhoneLayout, !roundOver {
-                  Button {
-                    confirmReveal = true
-                  } label: {
-                    Label("Reveal Word", systemImage: "eye")
-                  }
-                  .labelStyle(.iconOnly)
-                  .buttonStyle(.bordered)
-                  .controlSize(.small)
-                  .tint(.red)
-                  .accessibilityHint("Reveals the answer and counts the round as a loss")
-                }
-
                 boardView(
                   tileSize: usesWideLayout && !(roundOver || showsOnScreenKeyboard)
                     ? 68
@@ -360,10 +354,29 @@ struct WordleView: View {
           GameNavigationTitle(title: "WORD", systemImage: "square.grid.3x3.fill", tint: .mint)
         }
       }
+      ToolbarItem(placement: .topBarTrailing) {
+        if started && !roundOver {
+          Menu {
+            Button(role: .destructive) {
+              confirmReveal = true
+            } label: {
+              Label("Give Up", systemImage: "flag.fill")
+            }
+          } label: {
+            Image(systemName: "ellipsis.circle")
+          }
+          .accessibilityLabel("WORD options")
+          .accessibilityHint("Includes an option to give up the current round")
+        }
+      }
     }
     .task {
       hardwareKeyboardConnected = GCKeyboard.coalesced != nil
       showsOnScreenKeyboard = !hardwareKeyboardConnected
+    }
+    .task {
+      await Self.prewarmAnswerBank()
+      isAnswerBankPrepared = true
     }
     .task {
       for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidConnect) {
@@ -453,7 +466,8 @@ struct WordleView: View {
 
             GameSplashLaunchLayout(
                 tint: .mint,
-                isStartEnabled: mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay,
+                isStartEnabled: isAnswerBankPrepared
+                    && (mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay),
                 startAction: { startNewRound(practice: mode == .practice) }
             ) {
                 GameLobbyPreview(kind: .wordle)
@@ -1596,7 +1610,6 @@ private struct WordGameResponsiveLayout<
   let showsBoardCardSecond: Bool
   let toggleKeyboardCard: () -> Void
   let swapCards: () -> Void
-  let revealWord: () -> Void
   let scoreboard: Scoreboard
   let board: Board
   let feedback: Feedback
@@ -1616,7 +1629,6 @@ private struct WordGameResponsiveLayout<
     showsBoardCardSecond: Bool,
     toggleKeyboardCard: @escaping () -> Void,
     swapCards: @escaping () -> Void,
-    revealWord: @escaping () -> Void,
     @ViewBuilder scoreboard: () -> Scoreboard,
     @ViewBuilder board: () -> Board,
     @ViewBuilder feedback: () -> Feedback,
@@ -1629,7 +1641,6 @@ private struct WordGameResponsiveLayout<
     self.showsBoardCardSecond = showsBoardCardSecond
     self.toggleKeyboardCard = toggleKeyboardCard
     self.swapCards = swapCards
-    self.revealWord = revealWord
     self.scoreboard = scoreboard()
     self.board = board()
     self.feedback = feedback()
@@ -1696,14 +1707,6 @@ private struct WordGameResponsiveLayout<
     VStack(spacing: 16) {
       HStack {
         Spacer()
-
-        Button(action: revealWord) {
-          Label("Reveal Word", systemImage: "eye")
-        }
-        .labelStyle(.iconOnly)
-        .buttonStyle(.bordered)
-        .controlSize(.small)
-        .accessibilityHint("Reveals the answer and counts the round as a loss")
 
         Button(action: swapCards) {
           Label("Swap Cards", systemImage: "arrow.left.arrow.right")
@@ -1922,4 +1925,3 @@ private struct FilledGameKeyButtonStyle: ButtonStyle {
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
-

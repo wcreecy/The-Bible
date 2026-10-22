@@ -91,11 +91,11 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         switch self {
         case .quiz: "Bible facts"
         case .hangman: "People, places and books"
-        case .beatTheClock: "Recall of people, places and books"
+        case .beatTheClock: "Recall of people, places & books"
         case .verseMatch: "Match the verse with its text"
         case .bookOrder: "Order the books correctly"
         case .wordSearch: "Find the words"
-        case .whoAmI: "Name the person described in the clue"
+        case .whoAmI: "Name the person"
         case .wordle: "5 letters, 6 tries"
         case .trivia: "Bible Trivia"
         case .reviewRound: "Previously missed questions"
@@ -172,6 +172,11 @@ private struct DailyWordResult: Codable {
     let word: String
 }
 
+private enum GameProgress: Equatable {
+    case standard(String)
+    case dailyWord(word: String, won: Bool)
+}
+
 struct GamesView: View {
     @Binding var path: NavigationPath
 
@@ -181,7 +186,7 @@ struct GamesView: View {
 
     /// Row progress text, rebuilt only when stats change. Building it reads about a hundred
     /// stored values, so it must not run on every redraw.
-    @State private var progressByRoute: [GameRoute: String] = [:]
+    @State private var progressByRoute: [GameRoute: GameProgress] = [:]
     @State private var verseToRememberOffset = 0
 
     private var todayChallengeStore: TodayChallengeStore { .shared }
@@ -363,7 +368,7 @@ struct GamesView: View {
             groups: GameLearningGroup.allCases,
             reviewIsAvailable: !MissedGameQuestionStore.shared.reviewableGames().isEmpty,
             usesExpandedLayout: horizontalSizeClass == .regular,
-            progress: { progressByRoute[$0] ?? "Not played" },
+            progress: { progressByRoute[$0] ?? .standard("Not played") },
             recommendation: recommendation,
             onSelect: present,
             onSelectRecommendation: selectRecommendation
@@ -422,21 +427,21 @@ struct GamesView: View {
         for route: GameRoute,
         entry: GameStats.GameBreakdown.Entry?,
         todayWordResult: DailyWordResult?
-    ) -> String {
+    ) -> GameProgress {
         if route == .wordle, let result = todayWordResult {
-            return result.won ? "Solved in \(result.guesses)/6" : "Try again tomorrow"
+            return .dailyWord(word: result.word, won: result.won)
         }
 
         guard let entry, entry.answered > 0 else {
-            return "Not played"
+            return .standard("Not played")
         }
 
         let accuracy = Int((Double(entry.correct) / Double(entry.answered) * 100).rounded())
         let bestStreak = max(0, entry.bestStreak ?? 0)
         if route == .trivia || bestStreak > 0 {
-            return "\(accuracy)% · Best \(bestStreak)"
+            return .standard("\(accuracy)% · Best \(bestStreak)")
         }
-        return "\(accuracy)% · \(entry.answered) played"
+        return .standard("\(accuracy)% · \(entry.answered) played")
     }
 
     private func present(_ route: GameRoute) {
@@ -490,7 +495,7 @@ private struct GameCollectionCard: View {
     let groups: [GameLearningGroup]
     let reviewIsAvailable: Bool
     let usesExpandedLayout: Bool
-    let progress: (GameRoute) -> String
+    let progress: (GameRoute) -> GameProgress
     let recommendation: GameRecommendation
     let onSelect: (GameRoute) -> Void
     let onSelectRecommendation: (GameRecommendationDestination) -> Void
@@ -569,7 +574,7 @@ private struct GameCollectionReviewSection: View {
 
             GameNavigationRow(
                 route: .reviewRound,
-                progress: "Ready",
+                progress: .standard("Ready"),
                 usesExpandedLayout: usesExpandedLayout,
                 onSelect: onSelect
             )
@@ -645,7 +650,7 @@ private struct GameNavigationRow: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let route: GameRoute
-    let progress: String
+    let progress: GameProgress
     let usesExpandedLayout: Bool
     let onSelect: () -> Void
 
@@ -678,7 +683,7 @@ private struct GameNavigationRow: View {
 
 private struct GameStandardRow: View {
     let route: GameRoute
-    let progress: String
+    let progress: GameProgress
     let usesExpandedLayout: Bool
 
     var body: some View {
@@ -697,9 +702,10 @@ private struct GameStandardRow: View {
 
             Spacer(minLength: 8)
 
-            Text(progress)
-                .font((usesExpandedLayout ? Font.footnote : Font.caption).weight(.medium))
-                .foregroundStyle(.secondary)
+            GameProgressLabel(
+                progress: progress,
+                font: (usesExpandedLayout ? Font.footnote : Font.caption).weight(.medium)
+            )
                 .multilineTextAlignment(.trailing)
                 .fixedSize(horizontal: true, vertical: false)
 
@@ -713,7 +719,7 @@ private struct GameStandardRow: View {
 
 private struct GameAccessibilityRow: View {
     let route: GameRoute
-    let progress: String
+    let progress: GameProgress
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -730,12 +736,30 @@ private struct GameAccessibilityRow: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text(progress)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
+            GameProgressLabel(progress: progress, font: .caption.weight(.medium))
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct GameProgressLabel: View {
+    let progress: GameProgress
+    let font: Font
+
+    var body: some View {
+        switch progress {
+        case .standard(let text):
+            Text(text)
+                .font(font)
+                .foregroundStyle(.secondary)
+        case .dailyWord(let word, let won):
+            Text(word)
+                .font(font)
+                .foregroundStyle(won ? .green : .red)
+                .strikethrough(!won)
+                .accessibilityLabel(won ? "Today's WORD: \(word), solved" : "Today's WORD: \(word), not solved")
+        }
     }
 }
 

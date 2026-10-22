@@ -577,9 +577,9 @@ private struct BibleTriviaSetupScreen: View {
                     tint: .cyan,
                     experienceLevel: experienceLevel,
                     experienceDetails: GameExperienceDetails(
-                        learn: "Easy questions with 30 seconds for each answer.",
-                        standard: "Easy and normal questions with 15 seconds each.",
-                        challenge: "All questions with 10 seconds for each answer."
+                        learn: "30 seconds for each answer.",
+                        standard: "15 seconds for each answer and questions are a little more challenging",
+                        challenge: "10 seconds for each answer and the most challenging questions."
                     ),
                     experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
                     isConfigurationEnabled: !isReviewRound,
