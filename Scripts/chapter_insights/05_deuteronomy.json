@@ -5,60 +5,56 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Speaks to all Israel on the plains of Moab and begins reviewing the journey from Horeb"
+        "role": "Speaks to all Israel and retells the journey from Horeb."
       },
       {
         "name": "The LORD",
-        "role": "Gave the promise of the land, led Israel by fire and cloud (1:33), and pronounced judgment on the unbelieving generation"
+        "role": "Told Israel to go up and take the land, then judged the generation that refused."
       },
       {
-        "name": "Israelite leaders and judges",
-        "role": "Wise, respected men chosen from each tribe to share the work of leading and judging (1:13-18)"
+        "name": "The judges",
+        "role": "Wise men Moses chose to help him lead and judge the people."
       },
       {
         "name": "The twelve spies",
-        "role": "One man from each tribe sent to explore the land and report back (1:22-25)"
+        "role": "Searched the land and brought back its fruit."
       },
       {
-        "name": "Caleb son of Jephunneh",
-        "role": "The only one of that generation, apart from Joshua (1:38), said to follow the LORD fully (1:36)"
+        "name": "The people",
+        "role": "Refused to go up, then attacked on their own and were beaten."
       },
       {
-        "name": "Joshua son of Nun",
-        "role": "Moses' assistant, named as the one who will lead the people into the land (1:38)"
-      },
-      {
-        "name": "The Amorites",
-        "role": "Inhabitants of the hill country who drove Israel back at Seir as far as Hormah (1:44)"
+        "name": "Caleb and Joshua",
+        "role": "The only two of that generation who would enter the land."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Remembering history",
-        "explanation": "Moses grounds the covenant in what the people actually experienced, so that their future choices are made with memory rather than forgetfulness",
+        "theme": "Remember the journey",
+        "explanation": "Moses retells what the people saw God do, so they will not forget it now.",
         "references": [
-          "1:6-8,30-31"
+          "Deuteronomy 1:6-8,30-31"
         ]
       },
       {
-        "theme": "Shared leadership and fair judgment",
-        "explanation": "Governing is distributed among capable leaders, and judges must hear cases impartially, because 'the judgment is God's'",
+        "theme": "Fair judges",
+        "explanation": "Judges must hear small and great alike, \"for the judgment is God's.\"",
         "references": [
-          "1:9-17"
+          "Deuteronomy 1:9-17"
         ]
       },
       {
-        "theme": "Fear versus trust",
-        "explanation": "The people saw the same land and the same God but let fear win; Moses contrasts what they feared with what God had already done",
+        "theme": "Fear or trust",
+        "explanation": "The parents saw the same land and the same God, but they let fear win.",
         "references": [
-          "1:26-33"
+          "Deuteronomy 1:26-33"
         ]
       },
       {
-        "theme": "Obedience cannot be postponed or imitated",
-        "explanation": "After refusing to go, the people tried to go on their own terms and failed, showing that trust is more than changing one's mind after the fact",
+        "theme": "Too late to go",
+        "explanation": "After refusing, the people tried to go on their own, and they failed.",
         "references": [
-          "1:41-45"
+          "Deuteronomy 1:41-45"
         ]
       }
     ],
@@ -69,57 +65,45 @@
     "whereWeAre": "Moses' retelling in chapter 1 ended with Israel's defeat after refusing to enter the land. Now he covers the thirty-eight years of wandering that followed and the turn north past Edom, Moab, and Ammon. The first victory, over Sihon, leads into the defeat of Og in chapter 3.",
     "keyFigures": [
       {
-        "name": "The LORD",
-        "role": "Directs Israel's route, gives lands to other nations, and gives Israel victory over Sihon"
-      },
-      {
         "name": "Moses",
-        "role": "Recounts these events to the new generation"
+        "role": "Retells the journey around Edom and the victory over Sihon."
       },
       {
-        "name": "Descendants of Esau (Edom)",
-        "role": "Relatives of Israel living in Seir; Israel is told not to provoke them (2:4-5)"
-      },
-      {
-        "name": "Moabites and Ammonites",
-        "role": "Descendants of Lot (2:9,19) whose land Israel is told not to take"
+        "name": "The LORD",
+        "role": "Told Israel not to fight Edom, Moab, or Ammon and gave Sihon into their hands."
       },
       {
         "name": "Sihon king of Heshbon",
-        "role": "Amorite king who refused Israel passage and was defeated (2:26-36)"
-      },
-      {
-        "name": "Earlier inhabitants (Emim, Zamzummim, Horites, etc.)",
-        "role": "Mentioned as background: peoples who lived in these regions before Moab, Ammon, and Edom (2:10-12,20-23)"
+        "role": "Refused to let Israel pass and was defeated."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God's sovereignty over all nations",
-        "explanation": "The LORD gives land to Edom, Moab, and Ammon as well as to Israel; Israel is not the only people God works with",
+        "theme": "God rules every nation",
+        "explanation": "The LORD gave land to Edom, Moab, and Ammon too, so Israel must not take it.",
         "references": [
-          "2:5,9,19,21-22"
+          "Deuteronomy 2:5,9,19,21-22"
         ]
       },
       {
-        "theme": "Restraint and respect for neighbors",
-        "explanation": "Israel is told to avoid conflict and to pay for what it uses",
+        "theme": "Good neighbors",
+        "explanation": "Israel is to pay for food and water and avoid war with its relatives.",
         "references": [
-          "2:4-6,9,19,28-29"
+          "Deuteronomy 2:4-6,9,19,28-29"
         ]
       },
       {
-        "theme": "God's timing and judgment",
-        "explanation": "A whole generation passes before Israel moves forward, showing that disobedience has lasting consequences",
+        "theme": "A generation passes",
+        "explanation": "Thirty-eight years go by until the men who refused have died.",
         "references": [
-          "2:14-15"
+          "Deuteronomy 2:14-15"
         ]
       },
       {
-        "theme": "Victory belongs to God",
-        "explanation": "Sihon's defeat is credited to the LORD's giving, not Israel's strength",
+        "theme": "Victory from God",
+        "explanation": "Sihon falls because the LORD gives him into Israel's hand.",
         "references": [
-          "2:24,30-33"
+          "Deuteronomy 2:24,30-33"
         ]
       }
     ],
@@ -130,57 +114,57 @@
     "whereWeAre": "Chapter 2 ended with Israel's victory over Sihon. Moses now recalls the defeat of Og, how the land east of the Jordan was given to two and a half tribes, and his own plea to enter the land. This finishes his history lesson, and in chapter 4 he turns to what it means for Israel now.",
     "keyFigures": [
       {
-        "name": "Og king of Bashan",
-        "role": "Last of the remnant of the Rephaim, defeated with his people and cities (3:1-11)"
-      },
-      {
         "name": "Moses",
-        "role": "Speaker; pleads to enter the land but is told he cannot"
+        "role": "Retells the defeat of Og and pleads to enter the land."
       },
       {
         "name": "The LORD",
-        "role": "Gives victory over Og, and answers Moses' request with a refusal"
+        "role": "Gave Og into Israel's hand and told Moses, \"Let it suffice thee.\""
+      },
+      {
+        "name": "Og king of Bashan",
+        "role": "Came out to fight Israel at Edrei and was defeated."
       },
       {
         "name": "Reuben, Gad, and half of Manasseh",
-        "role": "Receive land east of the Jordan with the duty to help conquer west of it (3:12-20)"
+        "role": "Received land east of the Jordan and promised to help their brothers."
       },
       {
-        "name": "Jair son of Manasseh",
-        "role": "Took the region of Argob and named its villages after himself (3:14)"
+        "name": "Jair",
+        "role": "Took the region of Argob and named its towns after himself."
       },
       {
         "name": "Joshua",
-        "role": "Told to remember what God did to Og and Sihon and appointed to lead (3:21-22,28)"
+        "role": "Told not to fear, because the LORD will fight for Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God fights for Israel",
-        "explanation": "What God did to Sihon and Og is presented as a pattern for what he will do west of the Jordan",
+        "theme": "God fights for you",
+        "explanation": "What God did to Sihon and Og shows what he will do across the Jordan.",
         "references": [
-          "3:2,21-22"
+          "Deuteronomy 3:2,21-22"
         ]
       },
       {
-        "theme": "Shared obligation among the tribes",
-        "explanation": "Tribes already settled must not leave their brothers to fight alone",
+        "theme": "No one fights alone",
+        "explanation": "The tribes with land already must still fight beside their brothers.",
         "references": [
-          "3:18-20"
+          "Deuteronomy 3:18-20"
         ]
       },
       {
-        "theme": "Grace and consequence",
-        "explanation": "Moses' prayer shows honest pleading, but the answer remains no; God still lets him see the land and tells him to strengthen Joshua",
+        "theme": "An honest no",
+        "explanation": "Moses pleads to enter, but God says no, and lets him see the land from Pisgah.",
         "references": [
-          "3:23-28"
+          "Deuteronomy 3:23-28"
         ]
       },
       {
-        "theme": "Passing leadership on",
-        "explanation": "Moses' last task is preparing his successor rather than securing his own place",
+        "theme": "Passing it on",
+        "explanation": "Moses' last job is to strengthen Joshua.",
         "references": [
-          "3:28"
+          "Deuteronomy 3:28"
         ]
       }
     ],
@@ -192,52 +176,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Teacher and preacher, urging Israel to obey and remember"
+        "role": "Urges Israel to obey and never to make an image of God."
       },
       {
         "name": "The LORD",
-        "role": "Spoke from the fire at Horeb, gave the covenant and the Ten Commandments, and is described as merciful and as a consuming fire"
-      },
-      {
-        "name": "Israel and its future generations",
-        "role": "The covenant community who must teach the law to children and grandchildren"
-      },
-      {
-        "name": "The nations",
-        "role": "Observers who will see Israel's wisdom through obedience (4:6); also the places where Israel would be scattered (4:27)"
-      },
-      {
-        "name": "Reuben, Gad, and Manasseh",
-        "role": "Tribes whose Transjordan cities Bezer, Ramoth, and Golan are set apart as cities of refuge (4:41-43)"
+        "role": "Spoke from the fire at Horeb, where Israel heard a voice but saw no form."
       }
     ],
     "keyThemes": [
       {
         "theme": "Obedience as wisdom",
-        "explanation": "Following God's commands is described as visible wisdom and understanding in the eyes of other peoples",
+        "explanation": "Keeping God's laws will show the nations Israel's wisdom.",
         "references": [
-          "4:5-8"
+          "Deuteronomy 4:5-8"
         ]
       },
       {
-        "theme": "God cannot be reduced to an image",
-        "explanation": "At Horeb Israel heard a voice but saw no form, so any physical representation misrepresents God",
+        "theme": "No image of God",
+        "explanation": "At Horeb Israel heard God's voice but saw no form, so no image can show him.",
         "references": [
-          "4:12,15-19"
+          "Deuteronomy 4:12,15-19"
         ]
       },
       {
-        "theme": "Mercy after failure",
-        "explanation": "Even after exile for unfaithfulness, God can be found by those who seek him wholeheartedly",
+        "theme": "Found again",
+        "explanation": "Even in exile, those who seek God with all their heart will find him.",
         "references": [
-          "4:29-31"
+          "Deuteronomy 4:29-31"
         ]
       },
       {
-        "theme": "The uniqueness of the LORD",
-        "explanation": "The LORD is presented as the only God, with no equal in power or in nearness to his people",
+        "theme": "There is none else",
+        "explanation": "\"The LORD he is God in heaven above, and upon the earth beneath: there is none else.\"",
         "references": [
-          "4:32-35,39"
+          "Deuteronomy 4:32-35,39"
         ]
       }
     ],
@@ -255,52 +227,44 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Mediator who stood between the LORD and the people at Horeb and now repeats the commandments"
+        "role": "Repeats the Ten Commandments and recalls standing between the LORD and the people."
       },
       {
         "name": "The LORD",
-        "role": "Speaks the Ten Commandments directly to the assembly from the fire (5:4,22)"
+        "role": "Spoke the commandments \"out of the midst of the fire.\""
       },
       {
-        "name": "All Israel",
-        "role": "Addressed as those with whom the covenant was made 'not with our fathers' alone but 'with us, all of us here alive today' (5:3)"
-      },
-      {
-        "name": "Household members: sons, daughters, servants, foreigners, animals",
-        "role": "Included in the Sabbath rest (5:14)"
-      },
-      {
-        "name": "Parents",
-        "role": "Those to be honored by their children (5:16)"
+        "name": "The people at Horeb",
+        "role": "Were afraid and asked Moses to listen to God for them."
       }
     ],
     "keyThemes": [
       {
-        "theme": "A covenant with the living generation",
-        "explanation": "The covenant is not just history; each generation must receive it as its own",
+        "theme": "A covenant for today",
+        "explanation": "\"The LORD made not this covenant with our fathers, but with us.\"",
         "references": [
-          "5:2-3"
+          "Deuteronomy 5:2-3"
         ]
       },
       {
-        "theme": "Love expressed in obedience",
-        "explanation": "The commandments protect the relationship with God and with neighbor, framing them in the context of deliverance from Egypt",
+        "theme": "Rescued, then commanded",
+        "explanation": "The commandments begin with the God who brought Israel out of slavery.",
         "references": [
-          "5:6-21"
+          "Deuteronomy 5:6-21"
         ]
       },
       {
-        "theme": "Sabbath as rest and remembrance",
-        "explanation": "Rest extends to servants and foreigners and is rooted in memory of slavery",
+        "theme": "Rest for everyone",
+        "explanation": "Servants rest too, because Israel was once a slave in Egypt.",
         "references": [
-          "5:12-15"
+          "Deuteronomy 5:12-15"
         ]
       },
       {
-        "theme": "Reverence and mediation",
-        "explanation": "The people's fear at Horeb leads to Moses' role as intermediary, and God desires hearts that fear him and obey",
+        "theme": "Hearts that fear God",
+        "explanation": "God says, \"O that there were such an heart in them, that they would fear me.\"",
         "references": [
-          "5:22-29"
+          "Deuteronomy 5:22-29"
         ]
       }
     ],
@@ -358,52 +322,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Teaches the commandments and urges parents to pass them on"
+        "role": "Teaches the great command to love the LORD."
       },
       {
         "name": "The LORD",
-        "role": "Declared to be one and to be loved with all one's being; the God who brought Israel out of Egypt"
-      },
-      {
-        "name": "Israel",
-        "role": "Addressed directly as 'Hear, O Israel'"
-      },
-      {
-        "name": "Children of Israel",
-        "role": "Those who will ask the meaning of the commands and receive the story (6:20-25)"
-      },
-      {
-        "name": "Abraham, Isaac, and Jacob",
-        "role": "Patriarchs to whom the LORD swore to give the land (6:10)"
+        "role": "Is \"one LORD,\" the God who brought Israel out of Egypt."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Wholehearted love for God",
-        "explanation": "Love for God is the center of Israel's obligation, involving heart, soul, and strength",
+        "theme": "Love God completely",
+        "explanation": "\"Thou shalt love the LORD thy God with all thine heart, and with all thy soul, and with all thy might.\"",
         "references": [
-          "6:4-5"
+          "Deuteronomy 6:4-5"
         ]
       },
       {
-        "theme": "Passing faith to the next generation",
-        "explanation": "Teaching happens in ordinary daily life at home, on the road, when lying down and rising",
+        "theme": "Teach your children",
+        "explanation": "God's words are to be talked about at home, on the road, at bedtime, and in the morning.",
         "references": [
-          "6:6-9,20-25"
+          "Deuteronomy 6:6-9,20-25"
         ]
       },
       {
-        "theme": "The danger of prosperity",
-        "explanation": "Comfort can lead to forgetting the God who gave it",
+        "theme": "Don't forget in good times",
+        "explanation": "Comfort can make people forget the God who gave it.",
         "references": [
-          "6:10-12"
+          "Deuteronomy 6:10-12"
         ]
       },
       {
-        "theme": "Retelling redemption",
-        "explanation": "The exodus story is the reason for the commands, not just a historical detail",
+        "theme": "Tell the story",
+        "explanation": "When children ask about the laws, parents tell how God brought them out of Egypt.",
         "references": [
-          "6:20-25"
+          "Deuteronomy 6:20-25"
         ]
       }
     ],
@@ -461,52 +413,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the instructions"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Chooses Israel, keeps covenant love, and will drive out the nations"
-      },
-      {
-        "name": "Israel",
-        "role": "Called a holy people, treasured possession"
-      },
-      {
-        "name": "The seven nations",
-        "role": "Hittites, Girgashites, Amorites, Canaanites, Perizzites, Hivites, and Jebusites (7:1), the inhabitants of the land"
-      },
-      {
-        "name": "Pharaoh and Egypt",
-        "role": "Referenced as the example of God's power in the past (7:8,18)"
+        "role": "Chose Israel because he loved them, and will drive out the nations."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Chosen by love, not merit",
-        "explanation": "Israel's election rests on God's love and his promise to the patriarchs, not on its size or strength",
+        "theme": "Chosen by love",
+        "explanation": "God chose Israel because he loved them, not because they were many.",
         "references": [
-          "7:6-8"
+          "Deuteronomy 7:6-8"
         ]
       },
       {
-        "theme": "Covenant faithfulness",
-        "explanation": "The LORD keeps covenant love for those who love him but holds accountable those who reject him",
+        "theme": "A faithful God",
+        "explanation": "God keeps covenant \"to a thousand generations\" with those who love him.",
         "references": [
-          "7:9-11"
+          "Deuteronomy 7:9-11"
         ]
       },
       {
-        "theme": "Exclusive loyalty",
-        "explanation": "Intermarriage and idols are prohibited because they would lead hearts away from the LORD",
+        "theme": "No other gods",
+        "explanation": "Israel must not marry into the nations or keep their idols.",
         "references": [
-          "7:3-5,25-26"
+          "Deuteronomy 7:3-5,25-26"
         ]
       },
       {
-        "theme": "Courage grounded in memory",
-        "explanation": "Israel should not fear because of what God did to Egypt",
+        "theme": "Remember and don't fear",
+        "explanation": "Remembering what God did to Pharaoh gives courage.",
         "references": [
-          "7:17-21"
+          "Deuteronomy 7:17-21"
         ]
       }
     ],
@@ -518,48 +458,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Speaker urging remembrance and humility"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Led, humbled, tested, fed, and disciplined Israel; gives the land and the ability to produce wealth"
-      },
-      {
-        "name": "Israel",
-        "role": "Wilderness generation remembered, and the generation now about to enter the land"
-      },
-      {
-        "name": "Ancestors ('fathers')",
-        "role": "Those who did not know manna before it was given (8:3,16)"
+        "role": "Led Israel forty years, fed them with manna, and gives them power to get wealth."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Dependence on God's word",
-        "explanation": "Manna taught that life depends on what God provides and says, not only on food",
+        "theme": "More than bread",
+        "explanation": "\"man doth not live by bread only, but by every word that proceedeth out of the mouth of the LORD.\"",
         "references": [
-          "8:3"
+          "Deuteronomy 8:3"
         ]
       },
       {
-        "theme": "Humility through testing",
-        "explanation": "Hardship revealed what was in their hearts and trained them to rely on God",
+        "theme": "Tested in the desert",
+        "explanation": "The hard years showed what was in Israel's heart.",
         "references": [
-          "8:2,5,16"
+          "Deuteronomy 8:2,5,16"
         ]
       },
       {
-        "theme": "Gratitude in prosperity",
-        "explanation": "Success becomes dangerous when it leads to pride or forgetfulness",
+        "theme": "Thankful when full",
+        "explanation": "When Israel is rich, they must not forget God.",
         "references": [
-          "8:11-18"
+          "Deuteronomy 8:11-18"
         ]
       },
       {
         "theme": "Wealth is a gift",
-        "explanation": "The ability to produce wealth is said to come from the LORD, tied to his covenant",
+        "explanation": "It is God \"that giveth thee power to get wealth.\"",
         "references": [
-          "8:17-18"
+          "Deuteronomy 8:17-18"
         ]
       }
     ],
@@ -582,56 +514,48 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Recounts his own role as mediator and intercessor"
+        "role": "Retells the golden calf and his forty days of prayer for the people."
       },
       {
         "name": "The LORD",
-        "role": "Gives the land by promise and judgment, not because of Israel's merit"
+        "role": "Was ready to destroy Israel but listened to Moses."
       },
       {
-        "name": "Israel",
-        "role": "Described as stiff-necked and repeatedly rebellious"
+        "name": "The people",
+        "role": "Made the golden calf at Horeb and rebelled again at other places."
       },
       {
         "name": "Aaron",
-        "role": "Named as having been in danger because of the golden calf; Moses prayed for him (9:20)"
-      },
-      {
-        "name": "The Anakim",
-        "role": "Large and strong people in the land, mentioned as reason for Israel's fear (9:2)"
-      },
-      {
-        "name": "Abraham, Isaac, and Jacob",
-        "role": "Patriarchs whose covenant is the basis for God's action (9:5,27)"
+        "role": "Made the calf, and Moses prayed for him too."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Grace, not merit",
-        "explanation": "The land is a gift grounded in God's promise and in the wickedness of its previous occupants, not Israel's goodness",
+        "theme": "Not because you are good",
+        "explanation": "God gives the land because of his promise, not Israel's righteousness.",
         "references": [
-          "9:4-6"
+          "Deuteronomy 9:4-6"
         ]
       },
       {
-        "theme": "Honest remembrance of failure",
-        "explanation": "Israel's identity includes its own history of rebellion",
+        "theme": "An honest past",
+        "explanation": "Israel has rebelled \"from the day that I knew you.\"",
         "references": [
-          "9:7,24"
+          "Deuteronomy 9:7,24"
         ]
       },
       {
-        "theme": "Intercession",
-        "explanation": "Moses pleads on behalf of the people and appeals to God's promises and reputation",
+        "theme": "Praying for others",
+        "explanation": "Moses lies before the LORD forty days and nights for the people.",
         "references": [
-          "9:18-20,25-29"
+          "Deuteronomy 9:18-20,25-29"
         ]
       },
       {
-        "theme": "God's judgment on all nations",
-        "explanation": "The nations are removed because of their wickedness, showing God's moral standards apply broadly",
+        "theme": "Judgment on wickedness",
+        "explanation": "The nations lose the land because of their wickedness.",
         "references": [
-          "9:4-5"
+          "Deuteronomy 9:4-5"
         ]
       }
     ],
@@ -643,56 +567,48 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Makes the second tablets and the ark and continues his address"
+        "role": "Cuts new tablets and puts them in the ark."
       },
       {
         "name": "The LORD",
-        "role": "Writes the commandments again and is described as God of gods who loves the stranger"
-      },
-      {
-        "name": "Aaron and Eleazar",
-        "role": "Aaron dies; his son Eleazar serves as priest in his place (10:6)"
+        "role": "Writes the commandments again and sets apart the tribe of Levi."
       },
       {
         "name": "The Levites",
-        "role": "Set apart to carry the ark, minister, and bless; their inheritance is the LORD (10:8-9)"
+        "role": "Carry the ark and bless in the LORD's name."
       },
       {
-        "name": "Strangers, orphans, and widows",
-        "role": "Those the LORD loves and defends, and Israel must also protect (10:18-19)"
-      },
-      {
-        "name": "Jacob's seventy descendants",
-        "role": "Those who went down to Egypt (10:22)"
+        "name": "Aaron and Eleazar",
+        "role": "Aaron dies at Mosera, and his son serves as priest in his place."
       }
     ],
     "keyThemes": [
       {
-        "theme": "What God requires",
-        "explanation": "Reverence, obedience, love, and service from the whole heart",
+        "theme": "What God asks",
+        "explanation": "\"to fear the LORD thy God, to walk in all his ways, and to love him.\"",
         "references": [
-          "10:12-13"
+          "Deuteronomy 10:12-13"
         ]
       },
       {
-        "theme": "Circumcision of the heart",
-        "explanation": "Inward devotion is required, not just outward belonging",
+        "theme": "A changed heart",
+        "explanation": "\"Circumcise therefore the foreskin of your heart.\"",
         "references": [
-          "10:16"
+          "Deuteronomy 10:16"
         ]
       },
       {
-        "theme": "Justice for the vulnerable",
-        "explanation": "God cares for the foreigner, orphan, and widow, and Israel must reflect that",
+        "theme": "Care for the weak",
+        "explanation": "God loves the stranger, so Israel must too, for they were strangers in Egypt.",
         "references": [
-          "10:17-19"
+          "Deuteronomy 10:17-19"
         ]
       },
       {
-        "theme": "The LORD as inheritance",
-        "explanation": "The Levites' role shows that God himself can be the portion of those who serve him",
+        "theme": "God as the reward",
+        "explanation": "The Levites have no land, because \"the LORD is his inheritance.\"",
         "references": [
-          "10:8-9"
+          "Deuteronomy 10:8-9"
         ]
       }
     ],
@@ -704,52 +620,44 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Speaker pressing the people to choose obedience"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Provider of rain and land, and the one who acted in Egypt, the wilderness, and against Dathan and Abiram"
-      },
-      {
-        "name": "Israel's current generation",
-        "role": "Those who saw the LORD's acts with their own eyes (11:2,7)"
-      },
-      {
-        "name": "Children who have not seen",
-        "role": "Those who must be taught (11:2,19)"
+        "role": "Sends the rain and sets a blessing and a curse before Israel."
       },
       {
         "name": "Dathan and Abiram",
-        "role": "Sons of Eliab of Reuben swallowed by the earth in a rebellion against Moses (11:6; see Numbers 16)"
+        "role": "Recalled as the rebels whom the earth swallowed."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Love and obedience together",
-        "explanation": "Love for God is expressed in keeping his commandments",
+        "theme": "Love shown by obedience",
+        "explanation": "Loving God and keeping his commands go together.",
         "references": [
-          "11:1,13,22"
+          "Deuteronomy 11:1,13,22"
         ]
       },
       {
-        "theme": "Dependence on God for provision",
-        "explanation": "The land's fertility depends on rain from God, not human irrigation",
+        "theme": "Rain from heaven",
+        "explanation": "Canaan drinks the rain God sends, unlike Egypt's watered fields.",
         "references": [
-          "11:10-15"
+          "Deuteronomy 11:10-15"
         ]
       },
       {
-        "theme": "Teaching children",
-        "explanation": "Faith is passed down in conversation and through visible reminders",
+        "theme": "Teach your children",
+        "explanation": "God's words are to be taught at home and written on the doors.",
         "references": [
-          "11:19-21"
+          "Deuteronomy 11:19-21"
         ]
       },
       {
-        "theme": "Blessing and curse as a choice",
-        "explanation": "Israel must choose between two paths, with consequences attached",
+        "theme": "A blessing and a curse",
+        "explanation": "\"I set before you this day a blessing and a curse.\"",
         "references": [
-          "11:26-28"
+          "Deuteronomy 11:26-28"
         ]
       }
     ],
@@ -761,52 +669,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the central worship laws"
+        "role": "Begins the laws for life in the land."
       },
       {
         "name": "The LORD",
-        "role": "Chooses the place for his name and receives the offerings"
-      },
-      {
-        "name": "Israel and its households",
-        "role": "Worshipers who bring offerings and eat before the LORD with joy"
-      },
-      {
-        "name": "Levites",
-        "role": "Not to be neglected; they have no inheritance and depend on the community (12:12,18-19)"
-      },
-      {
-        "name": "The nations being dispossessed",
-        "role": "Their altars, pillars, and Asherim are to be destroyed (12:2-3); their practices are warned against (12:29-31)"
+        "role": "Will choose one place \"to put his name there.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Worship on God's terms",
-        "explanation": "Israel is not to worship as the nations do but as the LORD directs",
+        "theme": "Worship God's way",
+        "explanation": "Israel must not worship the LORD the way the nations worship their gods.",
         "references": [
-          "12:4,30-31"
+          "Deuteronomy 12:4,30-31"
         ]
       },
       {
-        "theme": "Joyful worship",
-        "explanation": "Offerings are tied to eating and rejoicing with family, servants, and Levites",
+        "theme": "Joy before God",
+        "explanation": "Offerings are eaten with rejoicing by families, servants, and Levites.",
         "references": [
-          "12:7,12,18"
+          "Deuteronomy 12:7,12,18"
         ]
       },
       {
-        "theme": "Reverence for life and blood",
-        "explanation": "Blood is not to be eaten because it represents life",
+        "theme": "The blood is the life",
+        "explanation": "Meat may be eaten anywhere, but never the blood.",
         "references": [
-          "12:23-25"
+          "Deuteronomy 12:23-25"
         ]
       },
       {
-        "theme": "Guarding against syncretism",
-        "explanation": "Israel must avoid mixing worship of the LORD with practices of other religions",
+        "theme": "Don't copy the nations",
+        "explanation": "Israel must not ask how the nations served their gods and do the same.",
         "references": [
-          "12:29-31"
+          "Deuteronomy 12:29-31"
         ]
       }
     ],
@@ -818,52 +714,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Speaker delivering the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "The one whose exclusive worship is at stake and who tests Israel's love"
-      },
-      {
-        "name": "A prophet or dreamer of dreams",
-        "role": "A potential false teacher who performs signs but leads toward other gods (13:1-5)"
-      },
-      {
-        "name": "Close family or friends",
-        "role": "Those who might secretly encourage worship of other gods (13:6-11)"
-      },
-      {
-        "name": "'Worthless men' and the people of a city",
-        "role": "Those who lead a town into idolatry (13:13-15)"
+        "role": "Tests whether Israel loves him with all their heart."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Exclusive loyalty to the LORD",
-        "explanation": "Allegiance to the LORD outweighs even family bonds and miraculous signs",
+        "theme": "Loyal to God first",
+        "explanation": "Not even a prophet, a brother, or a friend may lead Israel to other gods.",
         "references": [
-          "13:3-4,6-8"
+          "Deuteronomy 13:3-4,6-8"
         ]
       },
       {
-        "theme": "Testing and discernment",
-        "explanation": "A sign alone does not prove a message is from God; the message must be consistent with God's commands",
+        "theme": "Signs are not enough",
+        "explanation": "A prophet whose sign comes true must still be rejected if he leads away from God.",
         "references": [
-          "13:1-4"
+          "Deuteronomy 13:1-4"
         ]
       },
       {
-        "theme": "Seriousness of apostasy",
-        "explanation": "In this covenant, turning to other gods is treated like treason against the covenant king",
+        "theme": "A serious sin",
+        "explanation": "Turning others to other gods is treated as betraying God himself.",
         "references": [
-          "13:5,10"
+          "Deuteronomy 13:5,10"
         ]
       },
       {
-        "theme": "Careful inquiry",
-        "explanation": "Even in a grave charge, the community must investigate thoroughly",
+        "theme": "Look carefully",
+        "explanation": "A report about a town must be checked carefully before anything is done.",
         "references": [
-          "13:12-14"
+          "Deuteronomy 13:12-14"
         ]
       }
     ],
@@ -875,52 +759,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers these laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Calls Israel his treasured people and holy"
-      },
-      {
-        "name": "Israel",
-        "role": "Described as children of the LORD and a holy people"
-      },
-      {
-        "name": "Levites",
-        "role": "Receive the tithe because they have no inheritance (14:27-29)"
-      },
-      {
-        "name": "The foreigner, fatherless, and widow",
-        "role": "Those cared for by the third-year tithe (14:29)"
+        "role": "Has chosen Israel \"to be a peculiar people unto himself.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Identity as God's holy people",
-        "explanation": "Practices of mourning and food set Israel apart as belonging to the LORD",
+        "theme": "Children of God",
+        "explanation": "\"Ye are the children of the LORD your God.\"",
         "references": [
-          "14:1-2,21"
+          "Deuteronomy 14:1-2,21"
         ]
       },
       {
-        "theme": "Distinction in daily life",
-        "explanation": "Dietary rules shape ordinary life around holiness",
+        "theme": "Holy in daily life",
+        "explanation": "What Israel eats marks them as God's people.",
         "references": [
-          "14:3-20"
+          "Deuteronomy 14:3-20"
         ]
       },
       {
-        "theme": "Joyful worship and giving",
-        "explanation": "The tithe is to be eaten in the LORD's presence with rejoicing",
+        "theme": "A tithe with joy",
+        "explanation": "The tithe is eaten before the LORD with rejoicing.",
         "references": [
-          "14:22-27"
+          "Deuteronomy 14:22-27"
         ]
       },
       {
-        "theme": "Provision for the vulnerable",
-        "explanation": "The third-year tithe feeds those without land or family support",
+        "theme": "Food for the needy",
+        "explanation": "Every third year the tithe feeds the Levite, the stranger, the orphan, and the widow.",
         "references": [
-          "14:28-29"
+          "Deuteronomy 14:28-29"
         ]
       }
     ],
@@ -932,52 +804,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Speaker presenting the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Source of blessing and the one who redeemed Israel from slavery"
-      },
-      {
-        "name": "Debtors and creditors",
-        "role": "Fellow Israelites in lending relationships (15:1-3)"
-      },
-      {
-        "name": "The poor among them",
-        "role": "Those the community must support (15:7-11)"
-      },
-      {
-        "name": "Hebrew male and female slaves",
-        "role": "Those entitled to release and provision after six years (15:12-18)"
+        "role": "Promises to bless Israel when they open their hand to the poor."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Generosity toward the poor",
-        "explanation": "The community is to lend freely and give without a grudging heart",
+        "theme": "An open hand",
+        "explanation": "\"Thou shalt open thine hand wide unto thy brother, to thy poor.\"",
         "references": [
-          "15:7-11"
+          "Deuteronomy 15:7-11"
         ]
       },
       {
-        "theme": "Freedom and release",
-        "explanation": "Debts and servitude have limits, rooted in the memory of redemption from Egypt",
+        "theme": "A fresh start",
+        "explanation": "Debts are cancelled and servants freed in the seventh year.",
         "references": [
-          "15:1-2,12-15"
+          "Deuteronomy 15:1-2,12-15"
         ]
       },
       {
-        "theme": "Obedience brings blessing",
-        "explanation": "God's blessing is connected to following these commands",
+        "theme": "Blessed for obeying",
+        "explanation": "God promises to bless those who keep these laws.",
         "references": [
-          "15:4-6,10,18"
+          "Deuteronomy 15:4-6,10,18"
         ]
       },
       {
-        "theme": "Remember slavery",
-        "explanation": "Past experience in Egypt shapes how Israel treats those in debt or service",
+        "theme": "Remember you were slaves",
+        "explanation": "Israel's own slavery in Egypt shapes how they treat others.",
         "references": [
-          "15:15"
+          "Deuteronomy 15:15"
         ]
       }
     ],
@@ -989,52 +849,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Redeemer who is honored at the festivals and who blesses the harvest"
-      },
-      {
-        "name": "Israelite households",
-        "role": "Worshipers who celebrate and bring offerings"
-      },
-      {
-        "name": "Servants, Levites, foreigners, orphans, and widows",
-        "role": "Included in the joy of the festivals (16:11,14)"
-      },
-      {
-        "name": "Judges and officers",
-        "role": "Appointed in every town to judge fairly (16:18)"
+        "role": "Calls Israel to three feasts each year at the place he will choose."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Remembering redemption",
-        "explanation": "The festivals tie Israel's yearly life to the exodus",
+        "theme": "Feasts of remembering",
+        "explanation": "The feasts tie each year to the rescue from Egypt.",
         "references": [
-          "16:1,3,12"
+          "Deuteronomy 16:1,3,12"
         ]
       },
       {
-        "theme": "Inclusive joy",
-        "explanation": "Celebration extends to those without land or family",
+        "theme": "Joy for everyone",
+        "explanation": "Servants, strangers, orphans, and widows share in the feasts.",
         "references": [
-          "16:11,14"
+          "Deuteronomy 16:11,14"
         ]
       },
       {
-        "theme": "Pilgrimage and dependence",
-        "explanation": "Three annual appearances before the LORD, each with gifts according to blessing",
+        "theme": "Coming before God",
+        "explanation": "Three times a year every man comes before the LORD with a gift.",
         "references": [
-          "16:16-17"
+          "Deuteronomy 16:16-17"
         ]
       },
       {
-        "theme": "Justice without partiality",
-        "explanation": "Judges must not take bribes or show favoritism",
+        "theme": "Justice, only justice",
+        "explanation": "Judges must not take bribes or play favorites.",
         "references": [
-          "16:18-20"
+          "Deuteronomy 16:18-20"
         ]
       }
     ],
@@ -1046,52 +894,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Speaker delivering the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Source of the law and the one who chooses the king"
-      },
-      {
-        "name": "Witnesses (two or three)",
-        "role": "Required for conviction in a capital case (17:6)"
-      },
-      {
-        "name": "Levitical priests and the judge",
-        "role": "Decide difficult cases at the chosen place (17:8-9)"
-      },
-      {
-        "name": "A future king",
-        "role": "Not yet existing; to be chosen by the LORD and bound by the law (17:14-20)"
+        "role": "Will choose Israel's king when the time comes."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Due process",
-        "explanation": "Capital charges require thorough inquiry and more than one witness",
+        "theme": "Fair trials",
+        "explanation": "No one may be put to death on the word of only one witness.",
         "references": [
-          "17:4-6"
+          "Deuteronomy 17:4-6"
         ]
       },
       {
-        "theme": "Authority and accountability in the courts",
-        "explanation": "Difficult matters have a higher court, whose decisions the community should honor",
+        "theme": "Hard cases",
+        "explanation": "Difficult cases go to the priests and the judge, and their ruling must be followed.",
         "references": [
-          "17:8-13"
+          "Deuteronomy 17:8-13"
         ]
       },
       {
-        "theme": "Limited kingship",
-        "explanation": "The king is not above the law and must avoid excess power and wealth",
+        "theme": "A king with limits",
+        "explanation": "A king must not pile up horses, wives, or gold.",
         "references": [
-          "17:16-17"
+          "Deuteronomy 17:16-17"
         ]
       },
       {
-        "theme": "The king under God's word",
-        "explanation": "The king is to read and copy the law daily to learn humility and obedience",
+        "theme": "A king under God's law",
+        "explanation": "The king must copy the law and read it all his life.",
         "references": [
-          "17:18-20"
+          "Deuteronomy 17:18-20"
         ]
       }
     ],
@@ -1103,56 +939,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws and is the model for the future prophet"
+        "role": "Promises that God will raise up a prophet like him."
       },
       {
         "name": "The LORD",
-        "role": "Provides for the Levites and promises a prophet"
-      },
-      {
-        "name": "Levitical priests and Levites",
-        "role": "Serve the LORD and live from the offerings (18:1-8)"
-      },
-      {
-        "name": "The nations' diviners, sorcerers, and mediums",
-        "role": "Practitioners whose methods Israel must not adopt (18:9-14)"
-      },
-      {
-        "name": "The prophet like Moses",
-        "role": "A promised future spokesman for God (18:15-19)"
-      },
-      {
-        "name": "False prophets",
-        "role": "Those who speak presumptuously or in other gods' names (18:20-22)"
+        "role": "Will put his words in that prophet's mouth."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God provides for those who serve him",
-        "explanation": "The Levites live from the people's offerings, reflecting dependence on God and the community",
+        "theme": "Support for God's servants",
+        "explanation": "The priests and Levites live on the people's offerings.",
         "references": [
-          "18:1-5"
+          "Deuteronomy 18:1-5"
         ]
       },
       {
-        "theme": "Reject occult practices",
-        "explanation": "Seeking guidance through divination and the dead is incompatible with trust in the LORD",
+        "theme": "No fortune-telling",
+        "explanation": "Israel must not seek guidance from diviners or the dead.",
         "references": [
-          "18:9-14"
+          "Deuteronomy 18:9-14"
         ]
       },
       {
-        "theme": "God speaks through chosen messengers",
-        "explanation": "The prophet is the voice through whom the LORD addresses the people",
+        "theme": "A prophet like Moses",
+        "explanation": "God promises \"a Prophet from the midst of thee, of thy brethren, like unto me.\"",
         "references": [
-          "18:15-19"
+          "Deuteronomy 18:15-19"
         ]
       },
       {
         "theme": "Testing a prophet",
-        "explanation": "A prophet's message must be consistent with God's word and be fulfilled",
+        "explanation": "A prophet whose words do not come true has not spoken for the LORD.",
         "references": [
-          "18:20-22"
+          "Deuteronomy 18:20-22"
         ]
       }
     ],
@@ -1180,56 +1000,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Speaker giving the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Gives the land and sets out the justice system"
-      },
-      {
-        "name": "The person who kills unintentionally",
-        "role": "May flee to a city of refuge (19:4-5)"
-      },
-      {
-        "name": "The avenger of blood",
-        "role": "A family member responsible for avenging a killing (19:6)"
-      },
-      {
-        "name": "Elders of the city",
-        "role": "Responsible for handing over a murderer (19:12)"
-      },
-      {
-        "name": "Witnesses, including a malicious witness",
-        "role": "Those whose testimony determines guilt (19:15-19)"
+        "role": "Gives the laws Moses passes on to Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Protecting the innocent",
-        "explanation": "Cities of refuge protect unintentional killers from hasty revenge",
+        "theme": "A safe place",
+        "explanation": "Cities of refuge protect someone who kills by accident from quick revenge.",
         "references": [
-          "19:1-7"
+          "Deuteronomy 19:1-7"
         ]
       },
       {
-        "theme": "Justice for murder",
-        "explanation": "Intentional killing is not to be excused, and the community must not shed innocent blood",
+        "theme": "No excuse for murder",
+        "explanation": "A murderer must not be protected, and innocent blood must not be shed.",
         "references": [
-          "19:10-13"
+          "Deuteronomy 19:10-13"
         ]
       },
       {
-        "theme": "Truthful testimony",
-        "explanation": "Multiple witnesses are required, and false accusers face the penalty they sought",
+        "theme": "Honest witnesses",
+        "explanation": "Two or three witnesses are needed, and a false witness gets the punishment he wanted for another.",
         "references": [
-          "19:15-19"
+          "Deuteronomy 19:15-19"
         ]
       },
       {
-        "theme": "Respect for property boundaries",
-        "explanation": "Moving a neighbor's boundary marker is treated as a serious wrong",
+        "theme": "Don't move the markers",
+        "explanation": "Moving a neighbor's boundary stone is stealing his land.",
         "references": [
-          "19:14"
+          "Deuteronomy 19:14"
         ]
       }
     ],
@@ -1252,56 +1056,44 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws of war"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Goes with Israel to fight for them"
+        "role": "Goes with Israel to fight for them."
       },
       {
         "name": "The priest",
-        "role": "Encourages the army before battle (20:2-4)"
-      },
-      {
-        "name": "Officers",
-        "role": "Announce the exemptions from service (20:5-9)"
-      },
-      {
-        "name": "Israelite soldiers",
-        "role": "Fighters who are to trust the LORD"
-      },
-      {
-        "name": "Enemy cities, near and far",
-        "role": "Distinguished in how Israel is to treat them (20:10-18)"
+        "role": "Is to speak to the army before each battle."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God's presence in battle",
-        "explanation": "Israel is told not to fear because the LORD fights for them",
+        "theme": "God goes with you",
+        "explanation": "Israel need not fear in battle, because the LORD fights for them.",
         "references": [
-          "20:1,4"
+          "Deuteronomy 20:1,4"
         ]
       },
       {
         "theme": "Limits on war",
-        "explanation": "Exemptions and rules restrain the scope and conduct of fighting",
+        "explanation": "Some men are sent home, and the fighting has rules.",
         "references": [
-          "20:5-9,19-20"
+          "Deuteronomy 20:5-9,19-20"
         ]
       },
       {
-        "theme": "Offering peace first",
-        "explanation": "Distant cities must first be offered terms of peace",
+        "theme": "Peace first",
+        "explanation": "A faraway city must be offered peace before any attack.",
         "references": [
-          "20:10-11"
+          "Deuteronomy 20:10-11"
         ]
       },
       {
-        "theme": "Protection of resources",
-        "explanation": "Fruit trees that sustain life are not to be destroyed in a siege",
+        "theme": "Spare the trees",
+        "explanation": "Fruit trees must not be cut down in a siege.",
         "references": [
-          "20:19-20"
+          "Deuteronomy 20:19-20"
         ]
       }
     ],
@@ -1313,56 +1105,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
-        "name": "Elders, judges, and priests",
-        "role": "Handle the unsolved murder case (21:2-6)"
-      },
-      {
-        "name": "The captive woman",
-        "role": "A woman taken in war and afforded certain protections (21:10-14)"
-      },
-      {
-        "name": "The man with two wives and the firstborn",
-        "role": "Illustrate inheritance protection (21:15-17)"
-      },
-      {
-        "name": "The rebellious son and his parents",
-        "role": "Case brought to the elders (21:18-21)"
-      },
-      {
-        "name": "The executed person",
-        "role": "Whose body must not remain overnight on a tree (21:22-23)"
+        "name": "The LORD",
+        "role": "Gives the laws Moses passes on to Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Communal responsibility for bloodshed",
-        "explanation": "Even unsolved killings affect the land and the community, requiring ritual and judicial response",
+        "theme": "Shared responsibility",
+        "explanation": "Even an unsolved murder must be answered for by the nearest town.",
         "references": [
-          "21:1-9"
+          "Deuteronomy 21:1-9"
         ]
       },
       {
-        "theme": "Protecting the vulnerable",
-        "explanation": "The captive woman is given time and legal protection",
+        "theme": "Protection for a captive",
+        "explanation": "A woman taken in war is given time to mourn and cannot be sold.",
         "references": [
-          "21:10-14"
+          "Deuteronomy 21:10-14"
         ]
       },
       {
-        "theme": "Fairness in inheritance",
-        "explanation": "A father may not favor one son based on affection for his mother",
+        "theme": "Fair inheritance",
+        "explanation": "A father may not give the firstborn's share to a favorite son.",
         "references": [
-          "21:15-17"
+          "Deuteronomy 21:15-17"
         ]
       },
       {
-        "theme": "Respect for the dead and the land",
-        "explanation": "A hanged body must be buried promptly lest the land be defiled",
+        "theme": "Respect for the dead",
+        "explanation": "A hanged body must be buried the same day.",
         "references": [
-          "21:22-23"
+          "Deuteronomy 21:22-23"
         ]
       }
     ],
@@ -1380,56 +1156,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
-        "name": "Your brother or neighbor",
-        "role": "The person whose lost property must be returned (22:1-4)"
-      },
-      {
-        "name": "A newly married man and his wife",
-        "role": "Parties in an accusation about virginity (22:13-21)"
-      },
-      {
-        "name": "The girl's parents and the elders",
-        "role": "Defend the bride and decide the case at the gate (22:15-18)"
-      },
-      {
-        "name": "Betrothed and unbetrothed young women",
-        "role": "Subjects of laws on sexual violation (22:23-29)"
-      },
-      {
-        "name": "The man who violates them",
-        "role": "Held responsible under the law"
+        "name": "The LORD",
+        "role": "Gives the laws Moses passes on to Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Neighborly responsibility",
-        "explanation": "One must actively help a neighbor's property and not look away",
+        "theme": "Care for your neighbor",
+        "explanation": "Lost animals and goods must be returned, not ignored.",
         "references": [
-          "22:1-4"
+          "Deuteronomy 22:1-4"
         ]
       },
       {
         "theme": "Protecting life",
-        "explanation": "Safety rules such as the roof parapet treat even accidental death as a community concern",
+        "explanation": "A new house must have a railing on its roof.",
         "references": [
-          "22:8"
+          "Deuteronomy 22:8"
         ]
       },
       {
-        "theme": "Order and distinction",
-        "explanation": "Various prohibitions on mixing reflect the book's emphasis on holiness and boundaries",
+        "theme": "Keeping things distinct",
+        "explanation": "Israel is not to mix seeds, animals, or fabrics.",
         "references": [
-          "22:5,9-12"
+          "Deuteronomy 22:5,9-12"
         ]
       },
       {
-        "theme": "Sexual integrity and legal protection",
-        "explanation": "Laws regulate marriage and protect women from false accusation and violation",
+        "theme": "Purity and protection",
+        "explanation": "Laws protect marriage and defend women from false charges and violence.",
         "references": [
-          "22:13-29"
+          "Deuteronomy 22:13-29"
         ]
       }
     ],
@@ -1441,56 +1201,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws"
-      },
-      {
-        "name": "Ammonites and Moabites",
-        "role": "Excluded from the assembly, linked to events during Israel's journey (23:3-4; see Numbers 22-25)"
-      },
-      {
-        "name": "Edomites and Egyptians",
-        "role": "Treated more favorably because of kinship and Israel's time in Egypt (23:7-8)"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Walks in the camp and requires holiness"
-      },
-      {
-        "name": "An escaped slave",
-        "role": "Not to be handed over to the master (23:15-16)"
-      },
-      {
-        "name": "Neighbors, vow-makers, and borrowers",
-        "role": "Subjects of the laws on lending, promises, and gleaning"
+        "role": "Walks in the middle of the camp, so it must be kept holy."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Holiness in the camp",
-        "explanation": "The LORD's presence requires physical and moral cleanliness",
+        "theme": "A holy camp",
+        "explanation": "\"the LORD thy God walketh in the midst of thy camp,\" so it must be kept clean.",
         "references": [
-          "23:9-14"
+          "Deuteronomy 23:9-14"
         ]
       },
       {
-        "theme": "Refuge for the oppressed",
-        "explanation": "A fugitive slave is to be sheltered, not returned",
+        "theme": "Refuge for the runaway",
+        "explanation": "An escaped slave must not be handed back to his master.",
         "references": [
-          "23:15-16"
+          "Deuteronomy 23:15-16"
         ]
       },
       {
-        "theme": "Integrity in worship and promises",
-        "explanation": "Cultic prostitution is forbidden and vows must be kept",
+        "theme": "Keep your vows",
+        "explanation": "A vow to the LORD must be paid without delay.",
         "references": [
-          "23:17-23"
+          "Deuteronomy 23:17-23"
         ]
       },
       {
-        "theme": "Generosity and boundaries with neighbors",
-        "explanation": "Eating from a neighbor's field is allowed for need, but not for profit",
+        "theme": "Sharing with neighbors",
+        "explanation": "A passerby may eat from a neighbor's field but not carry any away.",
         "references": [
-          "23:24-25"
+          "Deuteronomy 23:24-25"
         ]
       }
     ],
@@ -1502,56 +1246,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
-        "name": "A husband and wife in divorce",
-        "role": "The parties in the law on certificate and remarriage (24:1-4)"
-      },
-      {
-        "name": "Debtors and creditors",
-        "role": "The poor person whose pledge is protected and the lender who must respect his dignity (24:6,10-13)"
-      },
-      {
-        "name": "Hired workers",
-        "role": "Poor and needy laborers, including foreigners, who must be paid on time (24:14-15)"
-      },
-      {
-        "name": "Foreigner, fatherless, and widow",
-        "role": "Protected in court and by the harvest gleanings (24:17-22)"
-      },
-      {
-        "name": "Miriam",
-        "role": "Mentioned as a reminder of what happened to her (24:9; see Numbers 12)"
+        "name": "The LORD",
+        "role": "Gives the laws Moses passes on to Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Protecting the vulnerable",
-        "explanation": "Many laws guard the poor, hired workers, and outsiders from exploitation",
+        "theme": "Protecting the weak",
+        "explanation": "The poor, the worker, and the stranger must not be taken advantage of.",
         "references": [
-          "24:6,10-15,17-22"
+          "Deuteronomy 24:6,10-15,17-22"
         ]
       },
       {
-        "theme": "Dignity of the debtor",
-        "explanation": "A creditor must not invade a poor person's home or keep his essential cloak overnight",
+        "theme": "Dignity for the poor",
+        "explanation": "A lender must not go into a poor man's house or keep his coat overnight.",
         "references": [
-          "24:10-13"
+          "Deuteronomy 24:10-13"
         ]
       },
       {
-        "theme": "Individual responsibility",
-        "explanation": "Each person answers for his own sin rather than being punished for a relative's",
+        "theme": "Each for his own sin",
+        "explanation": "Children are not put to death for their parents' sins.",
         "references": [
-          "24:16"
+          "Deuteronomy 24:16"
         ]
       },
       {
-        "theme": "Memory of slavery shaping generosity",
-        "explanation": "Israel's own past is the reason for compassion",
+        "theme": "Remember Egypt",
+        "explanation": "Israel's own slavery is the reason for kindness.",
         "references": [
-          "24:18,22"
+          "Deuteronomy 24:18,22"
         ]
       }
     ],
@@ -1563,56 +1291,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the laws"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
-        "name": "Judges and the guilty party",
-        "role": "Those involved in the limit on flogging (25:1-3)"
-      },
-      {
-        "name": "The ox",
-        "role": "Used as an example of fairness to working animals (25:4)"
-      },
-      {
-        "name": "The widow and the brother-in-law",
-        "role": "The levirate marriage parties (25:5-10)"
-      },
-      {
-        "name": "Elders of the town",
-        "role": "Witness the process at the gate (25:7-9)"
-      },
-      {
-        "name": "Amalek",
-        "role": "A people who attacked Israel's stragglers (25:17-18; see Exodus 17:8-16)"
+        "name": "The LORD",
+        "role": "Gives the laws Moses passes on to Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Dignity even in punishment",
-        "explanation": "Corporal punishment is limited so a person is not degraded",
+        "theme": "Dignity in punishment",
+        "explanation": "A beating is limited to forty stripes.",
         "references": [
-          "25:2-3"
+          "Deuteronomy 25:2-3"
         ]
       },
       {
-        "theme": "Fairness and honesty",
-        "explanation": "Honest weights are required, and even working animals are to be treated fairly",
+        "theme": "Fair and honest",
+        "explanation": "Weights must be honest, and even the ox treading grain must be fed.",
         "references": [
-          "25:4,13-16"
+          "Deuteronomy 25:4,13-16"
         ]
       },
       {
-        "theme": "Family continuity and care for widows",
-        "explanation": "Levirate marriage protects the widow and the family line",
+        "theme": "Caring for the widow",
+        "explanation": "A brother marries his dead brother's widow to carry on the family name.",
         "references": [
-          "25:5-10"
+          "Deuteronomy 25:5-10"
         ]
       },
       {
-        "theme": "Remembering injustice",
-        "explanation": "Israel is to remember Amalek's attack, tied to weakness and trust in God",
+        "theme": "Remember Amalek",
+        "explanation": "Israel must remember how Amalek attacked the weak at the back of the line.",
         "references": [
-          "25:17-19"
+          "Deuteronomy 25:17-19"
         ]
       }
     ],
@@ -1650,56 +1362,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the instructions and the closing exhortation"
-      },
-      {
-        "name": "The worshiper",
-        "role": "Each Israelite who brings the offering and recites the confession"
-      },
-      {
-        "name": "The priest",
-        "role": "Receives the basket and sets it before the altar (26:3-4)"
-      },
-      {
-        "name": "The 'wandering Aramean'",
-        "role": "Understood to refer to Jacob or the early ancestors (26:5)"
-      },
-      {
-        "name": "Levites, foreigners, fatherless, widows",
-        "role": "Recipients of the tithe (26:12)"
+        "role": "Speaks God's laws to Israel on the plains of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Redeemer and covenant partner"
+        "role": "Takes Israel as his own people, as Israel takes him as their God."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Gratitude expressed in action",
-        "explanation": "The firstfruits recognize that the harvest is a gift",
+        "theme": "Thankful giving",
+        "explanation": "The first of the harvest is brought to God in a basket.",
         "references": [
-          "26:1-4,10-11"
+          "Deuteronomy 26:1-4,10-11"
         ]
       },
       {
-        "theme": "Retelling the story of redemption",
-        "explanation": "Worship includes reciting what God has done in history",
+        "theme": "Telling God's story",
+        "explanation": "\"A Syrian ready to perish was my father\" begins a short retelling of Israel's history.",
         "references": [
-          "26:5-9"
+          "Deuteronomy 26:5-9"
         ]
       },
       {
-        "theme": "Sharing with the vulnerable",
-        "explanation": "The tithe provides for those without land",
+        "theme": "Sharing with the needy",
+        "explanation": "The tithe feeds those who have no land.",
         "references": [
-          "26:12-13"
+          "Deuteronomy 26:12-13"
         ]
       },
       {
-        "theme": "Mutual covenant commitment",
-        "explanation": "Both Israel and the LORD declare their commitment",
+        "theme": "A promise both ways",
+        "explanation": "Israel promises to obey, and God declares Israel his own people.",
         "references": [
-          "26:16-19"
+          "Deuteronomy 26:16-19"
         ]
       }
     ],
@@ -1711,52 +1407,44 @@
     "keyFigures": [
       {
         "name": "Moses and the elders",
-        "role": "Give the instructions together"
+        "role": "Command the people to write the law on stones once they enter the land."
       },
       {
-        "name": "Levitical priests",
-        "role": "Join Moses in addressing the people and pronounce the curses (27:9,14)"
-      },
-      {
-        "name": "The six tribes on Gerizim",
-        "role": "Simeon, Levi, Judah, Issachar, Joseph, Benjamin: stand for the blessing (27:12)"
-      },
-      {
-        "name": "The six tribes on Ebal",
-        "role": "Reuben, Gad, Asher, Zebulun, Dan, Naphtali: stand for the curse (27:13)"
+        "name": "The Levites",
+        "role": "Are to call out the curses with a loud voice."
       },
       {
         "name": "All the people",
-        "role": "Respond with 'Amen' to each curse (27:15-26)"
+        "role": "Are to answer \"Amen\" to each curse."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Public, visible law",
-        "explanation": "The words of the law are to be written openly so all can read them",
+        "theme": "The law in plain sight",
+        "explanation": "The words of the law are written on stones for everyone to read.",
         "references": [
-          "27:2-4,8"
+          "Deuteronomy 27:2-4,8"
         ]
       },
       {
-        "theme": "Worship and covenant together",
-        "explanation": "The altar and offerings accompany the law's proclamation",
+        "theme": "Worship and law together",
+        "explanation": "An altar and offerings go with the reading of the law.",
         "references": [
-          "27:5-7"
+          "Deuteronomy 27:5-7"
         ]
       },
       {
-        "theme": "Accountability for hidden sins",
-        "explanation": "Several curses address secret wrongdoing, showing God sees what the community cannot",
+        "theme": "Sins in secret",
+        "explanation": "Several curses name sins done where no one sees.",
         "references": [
-          "27:15,24"
+          "Deuteronomy 27:15,24"
         ]
       },
       {
-        "theme": "Communal assent",
-        "explanation": "The people's 'Amen' marks personal agreement with the covenant terms",
+        "theme": "Saying Amen",
+        "explanation": "The people answer \"Amen\" to each curse and agree to the covenant.",
         "references": [
-          "27:15-26"
+          "Deuteronomy 27:15-26"
         ]
       }
     ],
@@ -1774,56 +1462,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Pronounces the blessings and curses"
+        "role": "Sets the blessings and curses of the covenant before Israel."
       },
       {
         "name": "The LORD",
-        "role": "Source of both blessing and discipline"
-      },
-      {
-        "name": "Israel",
-        "role": "The covenant people whose obedience or disobedience determines the outcome"
-      },
-      {
-        "name": "A distant nation",
-        "role": "The foreign enemy who will besiege their cities (28:49-52)"
-      },
-      {
-        "name": "Israel's king",
-        "role": "Referred to in the prospect of exile (28:36)"
-      },
-      {
-        "name": "Egypt",
-        "role": "Mentioned as a source of diseases and a place of return (28:27,60,68)"
+        "role": "Promises blessing for obedience and warns of curses for disobedience."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Obedience and blessing",
-        "explanation": "Faithfulness leads to flourishing in every area of life",
+        "theme": "Blessing for obedience",
+        "explanation": "Obedience brings blessing in the city, the field, and the home.",
         "references": [
-          "28:1-14"
+          "Deuteronomy 28:1-14"
         ]
       },
       {
-        "theme": "Covenant consequences",
-        "explanation": "Disobedience brings escalating curses",
+        "theme": "Curses for disobedience",
+        "explanation": "Disobedience brings curse after curse.",
         "references": [
-          "28:15-46"
+          "Deuteronomy 28:15-46"
         ]
       },
       {
-        "theme": "Heart attitude",
-        "explanation": "Rejecting service done 'with joy and gladness' is part of the problem",
+        "theme": "A grateful heart",
+        "explanation": "Israel is warned for not serving God \"with joyfulness, and with gladness of heart.\"",
         "references": [
-          "28:47"
+          "Deuteronomy 28:47"
         ]
       },
       {
-        "theme": "Exile and loss",
-        "explanation": "The final result is scattering and anxiety among the nations",
+        "theme": "Scattered",
+        "explanation": "The last curse is exile among the nations.",
         "references": [
-          "28:64-68"
+          "Deuteronomy 28:64-68"
         ]
       }
     ],
@@ -1835,56 +1507,44 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Summons the people and renews the covenant"
+        "role": "Calls all Israel to enter the covenant in the land of Moab."
       },
       {
         "name": "The LORD",
-        "role": "Covenant maker who guided Israel and promised to be their God"
+        "role": "Makes the covenant with Israel and with those not yet born."
       },
       {
         "name": "All Israel",
-        "role": "Leaders, elders, officers, men, children, wives, and foreigners (29:10-11)"
-      },
-      {
-        "name": "Foreigners in the camp",
-        "role": "Included in the covenant assembly (29:11)"
-      },
-      {
-        "name": "Future generations and foreign visitors",
-        "role": "Those who will ask about a devastated land (29:22-24)"
-      },
-      {
-        "name": "Sodom, Gomorrah, Admah, and Zeboiim",
-        "role": "Cities used as an image of total devastation (29:23)"
+        "role": "Stand before the LORD that day, from the leaders to the servants."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The covenant binds the present moment",
-        "explanation": "The covenant is not just inherited; each generation stands and enters it",
+        "theme": "Your covenant too",
+        "explanation": "Every generation must stand before God and enter the covenant for itself.",
         "references": [
-          "29:10-15"
+          "Deuteronomy 29:10-15"
         ]
       },
       {
-        "theme": "Inclusion of all",
-        "explanation": "Even the lowest-status members and later generations are bound",
+        "theme": "Everyone included",
+        "explanation": "Even servants, strangers, and those not yet born are part of it.",
         "references": [
-          "29:11,14-15"
+          "Deuteronomy 29:11,14-15"
         ]
       },
       {
-        "theme": "Warning against secret apostasy",
-        "explanation": "Private turning from the LORD can poison the whole community",
+        "theme": "A poison root",
+        "explanation": "One person's secret turning from God can poison the whole people.",
         "references": [
-          "29:18-20"
+          "Deuteronomy 29:18-20"
         ]
       },
       {
-        "theme": "Revealed and hidden things",
-        "explanation": "God holds what is hidden, while Israel is responsible for what has been revealed",
+        "theme": "Hidden and revealed",
+        "explanation": "\"The secret things belong unto the LORD our God: but those things which are revealed belong unto us.\"",
         "references": [
-          "29:29"
+          "Deuteronomy 29:29"
         ]
       }
     ],
@@ -1896,52 +1556,40 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the call to choose life"
+        "role": "Sets life and death before Israel and calls them to choose life."
       },
       {
         "name": "The LORD",
-        "role": "Restores, gathers, and gives the opportunity to choose"
-      },
-      {
-        "name": "Israel in exile and its descendants",
-        "role": "Those who may return from scattering (30:1-5)"
-      },
-      {
-        "name": "Heaven and earth",
-        "role": "Called as witnesses (30:19)"
-      },
-      {
-        "name": "Abraham, Isaac, and Jacob",
-        "role": "Ancestors to whom the land was sworn (30:20)"
+        "role": "Promises to gather his scattered people and change their hearts."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Repentance and restoration",
-        "explanation": "Return to the LORD is met with gathering and renewed blessing",
+        "theme": "Coming home",
+        "explanation": "If Israel returns to God, he will gather them again.",
         "references": [
-          "30:1-5,8-10"
+          "Deuteronomy 30:1-5,8-10"
         ]
       },
       {
-        "theme": "Transformed hearts",
-        "explanation": "The LORD himself enables love and devotion",
+        "theme": "A new heart",
+        "explanation": "God will circumcise their hearts so they can love him.",
         "references": [
-          "30:6"
+          "Deuteronomy 30:6"
         ]
       },
       {
-        "theme": "The nearness of God's word",
-        "explanation": "The commandment is accessible and doable, not remote",
+        "theme": "The word is near",
+        "explanation": "God's command is \"very nigh unto thee, in thy mouth, and in thy heart.\"",
         "references": [
-          "30:11-14"
+          "Deuteronomy 30:11-14"
         ]
       },
       {
-        "theme": "The call to choose",
-        "explanation": "Life and death, blessing and curse are set before Israel, each person must choose",
+        "theme": "Choose life",
+        "explanation": "Life and death are set before Israel: \"therefore choose life.\"",
         "references": [
-          "30:15-20"
+          "Deuteronomy 30:15-20"
         ]
       }
     ],
@@ -1964,52 +1612,48 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Aged 120, passes leadership and writes the law"
+        "role": "At 120, hands leadership to Joshua and writes down the law."
       },
       {
         "name": "Joshua",
-        "role": "Commissioned as Moses' successor"
+        "role": "Told, \"Be strong and of a good courage.\""
       },
       {
         "name": "The LORD",
-        "role": "Promises to go with Israel and Joshua, and foretells the people's unfaithfulness"
+        "role": "Appears at the tent and warns that Israel will turn away."
       },
       {
-        "name": "Levitical priests who carry the ark and the elders of Israel",
-        "role": "Receive the written law (31:9)"
-      },
-      {
-        "name": "All Israel, including children and foreigners",
-        "role": "Hear the law read every seven years (31:11-13)"
+        "name": "The priests and elders",
+        "role": "Receive the book of the law."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Handing on leadership",
-        "explanation": "Moses prepares Joshua and publicly entrusts him",
+        "theme": "Passing the torch",
+        "explanation": "Moses gives Joshua his charge in front of all Israel.",
         "references": [
-          "31:3-8,23"
+          "Deuteronomy 31:3-8,23"
         ]
       },
       {
-        "theme": "God's presence",
-        "explanation": "The LORD himself goes before the people and does not leave",
+        "theme": "God goes ahead",
+        "explanation": "\"he will not fail thee, nor forsake thee.\"",
         "references": [
-          "31:6,8"
+          "Deuteronomy 31:6,8"
         ]
       },
       {
-        "theme": "Public reading of the law",
-        "explanation": "The community regularly hears the law together, including children and foreigners",
+        "theme": "Hearing the law together",
+        "explanation": "Every seventh year the whole people, children and strangers too, hear the law read.",
         "references": [
-          "31:9-13"
+          "Deuteronomy 31:9-13"
         ]
       },
       {
-        "theme": "Honest foresight",
-        "explanation": "God warns of future rebellion, and the song and book serve as witnesses",
+        "theme": "An honest warning",
+        "explanation": "God warns that Israel will turn away, and the song will testify against them.",
         "references": [
-          "31:16-22,26-29"
+          "Deuteronomy 31:16-22,26-29"
         ]
       }
     ],
@@ -2021,60 +1665,44 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Recites the song and is told he will die"
+        "role": "Teaches Israel the song and is told to climb mount Nebo."
       },
       {
         "name": "The LORD",
-        "role": "Described as the Rock, Father, and Judge who is faithful and just"
+        "role": "\"The Rock,\" who chose and cared for his people."
       },
       {
-        "name": "Jacob/Jeshurun",
-        "role": "Poetic names for Israel (32:9,15)"
-      },
-      {
-        "name": "Foreign gods",
-        "role": "Described as new gods, not gods their fathers knew (32:16-17)"
-      },
-      {
-        "name": "The nations and Israel's enemies",
-        "role": "Used as instruments but not credited with the victory (32:27,43)"
-      },
-      {
-        "name": "Joshua (Hoshea) son of Nun",
-        "role": "Joins Moses in speaking the song (32:44)"
-      },
-      {
-        "name": "Aaron",
-        "role": "Referenced as having died on Mount Hor (32:50)"
+        "name": "Joshua",
+        "role": "Speaks the words of the song with Moses."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God as faithful Rock",
-        "explanation": "The LORD is steady, just, and reliable while Israel is fickle",
+        "theme": "God the Rock",
+        "explanation": "\"He is the Rock, his work is perfect.\"",
         "references": [
-          "32:3-4,15,18,30-31"
+          "Deuteronomy 32:3-4,15,18,30-31"
         ]
       },
       {
-        "theme": "Ingratitude and idolatry",
-        "explanation": "Prosperity led to abandoning the Giver",
+        "theme": "Forgetting the Giver",
+        "explanation": "Israel grew fat and forgot the God who made them.",
         "references": [
-          "32:15-18"
+          "Deuteronomy 32:15-18"
         ]
       },
       {
-        "theme": "Justice and compassion",
-        "explanation": "God judges but also vindicates and has compassion on his people",
+        "theme": "Judgment and mercy",
+        "explanation": "God judges his people but will also have mercy on them.",
         "references": [
-          "32:35-36,43"
+          "Deuteronomy 32:35-36,43"
         ]
       },
       {
-        "theme": "Words that bring life",
-        "explanation": "The song and law are not trivial but life itself",
+        "theme": "Words of life",
+        "explanation": "God's word \"is not a vain thing for you; because it is your life.\"",
         "references": [
-          "32:46-47"
+          "Deuteronomy 32:46-47"
         ]
       }
     ],
@@ -2107,117 +1735,93 @@
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "The 'man of God' who blesses the tribes (33:1)"
+        "role": "\"The man of God,\" who blesses each tribe before his death."
       },
       {
         "name": "The LORD",
-        "role": "Appears from Sinai and is Israel's refuge and helper"
-      },
-      {
-        "name": "The twelve tribes (except Simeon)",
-        "role": "Individually blessed with specific words"
-      },
-      {
-        "name": "Levi",
-        "role": "Entrusted with Urim and Thummim, teaching the law, and offering sacrifices (33:8-11)"
-      },
-      {
-        "name": "Judah",
-        "role": "Moses prays for help in battle and return to his people (33:7)"
-      },
-      {
-        "name": "Joseph (Ephraim and Manasseh)",
-        "role": "Receives the longest blessing, with agricultural abundance and strength (33:13-17)"
-      },
-      {
-        "name": "Jeshurun",
-        "role": "Poetic name for Israel (33:5,26)"
+        "role": "Came from Sinai and is Israel's refuge."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Blessing from God",
-        "explanation": "Each tribe's future is entrusted to the LORD's care",
+        "theme": "A blessing for each tribe",
+        "explanation": "Moses blesses each tribe and places its future in God's care.",
         "references": [
-          "33:6-25"
+          "Deuteronomy 33:6-25"
         ]
       },
       {
-        "theme": "Diverse callings",
-        "explanation": "Tribes have different roles, such as Levi's teaching and Judah's leadership in battle",
+        "theme": "Different callings",
+        "explanation": "Levi teaches the law, Judah fights, and Joseph is blessed with plenty.",
         "references": [
-          "33:7-11,18-25"
+          "Deuteronomy 33:7-11,18-25"
         ]
       },
       {
-        "theme": "God as refuge and helper",
-        "explanation": "The LORD is a dwelling place with everlasting arms",
+        "theme": "Everlasting arms",
+        "explanation": "\"The eternal God is thy refuge, and underneath are the everlasting arms.\"",
         "references": [
-          "33:26-29"
+          "Deuteronomy 33:26-29"
         ]
       },
       {
-        "theme": "Israel's unique salvation",
-        "explanation": "Israel's blessedness is described as being saved by the LORD",
+        "theme": "Saved by the LORD",
+        "explanation": "\"Happy art thou, O Israel: who is like unto thee, O people saved by the LORD.\"",
         "references": [
-          "33:29"
+          "Deuteronomy 33:29"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Deuteronomy 34": {
-    "summary": "Moses climbs from the plains of Moab up Mount Nebo to the top of Pisgah opposite Jericho, and the LORD shows him the land from Gilead to Dan, all of Naphtali, Ephraim and Manasseh, Judah as far as the western sea, the Negeb, and the plain of Jericho. The LORD says, \"I have caused thee to see it with thine eyes, but thou shalt not go over thither\" (Deuteronomy 34:1-4). Moses dies there at the LORD's command, and the LORD buries him in a valley in Moab; \"no man knoweth of his sepulchre unto this day\" (Deuteronomy 34:5-6). He was 120, and \"his eye was not dim, nor his natural force abated\" (Deuteronomy 34:7). Israel mourns for thirty days (Deuteronomy 34:8). Joshua, filled with the spirit of wisdom, takes over leadership (Deuteronomy 34:9). The book closes by saying that no prophet like Moses has arisen in Israel, who knew the LORD face to face and did signs and wonders in Egypt (Deuteronomy 34:10-12).",
+    "summary": "Moses climbs from the plains of Moab up Mount Nebo to the top of Pisgah opposite Jericho, and the LORD shows him the land from Gilead to Dan, all of Naphtali, Ephraim and Manasseh, Judah as far as the western sea, the south, and the plain of Jericho. The LORD says, \"I have caused thee to see it with thine eyes, but thou shalt not go over thither\" (Deuteronomy 34:1-4). Moses dies there at the LORD's command, and the LORD buries him in a valley in Moab; \"no man knoweth of his sepulchre unto this day\" (Deuteronomy 34:5-6). He was 120, and \"his eye was not dim, nor his natural force abated\" (Deuteronomy 34:7). Israel mourns for thirty days (Deuteronomy 34:8). Joshua, filled with the spirit of wisdom, takes over leadership (Deuteronomy 34:9). The book closes by saying that no prophet like Moses has arisen in Israel, who knew the LORD face to face and did signs and wonders in Egypt (Deuteronomy 34:10-12).",
     "whereWeAre": "Moses gave his last blessing in chapter 33. Now he climbs Mount Nebo, sees the promised land, and dies. This ends the first five books of the Bible, and the story continues in Joshua as Israel finally crosses the Jordan.",
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "The servant of the LORD who sees the land but dies outside it"
+        "role": "Sees the promised land from Pisgah and dies."
       },
       {
         "name": "The LORD",
-        "role": "Shows Moses the land, buries him, and fulfills his promise to the patriarchs"
+        "role": "Shows Moses the land and buries him."
       },
       {
-        "name": "Joshua son of Nun",
-        "role": "Filled with the spirit of wisdom as the new leader (34:9)"
+        "name": "Joshua",
+        "role": "Full of the spirit of wisdom, he leads Israel."
       },
       {
-        "name": "The Israelites",
-        "role": "Mourn for thirty days and obey Joshua (34:8-9)"
-      },
-      {
-        "name": "Abraham, Isaac, and Jacob",
-        "role": "Recipients of the promise of the land (34:4)"
+        "name": "The children of Israel",
+        "role": "Mourn Moses thirty days and obey Joshua."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God's faithfulness to the promise",
-        "explanation": "The land is shown to Moses as the one the LORD swore to the patriarchs",
+        "theme": "God keeps his promise",
+        "explanation": "The land Moses sees is the land God swore to Abraham, Isaac, and Jacob.",
         "references": [
-          "34:4"
+          "Deuteronomy 34:4"
         ]
       },
       {
-        "theme": "Dignity in Moses' death",
-        "explanation": "Moses' death is described with God's own involvement and with grief from the community",
+        "theme": "An honored death",
+        "explanation": "God himself buries Moses, and Israel mourns him thirty days.",
         "references": [
-          "34:5-8"
+          "Deuteronomy 34:5-8"
         ]
       },
       {
-        "theme": "Succession of leadership",
-        "explanation": "Joshua inherits leadership with wisdom, and the people follow",
+        "theme": "A new leader",
+        "explanation": "Joshua is full of the spirit of wisdom, and the people follow him.",
         "references": [
-          "34:9"
+          "Deuteronomy 34:9"
         ]
       },
       {
-        "theme": "Moses' unique role",
-        "explanation": "He is remembered as the unparalleled prophet who knew the LORD face to face",
+        "theme": "No prophet like Moses",
+        "explanation": "No other prophet knew the LORD \"face to face\" as Moses did.",
         "references": [
-          "34:10-12"
+          "Deuteronomy 34:10-12"
         ]
       }
     ],

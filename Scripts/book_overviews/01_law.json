@@ -65,12 +65,12 @@
     ]
   },
   "Exodus": {
-    "author": "Traditionally associated with Moses.",
+    "author": "Moses, by Jewish and Christian tradition. The book records Moses writing down the LORD's words (Exodus 24:4).",
     "audience": "Israel, especially the generation formed through deliverance from Egypt and covenant at Sinai.",
     "purpose": "To recount God's deliverance of Israel from slavery, the covenant at Sinai, and the establishment of worship centered on God's presence.",
-    "theme": "God redeems His people, forms them into a covenant community, and dwells among them.",
-    "summary": "Exodus tells how God rescues Israel from Egyptian slavery, leads them through the sea, gives His law at Sinai, and instructs them to build the tabernacle so His presence may dwell among them.",
-    "keyVerse": "Exodus 20:3",
+    "theme": "God redeems his people, forms them into a covenant community, and dwells among them.",
+    "summary": "Exodus tells how God rescues Israel from Egyptian slavery, leads them through the sea, gives his law at Sinai, and instructs them to build the tabernacle so his presence may dwell among them.",
+    "keyVerse": "Exodus 20:2",
     "movements": [
       {
         "title": "Moses and the Exodus",
@@ -120,18 +120,18 @@
         "description": "Moses' assistant, who leads Israel in battle against the Amalekites."
       },
       {
-        "name": "Bezalel",
+        "name": "Bezaleel",
         "description": "A craftsman filled with God's Spirit to oversee building the tabernacle and its furnishings."
       }
     ]
   },
   "Leviticus": {
-    "author": "Traditionally associated with Moses.",
+    "author": "Moses, by Jewish and Christian tradition. Chapter after chapter begins, \"And the LORD spake unto Moses.\"",
     "audience": "Israel, especially priests and the covenant community worshiping at the tabernacle.",
     "purpose": "To teach Israel how a holy God can dwell among a sinful people through sacrifice, priesthood, purity, and holy living.",
-    "theme": "God is holy, and His people are called to approach Him rightly and reflect His holiness in worship and life.",
+    "theme": "God is holy, and his people are called to approach him rightly and reflect his holiness in worship and life.",
     "summary": "Leviticus explains sacrifices, priestly duties, clean and unclean categories, the Day of Atonement, and covenant holiness. It connects worship with ethical living.",
-    "keyVerse": "Leviticus 19:18",
+    "keyVerse": "Leviticus 19:2",
     "movements": [
       {
         "title": "Sacrificial Instructions",
@@ -166,7 +166,7 @@
       },
       {
         "name": "Nadab and Abihu",
-        "description": "Aaron's sons, who die after offering unauthorized fire before the LORD."
+        "description": "Aaron's sons, who die after offering \"strange fire\" before the LORD."
       },
       {
         "name": "Eleazar and Ithamar",
@@ -175,12 +175,12 @@
     ]
   },
   "Numbers": {
-    "author": "Traditionally associated with Moses.",
+    "author": "Moses, by Jewish and Christian tradition. The book says that \"Moses wrote their goings out according to their journeys\" (Numbers 33:2).",
     "audience": "Israel during the wilderness period.",
     "purpose": "To recount Israel's journey from Sinai toward Canaan, exposing repeated unbelief while showing God's continuing faithfulness.",
-    "theme": "Human unbelief brings consequences, yet God remains faithful to His covenant purposes.",
+    "theme": "Human unbelief brings consequences, yet God remains faithful to his covenant purposes.",
     "summary": "Numbers follows Israel from preparation at Sinai through rebellion and wilderness wandering to a new generation ready to enter Canaan.",
-    "keyVerse": "Numbers 6:24",
+    "keyVerse": "Numbers 23:19",
     "movements": [
       {
         "title": "Departure from Sinai",
@@ -240,10 +240,10 @@
     ]
   },
   "Deuteronomy": {
-    "author": "Traditionally associated with Moses, with the closing account of his death understood as added by a later hand.",
+    "author": "Moses, by Jewish and Christian tradition; the book says that \"Moses wrote this law\" (Deuteronomy 31:9). The account of his death in chapter 34 was added by another hand, traditionally Joshua.",
     "audience": "The new generation of Israel preparing to enter Canaan.",
     "purpose": "To renew the covenant, restate God's law for a new generation, and call Israel to love and obey God in the land.",
-    "theme": "Covenant faithfulness means loving God wholeheartedly and living in obedient loyalty to Him.",
+    "theme": "Covenant faithfulness means loving God wholeheartedly and living in obedient loyalty to him.",
     "summary": "Moses reviews Israel's history, restates the law, explains covenant blessings and curses, commissions Joshua, and dies before Israel enters Canaan.",
     "keyVerse": "Deuteronomy 6:5",
     "movements": [

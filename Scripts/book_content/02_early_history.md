@@ -1,5 +1,5 @@
 # Joshua
-When it happened: From the death of Moses to the death of Joshua at 110 (Joshua 24:29). Depending on the date of the exodus, this is placed either around 1400 BC or in the 1200s BC.
+When it happened: From the death of Moses to the death of Joshua at 110 (Joshua 24:29). By the Bible's own count this is around 1400 BC (1 Kings 6:1); many scholars prefer the 1200s BC.
 When it was written: The book records that "Joshua wrote these words in the book of the law of God" (Joshua 24:26). Repeated notes that things remain "unto this day" show that at least parts were written some time after the events.
 Where: The Jordan River, Gilgal, Jericho, Ai, Gibeon, Mount Ebal, Shiloh, and Shechem in the land of Canaan.
 The world at the time: Canaan was a patchwork of walled city-states, each with its own king—Joshua 12 lists thirty-one of them. No single empire controlled the land at this point in the story.
@@ -34,7 +34,7 @@ When the kings of Canaan hear that God dried up the Jordan, their hearts melt wi
 
 Near Jericho, Joshua looks up and sees a man standing in front of him with a drawn sword. Joshua walks up to him and asks, “Art thou for us, or for our adversaries?” The man answers, “Nay; but as captain of the host of the LORD am I now come.” Joshua falls on his face and worships. The commander tells him, “Loose thy shoe from off thy foot; for the place whereon thou standest is holy,” the same words God spoke to Moses at the burning bush. The battle ahead belongs to God.
 
-**The Walls of Jericho Fall (Joshua 6:1–27)** — God gives Israel an unusual plan for capturing Jericho, and the city's walls collapse after the people follow His instructions.
+**The Walls of Jericho Fall (Joshua 6:1–27)** — God gives Israel an unusual plan for capturing Jericho, and the city's walls collapse after the people follow his instructions.
 
 Jericho is locked up tight. No one goes in or out. God gives Joshua an unusual battle plan. For six days, the army is to march around the city once a day, with seven priests blowing trumpets made from rams' horns in front of the ark. The people must not shout or even speak. On the seventh day, they must march around the city seven times. Then the priests will give a long blast, and all the people must shout.
 
@@ -58,7 +58,7 @@ The Israelite leaders look at the evidence, “and asked not counsel at the mout
 
 **God Gives Israel Victory Over Southern Kings (Joshua 10:1–43)** — Joshua leads Israel against an alliance of southern Canaanite kings, and God grants victory through battle and extraordinary signs.
 
-When Adonizedek, the king of Jerusalem, hears that Gibeon has made peace with Israel, he joins with four other Amorite kings to attack Gibeon. The Gibeonites send an urgent message to Joshua: “Come up to us quickly, and save us.” Joshua marches all night with his army and takes the enemy by surprise. God throws them into a panic, and as they flee, He sends huge hailstones from the sky. More of them die from the hail than from the sword.
+When Adonizedek, the king of Jerusalem, hears that Gibeon has made peace with Israel, he joins with four other Amorite kings to attack Gibeon. The Gibeonites send an urgent message to Joshua: “Come up to us quickly, and save us.” Joshua marches all night with his army and takes the enemy by surprise. God throws them into a panic, and as they flee, he sends huge hailstones from the sky. More of them die from the hail than from the sword.
 
 Then Joshua prays in front of all Israel: “Sun, stand thou still upon Gibeon; and thou, Moon, in the valley of Ajalon. And the sun stood still, and the moon stayed, until the people had avenged themselves upon their enemies.” The sun stops in the middle of the sky for about a whole day. “And there was no day like that before it or after it, that the LORD hearkened unto the voice of a man: for the LORD fought for Israel.”
 
@@ -68,7 +68,7 @@ The five kings hide in a cave at Makkedah. Joshua has the cave sealed with large
 
 Now the kings of the north gather under Jabin, king of Hazor, the most powerful city in the region. They bring a huge army, “even as the sand that is upon the sea shore in multitude,” with many horses and chariots, and camp by the waters of Merom. God tells Joshua, “Be not afraid because of them: for to morrow about this time will I deliver them up all slain before Israel.” Joshua attacks suddenly and defeats them. As God commanded, he cuts the hamstrings of their horses and burns their chariots, so Israel will trust in God rather than in weapons. Then he captures and burns Hazor.
 
-The wars go on for a long time, but in the end, “Joshua took the whole land, according to all that the LORD said unto Moses.” He even defeats the Anakim, the giants who had frightened the spies forty years before. Joshua gives the land to Israel as an inheritance, tribe by tribe. “And the land rested from war.” Chapter 12 lists the kings Israel defeated, two east of the Jordan under Moses and thirty-one west of the Jordan under Joshua.
+The wars go on for a long time, but in the end, “Joshua took the whole land, according to all that the LORD said unto Moses.” He even defeats the Anakims, the giants who had frightened the spies forty years before. Joshua gives the land to Israel as an inheritance, tribe by tribe. “And the land rested from war.” Chapter 12 lists the kings Israel defeated, two east of the Jordan under Moses and thirty-one west of the Jordan under Joshua.
 
 **God Prepares Israel to Divide the Land (Joshua 13:1–14:15)** — As Joshua grows old, God commands the remaining land to be assigned among Israel's tribes, while Caleb receives his promised inheritance.
 
@@ -82,7 +82,7 @@ These chapters describe the borders and cities of each tribe's land, assigned by
 
 The descendants of Joseph, Ephraim and Manasseh, receive land in the center of the country. They complain that their share is too small. Joshua tells them, “If thou be a great people, then get thee up to the wood country, and cut down for thyself there,” clearing the forests. They worry about the Canaanites' iron chariots, but Joshua says they will drive them out.
 
-The whole community gathers at Shiloh and sets up the tabernacle there. Seven tribes still have not received their land. Joshua asks them, “How long are ye slack to go to possess the land, which the LORD God of your fathers hath given you?” He sends three men from each tribe to survey the remaining land and divide it into seven parts. Then he casts lots for Benjamin, Simeon, Zebulun, Issachar, Asher, Naphtali, and Dan. When everything is divided, the people give Joshua his own town, Timnath-serah, in the hill country of Ephraim.
+The whole community gathers at Shiloh and sets up the tabernacle there. Seven tribes still have not received their land. Joshua asks them, “How long are ye slack to go to possess the land, which the LORD God of your fathers hath given you?” He sends three men from each tribe to survey the remaining land and divide it into seven parts. Then he casts lots for Benjamin, Simeon, Zebulun, Issachar, Asher, Naphtali, and Dan. When everything is divided, the people give Joshua his own town, Timnathserah, in the hill country of Ephraim.
 
 **God Establishes Cities of Refuge and Levitical Cities (Joshua 20:1–21:45)** — God provides cities of refuge for accidental deaths and assigns towns to the Levites throughout Israel's territories.
 
@@ -90,7 +90,7 @@ As Moses commanded, Israel sets apart six cities of refuge, three on each side o
 
 The Levites come to Eleazar the priest and Joshua and ask for the towns Moses promised them. They receive forty-eight cities with pastureland scattered throughout the land, so the priests and Levites can live among all the tribes and teach them God's law.
 
-The section ends with a summary of God's faithfulness. God gave Israel all the land He had sworn to their ancestors, gave them rest on every side, and gave their enemies into their hands. “There failed not ought of any good thing which the LORD had spoken unto the house of Israel; all came to pass.”
+The section ends with a summary of God's faithfulness. God gave Israel all the land he had sworn to their ancestors, gave them rest on every side, and gave their enemies into their hands. “There failed not ought of any good thing which the LORD had spoken unto the house of Israel; all came to pass.”
 
 **The Eastern Tribes Return Home (Joshua 22:1–34)** — The tribes east of the Jordan build an altar that nearly causes conflict, but an explanation prevents fighting among the Israelites.
 
@@ -98,13 +98,13 @@ The war is over, so Joshua calls the soldiers of Reuben, Gad, and half of Manass
 
 On their way home, by the Jordan River, these tribes build a huge altar. When the other tribes hear about it, they think the eastern tribes are turning away from God by building a rival altar, and they gather at Shiloh to go to war against them. First they send Phinehas the priest and ten leaders to confront them. They remind them how God punished all Israel for the sin at Peor and for Achan's sin.
 
-The eastern tribes explain that they never meant to offer sacrifices there. They were afraid that one day the western tribes' children would say the Jordan separated them from Israel and from the LORD. So they built a copy of God's altar as a witness that they too belong to Him. Phinehas and the leaders are pleased, and the war is called off. The eastern tribes name the altar Ed, meaning witness, saying, “it shall be a witness between us that the LORD is God.”
+The eastern tribes explain that they never meant to offer sacrifices there. They were afraid that one day the western tribes' children would say the Jordan separated them from Israel and from the LORD. So they built a copy of God's altar as a witness that they too belong to him. Phinehas and the leaders are pleased, and the war is called off. The eastern tribes name the altar Ed, meaning witness, saying, “it shall be a witness between us that the LORD is God.”
 
 **Joshua Calls Israel to Remain Faithful (Joshua 23:1–16)** — Near the end of his life, Joshua gathers Israel's leaders and warns them not to abandon the God who has given them victory.
 
 A long time later, Joshua is very old. He calls together Israel's leaders and reminds them of all God has done: “for the LORD your God is he that hath fought for you.” God will drive out the nations that remain, but Israel must obey everything written in the law of Moses. “One man of you shall chase a thousand: for the LORD your God, he it is that fighteth for you.” “Take good heed therefore unto yourselves, that ye love the LORD your God.”
 
-But Joshua also warns them. If they marry the people of the nations that remain and worship their gods, those nations will become “snares and traps unto you, and scourges in your sides, and thorns in your eyes,” until Israel is driven out of the land. Then he says, “behold, this day I am going the way of all the earth.” He reminds them that “not one thing hath failed of all the good things which the LORD your God spake concerning you.” And just as God has kept every good promise, He will also keep His warnings if they break His covenant.
+But Joshua also warns them. If they marry the people of the nations that remain and worship their gods, those nations will become “snares and traps unto you, and scourges in your sides, and thorns in your eyes,” until Israel is driven out of the land. Then he says, “behold, this day I am going the way of all the earth.” He reminds them that “not one thing hath failed of all the good things which the LORD your God spake concerning you.” And just as God has kept every good promise, he will also keep his warnings if they break his covenant.
 
 **Joshua Renews the Covenant Before His Death (Joshua 24:1–33)** — Joshua gathers Israel at Shechem, recounts God's faithfulness, and challenges the people to choose whom they will serve before his death.
 
@@ -112,11 +112,11 @@ Joshua gathers all the tribes at Shechem, where Abraham first received God's pro
 
 Then Joshua puts the choice before them: “And if it seem evil unto you to serve the LORD, choose you this day whom ye will serve... but as for me and my house, we will serve the LORD.” The people answer, “God forbid that we should forsake the LORD, to serve other gods.” But Joshua says, “Ye cannot serve the LORD: for he is an holy God; he is a jealous God.” He wants them to understand how serious their promise is. They insist, “Nay; but we will serve the LORD.” Joshua says, “Ye are witnesses against yourselves,” and they answer, “We are witnesses.”
 
-Joshua writes their promise in the book of the law and sets up a large stone under an oak tree as a witness. Then he sends everyone home. Joshua dies at 110 and is buried in his town of Timnath-serah. “And Israel served the LORD all the days of Joshua, and all the days of the elders that overlived Joshua.” The Israelites bury Joseph's bones at Shechem, keeping the promise made more than four hundred years earlier. Eleazar the priest also dies. The book of Joshua ends with God's promises kept and the people's promise still to be tested.
+Joshua writes their promise in the book of the law and sets up a large stone under an oak tree as a witness. Then he sends everyone home. Joshua dies at 110 and is buried in his town of Timnathserah. “And Israel served the LORD all the days of Joshua, and all the days of the elders that overlived Joshua.” The Israelites bury Joseph's bones at Shechem, keeping the promise made more than four hundred years earlier. Eleazar the priest also dies. The book of Joshua ends with God's promises kept and the people's promise still to be tested.
 
 # Judges
 When it happened: Between the death of Joshua and the rise of Israel's first king—roughly the 1300s to the 1000s BC. The judges' years add up to several centuries, but some of them may have ruled at the same time in different regions.
-When it was written: The repeated phrase "In those days there was no king in Israel" suggests it was written after Israel had kings.
+When it was written: Jewish tradition credits Samuel. The repeated phrase "In those days there was no king in Israel" suggests it was written after Israel had kings.
 Where: Throughout the tribal lands of Israel—the hill country of Ephraim, the valley of Jezreel, Gilead east of the Jordan, the far northern city of Dan, and the Philistine cities such as Gaza.
 The world at the time: The tribes had no central government and were attacked again and again by neighbors: a king of Mesopotamia, Moab, the Canaanite king Jabin of Hazor, Midian, Ammon, and the Philistines.
 
@@ -148,9 +148,9 @@ Sisera brings his chariots, and Deborah tells Barak, “Up; for this is the day.
 
 Chapter 5 is the Song of Deborah, one of the oldest poems in the Bible. “Awake, awake, Deborah: awake, awake, utter a song.” It praises the tribes that came to fight and scolds those that stayed home. “The stars in their courses fought against Sisera. The river of Kishon swept them away.” “Blessed above women shall Jael the wife of Heber the Kenite be.” Then the song pictures Sisera's mother looking out her window, wondering, “Why is his chariot so long in coming?” Her ladies assure her that he is just dividing the spoils. But he will never come home. The song ends, “So let all thine enemies perish, O LORD: but let them that love him be as the sun when he goeth forth in his might.” The land has peace for forty years.
 
-**God Calls Gideon to Deliver Israel (Judges 6:1–8:35)** — God chooses Gideon to rescue Israel from Midian, demonstrating His power through a small army before Gideon's later actions bring new trouble.
+**God Calls Gideon to Deliver Israel (Judges 6:1–8:35)** — God chooses Gideon to rescue Israel from Midian, demonstrating his power through a small army before Gideon's later actions bring new trouble.
 
-Again Israel does evil, and God gives them into the hands of the Midianites for seven years. Every harvest, the Midianites and other desert tribes swarm in “as grasshoppers for multitude,” with countless camels, and destroy everything. The Israelites hide in caves and mountains. When they cry out, God sends a prophet to remind them that they have disobeyed Him.
+Again Israel does evil, and God gives them into the hands of the Midianites for seven years. Every harvest, the Midianites and other desert tribes swarm in “as grasshoppers for multitude,” with countless camels, and destroy everything. The Israelites hide in caves and mountains. When they cry out, God sends a prophet to remind them that they have disobeyed him.
 
 Then the angel of the LORD sits under an oak tree where a young man named Gideon is secretly threshing wheat in a winepress, hiding from the Midianites. The angel says, “The LORD is with thee, thou mighty man of valour.” Gideon answers, “Oh my Lord, if the LORD be with us, why then is all this befallen us?” God tells him to go and save Israel. Gideon objects, “my family is poor in Manasseh, and I am the least in my father's house.” God says, “Surely I will be with thee.” Gideon brings an offering, and when the angel touches it with his staff, fire bursts from the rock and burns it up. That night, at God's command, Gideon tears down his father's altar to Baal and the wooden pole beside it. In the morning, the townspeople want to kill him, but his father Joash says, “Will ye plead for Baal?” If Baal is a god, let him defend himself. So Gideon is nicknamed Jerubbaal, meaning let Baal contend.
 
@@ -184,7 +184,7 @@ Then the men of Ephraim angrily accuse Jephthah of not calling them to the battl
 
 Again Israel does evil, and God lets the Philistines rule over them for forty years. A man named Manoah from the tribe of Dan has a wife who cannot have children. The angel of the LORD appears to her and says she will have a son. She must not drink wine or eat anything unclean, because the boy will be a Nazarite from birth. “No razor shall come on his head,” and “he shall begin to deliver Israel out of the hand of the Philistines.”
 
-She runs to tell her husband. Manoah prays for the man of God to come back and teach them how to raise the boy, and the angel appears again. Manoah offers to cook him a young goat and asks his name. The angel answers, “Why askest thou thus after my name, seeing it is secret?” Manoah offers the goat on a rock as a sacrifice, and as the flame rises toward heaven, the angel goes up in the flame. Manoah and his wife fall on their faces. Manoah says, “We shall surely die, because we have seen God.” But his wife sensibly replies that if God meant to kill them, He would not have accepted their offering or told them all this. The woman gives birth to a son and names him Samson. The boy grows, the LORD blesses him, “And the Spirit of the LORD began to move him.”
+She runs to tell her husband. Manoah prays for the man of God to come back and teach them how to raise the boy, and the angel appears again. Manoah offers to cook him a young goat and asks his name. The angel answers, “Why askest thou thus after my name, seeing it is secret?” Manoah offers the goat on a rock as a sacrifice, and as the flame rises toward heaven, the angel goes up in the flame. Manoah and his wife fall on their faces. Manoah says, “We shall surely die, because we have seen God.” But his wife sensibly replies that if God meant to kill them, he would not have accepted their offering or told them all this. The woman gives birth to a son and names him Samson. The boy grows, the LORD blesses him, “And the Spirit of the LORD began to move him.”
 
 **Samson Battles the Philistines (Judges 14:1–15:20)** — Samson's marriage arrangements and conflicts with the Philistines lead to escalating violence as God uses him against Israel's oppressors.
 

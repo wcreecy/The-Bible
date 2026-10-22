@@ -1,39 +1,39 @@
 {
   "Exodus 1": {
-    "summary": "After naming Jacob's sons, Exodus describes Israel's multiplication in Egypt and a new king who fears their growth. Pharaoh subjects the Israelites to harsh forced labor, but they keep increasing. He orders Hebrew midwives to kill newborn boys; they refuse, and he eventually commands that every Hebrew son be thrown into the Nile. This slavery is the problem the rest of the book answers.",
+    "summary": "The book begins by naming the sons of Jacob who came to Egypt, and their family grows into a great people (Exodus 1:1–7). A new king who \"knew not Joseph\" fears them and makes them slaves, forcing them to build the store cities Pithom and Raamses (Exodus 1:8–14). He orders the Hebrew midwives, Shiphrah and Puah, to kill every newborn boy, but they fear God and refuse (Exodus 1:15–21). Then Pharaoh commands that every Hebrew son be thrown into the river (Exodus 1:22). This slavery is the problem the rest of the book answers.",
     "whereWeAre": "Genesis ended with Jacob's family safe in Egypt and Joseph's death. Exodus picks up years later, after that family has grown into a nation. Then \"there arose up a new king over Egypt, which knew not Joseph\" (Exodus 1:8), and chapter 2 introduces the baby who will lead them out.",
     "keyFigures": [
       {
         "name": "Pharaoh",
-        "role": "Egyptian ruler who imposes forced labor and orders the killing of boys"
+        "role": "The new king of Egypt, who makes Israel slaves and orders their baby boys killed."
       },
       {
-        "name": "Israelites",
-        "role": "Descendants of Jacob whose numbers increase under oppression"
+        "name": "The children of Israel",
+        "role": "Jacob's descendants, who keep growing even as they are oppressed."
       },
       {
         "name": "Shiphrah and Puah",
-        "role": "Hebrew midwives who refuse the king's command"
+        "role": "Hebrew midwives who fear God and refuse to kill the boys."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Oppression and resilience",
-        "explanation": "Israel multiplies despite increasingly harsh measures",
+        "theme": "Growing under pressure",
+        "explanation": "\"But the more they afflicted them, the more they multiplied and grew.\" Egypt cannot stop God's promise.",
         "references": [
           "Exodus 1:7-14"
         ]
       },
       {
-        "theme": "Moral courage",
-        "explanation": "The midwives fear God more than the king and preserve life",
+        "theme": "Courage to obey God",
+        "explanation": "The midwives fear God more than the king and save the baby boys.",
         "references": [
           "Exodus 1:15-21"
         ]
       },
       {
-        "theme": "Threat to life",
-        "explanation": "Pharaoh escalates persecution to a public decree against sons",
+        "theme": "A cruel order",
+        "explanation": "Pharaoh orders every Hebrew son thrown into the river, which sets up the story of Moses' rescue.",
         "references": [
           "Exodus 1:22"
         ]
@@ -42,52 +42,52 @@
     "explainedReferences": []
   },
   "Exodus 2": {
-    "summary": "A Levite mother hides her son, then places him in a basket among Nile reeds. Pharaoh's daughter rescues and adopts the child, whom she names Moses, while his own mother nurses him. As an adult Moses kills an Egyptian who was striking a Hebrew, flees to Midian, and helps a priest's daughters at a well. He marries Zipporah. Back in Egypt Israel groans under slavery, and God hears and remembers his covenant with the ancestors.",
+    "summary": "A Levite mother hides her baby son, then sets him in a basket among the reeds of the Nile. Pharaoh's daughter finds him, names him Moses, and raises him, while his own mother nurses him (Exodus 2:1–10). As a man, Moses kills an Egyptian who is beating a Hebrew and flees from Pharaoh to Midian (Exodus 2:11–15). There he helps the daughters of Reuel, the priest of Midian, at a well and marries Zipporah (Exodus 2:16–22). Back in Egypt, Israel groans under slavery, and God hears and remembers his covenant (Exodus 2:23–25).",
     "whereWeAre": "Chapter 1 ended with Pharaoh ordering every Hebrew baby boy thrown into the Nile. This chapter tells how one of those boys, Moses, is saved and raised in Pharaoh's own palace. It ends with Moses living far away in Midian and God hearing Israel's cries, which leads to the burning bush in chapter 3.",
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Hebrew child preserved and later fugitive in Midian"
-      },
-      {
-        "name": "Pharaoh's daughter",
-        "role": "Royal woman who adopts Moses"
+        "role": "Saved as a baby, raised by Pharaoh's daughter, and forced to flee to Midian as a man."
       },
       {
         "name": "Moses' mother and sister",
-        "role": "Family members who preserve his life"
+        "role": "Hide the baby, watch over him, and arrange for his own mother to nurse him."
       },
       {
-        "name": "Reuel",
-        "role": "Priest of Midian who welcomes Moses"
+        "name": "Pharaoh's daughter",
+        "role": "Finds the baby in the river and raises him as her son."
+      },
+      {
+        "name": "Reuel (Jethro)",
+        "role": "The priest of Midian, who takes Moses into his home."
       },
       {
         "name": "Zipporah",
-        "role": "Daughter of Reuel who marries Moses"
+        "role": "Reuel's daughter, who marries Moses."
       },
       {
-        "name": "Israelites",
-        "role": "Enslaved people whose cry reaches God"
+        "name": "God",
+        "role": "Hears Israel's groaning and remembers his covenant."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Preservation amid danger",
-        "explanation": "The infant Moses survives a decree of death",
+        "theme": "Saved from the river",
+        "explanation": "The baby Pharaoh wanted drowned is pulled from the river and raised in Pharaoh's own house.",
         "references": [
           "Exodus 2:1-10"
         ]
       },
       {
-        "theme": "Justice and exile",
-        "explanation": "Moses' intervention leads to flight rather than immediate deliverance",
+        "theme": "Rescue on his own terms",
+        "explanation": "Moses kills an Egyptian to help his people, but it only drives him away.",
         "references": [
           "Exodus 2:11-15"
         ]
       },
       {
-        "theme": "Covenant remembrance",
-        "explanation": "God hears Israel's suffering and remembers the patriarchal covenant",
+        "theme": "God remembers",
+        "explanation": "God hears Israel's groaning and remembers his covenant with Abraham, Isaac, and Jacob.",
         "references": [
           "Exodus 2:23-25"
         ]
@@ -96,50 +96,49 @@
     "explainedReferences": []
   },
   "Exodus 3": {
-    "summary": "While tending Jethro's flock near Horeb, Moses sees a bush burning without being consumed. God calls him by name, tells him to remove his sandals on holy ground, and identifies himself as the God of Abraham, Isaac, and Jacob. God says he has seen Israel's misery and sends Moses to lead the people out of Egypt. Moses objects that he is inadequate and asks God's name; God answers, \"I AM THAT I AM\" (Exodus 3:14), and gives Moses instructions for approaching Israel's elders and Pharaoh.",
+    "summary": "While tending Jethro's flock at Horeb, Moses sees a bush that burns but is not consumed, and God calls him to take off his shoes on holy ground (Exodus 3:1–6). God says he has seen his people's misery and is sending Moses to bring them out of Egypt (Exodus 3:7–12). When Moses asks God's name, God answers, \"I AM THAT I AM\" (Exodus 3:13–15). God then tells Moses to gather the elders, go to Pharaoh, and expect Egypt to send Israel away with riches (Exodus 3:16–22).",
     "whereWeAre": "Moses has spent many years as a shepherd in Midian since fleeing Egypt in chapter 2. Now God meets him in a burning bush and calls him to go back and lead Israel out. Moses' doubts and objections continue into chapter 4.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Speaks from the burning bush, reveals his name, and sends Moses to Egypt."
+      },
+      {
         "name": "Moses",
-        "role": "Shepherd commissioned to confront Pharaoh"
+        "role": "Turns aside to see the bush, then argues that he is not the right man to go."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Reveals his presence and covenant purpose"
-      },
-      {
-        "name": "Jethro",
-        "role": "Priest of Midian whose flock Moses tends"
-      },
-      {
-        "name": "Israelite elders",
-        "role": "Leaders Moses is instructed to assemble"
-      },
-      {
-        "name": "Pharaoh",
-        "role": "Ruler Moses is instructed to approach"
+        "name": "The angel of the LORD",
+        "role": "Appears to Moses \"in a flame of fire out of the midst of a bush.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Divine attention",
-        "explanation": "God sees, hears, and knows the suffering of Israel",
-        "references": [
-          "Exodus 3:7-10"
-        ]
-      },
-      {
-        "theme": "Holy presence",
-        "explanation": "Moses removes his sandals before the divine appearance",
+        "theme": "Holy ground",
+        "explanation": "God's presence makes the ground holy, so Moses takes off his shoes and hides his face.",
         "references": [
           "Exodus 3:1-6"
         ]
       },
       {
-        "theme": "Calling and promise",
-        "explanation": "God commissions Moses and promises to be with him",
+        "theme": "God sees and hears",
+        "explanation": "God has seen his people's suffering and heard their cry, and he comes down to rescue them.",
+        "references": [
+          "Exodus 3:7-10"
+        ]
+      },
+      {
+        "theme": "\"I will be with thee\"",
+        "explanation": "Moses feels unfit, and God's answer is his own presence: \"Certainly I will be with thee.\"",
         "references": [
           "Exodus 3:10-12"
+        ]
+      },
+      {
+        "theme": "God's name",
+        "explanation": "God reveals himself as \"I AM THAT I AM,\" the God who always is.",
+        "references": [
+          "Exodus 3:13-15"
         ]
       }
     ],
@@ -167,48 +166,52 @@
     ]
   },
   "Exodus 4": {
-    "summary": "Moses fears that Israel will not believe his call. God gives signs involving a staff, his hand, and water from the Nile. Moses then protests his speaking ability; God promises help, yet Moses asks for someone else to go. God appoints Aaron to speak alongside him. Moses returns toward Egypt after asking Jethro's permission. On the way, the LORD meets Moses and seeks to kill him until Zipporah circumcises their son. Aaron meets Moses, the two gather Israel's elders, and the people believe and worship.",
+    "summary": "Moses fears that Israel will not believe him, so God gives him three signs: a rod that becomes a serpent, a hand made leprous and healed, and water turned to blood (Exodus 4:1–9). When Moses says he is slow of speech and begs God to send someone else, God sends Aaron to speak for him (Exodus 4:10–17). Moses takes his family and sets out for Egypt with \"the rod of God\" in his hand (Exodus 4:18–23). On the way, the LORD meets Moses and seeks to kill him until Zipporah circumcises their son (Exodus 4:24–26). Aaron meets Moses, they tell the elders everything, and the people believe and worship (Exodus 4:27–31).",
     "whereWeAre": "God has just called Moses at the burning bush in chapter 3, but Moses is still not sure. God answers his fears with signs and gives him his brother Aaron as a helper. Moses heads back to Egypt, and in chapter 5 he stands before Pharaoh for the first time.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Gives Moses signs, grows angry at his excuses, and sends Aaron to help him."
+      },
+      {
         "name": "Moses",
-        "role": "Reluctant messenger carrying God's instructions"
+        "role": "Asks God to send someone else, then sets out for Egypt."
       },
       {
         "name": "Aaron",
-        "role": "Moses' brother appointed as spokesperson"
+        "role": "Meets Moses at the mountain of God and speaks for him to the elders."
       },
       {
         "name": "Zipporah",
-        "role": "Moses' wife who performs circumcision in the journey episode"
+        "role": "Circumcises her son when the LORD meets Moses on the road."
       },
       {
         "name": "Jethro",
-        "role": "Moses' father-in-law who permits his departure"
+        "role": "Lets Moses go back to Egypt."
       },
       {
-        "name": "Israelite elders",
-        "role": "Hear the signs and message"
+        "name": "The elders of Israel",
+        "role": "Hear the message, see the signs, and worship."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Assurance through signs",
-        "explanation": "God supplies signs addressing Moses' fear of rejection",
+        "theme": "Signs for doubters",
+        "explanation": "God gives Moses three signs so that the people will believe.",
         "references": [
           "Exodus 4:1-9"
         ]
       },
       {
-        "theme": "Human limitation and help",
-        "explanation": "God responds to Moses' reluctance and assigns Aaron",
+        "theme": "God uses weak people",
+        "explanation": "Moses says he is slow of speech, and God answers, \"Who hath made man's mouth?\"",
         "references": [
           "Exodus 4:10-17"
         ]
       },
       {
-        "theme": "Belief and worship",
-        "explanation": "Israel's leaders receive news of God's concern",
+        "theme": "The people believe",
+        "explanation": "The elders hear that God has seen their affliction, and they bow and worship.",
         "references": [
           "Exodus 4:29-31"
         ]
@@ -217,44 +220,44 @@
     "explainedReferences": []
   },
   "Exodus 5": {
-    "summary": "Moses and Aaron ask Pharaoh to allow Israel to hold a festival for the LORD in the wilderness. Pharaoh refuses and makes the people's brick quotas harder by withholding straw. Israelite foremen are beaten for failing to meet the same targets and blame Moses and Aaron for their suffering. Moses turns to God, asking why the mission has made conditions worse. Standing up to Pharaoh at first makes things worse.",
+    "summary": "Moses and Aaron tell Pharaoh, \"Let my people go,\" but Pharaoh answers that he does not know the LORD (Exodus 5:1–5). He orders that the slaves gather their own straw and still make the same number of bricks (Exodus 5:6–14). The Israelite officers are beaten, and they blame Moses and Aaron (Exodus 5:15–21). Moses asks God why he has let things get worse (Exodus 5:22–23).",
     "whereWeAre": "Moses and Aaron have returned to Egypt, and at the end of chapter 4 the people believed them. Now they tell Pharaoh, \"Let my people go\" (Exodus 5:1), and he answers by making the slaves' work harder. Moses' discouraged prayer leads into God's promises in chapter 6.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Messenger who petitions Pharaoh and protests to God"
-      },
-      {
-        "name": "Aaron",
-        "role": "Moses' companion in the request"
+        "name": "Moses and Aaron",
+        "role": "Ask Pharaoh to let Israel go and hold a feast in the wilderness."
       },
       {
         "name": "Pharaoh",
-        "role": "King who intensifies forced labor"
+        "role": "Refuses and makes the slaves gather their own straw."
       },
       {
-        "name": "Israelite foremen",
-        "role": "Workers held responsible for impossible quotas"
+        "name": "The taskmasters",
+        "role": "Egyptian overseers who drive the people harder."
+      },
+      {
+        "name": "The Israelite officers",
+        "role": "Foremen who are beaten and blame Moses and Aaron."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Resistance to liberation",
-        "explanation": "Pharaoh rejects the request to worship",
+        "theme": "Who is the LORD?",
+        "explanation": "Pharaoh asks, \"Who is the LORD, that I should obey his voice?\" and refuses.",
         "references": [
           "Exodus 5:1-5"
         ]
       },
       {
-        "theme": "Escalating injustice",
-        "explanation": "The people must produce bricks without supplied straw",
+        "theme": "Harder before better",
+        "explanation": "Pharaoh makes the slaves gather their own straw but keep the same number of bricks.",
         "references": [
           "Exodus 5:6-19"
         ]
       },
       {
-        "theme": "Honest lament",
-        "explanation": "Moses brings disappointment and questions before God",
+        "theme": "Honest prayer",
+        "explanation": "Moses brings his disappointment straight to God.",
         "references": [
           "Exodus 5:22-23"
         ]
@@ -263,48 +266,44 @@
     "explainedReferences": []
   },
   "Exodus 6": {
-    "summary": "God responds to Moses by reaffirming his identity and promises to the patriarchs. He pledges to free, redeem, and take Israel as his people, bringing them into the promised land. Israel cannot listen because of their crushed spirit and harsh labor. God commands Moses and Aaron to speak to Pharaoh. A genealogy traces the lines of Reuben, Simeon, and Levi, highlighting Moses and Aaron's place in Israel's family.",
+    "summary": "God answers Moses by repeating his name and his promises: he will free Israel, take them as his people, and bring them into the land (Exodus 6:1–8). The people are too crushed by their slavery to listen (Exodus 6:9). God sends Moses back to Pharaoh (Exodus 6:10–13). A family list traces Moses and Aaron through the tribe of Levi (Exodus 6:14–27), and Moses again says Pharaoh will not listen to him (Exodus 6:28–30).",
     "whereWeAre": "Chapter 5 ended with Moses asking God why things have gotten worse. God answers with a string of promises: he will free Israel and make them his own people. A family list then shows where Moses and Aaron come from before the plagues begin in chapter 7.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Reaffirms covenant promises"
+        "name": "God",
+        "role": "Repeats his promises and sends Moses back to Pharaoh."
       },
       {
         "name": "Moses",
-        "role": "Commissioned deliverer who doubts his ability to speak"
+        "role": "Tells the people God's promise, then doubts that Pharaoh will listen to him."
+      },
+      {
+        "name": "The children of Israel",
+        "role": "Too crushed by slavery to listen."
       },
       {
         "name": "Aaron",
-        "role": "Brother and partner in the mission"
-      },
-      {
-        "name": "Israelites",
-        "role": "People too distressed to receive the message"
-      },
-      {
-        "name": "Levi's descendants",
-        "role": "Family line that situates Moses and Aaron"
+        "role": "Moses' brother, sent with him to Pharaoh."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Covenant faithfulness",
-        "explanation": "God recalls his promises to Abraham, Isaac, and Jacob",
+        "theme": "God's promises",
+        "explanation": "God promises to free Israel, make them his people, and bring them into the land.",
         "references": [
           "Exodus 6:2-8"
         ]
       },
       {
-        "theme": "Hope amid exhaustion",
-        "explanation": "The people cannot absorb the promise because of suffering",
+        "theme": "Too crushed to listen",
+        "explanation": "The people are so broken by slavery that they cannot take in the promise.",
         "references": [
           "Exodus 6:9"
         ]
       },
       {
-        "theme": "Communal identity",
-        "explanation": "The genealogy locates the leaders among Israel's clans",
+        "theme": "An ordinary family",
+        "explanation": "The family list shows that Moses and Aaron come from a family in the tribe of Levi.",
         "references": [
           "Exodus 6:14-27"
         ]
@@ -313,44 +312,48 @@
     "explainedReferences": []
   },
   "Exodus 7": {
-    "summary": "God tells Moses that Aaron will speak for him before Pharaoh. Their first sign turns Aaron's staff into a serpent; Pharaoh's magicians copy it, but Aaron's staff swallows theirs. Pharaoh refuses to listen. Moses and Aaron then announce judgment on the Nile, and Aaron strikes the water so it becomes blood. Fish die, the river stinks, and drinking water becomes scarce. Pharaoh remains unmoved.",
+    "summary": "God tells Moses that he will harden Pharaoh's heart and bring Israel out by great judgments, and Moses, now eighty, goes to Pharaoh with Aaron (Exodus 7:1–7). Aaron's rod becomes a serpent and swallows the magicians' rods, but Pharaoh will not listen (Exodus 7:8–13). In the first plague, Aaron strikes the Nile, and its water turns to blood (Exodus 7:14–25).",
     "whereWeAre": "God sends Moses and Aaron back to Pharaoh after the family list in chapter 6. Here the contest begins: Aaron's staff becomes a serpent, and the Nile turns to blood. This is the first of ten plagues, which continue through chapter 11.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Tells Moses he will harden Pharaoh's heart and bring Israel out with great judgments."
+      },
+      {
         "name": "Moses",
-        "role": "God's commissioned messenger"
+        "role": "Goes to Pharaoh at eighty and warns him at the river."
       },
       {
         "name": "Aaron",
-        "role": "Spokesperson who performs the signs"
+        "role": "Throws down his rod and strikes the Nile."
       },
       {
         "name": "Pharaoh",
-        "role": "King who refuses to release Israel"
+        "role": "Hardens his heart and will not listen."
       },
       {
-        "name": "Egyptian magicians",
-        "role": "Court specialists who reproduce some signs"
+        "name": "Pharaoh's magicians",
+        "role": "Copy the first signs with their secret arts."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Conflict over authority",
-        "explanation": "Signs confront Pharaoh's resistance",
+        "theme": "Who has the power?",
+        "explanation": "Aaron's rod swallows the magicians' rods.",
         "references": [
           "Exodus 7:8-13"
         ]
       },
       {
-        "theme": "Judgment on essential resources",
-        "explanation": "The Nile's water becomes unusable in the account",
+        "theme": "The river turns to blood",
+        "explanation": "The Nile, the life of Egypt, becomes blood.",
         "references": [
           "Exodus 7:14-21"
         ]
       },
       {
-        "theme": "Persistent refusal",
-        "explanation": "Pharaoh continues to reject the demand",
+        "theme": "A hard heart",
+        "explanation": "Pharaoh sees the sign and still will not listen.",
         "references": [
           "Exodus 7:22-25"
         ]
@@ -359,49 +362,49 @@
     "explainedReferences": []
   },
   "Exodus 8": {
-    "summary": "Frogs cover Egypt and enter homes, beds, and ovens. Pharaoh asks Moses for relief but changes his mind after the frogs die. Next, dust becomes gnats or lice, and Egyptian magicians confess their inability to reproduce the sign. Swarms of flies follow, but the land of Goshen is distinguished from the affected areas. Pharaoh offers partial concessions, then withdraws them when the swarm ends.",
+    "summary": "Frogs cover Egypt, and Pharaoh begs for relief, then hardens his heart once they are gone (Exodus 8:1–15). The dust becomes lice, and the magicians admit, \"This is the finger of God\" (Exodus 8:16–19). Swarms of flies fill Egypt but not the land of Goshen, and once again Pharaoh promises to let Israel go and then refuses (Exodus 8:20–32).",
     "whereWeAre": "The Nile turned to blood in chapter 7, but Pharaoh would not listen. Now come the second, third, and fourth plagues: frogs, lice, and flies. Pharaoh promises to let Israel go and then breaks his word, and the plagues keep coming in chapter 9.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Sends the frogs, lice, and flies, and keeps the flies out of Goshen."
+      },
+      {
         "name": "Moses",
-        "role": "Intercedes and conveys God's warnings"
+        "role": "Brings God's warnings and prays for the plagues to stop."
       },
       {
         "name": "Aaron",
-        "role": "Performs the sign involving dust"
+        "role": "Stretches out his rod to bring the frogs and the lice."
       },
       {
         "name": "Pharaoh",
-        "role": "Repeatedly promises and retracts concessions"
+        "role": "Promises to let Israel go, then changes his mind each time."
       },
       {
-        "name": "Egyptian magicians",
-        "role": "Admit the limits of their power"
-      },
-      {
-        "name": "Israelites in Goshen",
-        "role": "People distinguished in the fly plague"
+        "name": "The magicians",
+        "role": "Fail to make lice and say, \"This is the finger of God.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Repeated warnings",
-        "explanation": "Pharaoh is given opportunities to respond",
+        "theme": "Many chances",
+        "explanation": "Before each plague, Pharaoh is told to let the people go.",
         "references": [
           "Exodus 8:1-4",
           "Exodus 8:16-21"
         ]
       },
       {
-        "theme": "Limits of human control",
-        "explanation": "The magicians fail to reproduce the dust sign",
+        "theme": "\"The finger of God\"",
+        "explanation": "The magicians cannot copy the lice and admit that it is God's doing.",
         "references": [
           "Exodus 8:16-19"
         ]
       },
       {
         "theme": "Broken promises",
-        "explanation": "Pharaoh reverses himself after relief",
+        "explanation": "Each time relief comes, Pharaoh goes back on his word.",
         "references": [
           "Exodus 8:8-15",
           "Exodus 8:28-32"
@@ -411,48 +414,48 @@
     "explainedReferences": []
   },
   "Exodus 9": {
-    "summary": "A disease strikes Egyptian livestock while Israelite herds are spared. Pharaoh still refuses to release Israel. A further plague produces painful boils on people and animals, affecting even the magicians. Moses then warns of devastating hail. Some of Pharaoh's servants protect their workers and animals, but crops, people, and livestock left outside are struck. Pharaoh admits wrongdoing, yet hardens his heart again after the storm stops.",
+    "summary": "A disease kills the livestock of Egypt, but not one animal of Israel's dies (Exodus 9:1–7). Ashes thrown into the air bring boils on people and animals, even the magicians (Exodus 9:8–12). God warns of a terrible hail, and those who fear his word bring their servants and animals inside (Exodus 9:13–21). The hail and fire strike Egypt but not Goshen (Exodus 9:22–26). Pharaoh says, \"I have sinned this time,\" but when the storm stops he hardens his heart again (Exodus 9:27–35).",
     "whereWeAre": "Three plagues came and went in chapter 8, and Pharaoh kept going back on his word. This chapter brings the fifth, sixth, and seventh plagues: dead livestock, boils, and hail. Egypt is falling apart, but Pharaoh still refuses, which sets up the locusts and darkness in chapter 10.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Announces warnings and prays for relief"
+        "name": "God",
+        "role": "Strikes Egypt's livestock, sends boils and hail, and spares Israel."
       },
       {
-        "name": "Aaron",
-        "role": "Participates in the sign of soot"
+        "name": "Moses",
+        "role": "Throws ashes into the air, warns of the hail, and prays for it to stop."
       },
       {
         "name": "Pharaoh",
-        "role": "Rejects the demand despite severe losses"
+        "role": "Admits \"I have sinned this time,\" then hardens his heart again."
       },
       {
         "name": "Pharaoh's servants",
-        "role": "Some heed the hail warning"
+        "role": "Some fear the word of the LORD and bring their servants and cattle inside."
       },
       {
-        "name": "Egyptian magicians",
-        "role": "Unable to stand before Moses because of boils"
+        "name": "The magicians",
+        "role": "Cannot stand before Moses because of the boils."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Distinction and protection",
-        "explanation": "The narrative separates Israelite livestock from Egyptian livestock",
+        "theme": "God protects his people",
+        "explanation": "Egypt's cattle die, but not one of Israel's.",
         "references": [
           "Exodus 9:4-7"
         ]
       },
       {
-        "theme": "Warning and responsibility",
-        "explanation": "Some Egyptians respond to the warning by sheltering those at risk",
+        "theme": "Heeding the warning",
+        "explanation": "Egyptians who fear God's word bring their servants and animals in from the hail.",
         "references": [
           "Exodus 9:18-21"
         ]
       },
       {
-        "theme": "Superficial repentance",
-        "explanation": "Pharaoh confesses but returns to refusal",
+        "theme": "Sorry, but not changed",
+        "explanation": "Pharaoh admits his sin, but when the hail stops he hardens his heart again.",
         "references": [
           "Exodus 9:27-35"
         ]
@@ -467,49 +470,45 @@
     ]
   },
   "Exodus 10": {
-    "summary": "Moses announces locusts, and Pharaoh's own officials urge him to let the Israelites go. Pharaoh offers to release only the men; Moses insists that the entire community and its flocks must worship. Locusts consume what the hail left. Pharaoh asks forgiveness but again refuses after the locusts are removed. A deep darkness then covers Egypt for three days, while Israel has light. Pharaoh finally rejects Moses' demand to bring livestock and threatens him.",
+    "summary": "Pharaoh's own servants beg him to let Israel go, but he offers to let only the men leave (Exodus 10:1–11). Locusts cover the land and eat everything the hail left (Exodus 10:12–20). Then a thick darkness covers Egypt for three days, while Israel has light in their homes (Exodus 10:21–23). Pharaoh refuses to let the flocks go and warns Moses never to see his face again (Exodus 10:24–29).",
     "whereWeAre": "Hail has just destroyed much of Egypt's crops in chapter 9. Now locusts eat what is left, and then darkness covers the land for three days. These are the eighth and ninth plagues; only one more remains, and chapter 11 announces it.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Announces plagues and rejects partial freedom"
+        "name": "God",
+        "role": "Sends the locusts and the darkness, while Israel has light."
       },
       {
-        "name": "Aaron",
-        "role": "Works with Moses before Pharaoh"
+        "name": "Moses and Aaron",
+        "role": "Warn Pharaoh of locusts and refuse to leave anyone behind."
       },
       {
         "name": "Pharaoh",
-        "role": "Offers inadequate compromises and refuses release"
+        "role": "Offers to let only the men go, then threatens Moses' life."
       },
       {
         "name": "Pharaoh's servants",
-        "role": "Warn of Egypt's destruction"
-      },
-      {
-        "name": "Israelites",
-        "role": "People preparing for a complete communal departure"
+        "role": "Beg Pharaoh to let the people go before Egypt is destroyed."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Whole-community worship",
-        "explanation": "Moses includes children and livestock in the request",
+        "theme": "Everyone must go",
+        "explanation": "Moses refuses to leave the children or the flocks behind.",
         "references": [
           "Exodus 10:8-11",
           "Exodus 10:24-26"
         ]
       },
       {
-        "theme": "Consequences of refusal",
-        "explanation": "Locusts consume what survived hail",
+        "theme": "Nothing green left",
+        "explanation": "The locusts eat everything the hail left.",
         "references": [
           "Exodus 10:12-15"
         ]
       },
       {
-        "theme": "Darkness and distinction",
-        "explanation": "Egypt experiences darkness while Israel has light",
+        "theme": "Light in the darkness",
+        "explanation": "Thick darkness covers Egypt for three days, but Israel has light in their homes.",
         "references": [
           "Exodus 10:21-23"
         ]
@@ -518,44 +517,40 @@
     "explainedReferences": []
   },
   "Exodus 11": {
-    "summary": "God announces that one final plague will lead Pharaoh to send Israel away. Moses instructs the Israelites to ask their Egyptian neighbors for silver and gold articles. He warns that at midnight the firstborn in Egypt will die, from Pharaoh's household to the lowest servant's household, including livestock. Israel, by contrast, will be distinguished. Moses leaves Pharaoh in anger, and the chapter notes that God had said Pharaoh would keep refusing.",
+    "summary": "God tells Moses that one more plague will make Pharaoh send Israel away, and the people ask the Egyptians for silver and gold (Exodus 11:1–3). Moses warns that at midnight every firstborn in Egypt will die, from Pharaoh's son to the son of a servant girl, while Israel is spared (Exodus 11:4–8). Pharaoh still will not listen, just as God said (Exodus 11:9–10).",
     "whereWeAre": "Nine plagues have struck Egypt, and Pharaoh has just thrown Moses out in chapter 10. Now God announces the last and worst plague: the death of every firstborn. The chapter is a short pause before that night arrives in chapter 12.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Announces the final judgment"
+        "name": "God",
+        "role": "Announces the last plague and gives Israel favor with the Egyptians."
       },
       {
         "name": "Moses",
-        "role": "Warns Pharaoh and instructs Israel"
+        "role": "Warns Pharaoh about the death of the firstborn and leaves \"in a great anger.\""
       },
       {
         "name": "Pharaoh",
-        "role": "Continues resisting"
-      },
-      {
-        "name": "Egyptian and Israelite households",
-        "role": "Communities facing sharply different outcomes"
+        "role": "Still will not listen."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Final warning",
-        "explanation": "Judgment is announced before it occurs",
+        "theme": "A final warning",
+        "explanation": "Moses tells Pharaoh that every firstborn in Egypt will die at midnight.",
         "references": [
           "Exodus 11:4-8"
         ]
       },
       {
-        "theme": "Distinction of Israel",
-        "explanation": "The account emphasizes a difference between the oppressed and their oppressors",
+        "theme": "A difference made",
+        "explanation": "God puts a difference between Egypt and Israel, and not even a dog will bark at Israel.",
         "references": [
           "Exodus 11:6-7"
         ]
       },
       {
-        "theme": "Departure prepared",
-        "explanation": "Israel is told to request valuables from neighbors",
+        "theme": "Ready to leave",
+        "explanation": "The people ask the Egyptians for silver and gold, and God gives them favor.",
         "references": [
           "Exodus 11:1-3"
         ]
@@ -564,49 +559,49 @@
     "explainedReferences": []
   },
   "Exodus 12": {
-    "summary": "God institutes Passover: Israelite households select and slaughter lambs, apply blood to doorposts, and eat the meal with unleavened bread and bitter herbs, ready to depart. The LORD's judgment falls on Egypt's firstborn; Pharaoh finally orders Israel to leave. The people depart from Rameses toward Succoth. The chapter instructs Israel to remember this deliverance through annual observance and explains who may share the meal, including the rule that males must be circumcised.",
+    "summary": "God gives the Passover: each household kills a lamb, puts its blood on the doorposts, and eats the meal ready to leave, for \"when I see the blood, I will pass over you\" (Exodus 12:1–13). Israel is to keep the feast of unleavened bread every year to remember this day (Exodus 12:14–28). At midnight the LORD strikes the firstborn of Egypt, and Pharaoh sends Israel away (Exodus 12:29–36). About six hundred thousand men, with their families, leave Rameses after 430 years in Egypt (Exodus 12:37–42). The chapter ends with rules for who may eat the Passover (Exodus 12:43–51).",
     "whereWeAre": "In chapter 11 God warned that every firstborn in Egypt would die. Here he tells Israel how to be safe: by the blood of a lamb on their doorposts. That night the plague falls, Israel finally leaves Egypt, and chapter 13 tells them how to remember it.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Gives the Passover instructions and brings judgment"
+        "name": "God",
+        "role": "Gives the Passover and strikes down the firstborn of Egypt."
       },
       {
         "name": "Moses and Aaron",
-        "role": "Relay instructions and lead departure"
+        "role": "Teach the elders the Passover and lead the people out."
+      },
+      {
+        "name": "The children of Israel",
+        "role": "Put the blood on their doors, eat the meal, and leave in haste."
       },
       {
         "name": "Pharaoh",
-        "role": "Orders Israel to leave after the plague"
+        "role": "Rises at midnight and orders Israel to go."
       },
       {
-        "name": "Israelite households",
-        "role": "Mark doors, eat the meal, and depart"
-      },
-      {
-        "name": "Egyptian households",
-        "role": "Suffer loss of firstborn"
+        "name": "The Egyptians",
+        "role": "Hurry Israel out and give them silver, gold, and clothing."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Deliverance and protection",
-        "explanation": "Passover blood marks the households specified in the narrative",
+        "theme": "Saved by the blood",
+        "explanation": "The lamb's blood on the door marks the homes God will pass over: \"when I see the blood, I will pass over you.\"",
         "references": [
           "Exodus 12:7-13"
         ]
       },
       {
-        "theme": "Remembering through worship",
-        "explanation": "The festival becomes an enduring memorial",
+        "theme": "A meal to remember",
+        "explanation": "Israel is to keep the Passover every year and explain it to their children.",
         "references": [
           "Exodus 12:14-20",
           "Exodus 12:24-27"
         ]
       },
       {
-        "theme": "Freedom and new beginning",
-        "explanation": "Israel leaves Egypt after long residence",
+        "theme": "Free at last",
+        "explanation": "After 430 years in Egypt, Israel walks out the same night.",
         "references": [
           "Exodus 12:29-42"
         ]
@@ -621,46 +616,42 @@
     ]
   },
   "Exodus 13": {
-    "summary": "God commands Israel to dedicate firstborn males and remember the departure with the Feast of Unleavened Bread. Parents are to explain these practices to their children. As the people leave, God avoids the shorter route through Philistine territory, leading them toward the wilderness by the sea instead. Moses takes Joseph's bones, fulfilling an earlier oath. God guides the travelers by cloud during the day and fire at night.",
+    "summary": "God claims every firstborn as his, and Moses tells the people to keep the feast and explain it to their children (Exodus 13:1–16). God leads Israel by the longer road through the wilderness, Moses carries Joseph's bones, and the LORD goes before them in a pillar of cloud by day and fire by night (Exodus 13:17–22).",
     "whereWeAre": "Israel has just left Egypt on the night of the first Passover. Before the journey goes far, God tells them how to remember this day in every generation. Then he leads them by a cloud and a fire toward the sea, where chapter 14 takes place.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Directs the journey and commands memorial observances"
+        "name": "God",
+        "role": "Claims the firstborn and leads Israel by a pillar of cloud and of fire."
       },
       {
         "name": "Moses",
-        "role": "Carries Joseph's bones and leads the people"
+        "role": "Teaches the people to remember the day and carries Joseph's bones."
       },
       {
-        "name": "Israelites",
-        "role": "Newly freed travelers charged with teaching children"
-      },
-      {
-        "name": "Joseph",
-        "role": "Earlier patriarch whose remains are carried, mentioned in the chapter"
+        "name": "The children of Israel",
+        "role": "Set out from Succoth for the edge of the wilderness."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Memory across generations",
-        "explanation": "Parents are to explain deliverance to children",
+        "theme": "Teaching the children",
+        "explanation": "When children ask what the feast means, parents must tell how God brought them out.",
         "references": [
           "Exodus 13:3-10",
           "Exodus 13:14-16"
         ]
       },
       {
-        "theme": "Consecration of firstborn",
-        "explanation": "Firstborn dedication recalls the rescue from Egypt",
+        "theme": "The firstborn belong to God",
+        "explanation": "Every firstborn is set apart to the LORD to remember the night he struck Egypt's firstborn.",
         "references": [
           "Exodus 13:1-2",
           "Exodus 13:11-16"
         ]
       },
       {
-        "theme": "Guidance on an unexpected route",
-        "explanation": "God directs the people through the wilderness",
+        "theme": "God leads the way",
+        "explanation": "God takes Israel by a longer road and goes before them in cloud and fire.",
         "references": [
           "Exodus 13:17-22"
         ]
@@ -675,44 +666,48 @@
     ]
   },
   "Exodus 14": {
-    "summary": "Israel camps near the sea, and Pharaoh pursues with chariots and troops. Terrified Israelites accuse Moses of leading them to die. Moses tells them to stand firm; God commands movement forward. The sea is divided, and Israel crosses on dry ground, while the pursuing Egyptian force is overwhelmed as the waters return. Israel sees the outcome, fears the LORD, and trusts him and Moses. This crossing is the great rescue at the center of Exodus.",
+    "summary": "God leads Israel to camp by the sea, and Pharaoh chases them with six hundred chariots (Exodus 14:1–9). The people panic, but Moses says, \"Fear ye not, stand still, and see the salvation of the LORD\" (Exodus 14:10–14). Moses stretches out his hand, the sea divides, and Israel walks through on dry ground (Exodus 14:15–22). The waters return over the Egyptian army, and Israel fears the LORD and believes him and Moses (Exodus 14:23–31).",
     "whereWeAre": "Israel left Egypt in chapter 12 and is now camped by the sea. Pharaoh changes his mind and chases them with his chariots. Moses tells the people, \"stand still, and see the salvation of the LORD\" (Exodus 14:13), and in chapter 15 Israel sings about what they have just seen.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Leads Israel to the sea, parts the waters, and overthrows the Egyptians."
+      },
+      {
         "name": "Moses",
-        "role": "Leads the crossing and stretches out his hand at God's command"
+        "role": "Tells the people to stand still and stretches his hand over the sea."
       },
       {
         "name": "Pharaoh and his army",
-        "role": "Pursue the escaped workers"
+        "role": "Chase Israel with six hundred chariots and drown in the sea."
       },
       {
-        "name": "Israelites",
-        "role": "Cross the sea in fear and then awe"
+        "name": "The children of Israel",
+        "role": "Cry out in fear, walk through on dry ground, and believe."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Delivers Israel through the sea"
+        "name": "The angel of God",
+        "role": "Moves behind Israel with the pillar of cloud to guard them."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Deliverance under threat",
-        "explanation": "Israel escapes an apparently overwhelming military force",
+        "theme": "Trapped by the sea",
+        "explanation": "With the sea ahead and Pharaoh behind, Israel has no way out but God.",
         "references": [
           "Exodus 14:10-22"
         ]
       },
       {
-        "theme": "Trust during fear",
-        "explanation": "Moses directs people to see God's deliverance",
+        "theme": "Stand still",
+        "explanation": "Moses says, \"Fear ye not, stand still, and see the salvation of the LORD.\"",
         "references": [
           "Exodus 14:13-14"
         ]
       },
       {
-        "theme": "Freedom secured",
-        "explanation": "The pursuing Egyptian forces are defeated",
+        "theme": "The enemy defeated",
+        "explanation": "The waters return over the Egyptians, and Israel believes the LORD and Moses.",
         "references": [
           "Exodus 14:26-31"
         ]
@@ -721,44 +716,44 @@
     "explainedReferences": []
   },
   "Exodus 15": {
-    "summary": "Moses and the Israelites sing a victory song celebrating God's defeat of the pursuing army and his incomparable power. Miriam leads the women with tambourines and dancing. The travelers then go three days without water and find bitter water at Marah. After Moses cries out, God makes it drinkable and gives instruction about listening to his commands. The chapter ends at Elim, with its springs and palm trees.",
+    "summary": "Moses and Israel sing to the LORD, who \"hath triumphed gloriously\" over Pharaoh's army (Exodus 15:1–18). Miriam leads the women with timbrels and dancing (Exodus 15:19–21). Three days later, the water at Marah is bitter, and God shows Moses a tree that makes it sweet (Exodus 15:22–26). The people camp at Elim, with its twelve wells and seventy palm trees (Exodus 15:27).",
     "whereWeAre": "Israel has just walked through the sea on dry ground, and the Egyptian army is gone. The people celebrate with a song. Then reality sets in: three days into the desert they find no good water, and the complaining of the wilderness years begins, continuing in chapter 16.",
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Leads the victory song and prays at Marah"
+        "role": "Leads Israel's song and cries to the LORD at Marah."
       },
       {
         "name": "Miriam",
-        "role": "Sister of Aaron who leads women in song and dance"
+        "role": "The prophetess, who leads the women with timbrels and dancing."
       },
       {
-        "name": "Israelites",
-        "role": "Sing and then complain over drinking water"
+        "name": "The people",
+        "role": "Sing of their rescue, then complain about the bitter water."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Deliverer and provider"
+        "name": "God",
+        "role": "Makes the water sweet and calls himself \"the LORD that healeth thee.\""
       }
     ],
     "keyThemes": [
       {
         "theme": "Praise after rescue",
-        "explanation": "The song interprets the sea deliverance as God's victory",
+        "explanation": "Israel sings that the LORD \"hath triumphed gloriously.\"",
         "references": [
           "Exodus 15:1-18"
         ]
       },
       {
-        "theme": "Communal celebration",
-        "explanation": "Miriam and the women join worship",
+        "theme": "Everyone joins in",
+        "explanation": "Miriam and the women sing and dance before the LORD.",
         "references": [
           "Exodus 15:20-21"
         ]
       },
       {
-        "theme": "Provision in hardship",
-        "explanation": "Bitter water becomes drinkable",
+        "theme": "God heals",
+        "explanation": "God makes the bitter water sweet and calls himself \"the LORD that healeth thee.\"",
         "references": [
           "Exodus 15:22-27"
         ]
@@ -767,44 +762,44 @@
     "explainedReferences": []
   },
   "Exodus 16": {
-    "summary": "In the wilderness of Sin the Israelites complain about hunger and remember Egypt's food. God promises bread from heaven and sends quail in the evening and manna in the morning. People collect a daily amount, while on the sixth day they gather twice as much for the Sabbath. Some disobey the instructions and discover the limits of hoarding. A portion of manna is kept as a memorial, and the text says Israel ate it for forty years.",
+    "summary": "In the wilderness of Sin, the people complain that they had more food in Egypt (Exodus 16:1–3). God promises \"bread from heaven,\" and Moses and Aaron tell the people the LORD has heard them (Exodus 16:4–12). Quail come in the evening and manna in the morning, and each person gathers just enough (Exodus 16:13–21). On the sixth day they gather twice as much so they can rest on the Sabbath (Exodus 16:22–30). A jar of manna is kept as a reminder, and Israel eats manna for forty years (Exodus 16:31–36).",
     "whereWeAre": "About a month after leaving Egypt, the people run out of food. They complain, and God sends quail and manna, bread from heaven. Chapter 17 brings the next test, a lack of water.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Explains the provision and gathering rules"
+        "name": "The children of Israel",
+        "role": "Complain of hunger, then gather manna each morning."
       },
       {
-        "name": "Aaron",
-        "role": "Addresses the assembly and keeps the memorial portion"
+        "name": "Moses and Aaron",
+        "role": "Tell the people that the LORD has heard them."
       },
       {
-        "name": "Israelites",
-        "role": "Receive manna and learn daily dependence"
+        "name": "God",
+        "role": "Sends quail and manna and teaches Israel to rest on the Sabbath."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Provides food and Sabbath instructions"
+        "name": "Some of the people",
+        "role": "Keep manna overnight or go out to gather on the Sabbath, against God's word."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Daily provision",
-        "explanation": "God provides food sufficient for each day",
+        "theme": "Bread from heaven",
+        "explanation": "God sends manna each morning, and everyone has just enough.",
         "references": [
           "Exodus 16:4-18"
         ]
       },
       {
-        "theme": "Learning trust",
-        "explanation": "Stored manna spoils except as directed for Sabbath",
+        "theme": "Trust for today",
+        "explanation": "Manna kept overnight rots, but a double share on the sixth day keeps for the Sabbath.",
         "references": [
           "Exodus 16:19-30"
         ]
       },
       {
-        "theme": "Remembering provision",
-        "explanation": "An omer of manna is preserved for future generations",
+        "theme": "Remember",
+        "explanation": "A jar of manna is kept so later generations can see the bread God gave.",
         "references": [
           "Exodus 16:32-36"
         ]
@@ -819,48 +814,52 @@
     ]
   },
   "Exodus 17": {
-    "summary": "At Rephidim the people quarrel with Moses because there is no water. God instructs Moses to strike a rock at Horeb, and water comes out. The place is called Massah and Meribah because Israel tested and quarreled. Amalek then attacks. Joshua leads the fighters while Moses stands on a hill with God's staff; Aaron and Hur support his hands until Israel prevails. Moses builds an altar commemorating God's help.",
+    "summary": "At Rephidim there is no water, and the people quarrel with Moses, so God tells him to strike a rock at Horeb, and water flows (Exodus 17:1–7). Amalek attacks, and Israel wins while Aaron and Hur hold up Moses' hands (Exodus 17:8–13). God tells Moses to write the victory in a book, and Moses builds an altar called Jehovahnissi (Exodus 17:14–16).",
     "whereWeAre": "God has just given manna in chapter 16, but now there is no water. The people quarrel, and God brings water from a rock. Then Israel fights its first battle, against Amalek, before Moses' father-in-law arrives in chapter 18.",
     "keyFigures": [
       {
+        "name": "The people",
+        "role": "Quarrel with Moses because there is no water."
+      },
+      {
         "name": "Moses",
-        "role": "Intercedes and directs both episodes"
+        "role": "Strikes the rock and holds up the rod during the battle."
       },
       {
         "name": "Joshua",
-        "role": "Leads Israel's fighters"
+        "role": "Leads Israel's men against Amalek."
       },
       {
         "name": "Aaron and Hur",
-        "role": "Support Moses during the battle"
-      },
-      {
-        "name": "Israelites",
-        "role": "People in need of water and defense"
+        "role": "Hold up Moses' hands until sunset."
       },
       {
         "name": "Amalek",
-        "role": "Attacking group named in the text"
+        "role": "Attacks Israel at Rephidim."
+      },
+      {
+        "name": "God",
+        "role": "Brings water from the rock and promises to blot out Amalek."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Needs and complaint",
-        "explanation": "A water crisis exposes mistrust and fear",
+        "theme": "Is the LORD among us?",
+        "explanation": "The people test God, asking, \"Is the LORD among us, or not?\"",
         "references": [
           "Exodus 17:1-7"
         ]
       },
       {
-        "theme": "Assistance in weakness",
-        "explanation": "Aaron and Hur help Moses persevere",
+        "theme": "Holding up a leader",
+        "explanation": "Aaron and Hur hold up Moses' hands until the battle is won.",
         "references": [
           "Exodus 17:10-13"
         ]
       },
       {
-        "theme": "Remembered deliverance",
-        "explanation": "An altar marks the victory over Amalek",
+        "theme": "The LORD my banner",
+        "explanation": "Moses builds an altar and names it Jehovahnissi to remember the victory.",
         "references": [
           "Exodus 17:14-16"
         ]
@@ -869,48 +868,48 @@
     "explainedReferences": []
   },
   "Exodus 18": {
-    "summary": "Jethro, Moses' father-in-law, visits with Zipporah and Moses' sons. After hearing of Israel's rescue, Jethro blesses the LORD and shares a meal with Israel's elders. Watching Moses judge disputes from morning to evening, Jethro warns that the burden is too great. He recommends appointing capable, trustworthy leaders over groups of varying sizes, with difficult cases referred to Moses. Moses follows the advice, and Jethro returns home.",
+    "summary": "Jethro brings Moses' wife and sons to the camp, rejoices at all God has done, and offers sacrifices (Exodus 18:1–12). Watching Moses judge the people from morning to evening, Jethro advises him to choose able men to judge the smaller cases (Exodus 18:13–23). Moses does as he says, and Jethro goes home (Exodus 18:24–27).",
     "whereWeAre": "Israel has come through the sea, hunger, thirst, and battle, and is camped near the mountain of God. Moses' father-in-law, Jethro, visits and helps him organize the people. In chapter 19 Israel arrives at Mount Sinai, and the story shifts from escape to covenant.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Judge and leader who adopts delegated leadership"
-      },
-      {
         "name": "Jethro",
-        "role": "Midianite priest and father-in-law who offers counsel"
+        "role": "Brings Moses' family, praises the LORD, and gives wise advice."
       },
       {
-        "name": "Zipporah",
-        "role": "Moses' wife brought to the camp"
+        "name": "Moses",
+        "role": "Tells Jethro all God has done and takes his advice."
       },
       {
-        "name": "Gershom and Eliezer",
-        "role": "Moses' sons"
+        "name": "Zipporah and her sons",
+        "role": "Moses' wife and his sons Gershom and Eliezer, brought to the camp."
       },
       {
-        "name": "Israelite elders and appointed leaders",
-        "role": "Share worship and judicial responsibilities"
+        "name": "Aaron and the elders",
+        "role": "Eat bread with Jethro before God."
+      },
+      {
+        "name": "The new judges",
+        "role": "Able men set over thousands, hundreds, fifties, and tens."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Humility in leadership",
-        "explanation": "Moses listens to counsel from Jethro",
+        "theme": "Wise advice",
+        "explanation": "Moses listens to Jethro and changes how he leads.",
         "references": [
           "Exodus 18:17-24"
         ]
       },
       {
-        "theme": "Shared responsibility",
-        "explanation": "Judging is distributed among qualified leaders",
+        "theme": "Sharing the load",
+        "explanation": "Faithful men judge the small cases so that Moses can handle the hard ones.",
         "references": [
           "Exodus 18:21-26"
         ]
       },
       {
-        "theme": "Praise for deliverance",
-        "explanation": "Jethro recognizes the LORD's rescue of Israel",
+        "theme": "Praise from an outsider",
+        "explanation": "Jethro says, \"Now I know that the LORD is greater than all gods.\"",
         "references": [
           "Exodus 18:9-12"
         ]
@@ -919,44 +918,40 @@
     "explainedReferences": []
   },
   "Exodus 19": {
-    "summary": "Three months after leaving Egypt, Israel camps before Mount Sinai. God reminds the people of their deliverance and calls them to be his treasured possession, a kingdom of priests, and a holy nation if they keep the covenant. The people agree. They prepare for the divine appearance by washing clothing and respecting boundaries around the mountain. Thunder, lightning, smoke, a trumpet sound, and trembling accompany God's descent as Moses moves between the people and the mountain.",
+    "summary": "In the third month after leaving Egypt, Israel camps before Mount Sinai, and God calls them to be \"a kingdom of priests, and an holy nation\" (Exodus 19:1–6). The people answer, \"All that the LORD hath spoken we will do\" (Exodus 19:7–8). For three days they wash their clothes and keep away from the mountain (Exodus 19:9–15). Then the LORD comes down on Sinai in fire, with thunder, lightning, smoke, and a loud trumpet (Exodus 19:16–25).",
     "whereWeAre": "Three months after leaving Egypt, Israel reaches Mount Sinai. God saved them from slavery; now he invites them to be his own people. This chapter prepares them for God to speak the Ten Commandments in chapter 20.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Calls Israel to be his own people and comes down on Sinai in fire."
+      },
+      {
         "name": "Moses",
-        "role": "Delivers the covenant proposal and directs preparations"
+        "role": "Carries God's words to the people and their answer back to God."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Appears at Sinai and calls Israel into covenant"
-      },
-      {
-        "name": "Israelites",
-        "role": "Accept the covenant call and consecrate themselves"
-      },
-      {
-        "name": "Aaron",
-        "role": "Mentioned as one summoned upward with Moses"
+        "name": "The children of Israel",
+        "role": "Agree to obey, prepare for three days, and tremble at the mountain."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Covenant identity",
-        "explanation": "Israel is called to a distinct communal vocation",
+        "theme": "A special people",
+        "explanation": "God calls Israel \"a peculiar treasure\" and \"a kingdom of priests, and an holy nation.\"",
         "references": [
           "Exodus 19:3-6"
         ]
       },
       {
-        "theme": "Preparation and holiness",
-        "explanation": "Boundaries and washing express seriousness about God's presence",
+        "theme": "Getting ready to meet God",
+        "explanation": "The people wash and keep away from the mountain for three days.",
         "references": [
           "Exodus 19:10-15"
         ]
       },
       {
         "theme": "Awe before God",
-        "explanation": "The mountain theophany emphasizes divine majesty",
+        "explanation": "Thunder, fire, smoke, and a trumpet show how great and holy God is.",
         "references": [
           "Exodus 19:16-25"
         ]
@@ -965,40 +960,40 @@
     "explainedReferences": []
   },
   "Exodus 20": {
-    "summary": "God speaks the Ten Commandments, beginning by identifying himself as the one who brought Israel out of slavery. The commands prohibit other gods, idols, misuse of God's name, murder, adultery, theft, false witness, and coveting, and they instruct Israel to honor Sabbath and parents. Frightened by the divine manifestation, the people ask Moses to mediate. The chapter closes with instructions for simple altars and respectful worship.",
+    "summary": "God speaks the Ten Commandments, beginning with the reminder that he brought Israel out of Egypt (Exodus 20:1–17). The people are afraid and ask Moses to speak to them instead, and Moses goes near the thick darkness where God is (Exodus 20:18–21). God gives rules for simple altars of earth or uncut stone (Exodus 20:22–26).",
     "whereWeAre": "Israel is camped at Mount Sinai and watched God come down on the mountain in fire and smoke in chapter 19. Now God speaks the Ten Commandments. They are the heart of the covenant, and chapters 21–23 show how they apply to daily life.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Speaks the foundational covenant commands"
+        "name": "God",
+        "role": "Speaks the Ten Commandments from Sinai."
       },
       {
         "name": "Moses",
-        "role": "Mediates after the people fear the divine voice"
+        "role": "Draws near to the thick darkness where God is."
       },
       {
-        "name": "Israelites",
-        "role": "Hear the commands and request mediation"
+        "name": "The people",
+        "role": "Hear the commands and ask Moses to speak to them instead."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Exclusive worship",
-        "explanation": "The commands begin with loyalty to the LORD",
+        "theme": "God first",
+        "explanation": "The commands begin with God's rescue and with having no other gods.",
         "references": [
           "Exodus 20:1-6"
         ]
       },
       {
-        "theme": "Ethical community",
-        "explanation": "Commands protect life, family, property, and truthful testimony",
+        "theme": "Loving your neighbor",
+        "explanation": "The rest of the commands protect family, life, marriage, property, and the truth.",
         "references": [
           "Exodus 20:12-17"
         ]
       },
       {
         "theme": "Rest and reverence",
-        "explanation": "Sabbath and altar laws shape public worship",
+        "explanation": "Israel is to keep the Sabbath and fear God so that they do not sin.",
         "references": [
           "Exodus 20:8-12",
           "Exodus 20:18-21"
@@ -1109,44 +1104,36 @@
     ]
   },
   "Exodus 21": {
-    "summary": "The covenant laws address Hebrew debt servants and limits on service, protections for women sold as servants, killings and assaults, kidnapping, harm to pregnant women, and responsibility for dangerous animals and uncovered pits. The chapter distinguishes deliberate murder from certain unintended deaths and sets restitution and penalties for specific injuries. Some of these laws fit an ancient way of life that can feel strange or troubling to modern readers.",
+    "summary": "God gives laws for Hebrew servants, who go free in the seventh year, and for women sold as servants (Exodus 21:1–11). He sets penalties for murder, kidnapping, and injuries, separating deliberate killing from accidents and making the penalty fit the harm (Exodus 21:12–27). An owner is responsible for a dangerous ox or an open pit (Exodus 21:28–36). Some of these laws fit an ancient way of life that can feel strange or troubling to modern readers.",
     "whereWeAre": "God has just given the Ten Commandments in chapter 20. Chapters 21–23 apply them to everyday cases, starting here with servants, violence, and injuries. These laws are called \"the book of the covenant\" (Exodus 24:7), which Israel agrees to in chapter 24.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Gives Moses laws that apply the Ten Commandments to daily life."
+      },
+      {
         "name": "Moses",
-        "role": "Recipient of the legal instructions from God, as established in context"
-      },
-      {
-        "name": "Hebrew servants and masters",
-        "role": "People regulated by the service laws"
-      },
-      {
-        "name": "Injured persons and offenders",
-        "role": "Parties addressed in cases of harm"
-      },
-      {
-        "name": "Judges or authorities",
-        "role": "Implied in legal adjudication but not individually named"
+        "role": "Receives \"the judgments\" he is to set before the people."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Protection amid unequal status",
-        "explanation": "Servitude is regulated rather than presented as a modern ideal",
+        "theme": "Limits on servitude",
+        "explanation": "A Hebrew servant goes free in the seventh year.",
         "references": [
           "Exodus 21:1-11"
         ]
       },
       {
-        "theme": "Accountability for harm",
-        "explanation": "Law distinguishes intent and different types of injury",
+        "theme": "Justice for harm",
+        "explanation": "The law separates murder from accidents, and the penalty must fit the injury.",
         "references": [
           "Exodus 21:12-27"
         ]
       },
       {
-        "theme": "Responsibility for preventable danger",
-        "explanation": "Owners face consequences for known risks",
+        "theme": "Responsible for danger",
+        "explanation": "An owner who knows his ox is dangerous must answer for the harm it does.",
         "references": [
           "Exodus 21:28-36"
         ]
@@ -1166,44 +1153,36 @@
     ]
   },
   "Exodus 22": {
-    "summary": "The laws continue with compensation for theft, grazing damage, fires, property held in trust, and borrowing. Further commands address sexual wrongdoing, sorcery, sacrifice to other gods, and the treatment of immigrants, widows, orphans, and the poor. Lending to the needy is not to become an occasion for exploitation. Israel is called to respect God and community leaders and to offer firstfruits and firstborn gifts. Being God's people includes treating others fairly with money and property.",
+    "summary": "Laws cover theft, damage to crops, and property left in someone's care (Exodus 22:1–15). Other laws deal with seduction, sorcery, and sacrifice to other gods (Exodus 22:16–20). God warns that he will hear the cry of the stranger, the widow, and the orphan if they are mistreated (Exodus 22:21–24). Loans to the poor must not be used to exploit them (Exodus 22:25–27), and Israel must honor God and give him its firstfruits and firstborn (Exodus 22:28–31).",
     "whereWeAre": "The laws that began in chapter 21 continue. This chapter covers stolen property, damages, and loans, and it gives special protection to strangers, widows, and orphans. Chapter 23 finishes this section of laws.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Source of the laws within the Sinai narrative"
+        "name": "God",
+        "role": "Continues the laws and promises to hear the cry of widows and orphans."
       },
       {
-        "name": "Thieves and property owners",
-        "role": "People in restitution cases"
-      },
-      {
-        "name": "Resident foreigners, widows, orphans, and poor people",
-        "role": "Groups explicitly protected"
-      },
-      {
-        "name": "Community leaders",
-        "role": "Authorities whom the law says not to curse"
+        "name": "Moses",
+        "role": "Receives these laws on the mountain."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Restitution and fairness",
-        "explanation": "Property losses require proportionate compensation",
+        "theme": "Making it right",
+        "explanation": "A thief or careless neighbor must pay back what was lost.",
         "references": [
           "Exodus 22:1-15"
         ]
       },
       {
-        "theme": "Care for vulnerable people",
-        "explanation": "Foreigners, widows, and orphans are not to be oppressed",
+        "theme": "Care for the weak",
+        "explanation": "God warns that he will hear the cry of the stranger, the widow, and the orphan.",
         "references": [
           "Exodus 22:21-24"
         ]
       },
       {
-        "theme": "Economic mercy",
-        "explanation": "Loans and pledged garments must not destroy a poor neighbor's wellbeing",
+        "theme": "Mercy to the poor",
+        "explanation": "A poor man's coat taken as a pledge must be returned by sunset.",
         "references": [
           "Exodus 22:25-27"
         ]
@@ -1212,48 +1191,36 @@
     "explainedReferences": []
   },
   "Exodus 23": {
-    "summary": "God commands truthful testimony, fair legal treatment, protection of an enemy's wandering animal, and resistance to bribery or oppression of foreigners. He also establishes sabbatical rest for fields and workers, and three annual pilgrimage festivals: Unleavened Bread, Harvest, and Ingathering. The chapter concludes with a promise of guidance toward the land, coupled with warnings not to adopt the worship of its inhabitants. God's covenant reaches every part of life: courts, farming, worship, and the nation.",
+    "summary": "God commands honest witnesses, fair judges, and kindness even to an enemy's animal (Exodus 23:1–9). The land rests every seventh year, and people and animals rest every seventh day (Exodus 23:10–13). Israel gathers for three feasts each year (Exodus 23:14–19). God promises to send an angel ahead of them and to drive out the nations of Canaan, but Israel must not worship their gods (Exodus 23:20–33).",
     "whereWeAre": "This chapter finishes the laws that began in chapter 21. It covers fair courts, rest for the land and for workers, and three yearly feasts. It ends with God's promise to lead Israel into the land, and in chapter 24 the people formally accept the covenant.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Giver of legal and covenant promises"
+        "name": "God",
+        "role": "Finishes these laws and promises to send an angel ahead of Israel."
       },
       {
-        "name": "Israelites",
-        "role": "Community commanded to practice justice and worship"
-      },
-      {
-        "name": "Foreigners and the poor",
-        "role": "People protected by specific commands"
-      },
-      {
-        "name": "Angel or messenger",
-        "role": "Divinely sent guide promised in the narrative"
-      },
-      {
-        "name": "Canaanite inhabitants",
-        "role": "Groups Israel is warned not to imitate religiously"
+        "name": "Moses",
+        "role": "Receives these laws on the mountain."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Impartial justice",
-        "explanation": "Witnesses and judges are warned against bias and bribes",
+        "theme": "Fair courts",
+        "explanation": "Witnesses and judges must not lie, take bribes, or play favorites.",
         "references": [
           "Exodus 23:1-9"
         ]
       },
       {
-        "theme": "Rest and celebration",
-        "explanation": "Sabbatical practice and festivals establish rhythms of care and gratitude",
+        "theme": "Rest and feasts",
+        "explanation": "Israel rests every seventh day and every seventh year and gathers for three feasts.",
         "references": [
           "Exodus 23:10-19"
         ]
       },
       {
-        "theme": "Faithful allegiance",
-        "explanation": "Israel is warned against adopting other gods",
+        "theme": "Faithful to God",
+        "explanation": "God will lead them, but they must not worship the gods of the land.",
         "references": [
           "Exodus 23:20-33"
         ]
@@ -1262,48 +1229,48 @@
     "explainedReferences": []
   },
   "Exodus 24": {
-    "summary": "Moses recounts God's words and laws, and Israel promises obedience. He writes the covenant terms, builds an altar, and uses sacrificial blood in a ceremony that marks the covenant between God and the people. Moses, Aaron, Nadab, Abihu, and seventy elders ascend and share a meal in God's presence. Later Moses goes higher with Joshua; the cloud covers the mountain and Moses remains there forty days and nights to receive further instruction.",
+    "summary": "God calls Moses, Aaron, Nadab, Abihu, and seventy elders to come up and worship (Exodus 24:1–2). Moses reads the book of the covenant, the people promise to obey, and he sprinkles them with \"the blood of the covenant\" (Exodus 24:3–8). The elders see the God of Israel and eat and drink before him (Exodus 24:9–11). Then Moses goes up into the cloud and stays on the mountain forty days and forty nights (Exodus 24:12–18).",
     "whereWeAre": "God has given the Ten Commandments and the laws of chapters 21–23. Now Israel formally agrees to the covenant, sealed with sacrifice and a meal before God. Moses then climbs the mountain for forty days, where he receives the plans for the tabernacle in chapters 25–31.",
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Covenant mediator who records the words and ascends the mountain"
+        "role": "Writes down the laws, reads them to the people, and climbs into the cloud."
       },
       {
-        "name": "Aaron, Nadab, and Abihu",
-        "role": "Leaders included in the covenant ascent"
+        "name": "The people",
+        "role": "Promise, \"All the words which the LORD hath said will we do.\""
       },
       {
-        "name": "Seventy elders",
-        "role": "Representatives who share the covenant meal"
+        "name": "Aaron, Nadab, Abihu, and the seventy elders",
+        "role": "Go partway up the mountain, see the God of Israel, and eat and drink."
       },
       {
         "name": "Joshua",
-        "role": "Moses' attendant on the ascent"
+        "role": "Goes up the mountain with Moses."
       },
       {
-        "name": "Israelites",
-        "role": "People pledging obedience"
+        "name": "God",
+        "role": "Calls Moses up to receive the tables of stone."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Covenant commitment",
-        "explanation": "Israel agrees to the words Moses reads",
+        "theme": "Saying yes to God",
+        "explanation": "The people agree to the covenant, and Moses seals it with blood.",
         "references": [
           "Exodus 24:3-8"
         ]
       },
       {
-        "theme": "Sacred fellowship",
-        "explanation": "Leaders eat and drink in the described divine presence",
+        "theme": "A meal with God",
+        "explanation": "The elders see the God of Israel and eat and drink before him.",
         "references": [
           "Exodus 24:9-11"
         ]
       },
       {
-        "theme": "Revelation and waiting",
-        "explanation": "Moses enters the cloud to receive further instruction",
+        "theme": "Waiting on God",
+        "explanation": "Moses goes into the cloud and stays forty days.",
         "references": [
           "Exodus 24:12-18"
         ]
@@ -1312,41 +1279,37 @@
     "explainedReferences": []
   },
   "Exodus 25": {
-    "summary": "God asks Israel to bring willing offerings of precious materials for a sanctuary so that he may dwell among them. Detailed instructions describe the ark, its cover and cherubim, a table for the bread of the Presence, and a seven-branched lampstand. Moses is repeatedly directed to follow the pattern shown to him. This begins a long section about the design and building of the tabernacle, God's tent.",
+    "summary": "God asks the people for willing gifts so that they can build a sanctuary where he will dwell among them (Exodus 25:1–9). He gives the plan for the ark and its mercy seat, with two cherubims of gold (Exodus 25:10–22). He describes the table for the showbread (Exodus 25:23–30) and the lampstand of pure gold, telling Moses to follow the pattern he was shown (Exodus 25:31–40). This begins a long section about the design and building of the tabernacle, God's tent.",
     "whereWeAre": "Moses is on the mountain for forty days after the covenant ceremony in chapter 24. God begins giving him plans for the tabernacle, a tent where God will live among his people. This chapter covers the ark, the table, and the lampstand, and the plans continue through chapter 31.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Gives the sanctuary design"
+        "name": "God",
+        "role": "Asks for willing gifts and gives Moses the plan for the ark, the table, and the lampstand."
       },
       {
         "name": "Moses",
-        "role": "Receives and transmits the instructions"
-      },
-      {
-        "name": "Israelites",
-        "role": "Asked to give willingly toward the sanctuary"
+        "role": "Receives the pattern on the mountain."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Willing generosity",
-        "explanation": "Offerings are to come from hearts moved to give",
+        "theme": "Willing gifts",
+        "explanation": "The tabernacle is built from gifts given \"willingly with his heart.\"",
         "references": [
           "Exodus 25:1-9"
         ]
       },
       {
-        "theme": "Divine presence",
-        "explanation": "The sanctuary is described as a dwelling place among the people",
+        "theme": "God among his people",
+        "explanation": "God says, \"let them make me a sanctuary; that I may dwell among them.\"",
         "references": [
           "Exodus 25:8-9",
           "Exodus 25:21-22"
         ]
       },
       {
-        "theme": "Careful worship",
-        "explanation": "Objects are built to a revealed pattern",
+        "theme": "Follow the pattern",
+        "explanation": "Everything must be made like the pattern God shows Moses.",
         "references": [
           "Exodus 25:9",
           "Exodus 25:40"
@@ -1362,40 +1325,36 @@
     ]
   },
   "Exodus 26": {
-    "summary": "The sanctuary design continues with inner curtains woven in blue, purple, and scarlet, embroidered cherubim, outer coverings, wooden frames, crossbars, and a veil. The veil separates the Most Holy Place, where the ark belongs, from the Holy Place holding the table and lampstand. The precise design creates an ordered sacred space inside a portable structure.",
+    "summary": "God describes the curtains of fine linen with cherubims, and the coverings of goats' hair and skins (Exodus 26:1–14). The tent stands on boards set in silver sockets and held by bars (Exodus 26:15–30). A veil divides the holy place from the most holy place, where the ark will stand (Exodus 26:31–37).",
     "whereWeAre": "In chapter 25 God described the furniture for the tabernacle. Now he describes the tent itself: its curtains, its frames, and the veil that closes off the most holy place. Chapter 27 moves outside to the altar and the courtyard.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Issues the building instructions"
+        "name": "God",
+        "role": "Gives the plan for the tent, its frames, and the veil."
       },
       {
         "name": "Moses",
-        "role": "Receives instructions for the tabernacle"
-      },
-      {
-        "name": "Skilled makers",
-        "role": "Not named in this chapter but implied by the commanded work"
+        "role": "Is told to set up the tabernacle by the pattern he was shown."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Sacred space",
-        "explanation": "The veil distinguishes areas of the sanctuary",
+        "theme": "Holy space",
+        "explanation": "A veil separates the most holy place, where the ark will stand.",
         "references": [
           "Exodus 26:31-35"
         ]
       },
       {
-        "theme": "Order and precision",
-        "explanation": "Frames and coverings follow detailed measurements",
+        "theme": "Care in every detail",
+        "explanation": "Every curtain, board, and socket is measured.",
         "references": [
           "Exodus 26:1-30"
         ]
       },
       {
-        "theme": "Portable worship",
-        "explanation": "The design permits a structured sanctuary for a moving community",
+        "theme": "A tent on the move",
+        "explanation": "The frames can be taken apart and carried as Israel travels.",
         "references": [
           "Exodus 26:15-30"
         ]
@@ -1404,44 +1363,40 @@
     "explainedReferences": []
   },
   "Exodus 27": {
-    "summary": "God specifies a bronze-covered altar for burnt offerings, with horns, utensils, and carrying poles. Instructions also lay out the surrounding courtyard, its linen hangings and entrance screen. Finally, Israel must supply pure olive oil so that the lamp burns regularly before the LORD, with Aaron and his sons charged to tend it. The chapter connects sacrifice, boundaries, and ongoing worship.",
+    "summary": "God describes a bronze altar for burnt offerings, with horns on its corners and poles to carry it (Exodus 27:1–8). A courtyard of linen hangings surrounds the tabernacle (Exodus 27:9–19). The people are to bring pure olive oil, and Aaron and his sons must keep the lamp burning before the LORD (Exodus 27:20–21).",
     "whereWeAre": "Chapter 26 described the tent of the tabernacle. Now the plans move outside, to the bronze altar and the courtyard around it. Chapter 28 turns from the building to the priests who will serve there.",
     "keyFigures": [
       {
-        "name": "God (the LORD)",
-        "role": "Commands the layout and maintenance"
+        "name": "God",
+        "role": "Gives the plan for the altar and the courtyard."
       },
       {
         "name": "Moses",
-        "role": "Receives the details"
-      },
-      {
-        "name": "Israelites",
-        "role": "Supply oil for the lamp"
+        "role": "Is told to have the people bring oil for the lamp."
       },
       {
         "name": "Aaron and his sons",
-        "role": "Assigned lamp-care responsibilities"
+        "role": "Charged to keep the lamp burning before the LORD."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Prepared approach",
-        "explanation": "The altar and courtyard order the place of worship",
+        "theme": "Coming near to God",
+        "explanation": "The altar and courtyard show the way into God's presence.",
         "references": [
           "Exodus 27:1-19"
         ]
       },
       {
-        "theme": "Ongoing devotion",
-        "explanation": "Oil is supplied for the regular lamp",
+        "theme": "A light always burning",
+        "explanation": "The lamp is to burn before the LORD from evening to morning.",
         "references": [
           "Exodus 27:20-21"
         ]
       },
       {
-        "theme": "Shared responsibility",
-        "explanation": "The people provide materials while priests tend the light",
+        "theme": "Everyone's part",
+        "explanation": "The people bring the oil, and the priests tend the lamp.",
         "references": [
           "Exodus 27:20-21"
         ]
@@ -1450,48 +1405,48 @@
     "explainedReferences": []
   },
   "Exodus 28": {
-    "summary": "Aaron and his sons are chosen to serve as priests. God directs skilled artisans to make sacred garments, including an ephod, a breastpiece with twelve stones representing Israel's tribes, a robe with bells and pomegranates, and a turban with a gold plate reading \"HOLINESS TO THE LORD\" (Exodus 28:36). The garments show that the priests stand for the people before God, an honor that carries holy duties.",
+    "summary": "God chooses Aaron and his sons as priests and tells Moses to have skilled workers make holy garments (Exodus 28:1–5). The ephod carries two stones engraved with the names of the tribes (Exodus 28:6–14). The breastplate holds twelve stones for the twelve tribes, with the Urim and the Thummim (Exodus 28:15–30). Aaron's robe has bells and pomegranates on its hem (Exodus 28:31–35), and his turban bears a gold plate reading \"HOLINESS TO THE LORD\" (Exodus 28:36–38). Coats, sashes, and caps are made for his sons (Exodus 28:39–43).",
     "whereWeAre": "The plans for the tabernacle itself were finished in chapters 25–27. Now God chooses Aaron and his sons as priests and describes the clothes they will wear. Chapter 29 explains how they will be set apart for this work.",
     "keyFigures": [
       {
-        "name": "Aaron",
-        "role": "Chosen high priest whose vestments are specified"
-      },
-      {
-        "name": "Nadab, Abihu, Eleazar, and Ithamar",
-        "role": "Aaron's sons appointed as priests"
+        "name": "God",
+        "role": "Chooses Aaron and his sons as priests and describes their garments."
       },
       {
         "name": "Moses",
-        "role": "Receives instructions to arrange the garments"
+        "role": "Is told to bring Aaron near and have the garments made."
       },
       {
-        "name": "Skilled artisans",
-        "role": "Commissioned to make the vestments"
+        "name": "Aaron",
+        "role": "Will carry the names of the tribes on his shoulders and over his heart."
       },
       {
-        "name": "Israel's tribes",
-        "role": "Represented by names and stones"
+        "name": "Aaron's sons",
+        "role": "Nadab, Abihu, Eleazar, and Ithamar, chosen to serve as priests."
+      },
+      {
+        "name": "The skilled workers",
+        "role": "Filled with \"the spirit of wisdom\" to make the garments."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Representation",
-        "explanation": "The breastpiece bears the names of the tribes",
+        "theme": "Carrying the people to God",
+        "explanation": "Aaron wears the tribes' names over his heart when he goes before the LORD.",
         "references": [
           "Exodus 28:15-29"
         ]
       },
       {
-        "theme": "Consecrated service",
-        "explanation": "The turban's inscription marks priestly holiness",
+        "theme": "Holiness to the LORD",
+        "explanation": "The gold plate on Aaron's turban shows that the priests belong to God.",
         "references": [
           "Exodus 28:36-38"
         ]
       },
       {
-        "theme": "Skill in worship",
-        "explanation": "Craftsmanship is enlisted to make priestly clothing",
+        "theme": "Skill for God",
+        "explanation": "Craftsmen use their God-given skill to make garments \"for glory and for beauty.\"",
         "references": [
           "Exodus 28:2-5"
         ]
@@ -1500,44 +1455,40 @@
     "explainedReferences": []
   },
   "Exodus 29": {
-    "summary": "Detailed rites explain how Aaron and his sons are to be consecrated: washing, dressing, anointing, and sacrifices with a bull and two rams. Blood is applied in specified places, and parts of the offerings are eaten by the priests under strict rules. The altar is purified over seven days. Daily morning and evening lamb offerings are also commanded. The chapter culminates in God's promise to meet Israel, sanctify the sanctuary, and dwell among the people.",
+    "summary": "God explains how Aaron and his sons will be set apart: washing, dressing, anointing, and sacrifices over seven days (Exodus 29:1–37). A lamb is to be offered every morning and every evening (Exodus 29:38–42). God promises to meet with Israel and to \"dwell among the children of Israel\" (Exodus 29:43–46).",
     "whereWeAre": "Chapter 28 described the priests' clothes. This chapter explains the seven-day ceremony that will set Aaron and his sons apart as priests. It ends with God's promise to live among Israel, and chapter 30 adds the last items for the tabernacle.",
     "keyFigures": [
       {
-        "name": "Aaron and his sons",
-        "role": "Recipients of priestly consecration"
+        "name": "God",
+        "role": "Gives the ceremony that sets the priests apart and promises to live among Israel."
       },
       {
         "name": "Moses",
-        "role": "Directed to administer the ordination ritual"
+        "role": "Is told to wash, clothe, and anoint the priests."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Promises to meet and dwell among Israel"
-      },
-      {
-        "name": "Israelites",
-        "role": "Community represented by ongoing offerings"
+        "name": "Aaron and his sons",
+        "role": "The priests to be set apart over seven days."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Preparation for priesthood",
-        "explanation": "Washing, clothing, and sacrifices mark the priests' commissioning",
+        "theme": "Set apart to serve",
+        "explanation": "Washing, new clothes, oil, and sacrifices make the priests ready.",
         "references": [
           "Exodus 29:1-37"
         ]
       },
       {
-        "theme": "Daily worship",
-        "explanation": "Morning and evening offerings establish regular practice",
+        "theme": "Morning and evening",
+        "explanation": "A lamb is offered every morning and every evening.",
         "references": [
           "Exodus 29:38-42"
         ]
       },
       {
-        "theme": "Presence and identity",
-        "explanation": "God promises to dwell among those brought out of Egypt",
+        "theme": "God with them",
+        "explanation": "God promises, \"I will dwell among the children of Israel.\"",
         "references": [
           "Exodus 29:43-46"
         ]
@@ -1546,48 +1497,40 @@
     "explainedReferences": []
   },
   "Exodus 30": {
-    "summary": "God gives instructions for a gold-covered incense altar, yearly atonement for its horns, and a census contribution described as ransom money for each counted Israelite male. A bronze basin is required for priestly washing, and special recipes are given for sacred anointing oil and incense. The materials are reserved for holy use and must not be copied for personal use.",
+    "summary": "God describes a golden altar for burning incense every morning and evening (Exodus 30:1–10). Every man counted in a census gives half a shekel, rich and poor alike (Exodus 30:11–16). A bronze basin is made for the priests to wash in (Exodus 30:17–21). God gives recipes for the holy anointing oil (Exodus 30:22–33) and the holy incense, which must never be made for personal use (Exodus 30:34–38).",
     "whereWeAre": "The priests and their ordination were described in chapters 28–29. Now God adds the last pieces of the plan: the incense altar, a census offering, a washing basin, and special oil and incense. Chapter 31 names the craftsmen and ends Moses' forty days on the mountain.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Gives the last plans: the incense altar, the census offering, the basin, and the holy oil and incense."
+      },
+      {
         "name": "Moses",
-        "role": "Receives and communicates the instructions"
+        "role": "Receives these instructions."
       },
       {
         "name": "Aaron",
-        "role": "Burns incense and performs atonement rites"
-      },
-      {
-        "name": "Aaron's sons",
-        "role": "Wash before priestly service"
-      },
-      {
-        "name": "Counted Israelites",
-        "role": "Supply the prescribed half-shekel contribution"
-      },
-      {
-        "name": "God (the LORD)",
-        "role": "Defines holy uses"
+        "role": "Will burn incense every morning and evening."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Prayerful worship",
-        "explanation": "Regular incense is associated with sanctuary service",
+        "theme": "Prayer like incense",
+        "explanation": "Incense rises before God every morning and evening.",
         "references": [
           "Exodus 30:1-10"
         ]
       },
       {
-        "theme": "Equal contribution",
-        "explanation": "The counted rich and poor give the same sum",
+        "theme": "Everyone counts the same",
+        "explanation": "Rich and poor give the same half shekel.",
         "references": [
           "Exodus 30:11-16"
         ]
       },
       {
-        "theme": "Holiness in practice",
-        "explanation": "Washing and reserved mixtures distinguish sacred service",
+        "theme": "Holy things kept holy",
+        "explanation": "The holy oil and incense must never be copied for ordinary use.",
         "references": [
           "Exodus 30:17-38"
         ]
@@ -1596,48 +1539,44 @@
     "explainedReferences": []
   },
   "Exodus 31": {
-    "summary": "God names Bezalel of Judah and Oholiab of Dan as leaders for skilled tabernacle work, giving them wisdom and ability for craftsmanship. He again commands Israel to observe the Sabbath as a sign of the covenant, with severe penalties stated for its violation. When God finishes speaking on Sinai, he gives Moses two stone tablets of the testimony written by God's finger.",
+    "summary": "God fills Bezaleel of Judah with his Spirit and gives him Aholiab of Dan to lead the work on the tabernacle (Exodus 31:1–11). He repeats that the Sabbath is a sign between him and Israel forever (Exodus 31:12–17). Then he gives Moses \"two tables of testimony\" written \"with the finger of God\" (Exodus 31:18).",
     "whereWeAre": "This is the last of the tabernacle instructions that began in chapter 25. God names the craftsmen, repeats the Sabbath command, and gives Moses the two stone tablets. But while Moses has been on the mountain, the people below have been busy, as chapter 32 reveals.",
     "keyFigures": [
       {
-        "name": "Bezalel",
-        "role": "Chief craftsman from Judah"
+        "name": "God",
+        "role": "Fills Bezaleel with his Spirit, repeats the Sabbath, and gives Moses the tablets."
       },
       {
-        "name": "Oholiab",
-        "role": "Assistant craftsman from Dan"
+        "name": "Bezaleel",
+        "role": "Of the tribe of Judah, chosen to lead the work."
+      },
+      {
+        "name": "Aholiab",
+        "role": "Of the tribe of Dan, chosen to work with him."
       },
       {
         "name": "Moses",
-        "role": "Receives the tablets"
-      },
-      {
-        "name": "Israelites",
-        "role": "Called to keep Sabbath"
-      },
-      {
-        "name": "God (the LORD)",
-        "role": "Equips workers and gives the covenant sign"
+        "role": "Receives \"two tables of testimony\" written by God."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Gifts for service",
-        "explanation": "Craft skill is portrayed as divinely supplied",
+        "theme": "Gifts from God",
+        "explanation": "God fills Bezaleel with his Spirit for skilled work.",
         "references": [
           "Exodus 31:1-11"
         ]
       },
       {
-        "theme": "Sacred rest",
-        "explanation": "Sabbath marks Israel's covenant life",
+        "theme": "A sign of the covenant",
+        "explanation": "The Sabbath is \"a sign between me and you\" for all generations.",
         "references": [
           "Exodus 31:12-17"
         ]
       },
       {
-        "theme": "Written testimony",
-        "explanation": "The tablets symbolize the covenant instruction",
+        "theme": "Written by God",
+        "explanation": "The tablets are \"written with the finger of God.\"",
         "references": [
           "Exodus 31:18"
         ]
@@ -1646,49 +1585,53 @@
     "explainedReferences": []
   },
   "Exodus 32": {
-    "summary": "When Moses delays on the mountain, the people ask Aaron to make gods to go before them. Aaron fashions a golden calf, and the crowd holds a festival. God tells Moses of their wrongdoing. Moses pleads for Israel; descending, he breaks the tablets, destroys the calf, and confronts Aaron. Levites rally to Moses and kill many in a severe act of judgment. Moses then intercedes again, asking forgiveness, and the chapter ends with a plague on the people and their future uncertain.",
+    "summary": "While Moses is on the mountain, the people ask Aaron to make them gods, and he makes a golden calf (Exodus 32:1–6). God tells Moses what they have done, and Moses pleads for them (Exodus 32:7–14). Moses comes down, breaks the tablets, and burns the calf (Exodus 32:15–20). Aaron makes excuses (Exodus 32:21–24), and the Levites answer Moses' call and kill about three thousand men (Exodus 32:25–29). Moses offers his own life for the people's sin, and the LORD sends a plague (Exodus 32:30–35).",
     "whereWeAre": "Moses has been on the mountain for forty days receiving God's plans in chapters 25–31. Meanwhile, the people grow tired of waiting and make a golden calf. Only weeks after promising to obey, they break the covenant, and chapters 33–34 ask whether God will still go with them.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Confronts idolatry and intercedes for the people"
+        "name": "The people",
+        "role": "Grow tired of waiting and demand gods to go before them."
       },
       {
         "name": "Aaron",
-        "role": "Makes the calf at the people's request"
+        "role": "Makes the golden calf and builds an altar before it."
       },
       {
-        "name": "Israelites",
-        "role": "Participate in the calf worship"
+        "name": "God",
+        "role": "Tells Moses what the people have done and threatens to destroy them."
       },
       {
-        "name": "Levites",
-        "role": "Carry out Moses' order against offenders"
+        "name": "Moses",
+        "role": "Pleads for Israel, breaks the tablets, and offers his own life for them."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Condemns the covenant breach"
+        "name": "Joshua",
+        "role": "Hears the noise from the camp and thinks it is war."
+      },
+      {
+        "name": "The Levites",
+        "role": "Answer Moses' call and go through the camp with swords."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Idolatry and impatience",
-        "explanation": "The people turn to a manufactured image while Moses is absent",
+        "theme": "Tired of waiting",
+        "explanation": "While Moses is away, the people make a golden calf and call it their god.",
         "references": [
           "Exodus 32:1-6"
         ]
       },
       {
-        "theme": "Intercession",
-        "explanation": "Moses appeals to God's promises and seeks forgiveness",
+        "theme": "Standing in the gap",
+        "explanation": "Moses pleads for the people and even offers his own life for them.",
         "references": [
           "Exodus 32:11-14",
           "Exodus 32:30-32"
         ]
       },
       {
-        "theme": "Severe covenant breach",
-        "explanation": "Broken tablets and judgment demonstrate the crisis",
+        "theme": "A covenant broken",
+        "explanation": "Moses breaks the tablets, a sign that the covenant has been broken.",
         "references": [
           "Exodus 32:7-10",
           "Exodus 32:19-28"
@@ -1704,44 +1647,44 @@
     ]
   },
   "Exodus 33": {
-    "summary": "God commands Israel to move toward the promised land but warns that he will not go among the people in the same way because of their stubbornness. The Israelites mourn and remove ornaments. Moses meets with God at a tent outside the camp, while Joshua stays nearby. Moses pleads for God's presence to accompany Israel, arguing that this will set them apart. God grants the request and lets Moses glimpse his glory, covering him with his hand so that he sees only God's back.",
+    "summary": "God tells Israel to go on to the land but says he will not go with them himself, and the people mourn and take off their ornaments (Exodus 33:1–6). Moses meets the LORD in a tent outside the camp, where God speaks with him \"face to face\" (Exodus 33:7–11). Moses pleads for God's presence to go with them, and God agrees (Exodus 33:12–17). When Moses asks to see God's glory, God covers him with his hand so that he sees only God's back (Exodus 33:18–23).",
     "whereWeAre": "The golden calf in chapter 32 has broken the covenant, and God says he will not go with Israel himself. Moses pleads with God to stay with his people. God agrees and promises to show Moses his glory, which happens in chapter 34.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Says he will not go with Israel, then agrees after Moses pleads."
+      },
+      {
         "name": "Moses",
-        "role": "Intercedes for God's presence"
+        "role": "Speaks with God \"face to face\" and asks to see his glory."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Responds to Moses and reveals limited glory"
-      },
-      {
-        "name": "Israelites",
-        "role": "Mourn and remove ornaments"
+        "name": "The people",
+        "role": "Mourn and take off their ornaments."
       },
       {
         "name": "Joshua",
-        "role": "Young attendant who remains at the tent"
+        "role": "Stays in the tent where Moses meets with God."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Presence above mere progress",
-        "explanation": "Moses insists that Israel needs God's company, not only a destination",
+        "theme": "Nothing without God",
+        "explanation": "Moses says, \"If thy presence go not with me, carry us not up hence.\"",
         "references": [
           "Exodus 33:12-17"
         ]
       },
       {
-        "theme": "Repentance and mourning",
-        "explanation": "The people react to the threat of divine withdrawal",
+        "theme": "Sorrow for sin",
+        "explanation": "The people mourn and take off their ornaments.",
         "references": [
           "Exodus 33:1-6"
         ]
       },
       {
-        "theme": "Limits of revelation",
-        "explanation": "Moses cannot see God's face directly in the account",
+        "theme": "Seeing God's glory",
+        "explanation": "Moses may see God's goodness pass by, but no one can see his face and live.",
         "references": [
           "Exodus 33:18-23"
         ]
@@ -1756,40 +1699,40 @@
     ]
   },
   "Exodus 34": {
-    "summary": "Moses cuts new tablets and returns to the mountain. God proclaims his character as merciful, gracious, patient, and just, and renews covenant commands concerning worship, festivals, firstborn, and staying away from other gods. Moses fasts forty days and nights as he receives the words. When he descends, his face shines from speaking with God, so he covers it with a veil after speaking God's words to the people.",
+    "summary": "Moses cuts two new tablets, and the LORD passes by, proclaiming that he is \"merciful and gracious, longsuffering\" (Exodus 34:1–9). God renews the covenant and its commands about worship, the feasts, and the firstborn, and Moses spends forty more days on the mountain (Exodus 34:10–28). When he comes down, his face shines, so he wears a veil after speaking God's words to the people (Exodus 34:29–35).",
     "whereWeAre": "Moses broke the first stone tablets in chapter 32 and pleaded with God in chapter 33. Now God gives new tablets and renews the covenant. Moses comes down with a shining face, and in chapter 35 the building of the tabernacle begins.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Passes by Moses, proclaims his name, and renews the covenant."
+      },
+      {
         "name": "Moses",
-        "role": "Receives renewed tablets and mediates the covenant"
+        "role": "Cuts new tablets, spends forty days on the mountain, and comes down with a shining face."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Proclaims divine character and renews the terms"
-      },
-      {
-        "name": "Aaron and Israelites",
-        "role": "See Moses' radiant face and hear his words"
+        "name": "Aaron and the people",
+        "role": "Are afraid to come near Moses at first."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Mercy and justice",
-        "explanation": "The divine proclamation holds compassion and accountability together",
+        "theme": "Merciful and just",
+        "explanation": "God calls himself \"merciful and gracious, longsuffering,\" yet he will not clear the guilty.",
         "references": [
           "Exodus 34:6-7"
         ]
       },
       {
-        "theme": "Renewed allegiance",
-        "explanation": "The covenant commands forbid worship of other gods",
+        "theme": "Starting again",
+        "explanation": "God renews the covenant and warns Israel against other gods.",
         "references": [
           "Exodus 34:10-17"
         ]
       },
       {
-        "theme": "Transformed encounter",
-        "explanation": "Moses' shining face follows communion with God",
+        "theme": "A shining face",
+        "explanation": "Time with God leaves Moses' face shining.",
         "references": [
           "Exodus 34:29-35"
         ]
@@ -1804,48 +1747,48 @@
     ]
   },
   "Exodus 35": {
-    "summary": "Moses gathers Israel and begins with the Sabbath command, then calls for willing contributions to construct the tabernacle. The people bring textiles, metals, wood, jewels, and other materials. Skilled women spin yarn, and leaders supply stones and spices. Moses publicly identifies Bezalel and Oholiab as equipped to teach and carry out the work. The chapter shifts from receiving instructions to community participation in their fulfillment.",
+    "summary": "Moses repeats the Sabbath command (Exodus 35:1–3), then asks everyone \"of a willing heart\" to bring gifts for the tabernacle (Exodus 35:4–19). Men and women bring gold, cloth, skins, wood, and spices, and skilled women spin yarn (Exodus 35:20–29). Moses names Bezaleel and Aholiab as the master craftsmen and teachers (Exodus 35:30–35).",
     "whereWeAre": "The covenant has been renewed after the golden calf in chapters 32–34. Now Israel finally starts to build the tabernacle God described in chapters 25–31. The people bring gifts, and the work continues through chapter 40.",
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Convenes Israel and organizes the work"
+        "role": "Gathers Israel, repeats the Sabbath, and calls for gifts."
       },
       {
-        "name": "Israelites",
-        "role": "Contribute materials according to willingness"
+        "name": "The people",
+        "role": "Bring gifts with willing hearts."
       },
       {
-        "name": "Skilled women",
-        "role": "Spin fibers and bring crafted contributions"
+        "name": "The skilled women",
+        "role": "Spin blue, purple, and scarlet yarn, fine linen, and goats' hair."
       },
       {
-        "name": "Bezalel and Oholiab",
-        "role": "Named work leaders and teachers"
+        "name": "The rulers",
+        "role": "Bring onyx stones, spices, and oil."
       },
       {
-        "name": "Community leaders",
-        "role": "Contribute stones and spices"
+        "name": "Bezaleel and Aholiab",
+        "role": "Named by Moses as the master craftsmen and teachers."
       }
     ],
     "keyThemes": [
       {
         "theme": "Rest before work",
-        "explanation": "Sabbath is reaffirmed before construction begins",
+        "explanation": "Even holy work stops on the Sabbath.",
         "references": [
           "Exodus 35:1-3"
         ]
       },
       {
-        "theme": "Willing giving",
-        "explanation": "The people supply materials from generous hearts",
+        "theme": "Willing hearts",
+        "explanation": "Everyone \"of a willing heart\" brings a gift.",
         "references": [
           "Exodus 35:4-29"
         ]
       },
       {
-        "theme": "Shared gifts",
-        "explanation": "Different forms of skill support a common purpose",
+        "theme": "Many gifts, one work",
+        "explanation": "God gives different people different skills for one task.",
         "references": [
           "Exodus 35:30-35"
         ]
@@ -1854,44 +1797,44 @@
     "explainedReferences": []
   },
   "Exodus 36": {
-    "summary": "Skilled workers begin constructing the tabernacle from the offerings. The people keep bringing gifts until the artisans tell Moses that there is more than enough, and he orders the giving to stop. The chapter then describes the inner curtains, coverings, frames, bars, and veil made in accordance with the earlier design. Generous giving and careful work move the building forward.",
+    "summary": "The people bring so many gifts that the workers tell Moses there is more than enough, and he stops the giving (Exodus 36:1–7). The craftsmen make the curtains and coverings (Exodus 36:8–19), the boards and bars (Exodus 36:20–34), and the veil and the door hanging (Exodus 36:35–38).",
     "whereWeAre": "In chapter 35 the people began bringing gifts for the tabernacle. They bring so much that Moses has to tell them to stop. Then the craftsmen make the curtains and frames, and chapter 37 turns to the furniture.",
     "keyFigures": [
       {
-        "name": "Bezalel and Oholiab",
-        "role": "Lead the skilled workers"
+        "name": "Bezaleel and Aholiab",
+        "role": "Lead the craftsmen in the work."
+      },
+      {
+        "name": "The skilled workers",
+        "role": "Tell Moses that the people have brought too much."
       },
       {
         "name": "Moses",
-        "role": "Receives their report and stops further offerings"
+        "role": "Sends word through the camp to stop the giving."
       },
       {
-        "name": "Israelites",
-        "role": "Contribute more material than needed"
-      },
-      {
-        "name": "Skilled artisans",
-        "role": "Make curtains, coverings, frames, and veil"
+        "name": "The people",
+        "role": "Keep bringing gifts every morning."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Abundant generosity",
-        "explanation": "The offerings exceed the project's needs",
+        "theme": "More than enough",
+        "explanation": "The people give so much that Moses has to stop them.",
         "references": [
           "Exodus 36:3-7"
         ]
       },
       {
-        "theme": "Responsible stewardship",
-        "explanation": "Moses halts collection when enough has been given",
+        "theme": "Knowing when to stop",
+        "explanation": "Moses stops the gifts once there is enough.",
         "references": [
           "Exodus 36:5-7"
         ]
       },
       {
-        "theme": "Faithful workmanship",
-        "explanation": "The described structures follow the given pattern",
+        "theme": "Careful work",
+        "explanation": "The workers make every piece just as God commanded.",
         "references": [
           "Exodus 36:8-38"
         ]
@@ -1900,40 +1843,32 @@
     "explainedReferences": []
   },
   "Exodus 37": {
-    "summary": "Bezalel crafts the ark and mercy seat with cherubim, the table with its vessels, the pure-gold lampstand with its branches and floral ornamentation, and the incense altar. The chapter also records preparation of the sacred anointing oil and incense. Everything follows the designs God gave Moses in chapters 25–30.",
+    "summary": "Bezaleel makes the ark and the mercy seat with its cherubims (Exodus 37:1–9) and the table for the showbread (Exodus 37:10–16). He makes the lampstand of pure gold, with its flowers and buds (Exodus 37:17–24), and the altar of incense, the holy oil, and the incense (Exodus 37:25–29). Everything follows the designs God gave Moses in chapters 25–30.",
     "whereWeAre": "The tent's curtains and frames were made in chapter 36. Now Bezaleel makes the furniture for the inside: the ark, the table, the lampstand, and the incense altar. Chapter 38 moves out to the altar and the courtyard.",
     "keyFigures": [
       {
-        "name": "Bezalel",
-        "role": "Craftsman explicitly named as maker of key furnishings"
-      },
-      {
-        "name": "Other artisans",
-        "role": "Not individually named in this chapter"
-      },
-      {
-        "name": "God (the LORD)",
-        "role": "Source of earlier instructions, not a speaking character in this chapter"
+        "name": "Bezaleel",
+        "role": "Makes the ark, the mercy seat, the table, the lampstand, and the incense altar."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Careful obedience",
-        "explanation": "The furniture is made according to the earlier specifications",
+        "theme": "Doing it right",
+        "explanation": "The furniture is made exactly as God described.",
         "references": [
           "Exodus 37:1-29"
         ]
       },
       {
-        "theme": "Sacred focus",
-        "explanation": "Ark, table, lampstand, and altar equip the sanctuary",
+        "theme": "The heart of worship",
+        "explanation": "The ark, table, lampstand, and altar are the center of Israel's worship.",
         "references": [
           "Exodus 37:1-28"
         ]
       },
       {
-        "theme": "Beauty in craftsmanship",
-        "explanation": "Detailed goldwork and ornament belong to worship space",
+        "theme": "Beauty for God",
+        "explanation": "The lampstand is made of pure gold, with flowers and buds.",
         "references": [
           "Exodus 37:17-24"
         ]
@@ -1942,48 +1877,44 @@
     "explainedReferences": []
   },
   "Exodus 38": {
-    "summary": "Bezalel and the workers make the bronze altar, basin, and courtyard hangings with their pillars and bases. The bronze basin uses mirrors donated by women who served at the entrance to the tent of meeting. An inventory then records the gold, silver, and bronze used in the project, overseen by Ithamar, Aaron's son. Every gift is counted, showing the work was done honestly.",
+    "summary": "The workers make the bronze altar (Exodus 38:1–7) and the bronze basin, from mirrors given by the women who served at the tabernacle door (Exodus 38:8). They make the courtyard and its hangings (Exodus 38:9–20). Then the gold, silver, and bronze are counted under Ithamar, Aaron's son (Exodus 38:21–31). Every gift is counted, showing the work was done honestly.",
     "whereWeAre": "The furniture inside the tabernacle was made in chapter 37. This chapter makes the bronze altar, the washing basin, and the courtyard, and it counts the metals used. Chapter 39 finishes with the priests' clothes.",
     "keyFigures": [
       {
-        "name": "Bezalel",
-        "role": "Oversees key construction work"
+        "name": "Bezaleel",
+        "role": "Makes the bronze altar, the basin, and the courtyard."
       },
       {
-        "name": "Oholiab",
-        "role": "Named as master craftsman and embroiderer"
+        "name": "Aholiab",
+        "role": "Works with him as an engraver and embroiderer."
+      },
+      {
+        "name": "The women at the tabernacle door",
+        "role": "Give their bronze mirrors for the basin."
       },
       {
         "name": "Ithamar",
-        "role": "Aaron's son associated with the inventory"
-      },
-      {
-        "name": "Women serving at the tent entrance",
-        "role": "Contribute bronze mirrors"
-      },
-      {
-        "name": "Levites",
-        "role": "Account for materials under direction"
+        "role": "Aaron's son, who leads the Levites in counting the metals."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Sacrificial worship",
-        "explanation": "The bronze altar is made for the tabernacle court",
+        "theme": "The place of sacrifice",
+        "explanation": "The bronze altar stands in the courtyard.",
         "references": [
           "Exodus 38:1-7"
         ]
       },
       {
-        "theme": "Contributions from many",
-        "explanation": "Women's mirrors supply bronze for the basin",
+        "theme": "Gifts from many",
+        "explanation": "Women give their mirrors to make the bronze basin.",
         "references": [
           "Exodus 38:8"
         ]
       },
       {
-        "theme": "Financial accountability",
-        "explanation": "Precious metals are weighed and recorded",
+        "theme": "Honest accounts",
+        "explanation": "Every talent of gold, silver, and bronze is counted.",
         "references": [
           "Exodus 38:21-31"
         ]
@@ -1992,44 +1923,36 @@
     "explainedReferences": []
   },
   "Exodus 39": {
-    "summary": "The artisans weave and assemble Aaron's holy garments: the ephod, breastpiece with twelve stones, robe, tunics, sashes, and turban plate. The account repeatedly says the work was done as the LORD commanded Moses. All the finished tabernacle components are brought to Moses, who inspects them and blesses the workers after confirming that the tasks were completed as instructed.",
+    "summary": "The workers make the priests' holy garments, the ephod, the breastplate, the robe, and the gold plate, \"as the LORD commanded Moses\" (Exodus 39:1–31). All the finished work is brought to Moses, who sees that it was done just as commanded and blesses the people (Exodus 39:32–43).",
     "whereWeAre": "The tabernacle and its furniture were made in chapters 36–38. Now the priests' clothes are made, and all the finished work is brought to Moses. He sees it was done just as God commanded, and in chapter 40 the tabernacle is set up.",
     "keyFigures": [
       {
+        "name": "The workers",
+        "role": "Make the priests' garments and finish all the work."
+      },
+      {
         "name": "Moses",
-        "role": "Inspects the completed items and blesses the workers"
-      },
-      {
-        "name": "Aaron",
-        "role": "Designated wearer of the high-priestly garments"
-      },
-      {
-        "name": "Aaron's sons",
-        "role": "Priests for whom garments are also made"
-      },
-      {
-        "name": "Israelite artisans",
-        "role": "Complete the garments and furnishings"
+        "role": "Looks over the finished work and blesses the people."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Faithful completion",
-        "explanation": "Repeated statements link making with the received instructions",
+        "theme": "Faithful to the end",
+        "explanation": "Again and again the chapter says the work was done \"as the LORD commanded Moses.\"",
         "references": [
           "Exodus 39:1-31"
         ]
       },
       {
-        "theme": "Representation before God",
-        "explanation": "The breastpiece bears the tribal names",
+        "theme": "Carrying the tribes",
+        "explanation": "The breastplate holds twelve stones for the twelve tribes.",
         "references": [
           "Exodus 39:8-21"
         ]
       },
       {
-        "theme": "Inspection and blessing",
-        "explanation": "Moses examines finished work and blesses the workers",
+        "theme": "Work approved",
+        "explanation": "Moses inspects the finished work and blesses the people.",
         "references": [
           "Exodus 39:32-43"
         ]
@@ -2038,44 +1961,44 @@
     "explainedReferences": []
   },
   "Exodus 40": {
-    "summary": "God directs Moses to erect the tabernacle on the first day of the first month of the second year and arrange its furnishings. Moses sets up the structure, installs the ark, table, lampstand, altars, basin, and courtyard, and completes the work as commanded. A cloud then covers the tent of meeting, and the LORD's glory fills the tabernacle so completely that Moses cannot enter. Thereafter Israel moves when the cloud lifts and remains when it stays, with fire visible by night.",
+    "summary": "God tells Moses to set up the tabernacle on the first day of the first month and to anoint Aaron and his sons as priests (Exodus 40:1–15). Moses sets up the tent and puts everything in its place, doing \"according to all that the LORD commanded him\" (Exodus 40:16–33). Then the cloud covers the tent, and the glory of the LORD fills the tabernacle so that Moses cannot enter (Exodus 40:34–35). From then on, Israel travels when the cloud lifts and stays when it rests (Exodus 40:36–38).",
     "whereWeAre": "All the pieces of the tabernacle were finished and checked in chapter 39. Now Moses sets it up, and \"the glory of the LORD filled the tabernacle\" (Exodus 40:34). Exodus ends with God living among his people, and Leviticus begins with God speaking to Moses from this tent.",
     "keyFigures": [
       {
+        "name": "God",
+        "role": "Tells Moses to set up the tabernacle and fills it with his glory."
+      },
+      {
         "name": "Moses",
-        "role": "Sets up and consecrates the tabernacle"
+        "role": "Sets up the tabernacle, doing \"according to all that the LORD commanded him.\""
       },
       {
         "name": "Aaron and his sons",
-        "role": "Washed, clothed, and appointed for priestly service"
+        "role": "Washed, clothed, and anointed as priests."
       },
       {
-        "name": "God (the LORD)",
-        "role": "Commands the setup and fills the sanctuary with glory"
-      },
-      {
-        "name": "Israelites",
-        "role": "Follow the cloud's direction on their journeys"
+        "name": "The children of Israel",
+        "role": "Travel when the cloud lifts and stay when it rests."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Obedient completion",
-        "explanation": "Moses assembles the sanctuary as instructed",
+        "theme": "Obedience completed",
+        "explanation": "Moses sets up everything just as God commanded.",
         "references": [
           "Exodus 40:16-33"
         ]
       },
       {
-        "theme": "Divine presence",
-        "explanation": "The cloud and glory fill the tabernacle",
+        "theme": "God moves in",
+        "explanation": "The glory of the LORD fills the tabernacle so that even Moses cannot enter.",
         "references": [
           "Exodus 40:34-35"
         ]
       },
       {
-        "theme": "Guidance for the journey",
-        "explanation": "Cloud and fire govern Israel's movements",
+        "theme": "Guided on the way",
+        "explanation": "The cloud tells Israel when to travel and when to stay.",
         "references": [
           "Exodus 40:36-38"
         ]

@@ -1,9 +1,9 @@
 {
   "Joshua": {
-    "author": "Traditionally associated with Joshua, though the book likely includes later editorial material.",
+    "author": "Joshua, by Jewish tradition; the book says that \"Joshua wrote these words in the book of the law of God\" (Joshua 24:26). Notes about things that remain \"unto this day\" show that some parts were added later.",
     "audience": "Israel after Moses, entering and settling Canaan.",
     "purpose": "To recount Israel's entrance into the promised land, the distribution of territory, and the call to covenant faithfulness.",
-    "theme": "God is faithful to His promises, and His people are called to courageous, exclusive covenant loyalty.",
+    "theme": "God is faithful to his promises, and his people are called to courageous, exclusive covenant loyalty.",
     "summary": "Joshua leads Israel across the Jordan, through major campaigns, into tribal allotments, and finally calls the nation to choose faithful service to the LORD.",
     "keyVerse": "Joshua 24:15",
     "movements": [
@@ -51,7 +51,7 @@
         "description": "A Canaanite people who deceive Israel into making a peace treaty."
       },
       {
-        "name": "Adoni-zedek",
+        "name": "Adonizedek",
         "description": "King of Jerusalem who leads a coalition of kings against Gibeon and Israel."
       },
       {
@@ -61,7 +61,7 @@
     ]
   },
   "Judges": {
-    "author": "Anonymous; Jewish tradition has sometimes associated it with Samuel.",
+    "author": "Samuel, according to Jewish tradition. The book does not name its writer, and its refrain \"In those days there was no king in Israel\" shows it was written after Israel had kings.",
     "audience": "Israel during the period between Joshua and the monarchy.",
     "purpose": "To explain Israel's recurring cycle of apostasy, oppression, crying out, and deliverance, while showing the need for faithful leadership.",
     "theme": "When God's people abandon covenant faithfulness, disorder deepens; God repeatedly shows mercy through deliverers.",
@@ -125,7 +125,7 @@
       },
       {
         "name": "Samson",
-        "description": "A Nazirite of great strength whose personal failings, including with Delilah, end in his capture and death among the Philistines."
+        "description": "A Nazarite of great strength whose personal failings, including with Delilah, end in his capture and death among the Philistines."
       }
     ]
   },

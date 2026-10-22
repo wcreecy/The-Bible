@@ -1,699 +1,671 @@
 {
   "Numbers 1": {
-    "summary": "At Sinai, the LORD instructs Moses to count Israelite men twenty years old and older who can serve in the army. Moses and Aaron, assisted by a leader from each tribe, register the twelve tribes; the total is 603,550 (Numbers 1:46). Levi is excluded from this military census because the Levites are appointed to care for the tabernacle, camp around it, and prevent unauthorized approach. Israel is organized for the journey, with God's tent at the center.",
+    "summary": "In the wilderness of Sinai, the LORD tells Moses to count every man twenty years old and up who can go to war (Numbers 1:1–4). A leader from each tribe is named to help (Numbers 1:5–16). Tribe by tribe the men are counted, for a total of 603,550 (Numbers 1:17–46). The Levites are not counted with them, because they are set apart to carry and guard the tabernacle (Numbers 1:47–54).",
     "whereWeAre": "Leviticus ended with Israel still camped at Mount Sinai. Numbers begins one month after the tabernacle was set up, as God tells Moses to count the men who can fight. Chapter 2 arranges the tribes around the tabernacle.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Commands the census and assigns responsibilities"
+        "role": "Tells Moses to count the men who can go to war."
       },
       {
-        "name": "Moses",
-        "role": "Leads the registration"
+        "name": "Moses and Aaron",
+        "role": "Count the people with the help of the tribal leaders."
       },
       {
-        "name": "Aaron",
-        "role": "Assists Moses"
+        "name": "The tribal leaders",
+        "role": "One man from each tribe, named to help with the count."
       },
       {
-        "name": "Tribal leaders",
-        "role": "Represent their tribes in the count"
-      },
-      {
-        "name": "Levites",
-        "role": "Are set apart to guard and transport the tabernacle"
+        "name": "The Levites",
+        "role": "Set apart to carry and guard the tabernacle instead."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Ordered community",
-        "explanation": "Tribal registration gives Israel a defined structure for its journey",
+        "theme": "Every person counts",
+        "explanation": "Each tribe is counted by name and family as Israel gets ready to travel.",
         "references": [
-          "1:2-4"
+          "Numbers 1:2-4"
         ]
       },
       {
         "theme": "Different callings",
-        "explanation": "Levi's service differs from the military duty of other tribes",
+        "explanation": "The Levites serve at the tabernacle while the other tribes prepare to fight.",
         "references": [
-          "1:47-53"
+          "Numbers 1:47-53"
         ]
       },
       {
-        "theme": "Holiness and boundaries",
-        "explanation": "The tabernacle requires appointed guardians and careful access",
+        "theme": "Guarding the holy place",
+        "explanation": "The Levites camp around the tabernacle so that no one comes near it carelessly.",
         "references": [
-          "1:50-53"
+          "Numbers 1:50-53"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 2": {
-    "summary": "The LORD assigns a camping and marching order around the tent of meeting. Judah, Issachar, and Zebulun camp to the east; Reuben, Simeon, and Gad to the south; Ephraim, Manasseh, and Benjamin to the west; and Dan, Asher, and Naphtali to the north. The Levites stay near the tabernacle and travel between tribal divisions. The same fighting-men total of 603,550 is repeated. Israel's movement is to be ordered around God's dwelling among them.",
+    "summary": "Each tribe is to camp under its own standard around the tabernacle (Numbers 2:1–2). Judah, Issachar, and Zebulun camp on the east and lead the march (Numbers 2:3–9), with Reuben's camp on the south (Numbers 2:10–16). The Levites and the tabernacle travel in the middle (Numbers 2:17). Ephraim's camp is on the west (Numbers 2:18–24) and Dan's on the north (Numbers 2:25–31). Israel camps and marches just as the LORD commanded (Numbers 2:32–34).",
     "whereWeAre": "Chapter 1 counted Israel's fighting men, tribe by tribe. Now God arranges where each tribe camps and marches, with the tabernacle in the middle. Chapters 3–4 turn to the tribe of Levi, which camps closest to it.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Sets the arrangement of the camp"
+        "role": "Gives each tribe its place around the tabernacle."
       },
       {
         "name": "Moses and Aaron",
-        "role": "Receive and implement the instructions"
+        "role": "Receive the plan for the camp."
       },
       {
-        "name": "Twelve tribes",
-        "role": "Camp and march under their respective standards"
+        "name": "The twelve tribes",
+        "role": "Camp and march under their own standards."
       },
       {
-        "name": "Levites",
-        "role": "Camp around the tabernacle and travel in the middle"
+        "name": "The Levites",
+        "role": "Camp around the tabernacle and travel in the middle."
       }
     ],
     "keyThemes": [
       {
         "theme": "God at the center",
-        "explanation": "The tent of meeting forms the camp's focal point",
+        "explanation": "The tabernacle stands in the middle, with every tribe camped around it.",
         "references": [
-          "2:2,17"
+          "Numbers 2:2",
+          "Numbers 2:17"
         ]
       },
       {
-        "theme": "Coordinated responsibility",
-        "explanation": "Each tribe has a designated place and order",
+        "theme": "Everyone has a place",
+        "explanation": "Each tribe knows where to camp and when to march.",
         "references": [
-          "2:3-31"
+          "Numbers 2:3-31"
         ]
       },
       {
-        "theme": "Faithful response",
-        "explanation": "Israel camps as commanded",
+        "theme": "Doing as God said",
+        "explanation": "\"And the children of Israel did according to all that the LORD commanded Moses.\"",
         "references": [
-          "2:34"
+          "Numbers 2:34"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 3": {
-    "summary": "The chapter identifies Aaron's sons as priests and records that Nadab and Abihu died after offering unauthorized fire. The LORD appoints Levites to assist Aaron and his sons and takes them in place of Israel's firstborn. The Levite clans—Gershon, Kohath, and Merari—are counted and stationed around the sanctuary with distinct responsibilities. Because the number of Israelite firstborn exceeds the Levites, redemption money is collected for the difference. The chapter explains who the priests are, what the Levites do, and why the Levites stand in for Israel's firstborn.",
+    "summary": "Aaron's sons are named as priests, and the chapter recalls how Nadab and Abihu died for offering \"strange fire\" (Numbers 3:1–4). The LORD gives the Levites to serve Aaron and takes them in place of Israel's firstborn (Numbers 3:5–13). The Levites are counted, and each clan is given its place around the tabernacle and its work (Numbers 3:14–39). There are 273 more firstborn than Levites, so each extra one is bought back for five shekels (Numbers 3:40–51).",
     "whereWeAre": "Chapters 1–2 counted and arranged the twelve tribes but left out Levi. This chapter counts the Levites and gives them to serve the priests, in place of Israel's firstborn sons. Chapter 4 gives each Levite family its job in moving the tabernacle.",
     "keyFigures": [
       {
-        "name": "Aaron",
-        "role": "High priest whose family holds priestly duties"
-      },
-      {
-        "name": "Nadab and Abihu",
-        "role": "Aaron's sons who died after unauthorized offering"
-      },
-      {
-        "name": "Eleazar and Ithamar",
-        "role": "Surviving priestly sons"
-      },
-      {
-        "name": "Gershonites, Kohathites, and Merarites",
-        "role": "Levitical clans assigned sanctuary duties"
+        "name": "The LORD",
+        "role": "Takes the Levites as his own in place of Israel's firstborn."
       },
       {
         "name": "Moses",
-        "role": "Conducts the counts and handles redemption payments"
+        "role": "Counts the Levites and collects the money to buy back the extra firstborn."
+      },
+      {
+        "name": "Aaron and his sons",
+        "role": "The priests, whom the Levites will serve."
+      },
+      {
+        "name": "The Gershonites, Kohathites, and Merarites",
+        "role": "The three Levite clans, each given a place and a duty."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Appointed service",
-        "explanation": "Only those assigned may perform specific priestly functions",
+        "theme": "Called to serve",
+        "explanation": "Only those God chooses may serve as priests.",
         "references": [
-          "3:5-10"
+          "Numbers 3:5-10"
         ]
       },
       {
         "theme": "Belonging to God",
-        "explanation": "Levites substitute for Israel's firstborn",
+        "explanation": "The Levites belong to the LORD in place of Israel's firstborn.",
         "references": [
-          "3:11-13,40-45"
+          "Numbers 3:11-13",
+          "Numbers 3:40-45"
         ]
       },
       {
-        "theme": "Redeeming the firstborn",
-        "explanation": "Additional firstborn are redeemed by prescribed silver",
+        "theme": "Bought back",
+        "explanation": "Every extra firstborn is bought back with silver.",
         "references": [
-          "3:46-51"
+          "Numbers 3:46-51"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 4": {
-    "summary": "Moses and Aaron receive separate work assignments for Levites aged thirty to fifty. Kohathites carry the most holy furnishings, but priests must first cover them; touching or looking upon uncovered holy objects threatens death. Gershonites transport curtains and coverings; Merarites carry frames, pillars, and fittings. Eleazar and Ithamar supervise designated aspects of the work. A count totals 8,580 eligible workers. Holy work is shared, supervised, and kept within careful limits.",
+    "summary": "The Kohathites, aged thirty to fifty, carry the holy things, but only after the priests have covered them, for they must not touch or see them (Numbers 4:1–20). The Gershonites carry the curtains and coverings (Numbers 4:21–28), and the Merarites carry the boards, bars, and pillars (Numbers 4:29–33). The Levites who can serve are counted: 8,580 in all (Numbers 4:34–49).",
     "whereWeAre": "Chapter 3 counted all the Levites. This chapter counts the men aged thirty to fifty and gives each family its part in carrying the tabernacle. With the camp in order, chapters 5–6 turn to keeping it pure.",
     "keyFigures": [
       {
+        "name": "The LORD",
+        "role": "Gives each Levite family its work."
+      },
+      {
         "name": "Moses and Aaron",
-        "role": "Organize and count sanctuary workers"
+        "role": "Count the Levites who can serve."
       },
       {
-        "name": "Kohathites",
-        "role": "Carry covered holy furnishings"
+        "name": "The Kohathites",
+        "role": "Carry the holy things once the priests have covered them."
       },
       {
-        "name": "Gershonites",
-        "role": "Transport fabrics and coverings"
+        "name": "The Gershonites",
+        "role": "Carry the curtains and coverings."
       },
       {
-        "name": "Merarites",
-        "role": "Transport structural components"
+        "name": "The Merarites",
+        "role": "Carry the boards, bars, and pillars."
       },
       {
         "name": "Eleazar and Ithamar",
-        "role": "Priests assigned oversight"
+        "role": "Aaron's sons, who oversee the work."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Reverence for holy things",
-        "explanation": "Holy objects must be handled through priestly preparation",
+        "theme": "Holy things handled with care",
+        "explanation": "The priests cover the holy things so the Kohathites can carry them safely.",
         "references": [
-          "4:5-20"
+          "Numbers 4:5-20"
         ]
       },
       {
-        "theme": "Division of labor",
-        "explanation": "Different Levite clans receive different tasks",
+        "theme": "Shared work",
+        "explanation": "Each Levite family carries its own part of the tabernacle.",
         "references": [
-          "4:21-33"
+          "Numbers 4:21-33"
         ]
       },
       {
-        "theme": "Accountability in service",
-        "explanation": "Workers are counted by assigned duties",
+        "theme": "Every worker counted",
+        "explanation": "The Levites are counted by the work they do.",
         "references": [
-          "4:46-49"
+          "Numbers 4:46-49"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 5": {
-    "summary": "The LORD orders the removal from the camp of people with specified sources of ritual impurity, protecting the community's sacred dwelling space. Anyone who wrongs another must confess and make restitution with an added fifth. The chapter then gives the procedure for a husband who suspects his wife of adultery when there is no witness, involving a priest, an oath, and a ritual ordeal. These laws deal with keeping the camp clean, making wrongs right, and settling a charge no one could prove.",
+    "summary": "Anyone with leprosy, a discharge, or contact with the dead must stay outside the camp (Numbers 5:1–4). A person who wrongs another must confess and pay it back with a fifth added (Numbers 5:5–10). If a husband suspects his wife of adultery with no witness, the priest has her drink bitter water before the LORD, and God shows whether she is guilty (Numbers 5:11–31).",
     "whereWeAre": "The camp has been counted and arranged in chapters 1–4. Now God gives laws to keep it clean and honest, since he lives in the middle of it. Chapter 6 continues with the Nazirite vow and the priestly blessing.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Gives commands about purity and restitution"
+        "role": "Gives laws to keep the camp clean and set wrongs right."
       },
       {
         "name": "Moses",
-        "role": "Communicates these commands"
+        "role": "Passes the laws on to Israel."
       },
       {
-        "name": "People who have wronged others",
-        "role": "Must confess and repay"
-      },
-      {
-        "name": "Husband and wife",
-        "role": "Participate in the jealousy procedure when the stated conditions arise"
-      },
-      {
-        "name": "Priest",
-        "role": "Administers the prescribed ritual"
+        "name": "The priest",
+        "role": "Gives the bitter water to a wife accused without a witness."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Community holiness",
-        "explanation": "Specified impurities require temporary separation from the camp",
+        "theme": "A clean camp",
+        "explanation": "The camp must stay clean because God lives in the middle of it.",
         "references": [
-          "5:1-4"
+          "Numbers 5:1-4"
         ]
       },
       {
-        "theme": "Restitution",
-        "explanation": "Confession is joined to repayment rather than words alone",
+        "theme": "Making it right",
+        "explanation": "Confession must come with paying back what was taken.",
         "references": [
-          "5:5-10"
+          "Numbers 5:5-10"
         ]
       },
       {
-        "theme": "Handling uncertainty",
-        "explanation": "The jealousy law prescribes a religious procedure rather than allowing an unsupported private verdict",
+        "theme": "Truth with no witness",
+        "explanation": "When no one saw what happened, the case is brought before God.",
         "references": [
-          "5:11-31"
+          "Numbers 5:11-31"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 6": {
-    "summary": "The Nazirite vow allows a man or woman to be specially dedicated to the LORD for a period of time. Nazirites abstain from grape products, avoid cutting their hair, and must not come into contact with the dead; rules are given for accidental defilement and completion of the vow. The chapter ends with the priestly blessing: \"The LORD bless thee, and keep thee\" (Numbers 6:24).",
+    "summary": "Any man or woman may take the vow of a Nazarite, giving up wine and grapes, letting the hair grow, and staying away from the dead (Numbers 6:1–8). If someone dies beside him, he starts his vow over (Numbers 6:9–12). When the vow ends, he brings offerings and shaves his head (Numbers 6:13–21). The chapter ends with the priestly blessing: \"The LORD bless thee, and keep thee\" (Numbers 6:22–27).",
     "whereWeAre": "Chapter 5 gave laws for keeping the camp pure. This chapter describes the Nazirite vow, a way for any man or woman to be set apart for God for a time. It ends with the priestly blessing, before chapter 7 steps back to the day the tabernacle was finished.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Defines vows and gives the blessing"
+        "role": "Gives the vow of the Nazarite and the words of the priestly blessing."
       },
       {
         "name": "Moses",
-        "role": "Receives the instructions"
-      },
-      {
-        "name": "Nazirite",
-        "role": "A man or woman undertaking special dedication"
+        "role": "Passes the laws on to Israel."
       },
       {
         "name": "Aaron and his sons",
-        "role": "Priests instructed to pronounce God's blessing"
+        "role": "Told to bless Israel in the LORD's name."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Voluntary dedication",
-        "explanation": "Both men and women can take a Nazirite vow",
+        "theme": "Set apart by choice",
+        "explanation": "Any man or woman may choose to be set apart to God for a time.",
         "references": [
-          "6:1-8"
+          "Numbers 6:1-8"
         ]
       },
       {
-        "theme": "Restoration after disruption",
-        "explanation": "Procedures address accidental impurity during a vow",
+        "theme": "Starting over",
+        "explanation": "If a Nazarite is made unclean by accident, he begins his vow again.",
         "references": [
-          "6:9-12"
+          "Numbers 6:9-12"
         ]
       },
       {
-        "theme": "Blessing and peace",
-        "explanation": "Priests pronounce a blessing grounded in God's favor",
+        "theme": "God's blessing",
+        "explanation": "\"The LORD make his face shine upon thee, and be gracious unto thee.\"",
         "references": [
-          "6:22-27"
+          "Numbers 6:22-27"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 7": {
-    "summary": "Once the tabernacle has been set up and consecrated, Israel's tribal leaders contribute carts and oxen for its transport. The Gershonites and Merarites receive them according to need, while Kohathites carry their holy loads on their shoulders. Over twelve successive days, each tribal leader presents an identical dedication offering for the altar. The repeated detail emphasizes equal participation. The chapter ends with Moses hearing God's voice speaking from above the mercy seat on the ark.",
+    "summary": "On the day the tabernacle is set up, the tribal leaders bring six wagons and twelve oxen to carry it (Numbers 7:1–9). For twelve days, one leader each day brings the same gift for the altar (Numbers 7:10–83). The gifts are added up (Numbers 7:84–88). When Moses goes into the tabernacle, he hears God's voice \"from off the mercy seat\" (Numbers 7:89).",
     "whereWeAre": "This chapter steps back to the day the tabernacle was set up at the end of Exodus, a month before the census in chapter 1. Over twelve days, each tribe's leader brings the same gifts for the altar. Chapter 8 turns to the lamps and to setting apart the Levites.",
     "keyFigures": [
       {
+        "name": "The tribal leaders",
+        "role": "Bring wagons, oxen, and twelve days of gifts for the altar."
+      },
+      {
         "name": "Moses",
-        "role": "Receives offerings and hears the LORD"
+        "role": "Gives the wagons to the Levites and hears God's voice in the tabernacle."
       },
       {
-        "name": "Tribal leaders",
-        "role": "Present identical altar-dedication gifts"
-      },
-      {
-        "name": "Gershonites and Merarites",
-        "role": "Receive transport equipment"
-      },
-      {
-        "name": "Kohathites",
-        "role": "Carry sacred objects on shoulders"
+        "name": "The Gershonites and Merarites",
+        "role": "Receive the wagons for carrying their loads."
       },
       {
         "name": "The LORD",
-        "role": "Speaks to Moses from the sanctuary"
+        "role": "Speaks to Moses from above the mercy seat."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Shared generosity",
-        "explanation": "Each tribe participates in the altar's dedication",
+        "theme": "Every tribe gives",
+        "explanation": "Each tribe brings the same gift, so every tribe shares equally in worship.",
         "references": [
-          "7:10-83"
+          "Numbers 7:10-83"
         ]
       },
       {
-        "theme": "Service matched to need",
-        "explanation": "Transport provisions differ by Levitical assignment",
+        "theme": "Help where it is needed",
+        "explanation": "The wagons go to the Levites with the heaviest loads.",
         "references": [
-          "7:4-9"
+          "Numbers 7:4-9"
         ]
       },
       {
-        "theme": "Divine presence",
-        "explanation": "Moses hears the LORD at the sanctuary",
+        "theme": "God speaks",
+        "explanation": "Moses hears God's voice from above the mercy seat.",
         "references": [
-          "7:89"
+          "Numbers 7:89"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 8": {
-    "summary": "Aaron is told how to position the seven lamps so they shine forward. The Levites are then purified and publicly presented for their work, with Israel laying hands on them and offerings made on their behalf. The LORD explains again that Levites take the place of Israel's firstborn. They begin service at twenty-five and retire from regular duty at fifty, though they may continue assisting. Serving at the tabernacle is a holy calling done on behalf of everyone.",
+    "summary": "Aaron lights the seven lamps so that they shine forward (Numbers 8:1–4). The Levites are cleansed, the people lay their hands on them, and they are given to the LORD in place of the firstborn (Numbers 8:5–22). They serve from age twenty-five to fifty, then help the younger men (Numbers 8:23–26).",
     "whereWeAre": "Chapter 7 recorded the tribes' gifts for the altar. Now Aaron sets up the lamps, and the Levites are cleansed and given to God for their work. Chapter 9 tells of the Passover kept just before Israel leaves Sinai.",
     "keyFigures": [
       {
-        "name": "Aaron",
-        "role": "Arranges the lamps and performs the presentation"
-      },
-      {
-        "name": "Moses",
-        "role": "Receives and communicates the instructions"
-      },
-      {
-        "name": "Levites",
-        "role": "Are cleansed and set apart for sanctuary work"
-      },
-      {
-        "name": "Israelites",
-        "role": "Lay hands on the Levites as representatives"
-      },
-      {
         "name": "The LORD",
-        "role": "Claims the Levites in place of the firstborn"
+        "role": "Tells Moses how to set the Levites apart."
+      },
+      {
+        "name": "Aaron",
+        "role": "Lights the lamps and offers the Levites before the LORD."
+      },
+      {
+        "name": "The Levites",
+        "role": "Are cleansed and given to the LORD for their work."
+      },
+      {
+        "name": "The children of Israel",
+        "role": "Lay their hands on the Levites."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Consecration for service",
-        "explanation": "Levites are purified and presented before beginning their duties",
+        "theme": "Made ready to serve",
+        "explanation": "The Levites are cleansed before they begin their work.",
         "references": [
-          "8:5-15"
+          "Numbers 8:5-15"
         ]
       },
       {
-        "theme": "Representation",
-        "explanation": "Levites serve on behalf of the wider Israelite community",
+        "theme": "Serving for everyone",
+        "explanation": "The Levites serve on behalf of the whole people.",
         "references": [
-          "8:16-19"
+          "Numbers 8:16-19"
         ]
       },
       {
-        "theme": "Service across life stages",
-        "explanation": "A distinction is made between regular duty and later assistance",
+        "theme": "A time for every age",
+        "explanation": "Older Levites step back from heavy work and help the younger ones.",
         "references": [
-          "8:23-26"
+          "Numbers 8:23-26"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 9": {
-    "summary": "In the first month of the second year after the exodus, Israel celebrates Passover at Sinai. Some people are ritually unclean because of contact with a dead body and cannot participate at the appointed time; Moses seeks the LORD's direction. A second-month Passover is authorized for those unclean or away on a journey, while deliberate neglect receives a warning. Resident foreigners who celebrate are subject to the same rule. The cloud above the tabernacle directs when Israel camps and travels, whether for a day or much longer.",
+    "summary": "In the first month of the second year, Israel keeps the Passover at Sinai (Numbers 9:1–5). Some men are unclean from touching a dead body, so God lets anyone unclean or far away keep it a month later (Numbers 9:6–14). From then on the cloud over the tabernacle tells Israel when to camp and when to travel (Numbers 9:15–23).",
     "whereWeAre": "The Levites were set apart in chapter 8. This chapter tells of the first Passover since leaving Egypt, kept at Sinai one year later, and explains how the cloud will guide Israel. In chapter 10 the cloud lifts, and the journey begins.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Establishes Passover provisions and directs the camp"
+        "role": "Lets those who were unclean keep the Passover a month later."
       },
       {
         "name": "Moses",
-        "role": "Brings an unresolved case before God"
+        "role": "Asks the LORD what the unclean men should do."
       },
       {
-        "name": "Ritually unclean Israelites",
-        "role": "Ask how they may participate in Passover"
+        "name": "The unclean men",
+        "role": "Ask why they must miss the Passover."
       },
       {
-        "name": "Resident foreigners",
-        "role": "Are included under the same Passover rule"
-      },
-      {
-        "name": "Israelites",
-        "role": "Move or remain according to the cloud"
+        "name": "The children of Israel",
+        "role": "Camp and travel at the LORD's command."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Provision for participation",
-        "explanation": "A later Passover addresses genuine barriers",
+        "theme": "A second chance",
+        "explanation": "Those who missed the Passover may keep it a month later.",
         "references": [
-          "9:6-12"
+          "Numbers 9:6-12"
         ]
       },
       {
-        "theme": "Equal standards for participants",
-        "explanation": "The resident foreigner and native-born worshiper share the same regulation",
+        "theme": "One law for all",
+        "explanation": "The stranger keeps the Passover by the same law as the Israelite.",
         "references": [
-          "9:14"
+          "Numbers 9:14"
         ]
       },
       {
-        "theme": "Guidance and patience",
-        "explanation": "The cloud determines when the camp moves",
+        "theme": "Following the cloud",
+        "explanation": "\"At the commandment of the LORD they rested in the tents.\"",
         "references": [
-          "9:15-23"
+          "Numbers 9:15-23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 10": {
-    "summary": "The LORD instructs Moses to make two hammered-silver trumpets for assembling the community, directing camp departures, sounding alarm in war, and marking sacrifices and festivals. In the second month of the second year, the cloud lifts, and Israel departs Sinai in its ordered tribal divisions. Moses urges Hobab to travel with them, noting his knowledge of camping places. The ark travels with the people, and Moses speaks brief prayers as it sets out and rests. The journey into the wilderness begins.",
+    "summary": "God has Moses make two silver trumpets to call the people and to signal the march (Numbers 10:1–10). On the twentieth day of the second month the cloud lifts, and the tribes leave Sinai in order (Numbers 10:11–28). Moses asks his relative Hobab to come and guide them (Numbers 10:29–32). As the ark sets out, Moses prays, \"Rise up, LORD, and let thine enemies be scattered\" (Numbers 10:33–36).",
     "whereWeAre": "Israel has been camped at Mount Sinai for almost a year, since Exodus 19. Now the trumpets sound, the cloud lifts, and the tribes set out in order toward the promised land. The journey goes wrong almost at once in chapter 11.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Commands the trumpets and directs the departure"
+        "role": "Tells Moses to make the trumpets and lifts the cloud from the tabernacle."
       },
       {
         "name": "Moses",
-        "role": "Leads the march and addresses Hobab"
+        "role": "Leads the march and prays as the ark sets out and stops."
       },
       {
-        "name": "Aaron's priestly sons",
-        "role": "Are assigned trumpet-blowing"
+        "name": "Aaron's sons, the priests",
+        "role": "Blow the silver trumpets."
       },
       {
         "name": "Hobab",
-        "role": "Is invited to accompany Israel and help with wilderness travel"
+        "role": "Moses' relative, asked to guide Israel in the wilderness."
       },
       {
-        "name": "Tribal divisions",
-        "role": "March in their assigned sequence"
+        "name": "The tribes",
+        "role": "March out of Sinai in their order."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Communication and unity",
-        "explanation": "Trumpets summon and direct the community",
+        "theme": "A call to gather",
+        "explanation": "The silver trumpets call the people together and signal the march.",
         "references": [
-          "10:1-10"
+          "Numbers 10:1-10"
         ]
       },
       {
-        "theme": "Movement by divine direction",
-        "explanation": "Israel leaves Sinai when the cloud lifts",
+        "theme": "Moving at God's word",
+        "explanation": "Israel leaves Sinai only when the cloud lifts.",
         "references": [
-          "10:11-13"
+          "Numbers 10:11-13"
         ]
       },
       {
-        "theme": "Prayer during travel",
-        "explanation": "Moses speaks at the ark's departure and rest",
+        "theme": "Prayer on the road",
+        "explanation": "Moses prays each time the ark sets out and each time it stops.",
         "references": [
-          "10:35-36"
+          "Numbers 10:35-36"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 11": {
-    "summary": "Complaints break out on the journey, and fire from the LORD consumes part of the camp until Moses intercedes. The people then long for Egypt's foods and reject their reliance on manna. Overwhelmed, Moses asks for relief; seventy elders receive a share in the Spirit's work, including Eldad and Medad, who prophesy in the camp. The LORD provides quail but also sends severe judgment as the people indulge their craving. The chapter sets the people's complaining against God's care, and Moses' heavy load is shared.",
+    "summary": "The people complain, and fire burns at the edge of the camp until Moses prays; the place is called Taberah (Numbers 11:1–3). They cry for meat, and Moses tells God the burden is too heavy for him (Numbers 11:4–15). God puts his Spirit on seventy elders, and even Eldad and Medad prophesy in the camp (Numbers 11:16–30). Quail cover the ground, but a plague strikes the greedy, and the place is named Kibrothhattaavah (Numbers 11:31–35).",
     "whereWeAre": "Israel has just left Sinai in chapter 10, ready to march to the promised land. Only three days out, the people start complaining. Moses is worn out, and in chapter 12 even his own brother and sister turn against him.",
     "keyFigures": [
       {
+        "name": "The people",
+        "role": "Complain about the hardships and cry for meat."
+      },
+      {
         "name": "Moses",
-        "role": "Intercedes and shares leadership responsibilities"
+        "role": "Tells God the load is too heavy and prays for the people."
       },
       {
         "name": "The LORD",
-        "role": "Responds to complaints, supplies quail, and judges the camp"
+        "role": "Sends fire, gives his Spirit to the elders, and sends quail and a plague."
       },
       {
-        "name": "Seventy elders",
-        "role": "Receive the Spirit to help bear the people's burden"
+        "name": "The seventy elders",
+        "role": "Receive the Spirit to help carry the load."
       },
       {
         "name": "Eldad and Medad",
-        "role": "Prophesy in the camp"
+        "role": "Prophesy in the camp."
       },
       {
         "name": "Joshua",
-        "role": "Questions the unexpected prophesying"
-      },
-      {
-        "name": "The people",
-        "role": "Complain about food and conditions"
+        "role": "Wants Moses to stop them."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Discontent and memory",
-        "explanation": "Longing for Egypt distorts the experience of liberation",
+        "theme": "Ungrateful hearts",
+        "explanation": "The people remember Egypt's food and forget Egypt's slavery.",
         "references": [
-          "11:4-6"
+          "Numbers 11:4-6"
         ]
       },
       {
-        "theme": "Shared leadership",
-        "explanation": "Moses is not expected to bear every burden alone",
+        "theme": "Sharing the load",
+        "explanation": "God gives his Spirit to seventy elders so that Moses does not carry the people alone.",
         "references": [
-          "11:14-17,24-30"
+          "Numbers 11:14-17",
+          "Numbers 11:24-30"
         ]
       },
       {
-        "theme": "Provision and judgment",
-        "explanation": "Quail arrives alongside consequences for uncontrolled craving",
+        "theme": "Getting what they craved",
+        "explanation": "God sends quail, but greed brings a plague.",
         "references": [
-          "11:31-34"
+          "Numbers 11:31-34"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 12": {
-    "summary": "Miriam and Aaron criticize Moses in connection with his Cushite wife and challenge his distinctive prophetic authority. The LORD summons the three to the tent of meeting, declares that Moses has a unique relationship of direct communication, and rebukes the challengers. Miriam is afflicted with a serious skin condition; Aaron asks Moses for help, and Moses prays for her healing. She remains outside the camp for seven days, and the people delay their journey until she returns. God himself defends Moses, who was \"very meek, above all the men which were upon the face of the earth\" (Numbers 12:3).",
+    "summary": "Miriam and Aaron speak against Moses because of his wife, a Cushite, and ask whether God speaks only through him (Numbers 12:1–3). The LORD calls them to the tabernacle and says he speaks with Moses \"mouth to mouth\" (Numbers 12:4–9). Miriam becomes leprous, Moses prays for her healing, and she waits outside the camp seven days (Numbers 12:10–16).",
     "whereWeAre": "The people complained about food in chapter 11. Now Miriam and Aaron, Moses' own sister and brother, question his leadership. God defends Moses, and in chapter 13 Israel stands at the edge of Canaan.",
     "keyFigures": [
       {
         "name": "Miriam",
-        "role": "Challenges Moses and is temporarily excluded after judgment"
+        "role": "Speaks against Moses and becomes leprous."
       },
       {
         "name": "Aaron",
-        "role": "Joins the challenge and asks Moses to intercede"
+        "role": "Joins her, then begs Moses to help her."
       },
       {
         "name": "Moses",
-        "role": "Is defended by the LORD and prays for Miriam"
+        "role": "Prays, \"Heal her now, O God, I beseech thee.\""
       },
       {
         "name": "The LORD",
-        "role": "Affirms Moses' distinctive role"
-      },
-      {
-        "name": "Moses' Cushite wife",
-        "role": "Is mentioned as part of the criticism but does not speak"
+        "role": "Defends Moses and rebukes Miriam and Aaron."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Authority and humility",
-        "explanation": "The LORD distinguishes Moses' vocation from ordinary prophetic revelation",
+        "theme": "A humble leader",
+        "explanation": "Moses is \"very meek,\" and God himself defends him.",
         "references": [
-          "12:3-8"
+          "Numbers 12:3-8"
         ]
       },
       {
-        "theme": "Consequences of accusation",
-        "explanation": "Speaking against Moses leads to a direct rebuke",
+        "theme": "Speaking against God's servant",
+        "explanation": "Miriam and Aaron's jealousy brings God's rebuke.",
         "references": [
-          "12:1-10"
+          "Numbers 12:1-10"
         ]
       },
       {
-        "theme": "Intercession and restoration",
-        "explanation": "Moses prays, and Miriam later rejoins the camp",
+        "theme": "Praying for others",
+        "explanation": "Moses prays for the sister who spoke against him.",
         "references": [
-          "12:11-15"
+          "Numbers 12:11-15"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 13": {
-    "summary": "At the LORD's command, Moses sends one leader from each tribe to explore Canaan. The scouts travel through the land and return with fruit, reporting that it is productive but its cities are fortified and its inhabitants formidable. Caleb urges Israel to go up and take possession, while the other scouts insist the people cannot prevail and spread a frightening report, including language about giants. Two very different reports about the same land set up the crisis in chapter 14.",
+    "summary": "Moses sends twelve men, one from each tribe, to spy out Canaan, and he renames Oshea as Joshua (Numbers 13:1–20). They search the land for forty days and carry back a huge cluster of grapes from Eshcol (Numbers 13:21–25). They report a land of milk and honey but strong, walled cities; Caleb says, \"we are well able to overcome it,\" but the others say they were like grasshoppers (Numbers 13:26–33).",
     "whereWeAre": "Israel has traveled from Sinai to the wilderness of Paran, on the edge of the promised land. Moses sends twelve men to spy out Canaan. Ten of them come back afraid, and chapter 14 tells how the people respond.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Commissions the reconnaissance"
+        "name": "The LORD",
+        "role": "Tells Moses to send men to search Canaan."
       },
       {
-        "name": "Twelve tribal scouts",
-        "role": "Survey Canaan and report their findings"
+        "name": "Moses",
+        "role": "Sends the twelve spies and renames Oshea as Joshua."
       },
       {
         "name": "Caleb",
-        "role": "Urges confidence in taking the land"
+        "role": "Urges Israel to go up at once and take the land."
       },
       {
-        "name": "Joshua (Hoshea)",
-        "role": "Is a scout renamed by Moses"
+        "name": "Joshua",
+        "role": "One of the twelve spies."
       },
       {
-        "name": "Inhabitants of Canaan",
-        "role": "Are described by the scouts as powerful occupants"
+        "name": "The ten spies",
+        "role": "Say Israel cannot win and spread a frightening report."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Promise and obstacles",
-        "explanation": "The land's fertility and fortified cities appear together",
+        "theme": "Promise and giants",
+        "explanation": "The land is rich, but its cities are strong and its people are big.",
         "references": [
-          "13:26-29"
+          "Numbers 13:26-29"
         ]
       },
       {
-        "theme": "Courage amid uncertainty",
-        "explanation": "Caleb urges action despite difficulty",
+        "theme": "Faith that speaks up",
+        "explanation": "Caleb says, \"Let us go up at once, and possess it.\"",
         "references": [
-          "13:30"
+          "Numbers 13:30"
         ]
       },
       {
-        "theme": "Fearful testimony",
-        "explanation": "The discouraging report shapes perception of the threat",
+        "theme": "Fear that spreads",
+        "explanation": "Ten spies see themselves as grasshoppers, and their fear spreads to the people.",
         "references": [
-          "13:31-33"
+          "Numbers 13:31-33"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 14": {
-    "summary": "The community weeps, wishes to return to Egypt, and threatens to replace its leadership. Joshua and Caleb urge trust in the LORD, but the assembly threatens them. The LORD announces judgment for the generation that rejected the promised land. Moses intercedes, and God pardons the people yet decrees that most counted adults will die in the wilderness; Caleb and Joshua are exceptions. The ten scouts who brought a bad report die in a plague. After hearing the verdict, some Israelites attempt to invade Canaan against Moses' warning and are defeated.",
+    "summary": "The people weep, want to choose a captain to lead them back to Egypt, and try to stone Joshua and Caleb (Numbers 14:1–10). God threatens to destroy them, but Moses pleads, \"Pardon, I beseech thee, the iniquity of this people\" (Numbers 14:11–25). God forgives, but that generation will wander forty years and die in the wilderness, except Caleb and Joshua (Numbers 14:26–38). The next day the people attack anyway and are beaten back to Hormah (Numbers 14:39–45).",
     "whereWeAre": "Chapter 13 ended with ten spies saying Israel cannot win. Now the people refuse to go in, and God says that generation will wander in the wilderness for forty years and die there. This is the turning point of Numbers; chapters 15–19 belong to the long years that follow.",
     "keyFigures": [
       {
-        "name": "The LORD",
-        "role": "Declares judgment while responding to Moses' plea"
+        "name": "The people",
+        "role": "Weep, plan to go back to Egypt, and try to stone Joshua and Caleb."
       },
       {
-        "name": "Moses",
-        "role": "Intercedes and warns against unauthorized attack"
+        "name": "Moses and Aaron",
+        "role": "Fall on their faces before the people."
       },
       {
         "name": "Joshua and Caleb",
-        "role": "Urge confidence and are spared the generational verdict"
+        "role": "Plead with the people to trust the LORD."
       },
       {
-        "name": "Israelite assembly",
-        "role": "Rebels and later attempts an unauthorized advance"
+        "name": "The LORD",
+        "role": "Forgives the people but sentences them to forty years in the wilderness."
       },
       {
-        "name": "Ten other scouts",
-        "role": "Die after spreading the faithless report"
+        "name": "The ten spies",
+        "role": "Die in a plague for their evil report."
       },
       {
-        "name": "Amalekites and Canaanites",
-        "role": "Defeat the attempted advance"
+        "name": "The Amalekites and Canaanites",
+        "role": "Beat back Israel's attack."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Unbelief and rebellion",
-        "explanation": "The people's response rejects the promised destination",
+        "theme": "Refusing God's gift",
+        "explanation": "The people would rather go back to Egypt than trust God.",
         "references": [
-          "14:1-4,11"
+          "Numbers 14:1-4",
+          "Numbers 14:11"
         ]
       },
       {
-        "theme": "Mercy with consequences",
-        "explanation": "Forgiveness does not remove all consequences",
+        "theme": "Forgiven, yet disciplined",
+        "explanation": "God pardons the people, but that generation will not enter the land.",
         "references": [
-          "14:19-35"
+          "Numbers 14:19-35"
         ]
       },
       {
-        "theme": "Presumption after judgment",
-        "explanation": "An attack without divine authorization fails",
+        "theme": "Too little, too late",
+        "explanation": "When the people attack without God, they are beaten.",
         "references": [
-          "14:39-45"
+          "Numbers 14:39-45"
         ]
       }
     ],
@@ -706,358 +678,347 @@
     ]
   },
   "Numbers 15": {
-    "summary": "After the rebellion, the LORD gives laws for grain and drink offerings when Israel eventually enters the land, applying one standard to Israelites and resident foreigners. Rules distinguish unintentional sins, for which atonement is prescribed, from defiant violations. A man gathering sticks on the Sabbath is executed after the LORD specifies the penalty. Israelites are also instructed to place tassels with a blue cord on their garments as reminders to obey God's commands. Even after the rebellion, God speaks of the day Israel will live in the land.",
+    "summary": "God gives laws for offerings \"When ye be come into the land,\" with one law for Israelites and strangers (Numbers 15:1–16). A cake from the first dough is to be given to the LORD (Numbers 15:17–21). Sins done in ignorance can be forgiven, but a person who sins \"presumptuously\" is cut off (Numbers 15:22–31). A man gathering sticks on the Sabbath is stoned (Numbers 15:32–36), and Israel is told to wear fringes with a blue thread to remember God's commands (Numbers 15:37–41).",
     "whereWeAre": "Israel has just refused to enter the land and been sentenced to forty years in the wilderness. Yet God gives laws that begin, \"When ye be come into the land\" (Numbers 15:2), a promise that their children will get there. Chapter 16 tells of a rebellion against Moses and Aaron.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Gives offerings, sin, Sabbath, and tassel instructions"
+        "role": "Gives laws for life in the land and judges the Sabbath-breaker."
       },
       {
         "name": "Moses",
-        "role": "Communicates laws and seeks a ruling in the Sabbath case"
+        "role": "Brings the case of the Sabbath-breaker to the LORD."
       },
       {
-        "name": "Israelite community",
-        "role": "Carries out the prescribed judgment"
+        "name": "The man gathering sticks",
+        "role": "Breaks the Sabbath and is stoned."
       },
       {
-        "name": "Man gathering wood",
-        "role": "Violates the Sabbath and is judged"
-      },
-      {
-        "name": "Resident foreigners",
-        "role": "Are covered by the same offering standards"
+        "name": "The congregation",
+        "role": "Carries out the sentence."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Hope beyond failure",
-        "explanation": "Offerings are described for life in the land Israel has not yet entered",
+        "theme": "The promise still stands",
+        "explanation": "God gives laws for the land even after Israel's refusal.",
         "references": [
-          "15:1-12"
+          "Numbers 15:1-12"
         ]
       },
       {
-        "theme": "Intent and accountability",
-        "explanation": "Unintentional wrongdoing is distinguished from defiant rejection",
+        "theme": "Mistakes and rebellion",
+        "explanation": "Sins done in ignorance can be forgiven, but open defiance cuts a person off.",
         "references": [
-          "15:22-31"
+          "Numbers 15:22-31"
         ]
       },
       {
-        "theme": "Remembering commands",
-        "explanation": "Tassels serve as visible reminders of covenant obedience",
+        "theme": "Reminders to obey",
+        "explanation": "The fringes on their clothes remind Israel to \"remember, and do all my commandments.\"",
         "references": [
-          "15:37-41"
+          "Numbers 15:37-41"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 16": {
-    "summary": "Korah, Dathan, Abiram, and 250 prominent men challenge Moses and Aaron's authority. Moses submits the dispute to a test involving censers and incense. The ground opens beneath Dathan and Abiram's households and those associated with Korah, while fire consumes the 250 incense offerers. The censers are made into an altar covering as a warning. When the congregation complains about the deaths, a plague begins; Aaron stands with incense between the living and the dead, and the plague stops. The chapter shows the danger of grabbing a holy role God has not given, and the power of praying for others.",
+    "summary": "Korah, a Levite, joins Dathan, Abiram, and 250 leaders to challenge Moses and Aaron (Numbers 16:1–11). Dathan and Abiram refuse Moses' call to come (Numbers 16:12–15). The earth opens and swallows the rebels, and fire burns up the 250 men offering incense (Numbers 16:16–35). Their censers are beaten into a covering for the altar as a warning (Numbers 16:36–40). When the people grumble, a plague begins, and Aaron stands \"between the dead and the living\" with incense until it stops (Numbers 16:41–50).",
     "whereWeAre": "The wandering years have begun after Israel's refusal in chapter 14. Now Korah and other leaders rise up against Moses and Aaron and claim the right to be priests. God judges them, and chapter 17 settles the question of whom God has chosen.",
     "keyFigures": [
       {
         "name": "Korah",
-        "role": "Levite leader of the challenge"
+        "role": "A Levite who leads the rebellion against Moses and Aaron."
       },
       {
         "name": "Dathan and Abiram",
-        "role": "Reubenite opponents of Moses"
+        "role": "Reubenites who refuse to come when Moses calls them."
+      },
+      {
+        "name": "The 250 leaders",
+        "role": "Offer incense and are burned up."
       },
       {
         "name": "Moses",
-        "role": "Refers the dispute to the LORD"
+        "role": "Leaves the choice to the LORD and pleads for the people."
       },
       {
         "name": "Aaron",
-        "role": "Performs the incense rite that stops the plague"
-      },
-      {
-        "name": "Two hundred fifty leaders",
-        "role": "Offer incense and die"
+        "role": "Stands between the dead and the living with incense."
       },
       {
         "name": "Eleazar",
-        "role": "Has censers made into a warning covering"
+        "role": "Gathers the censers to make a covering for the altar."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Disputed leadership",
-        "explanation": "Claims about shared holiness do not erase assigned roles",
+        "theme": "Grabbing for power",
+        "explanation": "Korah and his followers want a role God has not given them.",
         "references": [
-          "16:1-11"
+          "Numbers 16:1-11"
         ]
       },
       {
-        "theme": "Sacred responsibility",
-        "explanation": "Unauthorized incense offering brings judgment",
+        "theme": "Holy things are not toys",
+        "explanation": "Offering incense without God's call brings judgment.",
         "references": [
-          "16:35-40"
+          "Numbers 16:35-40"
         ]
       },
       {
-        "theme": "Intercession in crisis",
-        "explanation": "Aaron acts to stop the plague",
+        "theme": "Standing in the gap",
+        "explanation": "Aaron runs into the crowd with incense, and the plague stops.",
         "references": [
-          "16:46-50"
+          "Numbers 16:46-50"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 17": {
-    "summary": "The LORD instructs each tribal leader to provide a staff bearing his name, with Aaron's name on the staff of Levi. All twelve staffs are placed before the testimony. By morning Aaron's staff has sprouted, blossomed, and produced almonds, confirming his priestly appointment. It is kept as a sign to warn against rebellion. The people respond with fear that approaching the tabernacle may mean death. God settles the argument with a sign everyone can see.",
+    "summary": "God has each tribe's leader bring a rod with his name on it and lays them in the tabernacle (Numbers 17:1–7). By morning Aaron's rod has budded, blossomed, and borne almonds, and it is kept as a sign against rebels (Numbers 17:8–11). The people cry out that they are all about to die (Numbers 17:12–13).",
     "whereWeAre": "Korah's rebellion in chapter 16 asked who has the right to serve as priest. God answers with a sign: of twelve staffs, only Aaron's buds overnight. The people are now afraid to come near the tabernacle, and chapter 18 answers that fear.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Orders the test and identifies the chosen staff"
+        "role": "Chooses Aaron by making his rod bud."
       },
       {
         "name": "Moses",
-        "role": "Collects and displays the staffs"
+        "role": "Gathers the rods and lays them before the LORD."
       },
       {
         "name": "Aaron",
-        "role": "Is confirmed as leader of the priestly line"
+        "role": "His rod buds, blossoms, and bears almonds."
       },
       {
-        "name": "Tribal leaders",
-        "role": "Provide staffs as representatives"
+        "name": "The tribal leaders",
+        "role": "Each bring a rod with his name on it."
       },
       {
-        "name": "Israelites",
-        "role": "Express fear after the sign"
+        "name": "The people",
+        "role": "Cry out that they will all die."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Divine appointment",
-        "explanation": "Aaron's staff marks a specific calling",
+        "theme": "God's choice",
+        "explanation": "Aaron's rod buds to show whom God has chosen.",
         "references": [
-          "17:5,8"
+          "Numbers 17:5",
+          "Numbers 17:8"
         ]
       },
       {
-        "theme": "Remembering warnings",
-        "explanation": "The staff is preserved against future rebellion",
+        "theme": "A sign to remember",
+        "explanation": "The rod is kept as a warning against rebellion.",
         "references": [
-          "17:10"
+          "Numbers 17:10"
         ]
       },
       {
-        "theme": "Reverence and fear",
-        "explanation": "The people recognize the seriousness of sanctuary boundaries",
+        "theme": "Fear of God's house",
+        "explanation": "The people are afraid to come near the tabernacle.",
         "references": [
-          "17:12-13"
+          "Numbers 17:12-13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 18": {
-    "summary": "The LORD assigns Aaron and his sons responsibility for priestly work and the sanctuary's offenses, while Levites assist and guard the tent. Unauthorized persons must not approach sacred service. Priests are supported by specified portions of sacrifices and offerings, and Levites receive Israel's tithes because they receive no territorial inheritance like other tribes. In turn, Levites must contribute a tithe of the tithe to the priests. Those who serve at God's house are supported by the gifts of the people.",
+    "summary": "The priests and Levites are made responsible for guarding the tabernacle, so that no one else comes near and dies (Numbers 18:1–7). The priests receive portions of the offerings and firstfruits, and the LORD tells Aaron, \"I am thy part and thine inheritance\" (Numbers 18:8–20). The Levites receive Israel's tithes in place of land (Numbers 18:21–24), and they give a tenth of those tithes to the priests (Numbers 18:25–32).",
     "whereWeAre": "Chapter 17 ended with the people afraid that anyone who comes near the tabernacle will die. God answers by making the priests and Levites responsible for guarding it. He also explains how they will be supported, before chapter 19 turns to cleansing after contact with death.",
     "keyFigures": [
       {
-        "name": "Aaron and his sons",
-        "role": "Hold priestly responsibilities and receive assigned offerings"
-      },
-      {
-        "name": "Levites",
-        "role": "Assist with tabernacle service and receive tithes"
-      },
-      {
         "name": "The LORD",
-        "role": "Assigns duties and provisions"
+        "role": "Tells Aaron how the priests and Levites will guard the tabernacle and be supported."
       },
       {
-        "name": "Israelites",
-        "role": "Provide offerings and tithes"
+        "name": "Aaron and his sons",
+        "role": "Serve as priests and receive their share of the offerings."
+      },
+      {
+        "name": "The Levites",
+        "role": "Help the priests and receive Israel's tithes."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Responsibility with authority",
-        "explanation": "Priestly access carries accountability",
+        "theme": "Responsibility comes with privilege",
+        "explanation": "The priests must answer for any wrong done at the sanctuary.",
         "references": [
-          "18:1-7"
+          "Numbers 18:1-7"
         ]
       },
       {
-        "theme": "Sustaining service",
-        "explanation": "Offerings and tithes support sanctuary workers",
+        "theme": "Supporting God's servants",
+        "explanation": "The people's offerings and tithes support those who serve.",
         "references": [
-          "18:8-24"
+          "Numbers 18:8-24"
         ]
       },
       {
-        "theme": "Mutual obligation",
-        "explanation": "Levites contribute from what they receive",
+        "theme": "Giving from what is given",
+        "explanation": "Even the Levites give a tenth of what they receive.",
         "references": [
-          "18:25-32"
+          "Numbers 18:25-32"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 19": {
-    "summary": "The LORD prescribes a red heifer without defect to be slaughtered and burned outside the camp; its ashes are stored for preparing water used in purification. Contact with a dead body or graves creates ritual impurity for seven days, with cleansing on the third and seventh days. Failure to undergo purification threatens the sanctuary's holiness. It gives a way to be made clean after contact with death.",
+    "summary": "A red heifer without blemish is burned outside the camp, and its ashes are kept for the water of cleansing (Numbers 19:1–10). Anyone who touches a dead body is unclean for seven days and must be sprinkled with this water on the third and seventh days (Numbers 19:11–22).",
     "whereWeAre": "Chapters 16–18 were full of death, from Korah's rebellion to the plague that followed. This chapter explains how a person is made clean after touching a dead body, using the ashes of a red heifer. Chapter 20 jumps ahead to the end of the forty years.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Commands the purification procedure"
+        "role": "Gives the law of the red heifer."
       },
       {
         "name": "Moses and Aaron",
-        "role": "Receive the statute"
+        "role": "Receive the law."
       },
       {
         "name": "Eleazar",
-        "role": "Oversees the heifer ritual"
+        "role": "Takes the heifer outside the camp and sprinkles its blood."
       },
       {
-        "name": "Clean person",
-        "role": "Collects ashes and applies water as specified"
-      },
-      {
-        "name": "Anyone exposed to death",
-        "role": "Must follow the purification rules"
+        "name": "A clean man",
+        "role": "Gathers the ashes and sprinkles the water."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Death and impurity",
-        "explanation": "Contact with corpses creates a defined ritual condition",
+        "theme": "Death makes unclean",
+        "explanation": "Touching a dead body makes a person unclean for seven days.",
         "references": [
-          "19:11-16"
+          "Numbers 19:11-16"
         ]
       },
       {
-        "theme": "Cleansing and restoration",
-        "explanation": "Purification water is applied at appointed times",
+        "theme": "The way to be clean",
+        "explanation": "The water with the heifer's ashes makes a person clean again.",
         "references": [
-          "19:17-19"
+          "Numbers 19:17-19"
         ]
       },
       {
-        "theme": "Protecting sacred space",
-        "explanation": "Neglecting cleansing is linked to defiling the sanctuary",
+        "theme": "Protecting God's house",
+        "explanation": "Anyone who refuses to be cleansed defiles the sanctuary.",
         "references": [
-          "19:20"
+          "Numbers 19:20"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 20": {
-    "summary": "In the wilderness of Zin at Kadesh, Miriam dies. The people complain about the lack of water, and the LORD tells Moses to speak to a rock. Instead, Moses angrily addresses the people and strikes the rock twice; water flows, but the LORD says Moses and Aaron did not uphold his holiness and will not lead the people into the land. Edom refuses Israel passage by the king's highway, forcing another route. On Mount Hor, Aaron dies after his priestly garments are transferred to Eleazar. Israel loses two of its three leaders, and Moses learns he will not enter the land.",
+    "summary": "At Kadesh, Miriam dies; when the people complain of thirst, God tells Moses to speak to the rock, but Moses strikes it twice in anger, and God says he will not bring Israel into the land (Numbers 20:1–13). The king of Edom refuses to let Israel pass through his land (Numbers 20:14–21). On mount Hor, Aaron's garments are put on Eleazar, and Aaron dies (Numbers 20:22–29).",
     "whereWeAre": "The forty years in the wilderness are nearly over, and the people are back at Kadesh. Miriam dies, Moses strikes the rock in anger and loses his place in the promised land, and Aaron dies on Mount Hor. In chapter 21 Israel finally begins to move toward Canaan from the east.",
     "keyFigures": [
       {
         "name": "Miriam",
-        "role": "Dies at Kadesh"
+        "role": "Dies at Kadesh."
+      },
+      {
+        "name": "The people",
+        "role": "Complain that there is no water."
       },
       {
         "name": "Moses",
-        "role": "Strikes the rock and receives judgment"
+        "role": "Strikes the rock twice instead of speaking to it."
       },
       {
-        "name": "Aaron",
-        "role": "Shares in the judgment and dies on Mount Hor"
+        "name": "The LORD",
+        "role": "Gives water but tells Moses and Aaron they will not enter the land."
       },
       {
-        "name": "Eleazar",
-        "role": "Succeeds Aaron in priestly clothing"
+        "name": "The king of Edom",
+        "role": "Refuses to let Israel pass."
       },
       {
-        "name": "Edom's king",
-        "role": "Refuses passage"
-      },
-      {
-        "name": "Israelites",
-        "role": "Complain about water and mourn Aaron"
+        "name": "Aaron and Eleazar",
+        "role": "Aaron dies on mount Hor, and his son takes his place."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Leadership accountability",
-        "explanation": "Even Moses and Aaron are held responsible for their conduct",
+        "theme": "Leaders are accountable",
+        "explanation": "Even Moses and Aaron are judged for disobeying God.",
         "references": [
-          "20:7-12"
+          "Numbers 20:7-12"
         ]
       },
       {
-        "theme": "Necessity and provision",
-        "explanation": "Water comes to a distressed community",
+        "theme": "Water from the rock",
+        "explanation": "God still gives water to a complaining people.",
         "references": [
-          "20:2-11"
+          "Numbers 20:2-11"
         ]
       },
       {
-        "theme": "Transition and mortality",
-        "explanation": "Aaron's office passes to Eleazar as the generation changes",
+        "theme": "Passing the torch",
+        "explanation": "Aaron's garments pass to Eleazar as one generation gives way to the next.",
         "references": [
-          "20:22-29"
+          "Numbers 20:22-29"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 21": {
-    "summary": "Israel defeats the Canaanite king of Arad after making a vow. As the people travel around Edom, they again complain, and venomous snakes bite them. The LORD instructs Moses to set a bronze serpent on a pole; those who look at it live. The narrative then records further travel, a song celebrating water, and victories over Sihon king of the Amorites and Og king of Bashan. Israel still complains, but it also wins its first lands east of the Jordan.",
+    "summary": "Israel defeats the Canaanite king of Arad (Numbers 21:1–3). When the people complain again, fiery serpents bite them, and Moses makes \"a serpent of brass\" so that anyone who looks at it lives (Numbers 21:4–9). They travel north and sing to a well God gives them (Numbers 21:10–20). Israel defeats Sihon king of the Amorites (Numbers 21:21–32) and Og king of Bashan (Numbers 21:33–35).",
     "whereWeAre": "Chapter 20 ended with Aaron's death and Edom refusing to let Israel pass. Israel goes around Edom, complains again, and is saved by looking at a bronze serpent, which Jesus later compares to his own death (John 3:14). Then they win their first victories east of the Jordan and camp on the plains of Moab, where chapters 22–36 take place.",
     "keyFigures": [
       {
+        "name": "The king of Arad",
+        "role": "Attacks Israel and is defeated."
+      },
+      {
+        "name": "The people",
+        "role": "Complain, are bitten by serpents, and confess their sin."
+      },
+      {
         "name": "Moses",
-        "role": "Intercedes and makes the bronze serpent"
+        "role": "Prays and makes the serpent of brass."
       },
       {
         "name": "The LORD",
-        "role": "Responds to Israel's pleas and directs the remedy"
-      },
-      {
-        "name": "Israelites",
-        "role": "Complain, repent, travel, and fight"
-      },
-      {
-        "name": "King of Arad",
-        "role": "Opposes Israel in the south"
+        "role": "Sends the serpents and gives the cure."
       },
       {
         "name": "Sihon",
-        "role": "Amorite king defeated by Israel"
+        "role": "King of the Amorites, defeated when he attacks."
       },
       {
         "name": "Og",
-        "role": "King of Bashan defeated by Israel"
+        "role": "King of Bashan, defeated when he attacks."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Complaint and consequence",
-        "explanation": "The snake episode links rebellion with danger",
+        "theme": "Complaining again",
+        "explanation": "The people call the manna \"this light bread,\" and serpents come among them.",
         "references": [
-          "21:4-7"
+          "Numbers 21:4-7"
         ]
       },
       {
-        "theme": "God's provided remedy",
-        "explanation": "The bronze serpent is given as a means of survival in the story",
+        "theme": "Look and live",
+        "explanation": "Anyone bitten who looks at the serpent of brass lives (John 3:14).",
         "references": [
-          "21:8-9"
+          "Numbers 21:8-9"
         ]
       },
       {
-        "theme": "Progress toward settlement",
-        "explanation": "Victories establish control of territory east of Jordan",
+        "theme": "The first victories",
+        "explanation": "Israel defeats Sihon and Og and takes land east of the Jordan.",
         "references": [
-          "21:21-35"
+          "Numbers 21:21-35"
         ]
       }
     ],
@@ -1070,762 +1031,666 @@
     ]
   },
   "Numbers 22": {
-    "summary": "Balak, king of Moab, fears the Israelites encamped nearby and sends messengers to hire Balaam to curse them. Balaam initially refuses after God's prohibition, then receives permission to go under specified conditions. On the journey, his donkey sees the angel of the LORD blocking the way; Balaam does not until God opens his eyes. The angel warns him to say only what he is told. Balaam meets Balak, who prepares sacrifices, but God has already limited what Balaam can say.",
+    "summary": "Israel camps in the plains of Moab, and Balak king of Moab sends for Balaam to curse them, but God tells Balaam not to go (Numbers 22:1–14). Balak sends greater princes, and God lets Balaam go but only to speak his word (Numbers 22:15–21). On the road, Balaam's ass sees the angel of the LORD, turns aside three times, and speaks to him (Numbers 22:22–35). Balaam meets Balak, who offers sacrifices (Numbers 22:36–41).",
     "whereWeAre": "Israel has just defeated Sihon and Og and is camped on the plains of Moab. Balak, king of Moab, is terrified and hires the prophet Balaam to curse them. In chapters 23–24, Balaam tries.",
     "keyFigures": [
       {
         "name": "Balak",
-        "role": "King of Moab who seeks to curse Israel"
+        "role": "King of Moab, who sends for Balaam to curse Israel."
       },
       {
         "name": "Balaam",
-        "role": "Diviner summoned from outside Moab and constrained by God's word"
+        "role": "A seer who may only speak what God tells him."
       },
       {
-        "name": "Balaam's donkey",
-        "role": "Sees the angel before Balaam does"
+        "name": "Balaam's ass",
+        "role": "Sees the angel, turns aside, and speaks."
       },
       {
-        "name": "Angel of the LORD",
-        "role": "Confronts Balaam on the road"
+        "name": "The angel of the LORD",
+        "role": "Stands in the road with a drawn sword."
       },
       {
-        "name": "Moabite messengers",
-        "role": "Carry Balak's invitation"
+        "name": "The princes of Moab",
+        "role": "Carry Balak's message and money."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Fear of outsiders",
-        "explanation": "Balak interprets Israel's proximity as danger",
+        "theme": "Fear of God's people",
+        "explanation": "Balak is terrified because of how many Israelites there are.",
         "references": [
-          "22:2-6"
+          "Numbers 22:2-6"
         ]
       },
       {
-        "theme": "Limits of divination",
-        "explanation": "Balaam cannot freely pronounce a curse against Israel",
+        "theme": "No curse against God's will",
+        "explanation": "Balaam can say only what God puts in his mouth.",
         "references": [
-          "22:12,18,38"
+          "Numbers 22:12",
+          "Numbers 22:18",
+          "Numbers 22:38"
         ]
       },
       {
-        "theme": "Unexpected correction",
-        "explanation": "The donkey and angel expose Balaam's blindness",
+        "theme": "An ass that sees more",
+        "explanation": "The ass sees the angel that the famous seer cannot.",
         "references": [
-          "22:22-35"
+          "Numbers 22:22-35"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 23": {
-    "summary": "Balak brings Balaam to sites overlooking Israel and repeatedly offers sacrifices, hoping to obtain a curse. Instead Balaam speaks oracles received from God. The first proclaims Israel set apart and numerous; the second declares that God has blessed Israel and does not change the blessing at Balak's request. Balak becomes frustrated but tries another location. As Balaam says, \"How shall I curse, whom God hath not cursed?\" (Numbers 23:8).",
+    "summary": "Balaam has seven altars built, but his first message blesses Israel: \"How shall I curse, whom God hath not cursed?\" (Numbers 23:1–12). Balak tries again from Pisgah, and Balaam says, \"God is not a man, that he should lie\" (Numbers 23:13–26). Balak takes him to the top of Peor for a third try (Numbers 23:27–30).",
     "whereWeAre": "Balaam arrived in Moab at the end of chapter 22, warned to say only what God tells him. Balak takes him to high places overlooking Israel, but each time Balaam opens his mouth, he blesses instead of curses. Balak tries again in chapter 24.",
     "keyFigures": [
       {
         "name": "Balak",
-        "role": "Attempts to obtain a curse through ritual and payment"
+        "role": "Builds altars and takes Balaam to high places to curse Israel."
       },
       {
         "name": "Balaam",
-        "role": "Delivers oracles rather than Balak's requested curse"
+        "role": "Speaks the words God gives him and blesses Israel."
       },
       {
         "name": "The LORD",
-        "role": "Places words in Balaam's mouth"
-      },
-      {
-        "name": "Israel",
-        "role": "Is the subject of the blessings"
+        "role": "Puts his word in Balaam's mouth."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Blessing cannot be purchased",
-        "explanation": "Balak's offerings do not make Balaam's curse effective",
+        "theme": "Blessing cannot be bought",
+        "explanation": "Altars and money cannot make Balaam curse Israel.",
         "references": [
-          "23:1-12"
+          "Numbers 23:1-12"
         ]
       },
       {
-        "theme": "God's declared purpose",
-        "explanation": "Balaam emphasizes the stability of God's blessing",
+        "theme": "God keeps his word",
+        "explanation": "\"God is not a man, that he should lie.\"",
         "references": [
-          "23:19-23"
+          "Numbers 23:19-23"
         ]
       },
       {
-        "theme": "Limits on the messenger",
-        "explanation": "Balaam must speak the word received",
+        "theme": "Only God's words",
+        "explanation": "Balaam must speak only what the LORD gives him.",
         "references": [
-          "23:12,26"
+          "Numbers 23:12",
+          "Numbers 23:26"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 24": {
-    "summary": "After two failed attempts to curse Israel, Balaam no longer seeks omens and speaks further blessings while looking over Israel's camp. He describes Israel's flourishing and strength and announces that a star and scepter will arise from Jacob, overcoming neighboring enemies. Balak angrily sends him away, and Balaam delivers additional oracles about various nations before departing. The curse Balak paid for becomes a string of blessings.",
+    "summary": "The Spirit of God comes on Balaam, and he blesses Israel again: \"How goodly are thy tents, O Jacob\" (Numbers 24:1–9). Balak is furious that Balaam has blessed them three times (Numbers 24:10–14). Balaam sees far ahead: \"there shall come a Star out of Jacob\" (Numbers 24:15–19). He speaks of other nations and goes home (Numbers 24:20–25).",
     "whereWeAre": "Balaam has blessed Israel twice in chapter 23. Now he blesses them a third time and sees far into the future: \"there shall come a Star out of Jacob, and a Sceptre shall rise out of Israel\" (Numbers 24:17). Balak sends him home, but chapter 25 shows Israel bringing trouble on itself.",
     "keyFigures": [
       {
         "name": "Balaam",
-        "role": "Pronounces blessings and future-oriented oracles"
+        "role": "Blesses Israel a third time and sees a Star coming out of Jacob."
       },
       {
         "name": "Balak",
-        "role": "Rejects Balaam after repeated failure to curse"
+        "role": "Is furious and sends Balaam away."
       },
       {
-        "name": "Spirit of God",
-        "role": "Comes upon Balaam according to the narrative"
-      },
-      {
-        "name": "Israel and neighboring peoples",
-        "role": "Are named in the oracles"
+        "name": "The Spirit of God",
+        "role": "Comes on Balaam as he looks at Israel's camp."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Blessing despite opposition",
-        "explanation": "Attempts to curse Israel yield favorable oracles",
+        "theme": "Blessed despite enemies",
+        "explanation": "Every attempt to curse Israel ends in a blessing.",
         "references": [
-          "24:1-9"
+          "Numbers 24:1-9"
         ]
       },
       {
-        "theme": "Future kingship",
-        "explanation": "Star and scepter imagery points to anticipated rule from Jacob",
+        "theme": "A coming King",
+        "explanation": "\"There shall come a Star out of Jacob, and a Sceptre shall rise out of Israel.\"",
         "references": [
-          "24:15-19"
+          "Numbers 24:15-19"
         ]
       },
       {
-        "theme": "Limits of royal power",
-        "explanation": "Balak cannot dictate the message",
+        "theme": "Kings cannot control God",
+        "explanation": "Balak's anger cannot change God's message.",
         "references": [
-          "24:10-13"
+          "Numbers 24:10-13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 25": {
-    "summary": "At Shittim, Israelite men have sexual relations with Moabite women and participate in sacrifices to Baal of Peor. The LORD commands action against the offenders as a plague strikes the camp. Phinehas, Aaron's grandson, kills an Israelite man named Zimri and a Midianite woman named Cozbi, and the plague stops. God grants Phinehas a covenant of enduring priesthood and commands opposition to Midian. Israel is unfaithful to God in both body and worship.",
+    "summary": "At Shittim, Israel's men sin with the women of Moab and worship Baalpeor, and a plague breaks out; Phinehas kills Zimri and the Midianite woman Cozbi, and the plague stops after 24,000 have died (Numbers 25:1–9). God gives Phinehas \"my covenant of peace,\" a lasting priesthood (Numbers 25:10–15). God tells Moses to treat the Midianites as enemies (Numbers 25:16–18).",
     "whereWeAre": "Balaam could not curse Israel in chapters 22–24, but Israel falls into sin on its own. The men join in Moab's sexual sin and worship of Baal of Peor, and a plague breaks out. Numbers 31:16 later says this was Balaam's idea, and chapter 26 counts the people who are left.",
     "keyFigures": [
       {
-        "name": "Israelite offenders",
-        "role": "Join forbidden worship at Peor"
-      },
-      {
-        "name": "Moabite women",
-        "role": "Are involved in the opening account"
+        "name": "The men of Israel",
+        "role": "Sin with the women of Moab and worship Baalpeor."
       },
       {
         "name": "Moses",
-        "role": "Receives commands for judgment"
+        "role": "Orders the judges to punish those who joined Baalpeor."
       },
       {
         "name": "Phinehas",
-        "role": "Acts against a public violation and is granted a priestly promise"
+        "role": "Aaron's grandson, who stops the plague and is promised a lasting priesthood."
       },
       {
         "name": "Zimri and Cozbi",
-        "role": "Are killed by Phinehas"
+        "role": "An Israelite leader and a Midianite woman, killed by Phinehas."
       },
       {
         "name": "The LORD",
-        "role": "Judges the infidelity and ends the plague"
+        "role": "Sends the plague and makes his covenant of peace with Phinehas."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Covenant loyalty",
-        "explanation": "Participation in Baal worship is presented as a grave rupture",
+        "theme": "Unfaithful to God",
+        "explanation": "Israel's men join in Moab's sin and worship Baalpeor.",
         "references": [
-          "25:1-5"
+          "Numbers 25:1-5"
         ]
       },
       {
-        "theme": "Zeal and judgment",
-        "explanation": "Phinehas' action is commended within this particular narrative",
+        "theme": "Zeal for God",
+        "explanation": "Phinehas acts for God's honor, and God makes his covenant of peace with him.",
         "references": [
-          "25:6-13"
+          "Numbers 25:6-13"
         ]
       },
       {
-        "theme": "Communal consequences",
-        "explanation": "The text reports a deadly plague",
+        "theme": "Sin costs lives",
+        "explanation": "Twenty-four thousand die in the plague.",
         "references": [
-          "25:8-9"
+          "Numbers 25:8-9"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 26": {
-    "summary": "After the plague, the LORD commands Moses and Eleazar to count Israelites twenty years old and older who can go to war. The second census totals 601,730, and tribal families are listed to guide land allotments. Shares are to reflect population, while exact distributions are determined by lot. The Levites are counted separately. The chapter notes that, apart from Caleb and Joshua, those counted in the earlier wilderness census have died as the LORD foretold. A new generation now stands ready to enter the land.",
+    "summary": "After the plague, God tells Moses and Eleazar to count the men again (Numbers 26:1–4). The tribes are counted by families, for a total of 601,730 (Numbers 26:5–51). The land is to be divided by size and by lot (Numbers 26:52–56), and the Levites are counted separately (Numbers 26:57–62). Not one man from the first count is left except Caleb and Joshua (Numbers 26:63–65).",
     "whereWeAre": "The plague at Peor in chapter 25 has ended. Now God orders a second census, almost forty years after the first one in chapter 1. Only Caleb and Joshua are left from the old generation, and this new count will be used to divide the land.",
     "keyFigures": [
       {
-        "name": "Moses",
-        "role": "Supervises the second census"
+        "name": "The LORD",
+        "role": "Tells Moses and Eleazar to count the people again."
       },
       {
-        "name": "Eleazar",
-        "role": "Priest who assists after Aaron's death"
+        "name": "Moses and Eleazar",
+        "role": "Count the new generation in the plains of Moab."
       },
       {
-        "name": "Tribal families",
-        "role": "Are counted as a basis for land distribution"
-      },
-      {
-        "name": "Levites",
-        "role": "Receive a separate census"
+        "name": "The tribes",
+        "role": "Counted by families for dividing the land."
       },
       {
         "name": "Caleb and Joshua",
-        "role": "Remain from the earlier counted generation"
-      },
-      {
-        "name": "The LORD",
-        "role": "Orders the census and allotment principles"
+        "role": "The only men left from the first count."
       }
     ],
     "keyThemes": [
       {
         "theme": "A new generation",
-        "explanation": "The census marks the passing of the earlier generation",
+        "explanation": "The people who left Egypt have died, and their children now stand ready.",
         "references": [
-          "26:63-65"
+          "Numbers 26:63-65"
         ]
       },
       {
-        "theme": "Justice in allotment",
-        "explanation": "Population affects the size of inheritance",
+        "theme": "Fair shares",
+        "explanation": "Larger tribes receive more land.",
         "references": [
-          "26:52-54"
+          "Numbers 26:52-54"
         ]
       },
       {
-        "theme": "Order and divine direction",
-        "explanation": "Lots assign inheritances within the stated framework",
+        "theme": "God decides by lot",
+        "explanation": "The lot shows where each tribe's land will be.",
         "references": [
-          "26:55-56"
+          "Numbers 26:55-56"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 27": {
-    "summary": "The daughters of Zelophehad—Mahlah, Noah, Hoglah, Milcah, and Tirzah—ask to inherit land because their father died without a son. Moses brings their case before the LORD, who affirms their claim and establishes broader inheritance rules. The LORD then tells Moses he will see the promised land but not enter it. At Moses' request for a successor, Joshua is commissioned before Eleazar and the congregation, with priestly inquiry to guide Israel. The chapter settles a new question about inheritance and names the next leader.",
+    "summary": "The five daughters of Zelophehad ask for their father's land, since he had no sons, and God says, \"The daughters of Zelophehad speak right\" (Numbers 27:1–11). God tells Moses to look at the land from the mountain, for he will die without entering it (Numbers 27:12–14). Moses asks for a shepherd for the people, and Joshua is set apart before Eleazar and the congregation (Numbers 27:15–23).",
     "whereWeAre": "The new generation was counted in chapter 26. Five daughters of Zelophehad ask for their father's share of the land, and God says yes. Then God tells Moses he will soon die, and Joshua is chosen to lead Israel into the land.",
     "keyFigures": [
       {
-        "name": "Mahlah, Noah, Hoglah, Milcah, and Tirzah",
-        "role": "Petition for their deceased father's inheritance"
-      },
-      {
-        "name": "Zelophehad",
-        "role": "Their father, whose lack of sons creates the legal issue"
+        "name": "The daughters of Zelophehad",
+        "role": "Mahlah, Noah, Hoglah, Milcah, and Tirzah, who ask for their father's land."
       },
       {
         "name": "Moses",
-        "role": "Consults the LORD and commissions Joshua"
-      },
-      {
-        "name": "Joshua",
-        "role": "Is appointed successor"
-      },
-      {
-        "name": "Eleazar",
-        "role": "Participates in the public commissioning"
+        "role": "Brings their case to the LORD and asks for a leader to follow him."
       },
       {
         "name": "The LORD",
-        "role": "Affirms the inheritance claim and directs succession"
+        "role": "Grants their request and tells Moses he will soon die."
+      },
+      {
+        "name": "Joshua",
+        "role": "Chosen to lead Israel after Moses."
+      },
+      {
+        "name": "Eleazar",
+        "role": "The priest, before whom Joshua is set apart."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Seeking just judgment",
-        "explanation": "The daughters' petition receives a favorable ruling",
+        "theme": "Asking for justice",
+        "explanation": "Five sisters ask for their father's land, and God says they are right.",
         "references": [
-          "27:1-11"
+          "Numbers 27:1-11"
         ]
       },
       {
-        "theme": "Caring for future leadership",
-        "explanation": "Moses asks for a leader for the community",
+        "theme": "A shepherd for the flock",
+        "explanation": "Moses asks God for a leader, \"that the congregation of the LORD be not as sheep which have no shepherd.\"",
         "references": [
-          "27:15-17"
+          "Numbers 27:15-17"
         ]
       },
       {
-        "theme": "Public commissioning",
-        "explanation": "Joshua receives authority before the congregation",
+        "theme": "A leader set apart",
+        "explanation": "Joshua is given authority in front of the whole people.",
         "references": [
-          "27:18-23"
+          "Numbers 27:18-23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 28": {
-    "summary": "The LORD gives Moses a calendar of required offerings: two lambs daily, additional offerings each Sabbath, and sacrifices at the beginning of each month. The chapter then details offerings for Passover and the Festival of Unleavened Bread, followed by the Festival of Weeks or firstfruits. These recurring observances structure Israel's worship around daily, weekly, monthly, and seasonal rhythms. These are the offerings of the whole nation.",
+    "summary": "God lists the offerings Israel must bring: a lamb every morning and evening (Numbers 28:1–8), extra offerings each Sabbath (Numbers 28:9–10), and offerings at the start of each month (Numbers 28:11–15). He gives the offerings for the Passover and the feast of unleavened bread (Numbers 28:16–25) and for the day of firstfruits (Numbers 28:26–31).",
     "whereWeAre": "Joshua was named Moses' successor in chapter 27. Before Israel enters the land, God reminds the new generation of the offerings they must bring every day, week, month, and feast. The list of feasts continues in chapter 29.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Defines the offering calendar"
+        "role": "Lists the daily, weekly, monthly, and spring offerings."
       },
       {
         "name": "Moses",
-        "role": "Receives the commands for Israel"
-      },
-      {
-        "name": "Israelites",
-        "role": "Are responsible for presenting communal offerings"
-      },
-      {
-        "name": "Priests",
-        "role": "Are implied administrators of the prescribed sacrifices within the sanctuary system"
+        "role": "Commands the people to bring them."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Daily worship",
-        "explanation": "Morning and evening offerings form a recurring rhythm",
+        "theme": "Worship every day",
+        "explanation": "A lamb is offered every morning and every evening.",
         "references": [
-          "28:1-8"
+          "Numbers 28:1-8"
         ]
       },
       {
-        "theme": "Sacred time",
-        "explanation": "Sabbaths and new moons receive additional offerings",
+        "theme": "Holy times",
+        "explanation": "Sabbaths and new moons have extra offerings.",
         "references": [
-          "28:9-15"
+          "Numbers 28:9-15"
         ]
       },
       {
-        "theme": "Remembering redemption and harvest",
-        "explanation": "Passover and Weeks receive festival offerings",
+        "theme": "Remembering and thanking",
+        "explanation": "The Passover and the firstfruits have their own offerings.",
         "references": [
-          "28:16-31"
+          "Numbers 28:16-31"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 29": {
-    "summary": "The festival calendar continues with offerings for the first day of the seventh month, the Day of Atonement on the tenth day, and the seven-day Festival of Booths beginning on the fifteenth. The offerings for Booths decrease in the number of bulls over successive days, followed by a separate solemn assembly on the eighth day. The LORD describes these sacrifices as additional to vows and voluntary offerings. The seventh month is the busiest season of worship in Israel's year.",
+    "summary": "The seventh month begins with a day of blowing trumpets (Numbers 29:1–6), and its tenth day is a day to afflict their souls (Numbers 29:7–11). For the seven days of the feast that follows, the number of bulls drops by one each day, and an eighth day of assembly closes it (Numbers 29:12–38). These are in addition to vows and freewill offerings (Numbers 29:39–40).",
     "whereWeAre": "Chapter 28 listed the daily, weekly, monthly, and spring offerings. This chapter covers the fall feasts of the seventh month: the blowing of trumpets, the Day of Atonement, and the feast of tabernacles. Chapter 30 turns to keeping vows.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Prescribes festival offerings"
+        "role": "Lists the offerings for the feasts of the seventh month."
       },
       {
         "name": "Moses",
-        "role": "Conveys the commands"
-      },
-      {
-        "name": "Israelite congregation",
-        "role": "Observes sacred assemblies"
-      },
-      {
-        "name": "Priests",
-        "role": "Are implied to perform sacrifices under the sanctuary regulations"
+        "role": "Tells Israel all that the LORD commanded."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Holy assemblies",
-        "explanation": "Designated days involve rest or restricted work",
+        "theme": "Days set apart",
+        "explanation": "The seventh month has holy days with no ordinary work.",
         "references": [
-          "29:1,7,12,35"
+          "Numbers 29:1",
+          "Numbers 29:7",
+          "Numbers 29:12",
+          "Numbers 29:35"
         ]
       },
       {
-        "theme": "Atonement and humility",
-        "explanation": "The tenth-day observance includes self-denial",
+        "theme": "A day of humbling",
+        "explanation": "On the tenth day the people humble themselves before God.",
         "references": [
-          "29:7-11"
+          "Numbers 29:7-11"
         ]
       },
       {
-        "theme": "Celebration and dedication",
-        "explanation": "Booths has extended offerings across its festival days",
+        "theme": "A week of celebration",
+        "explanation": "The feast in the seventh month has offerings on every one of its days.",
         "references": [
-          "29:12-38"
+          "Numbers 29:12-38"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 30": {
-    "summary": "Moses tells Israel's tribal heads that vows to the LORD must be honored. The chapter sets specific rules for vows made by men, by unmarried women in their father's household, by married women, and by widows or divorced women. A father or husband may annul certain vows when first hearing them, but silence confirms them; consequences follow a later attempted annulment. A promise made to God is serious and must be kept.",
+    "summary": "A man who makes a vow to the LORD must keep it (Numbers 30:1–2). A young woman's vow may be cancelled by her father on the day he hears it (Numbers 30:3–5), and a wife's by her husband (Numbers 30:6–8). A widow or divorced woman must keep her vow (Numbers 30:9), and a husband who stays silent lets his wife's vow stand (Numbers 30:10–16).",
     "whereWeAre": "Chapters 28–29 covered the offerings Israel owes God. This chapter covers promises people make to God on their own. In chapter 31 Israel goes to war against Midian, the last task Moses must finish before he dies.",
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Delivers the regulations to tribal leaders"
+        "role": "Tells the heads of the tribes the law of vows."
       },
       {
-        "name": "Tribal heads",
-        "role": "Receive the instructions"
-      },
-      {
-        "name": "Men making vows",
-        "role": "Are required to fulfill their commitments"
-      },
-      {
-        "name": "Daughters and wives",
-        "role": "Are subject to specified household rules"
-      },
-      {
-        "name": "Fathers and husbands",
-        "role": "May confirm or annul certain vows"
-      },
-      {
-        "name": "Widows and divorced women",
-        "role": "Are explicitly responsible for their vows"
+        "name": "The heads of the tribes",
+        "role": "Receive the law for their people."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Keeping one's word",
-        "explanation": "Vows must not be treated casually",
+        "theme": "Keeping your word",
+        "explanation": "A man who vows to the LORD must do \"all that proceedeth out of his mouth.\"",
         "references": [
-          "30:1-2"
+          "Numbers 30:1-2"
         ]
       },
       {
-        "theme": "Household authority",
-        "explanation": "The law differentiates obligations by family status",
+        "theme": "Promises in the family",
+        "explanation": "A father or husband can cancel a vow on the day he hears it.",
         "references": [
-          "30:3-16"
+          "Numbers 30:3-16"
         ]
       },
       {
-        "theme": "Consequences of decisions",
-        "explanation": "Hearing, silence, and timely objection determine whether a vow stands",
+        "theme": "Silence says yes",
+        "explanation": "If he says nothing, the vow stands.",
         "references": [
-          "30:4-15"
+          "Numbers 30:4-15"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 31": {
-    "summary": "The LORD commands Israel to take vengeance on Midian for the conflict associated with Peor. Twelve thousand armed men go to war with Phinehas carrying sacred objects and trumpets. The Midianite kings and Balaam are killed. Moses rebukes the commanders for sparing women whom he associates with the earlier incident; the text orders further killing and the taking of captives. Rules for purification and division of spoils follow, with tribute assigned to priests and Levites. The chapter does not soften how harsh this war was.",
+    "summary": "Twelve thousand men go to war against Midian, with Phinehas and the trumpets; they kill the five kings of Midian and Balaam (Numbers 31:1–12). Moses is angry that the women who led Israel into sin at Peor were spared, and he orders them killed (Numbers 31:13–18). Soldiers and spoil are made clean (Numbers 31:19–24), and the spoil is divided, with a share for the LORD (Numbers 31:25–47). The officers give an offering, because not one Israelite soldier was lost (Numbers 31:48–54).",
     "whereWeAre": "God told Moses in chapter 27 that he would soon die. First, Israel must punish Midian for leading them into sin at Peor in chapter 25. After the battle, chapter 32 tells how two tribes ask to stay east of the Jordan.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Commands the campaign"
+        "role": "Sends Israel to war against Midian."
       },
       {
         "name": "Moses",
-        "role": "Directs the expedition and distribution of spoils"
+        "role": "Sends the army and is angry when the women are spared."
       },
       {
         "name": "Phinehas",
-        "role": "Accompanies the force with sacred objects"
+        "role": "Goes with the army, carrying the holy things and trumpets."
       },
       {
-        "name": "Israelite soldiers",
-        "role": "Fight Midian and bring captives and plunder"
+        "name": "The army",
+        "role": "A thousand men from each tribe, who defeat Midian."
       },
       {
-        "name": "Midianite kings and Balaam",
-        "role": "Are killed"
+        "name": "Balaam",
+        "role": "Killed in the battle."
       },
       {
         "name": "Eleazar",
-        "role": "Teaches purification rules for captured items"
+        "role": "Teaches the soldiers how to make the spoil clean."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Judgment in the narrative",
-        "explanation": "The war is presented as a response to Peor",
+        "theme": "Judgment on Midian",
+        "explanation": "Israel punishes Midian for leading them into sin at Peor.",
         "references": [
-          "31:1-3,15-16"
+          "Numbers 31:1-3",
+          "Numbers 31:15-16"
         ]
       },
       {
-        "theme": "Purification after war",
-        "explanation": "Those exposed to killing or corpses must be cleansed",
+        "theme": "Clean after battle",
+        "explanation": "Soldiers and spoil must be made clean before coming back into the camp.",
         "references": [
-          "31:19-24"
+          "Numbers 31:19-24"
         ]
       },
       {
-        "theme": "Allocation and accountability",
-        "explanation": "Spoils are counted and portions assigned",
+        "theme": "Sharing the spoil",
+        "explanation": "The spoil is counted and shared, with a portion for the LORD.",
         "references": [
-          "31:25-54"
+          "Numbers 31:25-54"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 32": {
-    "summary": "Reuben and Gad, who own large herds, ask to settle in pastureland east of the Jordan rather than cross into Canaan. Moses fears a repeat of the earlier refusal to enter the land. The tribes promise to send armed men across the river until the other tribes receive their inheritances. Moses warns that if they break their word, \"be sure your sin will find you out\" (Numbers 32:23). He accepts their promise and includes the half-tribe of Manasseh in territory allocations east of Jordan.",
+    "summary": "Reuben and Gad, who have great herds, ask to settle east of the Jordan (Numbers 32:1–5). Moses fears they are repeating the spies' sin (Numbers 32:6–15). They promise to fight with their brothers until the land is won (Numbers 32:16–19). Moses agrees but warns, \"be sure your sin will find you out\" (Numbers 32:20–32). Reuben, Gad, and half of Manasseh receive the land and build towns there (Numbers 32:33–42).",
     "whereWeAre": "Israel has conquered the land east of the Jordan in chapter 21. Now the tribes of Reuben and Gad ask to settle there instead of crossing over. Moses fears a repeat of the spies' refusal in chapter 14, and after the matter is settled, chapter 33 looks back on the whole journey.",
     "keyFigures": [
       {
-        "name": "Reubenites and Gadites",
-        "role": "Request pastureland east of Jordan and pledge military support"
+        "name": "Reuben and Gad",
+        "role": "Ask to settle east of the Jordan and promise to fight for their brothers."
       },
       {
         "name": "Moses",
-        "role": "Challenges and then conditionally approves the plan"
+        "role": "Rebukes them, then agrees with a warning."
       },
       {
         "name": "Eleazar and Joshua",
-        "role": "Are charged with enforcing the agreement"
+        "role": "Charged with seeing that the promise is kept."
       },
       {
-        "name": "Half-tribe of Manasseh",
-        "role": "Receives land in the east"
-      },
-      {
-        "name": "Other Israelite tribes",
-        "role": "Are to receive support in taking their inheritances"
+        "name": "The half tribe of Manasseh",
+        "role": "Also given land east of the Jordan."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Shared obligation",
-        "explanation": "Eastern settlers must assist the rest of Israel",
+        "theme": "No one sits out",
+        "explanation": "Moses asks, \"Shall your brethren go to war, and shall ye sit here?\"",
         "references": [
-          "32:16-22"
+          "Numbers 32:16-22"
         ]
       },
       {
-        "theme": "Learning from history",
-        "explanation": "Moses recalls the earlier generation's failure",
+        "theme": "Learning from the past",
+        "explanation": "Moses reminds them how the spies' fear kept a whole generation out of the land.",
         "references": [
-          "32:6-15"
+          "Numbers 32:6-15"
         ]
       },
       {
-        "theme": "Keeping commitments",
-        "explanation": "The agreement has consequences if the tribes do not fulfill it",
+        "theme": "Your sin will find you out",
+        "explanation": "Breaking their promise would be a sin against the LORD.",
         "references": [
-          "32:23-30"
+          "Numbers 32:23-30"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 33": {
-    "summary": "Moses records Israel's stages of travel from Rameses in Egypt through the wilderness to the plains of Moab, listing camps and select memories along the way, including Aaron's death at Mount Hor. On the plains of Moab, the LORD commands Israel to drive out Canaan's inhabitants, destroy their cult images and high places, and divide the land by lot. The chapter warns that people left in the land may become lasting sources of trouble. The list looks back on the whole journey before Israel crosses into the land.",
+    "summary": "Moses writes down every stop on Israel's journey, from Rameses to the plains of Moab, including Aaron's death on mount Hor (Numbers 33:1–49). God tells Israel to drive out the people of Canaan, destroy their idols, and divide the land by lot, or the people left will be \"pricks in your eyes, and thorns in your sides\" (Numbers 33:50–56).",
     "whereWeAre": "Israel is camped on the plains of Moab, ready to cross the Jordan. Before they go, Moses writes down every stop on the journey from Egypt to here. Chapters 34–36 look ahead to dividing the land.",
     "keyFigures": [
       {
         "name": "Moses",
-        "role": "Records the journey stages"
-      },
-      {
-        "name": "Aaron",
-        "role": "Dies on Mount Hor as recounted in the itinerary"
-      },
-      {
-        "name": "Israelites",
-        "role": "Travel from Egypt to Moab"
+        "role": "Writes down the stops on Israel's journey."
       },
       {
         "name": "The LORD",
-        "role": "Commands the occupation and land division"
-      },
-      {
-        "name": "Canaanite inhabitants",
-        "role": "Are the subject of the displacement commands"
+        "role": "Tells Israel to drive out the Canaanites and divide the land."
       }
     ],
     "keyThemes": [
       {
         "theme": "Remembering the journey",
-        "explanation": "The itinerary traces God's people through repeated stages",
+        "explanation": "The list traces every step of the forty years from Egypt.",
         "references": [
-          "33:1-49"
+          "Numbers 33:1-49"
         ]
       },
       {
-        "theme": "Land and covenant",
-        "explanation": "Inheritance is to be divided by lot",
+        "theme": "The land divided by lot",
+        "explanation": "Each family's land is to be chosen by lot.",
         "references": [
-          "33:50-54"
+          "Numbers 33:50-54"
         ]
       },
       {
-        "theme": "Warnings about compromise",
-        "explanation": "The text cautions against leaving opposing cults in place",
+        "theme": "Thorns in your sides",
+        "explanation": "Any Canaanites left in the land will bring trouble.",
         "references": [
-          "33:55-56"
+          "Numbers 33:55-56"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 34": {
-    "summary": "The LORD describes the borders of the promised land from the southern desert through the western sea, northern landmarks, and the Jordan on the east. The land is to be divided among nine and a half tribes because Reuben, Gad, and half of Manasseh have already received land east of Jordan. Eleazar and Joshua oversee the allotment with one representative from each receiving tribe. The chapter draws the map of the promised land and names who will divide it.",
+    "summary": "God describes the borders of the promised land, from the wilderness of Zin to the great sea and the Jordan (Numbers 34:1–12). The land is for nine and a half tribes, since the others have land east of the Jordan (Numbers 34:13–15). God names Eleazar, Joshua, and one leader from each tribe to divide it (Numbers 34:16–29).",
     "whereWeAre": "Chapter 33 looked back over the whole journey from Egypt. Now God draws the borders of the promised land and names the leaders who will divide it. Chapter 35 sets aside towns for the Levites and cities of refuge.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Sets land boundaries and names allotment administrators"
+        "role": "Gives the borders of the land and names who will divide it."
       },
       {
         "name": "Moses",
-        "role": "Receives and announces the instructions"
+        "role": "Tells Israel the borders."
       },
       {
-        "name": "Eleazar",
-        "role": "Priest assigned to oversee distribution"
+        "name": "Eleazar and Joshua",
+        "role": "Chosen to divide the land."
       },
       {
-        "name": "Joshua",
-        "role": "Leader assigned to oversee distribution"
-      },
-      {
-        "name": "Tribal representatives",
-        "role": "Assist in allotting land"
-      },
-      {
-        "name": "Nine and a half tribes",
-        "role": "Are designated recipients west of Jordan"
+        "name": "The tribal leaders",
+        "role": "One from each tribe, chosen to help."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Defined inheritance",
-        "explanation": "Borders describe the land to be apportioned",
+        "theme": "The promised land",
+        "explanation": "God draws the borders of the land he is giving.",
         "references": [
-          "34:1-12"
+          "Numbers 34:1-12"
         ]
       },
       {
-        "theme": "Fair administration",
-        "explanation": "Named leaders oversee the allotments",
+        "theme": "Leaders for the task",
+        "explanation": "Named leaders will divide the land fairly.",
         "references": [
-          "34:16-29"
+          "Numbers 34:16-29"
         ]
       },
       {
-        "theme": "One people, multiple holdings",
-        "explanation": "East-bank inheritances affect the west-bank division",
+        "theme": "One people",
+        "explanation": "The tribes east of the Jordan already have their land, but they are still part of Israel.",
         "references": [
-          "34:13-15"
+          "Numbers 34:13-15"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 35": {
-    "summary": "Israel must assign forty-eight towns, with surrounding pasturelands, to the Levites; six of these are to be cities of refuge, divided between east and west of the Jordan. The chapter distinguishes intentional murder from accidental killing and describes judgment by the congregation. A person acquitted of murder may remain in a refuge city until the high priest's death to avoid blood vengeance. Ransom cannot replace the stipulated consequences for murder. These laws stop endless revenge and protect the land from bloodshed.",
+    "summary": "The Levites are to receive forty-eight cities with land around them (Numbers 35:1–8). Six of them are cities of refuge for anyone who kills a person by accident (Numbers 35:9–15). The law separates murder from accidental killing, and the one who killed by accident stays in the city until the high priest dies (Numbers 35:16–29). A murderer needs more than one witness to be put to death, and no ransom may be taken for his life (Numbers 35:30–34).",
     "whereWeAre": "Chapter 34 drew the borders of the land. This chapter gives the Levites forty-eight towns and sets apart six of them as cities of refuge for someone who kills by accident. Chapter 36 closes the book with one more question about land.",
     "keyFigures": [
       {
         "name": "The LORD",
-        "role": "Commands Levitical towns and refuge procedures"
+        "role": "Gives the Levites' cities and the cities of refuge."
       },
       {
         "name": "Moses",
-        "role": "Communicates the legislation"
-      },
-      {
-        "name": "Levites",
-        "role": "Receive towns and surrounding pasturelands"
-      },
-      {
-        "name": "Accused killers",
-        "role": "May seek refuge pending judgment"
-      },
-      {
-        "name": "Avenger of blood",
-        "role": "Acts within the bounded legal process described"
-      },
-      {
-        "name": "Congregation",
-        "role": "Hears evidence and judges cases"
+        "role": "Passes the laws on to Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Protection through process",
-        "explanation": "Refuge exists while an accusation is judged",
+        "theme": "A safe place",
+        "explanation": "Cities of refuge protect someone accused of killing until the case is judged.",
         "references": [
-          "35:9-15,24-25"
+          "Numbers 35:9-15",
+          "Numbers 35:24-25"
         ]
       },
       {
-        "theme": "Intent matters",
-        "explanation": "Murder and accidental killing are distinguished",
+        "theme": "Accident or murder",
+        "explanation": "The law separates a killing by accident from murder.",
         "references": [
-          "35:16-25"
+          "Numbers 35:16-25"
         ]
       },
       {
-        "theme": "The value of life",
-        "explanation": "Murder and bloodshed are treated as serious offenses",
+        "theme": "Life is precious",
+        "explanation": "Bloodshed defiles the land, and no payment can excuse murder.",
         "references": [
-          "35:30-34"
+          "Numbers 35:30-34"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Numbers 36": {
-    "summary": "The heads of the Gileadite clans raise a concern about Zelophehad's daughters: if they marry outside their tribe, inherited land could shift to another tribal allotment. The LORD rules through Moses that daughters inheriting land may marry whom they choose within their father's tribal clan. The daughters comply, marrying within the descendants of Manasseh, and their inheritance stays with their tribe. The book ends by protecting both the daughters' rights and each tribe's land.",
+    "summary": "The leaders of Gilead's family worry that if Zelophehad's daughters marry into another tribe, their land will go with them (Numbers 36:1–4). Moses rules that they may marry whom they choose within their father's tribe (Numbers 36:5–9). The daughters marry their cousins, and their land stays in the tribe of Manasseh (Numbers 36:10–13).",
     "whereWeAre": "This last chapter returns to the daughters of Zelophehad from chapter 27. Their tribe asks what happens to the land if they marry outside it, and God gives an answer that protects both. Numbers ends on the plains of Moab, and Deuteronomy records Moses' final speeches there.",
     "keyFigures": [
       {
-        "name": "Gileadite clan heads",
-        "role": "Present the concern about shifting inherited land"
+        "name": "The leaders of Gilead's family",
+        "role": "Worry that their land will pass to another tribe."
       },
       {
         "name": "Moses",
-        "role": "Communicates the LORD's ruling"
+        "role": "Gives the LORD's ruling."
       },
       {
-        "name": "The LORD",
-        "role": "Gives the inheritance rule"
-      },
-      {
-        "name": "Mahlah, Tirzah, Hoglah, Milcah, and Noah",
-        "role": "Zelophehad's daughters who marry within their father's clan"
-      },
-      {
-        "name": "Manasseh's descendants",
-        "role": "Remain the tribal community holding the inheritance"
+        "name": "The daughters of Zelophehad",
+        "role": "Marry their cousins so the land stays in Manasseh."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Inheritance rights",
-        "explanation": "The daughters retain their legally recognized land claims",
+        "theme": "Rights protected",
+        "explanation": "The daughters keep the land God gave them.",
         "references": [
-          "36:1-6"
+          "Numbers 36:1-6"
         ]
       },
       {
-        "theme": "Tribal stability",
-        "explanation": "Marriage rules prevent transfers across tribal allotments",
+        "theme": "Each tribe keeps its land",
+        "explanation": "Marrying within the tribe keeps land from passing to another tribe.",
         "references": [
-          "36:7-9"
+          "Numbers 36:7-9"
         ]
       },
       {
-        "theme": "Obedience and resolution",
-        "explanation": "The daughters follow the ruling, resolving the dispute",
+        "theme": "Doing as God said",
+        "explanation": "\"Even as the LORD commanded Moses, so did the daughters of Zelophehad.\"",
         "references": [
-          "36:10-12"
+          "Numbers 36:10-12"
         ]
       }
     ],
