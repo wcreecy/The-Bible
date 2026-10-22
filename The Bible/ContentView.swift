@@ -29,12 +29,12 @@ struct ContentView: View {
     @State private var bibleStudyDestination: AppRouter.StudyDestination?
     @State private var launchBibleLocation: BibleReaderLocation?
     
-    @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
+    @AppStorage(AppStorageKey.colorSchemePreference) private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
     
     // One-time cleanup flag for deprecated app time keys
-    @AppStorage("didCleanupAppTimeKeys") private var didCleanupAppTimeKeys: Bool = false
+    @AppStorage(AppStorageKey.didCleanupAppTimeKeys) private var didCleanupAppTimeKeys: Bool = false
     // One-time cleanup for deprecated keepScreenOn setting
-    @AppStorage("didCleanupKeepScreenOnKey") private var didCleanupKeepScreenOnKey: Bool = false
+    @AppStorage(AppStorageKey.didCleanupKeepScreenOnKey) private var didCleanupKeepScreenOnKey: Bool = false
 
     @Environment(\.scenePhase) private var scenePhase
 
@@ -168,15 +168,15 @@ struct ContentView: View {
         ReadingSessionsStore.shared.prewarm()
 
         // One-time cleanup of deprecated keys
-        UserDefaults.standard.removeObject(forKey: "fontFamilyPreference")
+        UserDefaults.standard.removeObject(forKey: AppStorageKey.fontFamilyPreference)
 
         if !didCleanupAppTimeKeys {
-            UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
-            UserDefaults.standard.removeObject(forKey: "appActiveStart")
+            UserDefaults.standard.removeObject(forKey: AppStorageKey.appTotalActiveSeconds)
+            UserDefaults.standard.removeObject(forKey: AppStorageKey.appActiveStart)
             didCleanupAppTimeKeys = true
         }
         if !didCleanupKeepScreenOnKey {
-            UserDefaults.standard.removeObject(forKey: "keepScreenOn")
+            UserDefaults.standard.removeObject(forKey: AppStorageKey.keepScreenOn)
             didCleanupKeepScreenOnKey = true
         }
 
@@ -203,7 +203,7 @@ struct ContentView: View {
             }
         }
 
-        UserDefaults.standard.removeObject(forKey: "lastBackgroundedAt")
+        UserDefaults.standard.removeObject(forKey: AppStorageKey.lastBackgroundedAt)
         updateGameTimeTracking()
         updateMindfulMinutesTracking()
 
@@ -243,7 +243,7 @@ struct ContentView: View {
         case .settings:
             showMore(.settings)
         case .stats(let page):
-            UserDefaults.standard.set(page.rawValue, forKey: "statsSelectedMode")
+            UserDefaults.standard.set(page.rawValue, forKey: AppStorageKey.statsSelectedMode)
             showMore(.stats)
         case .bibleReference(let location):
             openBibleReference(location)
@@ -468,8 +468,8 @@ struct ContentView: View {
 
     private func handlePendingVerseOfDayNotification() {
         let defaults = UserDefaults.standard
-        guard defaults.bool(forKey: "pendingVerseOfDayNotification") else { return }
-        defaults.set(false, forKey: "pendingVerseOfDayNotification")
+        guard defaults.bool(forKey: AppStorageKey.pendingVerseOfDayNotification) else { return }
+        defaults.set(false, forKey: AppStorageKey.pendingVerseOfDayNotification)
 
         let verseCardIsVisible = !HomeLayoutStore().load().hidden.contains(.verseOfDay)
         if verseCardIsVisible {
@@ -478,9 +478,9 @@ struct ContentView: View {
             return
         }
 
-        let book = defaults.string(forKey: "verseOfDayBook") ?? ""
-        let chapter = defaults.integer(forKey: "verseOfDayChapter")
-        let verse = defaults.integer(forKey: "verseOfDayNumber")
+        let book = defaults.string(forKey: AppStorageKey.verseOfDayBook) ?? ""
+        let chapter = defaults.integer(forKey: AppStorageKey.verseOfDayChapter)
+        let verse = defaults.integer(forKey: AppStorageKey.verseOfDayNumber)
         guard !book.isEmpty, chapter > 0, verse > 0 else {
             homeCoordinator.reset()
             selectedTab = .home
@@ -603,8 +603,8 @@ struct ContentView: View {
     @MainActor
     private func ensureSavedFocusLiveActivityIfNeeded() {
         guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
-        let title = shared.string(forKey: "focusTitle")?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let body = shared.string(forKey: "focusBody")?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let title = shared.string(forKey: AppStorageKey.focusTitle)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let body = shared.string(forKey: AppStorageKey.focusBody)?.trimmingCharacters(in: .whitespacesAndNewlines)
         let hasContent = (!(title?.isEmpty ?? true) || !(body?.isEmpty ?? true))
         if hasContent {
             PrayerTimerActivityController.shared.ensureFocusIfNone(

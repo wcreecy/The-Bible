@@ -18,7 +18,7 @@ struct FocusReadingView: View {
     @State private var isControlsAutoHideSuspended = false
     @State private var isLocationPickerPresented = false
     @State private var isChapterInsightsPresented = false
-    @AppStorage("hasSeenFocusModeControlsHint") private var hasSeenControlsHint = false
+    @AppStorage(AppStorageKey.hasSeenFocusModeControlsHint) private var hasSeenControlsHint = false
 
     // Maps page numbers to Bible locations; pages themselves are built only when shown.
     private let pageMap: FocusPageMap

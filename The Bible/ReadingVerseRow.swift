@@ -3,14 +3,14 @@ import SwiftUI
 /// UserDefaults keys for what the reader shows on each verse.
 enum ReaderDisplaySettings {
     /// Master switch for the verse markers. On by default.
-    static let showsVerseMarkersKey = "showVerseMarkers"
+    static let showsVerseMarkersKey = AppStorageKey.showsVerseMarkers
     /// Individual marker visibility preferences. All are on by default.
-    static let showsBookmarkMarkersKey = "showBookmarkMarkers"
-    static let showsFavoriteMarkersKey = "showFavoriteMarkers"
-    static let showsNoteMarkersKey = "showNoteMarkers"
-    static let showsCrossReferenceMarkersKey = "showCrossReferenceMarkers"
+    static let showsBookmarkMarkersKey = AppStorageKey.showsBookmarkMarkers
+    static let showsFavoriteMarkersKey = AppStorageKey.showsFavoriteMarkers
+    static let showsNoteMarkersKey = AppStorageKey.showsNoteMarkers
+    static let showsCrossReferenceMarkersKey = AppStorageKey.showsCrossReferenceMarkers
     /// Read progress. Keeps the older all-icons key so existing choices carry over.
-    static let showsReadProgressKey = "showReadVerseCheckmarks"
+    static let showsReadProgressKey = AppStorageKey.showsReadVerseCheckmarks
 }
 
 struct ReadingVerseRow: View {

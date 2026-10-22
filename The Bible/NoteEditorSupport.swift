@@ -106,7 +106,7 @@ enum NoteEditorTextSize {
     static let minimumStep = 0
     static let maximumStep = 6
     static let defaultStep = 3
-    static let storageKey = "noteEditorTextSizeStep"
+    static let storageKey = AppStorageKey.noteEditorTextSizeStep
 
     /// The default step matches the system text size; each step above or below it moves one
     /// Dynamic Type size larger or smaller.

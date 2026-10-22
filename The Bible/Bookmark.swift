@@ -72,10 +72,10 @@ extension Bookmark {
         verseText: String
     ) {
         let shared = UserDefaults(suiteName: "group.bible.app") ?? .standard
-        shared.set(bookName, forKey: "bookmarkBook")
-        shared.set(chapter, forKey: "bookmarkChapter")
-        shared.set(verse, forKey: "bookmarkVerse")
-        shared.set(verseText, forKey: "bookmarkText")
+        shared.set(bookName, forKey: AppStorageKey.bookmarkBook)
+        shared.set(chapter, forKey: AppStorageKey.bookmarkChapter)
+        shared.set(verse, forKey: AppStorageKey.bookmarkVerse)
+        shared.set(verseText, forKey: AppStorageKey.bookmarkText)
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 }

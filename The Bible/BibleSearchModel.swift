@@ -17,7 +17,7 @@ enum BibleSearchScope: String, CaseIterable, Identifiable {
 @Observable
 final class BibleSearchModel {
     static let maxResults = 200
-    private static let recentSearchesKey = "bibleRecentSearches"
+    private static let recentSearchesKey = AppStorageKey.bibleRecentSearches
     private static let recentSearchLimit = 6
 
     let suggestedSearches = ["love", "faith", "peace", "John 3:16", "Psalm 23"]

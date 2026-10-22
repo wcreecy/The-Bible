@@ -30,7 +30,7 @@ final class ReadingPositionStore {
     /// once it has been stable for this long.
     private static let commitDelay: Duration = .seconds(2)
     private static let widgetDefaults = UserDefaults(suiteName: "group.bible.app")
-    private static let migrationKey = "didMigrateReadingPositionV1"
+    private static let migrationKey = AppStorageKey.didMigrateReadingPositionV1
 
     private init() {
         current = BibleStatsStore.shared.loadLastRead()
@@ -119,7 +119,7 @@ final class ReadingPositionStore {
     /// The Last Read widget reads this copy from the shared app group.
     private func mirrorToWidget(_ position: BibleStatsStore.LastRead?) {
         guard let shared = Self.widgetDefaults else { return }
-        let keys = ["lastReadBook", "lastReadChapter", "lastReadVerse", "lastReadText"]
+        let keys = [AppStorageKey.lastReadBook, AppStorageKey.lastReadChapter, AppStorageKey.lastReadVerse, AppStorageKey.lastReadText]
 
         guard let position else {
             keys.forEach { shared.removeObject(forKey: $0) }
@@ -133,10 +133,10 @@ final class ReadingPositionStore {
             .chapters.first { $0.number == position.chapterNumber }?
             .verses.first { $0.number == verseNumber }?
             .text ?? ""
-        shared.set(position.bookName, forKey: "lastReadBook")
-        shared.set(position.chapterNumber, forKey: "lastReadChapter")
-        shared.set(verseNumber, forKey: "lastReadVerse")
-        shared.set(text, forKey: "lastReadText")
+        shared.set(position.bookName, forKey: AppStorageKey.lastReadBook)
+        shared.set(position.chapterNumber, forKey: AppStorageKey.lastReadChapter)
+        shared.set(verseNumber, forKey: AppStorageKey.lastReadVerse)
+        shared.set(text, forKey: AppStorageKey.lastReadText)
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 
@@ -153,9 +153,9 @@ final class ReadingPositionStore {
         var best = BibleStatsStore.shared.loadLastRead()
 
         // The old device-only position added the verse for the same chapter.
-        if let book = defaults.string(forKey: "readerPositionBook"), !book.isEmpty {
-            let chapter = defaults.integer(forKey: "readerPositionChapter")
-            let verse = defaults.integer(forKey: "readerPositionVerse")
+        if let book = defaults.string(forKey: AppStorageKey.readerPositionBook), !book.isEmpty {
+            let chapter = defaults.integer(forKey: AppStorageKey.readerPositionChapter)
+            let verse = defaults.integer(forKey: AppStorageKey.readerPositionVerse)
             if chapter > 0, verse > 0 {
                 if let existing = best, existing.bookName == book, existing.chapterNumber == chapter {
                     best?.verseNumber = existing.verseNumber ?? verse

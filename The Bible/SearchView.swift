@@ -3,7 +3,7 @@ import SwiftUI
 struct SearchView: View {
     @State private var model = BibleSearchModel()
     @FocusState private var isSearchFieldFocused: Bool
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
 
     // Specific book picker state
     @State private var showBookPicker: Bool = false

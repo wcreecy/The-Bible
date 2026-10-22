@@ -24,7 +24,7 @@ struct ReadingView: View {
     @State private var viewModel: ReadingViewModel
 
     // Reader-specific font size (independent from global app UI font)
-    @AppStorage("readerFontSize") private var readerFontSize: Double = 17
+    @AppStorage(AppStorageKey.readerFontSize) private var readerFontSize: Double = 17
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
@@ -34,8 +34,8 @@ struct ReadingView: View {
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress: Bool = false
     /// The verse whose note is open from its note marker.
     @State private var noteEditorVerse: Verse?
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
-    @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.focusReadingEnabled) private var focusReadingEnabled = false
     @State private var isFocusModePresented = false
     // The Focus Reading setting opens Focus Mode once per visit, not every time the
     // reader reappears (for example after Focus Mode is dismissed).

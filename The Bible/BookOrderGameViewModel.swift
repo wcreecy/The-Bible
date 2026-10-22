@@ -126,8 +126,8 @@ struct BibleCanon {
 @MainActor
 @Observable
 final class BookOrderGameViewModel {
-    private static let difficultyKey = "bookOrderDifficulty"
-    private static let sourceKey = "bookOrderSource"
+    private static let difficultyKey = AppStorageKey.bookOrderDifficulty
+    private static let sourceKey = AppStorageKey.bookOrderSource
 
     var started: Bool = false
     var currentItems: [String] = []

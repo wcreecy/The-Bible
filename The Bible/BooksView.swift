@@ -5,7 +5,7 @@ struct BooksView: View {
     let books: [Book]
     @State private var searchText: String = ""
     // Shared preference across devices
-    @AppStorage("bibleBooksSortAlphabetical") private var sortAlphabetically: Bool = false
+    @AppStorage(AppStorageKey.bibleBooksSortAlphabetical) private var sortAlphabetically: Bool = false
 
     private var scriptureReference: (reference: ScriptureRef, book: Book, chapter: Chapter)? {
         BibleNavigationReference.resolve(searchText, in: books)
@@ -121,15 +121,15 @@ struct StudyBibleView: View {
     var onSelectBook: ((Book) -> Void)?
     var requestedDestination: AppRouter.StudyDestination? = nil
 
-    @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
-    @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
+    @AppStorage(AppStorageKey.lastStudiedBook) private var lastStudiedBook = ""
+    @AppStorage(AppStorageKey.lastStudiedChapter) private var lastStudiedChapter = 0
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var requestedChapter: StudyChapterRequest?
     @State private var requestedBookOverview: StudyBookOverviewRequest?
     @State private var studyTimeSourceID = UUID()
     @State private var searchText = ""
     @State private var testamentFilter: StudyTestamentFilter = .all
-    @AppStorage("studyBooksSortAlphabetical") private var sortAlphabetically = false
+    @AppStorage(AppStorageKey.studyBooksSortAlphabetical) private var sortAlphabetically = false
 
     private func bookColumns(for availableWidth: CGFloat) -> [GridItem] {
         let columnCount: Int

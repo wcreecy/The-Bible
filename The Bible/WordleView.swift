@@ -84,22 +84,22 @@ struct WordleView: View {
     @State private var practiceBestStreak: Int = 0
 
     // Debug flag to allow replaying Daily Wordle (matches Settings/Games)
-    @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
+    @AppStorage(AppStorageKey.wordleAllowDailyReplay) private var wordleAllowDailyReplay: Bool = false
 
     // Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
-    @AppStorage("wordleHardModeEnabled") private var hardModeEnabled: Bool = false
+    @AppStorage(AppStorageKey.wordleHardModeEnabled) private var hardModeEnabled: Bool = false
 
     // Difficulty captured when a round starts, so a round keeps its rules even if the setting changes.
     @State private var roundHardMode: Bool = false
 
     // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.debugAutoWinEnabled) private var debugAutoWinEnabled: Bool = false
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
 
     // Daily
     private var todayKey: String { Self.localDayKey(for: Date()) }
     private var dailyCompletedToday: Bool {
-        UserDefaults.standard.string(forKey: "wordleDailyCompletedDay") == todayKey
+        UserDefaults.standard.string(forKey: AppStorageKey.wordleDailyCompletedDay) == todayKey
     }
 
     // Toggle for keyboard layout
@@ -121,12 +121,12 @@ struct WordleView: View {
 
     // MARK: - Persistent WORD streak (overall, survives app relaunch)
     private let persistentStreak = PersistentGameStreak(game: "wordle")
-    private let practiceWordBagKey = "wordlePracticeWordBag"
-    private let lastPracticeWordKey = "wordleLastPracticeWord"
-    private let dailyWordAssignmentKey = "wordleDailyWordAssignment"
-    private let recentDailyWordsKey = "wordleRecentDailyWords"
+    private let practiceWordBagKey = AppStorageKey.wordlePracticeWordBag
+    private let lastPracticeWordKey = AppStorageKey.wordleLastPracticeWord
+    private let dailyWordAssignmentKey = AppStorageKey.wordleDailyWordAssignment
+    private let recentDailyWordsKey = AppStorageKey.wordleRecentDailyWords
     private let recentDailyWordLimit = 365
-    private let dailyProgressKey = "wordleDailyProgress"
+    private let dailyProgressKey = AppStorageKey.wordleDailyProgress
 
     // MARK: - Spell-check language for guess validation
     #if canImport(UIKit)
@@ -1224,15 +1224,15 @@ struct WordleView: View {
         roundRef = Self.verseIndex[target]
 
         if mode == .daily {
-            UserDefaults.standard.set(todayKey, forKey: "wordleDailyCompletedDay")
-            UserDefaults.standard.set(target, forKey: "wordleDailyTarget")
+            UserDefaults.standard.set(todayKey, forKey: AppStorageKey.wordleDailyCompletedDay)
+            UserDefaults.standard.set(target, forKey: AppStorageKey.wordleDailyTarget)
             // Push daily flags to iCloud KVS so other devices see completion/target
             iCloudSyncCoordinator.shared.pushKey("wordleDailyCompletedDay")
             iCloudSyncCoordinator.shared.pushKey("wordleDailyTarget")
 
             // Persist a per-day result summary for the Games list row
             let defaults = UserDefaults.standard
-            let key = "wordleDailyResultMap"
+            let key = AppStorageKey.wordleDailyResultMap
             struct DailyResult: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
             var map: [String: DailyResult] = [:]
             if let data = defaults.data(forKey: key),

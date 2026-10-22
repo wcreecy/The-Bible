@@ -25,7 +25,7 @@ struct BookOrderGameView: View {
     }
 
     // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+    @AppStorage(AppStorageKey.debugAutoWinEnabled) private var debugAutoWinEnabled: Bool = false
 
     var body: some View {
         GeometryReader { geometry in

@@ -30,6 +30,7 @@ enum AppStorageKey {
     static let statsSelectedMode = "statsSelectedMode"
     static let chapterListLayout = "chapterListLayout"
     static let noteEditorTextSizeStep = "noteEditorTextSizeStep"
+    static let verseOfDayWidth = "verseOfDayWidth"
 
     // Reading and saved verses
     static let readerPositionBook = "readerPositionBook"

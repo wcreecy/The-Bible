@@ -12,8 +12,8 @@ struct ChapterInsightsView: View {
     @State private var studyTimeSourceID = UUID()
     /// The chapter `insights` was loaded for; returning from a pushed page shouldn't reload.
     @State private var loadedLocation: ChapterLocation?
-    @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
-    @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
+    @AppStorage(AppStorageKey.lastStudiedBook) private var lastStudiedBook = ""
+    @AppStorage(AppStorageKey.lastStudiedChapter) private var lastStudiedChapter = 0
     @Environment(\.dismiss) private var dismiss
     /// The chapter open in the reader beneath this sheet, if the reader presented it.
     private let readerLocation: ChapterLocation?

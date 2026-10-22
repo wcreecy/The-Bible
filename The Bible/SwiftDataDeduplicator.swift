@@ -126,7 +126,7 @@ private extension VerseNote {
 /// at load time (favorites, bookmarks, notes, and verses copied for Home and the widgets).
 @MainActor
 enum StoredVerseTextCleaner {
-    private static let defaultsCleanedKey = "didCleanSavedVerseTextV1"
+    private static let defaultsCleanedKey = AppStorageKey.didCleanSavedVerseTextV1
 
     /// Cleans favorites, bookmarks, and notes. Returns whether any record changed.
     static func cleanModels(in context: ModelContext) -> Bool {
@@ -152,15 +152,15 @@ enum StoredVerseTextCleaner {
         let standard = UserDefaults.standard
         guard !standard.bool(forKey: defaultsCleanedKey) else { return }
 
-        clean(key: "verseOfDayText", in: standard)
+        clean(key: AppStorageKey.verseOfDayText, in: standard)
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             for key in ["verseOfDayText", "pinnedVerseText", "lastReadText"] {
                 clean(key: key, in: shared)
             }
         }
         let cloud = NSUbiquitousKeyValueStore.default
-        if let text = cloud.string(forKey: "lastReadText"), needsCleaning(text) {
-            cloud.set(KJVTextCleaner.clean(text).text, forKey: "lastReadText")
+        if let text = cloud.string(forKey: AppStorageKey.lastReadText), needsCleaning(text) {
+            cloud.set(KJVTextCleaner.clean(text).text, forKey: AppStorageKey.lastReadText)
         }
 
         standard.set(true, forKey: defaultsCleanedKey)

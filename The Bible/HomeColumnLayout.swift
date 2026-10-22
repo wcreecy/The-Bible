@@ -265,7 +265,7 @@ struct HomeColumnLayout: Equatable {
 
     // MARK: - Storage
 
-    private static let verseOfDayWidthKey = "verseOfDayWidth"
+    private static let verseOfDayWidthKey = AppStorageKey.verseOfDayWidth
 
     /// Encodes as `{"left": [...], "middle": [...], "right": [...], "verseOfDayWidth": [...]}`
     /// using raw values. The width is a one-item list so every value keeps the same type,

@@ -7,7 +7,7 @@ enum ChapterListLayout: String, CaseIterable, Identifiable {
     /// A row per chapter with its key themes, grouped under the book's sections.
     case detailed
 
-    static let storageKey = "chapterListLayout"
+    static let storageKey = AppStorageKey.chapterListLayout
 
     var id: Self { self }
 

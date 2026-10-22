@@ -42,11 +42,11 @@ final class GameStatsLedger {
 
     static let kvsKeyPrefix = "gameStatsLedger_v1_"
 
-    private let ownPayloadKey = "gameStatsLedgerOwnPayload_v1"
-    private let ownInstallationKey = "gameStatsLedgerOwnInstallation_v1"
-    private let snapshotKey = "gameStatsLedgerSnapshot_v1"
-    private let resetEpochKVSKey = "gameStatsResetEpoch"
-    private let lastSeenEpochKey = "gameStatsLastSeenResetEpoch"
+    private let ownPayloadKey = AppStorageKey.gameStatsLedgerOwnPayloadV1
+    private let ownInstallationKey = AppStorageKey.gameStatsLedgerOwnInstallationV1
+    private let snapshotKey = AppStorageKey.gameStatsLedgerSnapshotV1
+    private let resetEpochKVSKey = AppStorageKey.gameStatsResetEpoch
+    private let lastSeenEpochKey = AppStorageKey.gameStatsLastSeenResetEpoch
 
     private let kvs = NSUbiquitousKeyValueStore.default
     private let defaults = UserDefaults.standard
@@ -546,8 +546,8 @@ final class GameStatsLedger {
 /// ledger instead of sharing one, which would let the two devices overwrite each other.
 @MainActor
 enum LedgerInstallationIdentity {
-    private static let identifierKey = "gameStatsLedgerInstallationID"
-    private static let vendorKey = "gameStatsLedgerInstallationVendorID"
+    private static let identifierKey = AppStorageKey.gameStatsLedgerInstallationID
+    private static let vendorKey = AppStorageKey.gameStatsLedgerInstallationVendorID
 
     static var current: String {
         let defaults = UserDefaults.standard

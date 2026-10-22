@@ -16,9 +16,9 @@ final class PinnedVerseStore {
             await applyPinned(book: "", chapter: 0, verse: 0)
             return
         }
-        let book = (shared.string(forKey: "pinnedVerseBook") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        let chap = shared.integer(forKey: "pinnedVerseChapter")
-        let verse = shared.integer(forKey: "pinnedVerseNumber")
+        let book = (shared.string(forKey: AppStorageKey.pinnedVerseBook) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let chap = shared.integer(forKey: AppStorageKey.pinnedVerseChapter)
+        let verse = shared.integer(forKey: AppStorageKey.pinnedVerseNumber)
         if book.isEmpty || chap <= 0 || verse <= 0 {
             await applyPinned(book: "", chapter: 0, verse: 0)
             return
@@ -28,10 +28,10 @@ final class PinnedVerseStore {
 
     func set(bookName: String, chapter: Int, verse: Int, text: String) async {
         guard let shared = UserDefaults(suiteName: suite) else { return }
-        shared.set(bookName, forKey: "pinnedVerseBook")
-        shared.set(chapter, forKey: "pinnedVerseChapter")
-        shared.set(verse, forKey: "pinnedVerseNumber")
-        shared.set(text, forKey: "pinnedVerseText")
+        shared.set(bookName, forKey: AppStorageKey.pinnedVerseBook)
+        shared.set(chapter, forKey: AppStorageKey.pinnedVerseChapter)
+        shared.set(verse, forKey: AppStorageKey.pinnedVerseNumber)
+        shared.set(text, forKey: AppStorageKey.pinnedVerseText)
 
         // Apply pinned values on the next MainActor turn to avoid publishing during view updates.
         await applyPinned(book: bookName, chapter: chapter, verse: verse)
@@ -43,10 +43,10 @@ final class PinnedVerseStore {
 
     func clear() async {
         guard let shared = UserDefaults(suiteName: suite) else { return }
-        shared.removeObject(forKey: "pinnedVerseBook")
-        shared.removeObject(forKey: "pinnedVerseChapter")
-        shared.removeObject(forKey: "pinnedVerseNumber")
-        shared.removeObject(forKey: "pinnedVerseText")
+        shared.removeObject(forKey: AppStorageKey.pinnedVerseBook)
+        shared.removeObject(forKey: AppStorageKey.pinnedVerseChapter)
+        shared.removeObject(forKey: AppStorageKey.pinnedVerseNumber)
+        shared.removeObject(forKey: AppStorageKey.pinnedVerseText)
 
         // Apply cleared values on the next MainActor turn to avoid publishing during view updates.
         await applyPinned(book: "", chapter: 0, verse: 0)

@@ -50,8 +50,8 @@ struct FavoritesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
     @Query(filter: #Predicate<VerseNote> { $0.highlightColor != "" }) private var highlights: [VerseNote]
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
-    @AppStorage("favoritesSortOrder") private var sortOrder: SortOrder = .recent
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.favoritesSortOrder) private var sortOrder: SortOrder = .recent
 
     /// Not saved, so Saved Verses always opens on Favorites.
     @State private var shownList: SavedList = .favorites

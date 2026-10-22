@@ -4,7 +4,7 @@ import UserNotifications
 import WidgetKit
 
 struct SettingsView: View {
-    @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
+    @AppStorage(AppStorageKey.colorSchemePreference) private var colorSchemePreferenceRaw: String = "system"
     var body: some View {
         Form {
             SettingsAppLinksSection()
@@ -34,7 +34,7 @@ struct SettingsView: View {
 }
 
 private struct SettingsAppLinksSection: View {
-    @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw = ColorSchemePreference.system.rawValue
+    @AppStorage(AppStorageKey.colorSchemePreference) private var colorSchemePreferenceRaw = ColorSchemePreference.system.rawValue
     @AppStorage(LaunchTabPreference.defaultsKey) private var launchTabRaw = LaunchTabPreference.home.rawValue
 
     var body: some View {
@@ -93,12 +93,12 @@ private struct SettingsAppLinksSection: View {
 private struct SettingsReadingAndPrayerLinksSection: View {
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
-    @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
-    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes = 30
-    @AppStorage("verseOfDayScope") private var verseScopeRaw = "whole"
-    @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw = VOTDRefreshFrequency.custom.rawValue
-    @AppStorage("votdRefreshNotificationsEnabled") private var verseOfDayNotificationsEnabled = false
-    @AppStorage("timerSoundSelection") private var timerSoundSelection = TimerSound.default.rawValue
+    @AppStorage(AppStorageKey.focusReadingEnabled) private var focusReadingEnabled = false
+    @AppStorage(AppStorageKey.dailyGoalMinutes) private var dailyGoalMinutes = 30
+    @AppStorage(AppStorageKey.verseOfDayScope) private var verseScopeRaw = "whole"
+    @AppStorage(AppStorageKey.verseOfDayRefreshFrequency) private var refreshFrequencyRaw = VOTDRefreshFrequency.custom.rawValue
+    @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var verseOfDayNotificationsEnabled = false
+    @AppStorage(AppStorageKey.timerSoundSelection) private var timerSoundSelection = TimerSound.default.rawValue
 
     var body: some View {
         Section("Reading & Prayer") {
@@ -226,7 +226,7 @@ private struct SettingsReadingProgressSection: View {
     @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers = true
     @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers = true
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
-    @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
+    @AppStorage(AppStorageKey.focusReadingEnabled) private var focusReadingEnabled = false
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
     var body: some View {
@@ -440,8 +440,8 @@ private struct SettingsDataManagementLinksSection: View {
 }
 
 private struct SettingsHelpSection: View {
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
-    @AppStorage("contextualTipsResetGeneration") private var contextualTipsResetGeneration = 0
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsResetGeneration) private var contextualTipsResetGeneration = 0
 
     var body: some View {
         Section {

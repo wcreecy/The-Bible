@@ -6,7 +6,7 @@ struct VersesView: View {
     let book: Book
     let chapter: Chapter
     @Environment(NavigationCoordinator.self) private var coordinator
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
     @State private var showToast: Bool = false
