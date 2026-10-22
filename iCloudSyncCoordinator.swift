@@ -613,6 +613,12 @@ final class iCloudSyncCoordinator {
     // MARK: - One-shot reconcile pass at startup/identity change
 
     func reconcileAllKeysFromKVS() {
+        AppPerformance.measure("SyncReconciliation") {
+            reconcileAllKeysFromKVSImpl()
+        }
+    }
+
+    private func reconcileAllKeysFromKVSImpl() {
         // Merge only values that actually exist remotely. Missing keys are ambiguous
         // during downloads and outages; explicit reset epochs are the sole deletion signal.
         let remoteDict = kvs.dictionaryRepresentation

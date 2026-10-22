@@ -67,7 +67,9 @@ struct The_Bible__iOS_App: App {
 
     init() {
         UITestSupport.configureIfNeeded()
-        let store = Self.makeModelContainer()
+        let store = AppPerformance.measure("AppLaunchInitialization") {
+            Self.makeModelContainer()
+        }
         sharedModelContainer = store.container
         persistenceStoreMode = store.mode
     }

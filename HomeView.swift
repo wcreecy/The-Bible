@@ -778,7 +778,8 @@ struct HomeView: View {
             tint: verseActionToastTint
         )
         .onAppear {
-            loadHomeLayout()
+            AppPerformance.measure("HomeCardPreparation") {
+                loadHomeLayout()
             bibleStore.ensureLoaded()
 
             // Verse-of-the-Day initial handling moved to VM
@@ -796,7 +797,7 @@ struct HomeView: View {
             // Initial load of Bible Stats. The view model intentionally waits for
             // appearance so construction and appearance do not refresh twice.
             bibleVM.refresh()
-
+            }
         }
         .onNotification(.homeLayoutChanged) {
             loadHomeLayout()

@@ -142,7 +142,12 @@ final class BibleSearchModel {
                 try? await Task.sleep(for: .milliseconds(300))
             }
             guard !Task.isCancelled else { return }
-            let outcome = await Self.search(query: query, scope: scope, scopeBookName: scopeBookName)
+            let outcome = await AppPerformance.measure(
+                "SearchFirstResult",
+                budget: PerformanceBudget.searchFirstResult
+            ) {
+                await Self.search(query: query, scope: scope, scopeBookName: scopeBookName)
+            }
             guard !Task.isCancelled, let self else { return }
             results = outcome.results
             hasMoreResults = outcome.hasMore

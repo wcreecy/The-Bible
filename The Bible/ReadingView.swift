@@ -115,6 +115,14 @@ struct ReadingView: View {
                     }
                     .accessibilityLabel("Search Bible")
 
+                    Button {
+                        isChapterInsightsPresented = true
+                    } label: {
+                        Image(systemName: "lightbulb")
+                    }
+                    .accessibilityLabel("Study this chapter")
+                    .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
+
                     Menu {
                         Button {
                             readerFontSize = max(12, readerFontSize - 1)
@@ -140,14 +148,6 @@ struct ReadingView: View {
                             presentFocusMode()
                         } label: {
                             Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
-                        }
-
-                        Divider()
-
-                        Button {
-                            isChapterInsightsPresented = true
-                        } label: {
-                            Label("Chapter Insights", systemImage: "lightbulb")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")

@@ -11,6 +11,7 @@
 		2C02723A3086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */; };
 		2C02723C3086B2B800EDFEE5 /* HomeLayoutPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C02723B3086B2B800EDFEE5 /* HomeLayoutPreset.swift */; };
 		2C04929F3082AC5800123668 /* SavedVersesHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */; };
+		2C0AB1EC308A58A400DA8FD9 /* PerformanceSignposts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB1EB308A58A400DA8FD9 /* PerformanceSignposts.swift */; };
 		2C0DFA21306E9C5A00E114A5 /* NotesAndHighlightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */; };
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
 		2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */; };
@@ -214,6 +215,7 @@
 		2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingAndGamesComparisonCard.swift; sourceTree = "<group>"; };
 		2C02723B3086B2B800EDFEE5 /* HomeLayoutPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLayoutPreset.swift; sourceTree = "<group>"; };
 		2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedVersesHomeCard.swift; sourceTree = "<group>"; };
+		2C0AB1EB308A58A400DA8FD9 /* PerformanceSignposts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceSignposts.swift; sourceTree = "<group>"; };
 		2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesAndHighlightsView.swift; sourceTree = "<group>"; };
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
 		2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBooksThisMonthCardView.swift; sourceTree = "<group>"; };
@@ -629,6 +631,7 @@
 				2C1E7EE43087876D00DB8E2A /* StudyTimeTracker.swift */,
 				2C1E7EE630879C2700DB8E2A /* MissedGameQuestionStore.swift */,
 				2C6FD17A30882504007F22A1 /* ReviewRoundView.swift */,
+				2C0AB1EB308A58A400DA8FD9 /* PerformanceSignposts.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -917,6 +920,7 @@
 				2C2A44DE2EEE152E00FE8C2F /* StartScreen.swift in Sources */,
 				2C2A44FA2EEE337A00FE8C2F /* SettingsAppearanceSection.swift in Sources */,
 				2C514D0C3075AB4F000CFC0D /* TodayChallengeStore.swift in Sources */,
+				2C0AB1EC308A58A400DA8FD9 /* PerformanceSignposts.swift in Sources */,
 				2C2764EC2EE8C20D00A321FE /* PrayerStudyTimerSetupView.swift in Sources */,
 				2CBD4225306B575C002E33CE /* VerseActionMenu.swift in Sources */,
 				2C2A44DC2EEE152900FE8C2F /* SideBySideGameArea.swift in Sources */,

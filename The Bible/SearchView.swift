@@ -315,7 +315,7 @@ actor BibleSearchIndex {
             task = newTask
         }
 
-        let built = await task.value
+        let built = await AppPerformance.measure("BibleSearchIndexBuild") { await task.value }
         entries = built
         indexBuildTask = nil
         return built

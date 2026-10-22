@@ -49,7 +49,7 @@ actor BibleRepository {
             }
         }
         loadTask = task
-        let books = await task.value
+        let books = await AppPerformance.measure("BibleDataLoad") { await task.value }
         cache.store(books)
         loadTask = nil
         return books

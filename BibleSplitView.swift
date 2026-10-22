@@ -231,7 +231,12 @@ struct BibleSplitView: View {
                 model: searchModel,
                 bookSelectionMessage: "Select a book in the sidebar to search within it.",
                 onOpen: { result in
-                    openReader(bookName: result.bookName, chapter: result.chapterNumber, verse: result.verseNumber)
+                    openReader(
+                        bookName: result.bookName,
+                        chapter: result.chapterNumber,
+                        verse: result.verseNumber,
+                        preservingSearchContext: true
+                    )
                 }
             )
             .background(AppBackgroundView(tab: .bible))
@@ -304,7 +309,12 @@ struct BibleSplitView: View {
         .onSubmit(of: .search) {
             searchModel.saveRecentSearch()
             if let direct = searchModel.directReferenceResult() {
-                openReader(bookName: direct.bookName, chapter: direct.chapterNumber, verse: direct.verseNumber)
+                openReader(
+                    bookName: direct.bookName,
+                    chapter: direct.chapterNumber,
+                    verse: direct.verseNumber,
+                    preservingSearchContext: true
+                )
             }
         }
         .onAppear {
@@ -349,7 +359,8 @@ struct BibleSplitView: View {
                     detailPath.append(SearchRoute())
                 },
                 onNavigateBack: { currentBook in
-                    // Return to the chapter grid, or study page, for the book being read.
+                    // When a reader was opened from search, the searchable root remains in
+                    // place so this returns to the results instead of discarding the query.
                     selectedBook = currentBook
                     detailPath = bookPath(for: currentBook.name)
                 },
@@ -388,8 +399,10 @@ struct BibleSplitView: View {
         }
     }
 
-    private func selectBookForReader(named bookName: String) {
-        searchModel.query = ""
+    private func selectBookForReader(named bookName: String, clearingSearchContext: Bool = true) {
+        if clearingSearchContext {
+            searchModel.query = ""
+        }
         if selectedBook?.name != bookName {
             selectedBook = books.first(where: { $0.name == bookName })
         }
@@ -409,8 +422,13 @@ struct BibleSplitView: View {
     }
 
     /// Opens a passage from search results, keeping the book selection in step.
-    private func openReader(bookName: String, chapter: Int, verse: Int) {
-        selectBookForReader(named: bookName)
+    private func openReader(
+        bookName: String,
+        chapter: Int,
+        verse: Int,
+        preservingSearchContext: Bool = false
+    ) {
+        selectBookForReader(named: bookName, clearingSearchContext: !preservingSearchContext)
         Task { @MainActor in
             // The book change may replace the detail stack; install the route after it.
             await Task.yield()

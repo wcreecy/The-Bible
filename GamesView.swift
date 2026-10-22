@@ -413,14 +413,16 @@ struct GamesView: View {
     }
 
     private func refreshProgress() {
-        let statsByName = Dictionary(
-            GameStats.shared.breakdownSnapshot().entries.map { ($0.name, $0) },
-            uniquingKeysWith: { first, _ in first }
-        )
-        let todayWordResult = loadTodayWordResult()
-        progressByRoute = Dictionary(uniqueKeysWithValues: GameRoute.allCases.map { route in
-            (route, progressText(for: route, entry: statsByName[route.displayName], todayWordResult: todayWordResult))
-        })
+        AppPerformance.measure("GameStatsRefresh") {
+            let statsByName = Dictionary(
+                GameStats.shared.breakdownSnapshot().entries.map { ($0.name, $0) },
+                uniquingKeysWith: { first, _ in first }
+            )
+            let todayWordResult = loadTodayWordResult()
+            progressByRoute = Dictionary(uniqueKeysWithValues: GameRoute.allCases.map { route in
+                (route, progressText(for: route, entry: statsByName[route.displayName], todayWordResult: todayWordResult))
+            })
+        }
     }
 
     private func progressText(
