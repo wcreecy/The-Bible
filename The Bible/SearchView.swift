@@ -41,6 +41,9 @@ struct SearchView: View {
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            isSearchFieldFocused = true
+        }
         // Popover for selecting a specific book (searchable & scrollable)
         .popover(isPresented: $showBookPicker, arrowEdge: .top) {
             VStack(spacing: 0) {

@@ -148,6 +148,7 @@ struct HomeView: View {
     @State private var editHomeCueCircleProgress: CGFloat = 0
     @State private var editHomeCueArrowProgress: CGFloat = 0
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
+    @AppStorage("homeQuickSearchVisible") private var quickSearchVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
     @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
 
@@ -412,6 +413,18 @@ struct HomeView: View {
     private var compactHomeContent: some View {
         homeHeader(usesDashboard: false)
             .frame(maxWidth: .infinity)
+        if quickSearchVisible {
+            SearchHomeCard(
+                presentation: .inline,
+                onSelectResult: { result in
+                    openBibleReference(
+                        book: result.bookName,
+                        chapter: result.chapterNumber,
+                        verse: result.verseNumber
+                    )
+                }
+            )
+        }
         contextualHomeTip
             .frame(maxWidth: .infinity)
 
@@ -433,6 +446,21 @@ struct HomeView: View {
                 .frame(minHeight: max(0, availableHeight - 96), alignment: .center)
         } else {
             homeHeader(usesDashboard: true)
+
+            if !isEditingLayout {
+                if quickSearchVisible {
+            SearchHomeCard(
+                presentation: .inline,
+                onSelectResult: { result in
+                    openBibleReference(
+                        book: result.bookName,
+                        chapter: result.chapterNumber,
+                        verse: result.verseNumber
+                    )
+                }
+            )
+        }
+            }
 
             if isEditingLayout {
                 editHomeHint

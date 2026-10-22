@@ -15,6 +15,7 @@ struct HomeLayoutEditorView: View {
 
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
+    @AppStorage("homeQuickSearchVisible") private var quickSearchVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
     @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
     @State private var highlightedCards: Set<HomeCardID> = []
@@ -43,6 +44,7 @@ struct HomeLayoutEditorView: View {
         hiddenSet = HomeLayoutStore.baselineHidden
         columns = HomeLayoutStore.baselineColumns
         customizeButtonVisible = true
+        quickSearchVisible = true
         bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
         bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
         onDone()
@@ -502,6 +504,17 @@ struct HomeLayoutEditorView: View {
                 onApply: apply,
                 onRestoreDefault: resetToDefault
             )
+
+            Section {
+                Toggle(isOn: $quickSearchVisible) {
+                    Label("Show Quick Search on Home", systemImage: "magnifyingglass")
+                }
+                .toggleStyle(StatusColorToggleStyle())
+            } header: {
+                Label("Home Shortcuts", systemImage: "bolt")
+            } footer: {
+                Text("Quick Search lets you find words, phrases, and Bible references directly from Home.")
+            }
 
             if usesDashboard {
                 dashboardSections

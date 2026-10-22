@@ -277,7 +277,7 @@ struct BibleSearchResultsView: View {
         VStack(alignment: .leading, spacing: 6) {
             Label(title, systemImage: systemImage)
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
 
             ForEach(searches, id: \.self) { search in
                 Button {
@@ -285,8 +285,8 @@ struct BibleSearchResultsView: View {
                     model.saveRecentSearch(search)
                 } label: {
                     Text(search)
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .font(.subheadline.weight(.regular))
+                        .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, 6)
                 }
@@ -294,10 +294,10 @@ struct BibleSearchResultsView: View {
             }
         }
         .padding(12)
-        .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Color.primary.opacity(0.025), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.06))
+                .strokeBorder(Color.primary.opacity(0.035))
         }
     }
 }

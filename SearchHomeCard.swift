@@ -1,10 +1,26 @@
 import SwiftUI
 
 struct SearchHomeCard: View {
+    enum Presentation {
+        case card
+        case inline
+    }
+
+    let presentation: Presentation
     /// Called when typing starts and when results arrive, so Home can scroll the card
     /// above the keyboard and tab bar.
-    var onNeedsVisibility: () -> Void = {}
+    let onNeedsVisibility: () -> Void
     let onSelectResult: (SearchResult) -> Void
+
+    init(
+        presentation: Presentation = .card,
+        onNeedsVisibility: @escaping () -> Void = {},
+        onSelectResult: @escaping (SearchResult) -> Void
+    ) {
+        self.presentation = presentation
+        self.onNeedsVisibility = onNeedsVisibility
+        self.onSelectResult = onSelectResult
+    }
 
     /// A book, chapter, or verse the query names directly, shown above the keyword matches.
     private struct ReferenceMatch: Identifiable {
@@ -31,43 +47,29 @@ struct SearchHomeCard: View {
     }
 
     var body: some View {
-        HeroCard(
-            title: "",
-            subtitle: nil,
-            icon: nil,
-            tint: .purple
-        ) {
-            VStack(alignment: .leading, spacing: 12) {
-                Label("Search the Bible", systemImage: "magnifyingglass")
-                    .font(.headline)
-
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundStyle(.secondary)
-
-                    TextField("Search words or a reference", text: $query)
-                        .textFieldStyle(.plain)
-                        .autocorrectionDisabled(true)
-                        .textInputAutocapitalization(.never)
-                        .submitLabel(.search)
-                        .focused($isFieldFocused)
-                        .onSubmit(openTopResult)
-
-                    if !query.isEmpty {
-                        Button {
-                            query = ""
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.secondary)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Clear search")
+        Group {
+            switch presentation {
+            case .card:
+                HeroCard(
+                    title: "",
+                    subtitle: nil,
+                    icon: nil,
+                    tint: .purple
+                ) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Search the Bible", systemImage: "magnifyingglass")
+                            .font(.headline)
+                        searchField
+                        searchResults
                     }
                 }
-                .padding(10)
-                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-
-                searchResults
+            case .inline:
+                VStack(alignment: .leading, spacing: 10) {
+                    searchField
+                    if !query.isEmpty {
+                        searchResults
+                    }
+                }
             }
         }
         .onChange(of: query) { _, newValue in
@@ -89,6 +91,35 @@ struct SearchHomeCard: View {
         .onDisappear {
             searchTask?.cancel()
         }
+    }
+
+    private var searchField: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+
+            TextField("Search words or a reference", text: $query)
+                .textFieldStyle(.plain)
+                .autocorrectionDisabled(true)
+                .textInputAutocapitalization(.never)
+                .submitLabel(.search)
+                .focused($isFieldFocused)
+                .onSubmit(openTopResult)
+
+            if !query.isEmpty {
+                Button {
+                    query = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .padding(10)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .accessibilityLabel("Search the Bible")
     }
 
     @ViewBuilder
