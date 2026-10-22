@@ -38,7 +38,7 @@ def main():
         "treat offerings with contempt (1 Samuel 2:11–17, 22–25)."
     )
     chapters["1 Samuel 15"]["summary"] = chapters["1 Samuel 15"]["summary"].replace(
-        "The chapter's violent command belongs to an ancient war narrative and raises substantial modern ethical questions; it should not be used to justify present-day violence.",
+        "The chapter’s violent command belongs to an ancient war narrative and raises substantial modern ethical questions; it should not be used to justify present-day violence.",
         "The chapter records a severe command of judgment and Saul's refusal to carry it out fully (1 Samuel 15:1–35)."
     )
     write(path, chapters)
@@ -49,6 +49,14 @@ def main():
     for field in ("audience", "purpose", "theme", "summary"):
         book[field] = book[field].replace("His", "his").replace("Him", "him")
     write(overview_path, overview)
+    story_path = ROOT / "book_content/02_early_history.md"
+    story = story_path.read_text(encoding="utf-8")
+    start, end = story.index("# 1 Samuel"), story.index("# 2 Samuel")
+    section = story[start:end]
+    section = section.replace("turn toward Him.", "turn toward him.")
+    section = section.replace("God has done what He said.", "God has done what he said.")
+    section = section.replace("Saul disobeyed Him with the Amalekites", "Saul disobeyed him with the Amalekites")
+    story_path.write_text(story[:start] + section + story[end:], encoding="utf-8")
 
 if __name__ == "__main__":
     main()

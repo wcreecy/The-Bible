@@ -13,7 +13,7 @@ def main():
   following='The account hands off to 2 Kings 1, where Ahaziah seeks help after his fall.' if n==22 else f'Chapter {n+1} continues the consequences of these events.'
   x[k]['whereWeAre']=f'{prior} {summary}. {following}'
  for n in (1,2,11,16): x[f'1 Kings {n}']['keyFigures']=x[f'1 Kings {n}']['keyFigures'][:6]
- x['1 Kings 2']['summary']=x['1 Kings 2']['summary'].replace('without requiring', 'without claiming')
+ x['1 Kings 2']['summary']=x['1 Kings 2']['summary'].replace('without requiring', 'without saying').replace('without claiming', 'without saying')
  save(p,x)
  op=ROOT/'book_overviews/02_early_history.json'; o=load(op); b=o['1 Kings']
  b['author']='Jeremiah is the traditional author, though 1 Kings does not name its writer.'

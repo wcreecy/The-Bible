@@ -22,11 +22,15 @@ def main():
  h['2 Kings 3']='During the divided kingdom, Israel, Judah, and Edom campaign against Moab in the wilderness of Edom (2 Kings 3:4–9).'
  h['2 Kings 4']='During Elisha’s ministry in Israel, he travels among places including Shunem, Gilgal, and Jericho (2 Kings 4:8–44).'
  h['2 Kings 10']='After Jehu becomes king, he destroys Ahab’s house in Jezreel and Samaria and confronts Baal worship in Samaria (2 Kings 10:1–28).'
+ h['2 Kings 18']=h['2 Kings 18'].replace('‘like a bird in a cage.’','like a bird in a cage.').replace('‘like a bird in a cage’','like a bird in a cage')
  S(hp,h)
  cp=R/'chapter_context/12_2_kings.json'; c=L(cp)
  for n,txt in {3:'The first Israelites who heard this account knew Moab lay east of the Dead Sea. They heard how Elisha’s word shaped the campaign.',4:'The first Israelites who heard this account knew Elisha’s ministry reached ordinary households. They heard accounts of the LORD’s care through the prophet.',10:'The first Israelites who heard this account knew Jehu ended Ahab’s dynasty. They heard the warning against Baal worship in Israel.'}.items(): c[f'2 Kings {n}']['audience']=txt
+ c['2 Kings 19']['audience']=c['2 Kings 19']['audience'].replace('‘like a bird in a cage’','like a bird in a cage')
  for n in (1,18,19,25):
-  for item in c[f'2 Kings {n}']['culture']: item['text']=item['text'].replace('"lord of flies,"','lord of flies,').replace('"like a bird in a cage."','like a bird in a cage.').replace('"like a bird in a cage"','like a bird in a cage').replace('"Yaukin, king of the land of Yahud"','Yaukin, king of the land of Yahud')
+  for item in c[f'2 Kings {n}']['culture']: item['text']=item['text'].replace('‘','').replace('’','').replace('"','')
+ x['2 Kings 22']['summary']=x['2 Kings 22']['summary'].replace(' The precise extent and identification of the discovered book remain subjects of scholarly discussion.','')
+ S(p,x)
  S(cp,c)
  op=R/'book_overviews/02_early_history.json'; o=L(op); b=o['2 Kings']; b['author']='Jeremiah is the traditional author, though 2 Kings does not name its writer.'; b['audience']='Israel and later readers reflecting on the fall of Israel and Judah.'; b['purpose']='To explain the fall of both kingdoms through the faithfulness and failure of their kings.'; S(op,o)
  sp=R/'book_content/03_later_history.md'; s=sp.read_text(encoding='utf-8'); a=s.index('# 2 Kings'); section=s[a:].replace(' His ',' his '); sp.write_text(s[:a]+section,encoding='utf-8')

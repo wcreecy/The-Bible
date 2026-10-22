@@ -17,8 +17,8 @@ def main():
  hp=R/'historical_moments/06_chronicles.json'; h=L(hp)
  cp=R/'chapter_context/13_1_chronicles.json'; c=L(cp)
  for n in (1,2,4,5,14,18,22,24,28):
-  h[f'1 Chronicles {n}']=f"In the Chronicler's account, this chapter recalls Israel's past and its people in the lands named in 1 Chronicles {n} (1 Chronicles {n}:1)."
-  c[f'1 Chronicles {n}']['audience']=f"The first post-exile Israelites who heard this chapter knew their community needed a shared identity. They heard how this part of Israel's memory connected them to that history."
+  h[f'1 Chronicles {n}']=f"This material is set in the remembered history of Israel and Judah, with the people and places named in 1 Chronicles {n} (1 Chronicles {n}:1)."
+  c[f'1 Chronicles {n}']['audience']=f"Post-exile hearers used chapter {n}'s record to locate their own families and worship within Israel's long story."
  S(hp,h); S(cp,c)
  op=R/'book_overviews/03_later_history.json'; o=L(op); b=o['1 Chronicles']; b['author']='Ezra is the traditional author, though 1 Chronicles does not name its writer.'; b['audience']='Post-exile Israel, learning its identity through David’s line, worship, and shared history.'; b['purpose']='To retell Israel’s history around David’s kingdom, temple worship, and the LORD’s covenant purposes.'; S(op,o)
  sp=R/'book_content/03_later_history.md'; s=sp.read_text(encoding='utf-8'); a=s.index('# 1 Chronicles'); z=s.index('# 2 Chronicles',a); s=s[:a]+s[a:z].replace(' Him',' him')+s[z:]; sp.write_text(s,encoding='utf-8')

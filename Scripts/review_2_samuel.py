@@ -8,6 +8,7 @@ def save(p, x): p.write_text(json.dumps(x, ensure_ascii=False, indent=2) + "\n",
 def main():
     ip = ROOT / "chapter_insights/10_2_samuel.json"; x = load(ip)
     placements = {
+      10:"David showed covenant kindness to Mephibosheth in chapter 9. Chapter 10 records the insult of David's messengers and the war with Ammon and Syria. Chapter 11 turns to David's sin with Bathsheba.",
       5:"Chapter 4 ended with Ish-bosheth's murder and David's rejection of political violence. Chapter 5 unites Israel under David, makes Jerusalem his capital, and records victories over the Philistines. Chapter 6 brings the ark to Jerusalem.",
       7:"David brought the ark to Jerusalem in chapter 6. In chapter 7, David wants to build a house for the ark, but the LORD promises to establish David's house instead. Chapter 8 records the victories that follow.",
       8:"The LORD promises David an enduring house in chapter 7. Chapter 8 records David's victories and the growth of his royal administration. Chapter 9 shows David's kindness to Jonathan's son.",
@@ -32,4 +33,8 @@ def main():
     b["audience"]="Israel and later readers reflecting on David's monarchy and the LORD's covenant with his house."
     b["purpose"]="To tell of David's reign, the LORD's covenant promise, and the grave cost of David's sin."
     save(op,o)
+    sp=ROOT/"book_content/02_early_history.md"; s=sp.read_text(encoding="utf-8")
+    start,end=s.index("# 2 Samuel"),len(s)
+    section=s[start:end].replace("His people Israel", "his people Israel").replace("His servants are confused", "his servants are confused")
+    sp.write_text(s[:start]+section+s[end:],encoding="utf-8")
 if __name__=="__main__": main()

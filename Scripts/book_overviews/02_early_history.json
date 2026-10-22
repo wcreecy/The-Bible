@@ -61,11 +61,11 @@
     ]
   },
   "Judges": {
-    "author": "Samuel, according to Jewish tradition. The book does not name its writer, and its refrain \"In those days there was no king in Israel\" shows it was written after Israel had kings.",
-    "audience": "Israel during the period between Joshua and the monarchy.",
-    "purpose": "To explain Israel's recurring cycle of apostasy, oppression, crying out, and deliverance, while showing the need for faithful leadership.",
-    "theme": "When God's people abandon covenant faithfulness, disorder deepens; God repeatedly shows mercy through deliverers.",
-    "summary": "Judges tells a downward spiral: Israel turns from God, suffers oppression, cries out, and is rescued by judges. The book becomes increasingly dark and ends with social and moral chaos.",
+    "author": "Jewish tradition names Samuel as the author. Judges does not name its writer, but its repeated words, \"In those days there was no king in Israel,\" show that it was written after kings ruled Israel.",
+    "audience": "Israel after the time of the judges, when its people knew both the tribal stories and life under kings.",
+    "purpose": "To show Israel's repeating turn from the LORD, the oppression that follows, and the LORD's mercy in raising deliverers, while revealing the need for faithful leadership.",
+    "theme": "When Israel abandons covenant faithfulness, disorder deepens. The LORD repeatedly shows mercy through deliverers, yet the book ends with a nation doing what is right in its own eyes.",
+    "summary": "Judges traces Israel's downward cycle of rebellion, oppression, crying out, and rescue through leaders called judges. The final stories show idolatry, violence, and civil war, exposing the need for faithful leadership.",
     "keyVerse": "Judges 21:25",
     "movements": [
       {
@@ -130,11 +130,11 @@
     ]
   },
   "Ruth": {
-    "author": "Anonymous; Jewish tradition has sometimes associated it with Samuel.",
-    "audience": "Israel, likely with special interest in David's ancestry and covenant faithfulness.",
-    "purpose": "To show God's providence, loyal love, and the inclusion of a Moabite woman in the family line that leads to David.",
-    "theme": "God works through ordinary faithfulness, kindness, and providence to bring redemption.",
-    "summary": "Ruth follows Naomi and her Moabite daughter-in-law Ruth from grief and poverty to restoration. Ruth's loyalty leads to marriage with Boaz, and their family line becomes part of David's ancestry.",
+    "author": "Samuel is the traditional author. Ruth does not name its writer, but Jewish tradition connects the book with Samuel.",
+    "audience": "Israel, especially hearers who knew David's family line and the faithfulness God calls for among his people.",
+    "purpose": "To show the LORD's care through Ruth's loyalty, Boaz's faithfulness, and the restoration of Naomi's family line.",
+    "theme": "The LORD works through ordinary faithfulness and kindness to bring care, redemption, and hope.",
+    "summary": "Ruth follows Naomi from Moab to Bethlehem after both women lose their husbands. Boaz protects Ruth, redeems the family property, and marries her; their son Obed becomes David's grandfather.",
     "keyVerse": "Ruth 1:16",
     "movements": [
       {
@@ -187,10 +187,10 @@
     ]
   },
   "1 Samuel": {
-    "author": "Anonymous; traditions connect material with Samuel, Nathan, and Gad, but the final form is later than Samuel's lifetime.",
+    "author": "Samuel is the traditional author, with later material commonly linked to Nathan and Gad. The book itself does not name its writer.",
     "audience": "Israel during the transition from judges to monarchy.",
     "purpose": "To recount the rise of the monarchy, the failure of Saul, and the emergence of David as God's chosen king.",
-    "theme": "God looks at the heart, resists proud leadership, and advances His purposes through faithful obedience.",
+    "theme": "God looks at the heart, resists proud leadership, and advances his purposes through faithful obedience.",
     "summary": "1 Samuel moves from Samuel's birth and prophetic ministry to Saul's rise and fall, then to David's anointing and long conflict with Saul.",
     "keyVerse": "1 Samuel 16:7",
     "movements": [
@@ -252,9 +252,9 @@
     ]
   },
   "2 Samuel": {
-    "author": "Anonymous; built from royal and prophetic traditions.",
-    "audience": "Israel under David's reign and later readers reflecting on the Davidic monarchy.",
-    "purpose": "To narrate David's reign, God's covenant promise to his house, and the serious consequences of David's sin.",
+    "author": "Nathan and Gad are the traditional sources named for David's reign, though 2 Samuel does not name a single writer.",
+    "audience": "Israel and later readers reflecting on David's monarchy and the LORD's covenant with his house.",
+    "purpose": "To tell of David's reign, the LORD's covenant promise, and the grave cost of David's sin.",
     "theme": "God establishes David's dynasty, yet even the chosen king is accountable for sin and its consequences.",
     "summary": "David becomes king over all Israel, captures Jerusalem, receives God's covenant promise, and experiences both great victories and deep family turmoil after his sin with Bathsheba.",
     "keyVerse": "2 Samuel 7:16",
@@ -317,9 +317,9 @@
     ]
   },
   "1 Kings": {
-    "author": "Anonymous; often understood as part of a larger historical work compiled from earlier royal records and prophetic sources.",
-    "audience": "Judah and Israel, especially readers reflecting on the monarchy and exile.",
-    "purpose": "To explain the history of the united and divided kingdoms in light of covenant faithfulness and failure.",
+    "author": "Jeremiah is the traditional author, though 1 Kings does not name its writer.",
+    "audience": "Israel and later readers learning why the united kingdom divided and how its kings answered the LORD.",
+    "purpose": "To trace Solomon’s reign, the division of the kingdom, and the LORD’s word through prophets such as Elijah.",
     "theme": "The health of the kingdom is measured by loyalty to the LORD; idolatry and disobedience lead toward judgment.",
     "summary": "Solomon builds the temple but later compromises through idolatry. After his death the kingdom divides, and prophetic voices such as Elijah confront royal unfaithfulness.",
     "keyVerse": "1 Kings 18:39",
@@ -382,9 +382,9 @@
     ]
   },
   "2 Kings": {
-    "author": "Anonymous; likely compiled from royal, prophetic, and historical sources.",
-    "audience": "Judah and Israel, especially communities seeking to understand why both kingdoms fell.",
-    "purpose": "To trace the decline and exile of Israel and Judah as the result of persistent covenant rebellion, while preserving signs of God's prophetic faithfulness.",
+    "author": "Jeremiah is the traditional author, though 2 Kings does not name its writer.",
+    "audience": "Israel and later readers reflecting on the fall of Israel and Judah.",
+    "purpose": "To explain the fall of both kingdoms through the faithfulness and failure of their kings.",
     "theme": "Persistent idolatry and injustice bring covenant judgment, yet God's word continues to prove reliable.",
     "summary": "2 Kings records prophetic ministries, royal reforms, repeated rebellion, the fall of Samaria, and finally the fall of Jerusalem and exile to Babylon.",
     "keyVerse": "2 Kings 6:16",
