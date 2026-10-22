@@ -61,8 +61,8 @@
     ]
   },
   "2 Chronicles": {
-    "author": "Anonymous; traditionally associated with Ezra.",
-    "audience": "The post-exilic Jewish community.",
+    "author": "Ezra, according to Jewish tradition, who is also credited with 1 Chronicles. The book does not name its writer.",
+    "audience": "The Jews who had come home from exile in Babylon and were rebuilding Jerusalem and its temple.",
     "purpose": "To retell the history of Judah with emphasis on temple worship, reform, repentance, and the consequences of covenant faithfulness or rebellion.",
     "theme": "Seeking God brings renewal, while persistent unfaithfulness brings judgment; restoration remains possible through repentance.",
     "summary": "2 Chronicles begins with Solomon's temple, follows Judah's kings with special attention to reforms, and ends with exile and Cyrus's decree permitting return.",
@@ -138,10 +138,10 @@
     ]
   },
   "Ezra": {
-    "author": "Traditionally associated with Ezra; likely uses memoirs, lists, letters, and other records.",
-    "audience": "The returned Jewish community in Judah.",
+    "author": "Ezra, according to Jewish tradition. Parts of chapters 7–9 are written in his own voice, and the book also draws on family lists and royal letters.",
+    "audience": "The Jews who had returned from Babylon to Judah and were rebuilding their life around the temple.",
     "purpose": "To recount the return from exile, rebuilding of the temple, and Ezra's efforts to restore covenant faithfulness.",
-    "theme": "God restores His people, and restoration includes both rebuilt worship and renewed obedience.",
+    "theme": "God restores his people, and restoration includes both rebuilt worship and renewed obedience.",
     "summary": "Ezra recounts two major returns from exile: one connected with Zerubbabel and the temple, and a later one led by Ezra to address covenant faithfulness.",
     "keyVerse": "Ezra 7:10",
     "movements": [
@@ -199,8 +199,8 @@
     ]
   },
   "Nehemiah": {
-    "author": "Largely based on Nehemiah's memoirs, with editorial shaping in its final form.",
-    "audience": "The Jewish community in Jerusalem after exile.",
+    "author": "Nehemiah, who writes much of the book in his own voice (Nehemiah 1:1). Jewish tradition says he finished the book that Ezra began; in the Hebrew Bible, Ezra and Nehemiah were one book.",
+    "audience": "The Jews living in and around Jerusalem after the return from exile.",
     "purpose": "To recount the rebuilding of Jerusalem's walls and the community's renewed commitment to covenant life.",
     "theme": "God's work includes both rebuilding a city and reforming a covenant community.",
     "summary": "Nehemiah leads a rapid rebuilding of Jerusalem's walls despite opposition, then joins Ezra in public Scripture reading and covenant renewal before addressing ongoing social and religious problems.",
@@ -260,8 +260,8 @@
     ]
   },
   "Esther": {
-    "author": "Anonymous.",
-    "audience": "Jews living in the Persian Empire and later Jewish communities commemorating Purim.",
+    "author": "Jewish tradition credits the men of the Great Assembly, the leaders after the return from exile; some have named Mordecai, who \"wrote these things\" (Esther 9:20). The book does not name its writer.",
+    "audience": "Jews living throughout the Persian Empire, and every later generation that keeps the feast of Purim.",
     "purpose": "To explain the deliverance of the Jewish people from a planned massacre and the origin of the feast of Purim.",
     "theme": "Providence can preserve God's people even when God is not explicitly named.",
     "summary": "Esther, a Jewish woman who becomes queen, risks her life to expose Haman's plot against the Jews. The threatened destruction is reversed, and Purim commemorates the deliverance.",

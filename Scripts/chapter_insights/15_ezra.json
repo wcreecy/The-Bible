@@ -1,99 +1,91 @@
 {
   "Ezra 1": {
-    "summary": "Following the Babylonian exile, Cyrus king of Persia issues a written proclamation permitting members of God's people to return to Jerusalem and rebuild the temple. The narrator connects the decree to the LORD's promise spoken through Jeremiah (Ezra 1:1–4). Leaders of Judah and Benjamin, priests, Levites, and others whose spirits God moves prepare to leave; neighbors support them with valuables and offerings (Ezra 1:5–6). Cyrus releases temple vessels taken by Nebuchadnezzar, and the treasurer Mithredath counts them out to Sheshbazzar, identified as prince of Judah (Ezra 1:7–11). The chapter opens the restoration story with permission, provision, and returning worship rather than claiming that every exile went home.",
-    "whereWeAre": "The account portrays an imperial authorization to rebuild a sanctuary. Persia often worked with local religious institutions; the Cyrus Cylinder attests a broader royal restoration ideology, but does not itself mention a decree for Jerusalem. Imperial permission and the return of sacred vessels establish the material foundation for the rebuilding story.",
+    "summary": "In his first year, the LORD stirs up the spirit of Cyrus king of Persia, and he proclaims that the LORD has charged him to build a house at Jerusalem (Ezra 1:1–2). Any of God's people may go up, and their neighbors are to help them with silver, gold, goods, and beasts (Ezra 1:3–4). The leaders of Judah and Benjamin, the priests, and the Levites rise up to go, \"with all them whose spirit God had raised\" (Ezra 1:5–6). Cyrus brings out the vessels Nebuchadnezzar took from the temple, and Mithredath the treasurer counts them out to Sheshbazzar, the prince of Judah (Ezra 1:7–11).",
+    "whereWeAre": "2 Chronicles ended with Jerusalem burned and Cyrus king of Persia inviting God's people to go home. Ezra begins with the same decree, as God stirs up Cyrus and the first exiles prepare to leave Babylon. Chapter 2 lists the families who return.",
     "keyFigures": [
       {
         "name": "Cyrus",
-        "role": "Persian king who issues the proclamation. His imperial authorization makes the return and temple rebuilding possible (1:1–4)."
+        "role": "King of Persia, whose spirit the LORD stirs to send the exiles home."
       },
       {
-        "name": "Leaders of Judah and Benjamin, priests and Levites",
-        "role": "Israelite returnees who respond to the call. They undertake the journey and represent renewed communal worship (1:5)."
+        "name": "The leaders of Judah and Benjamin",
+        "role": "Rise up with the priests and Levites to go and build."
       },
       {
         "name": "Mithredath",
-        "role": "Persian treasurer who counts out temple articles. He administers the transfer of objects taken from Jerusalem (1:8)."
+        "role": "The treasurer who counts out the temple vessels."
       },
       {
         "name": "Sheshbazzar",
-        "role": "Prince of Judah entrusted with the temple vessels. He transports the returned objects with the exiles (1:8–11)."
-      },
-      {
-        "name": "Nebuchadnezzar",
-        "role": "Earlier Babylonian king recalled in the narrative. He had taken the temple articles to Babylon (1:7)."
+        "role": "The prince of Judah, who carries the vessels to Jerusalem."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Promise and restoration",
-        "explanation": "",
+        "theme": "God keeps his word",
+        "explanation": "The return fulfills the word of the LORD spoken through Jeremiah.",
         "references": [
-          "Ezra 1:1–4"
+          "Ezra 1:1"
         ]
       },
       {
-        "theme": "Willing response",
-        "explanation": "",
+        "theme": "God moves kings",
+        "explanation": "The LORD stirs up the spirit of a pagan king to send his people home.",
         "references": [
-          "Ezra 1:5–6"
+          "Ezra 1:1-2"
         ]
       },
       {
-        "theme": "Continuity of worship",
-        "explanation": "",
+        "theme": "A willing heart",
+        "explanation": "Those whose spirit God raised up choose to make the long journey.",
         "references": [
-          "Ezra 1:7–11"
+          "Ezra 1:5-6"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 2": {
-    "summary": "The chapter records families and groups returning from Babylonian exile under leaders including Zerubbabel and Jeshua (Ezra 2:1–2). It lists descendants by family and town, priests, Levites, singers, gatekeepers, temple servants, and descendants of Solomon's servants (Ezra 2:3–58). Some cannot establish ancestry, while certain priestly claimants are excluded from priestly privileges until a legitimate priest can consult Urim and Thummim (Ezra 2:59–63). The account gives a total for the assembly, notes servants, singers, animals, and voluntary donations for rebuilding (Ezra 2:64–69), and locates the settlers in their towns (Ezra 2:70). Its central purpose is to portray restoration as the reconstitution of a named community with recognized worship responsibilities.",
-    "whereWeAre": "Resettlement required reestablishing household claims, community membership, local residences, and worship roles after deportation. The register explains who constituted the new community before the altar and temple were restored.",
+    "summary": "The chapter lists the people who return with Zerubbabel and Jeshua, family by family and town by town (Ezra 2:1–35). It also lists the priests, Levites, singers, porters, Nethinims, and the children of Solomon's servants (Ezra 2:36–58). Some cannot show their family records, and the governor says those priests must not eat the most holy things until a priest stands up \"with Urim and with Thummim\" (Ezra 2:59–63). The whole company is 42,360, plus 7,337 servants and 200 singers (Ezra 2:64–67). Some family leaders give freely for the house of God, and everyone settles in their own towns (Ezra 2:68–70).",
+    "whereWeAre": "Cyrus let the exiles go home in chapter 1. This chapter lists the families who return with Zerubbabel and Jeshua, 42,360 in all, and the priests who cannot prove their family line. In chapter 3 they rebuild the altar in Jerusalem.",
     "keyFigures": [
       {
-        "name": "Zerubbabel and Jeshua",
-        "role": "Named among leaders of those who returned. They link the returnees to political and priestly leadership (2:2)."
+        "name": "Zerubbabel",
+        "role": "Leads the first return from Babylon."
       },
       {
-        "name": "Returning families of Israel",
-        "role": "Family and town groups listed throughout the register. Their names preserve communal identity after exile (2:3–35)."
+        "name": "Jeshua",
+        "role": "The priest who returns with Zerubbabel."
       },
       {
-        "name": "Priests and Levites",
-        "role": "Temple-related families and functionaries. Their enrollment anticipates restored service (2:36–42)."
+        "name": "The Tirshatha",
+        "role": "The governor, who keeps priests without records from the most holy things."
       },
       {
-        "name": "Temple servants and descendants of Solomon’s servants",
-        "role": "Groups associated with temple work. They show the wide range of people involved in sacred service (2:43–58)."
-      },
-      {
-        "name": "Unverified priestly families and the governor",
-        "role": "Claimants without adequate genealogical proof and the official who rules on their status. The governor restricts holy-food privileges pending resolution (2:61–63)."
+        "name": "The chief of the fathers",
+        "role": "Family leaders who give freely to rebuild the house of God."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Identity after exile",
-        "explanation": "",
+        "theme": "Every family counts",
+        "explanation": "The careful list shows that God's people return as real families from real towns.",
         "references": [
-          "Ezra 2:1–35"
+          "Ezra 2:1-35"
         ]
       },
       {
-        "theme": "Accountability in priestly service",
-        "explanation": "",
+        "theme": "Holy service",
+        "explanation": "Priests who cannot prove their line must wait before serving.",
         "references": [
-          "Ezra 2:61–63"
+          "Ezra 2:61-63"
         ]
       },
       {
-        "theme": "Shared investment",
-        "explanation": "",
+        "theme": "Giving freely",
+        "explanation": "Family leaders give gold and silver so the house of God can be rebuilt.",
         "references": [
-          "Ezra 2:68–70"
+          "Ezra 2:68-69"
         ]
       }
     ],
@@ -106,400 +98,376 @@
     ]
   },
   "Ezra 3": {
-    "summary": "In the seventh month, the returned Israelites gather in Jerusalem. Jeshua, Zerubbabel, and their colleagues rebuild the altar, resume the prescribed morning and evening burnt offerings, and celebrate the Feast of Booths while living amid fear of surrounding peoples (Ezra 3:1–6). Supplies are arranged for rebuilding the temple (Ezra 3:7). In the second year after arrival, workers and Levites organize the foundation-laying ceremony (Ezra 3:8–10). Priests sound trumpets, singers praise the LORD, and the assembly shouts for joy; older people who remember the former temple weep, so grief and celebration mingle (Ezra 3:11–13). Worship resumes before the new temple is complete, and rebuilding brings both promise and remembered loss.",
-    "whereWeAre": "Returning families faced practical shortages and opposition while restoring the sacrificial system and temple site. The altar and foundation provide a visible center for postexilic religious identity.",
+    "summary": "In the seventh month the people gather \"as one man\" to Jerusalem, and Jeshua and Zerubbabel build the altar and offer burnt offerings, though they fear the peoples around them (Ezra 3:1–3). They keep the feast of tabernacles and the daily offerings, even before the temple's foundation is laid (Ezra 3:4–6). They pay masons and carpenters and bring cedar from Lebanon by sea to Joppa (Ezra 3:7). In the second year the foundation is laid, and the priests and Levites praise the LORD, \"because he is good, for his mercy endureth for ever toward Israel\" (Ezra 3:8–11). Old men who had seen the first house weep aloud while others shout for joy, and no one can tell the sounds apart (Ezra 3:12–13).",
+    "whereWeAre": "The returning families were listed in chapter 2. Now they rebuild the altar, keep the feast of tabernacles, and lay the temple's foundation, as some shout for joy and the old men weep. Chapter 4 tells how their neighbors stop the work.",
     "keyFigures": [
       {
-        "name": "Jeshua son of Jozadak and fellow priests",
-        "role": "Priestly leaders who rebuild the altar. They restart sacrifices prescribed in the Law of Moses (3:2)."
+        "name": "Jeshua son of Jozadak",
+        "role": "Leads the priests in building the altar."
       },
       {
         "name": "Zerubbabel son of Shealtiel",
-        "role": "Community leader coordinating renewed worship and construction. He participates in the altar work and organizing the foundation (3:2, 8)."
+        "role": "Leads the people in rebuilding the altar and the foundation."
       },
       {
-        "name": "Levites and priests",
-        "role": "Temple workers, musicians, and overseers. They lead the building work and liturgical praise (3:8–11)."
+        "name": "The priests and Levites",
+        "role": "Praise the LORD with trumpets, cymbals, and song."
       },
       {
-        "name": "Older priests, Levites and family heads",
-        "role": "Witnesses who had seen the former temple. Their weeping reveals the emotional cost of exile (3:12)."
-      },
-      {
-        "name": "Assembled people",
-        "role": "Community participating in worship. They offer praise and respond to the new foundation (3:11–13)."
+        "name": "The ancient men",
+        "role": "Older priests, Levites, and fathers who had seen the first house and weep."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Worship before completion",
-        "explanation": "",
+        "theme": "Worship first",
+        "explanation": "The people rebuild the altar and offer sacrifices before the temple stands.",
         "references": [
-          "Ezra 3:1–6"
+          "Ezra 3:2-6"
         ]
       },
       {
-        "theme": "Faithful communal work",
-        "explanation": "",
+        "theme": "Praise for God's goodness",
+        "explanation": "At the foundation they sing that God's mercy endures for ever.",
         "references": [
-          "Ezra 3:7–11"
+          "Ezra 3:10-11"
         ]
       },
       {
-        "theme": "Joy and grief together",
-        "explanation": "",
+        "theme": "Joy mixed with tears",
+        "explanation": "Shouts of joy and the weeping of old men rise together.",
         "references": [
-          "Ezra 3:12–13"
+          "Ezra 3:12-13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 4": {
-    "summary": "Local groups approach Zerubbabel and the family heads, offering to help rebuild because they too worship Israel's God; the leaders refuse, insisting the authorized project belongs to the returned community (Ezra 4:1–3). Adversaries discourage the builders and hire advisers to hinder construction (Ezra 4:4–5). The chapter then supplies examples of later complaints during the reigns of Ahasuerus/Xerxes and Artaxerxes, including an Aramaic letter alleging that rebuilding Jerusalem threatens imperial revenues and order (Ezra 4:6–16). Artaxerxes orders the city-building work stopped pending further authorization (Ezra 4:17–23). Verse 24 returns to the earlier temple-building timeline, saying that work ceased until Darius's second year. Readers should not treat the whole chapter as a strictly continuous chronological sequence.",
-    "whereWeAre": "Imperial communication and local disputes shaped public construction and the status of Jerusalem. The author collects episodes of resistance to show that restoration faced persistent challenges.",
+    "summary": "The adversaries of Judah and Benjamin offer to help build, but Zerubbabel and Jeshua answer, \"Ye have nothing to do with us to build an house unto our God\" (Ezra 4:1–3). The people of the land weaken the builders' hands and hire counsellors against them through the reign of Cyrus until Darius (Ezra 4:4–5). The chapter then gathers later accusations: Rehum and Shimshai write to Artaxerxes that Jerusalem is \"the rebellious and the bad city\" (Ezra 4:6–16). Artaxerxes searches the records and orders the building of the city stopped, and the officials force the Jews to cease (Ezra 4:17–23). The temple work stops until the second year of Darius (Ezra 4:24).",
+    "whereWeAre": "The temple foundation was laid in chapter 3. Now the people of the land offer to help, are refused, and then work against the builders, and letters to Persian kings bring the work to a stop. In chapter 5 the prophets Haggai and Zechariah get it moving again.",
     "keyFigures": [
       {
-        "name": "Zerubbabel, Jeshua, and heads of families",
-        "role": "Leaders refusing an offer of joint temple construction. Their reply defines the project authorized membership (4:2–3)."
+        "name": "Zerubbabel and Jeshua",
+        "role": "Refuse the adversaries' offer to build with them."
       },
       {
-        "name": "People opposed to Judah and Benjamin",
-        "role": "Groups who frustrate rebuilding. They intimidate workers and lobby Persian officials (4:1, 4–5)."
-      },
-      {
-        "name": "Bishlam, Mithredath, Tabeel and companions",
-        "role": "Named correspondents in the time of Artaxerxes. They participate in the written complaint (4:7)."
+        "name": "The adversaries of Judah and Benjamin",
+        "role": "Offer to help, then work to stop the building."
       },
       {
         "name": "Rehum and Shimshai",
-        "role": "Official and scribe who draft an accusation. Their letter portrays Jerusalem as politically dangerous (4:8–16)."
+        "role": "The chancellor and scribe who accuse Jerusalem in a letter."
       },
       {
         "name": "Artaxerxes",
-        "role": "Persian king answering the complaint. He orders the work halted until further royal instruction (4:17–22)."
+        "role": "King of Persia, who orders the building of the city stopped."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Disputed cooperation",
-        "explanation": "",
+        "theme": "Building by God's command",
+        "explanation": "The leaders refuse outside help and build only as Cyrus commanded them.",
         "references": [
-          "Ezra 4:1–3"
+          "Ezra 4:1-3"
         ]
       },
       {
-        "theme": "Opposition through institutions",
-        "explanation": "",
+        "theme": "Opposition",
+        "explanation": "Enemies use fear, hired counsellors, and letters to stop God's work.",
         "references": [
-          "Ezra 4:4–16"
+          "Ezra 4:4-6",
+          "Ezra 4:11-16"
         ]
       },
       {
-        "theme": "Reading history carefully",
-        "explanation": "",
+        "theme": "Waiting",
+        "explanation": "The work stands still for years until God moves again.",
         "references": [
-          "Ezra 4:6–24"
+          "Ezra 4:24"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 5": {
-    "summary": "The prophets Haggai and Zechariah speak in God's name to the Jews in Judah and Jerusalem, and Zerubbabel and Jeshua resume construction of the temple (Ezra 5:1–2). Tattenai, governor of the province Beyond the River, and his associates question the builders about who authorized the work, but the elders continue as an inquiry is sent to Darius (Ezra 5:3–5). The officials' letter reports the work, identifies the elders' appeal to Cyrus's decree, and recounts the destruction under Nebuchadnezzar and the transfer of vessels to Sheshbazzar (Ezra 5:6–16). The letter asks Darius to search the archives (Ezra 5:17). The chapter presents renewed action under prophetic encouragement alongside an orderly appeal to imperial records.",
-    "whereWeAre": "The building project restarted after earlier delays, and regional officials sought confirmation of its authorization. The inquiry prepares for the verification of Cyrus’s decree in chapter 6.",
+    "summary": "The prophets Haggai and Zechariah prophesy to the Jews, and Zerubbabel and Jeshua begin to build again, \"and with them were the prophets of God helping them\" (Ezra 5:1–2). Tatnai the governor and Shetharboznai ask who commanded the building, but they cannot stop it, for \"the eye of their God was upon the elders of the Jews\" (Ezra 5:3–5). Their letter to Darius reports the elders' answer: they are servants of the God of heaven, rebuilding the house Nebuchadnezzar destroyed (Ezra 5:6–12). The elders say Cyrus decreed the rebuilding and returned the vessels by Sheshbazzar, and the letter asks Darius to search the king's treasure house (Ezra 5:13–17).",
+    "whereWeAre": "Opposition stopped the temple work in chapter 4. Now Haggai and Zechariah stir the people to build again, and the governor Tatnai writes to King Darius to ask who allowed it. Chapter 6 gives Darius' answer.",
     "keyFigures": [
       {
-        "name": "Haggai and Zechariah son of Iddo",
-        "role": "Prophets who exhort the builders. Their prophetic speech accompanies the resumption of temple work (5:1–2)."
+        "name": "Haggai and Zechariah",
+        "role": "Prophets who stir the people and help them build."
       },
       {
         "name": "Zerubbabel and Jeshua",
-        "role": "Leaders who begin rebuilding again. They act with the support of the prophets (5:2)."
+        "role": "Begin to build the house of God again."
       },
       {
-        "name": "Tattenai and Shethar-bozenai",
-        "role": "Provincial governor and associate. They investigate the temple project and write to the king (5:3, 6)."
+        "name": "Tatnai",
+        "role": "Governor on this side the river, who asks who allowed the work."
       },
       {
-        "name": "Jewish elders",
-        "role": "Community representatives questioned by officials. They explain the project’s religious and royal authorization (5:5, 9–16)."
+        "name": "The elders of the Jews",
+        "role": "Answer that they serve the God of heaven and earth."
       },
       {
         "name": "Darius",
-        "role": "Persian king addressed by officials. His archival review is requested to settle the dispute (5:17)."
+        "role": "King of Persia, to whom the letter is sent."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Prophetic encouragement",
-        "explanation": "",
+        "theme": "God's word stirs action",
+        "explanation": "Haggai and Zechariah's preaching gets the people building again.",
         "references": [
-          "Ezra 5:1–2"
+          "Ezra 5:1-2"
         ]
       },
       {
-        "theme": "Persistence under examination",
-        "explanation": "",
+        "theme": "God watches over his people",
+        "explanation": "The eye of God on the elders keeps the work from being stopped.",
         "references": [
-          "Ezra 5:3–5"
+          "Ezra 5:5"
         ]
       },
       {
-        "theme": "Memory and documentation",
-        "explanation": "",
+        "theme": "Honest witness",
+        "explanation": "The elders admit their fathers' sin and tell why the temple fell.",
         "references": [
-          "Ezra 5:11–17"
+          "Ezra 5:11-12"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 6": {
-    "summary": "Darius orders a search of the archives, and a memorandum of Cyrus's temple decree is found at Ecbatana (Ezra 6:1–5). Darius commands Tattenai and his colleagues not to interfere, orders support from provincial revenues, and warns against obstruction (Ezra 6:6–12). The elders prosper in building under the prophetic words of Haggai and Zechariah, and the temple is completed in Darius's sixth year (Ezra 6:13–15). Priests, Levites, and other returned exiles dedicate it with sacrifices and organize service according to the book of Moses (Ezra 6:16–18). They celebrate Passover and the Feast of Unleavened Bread, including those who have separated themselves from the impurities of the peoples of the land to seek the LORD (Ezra 6:19–22). The chapter celebrates restored worship within the Persian imperial order.",
-    "whereWeAre": "The second temple was completed with the approval and reported material support of Persian officials. The temple completion fulfills the first part of Ezra’s rebuilding narrative and enables public dedication and festival worship.",
+    "summary": "Darius has the records searched, and a roll with Cyrus' decree is found at Achmetha (Ezra 6:1–5). Darius tells Tatnai to let the work alone and to pay its costs from the king's taxes, and he warns that anyone who changes the order will be hanged on a beam from his own house (Ezra 6:6–12). The elders build and prosper through the prophesying of Haggai and Zechariah, and the house is finished on the third day of Adar in Darius' sixth year (Ezra 6:13–15). They dedicate it with joy, offer twelve he goats for all Israel, and set the priests and Levites in their courses (Ezra 6:16–18). The returned exiles keep the Passover and the feast of unleavened bread seven days with joy (Ezra 6:19–22).",
+    "whereWeAre": "Tatnai asked Darius to search the royal records in chapter 5. The search finds Cyrus' decree, Darius orders the work paid for, and the temple is finished and dedicated with a joyful Passover. Then the story jumps ahead nearly sixty years to Ezra himself in chapter 7.",
     "keyFigures": [
       {
         "name": "Darius",
-        "role": "King who confirms Cyrus’s authorization. He directs officials to protect and finance the work (6:1–12)."
+        "role": "Finds Cyrus' decree and orders the temple built at the king's cost."
       },
       {
-        "name": "Tattenai and Shethar-bozenai",
-        "role": "Regional officials addressed by Darius. They comply with the king’s order (6:6, 13)."
+        "name": "Tatnai",
+        "role": "The governor, who obeys the king's order quickly."
       },
       {
-        "name": "Jewish elders",
-        "role": "Leaders overseeing construction. They complete the temple as the narrative recounts (6:14–15)."
+        "name": "The elders of the Jews",
+        "role": "Finish the temple through the prophets' encouragement."
       },
       {
         "name": "Haggai and Zechariah",
-        "role": "Prophets named in the building account. Their exhortations are linked with the successful work (6:14)."
+        "role": "Prophets whose words help the work prosper."
       },
       {
-        "name": "Priests, Levites and returned exiles",
-        "role": "Participants in dedication and Passover. They reestablish ordered worship and celebrate the feast (6:16–22)."
+        "name": "The children of the captivity",
+        "role": "Dedicate the house and keep the Passover with joy."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Rebuilding brought to completion",
-        "explanation": "",
+        "theme": "God turns opposition around",
+        "explanation": "The officials who questioned the work are told to pay for it.",
         "references": [
-          "Ezra 6:13–15"
+          "Ezra 6:6-10"
         ]
       },
       {
-        "theme": "Corporate dedication",
-        "explanation": "",
+        "theme": "A finished house",
+        "explanation": "The temple is completed by God's command and the kings' decrees.",
         "references": [
-          "Ezra 6:16–18"
+          "Ezra 6:14-15"
         ]
       },
       {
-        "theme": "Remembering deliverance",
-        "explanation": "",
+        "theme": "Joyful worship",
+        "explanation": "The people dedicate the house and keep the Passover with joy.",
         "references": [
-          "Ezra 6:19–22"
+          "Ezra 6:16-22"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 7": {
-    "summary": "The narrative moves ahead to the reign of Artaxerxes. Ezra is introduced through a priestly genealogy and described as a skilled scribe devoted to studying, practicing, and teaching the Law of the LORD (Ezra 7:1–10). He journeys from Babylon to Jerusalem in the king’s seventh year with Israelites, priests, Levites, and temple personnel (Ezra 7:6–9). An Aramaic royal letter authorizes voluntary travel, contributions for temple worship, provision of supplies, exemptions for temple servants, and Ezra’s appointment of judges and teachers who know God’s law (Ezra 7:11–26). Ezra closes with praise to God for the king’s favorable response and gathers leading men for the journey (Ezra 7:27–28). The chapter connects Ezra's public authority with religious learning and Persian administrative support.",
-    "whereWeAre": "A Persian-authorized scribe is represented as receiving funds and authority to help organize temple worship and community law. The commission prepares for Ezra’s assembly of travelers and later response to marriage practices.",
+    "summary": "In the reign of Artaxerxes, Ezra, a priest descended from Aaron and \"a ready scribe in the law of Moses,\" goes up from Babylon (Ezra 7:1–6). He arrives in Jerusalem in the fifth month of the king's seventh year, for he \"had prepared his heart to seek the law of the LORD, and to do it, and to teach\" (Ezra 7:7–10). Artaxerxes' letter lets any Israelite go with him, sends silver and gold for offerings, and frees temple workers from taxes (Ezra 7:11–24). It also tells Ezra to appoint judges who know God's law and to teach those who do not (Ezra 7:25–26). Ezra blesses the LORD for putting this in the king's heart and gathers leaders of Israel to go with him (Ezra 7:27–28).",
+    "whereWeAre": "The temple was finished in chapter 6. Now, years later, Ezra the scribe comes from Babylon with a letter from King Artaxerxes, because he \"had prepared his heart to seek the law of the LORD\" (Ezra 7:10). Chapter 8 tells of his journey.",
     "keyFigures": [
       {
         "name": "Ezra",
-        "role": "Priest and scribe knowledgeable in the Law of Moses. He studies, practices, teaches, and leads the journey (7:1–10)."
+        "role": "A priest and scribe who goes to Jerusalem to teach God's law."
       },
       {
         "name": "Artaxerxes",
-        "role": "Persian king who provides an authorization letter. He grants resources and administrative responsibilities (7:11–26)."
-      },
-      {
-        "name": "Israelites, priests, Levites and temple personnel",
-        "role": "People permitted to accompany Ezra. Their participation broadens the journey into a religious mission (7:7, 13)."
-      },
-      {
-        "name": "Royal counselors and treasurers",
-        "role": "Officials referenced in the letter. They supply offerings and administer allotted resources (7:14–21)."
-      },
-      {
-        "name": "Judges and magistrates",
-        "role": "Officials Ezra is instructed to appoint. They are to administer law within the province (7:25–26)."
+        "role": "King of Persia, who sends Ezra with gifts and authority."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Learning and practicing Scripture",
-        "explanation": "",
+        "theme": "Study, do, and teach",
+        "explanation": "Ezra prepares his heart to seek God's law, to obey it, and to teach it.",
         "references": [
-          "Ezra 7:6–10"
+          "Ezra 7:10"
         ]
       },
       {
-        "theme": "Law and communal governance",
-        "explanation": "",
+        "theme": "The hand of God",
+        "explanation": "The king grants Ezra's request because God's hand is upon him.",
         "references": [
-          "Ezra 7:23–26"
+          "Ezra 7:6",
+          "Ezra 7:9",
+          "Ezra 7:28"
         ]
       },
       {
-        "theme": "Gratitude for provision",
-        "explanation": "",
+        "theme": "Praise for God's favor",
+        "explanation": "Ezra blesses God for putting kindness in the king's heart.",
         "references": [
-          "Ezra 7:27–28"
+          "Ezra 7:27-28"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 8": {
-    "summary": "Ezra lists the family heads and men who traveled with him from Babylon (Ezra 8:1–14). At the river Ahava he notices that no Levites are present, so messengers recruit Levites and temple servants (Ezra 8:15–20). Ezra proclaims a fast to seek God's protection for families and possessions, choosing not to ask the king for a military escort after affirming confidence in divine help (Ezra 8:21–23). He weighs out entrusted silver, gold, and vessels to appointed priests, who are responsible for safeguarding them (Ezra 8:24–30). The caravan departs, arrives in Jerusalem safely, rests, and delivers the valuables by weight; returned exiles offer sacrifices and convey the king's orders to provincial officials (Ezra 8:31–36). The chapter stresses both prayerful dependence and careful stewardship.",
-    "whereWeAre": "Travel over long imperial routes exposed families and valuables to risks; Ezra organized a caravan transporting gifts for temple worship. The chapter follows the royal authorization of chapter 7 with logistical planning and arrival.",
+    "summary": "Ezra lists the family heads who go up with him from Babylon (Ezra 8:1–14). At the river of Ahava he finds no Levites, so he sends to Iddo at Casiphia, and \"by the good hand of our God upon us\" Levites and Nethinims come (Ezra 8:15–20). Ezra proclaims a fast, because he is ashamed to ask the king for soldiers after saying God's hand is on those who seek him (Ezra 8:21–23). He weighs the silver, gold, and vessels out to twelve chief priests and tells them, \"Ye are holy unto the LORD; the vessels are holy also\" (Ezra 8:24–30). God keeps them from enemies on the way, the treasure is weighed again in the temple, and the returned exiles offer burnt offerings (Ezra 8:31–36).",
+    "whereWeAre": "Artaxerxes sent Ezra to Jerusalem with gifts and authority in chapter 7. Now Ezra gathers Levites, fasts for a safe journey without soldiers, and brings the treasure safely to the temple. In chapter 9 he learns of a grave sin among the people.",
     "keyFigures": [
       {
         "name": "Ezra",
-        "role": "Leader of the journey and supervisor of sacred goods. He gathers the caravan, calls for fasting, and accounts for donations (8:15–36)."
+        "role": "Gathers the travelers, calls a fast, and weighs out the treasure."
       },
       {
-        "name": "Family heads and returning households",
-        "role": "Groups enumerated as travelers. Their presence gives the journey a communal rather than individual character (8:1–14)."
-      },
-      {
-        "name": "Iddo and those at Casiphia",
-        "role": "Contacts who help recruit Levites. They secure personnel needed for temple service (8:16–20)."
+        "name": "Iddo",
+        "role": "The chief at Casiphia, who sends Levites and Nethinims."
       },
       {
         "name": "Sherebiah and Hashabiah",
-        "role": "Levites recruited for the journey. They help represent restored Levitical service (8:18–19, 24)."
+        "role": "Levites who join the journey and help carry the treasure."
       },
       {
-        "name": "Appointed priests and Levites",
-        "role": "Custodians of precious offerings. They receive, carry, and account for sacred resources (8:24–30, 33–34)."
+        "name": "Meremoth",
+        "role": "The priest who weighs the treasure in the house of God."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Humility and prayer",
-        "explanation": "",
+        "theme": "Prayer and fasting",
+        "explanation": "Ezra seeks a safe way by fasting and prayer, and God answers.",
         "references": [
-          "Ezra 8:21–23"
+          "Ezra 8:21-23"
         ]
       },
       {
-        "theme": "Safeguarding entrusted resources",
-        "explanation": "",
+        "theme": "Trusting God, not soldiers",
+        "explanation": "Ezra will not ask for soldiers after telling the king that God protects those who seek him.",
         "references": [
-          "Ezra 8:24–30"
+          "Ezra 8:22"
         ]
       },
       {
-        "theme": "Arrival and thanksgiving",
-        "explanation": "",
+        "theme": "Faithful with what is holy",
+        "explanation": "The treasure is weighed before and after the trip so all is kept honestly.",
         "references": [
-          "Ezra 8:31–36"
+          "Ezra 8:24-30",
+          "Ezra 8:33-34"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 9": {
-    "summary": "After Ezra's arrival, officials report that some Israelites, including priests and Levites, have married women from the peoples of the surrounding lands and have not maintained the separation required by their understanding of the law; leaders are said to have been prominent in this conduct (Ezra 9:1–2). Ezra tears his garments, pulls hair from his head and beard, and sits appalled while others gather (Ezra 9:3–4). At the evening sacrifice he kneels and prays, confessing communal guilt, remembering past judgment, and recognizing the remnant's recent mercy and renewed opportunity (Ezra 9:5–15). The chapter ends with confession rather than a prescribed settlement of every marriage. It must be read as the narrated community's covenant crisis, not as a general instruction to condemn contemporary ethnic or interfaith families.",
-    "whereWeAre": "A small restored community wrestles with boundaries of religious allegiance, household life, and continuity of worship. The officials’ report leads to Ezra’s lament and sets up the assembly and contested response of chapter 10.",
+    "summary": "The princes tell Ezra that the people, priests, and Levites have married daughters of the peoples of the lands, and that leaders have led the way (Ezra 9:1–2). Ezra tears his clothes, plucks hair from his head and beard, and sits stunned until the evening sacrifice, while those who tremble at God's words gather to him (Ezra 9:3–4). He falls on his knees and prays, \"O my God, I am ashamed and blush to lift up my face to thee\" (Ezra 9:5–7). He thanks God for \"a little reviving in our bondage\" and admits God has \"punished us less than our iniquities deserve\" (Ezra 9:8–13). He ends by confessing, \"we cannot stand before thee because of this\" (Ezra 9:14–15).",
+    "whereWeAre": "Ezra arrived safely in Jerusalem in chapter 8. Now leaders tell him that many, even priests and Levites, have married women of the nations around them, and Ezra prays a prayer of confession. Chapter 10 shows how the people respond.",
     "keyFigures": [
       {
+        "name": "The princes",
+        "role": "Report to Ezra that the people have married foreign wives."
+      },
+      {
         "name": "Ezra",
-        "role": "Priest-scribe who receives the report and prays. His lament articulates communal accountability before God (9:3–15)."
+        "role": "Mourns and confesses the people's sin before God."
       },
       {
-        "name": "Officials",
-        "role": "Those who report marriages and shared practices. They frame the situation as a covenant concern (9:1–2)."
-      },
-      {
-        "name": "Israelite people, priests and Levites",
-        "role": "Community groups implicated in the report. The issue reaches across social and religious positions (9:1)."
-      },
-      {
-        "name": "Princes and rulers",
-        "role": "Leaders specifically named as prominent offenders. Their reported example increases the gravity of the crisis (9:2)."
-      },
-      {
-        "name": "Those who tremble at God’s words",
-        "role": "Members who gather around Ezra. They share his concern during the initial response (9:4)."
+        "name": "Those who tremble at God's words",
+        "role": "Gather around Ezra in his grief."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Accountability for communal conduct",
-        "explanation": "",
+        "theme": "Grief over sin",
+        "explanation": "Ezra is so troubled by the people's sin that he sits stunned until evening.",
         "references": [
-          "Ezra 9:1–4"
+          "Ezra 9:3-4"
         ]
       },
       {
-        "theme": "Confession without self-justification",
-        "explanation": "",
+        "theme": "Confessing as one people",
+        "explanation": "Ezra says \"our iniquities,\" counting himself with the guilty.",
         "references": [
-          "Ezra 9:5–7"
+          "Ezra 9:6-7"
         ]
       },
       {
-        "theme": "Mercy and renewed opportunity",
-        "explanation": "",
+        "theme": "Undeserved mercy",
+        "explanation": "God has punished them less than they deserve and left them a remnant.",
         "references": [
-          "Ezra 9:8–15"
+          "Ezra 9:8-9",
+          "Ezra 9:13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ezra 10": {
-    "summary": "As Ezra weeps and confesses before the temple, a large assembly gathers. Shecaniah acknowledges the marriages and proposes a covenant to address them according to the law (Ezra 10:1–4). Ezra requires an oath from leaders, then withdraws in mourning and fasting (Ezra 10:5–6). The returned exiles assemble in Jerusalem amid heavy rain; Ezra rebukes them and demands a response, but the people ask for a scheduled inquiry because the matter is widespread and cannot be settled outdoors in a day (Ezra 10:7–15). Officials investigate cases over several months (Ezra 10:16–17). The chapter lists priests, Levites, and others who had married foreign women, including priests who give an offering, and ends by noting that some had children (Ezra 10:18–44). The text describes a painful, controversial communal decision and does not explain the future welfare of the women and children.",
-    "whereWeAre": "Community leadership convenes a public assembly to address marriages judged incompatible with its covenant obligations. This is the practical and controversial response to Ezra’s earlier prayer of confession.",
+    "summary": "As Ezra weeps before the house of God, a great crowd gathers, and Shechaniah says, \"yet now there is hope in Israel concerning this thing\" (Ezra 10:1–2). He proposes a covenant to put away the foreign wives and their children, and Ezra makes the leaders swear to do it (Ezra 10:3–5). Ezra fasts, and a proclamation calls all the exiles to Jerusalem within three days (Ezra 10:6–8). On the twentieth day of the ninth month the men sit in the street in the great rain, and they answer Ezra, \"As thou hast said, so must we do\" (Ezra 10:9–12). Because it is raining and the matter is large, they ask that each case be handled by rulers and the elders and judges of each city (Ezra 10:13–17). The book ends with a list of the priests, Levites, and other men who had taken foreign wives (Ezra 10:18–44).",
+    "whereWeAre": "Ezra confessed the people's sin in chapter 9. Now the people gather in the rain, agree to put away their foreign wives, and the book ends with a list of the men involved. The story continues in Nehemiah 1, where Nehemiah hears that Jerusalem's walls are still broken down.",
     "keyFigures": [
       {
         "name": "Ezra",
-        "role": "Priest-scribe leading public confession and inquiry. He demands a community response and organizes investigation (10:1, 10–17)."
+        "role": "Prays, fasts, and calls the people to separate from their foreign wives."
       },
       {
-        "name": "Shecaniah son of Jehiel",
-        "role": "Speaker who acknowledges wrongdoing and proposes a covenant. He urges action while expressing hope (10:2–4)."
+        "name": "Shechaniah",
+        "role": "Son of Jehiel, who confesses the sin and proposes a covenant."
       },
       {
-        "name": "Returning assembly",
-        "role": "Men, women and children present at the temple and later gathered in Jerusalem. Their grief and participation show the wide social impact (10:1, 9–14)."
+        "name": "The men of Judah and Benjamin",
+        "role": "Gather in the rain and agree to Ezra's word."
       },
       {
-        "name": "Jonathan son of Asahel and Jahzeiah son of Tikvah",
-        "role": "Men identified as opposing the proposed procedure in a passage whose wording is debated. They demonstrate that the implementation was not simply unanimous (10:15)."
-      },
-      {
-        "name": "Priests, Levites and named family members",
-        "role": "Those listed in connection with the marriages. The concluding register makes the action specific and records its family implications (10:18–44)."
+        "name": "Jonathan and Jahaziah",
+        "role": "Named in Ezra 10:15 in connection with the plan; the Hebrew word can mean they stood for it or against it."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Collective responsibility and reform",
-        "explanation": "",
+        "theme": "Hope after sin",
+        "explanation": "Shechaniah says there is still hope for Israel if they turn back.",
         "references": [
-          "Ezra 10:1–5"
+          "Ezra 10:2"
         ]
       },
       {
-        "theme": "Due process amid urgency",
-        "explanation": "",
+        "theme": "Turning from sin together",
+        "explanation": "The whole assembly agrees to do as Ezra says.",
         "references": [
-          "Ezra 10:9–17"
+          "Ezra 10:10-12"
         ]
       },
       {
-        "theme": "Human cost of separation",
-        "explanation": "",
+        "theme": "Doing it in order",
+        "explanation": "The people ask that each case be heard carefully, city by city.",
         "references": [
-          "Ezra 10:18–44"
+          "Ezra 10:13-17"
+        ]
+      },
+      {
+        "theme": "A hard ending",
+        "explanation": "The book closes with the names of those involved and the children affected.",
+        "references": [
+          "Ezra 10:18-44"
         ]
       }
     ],

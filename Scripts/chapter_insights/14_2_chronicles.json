@@ -1,53 +1,37 @@
 {
   "2 Chronicles 1": {
-    "summary": "Solomon assembles Israel’s leaders at Gibeon, where the tabernacle and bronze altar stand, while the ark is in Jerusalem. After offering sacrifices, he receives a divine invitation in a night vision and asks for wisdom to govern God’s people. God grants wisdom and also promises wealth and honor. The chapter closes with Solomon’s horses, chariots, silver, gold and commercial activity. The chapter focuses on solomon seeks wisdom at gibeon and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Solomon assembles Israel’s leaders at Gibeon, where the tabernacle and bronze altar stand, while the ark is in Jerusalem. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of solomon seeks wisdom at gibeon.",
+    "summary": "Solomon is established as king, and he takes all Israel's leaders to the high place at Gibeon, where Moses' tabernacle and the brasen altar still stand (2 Chronicles 1:1–5). He offers a thousand burnt offerings there (2 Chronicles 1:6). That night God tells him to ask for anything, and Solomon asks, \"Give me now wisdom and knowledge\" to lead the people (2 Chronicles 1:7–10). God grants it and adds riches, wealth, and honor beyond any king before or after him (2 Chronicles 1:11–12). Solomon gathers chariots and horsemen and makes silver and gold as common as stones in Jerusalem (2 Chronicles 1:13–17).",
+    "whereWeAre": "1 Chronicles ended with David's death and Solomon on the throne. Now Solomon goes to the tabernacle at Gibeon, asks God for wisdom, and receives riches and honor too. In chapter 2 he begins preparing to build the temple.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "Solomon assembles Israel’s leaders at Gibeon, where the tabernacle and bronze altar stand, while the ark is in Jerusalem. This places Solomon within the chapter’s account of solomon seeks wisdom at gibeon."
-      },
-      {
-        "name": "Israel’s officials",
-        "role": "Israel’s officials is identified in the chapter in connection with solomon seeks wisdom at gibeon. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Worships at Gibeon and asks God for wisdom to judge his people."
       },
       {
         "name": "God",
-        "role": "After offering sacrifices, he receives a divine invitation in a night vision and asks for wisdom to govern God’s people. This places God within the chapter’s account of solomon seeks wisdom at gibeon."
-      },
-      {
-        "name": "David",
-        "role": "David is identified in the chapter in connection with solomon seeks wisdom at gibeon. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Moses",
-        "role": "Moses is identified in the chapter in connection with solomon seeks wisdom at gibeon. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Bezalel",
-        "role": "Bezalel is identified in the chapter in connection with solomon seeks wisdom at gibeon. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Appears to Solomon at night and gives him wisdom, riches, and honor."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Seeking God for wisdom",
-        "explanation": "",
+        "theme": "Asking for wisdom",
+        "explanation": "Offered anything, Solomon asks for wisdom to lead God's people, not for riches or long life.",
         "references": [
-          "2 Chronicles 1:1-6"
+          "2 Chronicles 1:7-10"
         ]
       },
       {
-        "theme": "Stewardship of royal authority",
-        "explanation": "",
+        "theme": "God gives more than asked",
+        "explanation": "Because Solomon asked rightly, God adds riches and honor to the wisdom.",
         "references": [
-          "2 Chronicles 1:7-12"
+          "2 Chronicles 1:11-12"
         ]
       },
       {
-        "theme": "The promises and challenges of prosperity",
-        "explanation": "",
+        "theme": "Worship before work",
+        "explanation": "Solomon's reign begins with sacrifices at the tabernacle before any building starts.",
         "references": [
-          "2 Chronicles 1:14-17"
+          "2 Chronicles 1:2-6"
         ]
       }
     ],
@@ -60,96 +44,77 @@
     ]
   },
   "2 Chronicles 2": {
-    "summary": "Solomon plans a temple for the name of the LORD and a royal palace. He requests skilled labor and cedar, cypress and algum timber from Huram of Tyre. Huram replies by praising the LORD and sends a skilled craftsman. Solomon organizes a large workforce, including resident foreigners, for transport and building. His letter recognizes that no building can contain God. The chapter focuses on solomon organizes construction of the temple and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Solomon plans a temple for the name of the LORD and a royal palace. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of solomon organizes construction of the temple.",
+    "summary": "Solomon decides to build a house for the name of the LORD and a palace, and he sets thousands of men to carry loads and cut stone (2 Chronicles 2:1–2). He asks Huram king of Tyre for cedar and a skilled worker, saying that \"the heaven and heaven of heavens cannot contain him\" (2 Chronicles 2:3–10). Huram blesses the LORD and sends a master craftsman, also named Huram, whose mother was from the tribe of Dan (2 Chronicles 2:11–14). Huram promises to float timber to Joppa in return for wheat, barley, wine, and oil (2 Chronicles 2:15–16). Solomon counts the strangers living in Israel and puts them to work on the building (2 Chronicles 2:17–18).",
+    "whereWeAre": "God gave Solomon wisdom and wealth in chapter 1. Now Solomon gathers workers and asks Huram king of Tyre for cedar and a master craftsman. Chapter 3 begins the building on mount Moriah.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "Solomon plans a temple for the name of the LORD and a royal palace. This places Solomon within the chapter’s account of solomon organizes construction of the temple."
+        "role": "Plans the temple and asks Tyre for timber and a craftsman."
       },
       {
         "name": "Huram king of Tyre",
-        "role": "Huram king of Tyre is identified in the chapter in connection with solomon organizes construction of the temple. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Blesses the LORD and sends cedar and a skilled worker."
       },
       {
-        "name": "Huram-abi",
-        "role": "Huram-abi is identified in the chapter in connection with solomon organizes construction of the temple. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "David",
-        "role": "David is identified in the chapter in connection with solomon organizes construction of the temple. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "laborers and resident foreigners",
-        "role": "laborers and resident foreigners is identified in the chapter in connection with solomon organizes construction of the temple. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Huram the craftsman",
+        "role": "A master worker, son of a woman of Dan, sent to lead the skilled work."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The purpose of the temple",
-        "explanation": "",
+        "theme": "A house too small for God",
+        "explanation": "Solomon builds a great house, yet admits no building can contain the God of heaven.",
         "references": [
-          "2 Chronicles 2:1-6"
+          "2 Chronicles 2:4-6"
         ]
       },
       {
-        "theme": "International cooperation and skilled labor",
-        "explanation": "",
+        "theme": "Help from the nations",
+        "explanation": "A foreign king praises the LORD and supplies wood and skill for the temple.",
         "references": [
-          "2 Chronicles 2:7-10"
+          "2 Chronicles 2:11-16"
         ]
       },
       {
-        "theme": "Honoring God through deliberate preparation",
-        "explanation": "",
+        "theme": "Careful preparation",
+        "explanation": "Solomon plans workers, materials, and payment before the building begins.",
         "references": [
-          "2 Chronicles 2:11-18"
+          "2 Chronicles 2:2",
+          "2 Chronicles 2:17-18"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 3": {
-    "summary": "Solomon begins building the LORD’s house in Jerusalem on Mount Moriah at the location prepared by David, at the threshing floor of Ornan. The chapter details the building’s dimensions and ornate surfaces, the Most Holy Place, carved cherubim, the veil and the two pillars Jachin and Boaz. Architectural details express the sanctuary’s importance, without describing divine presence as confined to a structure. The chapter focuses on the temple is constructed and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Solomon begins building the LORD’s house in Jerusalem on Mount Moriah at the location prepared by David, at the threshing floor of Ornan. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of the temple is constructed.",
+    "summary": "Solomon begins building the house of the LORD on mount Moriah, at the threshingfloor of Ornan, where the LORD had appeared to David (2 Chronicles 3:1–2). The porch and the great house are lined with gold and decorated with precious stones and carved cherubims (2 Chronicles 3:3–7). The most holy house is overlaid with fine gold, and two large cherubims stand in it with wings touching wall to wall (2 Chronicles 3:8–13). Solomon makes the vail of blue, purple, and crimson, and sets up two bronze pillars named Jachin and Boaz before the temple (2 Chronicles 3:14–17).",
+    "whereWeAre": "Solomon arranged for workers and timber in chapter 2. Now the temple rises on mount Moriah, with gold walls, carved cherubims, and two bronze pillars. Chapter 4 describes the furnishings made for it.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "Solomon begins building the LORD’s house in Jerusalem on Mount Moriah at the location prepared by David, at the threshing floor of Ornan. This places Solomon within the chapter’s account of the temple is constructed."
-      },
-      {
-        "name": "David",
-        "role": "Solomon begins building the LORD’s house in Jerusalem on Mount Moriah at the location prepared by David, at the threshing floor of Ornan. This places David within the chapter’s account of the temple is constructed."
-      },
-      {
-        "name": "the temple builders",
-        "role": "the temple builders is identified in the chapter in connection with the temple is constructed. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "unnamed craftsmen",
-        "role": "unnamed craftsmen is identified in the chapter in connection with the temple is constructed. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Builds the house of the LORD on mount Moriah."
       }
     ],
     "keyThemes": [
       {
-        "theme": "A place set apart for worship",
-        "explanation": "",
+        "theme": "A chosen place",
+        "explanation": "The temple stands where God appeared to David, on mount Moriah.",
         "references": [
-          "2 Chronicles 3:1-2"
+          "2 Chronicles 3:1"
         ]
       },
       {
-        "theme": "Craftsmanship and sacred symbolism",
-        "explanation": "",
+        "theme": "Beauty for God",
+        "explanation": "Gold, precious stones, and carved cherubims show the honor due to God's house.",
         "references": [
-          "2 Chronicles 3:3-14"
+          "2 Chronicles 3:4-14"
         ]
       },
       {
-        "theme": "Continuity with David’s preparation",
-        "explanation": "",
+        "theme": "The way to God's presence",
+        "explanation": "The most holy place and the vail mark the place where God meets his people.",
         "references": [
-          "2 Chronicles 3:15-17"
+          "2 Chronicles 3:8-14"
         ]
       }
     ],
@@ -162,92 +127,81 @@
     ]
   },
   "2 Chronicles 4": {
-    "summary": "The chapter describes the bronze altar, great basin or Sea, washing basins, lampstands, tables and courts, followed by bronze and gold furnishings. Huram casts major metalworks in the Jordan plain. The inventory emphasizes carefully prepared spaces and implements for sacrifices, washing, lighting and the house’s service. The chapter focuses on temple furnishings and priestly equipment and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "The chapter describes the bronze altar, great basin or Sea, washing basins, lampstands, tables and courts, followed by bronze and gold furnishings. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of temple furnishings and priestly equipment.",
+    "summary": "Solomon makes a bronze altar twenty cubits square and a great molten sea resting on twelve bronze oxen (2 Chronicles 4:1–5). He makes ten lavers for washing, ten golden candlesticks, ten tables, and a hundred gold basons (2 Chronicles 4:6–8). He builds the court of the priests and the great court (2 Chronicles 4:9–10). Huram finishes the bronze work, cast in clay in the plain of Jordan, in such amounts that its weight could not be found out (2 Chronicles 4:11–18). The altar of gold, the lampstands, and the other vessels inside the house are made of pure gold (2 Chronicles 4:19–22).",
+    "whereWeAre": "The temple building was finished in chapter 3. This chapter lists what was made for its worship: the bronze altar, the great molten sea, lavers, lampstands, tables, and gold vessels. In chapter 5 the ark is brought in.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "Solomon is identified in the chapter in connection with temple furnishings and priestly equipment. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Has the altar, the molten sea, and the gold vessels made."
       },
       {
-        "name": "Huram the craftsman",
-        "role": "Huram the craftsman is identified in the chapter in connection with temple furnishings and priestly equipment. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "priests (implied by the vessels)",
-        "role": "priests (implied by the vessels) is identified in the chapter in connection with temple furnishings and priestly equipment. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Huram",
+        "role": "The craftsman who finishes the bronze work for the temple."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Sacrificial worship",
-        "explanation": "",
+        "theme": "Furnished for sacrifice",
+        "explanation": "The great bronze altar is ready for the burnt offerings.",
         "references": [
-          "2 Chronicles 4:1-6"
+          "2 Chronicles 4:1"
         ]
       },
       {
-        "theme": "Cleansing and service",
-        "explanation": "",
+        "theme": "Cleansing",
+        "explanation": "The molten sea and the lavers are for washing the priests and the offerings.",
         "references": [
-          "2 Chronicles 4:7-10"
+          "2 Chronicles 4:2-6"
         ]
       },
       {
-        "theme": "Careful provision for temple ministry",
-        "explanation": "",
+        "theme": "Light and bread",
+        "explanation": "The golden lampstands and tables carry on the work of the tabernacle on a larger scale.",
         "references": [
-          "2 Chronicles 4:11-22"
+          "2 Chronicles 4:7-8",
+          "2 Chronicles 4:19-22"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 5": {
-    "summary": "Solomon gathers Israel’s elders to bring the ark and sacred tent furnishings into the temple during the seventh-month festival. Priests carry the ark into the Most Holy Place; the narrative notes that the ark contains the two stone tablets. Musicians and singers praise the LORD, and a cloud fills the house so strongly that priests cannot continue their service. The chapter focuses on the ark enters the temple and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Solomon gathers Israel’s elders to bring the ark and sacred tent furnishings into the temple during the seventh-month festival. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of the ark enters the temple.",
+    "summary": "Solomon brings David's dedicated treasures into the finished house (2 Chronicles 5:1). At the feast of the seventh month, the elders gather, the Levites take up the ark, and Solomon and the people sacrifice more sheep and oxen than can be counted (2 Chronicles 5:2–6). The priests set the ark in the most holy place under the cherubims' wings, and nothing is in it but the two tables of stone (2 Chronicles 5:7–10). As the singers and trumpeters praise the LORD \"as one,\" a cloud fills the house, and the priests cannot stand to minister (2 Chronicles 5:11–14).",
+    "whereWeAre": "The temple and its furnishings were finished in chapters 3–4. Now the priests carry the ark into the most holy place, the singers praise God, and a cloud fills the house. In chapter 6 Solomon prays at the dedication.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "Solomon gathers Israel’s elders to bring the ark and sacred tent furnishings into the temple during the seventh-month festival. This places Solomon within the chapter’s account of the ark enters the temple."
+        "role": "Gathers Israel and brings the ark into the temple."
       },
       {
-        "name": "Israel’s elders",
-        "role": "Solomon gathers Israel’s elders to bring the ark and sacred tent furnishings into the temple during the seventh-month festival. This places Israel’s elders within the chapter’s account of the ark enters the temple."
+        "name": "The priests",
+        "role": "Set the ark in the most holy place and blow the trumpets."
       },
       {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with the ark enters the temple. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "priests",
-        "role": "Priests carry the ark into the Most Holy Place; the narrative notes that the ark contains the two stone tablets. This places priests within the chapter’s account of the ark enters the temple."
-      },
-      {
-        "name": "singers Asaph, Heman and Jeduthun",
-        "role": "singers Asaph, Heman and Jeduthun is identified in the chapter in connection with the ark enters the temple. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The Levite singers",
+        "role": "Asaph, Heman, and Jeduthun's men, who praise the LORD as the cloud fills the house."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Community gathers around the ark",
-        "explanation": "",
+        "theme": "God's presence",
+        "explanation": "The cloud of glory fills the temple as it once filled the tabernacle.",
         "references": [
-          "2 Chronicles 5:1-5"
+          "2 Chronicles 5:13-14"
         ]
       },
       {
-        "theme": "Sacred remembrance and priestly service",
-        "explanation": "",
+        "theme": "United praise",
+        "explanation": "Singers and trumpeters join \"as one\" to praise God's goodness and mercy.",
         "references": [
-          "2 Chronicles 5:6-10"
+          "2 Chronicles 5:12-13"
         ]
       },
       {
-        "theme": "Praise and the cloud of glory",
-        "explanation": "",
+        "theme": "The covenant at the center",
+        "explanation": "The ark holds the tables of stone, the covenant God made at Horeb.",
         "references": [
-          "2 Chronicles 5:11-14"
+          "2 Chronicles 5:7-10"
         ]
       }
     ],
@@ -260,50 +214,44 @@
     ]
   },
   "2 Chronicles 6": {
-    "summary": "Solomon blesses the assembly and recalls the promise to David. Before the altar he prays that God will hear from heaven, forgive and answer when people seek him amid conflict, defeat, drought, famine, war or exile. He explicitly says heaven cannot contain God and includes the foreigner who comes to pray. The chapter presents the temple as a focal place of prayer, not a limit on divine presence. The chapter focuses on solomon dedicates the temple in prayer and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Solomon blesses the assembly and recalls the promise to David. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of solomon dedicates the temple in prayer.",
+    "summary": "Solomon blesses the people and tells how God kept his promise to David by choosing Jerusalem and letting David's son build the house (2 Chronicles 6:1–11). Kneeling on a bronze scaffold before all Israel, he praises God for keeping covenant and asks, \"will God in very deed dwell with men on the earth?\" (2 Chronicles 6:12–21). He asks God to hear prayers made toward this house in times of sin, defeat, drought, famine, and plague (2 Chronicles 6:22–31). He prays for the stranger who comes from a far country, for armies at war, and for captives who repent in a foreign land (2 Chronicles 6:32–39). He ends by asking God to arise into his resting place and to remember his mercies to David (2 Chronicles 6:40–42).",
+    "whereWeAre": "The cloud of the LORD's glory filled the temple in chapter 5. Now Solomon blesses the people and prays that God will hear every prayer made toward this house. Chapter 7 tells how God answers, with fire from heaven.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "Solomon blesses the assembly and recalls the promise to David. This places Solomon within the chapter’s account of solomon dedicates the temple in prayer."
-      },
-      {
-        "name": "the LORD",
-        "role": "the LORD is identified in the chapter in connection with solomon dedicates the temple in prayer. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "David",
-        "role": "Solomon blesses the assembly and recalls the promise to David. This places David within the chapter’s account of solomon dedicates the temple in prayer."
-      },
-      {
-        "name": "Israel’s assembly",
-        "role": "Israel’s assembly is identified in the chapter in connection with solomon dedicates the temple in prayer. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "priests",
-        "role": "priests is identified in the chapter in connection with solomon dedicates the temple in prayer. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Blesses the people and prays at the dedication of the temple."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God’s promises to David",
-        "explanation": "",
+        "theme": "God keeps his promises",
+        "explanation": "Solomon's prayer begins by praising God for keeping his word to David.",
         "references": [
-          "2 Chronicles 6:1-11"
+          "2 Chronicles 6:4-11",
+          "2 Chronicles 6:14-17"
         ]
       },
       {
-        "theme": "Prayer, repentance and forgiveness",
-        "explanation": "",
+        "theme": "A house of prayer",
+        "explanation": "Solomon asks God to hear every prayer made toward this house.",
         "references": [
-          "2 Chronicles 6:12-21"
+          "2 Chronicles 6:19-21",
+          "2 Chronicles 6:40"
         ]
       },
       {
-        "theme": "God hears beyond the temple and Israel",
-        "explanation": "",
+        "theme": "Forgiveness for those who return",
+        "explanation": "Again and again Solomon asks God to forgive when his people turn back to him.",
         "references": [
-          "2 Chronicles 6:22-42"
+          "2 Chronicles 6:24-27",
+          "2 Chronicles 6:36-39"
+        ]
+      },
+      {
+        "theme": "Open to strangers",
+        "explanation": "Solomon also asks God to hear foreigners who come to pray, so all may know his name.",
+        "references": [
+          "2 Chronicles 6:32-33"
         ]
       }
     ],
@@ -316,144 +264,125 @@
     ]
   },
   "2 Chronicles 7": {
-    "summary": "Fire descends and consumes the sacrifices as the LORD’s glory fills the temple. The people bow and praise, and Solomon and the assembly hold an extended dedication festival. The LORD then appears to Solomon at night, promising to hear repentance and warning that disloyalty and idolatry will bring devastation, even to the temple. The chapter focuses on fire, divine response and dedication and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Fire descends and consumes the sacrifices as the LORD’s glory fills the temple. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of fire, divine response and dedication.",
+    "summary": "When Solomon finishes praying, fire comes down from heaven and consumes the sacrifices, and the glory of the LORD fills the house (2 Chronicles 7:1–3). Solomon and the people offer 22,000 oxen and 120,000 sheep and keep the dedication and the feast for fourteen days (2 Chronicles 7:4–11). The LORD appears to Solomon by night and promises, \"If my people, which are called by my name, shall humble themselves, and pray... then will I hear from heaven\" (2 Chronicles 7:12–18). He warns that if they turn away to other gods, he will pluck them out of the land and make the temple a byword among the nations (2 Chronicles 7:19–22).",
+    "whereWeAre": "Solomon finished his dedication prayer in chapter 6. Now fire falls from heaven, the people celebrate for two weeks, and God appears to Solomon at night with a promise and a warning. Chapter 8 turns to the rest of Solomon's work.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "The people bow and praise, and Solomon and the assembly hold an extended dedication festival. This places Solomon within the chapter’s account of fire, divine response and dedication."
+        "role": "Finishes the dedication and keeps the feast with all Israel."
       },
       {
-        "name": "priests",
-        "role": "priests is identified in the chapter in connection with fire, divine response and dedication. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The LORD",
+        "role": "Sends fire from heaven and appears to Solomon with a promise and a warning."
       },
       {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with fire, divine response and dedication. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Israelites",
-        "role": "Israelites is identified in the chapter in connection with fire, divine response and dedication. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "the LORD",
-        "role": "Fire descends and consumes the sacrifices as the LORD’s glory fills the temple. This places the LORD within the chapter’s account of fire, divine response and dedication."
+        "name": "The people of Israel",
+        "role": "Bow on the pavement and praise, \"For he is good.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Reverence before divine glory",
-        "explanation": "",
+        "theme": "God answers with fire",
+        "explanation": "Fire from heaven shows that God accepts the temple and its sacrifices.",
         "references": [
-          "2 Chronicles 7:1-7"
+          "2 Chronicles 7:1-3"
         ]
       },
       {
-        "theme": "Corporate celebration and thanksgiving",
-        "explanation": "",
+        "theme": "Humble prayer and healing",
+        "explanation": "God promises to forgive and heal the land when his people humble themselves and turn.",
         "references": [
-          "2 Chronicles 7:8-11"
+          "2 Chronicles 7:13-14"
         ]
       },
       {
-        "theme": "Repentance and covenant warning",
-        "explanation": "",
+        "theme": "The warning",
+        "explanation": "If Israel turns to other gods, even this great temple will be cast off.",
         "references": [
-          "2 Chronicles 7:12-22"
+          "2 Chronicles 7:19-22"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 8": {
-    "summary": "The account reviews fortified cities, store cities and other projects, including Solomon’s arrangement for Pharaoh’s daughter. It distinguishes forced labor assigned to remaining non-Israelite populations from Israelites appointed as soldiers and officers. Solomon follows the regular schedule of temple offerings and Levite duties attributed to David and receives ships and expertise from Huram. The chapter focuses on solomon’s building program and worship and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "The account reviews fortified cities, store cities and other projects, including Solomon’s arrangement for Pharaoh’s daughter. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of solomon’s building program and worship.",
+    "summary": "After twenty years of building, Solomon builds cities, store cities, and fortresses, including Tadmor in the wilderness and both Bethhorons (2 Chronicles 8:1–6). He makes the peoples left from the Canaanites his forced laborers, while Israelites serve as soldiers and officers (2 Chronicles 8:7–10). He moves Pharaoh's daughter out of the city of David because the places where the ark had been are holy (2 Chronicles 8:11). He keeps the daily, sabbath, new moon, and feast offerings and sets the priests and Levites in their courses as David commanded (2 Chronicles 8:12–16). Huram's sailors take Solomon's ships from Eziongeber to Ophir and bring back 450 talents of gold (2 Chronicles 8:17–18).",
+    "whereWeAre": "God answered Solomon's prayer in chapter 7. Now Solomon builds cities, sets up the daily worship David planned, and sends ships to Ophir for gold. In chapter 9 the queen of Sheba comes to see his wisdom.",
     "keyFigures": [
       {
         "name": "Solomon",
-        "role": "The account reviews fortified cities, store cities and other projects, including Solomon’s arrangement for Pharaoh’s daughter. This places Solomon within the chapter’s account of solomon’s building program and worship."
+        "role": "Builds cities, orders the temple worship, and sends ships to Ophir."
       },
       {
-        "name": "Pharaoh’s daughter",
-        "role": "The account reviews fortified cities, store cities and other projects, including Solomon’s arrangement for Pharaoh’s daughter. This places Pharaoh’s daughter within the chapter’s account of solomon’s building program and worship."
+        "name": "Pharaoh's daughter",
+        "role": "Solomon's wife, moved to a house away from the city of David."
       },
       {
         "name": "Huram",
-        "role": "Solomon follows the regular schedule of temple offerings and Levite duties attributed to David and receives ships and expertise from Huram. This places Huram within the chapter’s account of solomon’s building program and worship."
-      },
-      {
-        "name": "Israelites",
-        "role": "It distinguishes forced labor assigned to remaining non-Israelite populations from Israelites appointed as soldiers and officers. This places Israelites within the chapter’s account of solomon’s building program and worship."
-      },
-      {
-        "name": "remaining Canaanite populations",
-        "role": "remaining Canaanite populations is identified in the chapter in connection with solomon’s building program and worship. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "King of Tyre, who sends ships and skilled sailors."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Administration and labor",
-        "explanation": "",
+        "theme": "Worship in order",
+        "explanation": "Solomon keeps the offerings and courses of priests and Levites as Moses and David commanded.",
         "references": [
-          "2 Chronicles 8:1-6"
+          "2 Chronicles 8:12-15"
         ]
       },
       {
-        "theme": "Regular worship and obedience",
-        "explanation": "",
+        "theme": "Holy places",
+        "explanation": "Solomon moves Pharaoh's daughter out because the places where the ark had been are holy.",
         "references": [
-          "2 Chronicles 8:7-11"
+          "2 Chronicles 8:11"
         ]
       },
       {
-        "theme": "Trade and international relationships",
-        "explanation": "",
+        "theme": "A kingdom at its height",
+        "explanation": "Building, labor, and trade show how strong Solomon's kingdom has become.",
         "references": [
-          "2 Chronicles 8:12-18"
+          "2 Chronicles 8:1-6",
+          "2 Chronicles 8:17-18"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 9": {
-    "summary": "The queen of Sheba tests Solomon with questions and is impressed by his wisdom, administration and worship arrangements. She exchanges gifts with him. The chapter describes trade, wealth, royal objects and Solomon’s reputation before recording his forty-year reign, death and succession by Rehoboam. The chapter focuses on the queen of sheba visits solomon and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "The queen of Sheba tests Solomon with questions and is impressed by his wisdom, administration and worship arrangements. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of the queen of sheba visits solomon.",
+    "summary": "The queen of Sheba comes to test Solomon with hard questions, and he answers them all (2 Chronicles 9:1–2). She tells him \"the one half of the greatness of thy wisdom was not told me\" and praises the LORD, and the two exchange rich gifts (2 Chronicles 9:3–12). Solomon's yearly gold, his gold shields, his ivory throne, and his ships of Tarshish make him greater than all the kings of the earth (2 Chronicles 9:13–28). He reigns forty years over all Israel, dies, and his son Rehoboam becomes king (2 Chronicles 9:29–31).",
+    "whereWeAre": "Chapter 8 showed Solomon's building and trade. Now the queen of Sheba visits, and the chapter describes his great wealth before his death after forty years. In chapter 10 his son Rehoboam loses most of the kingdom.",
     "keyFigures": [
       {
+        "name": "The queen of Sheba",
+        "role": "Tests Solomon with hard questions and praises his God."
+      },
+      {
         "name": "Solomon",
-        "role": "The queen of Sheba tests Solomon with questions and is impressed by his wisdom, administration and worship arrangements. This places Solomon within the chapter’s account of the queen of sheba visits solomon."
+        "role": "Answers her questions and rules with great wealth for forty years."
       },
       {
-        "name": "queen of Sheba",
-        "role": "The queen of Sheba tests Solomon with questions and is impressed by his wisdom, administration and worship arrangements. This places queen of Sheba within the chapter’s account of the queen of sheba visits solomon."
-      },
-      {
-        "name": "Huram",
-        "role": "Huram is identified in the chapter in connection with the queen of sheba visits solomon. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Solomon’s servants",
-        "role": "Solomon’s servants is identified in the chapter in connection with the queen of sheba visits solomon. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Rehoboam",
+        "role": "Solomon's son, who becomes king when he dies."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Wisdom recognized across borders",
-        "explanation": "",
+        "theme": "Wisdom seen by the nations",
+        "explanation": "The queen of Sheba sees Solomon's wisdom and praises the God who made him king.",
         "references": [
-          "2 Chronicles 9:1-12"
+          "2 Chronicles 9:1-8"
         ]
       },
       {
-        "theme": "Wealth and the limits of royal splendor",
-        "explanation": "",
+        "theme": "Wealth as God's gift",
+        "explanation": "Solomon's great riches fulfill God's promise at Gibeon.",
         "references": [
-          "2 Chronicles 9:13-28"
+          "2 Chronicles 9:13-24"
         ]
       },
       {
-        "theme": "Solomon’s death and succession",
-        "explanation": "",
+        "theme": "Even great kings die",
+        "explanation": "After forty years Solomon dies, and the kingdom passes to his son.",
         "references": [
           "2 Chronicles 9:29-31"
         ]
@@ -468,50 +397,50 @@
     ]
   },
   "2 Chronicles 10": {
-    "summary": "At Shechem the people ask Rehoboam to lighten the burden imposed under Solomon. He ignores the elders’ advice and follows the harsher counsel of younger men. The northern tribes reject Davidic rule, kill the labor official Hadoram and force Rehoboam to flee to Jerusalem. The narrator attributes the turn of events to the LORD’s fulfillment of a prior word. The chapter focuses on rehoboam rejects the elders’ counsel and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "At Shechem the people ask Rehoboam to lighten the burden imposed under Solomon. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of rehoboam rejects the elders’ counsel.",
+    "summary": "Rehoboam goes to Shechem to be made king, and Jeroboam comes back from Egypt to lead the people's request for a lighter load (2 Chronicles 10:1–5). Rehoboam rejects the advice of the old men and follows the young men, answering, \"my father chastised you with whips, but I will chastise you with scorpions\" (2 Chronicles 10:6–14). The writer says \"the cause was of God,\" to fulfill his word through Ahijah (2 Chronicles 10:15). Israel cries, \"To your tents, O Israel,\" stones Hadoram the tax master, and rebels against the house of David (2 Chronicles 10:16–19).",
+    "whereWeAre": "Solomon died at the end of chapter 9. Now Rehoboam refuses to lighten the people's load, and the northern tribes break away under Jeroboam. From chapter 11 on, Chronicles follows only the kings of Judah.",
     "keyFigures": [
       {
         "name": "Rehoboam",
-        "role": "At Shechem the people ask Rehoboam to lighten the burden imposed under Solomon. This places Rehoboam within the chapter’s account of rehoboam rejects the elders’ counsel."
+        "role": "Rejects the old men's advice and loses the northern tribes."
       },
       {
         "name": "Jeroboam",
-        "role": "Jeroboam is identified in the chapter in connection with rehoboam rejects the elders’ counsel. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Returns from Egypt and speaks for the people at Shechem."
       },
       {
-        "name": "Israel’s assembly",
-        "role": "Israel’s assembly is identified in the chapter in connection with rehoboam rejects the elders’ counsel. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The old men",
+        "role": "Solomon's advisers, who tell Rehoboam to speak kindly."
       },
       {
-        "name": "older and younger advisers",
-        "role": "older and younger advisers is identified in the chapter in connection with rehoboam rejects the elders’ counsel. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The young men",
+        "role": "Rehoboam's friends, who tell him to answer harshly."
       },
       {
         "name": "Hadoram",
-        "role": "The northern tribes reject Davidic rule, kill the labor official Hadoram and force Rehoboam to flee to Jerusalem. This places Hadoram within the chapter’s account of rehoboam rejects the elders’ counsel."
+        "role": "Over the forced labor; Israel stones him."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The burden of leadership",
-        "explanation": "",
+        "theme": "Listening to advice",
+        "explanation": "Rehoboam rejects the wise counsel of the old men and loses most of his kingdom.",
         "references": [
-          "2 Chronicles 10:1-5"
+          "2 Chronicles 10:6-14"
         ]
       },
       {
-        "theme": "Consequences of rejecting wise counsel",
-        "explanation": "",
+        "theme": "Harsh leadership",
+        "explanation": "His hard answer to the people's request turns them against David's house.",
         "references": [
-          "2 Chronicles 10:6-15"
+          "2 Chronicles 10:13-16"
         ]
       },
       {
-        "theme": "The kingdom divides",
-        "explanation": "",
+        "theme": "God's word fulfilled",
+        "explanation": "The writer says the split came from God, as Ahijah had foretold.",
         "references": [
-          "2 Chronicles 10:16-19"
+          "2 Chronicles 10:15"
         ]
       }
     ],
@@ -524,186 +453,179 @@
     ]
   },
   "2 Chronicles 11": {
-    "summary": "Rehoboam gathers forces to fight Israel, but the prophet Shemaiah forbids warfare against their relatives, and the king obeys. Rehoboam fortifies Judahite towns. Priests and Levites from the northern territories come south after Jeroboam displaces them, strengthening worship in Jerusalem. Rehoboam’s family and succession arrangements close the chapter. The chapter focuses on judah’s defense and loyal worshipers and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Rehoboam gathers forces to fight Israel, but the prophet Shemaiah forbids warfare against their relatives, and the king obeys. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of judah’s defense and loyal worshipers.",
+    "summary": "Rehoboam gathers 180,000 men to win back Israel, but the prophet Shemaiah brings God's word, \"Ye shall not go up, nor fight against your brethren,\" and they obey (2 Chronicles 11:1–4). Rehoboam builds fifteen fortified cities in Judah and Benjamin and stocks them with food and weapons (2 Chronicles 11:5–12). When Jeroboam casts out the LORD's priests, the priests and Levites move to Judah, along with others who seek the LORD, and they strengthen the kingdom for three years (2 Chronicles 11:13–17). Rehoboam takes many wives, loves Maachah the daughter of Absalom most, and makes her son Abijah chief among his sons (2 Chronicles 11:18–23).",
+    "whereWeAre": "The northern tribes rejected Rehoboam in chapter 10. Now a prophet stops him from going to war, and he fortifies Judah while faithful priests and Levites move south. In chapter 12 Rehoboam forsakes the law, and Egypt invades.",
     "keyFigures": [
       {
         "name": "Rehoboam",
-        "role": "Rehoboam gathers forces to fight Israel, but the prophet Shemaiah forbids warfare against their relatives, and the king obeys. This places Rehoboam within the chapter’s account of judah’s defense and loyal worshipers."
+        "role": "Obeys the word not to fight and fortifies Judah."
       },
       {
         "name": "Shemaiah",
-        "role": "Rehoboam gathers forces to fight Israel, but the prophet Shemaiah forbids warfare against their relatives, and the king obeys. This places Shemaiah within the chapter’s account of judah’s defense and loyal worshipers."
+        "role": "A man of God who tells Rehoboam not to fight his brothers."
       },
       {
         "name": "Jeroboam",
-        "role": "Priests and Levites from the northern territories come south after Jeroboam displaces them, strengthening worship in Jerusalem. This places Jeroboam within the chapter’s account of judah’s defense and loyal worshipers."
+        "role": "Casts out the priests of the LORD and makes his own."
       },
       {
-        "name": "priests",
-        "role": "Priests and Levites from the northern territories come south after Jeroboam displaces them, strengthening worship in Jerusalem. This places priests within the chapter’s account of judah’s defense and loyal worshipers."
+        "name": "The priests and Levites",
+        "role": "Leave their homes in the north and come to Judah."
       },
       {
-        "name": "Levites",
-        "role": "Priests and Levites from the northern territories come south after Jeroboam displaces them, strengthening worship in Jerusalem. This places Levites within the chapter’s account of judah’s defense and loyal worshipers."
-      },
-      {
-        "name": "faithful migrants",
-        "role": "faithful migrants is identified in the chapter in connection with judah’s defense and loyal worshipers. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Abijah",
+        "role": "Son of Maachah, whom Rehoboam makes chief among his sons."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Restraint from civil warfare",
-        "explanation": "",
+        "theme": "Obeying God's word",
+        "explanation": "Rehoboam turns back from war when God's prophet tells him to.",
         "references": [
           "2 Chronicles 11:1-4"
         ]
       },
       {
-        "theme": "Defense amid division",
-        "explanation": "",
+        "theme": "Faithful people move",
+        "explanation": "Priests, Levites, and all who seek the LORD leave the north to worship in Jerusalem.",
         "references": [
-          "2 Chronicles 11:5-12"
+          "2 Chronicles 11:13-16"
         ]
       },
       {
-        "theme": "The relocation of priests and worshipers",
-        "explanation": "",
+        "theme": "Strength from faithfulness",
+        "explanation": "Judah is strong as long as it walks in the way of David and Solomon.",
         "references": [
-          "2 Chronicles 11:13-23"
+          "2 Chronicles 11:17"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 12": {
-    "summary": "After Rehoboam becomes secure, he and the people forsake the LORD’s law. Shishak of Egypt advances on Jerusalem. Shemaiah announces judgment; the leaders humble themselves, and Jerusalem avoids complete destruction, though Shishak takes treasures including golden shields. The chapter records Rehoboam’s continuing conflict with Jeroboam and death. The chapter focuses on shishak invades after judah’s unfaithfulness and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "After Rehoboam becomes secure, he and the people forsake the LORD’s law. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of shishak invades after judah’s unfaithfulness.",
+    "summary": "Once Rehoboam's kingdom is strong, he and all Israel forsake the law of the LORD (2 Chronicles 12:1). In his fifth year Shishak king of Egypt invades with a huge army and takes Judah's fortified cities (2 Chronicles 12:2–4). Shemaiah tells the leaders that God has left them to Shishak, and when they humble themselves, God promises not to destroy them but to make them Shishak's servants (2 Chronicles 12:5–8). Shishak takes the treasures of the temple and palace, including Solomon's gold shields, and Rehoboam replaces them with bronze (2 Chronicles 12:9–12). Rehoboam reigns seventeen years and does evil \"because he prepared not his heart to seek the LORD\" (2 Chronicles 12:13–16).",
+    "whereWeAre": "Chapter 11 showed Judah growing strong under Rehoboam. Once he is secure he forsakes the law, and Shishak of Egypt invades, but Judah is spared when its leaders humble themselves. In chapter 13 Rehoboam's son Abijah faces Jeroboam in battle.",
     "keyFigures": [
       {
         "name": "Rehoboam",
-        "role": "After Rehoboam becomes secure, he and the people forsake the LORD’s law. This places Rehoboam within the chapter’s account of shishak invades after judah’s unfaithfulness."
+        "role": "Forsakes the law, then humbles himself when Egypt invades."
       },
       {
-        "name": "Shishak king of Egypt",
-        "role": "Shishak king of Egypt is identified in the chapter in connection with shishak invades after judah’s unfaithfulness. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Shishak",
+        "role": "King of Egypt, who invades Judah and takes the temple treasures."
       },
       {
         "name": "Shemaiah",
-        "role": "Shemaiah announces judgment; the leaders humble themselves, and Jerusalem avoids complete destruction, though Shishak takes treasures including golden shields. This places Shemaiah within the chapter’s account of shishak invades after judah’s unfaithfulness."
+        "role": "The prophet who tells Judah's leaders that God has left them to Shishak."
       },
       {
-        "name": "Judah’s leaders",
-        "role": "Judah’s leaders is identified in the chapter in connection with shishak invades after judah’s unfaithfulness. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The princes of Israel",
+        "role": "Humble themselves and say, \"The LORD is righteous.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Disloyalty and national vulnerability",
-        "explanation": "",
+        "theme": "Forsaking the law",
+        "explanation": "When Rehoboam feels secure, he and Israel turn away from the LORD.",
         "references": [
-          "2 Chronicles 12:1-8"
+          "2 Chronicles 12:1"
         ]
       },
       {
-        "theme": "Humility in the face of correction",
-        "explanation": "",
+        "theme": "Humbling brings mercy",
+        "explanation": "When the leaders humble themselves, God does not destroy them.",
         "references": [
-          "2 Chronicles 12:9-12"
+          "2 Chronicles 12:6-7",
+          "2 Chronicles 12:12"
         ]
       },
       {
-        "theme": "The cost of foreign invasion",
-        "explanation": "",
+        "theme": "Learning whom to serve",
+        "explanation": "Judah serves Shishak so it will know the difference between serving God and serving foreign kings.",
         "references": [
-          "2 Chronicles 12:13-16"
+          "2 Chronicles 12:8"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 13": {
-    "summary": "In battle against Jeroboam, Abijah appeals to the Davidic covenant and contrasts Judah’s temple service with northern worship practices. Despite a northern ambush, Judah cries to the LORD and wins the battle as the narrative describes divine aid. The chapter ends with Abijah’s strength and Jeroboam’s decline. The chapter focuses on abijah confronts jeroboam and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "In battle against Jeroboam, Abijah appeals to the Davidic covenant and contrasts Judah’s temple service with northern worship practices. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of abijah confronts jeroboam.",
+    "summary": "Abijah becomes king and sets 400,000 men in battle against Jeroboam's 800,000 (2 Chronicles 13:1–3). From mount Zemaraim he reminds Israel of God's covenant with David and contrasts Judah's true priests with Jeroboam's golden calves, warning, \"fight ye not against the LORD God of your fathers\" (2 Chronicles 13:4–12). Jeroboam surrounds Judah with an ambush, but Judah cries to the LORD, the priests blow the trumpets, and God strikes Israel's army (2 Chronicles 13:13–17). Judah wins \"because they relied upon the LORD God of their fathers,\" and Jeroboam never recovers his strength (2 Chronicles 13:18–22).",
+    "whereWeAre": "Rehoboam died at the end of chapter 12. Now his son Abijah faces Jeroboam's much larger army and wins because Judah relied on the LORD. In chapter 14 Abijah's son Asa begins his long reign.",
     "keyFigures": [
       {
         "name": "Abijah",
-        "role": "In battle against Jeroboam, Abijah appeals to the Davidic covenant and contrasts Judah’s temple service with northern worship practices. This places Abijah within the chapter’s account of abijah confronts jeroboam."
+        "role": "King of Judah, who calls Israel back to the LORD and wins the battle."
       },
       {
         "name": "Jeroboam",
-        "role": "In battle against Jeroboam, Abijah appeals to the Davidic covenant and contrasts Judah’s temple service with northern worship practices. This places Jeroboam within the chapter’s account of abijah confronts jeroboam."
+        "role": "King of Israel, whose larger army and ambush are defeated."
       },
       {
-        "name": "priests and Levites",
-        "role": "priests and Levites is identified in the chapter in connection with abijah confronts jeroboam. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Judah and Israel",
-        "role": "Judah and Israel is identified in the chapter in connection with abijah confronts jeroboam. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The priests",
+        "role": "Blow the trumpets as Judah cries to the LORD."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Claims about the Davidic covenant",
-        "explanation": "",
+        "theme": "God's covenant with David",
+        "explanation": "Abijah reminds Israel that God gave the kingdom to David's line by \"a covenant of salt.\"",
         "references": [
-          "2 Chronicles 13:1-12"
+          "2 Chronicles 13:5-8"
         ]
       },
       {
-        "theme": "The importance of faithful worship",
-        "explanation": "",
+        "theme": "True worship",
+        "explanation": "Abijah contrasts Judah's priests and daily offerings with Jeroboam's golden calves.",
         "references": [
-          "2 Chronicles 13:13-20"
+          "2 Chronicles 13:8-11"
         ]
       },
       {
-        "theme": "Dependence on God in conflict",
-        "explanation": "",
+        "theme": "Relying on God",
+        "explanation": "Judah is outnumbered and surrounded but wins because it relies on the LORD.",
         "references": [
-          "2 Chronicles 13:21-22"
+          "2 Chronicles 13:14-18"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 14": {
-    "summary": "Asa removes foreign worship sites and calls Judah to seek the LORD. During a period of peace he fortifies towns and prepares forces. When Zerah the Cushite advances with a large army, Asa prays for help and Judah defeats the invaders, pursuing them toward Gerar. The numbers and identity of Zerah’s force are not independently secure. The chapter focuses on asa reforms worship and repels invaders and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Asa removes foreign worship sites and calls Judah to seek the LORD. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of asa reforms worship and repels invaders.",
+    "summary": "Abijah dies, and the land has ten years of quiet under his son Asa (2 Chronicles 14:1). Asa removes foreign altars and images, commands Judah to seek the LORD, and builds fortified cities (2 Chronicles 14:2–8). Zerah the Ethiopian comes against him with a huge army, and Asa prays, \"help us, O LORD our God; for we rest on thee\" (2 Chronicles 14:9–11). The LORD strikes the Ethiopians, and Judah chases them to Gerar and carries away much spoil (2 Chronicles 14:12–15).",
+    "whereWeAre": "Abijah defeated Jeroboam in chapter 13. Now his son Asa removes idols, builds up Judah, and prays when a huge Ethiopian army attacks. In chapter 15 a prophet urges him to keep seeking God.",
     "keyFigures": [
       {
         "name": "Asa",
-        "role": "Asa removes foreign worship sites and calls Judah to seek the LORD. This places Asa within the chapter’s account of asa reforms worship and repels invaders."
+        "role": "Removes idols, builds up Judah, and prays for help against Zerah."
       },
       {
-        "name": "Zerah the Cushite",
-        "role": "When Zerah the Cushite advances with a large army, Asa prays for help and Judah defeats the invaders, pursuing them toward Gerar. This places Zerah the Cushite within the chapter’s account of asa reforms worship and repels invaders."
+        "name": "Zerah the Ethiopian",
+        "role": "Attacks Judah with a huge army and is routed."
       },
       {
-        "name": "Judah’s army",
-        "role": "Judah’s army is identified in the chapter in connection with asa reforms worship and repels invaders. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The LORD",
+        "role": "Strikes the Ethiopians before Asa and Judah."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Seeking God in times of peace",
-        "explanation": "",
+        "theme": "Seeking God brings rest",
+        "explanation": "Asa removes idols, and God gives Judah years of quiet.",
         "references": [
-          "2 Chronicles 14:1-7"
+          "2 Chronicles 14:2-7"
         ]
       },
       {
-        "theme": "Preparation and wise defense",
-        "explanation": "",
+        "theme": "Prayer against great odds",
+        "explanation": "Facing a huge army, Asa prays that it is nothing for God to help the weak.",
         "references": [
-          "2 Chronicles 14:8-11"
+          "2 Chronicles 14:11"
         ]
       },
       {
-        "theme": "Prayer amid superior numbers",
-        "explanation": "",
+        "theme": "The battle is the LORD's",
+        "explanation": "God strikes the Ethiopians, and Judah only gathers the spoil.",
         "references": [
           "2 Chronicles 14:12-15"
         ]
@@ -712,204 +634,186 @@
     "explainedReferences": []
   },
   "2 Chronicles 15": {
-    "summary": "The Spirit comes upon Azariah, who urges Asa and the people to seek the LORD. Asa removes idols, repairs the altar and gathers the people for covenant renewal with sacrifices and an oath. He removes Maacah from her royal position over an Asherah image but does not remove every high place. The chapter notes a time without war. The chapter focuses on prophetic encouragement and covenant renewal and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "The Spirit comes upon Azariah, who urges Asa and the people to seek the LORD. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of prophetic encouragement and covenant renewal.",
+    "summary": "The Spirit of God comes on Azariah the son of Oded, who tells Asa, \"The LORD is with you, while ye be with him\" (2 Chronicles 15:1–7). Asa takes courage, puts away the idols, and repairs the altar of the LORD, and many from the northern tribes come over to him (2 Chronicles 15:8–9). In his fifteenth year the people gather at Jerusalem, sacrifice, and swear with shouting and trumpets to seek the LORD with all their heart (2 Chronicles 15:10–15). Asa removes Maachah from being queen because of her idol, though the high places are not taken out of Israel (2 Chronicles 15:16–19).",
+    "whereWeAre": "Asa won a great victory over Zerah in chapter 14. Now the prophet Azariah tells him, \"if ye seek him, he will be found of you\" (2 Chronicles 15:2), and Asa leads Judah in a covenant to seek the LORD. Chapter 16 shows Asa's last years, when he trusts in a foreign king instead.",
     "keyFigures": [
       {
-        "name": "Asa",
-        "role": "The Spirit comes upon Azariah, who urges Asa and the people to seek the LORD. This places Asa within the chapter’s account of prophetic encouragement and covenant renewal."
-      },
-      {
         "name": "Azariah son of Oded",
-        "role": "Azariah son of Oded is identified in the chapter in connection with prophetic encouragement and covenant renewal. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "A prophet who urges Asa to seek the LORD."
       },
       {
-        "name": "Judah and Benjamin",
-        "role": "Judah and Benjamin is identified in the chapter in connection with prophetic encouragement and covenant renewal. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Asa",
+        "role": "Puts away idols, leads a covenant, and removes his mother from being queen."
       },
       {
-        "name": "migrants from Israel",
-        "role": "migrants from Israel is identified in the chapter in connection with prophetic encouragement and covenant renewal. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The people of Judah and Benjamin",
+        "role": "Swear an oath to seek the LORD with all their heart."
       },
       {
-        "name": "Asa’s mother Maacah",
-        "role": "Asa’s mother Maacah is identified in the chapter in connection with prophetic encouragement and covenant renewal. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Maachah",
+        "role": "The queen mother, removed because she made an idol."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Response to prophetic encouragement",
-        "explanation": "",
+        "theme": "God is found by those who seek",
+        "explanation": "Azariah promises that God will be with them while they are with him.",
         "references": [
-          "2 Chronicles 15:1-7"
+          "2 Chronicles 15:2-7"
         ]
       },
       {
-        "theme": "Public covenant renewal",
-        "explanation": "",
+        "theme": "A covenant renewed",
+        "explanation": "The people swear with all their heart to seek the LORD.",
         "references": [
-          "2 Chronicles 15:8-15"
+          "2 Chronicles 15:12-15"
         ]
       },
       {
-        "theme": "Rejecting idols and restoring worship",
-        "explanation": "",
+        "theme": "Reform close to home",
+        "explanation": "Asa removes his own mother from being queen because of her idol.",
         "references": [
-          "2 Chronicles 15:16-19"
+          "2 Chronicles 15:16"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 16": {
-    "summary": "Baasha fortifies Ramah to constrain Judah. Asa sends temple and palace treasures to Ben-hadad of Aram, prompting him to attack Israel and relieve the pressure. The seer Hanani rebukes Asa for relying on an alliance rather than the LORD; Asa imprisons him and oppresses some people. Asa later develops a severe foot illness and dies. The chapter focuses on asa trusts diplomacy over the lord and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Baasha fortifies Ramah to constrain Judah. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of asa trusts diplomacy over the lord.",
+    "summary": "When Baasha king of Israel builds up Ramah against Judah, Asa sends silver and gold from the temple to Benhadad king of Syria to turn him against Israel (2 Chronicles 16:1–6). Hanani the seer tells Asa he has done foolishly by relying on Syria, for \"the eyes of the LORD run to and fro throughout the whole earth\" (2 Chronicles 16:7–9). Asa puts Hanani in prison and oppresses some of the people (2 Chronicles 16:10). In his thirty-ninth year Asa's feet become badly diseased, yet he seeks the physicians and not the LORD, and he dies two years later (2 Chronicles 16:11–14).",
+    "whereWeAre": "Asa led Judah in covenant renewal in chapter 15. Now, when Israel threatens him, he pays the king of Syria for help and jails the prophet who rebukes him. Chapter 17 begins the reign of his son Jehoshaphat.",
     "keyFigures": [
       {
         "name": "Asa",
-        "role": "Asa sends temple and palace treasures to Ben-hadad of Aram, prompting him to attack Israel and relieve the pressure. This places Asa within the chapter’s account of asa trusts diplomacy over the lord."
+        "role": "Pays Syria for help, then jails the seer who rebukes him."
       },
       {
         "name": "Baasha",
-        "role": "Baasha fortifies Ramah to constrain Judah. This places Baasha within the chapter’s account of asa trusts diplomacy over the lord."
+        "role": "King of Israel, who builds Ramah to cut off Judah."
       },
       {
-        "name": "Ben-hadad",
-        "role": "Asa sends temple and palace treasures to Ben-hadad of Aram, prompting him to attack Israel and relieve the pressure. This places Ben-hadad within the chapter’s account of asa trusts diplomacy over the lord."
+        "name": "Benhadad",
+        "role": "King of Syria, who breaks his treaty with Israel for Asa's silver."
       },
       {
         "name": "Hanani",
-        "role": "The seer Hanani rebukes Asa for relying on an alliance rather than the LORD; Asa imprisons him and oppresses some people. This places Hanani within the chapter’s account of asa trusts diplomacy over the lord."
-      },
-      {
-        "name": "Judah’s people",
-        "role": "Judah’s people is identified in the chapter in connection with asa trusts diplomacy over the lord. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "The seer who rebukes Asa and is put in prison."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Misplaced reliance on alliances",
-        "explanation": "",
+        "theme": "Trusting people instead of God",
+        "explanation": "Asa pays a foreign king instead of relying on the LORD who saved him before.",
         "references": [
-          "2 Chronicles 16:1-6"
+          "2 Chronicles 16:2-8"
         ]
       },
       {
-        "theme": "The courage of prophetic correction",
-        "explanation": "",
+        "theme": "God watches for loyal hearts",
+        "explanation": "Hanani says God's eyes search the earth to show himself strong for those whose hearts are true.",
         "references": [
-          "2 Chronicles 16:7-10"
+          "2 Chronicles 16:9"
         ]
       },
       {
-        "theme": "Power, anger and accountability",
-        "explanation": "",
+        "theme": "A hard heart in old age",
+        "explanation": "Asa jails the prophet and seeks only physicians in his illness.",
         "references": [
-          "2 Chronicles 16:11-14"
+          "2 Chronicles 16:10-12"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 17": {
-    "summary": "Jehoshaphat secures Judah’s towns and rejects Baal worship. He sends officials, Levites and priests throughout the cities to teach the Book of the Law of the LORD. Neighboring peoples fear the LORD, and tribute and military organization reinforce his kingdom. The chapter focuses on jehoshaphat strengthens judah and teaches the law and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Jehoshaphat secures Judah’s towns and rejects Baal worship. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of jehoshaphat strengthens judah and teaches the law.",
+    "summary": "Jehoshaphat becomes king and strengthens Judah, and the LORD is with him because he walks in the first ways of David and does not seek Baalim (2 Chronicles 17:1–6). In his third year he sends princes, Levites, and priests to teach in all the cities of Judah, carrying \"the book of the law of the LORD\" with them (2 Chronicles 17:7–9). The fear of the LORD falls on the nearby kingdoms, so they make no war, and the Philistines and Arabians bring him gifts (2 Chronicles 17:10–11). Jehoshaphat grows great, building castles and store cities and keeping a large army (2 Chronicles 17:12–19).",
+    "whereWeAre": "Asa ended his reign badly in chapter 16. His son Jehoshaphat seeks God, sends teachers of the law through Judah, and grows strong. In chapter 18 he makes a dangerous alliance with Ahab king of Israel.",
     "keyFigures": [
       {
         "name": "Jehoshaphat",
-        "role": "Jehoshaphat secures Judah’s towns and rejects Baal worship. This places Jehoshaphat within the chapter’s account of jehoshaphat strengthens judah and teaches the law."
+        "role": "Seeks God, strengthens Judah, and sends teachers of the law."
       },
       {
-        "name": "officials",
-        "role": "He sends officials, Levites and priests throughout the cities to teach the Book of the Law of the LORD. This places officials within the chapter’s account of jehoshaphat strengthens judah and teaches the law."
+        "name": "The teachers of the law",
+        "role": "Princes, Levites, and priests who teach in all the cities of Judah."
       },
       {
-        "name": "Levites",
-        "role": "He sends officials, Levites and priests throughout the cities to teach the Book of the Law of the LORD. This places Levites within the chapter’s account of jehoshaphat strengthens judah and teaches the law."
-      },
-      {
-        "name": "priests",
-        "role": "He sends officials, Levites and priests throughout the cities to teach the Book of the Law of the LORD. This places priests within the chapter’s account of jehoshaphat strengthens judah and teaches the law."
-      },
-      {
-        "name": "neighboring kingdoms",
-        "role": "neighboring kingdoms is identified in the chapter in connection with jehoshaphat strengthens judah and teaches the law. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The Philistines and Arabians",
+        "role": "Bring Jehoshaphat silver and flocks as gifts."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The ruler’s example",
-        "explanation": "",
+        "theme": "Seeking God",
+        "explanation": "Jehoshaphat walks in David's first ways and seeks God rather than Baal.",
         "references": [
-          "2 Chronicles 17:1-6"
+          "2 Chronicles 17:3-6"
         ]
       },
       {
-        "theme": "Teaching the law throughout Judah",
-        "explanation": "",
+        "theme": "Teaching the law",
+        "explanation": "Jehoshaphat sends teachers with the book of the law to every city.",
         "references": [
           "2 Chronicles 17:7-9"
         ]
       },
       {
-        "theme": "Security and military preparation",
-        "explanation": "",
+        "theme": "God gives peace",
+        "explanation": "The fear of the LORD keeps the nations around Judah from war.",
         "references": [
-          "2 Chronicles 17:10-19"
+          "2 Chronicles 17:10-11"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 18": {
-    "summary": "Jehoshaphat allies with Ahab and visits Samaria, where Ahab proposes retaking Ramoth-gilead. Many prophets predict success, but Micaiah reports a vision of disaster and a deceiving spirit among the prophets. Ahab disguises himself, is struck in battle and dies, while Jehoshaphat cries out and escapes. The chapter focuses on jehoshaphat joins ahab in battle and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Jehoshaphat allies with Ahab and visits Samaria, where Ahab proposes retaking Ramoth-gilead. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of jehoshaphat joins ahab in battle.",
+    "summary": "Jehoshaphat makes a marriage alliance with Ahab, and Ahab asks him to go to war at Ramothgilead (2 Chronicles 18:1–3). Four hundred prophets promise victory, but Jehoshaphat asks for a prophet of the LORD, and Micaiah is brought in (2 Chronicles 18:4–11). Micaiah says, \"what my God saith, that will I speak,\" and tells of Israel scattered like sheep and a lying spirit in the prophets' mouths (2 Chronicles 18:12–22). Zedekiah strikes Micaiah, and Ahab has him put in prison until he returns (2 Chronicles 18:23–27). In battle Ahab disguises himself, Jehoshaphat cries out and God helps him, and an arrow shot at random kills Ahab at sunset (2 Chronicles 18:28–34).",
+    "whereWeAre": "Jehoshaphat grew rich and strong in chapter 17. Now he joins Ahab in war at Ramothgilead, though the prophet Micaiah warns that Ahab will die. Chapter 19 shows a prophet rebuking Jehoshaphat for the alliance.",
     "keyFigures": [
       {
         "name": "Jehoshaphat",
-        "role": "Jehoshaphat allies with Ahab and visits Samaria, where Ahab proposes retaking Ramoth-gilead. This places Jehoshaphat within the chapter’s account of jehoshaphat joins ahab in battle."
+        "role": "Joins Ahab in battle but asks to hear a prophet of the LORD."
       },
       {
         "name": "Ahab",
-        "role": "Jehoshaphat allies with Ahab and visits Samaria, where Ahab proposes retaking Ramoth-gilead. This places Ahab within the chapter’s account of jehoshaphat joins ahab in battle."
+        "role": "King of Israel, who jails Micaiah and dies in battle in disguise."
       },
       {
-        "name": "Micaiah son of Imlah",
-        "role": "Micaiah son of Imlah is identified in the chapter in connection with jehoshaphat joins ahab in battle. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Micaiah",
+        "role": "A prophet who speaks only what God says and foretells Ahab's death."
       },
       {
         "name": "Zedekiah son of Chenaanah",
-        "role": "Zedekiah son of Chenaanah is identified in the chapter in connection with jehoshaphat joins ahab in battle. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "A prophet who makes horns of iron and strikes Micaiah."
       },
       {
-        "name": "prophets",
-        "role": "Many prophets predict success, but Micaiah reports a vision of disaster and a deceiving spirit among the prophets. This places prophets within the chapter’s account of jehoshaphat joins ahab in battle."
-      },
-      {
-        "name": "king of Aram",
-        "role": "king of Aram is identified in the chapter in connection with jehoshaphat joins ahab in battle. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The king of Syria",
+        "role": "Orders his captains to fight only against the king of Israel."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Danger of harmful alliances",
-        "explanation": "",
+        "theme": "A dangerous alliance",
+        "explanation": "Jehoshaphat's tie to Ahab nearly costs him his life.",
         "references": [
-          "2 Chronicles 18:1-11"
+          "2 Chronicles 18:1-3",
+          "2 Chronicles 18:31"
         ]
       },
       {
-        "theme": "Truthful prophecy against pressure",
-        "explanation": "",
+        "theme": "Speaking only God's word",
+        "explanation": "Micaiah refuses to say what the king wants and speaks only what God says.",
         "references": [
-          "2 Chronicles 18:12-27"
+          "2 Chronicles 18:12-13",
+          "2 Chronicles 18:27"
         ]
       },
       {
-        "theme": "The consequences of rejecting warnings",
-        "explanation": "",
+        "theme": "No escaping God's word",
+        "explanation": "Ahab's disguise cannot save him from the arrow God's word foretold.",
         "references": [
-          "2 Chronicles 18:28-34"
+          "2 Chronicles 18:29-34"
         ]
       }
     ],
@@ -922,230 +826,202 @@
     ]
   },
   "2 Chronicles 19": {
-    "summary": "After Jehoshaphat returns to Jerusalem, the seer Jehu rebukes his help to a wicked king while recognizing his efforts to seek God. Jehoshaphat encourages people to return to the LORD and establishes judges in Judah, instructing them to judge without partiality or bribery. He gives religious and civil responsibilities to named leaders in Jerusalem. The chapter focuses on jehoshaphat is rebuked and appoints judges and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "After Jehoshaphat returns to Jerusalem, the seer Jehu rebukes his help to a wicked king while recognizing his efforts to seek God. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of jehoshaphat is rebuked and appoints judges.",
+    "summary": "When Jehoshaphat returns to Jerusalem, Jehu the son of Hanani asks him, \"Shouldest thou help the ungodly,\" but also says good things are found in him (2 Chronicles 19:1–3). Jehoshaphat goes out among the people to bring them back to the LORD and sets judges in the fortified cities (2 Chronicles 19:4–5). He tells the judges, \"ye judge not for man, but for the LORD,\" for with God there is no taking of gifts (2 Chronicles 19:6–7). In Jerusalem he appoints Levites, priests, and family heads to judge, with Amariah over the LORD's matters and Zebadiah over the king's (2 Chronicles 19:8–11).",
+    "whereWeAre": "Jehoshaphat barely escaped the battle where Ahab died in chapter 18. Now the seer Jehu rebukes him, and Jehoshaphat appoints judges and tells them to judge in the fear of the LORD. In chapter 20 a great army comes against Judah.",
     "keyFigures": [
       {
         "name": "Jehoshaphat",
-        "role": "After Jehoshaphat returns to Jerusalem, the seer Jehu rebukes his help to a wicked king while recognizing his efforts to seek God. This places Jehoshaphat within the chapter’s account of jehoshaphat is rebuked and appoints judges."
+        "role": "Hears the rebuke, turns the people back to God, and sets up judges."
       },
       {
         "name": "Jehu son of Hanani",
-        "role": "Jehu son of Hanani is identified in the chapter in connection with jehoshaphat is rebuked and appoints judges. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "judges",
-        "role": "Jehoshaphat encourages people to return to the LORD and establishes judges in Judah, instructing them to judge without partiality or bribery. This places judges within the chapter’s account of jehoshaphat is rebuked and appoints judges."
-      },
-      {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with jehoshaphat is rebuked and appoints judges. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "priests",
-        "role": "priests is identified in the chapter in connection with jehoshaphat is rebuked and appoints judges. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "The seer who rebukes Jehoshaphat for helping Ahab."
       },
       {
         "name": "Amariah",
-        "role": "Amariah is identified in the chapter in connection with jehoshaphat is rebuked and appoints judges. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "The chief priest, over all matters of the LORD."
       },
       {
         "name": "Zebadiah",
-        "role": "Zebadiah is identified in the chapter in connection with jehoshaphat is rebuked and appoints judges. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Ruler of the house of Judah, over all the king's matters."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Rebuke followed by reform",
-        "explanation": "",
+        "theme": "Rebuke and grace",
+        "explanation": "Jehu rebukes Jehoshaphat but also names the good found in him.",
         "references": [
-          "2 Chronicles 19:1-3"
+          "2 Chronicles 19:2-3"
         ]
       },
       {
-        "theme": "Impartiality in administering justice",
-        "explanation": "",
+        "theme": "Justice in the fear of God",
+        "explanation": "Judges are told they judge for the LORD, who takes no bribes.",
         "references": [
-          "2 Chronicles 19:4-7"
+          "2 Chronicles 19:6-7"
         ]
       },
       {
-        "theme": "Accountability before God",
-        "explanation": "",
+        "theme": "Courage to do right",
+        "explanation": "Jehoshaphat tells the leaders to act faithfully and with courage.",
         "references": [
-          "2 Chronicles 19:8-11"
+          "2 Chronicles 19:9-11"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 20": {
-    "summary": "A coalition advances against Judah. Jehoshaphat proclaims a fast and publicly prays, confessing dependence on God. Jahaziel announces that the battle belongs to God; singers lead praise, and the opposing forces destroy one another. Judah gathers the spoil, rejoices and enjoys rest. A later maritime venture with Ahaziah fails after a prophetic rebuke. The chapter focuses on judah responds to a coalition with prayer and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "A coalition advances against Judah. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of judah responds to a coalition with prayer.",
+    "summary": "A great army of Moabites, Ammonites, and others comes against Judah, and Jehoshaphat proclaims a fast (2 Chronicles 20:1–4). Standing in the temple court, he prays, \"neither know we what to do: but our eyes are upon thee\" (2 Chronicles 20:5–13). The Spirit of the LORD comes on Jahaziel, a Levite, who says, \"the battle is not yours, but God's\" (2 Chronicles 20:14–19). Jehoshaphat sets singers before the army, and as they praise, the LORD sets ambushes and the enemies destroy one another (2 Chronicles 20:20–25). Judah blesses the LORD in the valley of Berachah and returns to Jerusalem with joy (2 Chronicles 20:26–30). Jehoshaphat reigns twenty-five years, but his shipping venture with Ahaziah of Israel is wrecked, as the prophet Eliezer foretold (2 Chronicles 20:31–37).",
+    "whereWeAre": "Jehoshaphat set up judges in chapter 19. Now a huge army invades, and Judah fasts and prays and is told \"the battle is not yours, but God's\" (2 Chronicles 20:15). Chapter 21 begins the evil reign of his son Jehoram.",
     "keyFigures": [
       {
         "name": "Jehoshaphat",
-        "role": "Jehoshaphat proclaims a fast and publicly prays, confessing dependence on God. This places Jehoshaphat within the chapter’s account of judah responds to a coalition with prayer."
+        "role": "Proclaims a fast, prays, and puts singers before the army."
       },
       {
         "name": "Jahaziel",
-        "role": "Jahaziel announces that the battle belongs to God; singers lead praise, and the opposing forces destroy one another. This places Jahaziel within the chapter’s account of judah responds to a coalition with prayer."
+        "role": "A Levite on whom the Spirit comes, who says the battle is God's."
       },
       {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with judah responds to a coalition with prayer. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The Levite singers",
+        "role": "Praise the LORD as Judah goes out to meet the enemy."
       },
       {
-        "name": "Judah",
-        "role": "A coalition advances against Judah. This places Judah within the chapter’s account of judah responds to a coalition with prayer."
+        "name": "The invaders",
+        "role": "Moab, Ammon, and mount Seir, who end up destroying one another."
       },
       {
-        "name": "Moabites",
-        "role": "Moabites is identified in the chapter in connection with judah responds to a coalition with prayer. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Ahaziah",
+        "role": "King of Israel, who joins Jehoshaphat in building ships."
       },
       {
-        "name": "Ammonites",
-        "role": "Ammonites is identified in the chapter in connection with judah responds to a coalition with prayer. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "inhabitants of Mount Seir",
-        "role": "inhabitants of Mount Seir is identified in the chapter in connection with judah responds to a coalition with prayer. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Eliezer",
+        "role": "A prophet who foretells that the ships will be broken."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Corporate prayer and fasting",
-        "explanation": "",
+        "theme": "Turning to God in fear",
+        "explanation": "Afraid, Jehoshaphat sets himself to seek the LORD and calls a fast.",
         "references": [
-          "2 Chronicles 20:1-13"
+          "2 Chronicles 20:3-4"
         ]
       },
       {
-        "theme": "Trust and praise amid threat",
-        "explanation": "",
+        "theme": "Eyes on God",
+        "explanation": "The king admits Judah does not know what to do, but its eyes are on God.",
         "references": [
-          "2 Chronicles 20:14-30"
+          "2 Chronicles 20:12"
         ]
       },
       {
-        "theme": "Caution in later alliances",
-        "explanation": "",
+        "theme": "The battle is God's",
+        "explanation": "Judah wins without fighting while the singers praise.",
         "references": [
-          "2 Chronicles 20:31-37"
+          "2 Chronicles 20:15-17",
+          "2 Chronicles 20:21-24"
+        ]
+      },
+      {
+        "theme": "Praise after victory",
+        "explanation": "Judah names the valley Berachah because they blessed the LORD there.",
+        "references": [
+          "2 Chronicles 20:26-28"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 21": {
-    "summary": "Jehoram secures his throne by killing his brothers and leads Judah toward idolatry. Edom and Libnah revolt. A letter attributed to Elijah announces judgment for his acts; raiders carry off much of his household, and he dies after a painful illness. Ahaziah is left to succeed him. The chapter focuses on jehoram’s violent reign and judgment and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Jehoram secures his throne by killing his brothers and leads Judah toward idolatry. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of jehoram’s violent reign and judgment.",
+    "summary": "Jehoram becomes king and kills all his brothers (2 Chronicles 21:1–4). He walks in the ways of Ahab's house, yet the LORD will not destroy David's house because of his covenant (2 Chronicles 21:5–7). Edom and Libnah revolt, and Jehoram builds high places and leads Judah astray (2 Chronicles 21:8–11). A writing from Elijah warns of a great plague on his people and a disease of his bowels (2 Chronicles 21:12–15). The Philistines and Arabians carry off his goods, wives, and sons except the youngest, and after two years of sickness he dies \"without being desired\" (2 Chronicles 21:16–20).",
+    "whereWeAre": "Jehoshaphat's reign ended in chapter 20 with a victory won by praise. His son Jehoram kills his brothers, follows Ahab's ways, and dies of a terrible disease after a warning from Elijah. In chapter 22 his son Ahaziah reigns only one year.",
     "keyFigures": [
       {
         "name": "Jehoram",
-        "role": "Jehoram secures his throne by killing his brothers and leads Judah toward idolatry. This places Jehoram within the chapter’s account of jehoram’s violent reign and judgment."
+        "role": "Kills his brothers, follows Ahab's ways, and dies of a painful disease."
       },
       {
-        "name": "Jehoshaphat",
-        "role": "Jehoshaphat is identified in the chapter in connection with jehoram’s violent reign and judgment. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The Edomites",
+        "role": "Revolt and make their own king."
       },
       {
         "name": "Elijah",
-        "role": "A letter attributed to Elijah announces judgment for his acts; raiders carry off much of his household, and he dies after a painful illness. This places Elijah within the chapter’s account of jehoram’s violent reign and judgment."
+        "role": "Sends Jehoram a written warning of judgment."
       },
       {
-        "name": "Edomites",
-        "role": "Edomites is identified in the chapter in connection with jehoram’s violent reign and judgment. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Philistines",
-        "role": "Philistines is identified in the chapter in connection with jehoram’s violent reign and judgment. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Arabs",
-        "role": "Arabs is identified in the chapter in connection with jehoram’s violent reign and judgment. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Ahaziah",
-        "role": "Ahaziah is left to succeed him. This places Ahaziah within the chapter’s account of jehoram’s violent reign and judgment."
+        "name": "The Philistines and Arabians",
+        "role": "Raid Judah and carry off the king's family and goods."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Violence within the royal family",
-        "explanation": "",
+        "theme": "Evil from bad company",
+        "explanation": "Jehoram's marriage to Ahab's daughter leads him into Ahab's ways.",
         "references": [
-          "2 Chronicles 21:1-7"
+          "2 Chronicles 21:6"
         ]
       },
       {
-        "theme": "Idolatry and political instability",
-        "explanation": "",
+        "theme": "God keeps his promise to David",
+        "explanation": "Even under an evil king, God will not destroy David's line.",
         "references": [
-          "2 Chronicles 21:8-15"
+          "2 Chronicles 21:7"
         ]
       },
       {
-        "theme": "Judgment and the preservation of a dynasty",
-        "explanation": "",
+        "theme": "Judgment foretold",
+        "explanation": "Elijah's letter warns Jehoram, and the disease he foretold comes.",
         "references": [
-          "2 Chronicles 21:16-20"
+          "2 Chronicles 21:12-19"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 22": {
-    "summary": "Ahaziah reigns briefly and follows the counsel of Ahab’s house. While visiting the wounded Joram of Israel, he encounters Jehu’s purge and is killed. Athaliah attempts to eliminate the royal family of Judah, but Jehoshabeath rescues the infant Joash and hides him with Jehoiada in the temple for six years. The chapter focuses on ahaziah falls and athaliah seizes power and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Ahaziah reigns briefly and follows the counsel of Ahab’s house. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of ahaziah falls and athaliah seizes power.",
+    "summary": "The people make Ahaziah, Jehoram's youngest son, king, and his mother Athaliah counsels him to do wickedly (2 Chronicles 22:1–4). He goes with Jehoram of Israel to war at Ramothgilead and later visits him at Jezreel (2 Chronicles 22:5–6). There Jehu, whom the LORD anointed to cut off Ahab's house, kills the princes of Judah and then Ahaziah (2 Chronicles 22:7–9). Athaliah destroys the royal family and takes the throne, but Jehoshabeath hides the baby Joash, and he stays hidden in the house of God six years (2 Chronicles 22:10–12).",
+    "whereWeAre": "Jehoram died unmourned in chapter 21. Now his son Ahaziah is killed in Jehu's revolt, and Athaliah kills the royal family to take the throne, but the baby Joash is hidden in the temple. Chapter 23 tells how he is crowned.",
     "keyFigures": [
       {
         "name": "Ahaziah",
-        "role": "Ahaziah reigns briefly and follows the counsel of Ahab’s house. This places Ahaziah within the chapter’s account of ahaziah falls and athaliah seizes power."
+        "role": "Jehoram's son, who follows his mother's counsel and is killed by Jehu."
       },
       {
         "name": "Athaliah",
-        "role": "Athaliah attempts to eliminate the royal family of Judah, but Jehoshabeath rescues the infant Joash and hides him with Jehoiada in the temple for six years. This places Athaliah within the chapter’s account of ahaziah falls and athaliah seizes power."
-      },
-      {
-        "name": "Joram of Israel",
-        "role": "While visiting the wounded Joram of Israel, he encounters Jehu’s purge and is killed. This places Joram of Israel within the chapter’s account of ahaziah falls and athaliah seizes power."
+        "role": "Ahaziah's mother, who destroys the royal family and seizes the throne."
       },
       {
         "name": "Jehu",
-        "role": "While visiting the wounded Joram of Israel, he encounters Jehu’s purge and is killed. This places Jehu within the chapter’s account of ahaziah falls and athaliah seizes power."
+        "role": "Anointed by the LORD to cut off Ahab's house; he kills Ahaziah."
       },
       {
         "name": "Jehoshabeath",
-        "role": "Athaliah attempts to eliminate the royal family of Judah, but Jehoshabeath rescues the infant Joash and hides him with Jehoiada in the temple for six years. This places Jehoshabeath within the chapter’s account of ahaziah falls and athaliah seizes power."
+        "role": "The king's daughter and Jehoiada's wife, who hides the baby Joash."
       },
       {
         "name": "Joash",
-        "role": "Athaliah attempts to eliminate the royal family of Judah, but Jehoshabeath rescues the infant Joash and hides him with Jehoiada in the temple for six years. This places Joash within the chapter’s account of ahaziah falls and athaliah seizes power."
-      },
-      {
-        "name": "priest Jehoiada",
-        "role": "priest Jehoiada is identified in the chapter in connection with ahaziah falls and athaliah seizes power. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "The infant prince, hidden in the temple for six years."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The dangers of corrupt influence",
-        "explanation": "",
+        "theme": "Wicked counsel",
+        "explanation": "Ahaziah follows his mother and Ahab's house \"to his destruction.\"",
         "references": [
-          "2 Chronicles 22:1-6"
+          "2 Chronicles 22:3-4"
         ]
       },
       {
-        "theme": "The vulnerability of royal succession",
-        "explanation": "",
+        "theme": "God's judgment",
+        "explanation": "Ahaziah dies in God's judgment on the house of Ahab.",
         "references": [
           "2 Chronicles 22:7-9"
         ]
       },
       {
-        "theme": "Protecting the Davidic heir",
-        "explanation": "",
+        "theme": "A hidden heir",
+        "explanation": "One baby, hidden by a brave woman, keeps David's line alive.",
         "references": [
           "2 Chronicles 22:10-12"
         ]
@@ -1154,468 +1030,444 @@
     "explainedReferences": []
   },
   "2 Chronicles 23": {
-    "summary": "Jehoiada organizes priests, Levites and military captains to secure young Joash. Joash is crowned in the temple while the people acclaim him. Athaliah protests and is taken outside to be executed. Jehoiada renews the covenant, removes Baal worship and restores temple service, and Joash takes the throne. The chapter focuses on joash is crowned and athaliah overthrown and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Jehoiada organizes priests, Levites and military captains to secure young Joash. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of joash is crowned and athaliah overthrown.",
+    "summary": "In the seventh year Jehoiada the priest makes a covenant with the captains and Levites, and they agree to make Joash king (2 Chronicles 23:1–3). Jehoiada places Levites and people to guard the temple and arms the captains with David's spears and shields (2 Chronicles 23:4–10). They crown Joash, give him the testimony, and anoint him, shouting, \"God save the king\" (2 Chronicles 23:11). Athaliah cries \"Treason, Treason,\" and she is taken out and killed at the horse gate (2 Chronicles 23:12–15). Jehoiada makes a covenant that the people will be the LORD's, they tear down the house of Baal, and Joash is set on the throne (2 Chronicles 23:16–21).",
+    "whereWeAre": "The infant Joash was hidden in the temple for six years in chapter 22. Now Jehoiada the priest brings him out and crowns him, and Athaliah is put to death. In chapter 24 Joash repairs the temple.",
     "keyFigures": [
       {
         "name": "Jehoiada",
-        "role": "Jehoiada organizes priests, Levites and military captains to secure young Joash. This places Jehoiada within the chapter’s account of joash is crowned and athaliah overthrown."
+        "role": "The priest who crowns Joash and leads the covenant."
       },
       {
         "name": "Joash",
-        "role": "Jehoiada organizes priests, Levites and military captains to secure young Joash. This places Joash within the chapter’s account of joash is crowned and athaliah overthrown."
+        "role": "Crowned king at seven."
       },
       {
         "name": "Athaliah",
-        "role": "Athaliah protests and is taken outside to be executed. This places Athaliah within the chapter’s account of joash is crowned and athaliah overthrown."
+        "role": "Cries \"Treason\" and is put to death."
       },
       {
-        "name": "Jehoshabeath",
-        "role": "Jehoshabeath is identified in the chapter in connection with joash is crowned and athaliah overthrown. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The captains and Levites",
+        "role": "Guard the temple and the young king."
       },
       {
-        "name": "Levites",
-        "role": "Jehoiada organizes priests, Levites and military captains to secure young Joash. This places Levites within the chapter’s account of joash is crowned and athaliah overthrown."
-      },
-      {
-        "name": "captains",
-        "role": "Jehoiada organizes priests, Levites and military captains to secure young Joash. This places captains within the chapter’s account of joash is crowned and athaliah overthrown."
-      },
-      {
-        "name": "people of Judah",
-        "role": "people of Judah is identified in the chapter in connection with joash is crowned and athaliah overthrown. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The people of the land",
+        "role": "Rejoice, tear down Baal's house, and kill his priest Mattan."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Courage and coordinated action",
-        "explanation": "",
+        "theme": "God preserves David's line",
+        "explanation": "Jehoiada sets the son of David back on the throne.",
         "references": [
-          "2 Chronicles 23:1-11"
+          "2 Chronicles 23:3",
+          "2 Chronicles 23:11"
         ]
       },
       {
-        "theme": "Renewed covenant worship",
-        "explanation": "",
+        "theme": "Covenant renewal",
+        "explanation": "Jehoiada leads the king and people in a covenant to be the LORD's people.",
         "references": [
-          "2 Chronicles 23:12-15"
+          "2 Chronicles 23:16"
         ]
       },
       {
-        "theme": "The restoration of legitimate kingship",
-        "explanation": "",
+        "theme": "Worship restored",
+        "explanation": "Baal's house is torn down, and temple service is set in order again.",
         "references": [
-          "2 Chronicles 23:16-21"
+          "2 Chronicles 23:17-19"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 24": {
-    "summary": "Under Jehoiada, Joash directs a collection for repairing the temple. After Jehoiada dies, leaders persuade the king toward idolatry; Zechariah rebukes the people and is stoned by royal order. Aramean forces defeat Judah, and Joash is later assassinated by his servants. Amaziah succeeds him. The chapter focuses on joash repairs the temple, then turns away and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Under Jehoiada, Joash directs a collection for repairing the temple. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of joash repairs the temple, then turns away.",
+    "summary": "Joash becomes king at seven and does right \"all the days of Jehoiada the priest\" (2 Chronicles 24:1–3). He has a chest set at the temple gate, the people gladly fill it, and the house of God is repaired (2 Chronicles 24:4–14). Jehoiada dies at 130 and is buried among the kings because he had done good in Israel (2 Chronicles 24:15–16). Then the princes lead Joash to serve idols, and when Zechariah son of Jehoiada rebukes them, Joash has him stoned in the temple court (2 Chronicles 24:17–22). A small Syrian army defeats Judah, and Joash's servants kill him in his bed (2 Chronicles 24:23–27).",
+    "whereWeAre": "Joash was crowned at seven in chapter 23. He repairs the temple while Jehoiada lives, but after Jehoiada dies he turns to idols and has the priest's son stoned. In chapter 25 his son Amaziah becomes king.",
     "keyFigures": [
       {
         "name": "Joash",
-        "role": "Under Jehoiada, Joash directs a collection for repairing the temple. This places Joash within the chapter’s account of joash repairs the temple, then turns away."
+        "role": "Repairs the temple, then turns to idols and has Zechariah stoned."
       },
       {
         "name": "Jehoiada",
-        "role": "Under Jehoiada, Joash directs a collection for repairing the temple. This places Jehoiada within the chapter’s account of joash repairs the temple, then turns away."
+        "role": "The priest who guides Joash and is buried among the kings."
+      },
+      {
+        "name": "The princes of Judah",
+        "role": "Lead Joash to serve idols after Jehoiada dies."
       },
       {
         "name": "Zechariah son of Jehoiada",
-        "role": "Zechariah son of Jehoiada is identified in the chapter in connection with joash repairs the temple, then turns away. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Rebukes the people and is stoned in the temple court."
       },
       {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with joash repairs the temple, then turns away. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The Syrians",
+        "role": "Defeat Judah's larger army with a small company."
       },
       {
-        "name": "Aramean raiders",
-        "role": "Aramean raiders is identified in the chapter in connection with joash repairs the temple, then turns away. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "conspirators",
-        "role": "conspirators is identified in the chapter in connection with joash repairs the temple, then turns away. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Zabad and Jehozabad",
+        "role": "Joash's servants, who kill him in his bed."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Supporting the temple’s upkeep",
-        "explanation": "",
+        "theme": "Giving with joy",
+        "explanation": "The people gladly fill the chest to repair the house of God.",
         "references": [
-          "2 Chronicles 24:1-14"
+          "2 Chronicles 24:8-14"
         ]
       },
       {
-        "theme": "The danger of rejecting correction",
-        "explanation": "",
+        "theme": "Faith that leans on others",
+        "explanation": "Joash does right only while Jehoiada lives.",
         "references": [
-          "2 Chronicles 24:15-22"
+          "2 Chronicles 24:2",
+          "2 Chronicles 24:17-18"
         ]
       },
       {
-        "theme": "Injustice and its consequences",
-        "explanation": "",
+        "theme": "Killing the messenger",
+        "explanation": "Joash stones the son of the man who saved his life.",
         "references": [
-          "2 Chronicles 24:23-27"
+          "2 Chronicles 24:20-22"
+        ]
+      },
+      {
+        "theme": "Forsaking God has a cost",
+        "explanation": "Judah loses to a small Syrian army because it forsook the LORD.",
+        "references": [
+          "2 Chronicles 24:24"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 25": {
-    "summary": "Amaziah punishes his father’s killers but spares their children in accordance with the law. After dismissing hired Israelite troops at a prophet’s instruction, he defeats Edom. He then adopts the defeated people’s gods and rejects prophetic warning. Provoking a clash with Joash of Israel, he loses; Jerusalem is breached and treasures are carried away. He is eventually killed in a conspiracy. The chapter focuses on amaziah wins, adopts idols and is defeated and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Amaziah punishes his father’s killers but spares their children in accordance with the law. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of amaziah wins, adopts idols and is defeated.",
+    "summary": "Amaziah does right, \"but not with a perfect heart,\" and he kills his father's murderers but spares their children, as the law of Moses commands (2 Chronicles 25:1–4). He hires 100,000 soldiers from Israel, but a man of God warns him, and he sends them home (2 Chronicles 25:5–10). Amaziah defeats Edom in the valley of salt, while the soldiers he sent away raid the cities of Judah (2 Chronicles 25:11–13). He then sets up the gods of Edom and silences the prophet who rebukes him (2 Chronicles 25:14–16). He challenges Joash king of Israel, who defeats him, breaks down Jerusalem's wall, and takes the temple's gold (2 Chronicles 25:17–24). Later a conspiracy forms against Amaziah, and he is killed at Lachish (2 Chronicles 25:25–28).",
+    "whereWeAre": "Joash was killed by his own servants in chapter 24. His son Amaziah defeats Edom, then worships Edom's gods and is beaten by Joash king of Israel. In chapter 26 his son Uzziah has a long reign.",
     "keyFigures": [
       {
         "name": "Amaziah",
-        "role": "Amaziah punishes his father’s killers but spares their children in accordance with the law. This places Amaziah within the chapter’s account of amaziah wins, adopts idols and is defeated."
+        "role": "Defeats Edom, then worships its gods and is defeated by Israel."
       },
       {
-        "name": "the prophet of God",
-        "role": "the prophet of God is identified in the chapter in connection with amaziah wins, adopts idols and is defeated. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "A man of God",
+        "role": "Warns Amaziah not to take Israel's soldiers to war."
       },
       {
-        "name": "Edomites",
-        "role": "Edomites is identified in the chapter in connection with amaziah wins, adopts idols and is defeated. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "A prophet",
+        "role": "Asks why Amaziah seeks gods that could not save their own people."
       },
       {
         "name": "Joash king of Israel",
-        "role": "Joash king of Israel is identified in the chapter in connection with amaziah wins, adopts idols and is defeated. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Judahite soldiers",
-        "role": "Judahite soldiers is identified in the chapter in connection with amaziah wins, adopts idols and is defeated. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Answers with a parable, then defeats Amaziah and breaks Jerusalem's wall."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Doing justice without collective punishment",
-        "explanation": "",
+        "theme": "A divided heart",
+        "explanation": "Amaziah does right, but not with a perfect heart.",
         "references": [
-          "2 Chronicles 25:1-10"
+          "2 Chronicles 25:2"
         ]
       },
       {
-        "theme": "Victory followed by idolatry",
-        "explanation": "",
+        "theme": "God can give more",
+        "explanation": "The man of God tells Amaziah the LORD can repay what he loses by obeying.",
         "references": [
-          "2 Chronicles 25:11-16"
+          "2 Chronicles 25:9"
         ]
       },
       {
-        "theme": "Pride and political disaster",
-        "explanation": "",
+        "theme": "Pride before a fall",
+        "explanation": "After victory Amaziah turns to Edom's gods and picks a fight he cannot win.",
         "references": [
-          "2 Chronicles 25:17-28"
+          "2 Chronicles 25:14-24"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 26": {
-    "summary": "Uzziah seeks God early, fortifies Jerusalem, strengthens agriculture and defense, and gains military reputation. When powerful, he enters the temple to burn incense, despite priestly objections. He is struck with a skin disease described as leprosy and lives separately while Jotham administers the kingdom. The chapter focuses on uzziah prospers but oversteps priestly duties and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Uzziah seeks God early, fortifies Jerusalem, strengthens agriculture and defense, and gains military reputation. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of uzziah prospers but oversteps priestly duties.",
+    "summary": "Uzziah becomes king at sixteen and reigns fifty-two years, and while he seeks God, God makes him prosper (2 Chronicles 26:1–5). He defeats the Philistines and Arabians, builds towers, digs wells, and loves farming (2 Chronicles 26:6–10). He builds a large army and sets on Jerusalem's towers machines that shoot arrows and great stones (2 Chronicles 26:11–15). But \"when he was strong, his heart was lifted up to his destruction,\" and he goes into the temple to burn incense (2 Chronicles 26:16). Azariah and eighty priests stand against him, and leprosy breaks out on his forehead while he rages (2 Chronicles 26:17–20). He lives apart as a leper until he dies, while his son Jotham rules (2 Chronicles 26:21–23).",
+    "whereWeAre": "Amaziah was killed in a conspiracy in chapter 25. His son Uzziah grows strong while he seeks God, but pride leads him to burn incense in the temple, and he becomes a leper. Chapter 27 tells of his son Jotham.",
     "keyFigures": [
       {
         "name": "Uzziah",
-        "role": "Uzziah seeks God early, fortifies Jerusalem, strengthens agriculture and defense, and gains military reputation. This places Uzziah within the chapter’s account of uzziah prospers but oversteps priestly duties."
+        "role": "Prospers while he seeks God, then is struck with leprosy for burning incense."
       },
       {
-        "name": "Zechariah (who instructed him)",
-        "role": "Zechariah (who instructed him) is identified in the chapter in connection with uzziah prospers but oversteps priestly duties. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Zechariah",
+        "role": "Has \"understanding in the visions of God\" and guides Uzziah."
       },
       {
         "name": "Azariah the priest",
-        "role": "Azariah the priest is identified in the chapter in connection with uzziah prospers but oversteps priestly duties. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "eighty priests",
-        "role": "eighty priests is identified in the chapter in connection with uzziah prospers but oversteps priestly duties. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Leads eighty priests to stop the king in the temple."
       },
       {
         "name": "Jotham",
-        "role": "He is struck with a skin disease described as leprosy and lives separately while Jotham administers the kingdom. This places Jotham within the chapter’s account of uzziah prospers but oversteps priestly duties."
+        "role": "Uzziah's son, who rules the people while his father lives apart."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Strength used for service",
-        "explanation": "",
+        "theme": "Prosperity from seeking God",
+        "explanation": "As long as Uzziah seeks the LORD, God makes him prosper.",
         "references": [
-          "2 Chronicles 26:1-15"
+          "2 Chronicles 26:5-15"
         ]
       },
       {
-        "theme": "Pride and priestly boundaries",
-        "explanation": "",
+        "theme": "Pride in strength",
+        "explanation": "When Uzziah becomes strong, his heart is lifted up to his destruction.",
         "references": [
-          "2 Chronicles 26:16-21"
+          "2 Chronicles 26:16"
         ]
       },
       {
-        "theme": "The dangers of misusing sacred authority",
-        "explanation": "",
+        "theme": "Limits on the king",
+        "explanation": "Burning incense belongs to the priests, and even the king may not take it.",
         "references": [
-          "2 Chronicles 26:22-23"
+          "2 Chronicles 26:17-21"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 27": {
-    "summary": "Jotham follows what the narrator calls right conduct, though the people continue corrupt practices. He builds the upper temple gate, fortifies towns and towers and defeats the Ammonites, receiving tribute for three years. He becomes strong because he orders his ways before the LORD, then dies and is succeeded by Ahaz. The chapter focuses on jotham builds and grows strong and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Jotham follows what the narrator calls right conduct, though the people continue corrupt practices. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of jotham builds and grows strong.",
+    "summary": "Jotham becomes king and does right, though the people still act corruptly (2 Chronicles 27:1–2). He builds the high gate of the temple, cities, and towers, and he makes the Ammonites pay tribute for three years (2 Chronicles 27:3–5). Jotham becomes mighty \"because he prepared his ways before the LORD his God\" (2 Chronicles 27:6). He dies after sixteen years, and his son Ahaz becomes king (2 Chronicles 27:7–9).",
+    "whereWeAre": "Uzziah died a leper in chapter 26. His son Jotham follows the LORD and grows mighty, though the people still act corruptly. In chapter 28 his son Ahaz leads Judah into deep idolatry.",
     "keyFigures": [
       {
         "name": "Jotham",
-        "role": "Jotham follows what the narrator calls right conduct, though the people continue corrupt practices. This places Jotham within the chapter’s account of jotham builds and grows strong."
+        "role": "Does right, builds, defeats the Ammonites, and becomes mighty."
       },
       {
-        "name": "Ammonites",
-        "role": "He builds the upper temple gate, fortifies towns and towers and defeats the Ammonites, receiving tribute for three years. This places Ammonites within the chapter’s account of jotham builds and grows strong."
-      },
-      {
-        "name": "Judah’s people",
-        "role": "Judah’s people is identified in the chapter in connection with jotham builds and grows strong. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The Ammonites",
+        "role": "Pay Jotham tribute for three years."
       }
     ],
     "keyThemes": [
       {
-        "theme": "A ruler’s faithful example",
-        "explanation": "",
+        "theme": "Walking before God",
+        "explanation": "Jotham becomes mighty because he prepared his ways before the LORD.",
         "references": [
-          "2 Chronicles 27:1-4"
+          "2 Chronicles 27:6"
         ]
       },
       {
-        "theme": "Public corruption persists",
-        "explanation": "",
+        "theme": "A good king, a corrupt people",
+        "explanation": "The king does right while the people still act corruptly.",
         "references": [
-          "2 Chronicles 27:5-6"
+          "2 Chronicles 27:2"
         ]
       },
       {
-        "theme": "Strength through disciplined conduct",
-        "explanation": "",
+        "theme": "Building up the land",
+        "explanation": "Jotham builds the temple's high gate and cities and castles in the hills and forests.",
         "references": [
-          "2 Chronicles 27:7-9"
+          "2 Chronicles 27:3-4"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 28": {
-    "summary": "Ahaz adopts condemned worship practices, including child sacrifice, and Judah suffers defeats from Aram and Israel. Oded warns Israelite victors to release Judahite captives, and leaders assist their return. Ahaz seeks Assyrian help but gains no relief, plunders temple goods and multiplies foreign altars before his death. The chapter focuses on ahaz’s idolatry brings disaster and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Ahaz adopts condemned worship practices, including child sacrifice, and Judah suffers defeats from Aram and Israel. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of ahaz’s idolatry brings disaster.",
+    "summary": "Ahaz makes images for Baalim and burns his children in the fire (2 Chronicles 28:1–4). God gives him into the hands of Syria and of Pekah king of Israel, who kills 120,000 men of Judah in one day and takes 200,000 captives (2 Chronicles 28:5–8). The prophet Oded warns Israel's army to send the captives back, and leaders of Ephraim clothe, feed, and return them to Jericho (2 Chronicles 28:9–15). Ahaz asks the king of Assyria for help, but Tilgathpilneser only distresses him (2 Chronicles 28:16–21). In his distress Ahaz sins even more, sacrificing to the gods of Damascus and shutting the doors of the house of the LORD (2 Chronicles 28:22–25). He dies and is not buried in the tombs of the kings (2 Chronicles 28:26–27).",
+    "whereWeAre": "Jotham's short, faithful reign ended in chapter 27. Now Ahaz worships Baal, loses battles to Syria and Israel, and shuts the temple doors. In chapter 29 his son Hezekiah opens them again.",
     "keyFigures": [
       {
         "name": "Ahaz",
-        "role": "Ahaz adopts condemned worship practices, including child sacrifice, and Judah suffers defeats from Aram and Israel. This places Ahaz within the chapter’s account of ahaz’s idolatry brings disaster."
+        "role": "Worships Baalim, shuts the temple doors, and seeks help from Assyria."
       },
       {
         "name": "Pekah",
-        "role": "Pekah is identified in the chapter in connection with ahaz’s idolatry brings disaster. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Zichri",
-        "role": "Zichri is identified in the chapter in connection with ahaz’s idolatry brings disaster. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "King of Israel, who kills 120,000 men of Judah in one day."
       },
       {
         "name": "Oded",
-        "role": "Oded warns Israelite victors to release Judahite captives, and leaders assist their return. This places Oded within the chapter’s account of ahaz’s idolatry brings disaster."
+        "role": "A prophet who tells Israel's army to send the captives home."
       },
       {
-        "name": "Israelite leaders",
-        "role": "Israelite leaders is identified in the chapter in connection with ahaz’s idolatry brings disaster. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The heads of Ephraim",
+        "role": "Clothe, feed, and return the captives to Jericho."
       },
       {
-        "name": "Edomites",
-        "role": "Edomites is identified in the chapter in connection with ahaz’s idolatry brings disaster. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Philistines",
-        "role": "Philistines is identified in the chapter in connection with ahaz’s idolatry brings disaster. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Tiglath-pileser",
-        "role": "Tiglath-pileser is identified in the chapter in connection with ahaz’s idolatry brings disaster. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Tilgathpilneser",
+        "role": "King of Assyria, who distresses Ahaz instead of helping him."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Idolatry and national loss",
-        "explanation": "",
+        "theme": "Idolatry brings defeat",
+        "explanation": "Ahaz's idols bring defeat by Syria, Israel, Edom, and the Philistines.",
         "references": [
-          "2 Chronicles 28:1-8"
+          "2 Chronicles 28:2-8",
+          "2 Chronicles 28:17-19"
         ]
       },
       {
-        "theme": "Mercy toward prisoners",
-        "explanation": "",
+        "theme": "Mercy to enemies",
+        "explanation": "Israel's leaders listen to the prophet and care for their captives from Judah.",
         "references": [
           "2 Chronicles 28:9-15"
         ]
       },
       {
-        "theme": "False hope in foreign assistance",
-        "explanation": "",
+        "theme": "Sinning more in trouble",
+        "explanation": "Instead of turning to God in distress, Ahaz sins even more.",
         "references": [
-          "2 Chronicles 28:16-27"
+          "2 Chronicles 28:22-25"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 29": {
-    "summary": "Hezekiah opens and repairs temple doors, calls priests and Levites to consecrate themselves and cleanse the sanctuary, and confesses the previous generation’s unfaithfulness. After purification, he leads sin and burnt offerings accompanied by music and praise. The assembly rejoices at how quickly worship is restored. The chapter focuses on hezekiah reopens and cleanses the temple and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Hezekiah opens and repairs temple doors, calls priests and Levites to consecrate themselves and cleanse the sanctuary, and confesses the previous generation’s unfaithfulness. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of hezekiah reopens and cleanses the temple.",
+    "summary": "In the first month of his reign, Hezekiah opens and repairs the doors of the temple (2 Chronicles 29:1–3). He tells the priests and Levites to sanctify themselves and the house, because their fathers' sins brought God's wrath (2 Chronicles 29:4–11). The Levites cleanse the house in sixteen days and carry the filth out to the brook Kidron (2 Chronicles 29:12–19). Hezekiah offers sin offerings for all Israel, and as the burnt offering begins, the Levites play David's instruments and the singers praise (2 Chronicles 29:20–30). The people bring so many offerings that the Levites help the priests, and all rejoice, \"for the thing was done suddenly\" (2 Chronicles 29:31–36).",
+    "whereWeAre": "Ahaz shut the temple doors in chapter 28. In the first month of his reign, Hezekiah opens them, has the temple cleansed, and restores its sacrifices and songs. Chapter 30 calls all Israel to keep the Passover.",
     "keyFigures": [
       {
         "name": "Hezekiah",
-        "role": "Hezekiah opens and repairs temple doors, calls priests and Levites to consecrate themselves and cleanse the sanctuary, and confesses the previous generation’s unfaithfulness. This places Hezekiah within the chapter’s account of hezekiah reopens and cleanses the temple."
+        "role": "Opens the temple doors and restores its worship."
       },
       {
-        "name": "priests",
-        "role": "Hezekiah opens and repairs temple doors, calls priests and Levites to consecrate themselves and cleanse the sanctuary, and confesses the previous generation’s unfaithfulness. This places priests within the chapter’s account of hezekiah reopens and cleanses the temple."
+        "name": "The Levites",
+        "role": "Sanctify themselves, cleanse the house, and lead the songs."
       },
       {
-        "name": "Levites",
-        "role": "Hezekiah opens and repairs temple doors, calls priests and Levites to consecrate themselves and cleanse the sanctuary, and confesses the previous generation’s unfaithfulness. This places Levites within the chapter’s account of hezekiah reopens and cleanses the temple."
+        "name": "The priests",
+        "role": "Offer the sin offerings and burnt offerings for all Israel."
       },
       {
-        "name": "named Levite leaders",
-        "role": "named Levite leaders is identified in the chapter in connection with hezekiah reopens and cleanses the temple. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Judah’s assembly",
-        "role": "Judah’s assembly is identified in the chapter in connection with hezekiah reopens and cleanses the temple. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The congregation",
+        "role": "Worship and bring offerings beyond what the priests can prepare."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Purification and renewed worship",
-        "explanation": "",
+        "theme": "Restoring what was abandoned",
+        "explanation": "Hezekiah opens the doors his father shut and cleanses the house.",
         "references": [
-          "2 Chronicles 29:1-11"
+          "2 Chronicles 29:3-5",
+          "2 Chronicles 29:15-17"
         ]
       },
       {
-        "theme": "Repentance and consecration",
-        "explanation": "",
+        "theme": "Confessing the past",
+        "explanation": "Hezekiah admits the sins of their fathers and seeks a covenant with God.",
         "references": [
-          "2 Chronicles 29:12-19"
+          "2 Chronicles 29:6-10"
         ]
       },
       {
-        "theme": "Communal generosity and praise",
-        "explanation": "",
+        "theme": "Joyful worship",
+        "explanation": "Songs, trumpets, and offerings fill the restored temple.",
         "references": [
-          "2 Chronicles 29:20-36"
+          "2 Chronicles 29:25-30",
+          "2 Chronicles 29:36"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 30": {
-    "summary": "Hezekiah sends invitations across Judah and the former northern kingdom to keep Passover in Jerusalem in the second month. Some mock, but others humble themselves and come. Priests and Levites conduct the feast, while Hezekiah intercedes for worshipers lacking proper purification. The celebration extends seven additional days and ends with a blessing. The chapter focuses on hezekiah calls israel and judah to passover and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Hezekiah sends invitations across Judah and the former northern kingdom to keep Passover in Jerusalem in the second month. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of hezekiah calls israel and judah to passover.",
+    "summary": "Hezekiah and the people decide to keep the Passover in the second month, since the priests were not ready in the first (2 Chronicles 30:1–5). Runners carry letters from Beersheba to Dan, calling Israel to return to the LORD, for he \"is gracious and merciful\" (2 Chronicles 30:6–9). Many in the north laugh at them, but some from Asher, Manasseh, and Zebulun humble themselves and come (2 Chronicles 30:10–12). A great crowd removes the altars in Jerusalem and keeps the Passover, and Hezekiah prays for those who eat it without being cleansed, and the LORD heals the people (2 Chronicles 30:13–20). They keep the feast seven days and then seven more, with joy not seen since Solomon (2 Chronicles 30:21–27).",
+    "whereWeAre": "Hezekiah restored the temple's worship in chapter 29. Now he invites Judah and what is left of the northern tribes to a great Passover in Jerusalem. In chapter 31 the people tear down idols and bring their tithes.",
     "keyFigures": [
       {
         "name": "Hezekiah",
-        "role": "Hezekiah sends invitations across Judah and the former northern kingdom to keep Passover in Jerusalem in the second month. This places Hezekiah within the chapter’s account of hezekiah calls israel and judah to passover."
+        "role": "Invites all Israel to the Passover and prays for the unclean."
       },
       {
-        "name": "couriers",
-        "role": "couriers is identified in the chapter in connection with hezekiah calls israel and judah to passover. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The posts",
+        "role": "Runners who carry the king's letters from city to city."
       },
       {
-        "name": "priests",
-        "role": "Priests and Levites conduct the feast, while Hezekiah intercedes for worshipers lacking proper purification. This places priests within the chapter’s account of hezekiah calls israel and judah to passover."
+        "name": "The remnant of Israel",
+        "role": "Some mock, but some from Asher, Manasseh, and Zebulun come."
       },
       {
-        "name": "Levites",
-        "role": "Priests and Levites conduct the feast, while Hezekiah intercedes for worshipers lacking proper purification. This places Levites within the chapter’s account of hezekiah calls israel and judah to passover."
-      },
-      {
-        "name": "people of Judah and Israel",
-        "role": "people of Judah and Israel is identified in the chapter in connection with hezekiah calls israel and judah to passover. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The priests and Levites",
+        "role": "Kill the Passover lambs and bless the people."
       }
     ],
     "keyThemes": [
       {
-        "theme": "An invitation beyond tribal divisions",
-        "explanation": "",
+        "theme": "An open invitation",
+        "explanation": "Hezekiah invites even the northern tribes to come back to the LORD.",
         "references": [
-          "2 Chronicles 30:1-12"
+          "2 Chronicles 30:1",
+          "2 Chronicles 30:6-9"
         ]
       },
       {
-        "theme": "Mercy amid imperfect purification",
-        "explanation": "",
+        "theme": "God's grace",
+        "explanation": "The letters promise that God is gracious and will not turn his face away.",
         "references": [
-          "2 Chronicles 30:13-20"
+          "2 Chronicles 30:9"
         ]
       },
       {
-        "theme": "The joy of shared worship",
-        "explanation": "",
+        "theme": "The heart over the ritual",
+        "explanation": "Hezekiah prays for people who seek God but are not cleansed, and God heals them.",
         "references": [
-          "2 Chronicles 30:21-27"
+          "2 Chronicles 30:18-20"
+        ]
+      },
+      {
+        "theme": "Great joy",
+        "explanation": "The feast is doubled, and Jerusalem has joy not seen since Solomon.",
+        "references": [
+          "2 Chronicles 30:23-26"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 31": {
-    "summary": "After the festival, participants remove illicit cult objects. Hezekiah assigns priestly and Levitical divisions and restores provisions for offerings. People bring abundant firstfruits and tithes, which are stored and distributed under appointed overseers. The narrator praises Hezekiah’s wholehearted service. The chapter focuses on hezekiah organizes temple support and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "After the festival, participants remove illicit cult objects. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of hezekiah organizes temple support.",
+    "summary": "After the Passover the people go out and break down the images, groves, and high places across the land (2 Chronicles 31:1). Hezekiah sets the priests and Levites in their courses and commands the people to give the priests' portion (2 Chronicles 31:2–4). The people bring firstfruits and tithes in heaps from the third month to the seventh (2 Chronicles 31:5–10). Hezekiah prepares storerooms and appoints Cononiah, Shimei, and others to oversee and share out the gifts (2 Chronicles 31:11–19). In every work he began, Hezekiah \"did it with all his heart, and prospered\" (2 Chronicles 31:20–21).",
+    "whereWeAre": "The great Passover ended in joy in chapter 30. Now the people destroy idols across the land and bring so many gifts that they lie in heaps. In chapter 32 Sennacherib of Assyria invades Judah.",
     "keyFigures": [
       {
         "name": "Hezekiah",
-        "role": "Hezekiah assigns priestly and Levitical divisions and restores provisions for offerings. This places Hezekiah within the chapter’s account of hezekiah organizes temple support."
+        "role": "Sets the priests and Levites in order and has storerooms built."
       },
       {
-        "name": "priests",
-        "role": "priests is identified in the chapter in connection with hezekiah organizes temple support. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with hezekiah organizes temple support. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Israelites and Judahites",
-        "role": "Israelites and Judahites is identified in the chapter in connection with hezekiah organizes temple support. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The people",
+        "role": "Bring firstfruits and tithes in heaps."
       },
       {
         "name": "Azariah",
-        "role": "Azariah is identified in the chapter in connection with hezekiah organizes temple support. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "The chief priest, who reports that there is plenty left over."
       },
       {
-        "name": "Conaniah",
-        "role": "Conaniah is identified in the chapter in connection with hezekiah organizes temple support. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Cononiah and Shimei",
+        "role": "Levites put in charge of the gifts."
+      },
+      {
+        "name": "Kore",
+        "role": "Over the freewill offerings."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Turning from idolatry",
-        "explanation": "",
+        "theme": "Tearing down idols",
+        "explanation": "The people go home and destroy the idols in the land.",
         "references": [
-          "2 Chronicles 31:1-8"
+          "2 Chronicles 31:1"
         ]
       },
       {
-        "theme": "Generous support of worship",
-        "explanation": "",
+        "theme": "Generous giving",
+        "explanation": "The people give so much that the gifts lie in heaps.",
         "references": [
-          "2 Chronicles 31:9-19"
+          "2 Chronicles 31:5-10"
         ]
       },
       {
-        "theme": "Faithful administration of gifts",
-        "explanation": "",
+        "theme": "Wholehearted service",
+        "explanation": "Hezekiah does every work with all his heart and prospers.",
         "references": [
           "2 Chronicles 31:20-21"
         ]
@@ -1624,158 +1476,154 @@
     "explainedReferences": []
   },
   "2 Chronicles 32": {
-    "summary": "Sennacherib invades Judah, and Hezekiah fortifies Jerusalem and secures its water supply. Assyrian messengers taunt the city and challenge confidence in the LORD. Hezekiah and Isaiah pray; the narrative describes divine deliverance and Sennacherib’s eventual death. Hezekiah recovers from illness, experiences pride and humility, and receives envoys from Babylon. The chapter focuses on sennacherib threatens judah; hezekiah trusts god and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Sennacherib invades Judah, and Hezekiah fortifies Jerusalem and secures its water supply. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of sennacherib threatens judah; hezekiah trusts god.",
+    "summary": "Sennacherib king of Assyria invades Judah, and Hezekiah stops the springs outside the city and builds up the walls (2 Chronicles 32:1–5). He tells the people, \"With him is an arm of flesh; but with us is the LORD our God to help us\" (2 Chronicles 32:6–8). Sennacherib's servants mock Hezekiah and the LORD in speeches and letters (2 Chronicles 32:9–19). Hezekiah and Isaiah pray, and the LORD sends an angel who cuts off the Assyrian army, and Sennacherib is killed by his own sons (2 Chronicles 32:20–23). Hezekiah becomes sick and is healed, but his heart is lifted up until he humbles himself (2 Chronicles 32:24–26). He grows very rich, brings Gihon's water to the west side of the city, and dies honored by all Judah (2 Chronicles 32:27–33).",
+    "whereWeAre": "Hezekiah reorganized worship in chapter 31. Now Assyria invades, Hezekiah prays, and an angel destroys the Assyrian army; later his heart is lifted up in pride. In chapter 33 his son Manasseh undoes his reforms.",
     "keyFigures": [
       {
         "name": "Hezekiah",
-        "role": "Sennacherib invades Judah, and Hezekiah fortifies Jerusalem and secures its water supply. This places Hezekiah within the chapter’s account of sennacherib threatens judah; hezekiah trusts god."
+        "role": "Prepares Jerusalem, prays, and is healed, but grows proud."
       },
       {
         "name": "Sennacherib",
-        "role": "Sennacherib invades Judah, and Hezekiah fortifies Jerusalem and secures its water supply. This places Sennacherib within the chapter’s account of sennacherib threatens judah; hezekiah trusts god."
+        "role": "King of Assyria, who invades and mocks the LORD."
       },
       {
         "name": "Isaiah",
-        "role": "Hezekiah and Isaiah pray; the narrative describes divine deliverance and Sennacherib’s eventual death. This places Isaiah within the chapter’s account of sennacherib threatens judah; hezekiah trusts god."
+        "role": "The prophet who prays with Hezekiah."
       },
       {
-        "name": "Assyrian envoys",
-        "role": "Assyrian envoys is identified in the chapter in connection with sennacherib threatens judah; hezekiah trusts god. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "Sennacherib's servants",
+        "role": "Taunt the people of Jerusalem in their own language."
       },
       {
-        "name": "Judah’s people",
-        "role": "Judah’s people is identified in the chapter in connection with sennacherib threatens judah; hezekiah trusts god. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The angel of the LORD",
+        "role": "Cuts off the leaders of the Assyrian camp."
       },
       {
-        "name": "Merodach-baladan’s envoys",
-        "role": "Merodach-baladan’s envoys is identified in the chapter in connection with sennacherib threatens judah; hezekiah trusts god. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The princes of Babylon",
+        "role": "Send ambassadors to ask about the wonder in the land."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Preparation under external threat",
-        "explanation": "",
+        "theme": "Courage from God's presence",
+        "explanation": "Hezekiah tells the people that more are with them than with Assyria.",
         "references": [
-          "2 Chronicles 32:1-8"
+          "2 Chronicles 32:7-8"
         ]
       },
       {
-        "theme": "Prayer and confidence amid propaganda",
-        "explanation": "",
+        "theme": "God answers mockery",
+        "explanation": "Assyria mocks the LORD as one of the idols, and God destroys its army.",
         "references": [
-          "2 Chronicles 32:9-23"
+          "2 Chronicles 32:13-21"
         ]
       },
       {
-        "theme": "Deliverance, pride and humility",
-        "explanation": "",
+        "theme": "Pride tested",
+        "explanation": "Hezekiah's heart is lifted up, and God leaves him to test what is in his heart.",
         "references": [
-          "2 Chronicles 32:24-33"
+          "2 Chronicles 32:25-26",
+          "2 Chronicles 32:31"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 33": {
-    "summary": "Manasseh establishes foreign altars, practices divination and desecrates the temple. The LORD warns him and the people, but they do not listen. Assyrian commanders take him captive; in distress he humbles himself and prays, and the narrative reports his restoration. He removes foreign gods and repairs defenses, though the people still sacrifice at high places. Amon succeeds him and continues evil, before being assassinated. The chapter focuses on manasseh’s evil, repentance and restoration and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Manasseh establishes foreign altars, practices divination and desecrates the temple. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of manasseh’s evil, repentance and restoration.",
+    "summary": "Manasseh becomes king at twelve and rebuilds the high places, sets altars for Baalim and the stars in the temple courts, and burns his children in the fire (2 Chronicles 33:1–9). The LORD speaks to him and the people, but they will not listen (2 Chronicles 33:10). The captains of Assyria bind Manasseh and carry him to Babylon, where he humbles himself and prays, and God brings him back to Jerusalem (2 Chronicles 33:11–13). He removes the foreign gods, repairs the LORD's altar, and commands Judah to serve the LORD (2 Chronicles 33:14–20). His son Amon does evil and never humbles himself, and his servants kill him after two years (2 Chronicles 33:21–25).",
+    "whereWeAre": "Hezekiah died honored at the end of chapter 32. His son Manasseh leads Judah to do worse than the heathen but repents in chains in Babylon, while his son Amon never humbles himself. In chapter 34 young Josiah takes the throne.",
     "keyFigures": [
       {
         "name": "Manasseh",
-        "role": "Manasseh establishes foreign altars, practices divination and desecrates the temple. This places Manasseh within the chapter’s account of manasseh’s evil, repentance and restoration."
+        "role": "Leads Judah into great evil, then repents in Babylon and is restored."
+      },
+      {
+        "name": "The captains of Assyria",
+        "role": "Bind Manasseh and carry him to Babylon."
       },
       {
         "name": "Amon",
-        "role": "Amon succeeds him and continues evil, before being assassinated. This places Amon within the chapter’s account of manasseh’s evil, repentance and restoration."
+        "role": "Does evil, never humbles himself, and is killed by his servants."
       },
       {
-        "name": "Assyrian military commanders",
-        "role": "Assyrian military commanders is identified in the chapter in connection with manasseh’s evil, repentance and restoration. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Judah’s people",
-        "role": "Judah’s people is identified in the chapter in connection with manasseh’s evil, repentance and restoration. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The people of the land",
+        "role": "Kill Amon's murderers and make Josiah king."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The gravity of corrupt worship",
-        "explanation": "",
+        "theme": "No one is beyond repentance",
+        "explanation": "Even Manasseh, who led Judah into great evil, is restored when he humbles himself.",
         "references": [
-          "2 Chronicles 33:1-9"
+          "2 Chronicles 33:12-13"
         ]
       },
       {
-        "theme": "Humility and repentance",
-        "explanation": "",
+        "theme": "Repentance bears fruit",
+        "explanation": "After returning, Manasseh removes idols and commands Judah to serve the LORD.",
         "references": [
-          "2 Chronicles 33:10-17"
+          "2 Chronicles 33:15-16"
         ]
       },
       {
-        "theme": "Reform and its limits",
-        "explanation": "",
+        "theme": "Refusing to humble oneself",
+        "explanation": "Amon follows his father's sins but not his repentance.",
         "references": [
-          "2 Chronicles 33:18-25"
+          "2 Chronicles 33:22-23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "2 Chronicles 34": {
-    "summary": "Josiah begins seeking God while young and later removes idolatrous sites. During temple repairs Hilkiah finds the Book of the Law, which Shaphan reads to the king. Josiah grieves and sends representatives to Huldah, who announces coming judgment yet acknowledges the king’s humility. Josiah publicly reads the covenant and urges the people to follow it. The chapter focuses on josiah restores the temple and finds the law and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Josiah begins seeking God while young and later removes idolatrous sites. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of josiah restores the temple and finds the law.",
+    "summary": "Josiah becomes king at eight, begins to seek God at sixteen, and at twenty begins to purge Judah and Jerusalem of idols (2 Chronicles 34:1–3). He breaks down the altars of Baalim and burns the bones of their priests, even in the cities of the northern tribes (2 Chronicles 34:4–7). In his eighteenth year he repairs the temple, and Hilkiah the priest finds \"a book of the law of the LORD given by Moses\" (2 Chronicles 34:8–14). Shaphan reads it to the king, and Josiah tears his clothes and sends to the prophetess Huldah (2 Chronicles 34:15–22). Huldah says the curses in the book will come, but not in Josiah's days, because his heart was tender (2 Chronicles 34:23–28). Josiah reads the book to the people, makes a covenant before the LORD, and leads them to serve God all his days (2 Chronicles 34:29–33).",
+    "whereWeAre": "Amon was killed by his servants in chapter 33. Young Josiah seeks God, purges idols, and leads the people in covenant after the book of the law is found in the temple. In chapter 35 he keeps a great Passover.",
     "keyFigures": [
       {
         "name": "Josiah",
-        "role": "Josiah begins seeking God while young and later removes idolatrous sites. This places Josiah within the chapter’s account of josiah restores the temple and finds the law."
+        "role": "Seeks God, purges idols, and makes a covenant before the LORD."
       },
       {
         "name": "Hilkiah",
-        "role": "During temple repairs Hilkiah finds the Book of the Law, which Shaphan reads to the king. This places Hilkiah within the chapter’s account of josiah restores the temple and finds the law."
+        "role": "The high priest who finds the book of the law in the temple."
       },
       {
         "name": "Shaphan",
-        "role": "During temple repairs Hilkiah finds the Book of the Law, which Shaphan reads to the king. This places Shaphan within the chapter’s account of josiah restores the temple and finds the law."
+        "role": "The scribe who reads the book to the king."
       },
       {
         "name": "Huldah",
-        "role": "Josiah grieves and sends representatives to Huldah, who announces coming judgment yet acknowledges the king’s humility. This places Huldah within the chapter’s account of josiah restores the temple and finds the law."
-      },
-      {
-        "name": "priests",
-        "role": "priests is identified in the chapter in connection with josiah restores the temple and finds the law. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with josiah restores the temple and finds the law. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Judah’s leaders",
-        "role": "Judah’s leaders is identified in the chapter in connection with josiah restores the temple and finds the law. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "The prophetess who tells what will happen to Jerusalem and to Josiah."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Renewing worship and the law",
-        "explanation": "",
+        "theme": "Seeking God when young",
+        "explanation": "Josiah begins to seek God while he is still young.",
         "references": [
-          "2 Chronicles 34:1-7"
+          "2 Chronicles 34:3"
         ]
       },
       {
-        "theme": "Responding to a rediscovered covenant",
-        "explanation": "",
+        "theme": "Hearing God's word",
+        "explanation": "When the law is read, Josiah tears his clothes and seeks the LORD.",
         "references": [
-          "2 Chronicles 34:8-22"
+          "2 Chronicles 34:19-21"
         ]
       },
       {
-        "theme": "The seriousness of prophetic warning",
-        "explanation": "",
+        "theme": "A tender heart",
+        "explanation": "God delays judgment because Josiah humbled himself.",
         "references": [
-          "2 Chronicles 34:23-33"
+          "2 Chronicles 34:26-28"
+        ]
+      },
+      {
+        "theme": "Covenant renewal",
+        "explanation": "Josiah leads the people to promise to keep God's commands with all their heart.",
+        "references": [
+          "2 Chronicles 34:30-33"
         ]
       }
     ],
@@ -1788,54 +1636,47 @@
     ]
   },
   "2 Chronicles 35": {
-    "summary": "Josiah sponsors a major Passover with extensive provisions, priestly service and Levitical participation. Later he confronts Pharaoh Neco near Megiddo despite a warning attributed in the narrative to God through Neco. Josiah is wounded and dies in Jerusalem; Jeremiah and others lament him. The chapter focuses on josiah celebrates passover and dies at megiddo and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "Josiah sponsors a major Passover with extensive provisions, priestly service and Levitical participation. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of josiah celebrates passover and dies at megiddo.",
+    "summary": "Josiah keeps the Passover in the first month and sets the priests and Levites in their places (2 Chronicles 35:1–6). He gives 30,000 lambs and kids and 3,000 bullocks from his own flocks, and his princes give freely too (2 Chronicles 35:7–9). The priests, Levites, singers, and porters serve in order, and no Passover like it had been kept since Samuel (2 Chronicles 35:10–19). Necho king of Egypt warns Josiah that God sent him, but Josiah disguises himself and fights at Megiddo (2 Chronicles 35:20–22). Archers wound Josiah, and he dies in Jerusalem, mourned by all Judah and by Jeremiah (2 Chronicles 35:23–27).",
+    "whereWeAre": "Josiah renewed the covenant in chapter 34. Now he keeps a Passover unlike any since Samuel, then dies in battle against Necho of Egypt. Chapter 36 tells of Judah's last kings and the fall of Jerusalem.",
     "keyFigures": [
       {
         "name": "Josiah",
-        "role": "Josiah sponsors a major Passover with extensive provisions, priestly service and Levitical participation. This places Josiah within the chapter’s account of josiah celebrates passover and dies at megiddo."
+        "role": "Keeps a great Passover and dies in battle at Megiddo."
       },
       {
-        "name": "priests",
-        "role": "priests is identified in the chapter in connection with josiah celebrates passover and dies at megiddo. This overview does not assign motives or actions beyond the biblical narrative."
+        "name": "The priests and Levites",
+        "role": "Prepare and serve the Passover as the law commands."
       },
       {
-        "name": "Levites",
-        "role": "Levites is identified in the chapter in connection with josiah celebrates passover and dies at megiddo. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Pharaoh Neco",
-        "role": "Later he confronts Pharaoh Neco near Megiddo despite a warning attributed in the narrative to God through Neco. This places Pharaoh Neco within the chapter’s account of josiah celebrates passover and dies at megiddo."
+        "name": "Necho",
+        "role": "King of Egypt, who warns Josiah not to fight him."
       },
       {
         "name": "Jeremiah",
-        "role": "Josiah is wounded and dies in Jerusalem; Jeremiah and others lament him. This places Jeremiah within the chapter’s account of josiah celebrates passover and dies at megiddo."
-      },
-      {
-        "name": "Judah’s people",
-        "role": "Judah’s people is identified in the chapter in connection with josiah celebrates passover and dies at megiddo. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Laments for Josiah."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Passover worship and order",
-        "explanation": "",
+        "theme": "Worship as God commands",
+        "explanation": "The Passover is kept as the law of Moses and David's plan direct.",
         "references": [
-          "2 Chronicles 35:1-19"
+          "2 Chronicles 35:4-6",
+          "2 Chronicles 35:16-18"
         ]
       },
       {
-        "theme": "Obedience and the challenge of discernment",
-        "explanation": "",
+        "theme": "Generous leaders",
+        "explanation": "The king and his princes give animals for the people's offerings.",
         "references": [
-          "2 Chronicles 35:20-24"
+          "2 Chronicles 35:7-9"
         ]
       },
       {
-        "theme": "Lament over a fallen king",
-        "explanation": "",
+        "theme": "Not listening",
+        "explanation": "Josiah ignores the warning from God through Necho and dies.",
         "references": [
-          "2 Chronicles 35:25-27"
+          "2 Chronicles 35:21-24"
         ]
       }
     ],
@@ -1848,62 +1689,53 @@
     ]
   },
   "2 Chronicles 36": {
-    "summary": "After Josiah, Judah has a rapid succession of kings under Egyptian and Babylonian pressure. The narrative recounts widespread unfaithfulness and rejection of prophetic warnings. Babylon destroys Jerusalem and the temple and exiles survivors. It closes with Cyrus of Persia authorizing return to Jerusalem to rebuild the LORD’s house, an ending that points toward restoration. The chapter focuses on judah falls; cyrus announces return and locates these events within the Chronicler’s account of Israel and Judah’s worship, kingship and relationship with the LORD.",
-    "whereWeAre": "After Josiah, Judah has a rapid succession of kings under Egyptian and Babylonian pressure. This is what the biblical narrative reports; external documentation varies by event and period. These circumstances clarify the political, religious and social stakes of judah falls; cyrus announces return.",
+    "summary": "The king of Egypt removes Jehoahaz after three months and sets up Jehoiakim, who is later bound by Nebuchadnezzar (2 Chronicles 36:1–8). Jehoiachin reigns three months and is taken to Babylon, and Zedekiah reigns eleven years and will not humble himself before Jeremiah (2 Chronicles 36:9–13). The priests and people pollute the temple and mock God's messengers \"till there was no remedy\" (2 Chronicles 36:14–16). The king of the Chaldees kills young and old, burns the house of God, breaks down Jerusalem's walls, and carries the survivors to Babylon (2 Chronicles 36:17–21). In his first year Cyrus king of Persia proclaims that the LORD has charged him to build a house in Jerusalem and invites God's people to \"go up\" (2 Chronicles 36:22–23).",
+    "whereWeAre": "Josiah died at Megiddo in chapter 35. Four kings follow, the people mock God's messengers, and Babylon burns the temple. The book ends with Cyrus of Persia letting the exiles go home, and Ezra 1 begins with the same decree.",
     "keyFigures": [
       {
-        "name": "Jehoahaz",
-        "role": "Jehoahaz is identified in the chapter in connection with judah falls; cyrus announces return. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
         "name": "Jehoiakim",
-        "role": "Jehoiakim is identified in the chapter in connection with judah falls; cyrus announces return. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Jehoiachin",
-        "role": "Jehoiachin is identified in the chapter in connection with judah falls; cyrus announces return. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Set up as king by Egypt and later bound by Nebuchadnezzar."
       },
       {
         "name": "Zedekiah",
-        "role": "Zedekiah is identified in the chapter in connection with judah falls; cyrus announces return. This overview does not assign motives or actions beyond the biblical narrative."
-      },
-      {
-        "name": "Jeremiah",
-        "role": "Jeremiah is identified in the chapter in connection with judah falls; cyrus announces return. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "Judah's last king, who will not humble himself and rebels."
       },
       {
         "name": "Nebuchadnezzar",
-        "role": "Nebuchadnezzar is identified in the chapter in connection with judah falls; cyrus announces return. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "King of Babylon, who destroys Jerusalem and the temple."
       },
       {
         "name": "Cyrus",
-        "role": "It closes with Cyrus of Persia authorizing return to Jerusalem to rebuild the LORD’s house, an ending that points toward restoration. This places Cyrus within the chapter’s account of judah falls; cyrus announces return."
-      },
-      {
-        "name": "priests and people",
-        "role": "priests and people is identified in the chapter in connection with judah falls; cyrus announces return. This overview does not assign motives or actions beyond the biblical narrative."
+        "role": "King of Persia, whose decree lets God's people go up to Jerusalem."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Repeated rejection of warning",
-        "explanation": "",
+        "theme": "God's patience",
+        "explanation": "God keeps sending messengers because he has compassion on his people.",
         "references": [
-          "2 Chronicles 36:1-14"
+          "2 Chronicles 36:15"
         ]
       },
       {
-        "theme": "The loss of kingdom and temple",
-        "explanation": "",
+        "theme": "No remedy",
+        "explanation": "When they keep mocking his prophets, God's wrath comes until there is no remedy.",
         "references": [
-          "2 Chronicles 36:15-21"
+          "2 Chronicles 36:16-19"
         ]
       },
       {
-        "theme": "Hope after judgment through return",
-        "explanation": "",
+        "theme": "God keeps his word",
+        "explanation": "The exile and the return both fulfill what God spoke through Jeremiah.",
         "references": [
-          "2 Chronicles 36:22-23"
+          "2 Chronicles 36:21-22"
+        ]
+      },
+      {
+        "theme": "Hope of return",
+        "explanation": "The book ends with an invitation to go up and rebuild God's house.",
+        "references": [
+          "2 Chronicles 36:23"
         ]
       }
     ],

@@ -1,494 +1,473 @@
 {
   "Esther 1": {
-    "summary": "King Ahasuerus holds an extended display of royal wealth for officials and servants at Susa, then a seven-day feast for those in the citadel; Queen Vashti separately hosts women (Esther 1:1–9). On the seventh day the king, merry with wine, commands that Vashti be brought before the guests wearing her royal crown to display her beauty. She refuses (Esther 1:10–12). The king consults advisers familiar with law and precedent. Memucan argues that her refusal could encourage wives throughout the empire to disregard husbands, and recommends removing her royal status and sending an empire-wide decree about household authority (Esther 1:13–22). The chapter establishes a powerful but reactive court and the vacancy that will later bring Esther into the story. It reports the court's reasoning without explicitly endorsing its view of marriage or claiming to know Vashti's motives.",
-    "whereWeAre": "The biblical narrator portrays a large, multilingual empire and a royal court structured by rank, feasts, advisers, and written communications. Persia’s imperial administration and the royal center at Susa are independently attested; these particular celebrations are not. An elaborate court setting explains how a personal royal dispute becomes an empire-wide decree and creates the narrative opening for Esther.",
+    "summary": "In his third year, King Ahasuerus, who rules 127 provinces from India to Ethiopia, shows off his riches for 180 days and then holds a seven-day feast at Shushan (Esther 1:1–8). Queen Vashti holds a feast for the women (Esther 1:9). When the king is \"merry with wine,\" he sends for Vashti to show her beauty, but she refuses to come, and he is very angry (Esther 1:10–12). Memucan warns that other wives will despise their husbands and advises that Vashti never again come before the king (Esther 1:13–20). The king sends letters to every province \"that every man should bear rule in his own house\" (Esther 1:21–22).",
+    "whereWeAre": "Nehemiah ended with the people back in Jerusalem, still struggling to stay faithful. Esther goes back a few decades to Jews who stayed in Persia, starting at King Ahasuerus' feast in Shushan, where Queen Vashti refuses his summons and loses her crown. In chapter 2 the king looks for a new queen.",
     "keyFigures": [
       {
         "name": "Ahasuerus",
-        "role": "King of the vast Persian realm portrayed in the narrative. His feasts and decree show how royal decisions shape the plot (1:1–4, 10–22)."
+        "role": "King of Persia, who holds a great feast and removes Vashti in anger."
       },
       {
         "name": "Vashti",
-        "role": "Queen who holds a feast for women and refuses the king’s summons. Her refusal triggers the removal decree; her reason is not given (1:9–12, 19)."
+        "role": "The queen, who refuses to come at the king's command."
       },
       {
-        "name": "Memucan and the seven princes",
-        "role": "Royal advisers, with Memucan speaking in favor of action. They frame a personal conflict as a kingdom-wide political concern (1:14–21)."
+        "name": "Memucan",
+        "role": "One of the king's princes, who advises that Vashti be removed."
       },
       {
-        "name": "The seven eunuchs",
-        "role": "Court attendants sent to bring Vashti. Their unsuccessful summons brings the conflict before the king (1:10–12)."
+        "name": "The seven chamberlains",
+        "role": "Sent to bring Vashti before the king."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Authority and its limits",
-        "explanation": "",
+        "theme": "Pride and anger",
+        "explanation": "The king's pride, stirred by wine, leads to anger and a hasty decree.",
         "references": [
-          "Esther 1:10–12"
+          "Esther 1:10-12"
         ]
       },
       {
-        "theme": "The reach of public decisions",
-        "explanation": "",
+        "theme": "Power that overreacts",
+        "explanation": "One queen's refusal becomes a law sent to every province.",
         "references": [
-          "Esther 1:16–22"
+          "Esther 1:16-22"
         ]
       },
       {
-        "theme": "Caution in interpreting motives",
-        "explanation": "",
+        "theme": "Setting the stage",
+        "explanation": "Vashti's removal opens the way for Esther to become queen.",
         "references": [
-          "Esther 1:12–15"
+          "Esther 1:19"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 2": {
-    "summary": "After the king's anger subsides, servants propose searching the realm for young women, bringing them to the women’s quarters, and choosing a new queen (Esther 2:1–4). Esther—also called Hadassah—a Jewish orphan raised by her cousin Mordecai is taken to the palace. She finds favor with Hegai and later with Ahasuerus, who makes her queen in his seventh year; following Mordecai’s instruction, she has not disclosed her people or family (Esther 2:5–20). Mordecai, sitting at the king’s gate, learns of a plot by Bigthan and Teresh against the king. Esther reports it in Mordecai’s name, an inquiry confirms it, the conspirators are executed, and the matter is recorded in the royal chronicles (Esther 2:21–23). The chapter establishes Esther’s constrained position in the palace and Mordecai’s unnoticed service. It does not say that Esther freely chose to enter the royal selection process.",
-    "whereWeAre": "Jews lived in various parts of the Persian Empire after Babylonian deportations; imperial service by members of diverse populations is historically plausible. The particular selection and assassination plot are known from Esther, not external confirmation. Esther’s ascent and Mordecai’s service set up both the threat against their people and the later reversal in their fortunes.",
+    "summary": "The king's servants suggest gathering young women from every province so the king can choose a new queen (Esther 2:1–4). Mordecai, a Benjamite at Shushan, has raised his cousin Hadassah, or Esther, and she is taken into the house of the women under Hegai (Esther 2:5–9). At Mordecai's word, Esther does not tell anyone her people, and Mordecai checks on her every day (Esther 2:10–11). After twelve months of preparation the women go in to the king one by one (Esther 2:12–14). The king loves Esther above all the women and sets the royal crown on her head in his seventh year (Esther 2:15–18). Mordecai learns that Bigthan and Teresh plan to kill the king, Esther tells the king in Mordecai's name, and it is written in the chronicles (Esther 2:19–23).",
+    "whereWeAre": "Vashti was removed in chapter 1. Now young women are gathered for the king, and Esther, a Jewish orphan raised by her cousin Mordecai, is made queen without telling anyone her people. Mordecai saves the king's life, and in chapter 3 a new enemy rises.",
     "keyFigures": [
       {
-        "name": "Esther (Hadassah)",
-        "role": "Jewish orphan brought into the royal women’s quarters and chosen as queen. Her position and undisclosed identity become crucial later (2:7–10, 15–20)."
+        "name": "Esther",
+        "role": "A Jewish orphan, also called Hadassah, who becomes queen."
       },
       {
         "name": "Mordecai",
-        "role": "Jewish relative who brought Esther up and watches over her. He advises secrecy and exposes a threat to the king (2:5–7, 10–11, 21–23)."
+        "role": "Esther's cousin, who raised her and uncovers a plot against the king."
       },
       {
         "name": "Ahasuerus",
-        "role": "King selecting a new queen. He chooses Esther and later receives the report about the plot (2:16–17, 22–23)."
+        "role": "Loves Esther above all the women and makes her queen."
       },
       {
         "name": "Hegai",
-        "role": "Keeper of the women. He shows Esther favor and helps prepare her for the royal presentation (2:8–9, 15)."
+        "role": "Keeper of the women, who shows Esther favor."
       },
       {
         "name": "Bigthan and Teresh",
-        "role": "Two royal chamberlains who plot against the king. Their exposed plot creates the record recalled in chapter 6 (2:21–23)."
+        "role": "Two chamberlains who plot to kill the king and are hanged."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Vulnerability within power",
-        "explanation": "",
+        "theme": "Hidden identity",
+        "explanation": "Esther keeps her people secret at Mordecai's word.",
         "references": [
-          "Esther 2:7–9"
+          "Esther 2:10",
+          "Esther 2:20"
         ]
       },
       {
-        "theme": "Identity and discretion",
-        "explanation": "",
+        "theme": "Favor",
+        "explanation": "Esther wins the favor of Hegai, of all who see her, and of the king.",
         "references": [
-          "Esther 2:10–11"
+          "Esther 2:9",
+          "Esther 2:15-17"
         ]
       },
       {
-        "theme": "Faithful action without immediate reward",
-        "explanation": "",
+        "theme": "A deed remembered later",
+        "explanation": "Mordecai's report is written down and forgotten until chapter 6.",
         "references": [
-          "Esther 2:21–23"
+          "Esther 2:21-23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 3": {
-    "summary": "Ahasuerus promotes Haman son of Hammedatha, the Agagite, above the other officials, and the king’s servants bow to him. Mordecai refuses to bow, though the chapter does not explicitly explain why Esther 3:1–4. When Haman learns Mordecai is Jewish, he plans not just to punish one man but to destroy Jews throughout the empire (Esther 3:5–6). Lots, called Pur, are cast to determine the timing; Haman persuades the king that an unnamed people have different laws and should be destroyed, and he offers money toward the project (Esther 3:7–11). A decree is issued by imperial couriers ordering the destruction and plundering of Jews on a specified day in Adar. The king and Haman sit drinking while Susa is bewildered (Esther 3:12–15). This chapter depicts prejudice escalating into state-sponsored violence through unchecked royal power and deceptive counsel.",
-    "whereWeAre": "The text portrays scattered Jewish communities as subject to a decree across the provinces. Postal routes, scribes, and governors were significant in Achaemenid administration, though this edict is not independently documented. Haman’s appeal to communal difference and royal security exploits the vulnerabilities of an imperial minority.",
+    "summary": "The king promotes Haman the Agagite, and all bow to him, \"But Mordecai bowed not, nor did him reverence\" (Esther 3:1–4). Haman is full of wrath and plans to destroy not only Mordecai but all the Jews in the kingdom (Esther 3:5–6). In the first month they cast Pur, the lot, before Haman, and it falls on the month Adar (Esther 3:7). Haman tells the king a certain people does not keep his laws and offers ten thousand talents of silver to have them destroyed (Esther 3:8–9). The king gives Haman his ring, and letters go out to kill all the Jews on the thirteenth of Adar (Esther 3:10–14). The king and Haman sit down to drink, \"but the city Shushan was perplexed\" (Esther 3:15).",
+    "whereWeAre": "Esther became queen and Mordecai foiled a plot against the king in chapter 2. Now Haman is promoted, Mordecai will not bow to him, and Haman wins a decree to destroy all the Jews. In chapter 4 Mordecai asks Esther to go to the king.",
     "keyFigures": [
       {
-        "name": "Haman son of Hammedatha",
-        "role": "Promoted royal officer called the Agagite. He turns anger at Mordecai into an empire-wide order to kill Jews (3:1, 5–15)."
+        "name": "Haman",
+        "role": "Son of Hammedatha the Agagite, who plots to destroy all the Jews."
       },
       {
         "name": "Mordecai",
-        "role": "Jewish court figure refusing to bow to Haman. His refusal sets the immediate conflict in motion (3:2–6)."
+        "role": "Refuses to bow to Haman."
       },
       {
         "name": "Ahasuerus",
-        "role": "King who grants Haman authority and his signet ring. His approval enables the proposed attack to become an imperial decree (3:8–12)."
+        "role": "Gives Haman his ring and lets him send the decree."
       },
       {
-        "name": "The Jews across the provinces",
-        "role": "Targeted minority population. They face destruction under the decree (3:6, 12–13)."
-      },
-      {
-        "name": "The king’s servants and couriers",
-        "role": "Officials who question Mordecai and carry royal messages. They show how hierarchy and state administration transmit the crisis (3:3–4, 13–15)."
+        "name": "The king's servants",
+        "role": "Ask Mordecai daily why he will not bow, then tell Haman."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Prejudice scaled into policy",
-        "explanation": "",
+        "theme": "Refusing to bow",
+        "explanation": "Mordecai will not give Haman the honor the king commanded.",
         "references": [
-          "Esther 3:5–6"
+          "Esther 3:2-4"
         ]
       },
       {
-        "theme": "Unchecked authority",
-        "explanation": "",
+        "theme": "Hatred grows",
+        "explanation": "Haman's anger at one man becomes a plan to destroy a whole people.",
         "references": [
-          "Esther 3:8–11"
+          "Esther 3:5-6"
         ]
       },
       {
-        "theme": "Threat and public fear",
-        "explanation": "",
+        "theme": "Lies to the powerful",
+        "explanation": "Haman tells the king a twisted story to get his decree.",
         "references": [
-          "Esther 3:12–15"
+          "Esther 3:8-11"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 4": {
-    "summary": "Mordecai mourns publicly in sackcloth and ashes after learning of the decree; Jews throughout the provinces fast and lament (Esther 4:1–3). Esther hears of his distress and sends Hathach to learn its cause. Mordecai provides the edict and asks her to appeal to the king for her people (Esther 4:4–9). Esther explains that appearing uninvited before the king can bring death unless the golden scepter is extended; she has not been called for thirty days (Esther 4:10–12). Mordecai warns that royal residence will not guarantee her safety and asks whether she has reached royalty for a time such as this, while speaking of possible deliverance from elsewhere (Esther 4:13–14). Esther asks the Jews in Susa to fast three days and says she and her young women will do likewise; she resolves to approach the king despite the danger (Esther 4:15–17). The chapter centers on solidarity, risk, and a decision to act. The Hebrew text does not explicitly mention prayer or name God here.",
-    "whereWeAre": "As narrated, diaspora communities respond with mourning while Esther must negotiate the king’s restricted access; the specific punishment for uninvited entry is reported by Esther, not independently verified as a universal rule. Differences between public mourning outside the palace and restricted access inside it dramatize Esther’s dilemma.",
+    "summary": "Mordecai tears his clothes and cries out in sackcloth, and in every province the Jews mourn and fast (Esther 4:1–3). Esther sends Hatach to find out why, and Mordecai sends her a copy of the decree and asks her to plead with the king (Esther 4:4–9). Esther answers that anyone who goes to the king uncalled will die unless he holds out the golden sceptre, and he has not called her for thirty days (Esther 4:10–12). Mordecai warns that she will not escape and asks, \"who knoweth whether thou art come to the kingdom for such a time as this?\" (Esther 4:13–14). Esther tells the Jews in Shushan to fast three days and says, \"if I perish, I perish\" (Esther 4:15–17).",
+    "whereWeAre": "Haman's decree went out in chapter 3. Now the Jews mourn, and Mordecai tells Esther she may have come to the kingdom \"for such a time as this\" (Esther 4:14). Esther calls a fast and, in chapter 5, goes to the king uninvited.",
     "keyFigures": [
       {
-        "name": "Esther",
-        "role": "Queen deciding whether to risk an unauthorized audience. She calls for communal fasting and agrees to approach the king (4:10–17)."
-      },
-      {
         "name": "Mordecai",
-        "role": "Mourning Jewish court figure. He explains the threat and challenges Esther to intervene (4:1, 7–14)."
+        "role": "Mourns in sackcloth and urges Esther to go to the king."
       },
       {
-        "name": "Hathach",
-        "role": "Attendant assigned to Esther. He conveys messages between Esther and Mordecai (4:5–10)."
+        "name": "Esther",
+        "role": "Calls a fast and decides to risk her life."
       },
       {
-        "name": "The Jews of Susa and the provinces",
-        "role": "People threatened by the decree. They mourn and are asked to fast in solidarity (4:3, 16)."
+        "name": "Hatach",
+        "role": "The chamberlain who carries messages between Esther and Mordecai."
       },
       {
-        "name": "Ahasuerus",
-        "role": "King whose access rules threaten the uninvited. His power makes Esther’s approach dangerous (4:11)."
+        "name": "The Jews",
+        "role": "Mourn in every province and fast with Esther in Shushan."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Courage amid genuine risk",
-        "explanation": "",
+        "theme": "Mourning and fasting",
+        "explanation": "The Jews answer the decree with mourning, fasting, and weeping.",
         "references": [
-          "Esther 4:11–16"
+          "Esther 4:1-3"
         ]
       },
       {
-        "theme": "Collective solidarity",
-        "explanation": "",
+        "theme": "For such a time as this",
+        "explanation": "Mordecai suggests that Esther became queen for this very purpose.",
         "references": [
-          "Esther 4:3, 15–17"
+          "Esther 4:14"
         ]
       },
       {
-        "theme": "Responsibility and uncertainty",
-        "explanation": "",
+        "theme": "Courage to risk",
+        "explanation": "Esther chooses to go to the king though it may cost her life.",
         "references": [
-          "Esther 4:13–14"
+          "Esther 4:16"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 5": {
-    "summary": "On the third day Esther puts on her royal apparel and stands in the inner court. The king extends the golden scepter, allowing her to approach (Esther 5:1–2). Rather than immediately revealing her request, she invites the king and Haman to a banquet and then invites them to a second banquet the next day (Esther 5:3–8). Haman leaves pleased with the honor, but the sight of Mordecai at the king’s gate fills him with anger (Esther 5:9). He boasts to his wife Zeresh and friends about wealth, children, promotion, and Esther’s invitations, yet says these mean little while Mordecai remains unbowed (Esther 5:10–13). On their advice, he has a tall wooden structure prepared to execute or impale Mordecai and plans to request permission in the morning (Esther 5:14). The chapter contrasts Esther’s measured approach with Haman’s increasingly reckless hostility.",
-    "whereWeAre": "Within the plot, an invitation to the king’s private meal is a privilege of access, while Haman is planning a public killing. Royal banquets become the setting for a planned appeal and, ironically, intensify Haman’s overconfidence.",
+    "summary": "On the third day Esther stands in the inner court, and the king holds out the golden sceptre to her (Esther 5:1–2). He offers her up to half the kingdom, but she only invites him and Haman to a banquet (Esther 5:3–5). At the banquet she invites them to a second banquet the next day (Esther 5:6–8). Haman leaves joyful, but when Mordecai will not stand up for him, he is full of anger (Esther 5:9). He boasts to his friends and his wife Zeresh, yet says, \"all this availeth me nothing, so long as I see Mordecai the Jew sitting at the king's gate\" (Esther 5:10–13). Zeresh and his friends tell him to build a gallows fifty cubits high for Mordecai, and he does (Esther 5:14).",
+    "whereWeAre": "Esther decided to risk her life in chapter 4. Now the king holds out his sceptre to her, and she invites him and Haman to a banquet, while Haman builds a gallows for Mordecai. In chapter 6 a sleepless night changes everything.",
     "keyFigures": [
       {
         "name": "Esther",
-        "role": "Queen who secures an audience and stages two banquets. Her invitations create an occasion to reveal the danger later (5:1–8)."
+        "role": "Goes to the king uncalled and invites him and Haman to a banquet."
       },
       {
         "name": "Ahasuerus",
-        "role": "King who receives Esther and attends her banquet. He grants her access and repeatedly asks for her petition (5:2–8)."
+        "role": "Holds out the golden sceptre and offers Esther up to half the kingdom."
       },
       {
         "name": "Haman",
-        "role": "Royal official honored at Esther’s banquet. He prepares the instrument intended for Mordecai’s death (5:4–14)."
+        "role": "Boasts of his honor but is enraged by Mordecai and builds a gallows."
       },
       {
         "name": "Mordecai",
-        "role": "Jew at the king’s gate. His refusal to show fear or honor stokes Haman’s anger (5:9, 13)."
+        "role": "Will not stand up or move for Haman at the gate."
       },
       {
-        "name": "Zeresh and Haman’s friends",
-        "role": "Haman’s advisers at home. They recommend seeking Mordecai’s execution (5:10–14)."
+        "name": "Zeresh",
+        "role": "Haman's wife, who with his friends advises the gallows."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Courage expressed with care",
-        "explanation": "",
+        "theme": "Wise timing",
+        "explanation": "Esther waits for the right moment instead of rushing her request.",
         "references": [
-          "Esther 5:1–8"
+          "Esther 5:3-8"
         ]
       },
       {
-        "theme": "Resentment despite abundance",
-        "explanation": "",
+        "theme": "Never satisfied",
+        "explanation": "Haman has wealth and honor, yet one man's refusal spoils it all.",
         "references": [
-          "Esther 5:9–13"
+          "Esther 5:11-13"
         ]
       },
       {
-        "theme": "Dangerous counsel",
-        "explanation": "",
+        "theme": "A trap being set",
+        "explanation": "Haman builds a gallows for Mordecai.",
         "references": [
-          "Esther 5:13–14"
+          "Esther 5:14"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 6": {
-    "summary": "Unable to sleep, the king orders the royal record read aloud and hears that Mordecai exposed Bigthan and Teresh’s assassination plot (Esther 6:1–2). Learning that Mordecai received no honor, the king asks Haman—who has arrived to seek Mordecai’s death—how to honor a man the king favors (Esther 6:3–6). Assuming he is the intended recipient, Haman recommends royal clothing, a royal horse, and a public proclamation. The king commands Haman to carry out these honors for Mordecai, which he does (Esther 6:7–11). Haman returns home humiliated; his wife Zeresh and advisers predict his downfall if Mordecai is Jewish. Royal attendants then escort Haman to Esther’s second banquet (Esther 6:12–14). The narrator uses striking irony: Haman’s bid to destroy Mordecai turns into a public celebration of him.",
-    "whereWeAre": "The royal annals contain Mordecai’s earlier report, and a court consultation unwittingly rewards him. The practice of recording acts of royal service enables the narrative’s pivotal reversal.",
+    "summary": "\"On that night could not the king sleep,\" so the chronicles are read to him, and he hears how Mordecai saved his life (Esther 6:1–2). He learns that nothing was done to honor Mordecai (Esther 6:3). Haman arrives to ask for Mordecai's death, and the king asks him, \"What shall be done unto the man whom the king delighteth to honour?\" (Esther 6:4–6). Thinking the king means him, Haman suggests the king's robe, horse, and crown and a noble to lead him through the city (Esther 6:7–9). The king tells Haman to do it for Mordecai, and Haman leads Mordecai through the street (Esther 6:10–11). Haman hurries home mourning, his wife says he will surely fall before Mordecai, and the king's servants rush him to the banquet (Esther 6:12–14).",
+    "whereWeAre": "Haman built a gallows for Mordecai in chapter 5. That night the king cannot sleep, learns that Mordecai saved his life, and makes Haman lead Mordecai through the city in honor. In chapter 7 Haman goes to Esther's second banquet.",
     "keyFigures": [
       {
         "name": "Ahasuerus",
-        "role": "Sleepless king who hears an overlooked court record. He orders Mordecai’s public recognition (6:1–10)."
-      },
-      {
-        "name": "Mordecai",
-        "role": "Earlier informant whose deed was recorded. He receives honor through a royal reversal (6:2–11)."
+        "role": "Cannot sleep, hears of Mordecai's deed, and orders him honored."
       },
       {
         "name": "Haman",
-        "role": "Court official intending to have Mordecai executed. He mistakenly designs and must perform Mordecai’s honor (6:4–14)."
+        "role": "Plans his own honor and is made to give it to Mordecai."
       },
       {
-        "name": "Zeresh and Haman’s wise men",
-        "role": "Family member and advisers. They interpret the reversal as a warning of Haman’s decline (6:13)."
+        "name": "Mordecai",
+        "role": "Rides through the city in the king's robe."
       },
       {
-        "name": "The king’s attendants",
-        "role": "Officials who come to Haman. They bring him to Esther’s banquet (6:14)."
+        "name": "Zeresh",
+        "role": "Tells Haman he will surely fall before Mordecai."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Delayed recognition",
-        "explanation": "",
+        "theme": "Unseen timing",
+        "explanation": "A sleepless night and a book of records bring Mordecai's deed to light.",
         "references": [
-          "Esther 6:1–3"
+          "Esther 6:1-3"
         ]
       },
       {
-        "theme": "Pride and mistaken expectation",
-        "explanation": "",
+        "theme": "Pride humbled",
+        "explanation": "Haman plans his own honor and must give it to his enemy.",
         "references": [
-          "Esther 6:4–10"
+          "Esther 6:6-11"
         ]
       },
       {
-        "theme": "Reversal of fortune",
-        "explanation": "",
+        "theme": "The beginning of a fall",
+        "explanation": "Haman's own family sees that he will fall before Mordecai.",
         "references": [
-          "Esther 6:10–14"
+          "Esther 6:13"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 7": {
-    "summary": "At Esther’s second banquet, the king again asks for her request. She asks for her life and the lives of her people, declaring that they have been sold for destruction and identifying Haman as their enemy (Esther 7:1–6). Ahasuerus rises in anger and goes into the palace garden. Haman remains to plead for his life and falls onto the couch where Esther is reclining. When the king returns, he interprets the scene as an assault upon the queen (Esther 7:7–8). Harbonah tells the king of the high wooden structure Haman had prepared for Mordecai, whose service had benefited the king. The king orders Haman executed upon it, and the king’s anger subsides (Esther 7:9–10). The chapter exposes the deadly plot and brings about the fall of its architect, though the decree against the Jews has not yet been rescinded or countered.",
-    "whereWeAre": "The story’s legal and court structure allows the king’s rapid punishment of an adviser while the earlier imperial decree still threatens Jews. The banquet context and Harbonah’s report turn Haman’s own preparations into evidence of his wrongdoing.",
+    "summary": "At the second banquet the king again offers Esther whatever she asks (Esther 7:1–2). She asks for her life and her people's, \"For we are sold, I and my people, to be destroyed\" (Esther 7:3–4). When the king asks who has done this, she says, \"The adversary and enemy is this wicked Haman\" (Esther 7:5–6). The king goes out in anger, and when he returns, Haman has fallen on Esther's couch begging for his life (Esther 7:7–8). Harbonah tells of the gallows Haman built for Mordecai, and \"they hanged Haman on the gallows that he had prepared for Mordecai\" (Esther 7:9–10).",
+    "whereWeAre": "Haman was forced to honor Mordecai in chapter 6. Now, at the second banquet, Esther reveals that she is a Jew and names Haman as the enemy, and he is hanged on his own gallows. Chapter 8 deals with the decree that is still in force.",
     "keyFigures": [
       {
         "name": "Esther",
-        "role": "Queen who reveals her Jewish identity and pleads for her people. She identifies the danger and names Haman (7:3–6)."
-      },
-      {
-        "name": "Haman",
-        "role": "Official whose anti-Jewish plan is exposed. He is executed on the device prepared for Mordecai (7:6–10)."
+        "role": "Pleads for her people and names Haman as their enemy."
       },
       {
         "name": "Ahasuerus",
-        "role": "King confronted with the result of the decree. He orders Haman’s death but does not yet resolve the legal threat (7:5–10)."
+        "role": "Orders Haman hanged on his own gallows."
+      },
+      {
+        "name": "Haman",
+        "role": "Exposed at the banquet and put to death."
       },
       {
         "name": "Harbonah",
-        "role": "One of the eunuchs attending the king. He reports the execution structure intended for Mordecai (7:9)."
-      },
-      {
-        "name": "Mordecai",
-        "role": "Court servant mentioned though not directly present. His prior loyal service becomes evidence against Haman’s plot (7:9)."
+        "role": "A chamberlain who tells the king about Haman's gallows."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Speaking for threatened people",
-        "explanation": "",
+        "theme": "Speaking up",
+        "explanation": "Esther reveals her people and asks for their lives.",
         "references": [
-          "Esther 7:3–6"
+          "Esther 7:3-4"
         ]
       },
       {
-        "theme": "Reversal of intended violence",
-        "explanation": "",
+        "theme": "Evil turned back",
+        "explanation": "Haman dies on the gallows he built for Mordecai.",
         "references": [
-          "Esther 7:9–10"
+          "Esther 7:9-10"
         ]
       },
       {
-        "theme": "Exposure is not yet full rescue",
-        "explanation": "",
+        "theme": "Justice",
+        "explanation": "The man who planned murder is exposed and judged.",
         "references": [
-          "Esther 7:3–10"
+          "Esther 7:6-8"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 8": {
-    "summary": "Ahasuerus gives Haman’s estate to Esther and transfers his signet ring to Mordecai, whom Esther appoints over the estate (Esther 8:1–2). Esther again pleads that Haman’s letters be reversed. The king says that a royal writing sealed in the king’s name cannot be revoked, but authorizes Esther and Mordecai to write a new decree (Esther 8:3–8). Scribes send the counteredict in many languages to the provinces, granting Jews the right to assemble and defend themselves against attackers on the appointed day, including the right to seize plunder (Esther 8:9–14). Mordecai emerges in royal clothing; Susa rejoices, and Jewish communities celebrate. The chapter reports that many people of the land profess to become Jews because fear of them has fallen on them (Esther 8:15–17). The crisis is not erased but met with a new state-backed provision for defense.",
-    "whereWeAre": "Mordecai’s elevation and new sealed dispatches are presented as a response to Haman’s still-operative decree. The inability to retract a sealed royal writing intensifies the need for a counteredict.",
+    "summary": "The king gives Haman's house to Esther and his ring to Mordecai, and Esther sets Mordecai over Haman's house (Esther 8:1–2). Esther falls at the king's feet and begs him to reverse Haman's letters (Esther 8:3–6). Since a writing sealed with the king's ring cannot be reversed, the king tells Esther and Mordecai to write a new one in his name (Esther 8:7–8). The new letters let the Jews in every city gather and stand for their lives on the thirteenth of Adar (Esther 8:9–14). Mordecai goes out in royal apparel, \"The Jews had light, and gladness, and joy, and honour,\" and many people become Jews (Esther 8:15–17).",
+    "whereWeAre": "Haman died in chapter 7, but his decree could not be reversed. Now Mordecai receives the king's ring and sends a new decree letting the Jews defend themselves. In chapter 9 the day of the decree arrives.",
     "keyFigures": [
       {
         "name": "Esther",
-        "role": "Queen and new recipient of Haman’s property. She pleads for protection of her people (8:1, 3–6)."
+        "role": "Begs the king to stop Haman's plan."
       },
       {
         "name": "Mordecai",
-        "role": "New holder of the king’s signet and authorizer of the counteredict. He rises in office and administers the policy (8:2, 7–15)."
+        "role": "Receives the king's ring and writes the new decree."
       },
       {
         "name": "Ahasuerus",
-        "role": "King who delegates authority for a second decree. He declines to revoke the first document but permits a countermeasure (8:7–8)."
+        "role": "Lets Esther and Mordecai write in his name."
       },
       {
-        "name": "Jews throughout the provinces",
-        "role": "People granted legal permission to defend themselves. They receive hope and prepare for the appointed day (8:11–17)."
-      },
-      {
-        "name": "Royal scribes and couriers",
-        "role": "Officers issuing and transmitting the message. They give the new order empire-wide reach (8:9–14)."
+        "name": "The Jews",
+        "role": "Rejoice at the new decree in every province."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Advocacy beyond personal safety",
-        "explanation": "",
+        "theme": "Pleading for others",
+        "explanation": "Esther, now safe herself, still begs for her people.",
         "references": [
-          "Esther 8:3–6"
+          "Esther 8:3-6"
         ]
       },
       {
-        "theme": "Power and legal consequences",
-        "explanation": "",
+        "theme": "A way through an unchangeable law",
+        "explanation": "The first decree stands, but a second lets the Jews defend themselves.",
         "references": [
-          "Esther 8:7–14"
+          "Esther 8:8-11"
         ]
       },
       {
-        "theme": "Reversal and public hope",
-        "explanation": "",
+        "theme": "Sorrow turned to joy",
+        "explanation": "The Jews have light, gladness, joy, and honour.",
         "references": [
-          "Esther 8:15–17"
+          "Esther 8:15-17"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 9": {
-    "summary": "On the thirteenth of Adar, when their enemies had expected to prevail, Jews assemble and defeat those seeking their harm; officials assist them because Mordecai has become powerful (Esther 9:1–4). In Susa the text reports five hundred killed, including Haman’s ten sons; the Jews do not take plunder. Esther requests another day for Jews in Susa and the display of Haman’s sons’ bodies, and the narrative reports three hundred more killed there, again with no plunder taken (Esther 9:5–15). Outside Susa the chapter reports seventy-five thousand enemies killed and says the Jews rest and feast afterward (Esther 9:16–19). Mordecai’s letters establish annual observance on the fourteenth and fifteenth of Adar, remembering the reversal of Haman’s lot (Pur) and exchanging gifts and aid to the poor; Esther and Mordecai confirm the practice (Esther 9:20–32). The chapter combines reported self-defense, extensive lethal violence, and the origin of Purim. It should not be sanitized or treated as a timeless endorsement of collective killing.",
-    "whereWeAre": "According to Esther, Jews use newly granted legal permission to confront attackers, then commemorate the reversal. The reported death tolls have no independent historical corroboration. The chapter resolves the threat introduced in chapter 3 and connects its resolution to a recurring festival.",
+    "summary": "On the thirteenth of Adar, the day their enemies hoped to rule them, the Jews gather and no one can stand against them (Esther 9:1–2). The rulers of the provinces help the Jews because they fear Mordecai (Esther 9:3–4). In Shushan the Jews kill five hundred men and Haman's ten sons, \"but on the spoil laid they not their hand\" (Esther 9:5–10). At Esther's request, the Jews in Shushan are given a second day, and Haman's sons are hanged (Esther 9:11–15). In the provinces the Jews kill seventy-five thousand of their foes, take no spoil, and rest and feast (Esther 9:16–19). Mordecai sends letters to keep the fourteenth and fifteenth of Adar each year, with feasting and \"gifts to the poor\" (Esther 9:20–22). The days are called Purim, after Pur, and Esther confirms them with a second letter (Esther 9:23–32).",
+    "whereWeAre": "Mordecai's new decree went out in chapter 8. On the thirteenth of Adar the Jews defeat those who attack them, and Mordecai and Esther set up the yearly feast of Purim. Chapter 10 closes with Mordecai's greatness.",
     "keyFigures": [
       {
-        "name": "The Jews in Susa and the provinces",
-        "role": "People assembling under the counteredict. They survive the appointed attack and later celebrate (9:1–19)."
+        "name": "The Jews",
+        "role": "Gather on the thirteenth of Adar and stand for their lives."
       },
       {
         "name": "Mordecai",
-        "role": "Influential royal official who sends Purim letters. He helps establish annual remembrance (9:3–4, 20–23, 29–31)."
+        "role": "Grows great and sends letters setting up Purim."
       },
       {
         "name": "Esther",
-        "role": "Queen who requests an additional day in Susa. She joins in confirming the remembrance (9:12–15, 29–32)."
+        "role": "Asks for a second day in Shushan and confirms Purim by letter."
       },
       {
-        "name": "Haman’s ten sons",
-        "role": "Named descendants of Haman killed during the conflict. Their deaths and later display are described in Susa (9:7–14)."
+        "name": "Ahasuerus",
+        "role": "Grants Esther's request."
       },
       {
-        "name": "Provincial and royal officials",
-        "role": "Authorities who aid the Jews. Their support reflects Mordecai’s new standing (9:3)."
+        "name": "The rulers of the provinces",
+        "role": "Help the Jews because they fear Mordecai."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Reversal and communal survival",
-        "explanation": "",
+        "theme": "Reversal",
+        "explanation": "The day meant for the Jews' destruction becomes the day they rule over their enemies.",
         "references": [
-          "Esther 9:1–4, 16–19"
+          "Esther 9:1"
         ]
       },
       {
-        "theme": "Violence and moral complexity",
-        "explanation": "",
+        "theme": "Not for plunder",
+        "explanation": "Three times the text says the Jews did not take the spoil.",
         "references": [
-          "Esther 9:5–16"
+          "Esther 9:10",
+          "Esther 9:15-16"
         ]
       },
       {
-        "theme": "Remembrance and care",
-        "explanation": "",
+        "theme": "Remembering deliverance",
+        "explanation": "Purim is kept every year so no generation forgets.",
         "references": [
-          "Esther 9:20–28"
+          "Esther 9:26-28"
         ]
       },
       {
-        "theme": "Communal institution of Purim",
-        "explanation": "",
+        "theme": "Joy shared with the poor",
+        "explanation": "The feast includes gifts to one another and to the poor.",
         "references": [
-          "Esther 9:29–32"
+          "Esther 9:22"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Esther 10": {
-    "summary": "The brief closing chapter reports that Ahasuerus imposed tribute on the land and the islands of the sea (Esther 10:1). It directs readers to the chronicles of the kings of Media and Persia for the king’s acts and the full account of Mordecai’s greatness (Esther 10:2). Mordecai, identified as a Jew, is second in rank to the king, esteemed among many of his fellow Jews, and known for seeking the good of his people and speaking peace to his descendants (Esther 10:3). The ending places the story’s deliverance within an empire that continues to exercise power and concludes with the prominence of a Jewish official concerned for his community. It does not supply Mordecai’s later biography or independently document the records it names.",
-    "whereWeAre": "The book ends with a royal tribute notice and a summary of Mordecai’s prestige after the crisis and Purim’s establishment. The brief ending emphasizes Mordecai’s status and concern for the Jewish community after the dramatic reversal.",
+    "summary": "Ahasuerus lays a tribute on the land and the isles of the sea (Esther 10:1). His acts and Mordecai's greatness are written in the chronicles of the kings of Media and Persia (Esther 10:2). Mordecai is \"next unto king Ahasuerus,\" great among the Jews, \"seeking the wealth of his people, and speaking peace to all his seed\" (Esther 10:3).",
+    "whereWeAre": "The Jews were saved and Purim was set up in chapter 9. This short chapter records Mordecai's greatness as second only to the king. Job follows, beginning the books of poetry and wisdom with a righteous man who suffers.",
     "keyFigures": [
       {
         "name": "Ahasuerus",
-        "role": "King imposing tribute across his realm. His government remains the larger political context of the conclusion (10:1–2)."
+        "role": "Lays a tribute on the land and the isles."
       },
       {
         "name": "Mordecai",
-        "role": "Jewish official ranked second to the king. He is praised for pursuing the welfare and peace of his people (10:2–3)."
-      },
-      {
-        "name": "Mordecai’s fellow Jews",
-        "role": "Community among whom he is highly regarded. They are beneficiaries of the leadership described (10:3)."
+        "role": "Second to the king, seeking the good of his people."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Leadership for communal welfare",
-        "explanation": "",
+        "theme": "Lifted up",
+        "explanation": "Mordecai, once marked for death, is second only to the king.",
         "references": [
           "Esther 10:3"
         ]
       },
       {
-        "theme": "Power within a larger empire",
-        "explanation": "",
+        "theme": "Seeking the good of others",
+        "explanation": "Mordecai uses his power for the wealth and peace of his people.",
         "references": [
-          "Esther 10:1–2"
+          "Esther 10:3"
         ]
       },
       {
-        "theme": "The lasting significance of service",
-        "explanation": "",
+        "theme": "A story worth recording",
+        "explanation": "Mordecai's greatness is written in the royal chronicles.",
         "references": [
-          "Esther 10:2–3"
+          "Esther 10:2"
         ]
       }
     ],

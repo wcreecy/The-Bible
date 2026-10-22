@@ -1,329 +1,331 @@
 {
   "Nehemiah 1": {
-    "summary": "At the Persian royal center of Susa, Nehemiah hears from Hanani and other men of Judah that the people remaining in Jerusalem face distress and that its walls and gates are ruined (Nehemiah 1:1–3). He mourns, fasts, and prays rather than immediately describing a rebuilding plan (Nehemiah 1:4). His prayer praises the covenant-keeping God, confesses the sins of Israel and of his own family, recalls the warnings and promises associated with Moses, and asks for favor before the man he must approach (Nehemiah 1:5–11). The final statement identifies Nehemiah as cupbearer to the king, explaining why he has access to the Persian court. The chapter introduces restoration as an issue of communal vulnerability and covenant faithfulness, with Nehemiah's public concern grounded in prayer.",
-    "whereWeAre": "The Persian Empire governed Judah as part of its western territories after Babylonian rule; returnees had rebuilt the temple, but the account reports continued trouble in Jerusalem. The distance between Susa and Jerusalem explains Nehemiah’s dependence on visitors for news and his request for royal intervention.",
+    "summary": "In the month Chisleu, Nehemiah is at Shushan the palace when Hanani and men of Judah tell him that the remnant are \"in great affliction\" and the wall of Jerusalem is broken down (Nehemiah 1:1–3). Nehemiah sits down and weeps, mourns, fasts, and prays (Nehemiah 1:4). He praises the God \"that keepeth covenant and mercy,\" confesses the sins of Israel and of his father's house, and recalls God's promise through Moses to gather his people if they return (Nehemiah 1:5–10). He asks for mercy before \"this man,\" for he was the king's cupbearer (Nehemiah 1:11).",
+    "whereWeAre": "Ezra ended with the people putting away their foreign wives. Some years later, at Shushan the palace, Nehemiah hears that Jerusalem's wall is still broken down, and he weeps, fasts, and prays. In chapter 2 he asks the king to send him there.",
     "keyFigures": [
       {
-        "name": "Nehemiah son of Hacaliah",
-        "role": "Royal cupbearer and narrator. Receives the report, confesses communal sin, and petitions God (1:1,4–11)."
+        "name": "Nehemiah",
+        "role": "The king's cupbearer, who weeps, fasts, and prays for Jerusalem."
       },
       {
-        "name": "Hanani and men from Judah",
-        "role": "Visitors who report conditions in Jerusalem. Their account prompts Nehemiah’s mourning and prayer (1:2–3)."
-      },
-      {
-        "name": "The people remaining in Judah",
-        "role": "Community described by the visitors. Their distress is the practical concern motivating the narrative (1:3)."
+        "name": "Hanani",
+        "role": "One of Nehemiah's brethren, who brings news of Jerusalem's broken wall."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Prayer before action",
-        "explanation": "",
+        "theme": "Grief that leads to prayer",
+        "explanation": "Bad news drives Nehemiah to weep, fast, and pray before he acts.",
         "references": [
-          "Nehemiah 1:4–11"
+          "Nehemiah 1:4"
         ]
       },
       {
-        "theme": "Shared responsibility and confession",
-        "explanation": "",
+        "theme": "Confession",
+        "explanation": "Nehemiah confesses his own family's sin along with Israel's.",
         "references": [
-          "Nehemiah 1:6–7"
+          "Nehemiah 1:6-7"
         ]
       },
       {
-        "theme": "Covenant memory and hope",
-        "explanation": "",
+        "theme": "Standing on God's promises",
+        "explanation": "He asks God to keep his word to gather the people who return to him.",
         "references": [
-          "Nehemiah 1:8–10"
+          "Nehemiah 1:8-10"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 2": {
-    "summary": "In Nisan of the twentieth year of King Artaxerxes, Nehemiah is visibly sad while serving wine. The king asks why; Nehemiah explains his grief over the ruined city of his ancestors, prays briefly, and requests permission and letters to travel and obtain timber (Nehemiah 2:1–8). The king agrees, and Nehemiah journeys to the governors beyond the Euphrates with royal escorts (Nehemiah 2:9). Sanballat and Tobiah dislike the prospect of help for Jerusalem (Nehemiah 2:10). After arriving, Nehemiah quietly surveys damaged walls by night before urging local leaders to rebuild (Nehemiah 2:11–18). Sanballat, Tobiah, and Geshem mock the effort and question its legitimacy; Nehemiah answers by expressing confidence in God and asserting his community's claim to the work (Nehemiah 2:19–20). The chapter presents planning, permission, inspection, and public cooperation as connected parts of rebuilding.",
-    "whereWeAre": "Provincial governors and imperial travel permissions formed part of Persian administration; Jerusalem’s defenses were politically sensitive. Royal letters, timber, and an escort make Nehemiah’s initiative administratively possible, while regional officials contest it.",
+    "summary": "In the month Nisan the king sees Nehemiah's sad face, and Nehemiah, \"very sore afraid,\" tells him the city of his fathers lies waste (Nehemiah 2:1–3). He prays to the God of heaven, asks to be sent to rebuild it, and the king gives him letters and timber, \"according to the good hand of my God upon me\" (Nehemiah 2:4–8). He travels with captains and horsemen, and Sanballat and Tobiah are grieved that someone has come to help Israel (Nehemiah 2:9–10). After three days in Jerusalem he views the broken walls by night (Nehemiah 2:11–16). He tells the rulers, \"let us build up the wall of Jerusalem,\" and they answer, \"Let us rise up and build\" (Nehemiah 2:17–18). Sanballat, Tobiah, and Geshem laugh them to scorn, but Nehemiah says, \"The God of heaven, he will prosper us\" (Nehemiah 2:19–20).",
+    "whereWeAre": "Nehemiah prayed for Jerusalem in chapter 1. Now King Artaxerxes sends him with letters and timber, he inspects the broken walls at night, and the people agree to build. Chapter 3 lists who repaired each part of the wall.",
     "keyFigures": [
       {
         "name": "Nehemiah",
-        "role": "Cupbearer and royal petitioner Secures permission, inspects walls, and rallies the builders (2:1–18)."
+        "role": "Asks the king to send him, inspects the walls, and calls the people to build."
       },
       {
         "name": "Artaxerxes",
-        "role": "Persian king Grants leave and letters supplying access and materials (2:1–9)."
+        "role": "King of Persia, who grants letters, timber, and an escort."
       },
       {
-        "name": "Sanballat, Tobiah and Geshem",
-        "role": "Regional opponents Ridicule or resist the effort to rebuild (2:10,19–20)."
+        "name": "Sanballat the Horonite",
+        "role": "Grieved at Nehemiah's coming; mocks the builders."
       },
       {
-        "name": "Jerusalem’s Jewish leaders and residents",
-        "role": "Local community approached by Nehemiah Agree to join the rebuilding after hearing his report (2:16–18)."
+        "name": "Tobiah the Ammonite",
+        "role": "Joins Sanballat in opposing the work."
+      },
+      {
+        "name": "Geshem the Arabian",
+        "role": "Laughs the builders to scorn."
+      },
+      {
+        "name": "The rulers of the Jews",
+        "role": "Answer Nehemiah, \"Let us rise up and build.\""
       }
     ],
     "keyThemes": [
       {
-        "theme": "Prayer and practical planning",
-        "explanation": "",
+        "theme": "Quick prayer, bold request",
+        "explanation": "Nehemiah prays silently and then asks the king for what he needs.",
         "references": [
-          "Nehemiah 2:4–8"
+          "Nehemiah 2:4-5"
         ]
       },
       {
-        "theme": "Shared rebuilding",
-        "explanation": "",
+        "theme": "The good hand of God",
+        "explanation": "Nehemiah credits God's hand for the king's favor.",
         "references": [
-          "Nehemiah 2:17–18"
+          "Nehemiah 2:8",
+          "Nehemiah 2:18"
         ]
       },
       {
-        "theme": "Opposition and resolve",
-        "explanation": "",
+        "theme": "Answering mockery",
+        "explanation": "Nehemiah answers scorn by trusting the God of heaven to prosper them.",
         "references": [
-          "Nehemiah 2:19–20"
+          "Nehemiah 2:19-20"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 3": {
-    "summary": "The chapter names priests, households, tradespeople, and residents from nearby towns who take responsibility for sections of Jerusalem’s walls and gates. Eliashib the high priest and other priests begin at the Sheep Gate (Nehemiah 3:1), followed by many groups repairing adjacent portions. The Fish Gate, Old Gate, Valley Gate, Dung Gate, Fountain Gate, Water Gate area, Horse Gate, East Gate, and Inspection Gate appear in the account, along with towers, pools, and houses (Nehemiah 3:3–32). The Tekoite nobles are singled out for not joining the work, although other Tekoites labor Nehemiah 3:5,Nehemiah 3:27. Some women are expressly included among those working with their father Shallum (Nehemiah 3:12). Rather than relating a single heroic act, the chapter documents a coordinated project spread across neighborhoods and occupations, emphasizing the many contributors who make reconstruction possible.",
-    "whereWeAre": "A vulnerable settlement required functioning gates, defensive walls, and coordinated labor drawn from the city and surrounding villages. The sequence of assignments maps how reconstruction was organized, although identifying every ancient landmark today is difficult.",
+    "summary": "Eliashib the high priest and the priests build the sheep gate and sanctify it (Nehemiah 3:1). Section by section, families, towns, goldsmiths, apothecaries, and merchants repair the wall and its gates, each \"next unto\" the other (Nehemiah 3:2–32). The men of Tekoa work, but \"their nobles put not their necks to the work of their Lord\" (Nehemiah 3:5). Shallum, ruler of half of Jerusalem, repairs his part, \"he and his daughters\" (Nehemiah 3:12). Many repair the wall in front of their own houses (Nehemiah 3:23, 28–30).",
+    "whereWeAre": "The people agreed to rebuild in chapter 2. This chapter goes around the city gate by gate, naming the priests, families, and workers who repaired each section. In chapter 4 their enemies mock them and plot an attack.",
     "keyFigures": [
       {
-        "name": "Eliashib and fellow priests",
-        "role": "Workers at the Sheep Gate Demonstrate priestly participation in repairing civic defenses (3:1)."
+        "name": "Eliashib",
+        "role": "The high priest, who builds the sheep gate with the priests."
       },
       {
-        "name": "Builders from Jerusalem and nearby towns",
-        "role": "Families, officials and professional groups Work on numerous sections of gates and walls (3:2–32)."
+        "name": "Shallum",
+        "role": "Ruler of half of Jerusalem, who repairs his section with his daughters."
       },
       {
-        "name": "Shallum and his daughters",
-        "role": "Family working on a wall section. Show that participation is not limited to men named as household heads (3:12)."
+        "name": "The Tekoites",
+        "role": "Repair two sections, though their nobles refuse to work."
       },
       {
-        "name": "Tekoites and their nobles",
-        "role": "Workers and nonparticipating local leaders. The narrative contrasts diligent labor with the nobles’ refusal (3:5,27)."
+        "name": "The builders of Jerusalem",
+        "role": "Families, goldsmiths, apothecaries, and merchants who each repair a section."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Cooperative responsibility",
-        "explanation": "",
+        "theme": "Everyone has a part",
+        "explanation": "Priests, rulers, craftsmen, and families all repair a section of the wall.",
         "references": [
-          "Nehemiah 3:1–5"
+          "Nehemiah 3:1-32"
         ]
       },
       {
-        "theme": "Service across social roles",
-        "explanation": "",
+        "theme": "Work close to home",
+        "explanation": "Many build the part of the wall in front of their own houses.",
         "references": [
-          "Nehemiah 3:8–12"
+          "Nehemiah 3:23",
+          "Nehemiah 3:28-30"
         ]
       },
       {
-        "theme": "Accountability in collective work",
-        "explanation": "",
+        "theme": "Refusing to serve",
+        "explanation": "The nobles of Tekoa are remembered for not putting their necks to the work.",
         "references": [
-          "Nehemiah 3:5",
-          "Nehemiah 3:27"
+          "Nehemiah 3:5"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 4": {
-    "summary": "Sanballat and Tobiah ridicule Jerusalem’s builders as the work advances (Nehemiah 4:1–3). Nehemiah prays about their hostility, and the people continue until the wall reaches half its height (Nehemiah 4:4–6). When Sanballat, Tobiah, Arabs, Ammonites, and Ashdodites are described as plotting an attack, the community prays and establishes a guard (Nehemiah 4:7–9). Exhaustion, rubble, and threats from nearby adversaries undermine confidence (Nehemiah 4:10–12). Nehemiah stations people by families with weapons, urges remembrance of the Lord, and organizes work so some build while others guard (Nehemiah 4:13–23). Even the workers carry weapons or remain close to them, and a trumpet signals where reinforcements are needed. The chapter depicts persistence under threat through a combination of trust, leadership, labor, and protective vigilance.",
-    "whereWeAre": "Fortifications could be seen as economically and politically consequential; the chapter reports hostile rumors and threats without independently documenting a battle. Fear of attack shapes Nehemiah’s decision to combine building with guard duty.",
+    "summary": "Sanballat mocks \"these feeble Jews,\" and Tobiah says a fox could break down their wall (Nehemiah 4:1–3). Nehemiah prays, \"Hear, O our God; for we are despised,\" and the wall rises to half its height, \"for the people had a mind to work\" (Nehemiah 4:4–6). When the enemies plot to attack, the people pray and set a watch day and night (Nehemiah 4:7–9). The workers grow tired, and Jews living near the enemies warn them ten times (Nehemiah 4:10–12). Nehemiah arms the families and tells them, \"remember the Lord, which is great and terrible, and fight\" (Nehemiah 4:13–14). From then on half work and half stand guard, every builder wears a sword, and a trumpet is ready to call them together (Nehemiah 4:15–23).",
+    "whereWeAre": "Chapter 3 showed the whole city at work on the wall. Now Sanballat and Tobiah mock the builders and plan to attack, so the people build with one hand and hold a weapon with the other. Chapter 5 brings trouble from inside the community.",
     "keyFigures": [
       {
+        "name": "Sanballat",
+        "role": "Mocks \"these feeble Jews\" and plots an attack."
+      },
+      {
+        "name": "Tobiah",
+        "role": "Jokes that a fox could break down the wall."
+      },
+      {
         "name": "Nehemiah",
-        "role": "Organizer and speaker Prays, deploys guards and workers, and rallies families (4:4–23)."
+        "role": "Prays, sets a watch, and arms the builders."
       },
       {
-        "name": "Sanballat and Tobiah",
-        "role": "Prominent critics of the wall Mock and oppose the construction (4:1–3,7)."
-      },
-      {
-        "name": "Arabs, Ammonites and Ashdodites",
-        "role": "Groups associated with opposition. Join the reported threat to Jerusalem (4:7–8)."
-      },
-      {
-        "name": "The Judean builders and their families",
-        "role": "Construction workers and defenders. Continue repairing while guarding vulnerable points (4:6,13–23)."
+        "name": "The builders",
+        "role": "Work with one hand and hold a weapon with the other."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Perseverance amid intimidation",
-        "explanation": "",
+        "theme": "Prayer and watchfulness",
+        "explanation": "The people pray to God and also set a watch day and night.",
         "references": [
-          "Nehemiah 4:1–6"
+          "Nehemiah 4:9"
         ]
       },
       {
-        "theme": "Prayer joined to vigilance",
-        "explanation": "",
+        "theme": "A mind to work",
+        "explanation": "The wall rises because the people are willing to work.",
         "references": [
-          "Nehemiah 4:7–9"
+          "Nehemiah 4:6"
         ]
       },
       {
-        "theme": "Shared protection",
-        "explanation": "",
+        "theme": "Courage from God",
+        "explanation": "Nehemiah tells them to remember the great and terrible Lord and fight for their families.",
         "references": [
-          "Nehemiah 4:13–20"
+          "Nehemiah 4:14",
+          "Nehemiah 4:20"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 5": {
-    "summary": "A crisis arises within the Jewish community itself: impoverished families complain that they cannot obtain enough grain, and some have mortgaged land or borrowed to pay royal taxes, with their children entering debt servitude (Nehemiah 5:1–5). Nehemiah condemns the nobles and officials who are exacting interest or profiting from fellow Judeans, calls a public assembly, and urges return of fields, vineyards, houses, and financial claims (Nehemiah 5:6–13). The leaders promise restitution; Nehemiah makes them swear an oath and calls the people to praise God (Nehemiah 5:12–13). He then describes twelve years as governor during which he did not take the customary governor’s food allowance, even while feeding many at his table (Nehemiah 5:14–19). The chapter warns that a rebuilt city remains vulnerable if those within it exploit one another.",
-    "whereWeAre": "Taxes, debt, food insecurity, and concentrated landholding affected ancient agrarian households; precise local economic figures are not independently available. The complaint interrupts rebuilding with the realization that internal debt practices threaten community survival.",
+    "summary": "There is a great cry of the people against their brethren the Jews: in a dearth they have mortgaged their land and sold their children to pay for grain and the king's tribute (Nehemiah 5:1–5). Nehemiah is very angry and tells the nobles and rulers, \"Ye exact usury, every one of his brother\" (Nehemiah 5:6–9). He tells them to give back the lands and the interest, and they promise, \"We will restore them\" (Nehemiah 5:10–12). He shakes out his lap as a sign, and the people say \"Amen\" and praise the LORD (Nehemiah 5:13). For twelve years as governor, Nehemiah does not eat \"the bread of the governor\" and feeds 150 at his table at his own cost (Nehemiah 5:14–18). He prays, \"Think upon me, my God, for good\" (Nehemiah 5:19).",
+    "whereWeAre": "The builders held off their enemies in chapter 4. Now poor families cry out that richer Jews have taken their land and their children for debt, and Nehemiah makes the nobles give it back. In chapter 6 the enemies try new tricks against Nehemiah himself.",
     "keyFigures": [
       {
+        "name": "The poor of the people",
+        "role": "Cry out that they have lost their land and children to debt."
+      },
+      {
         "name": "Nehemiah",
-        "role": "Governor and reformer. Challenges economic abuse and describes his own administrative choices (5:6–19)."
+        "role": "Rebukes the lenders and refuses the governor's allowance."
       },
       {
-        "name": "Poorer Judean families, including women",
-        "role": "People protesting hunger, taxation, and debt Expose injustices within the returned community (5:1–5)."
+        "name": "The nobles and rulers",
+        "role": "Promise to give back the land and the interest."
       },
       {
-        "name": "Nobles and officials",
-        "role": "Powerful creditors or lenders Agree publicly to reverse the practices Nehemiah condemns (5:7–13)."
-      },
-      {
-        "name": "Priests",
-        "role": "Witnesses to the pledged reform. Are summoned when the leaders swear to keep their promise (5:12)."
+        "name": "The priests",
+        "role": "Put the lenders under oath."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Economic justice",
-        "explanation": "",
+        "theme": "Justice for the poor",
+        "explanation": "Nehemiah will not let the rich take their brothers' land and children.",
         "references": [
-          "Nehemiah 5:1–11"
+          "Nehemiah 5:1-11"
         ]
       },
       {
-        "theme": "Public accountability",
-        "explanation": "",
+        "theme": "Keeping promises",
+        "explanation": "The lenders swear before the priests to give back what they took.",
         "references": [
-          "Nehemiah 5:12–13"
+          "Nehemiah 5:12-13"
         ]
       },
       {
-        "theme": "Leadership without extraction",
-        "explanation": "",
+        "theme": "A leader who serves",
+        "explanation": "Nehemiah refuses the governor's food and feeds others at his own cost.",
         "references": [
-          "Nehemiah 5:14–19"
+          "Nehemiah 5:14-18"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 6": {
-    "summary": "With the wall nearly complete, Sanballat and Geshem repeatedly invite Nehemiah to meet on the plain of Ono; he refuses because he believes the invitation is intended to harm him (Nehemiah 6:1–4). An open letter accuses him of seeking kingship and rebellion, but he rejects the allegation and prays for strength (Nehemiah 6:5–9). Shemaiah then urges Nehemiah to hide inside the temple; Nehemiah refuses and says he recognized the warning as a paid attempt to discredit him (Nehemiah 6:10–14). The wall is completed in fifty-two days, on the twenty-fifth of Elul (Nehemiah 6:15). The chapter adds that nobles of Judah exchanged letters with Tobiah because of family connections, sustaining the flow of threats even after the work is finished (Nehemiah 6:16–19). The focus is on resisting intimidation and completing the work without assuming opposition ends when a project ends.",
-    "whereWeAre": "Regional officials and kinship networks formed overlapping interests around Jerusalem’s restored defenses. Accusations of rebellion would be serious within an empire attentive to loyalty; the narrative depicts attempts to exploit that concern.",
+    "summary": "Sanballat and Geshem ask Nehemiah four times to meet them in the plain of Ono, but he answers, \"I am doing a great work, so that I cannot come down\" (Nehemiah 6:1–4). An open letter accuses him of planning to be king, and he replies that they invented it and prays, \"O God, strengthen my hands\" (Nehemiah 6:5–9). Shemaiah, hired by Tobiah and Sanballat, urges him to hide in the temple, but Nehemiah says, \"Should such a man as I flee?\" (Nehemiah 6:10–14). The wall is finished on the twenty-fifth day of Elul, in fifty-two days, and the nations see \"that this work was wrought of our God\" (Nehemiah 6:15–16). Still, nobles of Judah keep sending letters to and from Tobiah, and Tobiah sends letters to frighten Nehemiah (Nehemiah 6:17–19).",
+    "whereWeAre": "Nehemiah ended the abuse of the poor in chapter 5. Now his enemies try to lure him away, accuse him of rebellion, and frighten him into hiding in the temple, but the wall is finished in fifty-two days. Chapter 7 sets guards and turns to the people.",
     "keyFigures": [
       {
         "name": "Nehemiah",
-        "role": "Governor and wall organizer. Rejects invitations, accusations, and a questionable prophetic warning (6:1–14)."
+        "role": "Refuses every trap and finishes the wall."
       },
       {
         "name": "Sanballat and Geshem",
-        "role": "Opponents of the construction Use repeated messages and a public accusation to pressure him (6:1–9)."
+        "role": "Try to lure Nehemiah to Ono and accuse him of rebellion."
       },
       {
-        "name": "Shemaiah son of Delaiah",
-        "role": "Man whose proposed refuge is rejected. The narrator says he was hired to frighten Nehemiah (6:10–13)."
+        "name": "Shemaiah",
+        "role": "Son of Delaiah, hired to frighten Nehemiah into the temple."
       },
       {
-        "name": "Tobiah and allied Judean nobles",
-        "role": "Regional adversary and connected elites. Their letters and family ties illustrate continuing divided loyalties (6:17–19)."
+        "name": "Noadiah",
+        "role": "A prophetess who also tries to make Nehemiah afraid."
+      },
+      {
+        "name": "Tobiah",
+        "role": "Keeps writing to the nobles of Judah and sending letters to frighten Nehemiah."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Discernment under pressure",
-        "explanation": "",
+        "theme": "Staying on task",
+        "explanation": "Nehemiah will not stop his great work to meet his enemies.",
         "references": [
-          "Nehemiah 6:1–4"
+          "Nehemiah 6:3"
         ]
       },
       {
-        "theme": "Resisting false accusations",
-        "explanation": "",
+        "theme": "Facing lies",
+        "explanation": "He denies false charges and asks God to strengthen his hands.",
         "references": [
-          "Nehemiah 6:5–9"
+          "Nehemiah 6:8-9"
         ]
       },
       {
-        "theme": "Integrity in religious spaces",
-        "explanation": "",
+        "theme": "Not giving in to fear",
+        "explanation": "He refuses to hide in the temple and break God's law to save himself.",
         "references": [
-          "Nehemiah 6:10–14"
+          "Nehemiah 6:10-13"
         ]
       },
       {
-        "theme": "Completion despite opposition",
-        "explanation": "",
+        "theme": "God's work",
+        "explanation": "Even the enemies see that the wall was built by God.",
         "references": [
-          "Nehemiah 6:15–19"
+          "Nehemiah 6:15-16"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 7": {
-    "summary": "After the wall is built and doors are installed, Nehemiah appoints gatekeepers, singers, and Levites and entrusts Jerusalem to Hanani and Hananiah, described as trustworthy and God-fearing (Nehemiah 7:1–3). Because the city is large but sparsely populated, he considers its residents and discovers a genealogical register of earlier returnees (Nehemiah 7:4–5). The bulk of the chapter reproduces a long list of family groups, priests, Levites, temple servants, descendants of Solomon’s servants, and those unable to prove their ancestry (Nehemiah 7:6–65). It reports totals, gifts toward the work, and the settlement of returnees in their towns (Nehemiah 7:66–73). The register associates present restoration with earlier returns from exile, while acknowledging uncertainties in some family and priestly claims.",
-    "whereWeAre": "The city remained underpopulated according to the narrator; administrative and cultic positions required recognized personnel. The genealogical list justifies communal continuity and prepares for population and religious organization.",
+    "summary": "With the wall built and the doors set up, Nehemiah appoints porters, singers, and Levites and gives Hanani and Hananiah charge over Jerusalem (Nehemiah 7:1–2). The gates are not to be opened until the sun is hot, and the people keep watch by their houses (Nehemiah 7:3). The city is large but has few people, so God puts it in Nehemiah's heart to count the people, and he finds the register of the first return (Nehemiah 7:4–5). The register lists the families, priests, Levites, and servants who came up with Zerubbabel, 42,360 in all (Nehemiah 7:6–69). The governor, the chief fathers, and the people give gold, silver, and garments for the work, and all live in their cities (Nehemiah 7:70–73).",
+    "whereWeAre": "The wall was finished in chapter 6. Now Nehemiah puts the city under guard and finds the list of those who first came home with Zerubbabel. In chapter 8 the people gather to hear Ezra read the law.",
     "keyFigures": [
       {
         "name": "Nehemiah",
-        "role": "Governor and administrator Organizes security, appoints local leaders and consults a register (7:1–5)."
+        "role": "Sets guards over the city and gathers the people to be counted."
       },
       {
         "name": "Hanani",
-        "role": "Nehemiah’s brother. Receives responsibility for Jerusalem alongside Hananiah (7:2)."
+        "role": "Nehemiah's brother, given charge over Jerusalem."
       },
       {
         "name": "Hananiah",
-        "role": "Commander of the fortress. Is entrusted with authority because of stated trustworthiness (7:2)."
-      },
-      {
-        "name": "Families of returning exiles",
-        "role": "Named households and temple personnel. Their affiliations are recorded in the register (7:6–73)."
-      },
-      {
-        "name": "The governor and priests with unverified ancestry",
-        "role": "Officials and priestly claimants. The chapter postpones certain priestly privileges pending authoritative determination (7:64–65)."
+        "role": "The ruler of the palace, \"a faithful man,\" given charge with Hanani."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Responsible stewardship",
-        "explanation": "",
+        "theme": "Faithful leaders",
+        "explanation": "Nehemiah gives the city to men who are faithful and fear God.",
         "references": [
-          "Nehemiah 7:1–3"
+          "Nehemiah 7:2"
         ]
       },
       {
-        "theme": "Belonging and continuity",
-        "explanation": "",
+        "theme": "Guarding what was built",
+        "explanation": "The gates are watched and opened only in full daylight.",
         "references": [
-          "Nehemiah 7:5–7"
+          "Nehemiah 7:3"
         ]
       },
       {
-        "theme": "Integrity in public records",
-        "explanation": "",
+        "theme": "Remembering who came home",
+        "explanation": "The old register ties the people to those who first returned.",
         "references": [
-          "Nehemiah 7:61–65"
+          "Nehemiah 7:5-6"
         ]
       }
     ],
@@ -336,299 +338,302 @@
     ]
   },
   "Nehemiah 8": {
-    "summary": "On the first day of the seventh month, the people assemble near the Water Gate and ask Ezra the scribe to bring the Law of Moses (Nehemiah 8:1–2). Ezra reads publicly from morning until midday, assisted by Levites who help the listeners understand what is read Nehemiah 8:3–8. Some people weep, but Nehemiah, Ezra, and the Levites instruct them to celebrate the holy day, share food, and rejoice in the LORD (Nehemiah 8:9–12). The next day leaders study the Law further and discover instructions concerning the Festival of Booths. The people make booths and keep the festival with daily reading for seven days and an assembly on the eighth (Nehemiah 8:13–18). The chapter shifts the restoration story from a repaired wall to a community hearing, understanding, and responding to Scripture.",
-    "whereWeAre": "The narrative places Ezra’s teaching at the center of communal formation; the exact chronology of Ezra’s activity relative to Nehemiah has generated scholarly debate. The assembly interprets renewal not only as civic reconstruction but as renewed attention to Mosaic instruction.",
+    "summary": "All the people gather \"as one man\" at the water gate and ask Ezra to bring the book of the law of Moses (Nehemiah 8:1). Ezra reads it from a pulpit of wood from morning until midday, and the people answer, \"Amen, Amen\" (Nehemiah 8:2–6). The Levites read \"distinctly, and gave the sense, and caused them to understand the reading\" (Nehemiah 8:7–8). When the people weep, Nehemiah and Ezra tell them, \"neither be ye sorry; for the joy of the LORD is your strength\" (Nehemiah 8:9–12). The next day the leaders find that Israel should dwell in booths at the feast of the seventh month (Nehemiah 8:13–15). The people make booths, as they had not done since the days of Joshua, and Ezra reads the law every day of the feast (Nehemiah 8:16–18).",
+    "whereWeAre": "The people had settled in their towns at the end of chapter 7. Now in the seventh month they gather at the water gate, Ezra reads the law, and their tears turn to joy as they keep the feast of booths. Chapter 9 brings a day of fasting and confession.",
     "keyFigures": [
       {
-        "name": "Ezra the priest and scribe",
-        "role": "Public reader and teacher of the Law Reads before the assembly and blesses God (8:1–8)."
+        "name": "Ezra",
+        "role": "The scribe who reads the law to the people from a pulpit of wood."
       },
       {
-        "name": "Nehemiah the governor",
-        "role": "Civic leader. Helps direct the people toward celebration and sharing (8:9–10)."
+        "name": "Nehemiah",
+        "role": "The governor, who tells the people not to weep but to rejoice."
       },
       {
-        "name": "Levites who instruct the people",
-        "role": "Teachers and interpreters. Help listeners grasp the Law and encourage appropriate response (8:7–12)."
+        "name": "The Levites",
+        "role": "Help the people understand the reading."
       },
       {
-        "name": "Men, women and all who could understand",
-        "role": "Gathered worshiping community Listen and participate in the festival (8:2–3,16–18)."
+        "name": "All the people",
+        "role": "Listen, weep, and then keep the feast of booths with great gladness."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Understanding sacred teaching",
-        "explanation": "",
+        "theme": "Hearing God's word",
+        "explanation": "The people stand and listen to the law from morning until midday.",
         "references": [
-          "Nehemiah 8:1–8"
+          "Nehemiah 8:3-6"
         ]
       },
       {
-        "theme": "Joy expressed through generosity",
-        "explanation": "",
+        "theme": "Understanding the word",
+        "explanation": "The Levites explain the reading so the people understand.",
         "references": [
-          "Nehemiah 8:9–12"
+          "Nehemiah 8:7-8"
         ]
       },
       {
-        "theme": "Renewed practice from Scripture",
-        "explanation": "",
+        "theme": "Joy in the LORD",
+        "explanation": "The people are told not to grieve, for the joy of the LORD is their strength.",
         "references": [
-          "Nehemiah 8:13–18"
+          "Nehemiah 8:9-12"
+        ]
+      },
+      {
+        "theme": "Obeying what they learn",
+        "explanation": "They find the command about booths and keep it at once.",
+        "references": [
+          "Nehemiah 8:13-17"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 9": {
-    "summary": "On the twenty-fourth day of the seventh month, the Israelites gather in fasting, wearing sackcloth, and confessing their sins and those of their ancestors (Nehemiah 9:1–3). Levites lead worship and a lengthy prayer recounting God’s work: creation, the call of Abram, the exodus, Sinai, wilderness provision, entry into the land, repeated rebellion, deliverance, prophetic warnings, and eventual foreign domination (Nehemiah 9:4–31). The prayer stresses God’s faithfulness and compassion even when Israel proved unfaithful Nehemiah 9:17,Nehemiah 9:30–31. It acknowledges that the people are servants in the land given to their ancestors under kings who rule them (Nehemiah 9:32–37). They respond by making a written binding agreement (Nehemiah 9:38). This chapter uses confessed history to explain present conditions and motivate a renewed commitment.",
-    "whereWeAre": "The returned population lived within an empire and interpreted its dependence through Israel’s covenant history. The long prayer connects the history of rebellion and mercy to contemporary taxation and subordination.",
+    "summary": "On the twenty-fourth day of the month the people fast in sackcloth, separate from strangers, and confess their sins (Nehemiah 9:1–3). The Levites call out, \"Stand up and bless the LORD your God,\" and praise him as the maker of heaven and earth (Nehemiah 9:4–6). The prayer recalls God's call of Abram, the exodus, Sinai, and the manna and water in the wilderness (Nehemiah 9:7–15). When their fathers rebelled, God did not forsake them, for he is \"a God ready to pardon, gracious and merciful\" (Nehemiah 9:16–21). God gave them the land, yet they killed the prophets, and he delivered them to their enemies and rescued them many times (Nehemiah 9:22–31). The prayer ends, \"Behold, we are servants this day,\" and the people make a sure covenant in writing (Nehemiah 9:32–38).",
+    "whereWeAre": "The people kept the feast with great gladness in chapter 8. Now they fast in sackcloth, and the Levites lead a prayer that retells Israel's history of sin and God's mercy. It ends with a written covenant, signed in chapter 10.",
     "keyFigures": [
       {
-        "name": "Levites leading the assembly",
-        "role": "Prayer and worship leaders Call the people to praise and recount God’s dealings with Israel (9:4–5)."
+        "name": "The children of Israel",
+        "role": "Fast, confess their sins, and make a written covenant."
       },
       {
-        "name": "The Israelites assembled",
-        "role": "Confessing worshipers Fast, hear Scripture, and acknowledge wrongdoing (9:1–3)."
-      },
-      {
-        "name": "Abraham, Moses and Israel’s ancestors",
-        "role": "Figures recalled within the historical prayer. Their stories illustrate covenant promise, guidance and repeated disobedience (9:7–23)."
-      },
-      {
-        "name": "Past kings, prophets and foreign rulers",
-        "role": "Groups recalled in prayer. Represent repeated warnings, failures and the consequences named by the community (9:26–37)."
+        "name": "The Levites",
+        "role": "Lead the people in praise and in the long prayer of confession."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Confession grounded in history",
-        "explanation": "",
+        "theme": "Confession",
+        "explanation": "The people fast and confess their own sins and their fathers' sins.",
         "references": [
-          "Nehemiah 9:1–3",
-          "Nehemiah 9:26–33"
+          "Nehemiah 9:1-3"
         ]
       },
       {
-        "theme": "Divine compassion and persistence",
-        "explanation": "",
+        "theme": "God's faithfulness",
+        "explanation": "The prayer retells how God kept his promises from Abram to the land.",
         "references": [
-          "Nehemiah 9:16–21",
-          "Nehemiah 9:30–31"
+          "Nehemiah 9:7-15"
         ]
       },
       {
-        "theme": "Remembered covenant",
-        "explanation": "",
+        "theme": "Mercy again and again",
+        "explanation": "Each time Israel rebelled and cried out, God showed mercy.",
         "references": [
-          "Nehemiah 9:7–15"
+          "Nehemiah 9:17",
+          "Nehemiah 9:27-31"
         ]
       },
       {
-        "theme": "Renewed commitment",
-        "explanation": "",
+        "theme": "A fresh start",
+        "explanation": "Their confession leads to a written covenant.",
         "references": [
-          "Nehemiah 9:36–38"
+          "Nehemiah 9:38"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 10": {
-    "summary": "Nehemiah the governor heads a list of priests, Levites, and other leaders who seal a community agreement (Nehemiah 10:1–27). The wider people, including families and those able to understand, join the oath to walk in God's Law given through Moses (Nehemiah 10:28–29). Their commitments include restrictions on intermarriage, Sabbath trading, observance of the seventh-year release, a yearly contribution for temple service, provision of wood, firstfruits, firstborn offerings, and tithes supporting Levites and the temple (Nehemiah 10:30–39). The final declaration promises not to neglect the house of God. Rather than narrating a fresh construction event, the chapter records practical structures by which a community seeks to sustain worship and distinct covenant obligations.",
-    "whereWeAre": "Priestly worship required a steady supply of sacrificial materials, personnel and resources; local social obligations operated within imperial conditions. Written obligations give administrative shape to the resolve expressed in chapter 9.",
+    "summary": "Nehemiah the Tirshatha, the priests, the Levites, and the chief of the people seal the covenant (Nehemiah 10:1–27). The rest of the people join them in an oath \"to walk in God's law, which was given by Moses\" (Nehemiah 10:28–29). They promise not to give their children in marriage to the peoples of the land and not to buy on the sabbath, and to let the land rest every seventh year (Nehemiah 10:30–31). They pledge a third of a shekel a year for the temple service and cast lots for the wood offering (Nehemiah 10:32–34). They promise firstfruits, firstborn, and tithes, ending, \"we will not forsake the house of our God\" (Nehemiah 10:35–39).",
+    "whereWeAre": "Chapter 9 ended with a promise to make a sure covenant in writing. Now Nehemiah and the leaders seal it, and the people swear to keep God's law, the sabbath, and the support of the temple. In chapter 11 families move into Jerusalem.",
     "keyFigures": [
       {
-        "name": "Nehemiah the governor",
-        "role": "First named signer. Leads the covenant document’s listed signatories (10:1)."
+        "name": "Nehemiah",
+        "role": "The Tirshatha, or governor, the first to seal the covenant."
       },
       {
-        "name": "Priests, Levites and community chiefs",
-        "role": "Named covenant representatives Seal the agreement on behalf of the community (10:2–27)."
+        "name": "The priests, Levites, and chief of the people",
+        "role": "Seal the covenant by name."
       },
       {
-        "name": "The wider people and their families",
-        "role": "Participants in the oath Commit themselves to following the Law and specified practices (10:28–39)."
-      },
-      {
-        "name": "Levites, priests and temple workers",
-        "role": "Recipients and administrators of support. Their ongoing service requires contributions and provision (10:34–39)."
+        "name": "The rest of the people",
+        "role": "Swear an oath to walk in God's law."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Commitments made publicly",
-        "explanation": "",
+        "theme": "A public promise",
+        "explanation": "Leaders put their names on the covenant, and all the people swear to keep it.",
         "references": [
-          "Nehemiah 10:28–29"
+          "Nehemiah 10:1",
+          "Nehemiah 10:28-29"
         ]
       },
       {
-        "theme": "Distinct communal identity",
-        "explanation": "",
+        "theme": "Faith in daily life",
+        "explanation": "The promises cover marriage, the sabbath, debts, and offerings.",
         "references": [
-          "Nehemiah 10:30–31"
+          "Nehemiah 10:30-31"
         ]
       },
       {
-        "theme": "Sustaining worship materially",
-        "explanation": "",
+        "theme": "Caring for God's house",
+        "explanation": "The people pledge money, wood, firstfruits, and tithes for the temple.",
         "references": [
-          "Nehemiah 10:32–39"
+          "Nehemiah 10:32-39"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 11": {
-    "summary": "The leaders already live in Jerusalem, while lots are cast so that one out of ten of the rest of the people will settle there; volunteers are publicly blessed (Nehemiah 11:1–2). The chapter then lists inhabitants of Jerusalem, including members of Judah and Benjamin, priests, Levites, gatekeepers, and officials, often identifying their family lines and responsibilities (Nehemiah 11:3–24). It also names settlements and villages across Judah and Benjamin where others reside (Nehemiah 11:25–36). The account presents the needs of a functioning capital and sacred city: a wall alone cannot preserve Jerusalem without residents, worship personnel, and organized responsibilities. The lists honor the human commitments necessary for sustained settlement.",
-    "whereWeAre": "Reconstruction alone did not ensure a viable urban population; the chapter reports deliberate settlement policies. Population movement links the repaired walls to city security, administration and temple worship.",
+    "summary": "The rulers live in Jerusalem, and the rest of the people cast lots \"to bring one of ten to dwell in Jerusalem the holy city\" (Nehemiah 11:1). The people bless the men who willingly offer to live there (Nehemiah 11:2). The chapter lists the families of Judah and Benjamin who live in Jerusalem (Nehemiah 11:3–9). It lists the priests, Levites, porters, and singers who serve the house of God (Nehemiah 11:10–24). The others live in towns and villages of Judah, from Beersheba to the valley of Hinnom, and in the towns of Benjamin (Nehemiah 11:25–36).",
+    "whereWeAre": "The people sealed their covenant in chapter 10. Now one in ten is chosen by lot to live in Jerusalem, and the chapter lists the families of the city and the towns around it. Chapter 12 lists the priests and Levites and dedicates the wall.",
     "keyFigures": [
       {
-        "name": "Judah’s and Benjamin’s residents",
-        "role": "Families relocating or living in communities Populate Jerusalem and surrounding settlements (11:3–9,25–36)."
+        "name": "The rulers of the people",
+        "role": "Already live in Jerusalem."
       },
       {
-        "name": "Priests, Levites and gatekeepers",
-        "role": "Temple and gate personnel. Serve in Jerusalem’s worship and civic operations (11:10–24)."
+        "name": "The people",
+        "role": "Cast lots so one in ten will live in Jerusalem."
       },
       {
-        "name": "Volunteers and those selected by lot",
-        "role": "New Jerusalem residents. Help address the capital’s reported need for population (11:1–2)."
-      },
-      {
-        "name": "Community leaders",
-        "role": "Residents already in Jerusalem Anchor the city’s ongoing administration (11:1,3)."
+        "name": "The volunteers",
+        "role": "Willingly offer to live in the city and are blessed for it."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Sacrifice for communal well-being",
-        "explanation": "",
+        "theme": "Giving up comfort",
+        "explanation": "Some leave their farms to make Jerusalem strong.",
         "references": [
-          "Nehemiah 11:1–2"
+          "Nehemiah 11:1-2"
         ]
       },
       {
-        "theme": "Organized communal life",
-        "explanation": "",
+        "theme": "A city of worship",
+        "explanation": "Priests, Levites, and singers live where the temple stands.",
         "references": [
-          "Nehemiah 11:3–24"
+          "Nehemiah 11:10-23"
         ]
       },
       {
-        "theme": "Continuity across settlements",
-        "explanation": "",
+        "theme": "A people in their land",
+        "explanation": "Families fill the towns of Judah and Benjamin again.",
         "references": [
-          "Nehemiah 11:25–36"
+          "Nehemiah 11:25-36"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 12": {
-    "summary": "Lists of priests and Levites associated with the returns under Zerubbabel and Jeshua, and subsequent generations, open the chapter Nehemiah 12:1–26. The narrative then describes a ceremony for dedicating Jerusalem's rebuilt wall: Levites and singers gather, purification takes place, and two thanksgiving processions move along the walls before giving thanks at the house of God (Nehemiah 12:27–43). The people offer sacrifices and celebrate with great joy, which the account says can be heard far away (Nehemiah 12:43). Officials are appointed to oversee storerooms and contributions for priests, Levites, singers and gatekeepers (Nehemiah 12:44–47). The chapter joins public celebration of completed construction with provision for continuing worship.",
-    "whereWeAre": "The renewed city required worship services and administration after construction and repopulation. Wall dedication makes a public religious event of infrastructure work, while storeroom management aims to sustain the temple.",
+    "summary": "The chapter lists the priests and Levites who came up with Zerubbabel and Jeshua, and their families down to the days of Nehemiah and Ezra (Nehemiah 12:1–26). For the dedication of the wall the Levites are brought to Jerusalem, and the priests and Levites purify themselves, the people, the gates, and the wall (Nehemiah 12:27–30). Nehemiah sets two great companies of singers on the wall, one led by Ezra the scribe, and they go around in opposite directions to the house of God (Nehemiah 12:31–42). They offer great sacrifices, \"so that the joy of Jerusalem was heard even afar off\" (Nehemiah 12:43). Men are put over the storerooms, and Judah gladly gives the portions for the priests, Levites, singers, and porters (Nehemiah 12:44–47).",
+    "whereWeAre": "Chapter 11 filled Jerusalem with people. Now the priests and Levites are listed, and two great companies march on the wall in thanks until \"the joy of Jerusalem was heard even afar off\" (Nehemiah 12:43). In chapter 13 Nehemiah returns to find the covenant broken.",
     "keyFigures": [
       {
-        "name": "Priests and Levites in the genealogies",
-        "role": "Families serving across generations. The lists connect temple personnel to earlier returnees (12:1–26)."
-      },
-      {
         "name": "Nehemiah",
-        "role": "Governor and participant in dedication. Describes the two thanksgiving companies and joins the celebration (12:31,38–40)."
+        "role": "Brings the princes onto the wall and leads one company."
       },
       {
-        "name": "Ezra the scribe",
-        "role": "Leader in one procession Goes before the first company on the wall (12:36)."
+        "name": "Ezra",
+        "role": "The scribe who goes before the first company."
       },
       {
-        "name": "Singers, gatekeepers and appointed treasurers",
-        "role": "Worship personnel and administrators Lead praise and oversee supplies for ongoing service (12:27–29,44–47)."
+        "name": "The priests and Levites",
+        "role": "Purify the people and the wall and lead the thanksgiving."
+      },
+      {
+        "name": "The singers",
+        "role": "Sing loudly in two great companies on the wall."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Thanksgiving after shared work",
-        "explanation": "",
+        "theme": "Thanksgiving",
+        "explanation": "Two great companies give thanks as they walk on the wall.",
         "references": [
-          "Nehemiah 12:27–43"
+          "Nehemiah 12:31-40"
         ]
       },
       {
-        "theme": "Purification and worship",
-        "explanation": "",
+        "theme": "Joy that is heard",
+        "explanation": "The whole city's joy is heard far away.",
         "references": [
-          "Nehemiah 12:30",
           "Nehemiah 12:43"
         ]
       },
       {
-        "theme": "Provision for ongoing service",
-        "explanation": "",
+        "theme": "Ready to worship",
+        "explanation": "The priests and Levites purify themselves and the people first.",
         "references": [
-          "Nehemiah 12:44–47"
+          "Nehemiah 12:30"
+        ]
+      },
+      {
+        "theme": "Glad giving",
+        "explanation": "Judah gladly supports those who serve in the temple.",
+        "references": [
+          "Nehemiah 12:44-47"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Nehemiah 13": {
-    "summary": "The community hears the Law concerning exclusion of Ammonites and Moabites from the assembly and responds by separating those it identifies as outsiders (Nehemiah 13:1–3). Nehemiah then reports returning to Jerusalem after an absence at the Persian court and discovering that Eliashib had given Tobiah use of a temple storeroom. He removes Tobiah's belongings and restores the room to its intended use (Nehemiah 13:4–9). Nehemiah also restores support for Levites who had left their posts because their portions were withheld (Nehemiah 13:10–14). He confronts Sabbath trading, arranges for the gates to close, and warns merchants not to camp nearby (Nehemiah 13:15–22). Finally he rebukes marriages with women from Ashdod, Ammon and Moab, including the case of a priestly family tie to Sanballat, and prays for God to remember his work (Nehemiah 13:23–31). The ending is deliberately unsettled: earlier covenant promises require renewed enforcement, and Nehemiah's methods invite careful ethical assessment.",
-    "whereWeAre": "The book reports strains in temple administration, economic behavior and family identity after earlier public commitments. The chapter demonstrates that rebuilt defenses and signed oaths did not remove religious and social disputes.",
+    "summary": "The people read that no Ammonite or Moabite may enter the congregation, and they separate the mixed multitude from Israel (Nehemiah 13:1–3). While Nehemiah is away with the king, Eliashib gives Tobiah a great chamber in the temple, and on his return Nehemiah throws out Tobiah's goods (Nehemiah 13:4–9). He finds the Levites unpaid and gone to their fields, asks, \"Why is the house of God forsaken?\" and brings them back (Nehemiah 13:10–14). He sees work and trade on the sabbath, rebukes the nobles, and shuts the gates from evening until the sabbath is over (Nehemiah 13:15–22). He finds men married to women of Ashdod, Ammon, and Moab, makes them swear, and chases away a grandson of Eliashib who married Sanballat's daughter (Nehemiah 13:23–29). He cleanses the priests and Levites and ends, \"Remember me, O my God, for good\" (Nehemiah 13:30–31).",
+    "whereWeAre": "Chapter 12 ended in joy and faithful giving. Now, after Nehemiah's time away at the king's court, he finds Tobiah living in the temple, the Levites unpaid, the sabbath broken, and mixed marriages again. Esther tells another story of God's people in Persia, set earlier at Shushan.",
     "keyFigures": [
       {
         "name": "Nehemiah",
-        "role": "Governor returning to Jerusalem. Challenges temple misuse, neglected provisions, Sabbath commerce and certain marriages (13:6–31)."
+        "role": "Returns to Jerusalem and sets right what had gone wrong."
       },
       {
-        "name": "Eliashib the priest and Tobiah",
-        "role": "Temple authority and political associate A storeroom arrangement involving Tobiah is overturned (13:4–9)."
+        "name": "Eliashib",
+        "role": "The priest who gives Tobiah a chamber in the temple."
       },
       {
-        "name": "Levites and singers",
-        "role": "Temple service personnel Leave their duties when portions are not provided and are gathered back (13:10–13)."
+        "name": "Tobiah",
+        "role": "Nehemiah's old enemy, thrown out of the temple chamber."
       },
       {
-        "name": "Merchants and traders from Tyre",
-        "role": "Sabbath sellers and suppliers. Their trade provokes regulation at the city gates (13:15–22)."
+        "name": "The nobles of Judah",
+        "role": "Rebuked for allowing trade on the sabbath."
       },
       {
-        "name": "Judean men and foreign wives, including priestly kin",
-        "role": "Families challenged over intermarriage. The passage records Nehemiah’s forceful reform and concern over language and covenant identity (13:23–29)."
+        "name": "The men of Tyre",
+        "role": "Sell fish and goods in Jerusalem on the sabbath."
+      },
+      {
+        "name": "A son of Joiada",
+        "role": "Grandson of Eliashib and son-in-law of Sanballat, chased away by Nehemiah."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Reform requires vigilance",
-        "explanation": "",
+        "theme": "Promises broken",
+        "explanation": "Soon after the covenant, the people break the very things they promised.",
         "references": [
-          "Nehemiah 13:4–14"
+          "Nehemiah 13:10-11",
+          "Nehemiah 13:15-16",
+          "Nehemiah 13:23"
         ]
       },
       {
-        "theme": "Sacred time and economic habits",
-        "explanation": "",
+        "theme": "Keeping the sabbath",
+        "explanation": "Nehemiah shuts the gates to stop trade on the holy day.",
         "references": [
-          "Nehemiah 13:15–22"
+          "Nehemiah 13:17-22"
         ]
       },
       {
-        "theme": "Identity, marriage and ethical tension",
-        "explanation": "",
+        "theme": "Learning from Solomon",
+        "explanation": "Nehemiah reminds them that foreign wives led even Solomon into sin.",
         "references": [
-          "Nehemiah 13:23–29"
+          "Nehemiah 13:26-27"
         ]
       },
       {
-        "theme": "Accountability before God",
-        "explanation": "",
+        "theme": "Remember me, O God",
+        "explanation": "Nehemiah asks God again and again to remember him for good.",
         "references": [
           "Nehemiah 13:14",
           "Nehemiah 13:22",
-          "Nehemiah 13:30–31"
+          "Nehemiah 13:31"
         ]
       }
     ],
