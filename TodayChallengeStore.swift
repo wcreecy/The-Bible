@@ -161,13 +161,22 @@ final class TodayChallengeStore {
 
     private(set) var challenges: [TodayChallenge] = []
 
-    private let storageKey = "todayChallengesSnapshotV1"
-    private let cloudStorageKey = "todayChallengesSnapshotV2"
+    private let storageKey = AppStorageKey.todayChallengesSnapshotV1
+    private let cloudStorageKey = AppStorageKey.todayChallengesSnapshotV2
     private let catalog = TodayChallengeCatalog.load()
     private let cloudStore = NSUbiquitousKeyValueStore.default
     @ObservationIgnored private var corpusWaitTask: Task<Void, Never>?
+    @ObservationIgnored private var cloudChangeTask: Task<Void, Never>?
+    /// Ignores iCloud churn that changes only snapshot metadata, not the actual tasks people see.
+    @ObservationIgnored private var lastAppliedCloudSnapshot: TodayChallengeSnapshot?
 
     private init() {
+        cloudChangeTask = NotificationCenter.observe(
+            NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            for: self
+        ) { store, notification in
+            store.refreshForCloudChange(notification)
+        }
         cloudStore.synchronize()
         todayChallengesLogger.debug("Initialized Today challenge store.")
         loadOrCreateForToday()
@@ -178,6 +187,30 @@ final class TodayChallengeStore {
         // A chapter task is complete when every verse in it is recorded as read.
         syncCompletedReadingChallenges()
         syncGameProgress()
+    }
+
+    /// Reconciles only when iCloud reports that Today Challenge data changed. The key-value
+    /// store also posts for unrelated synced settings and game data, which must not reload this card.
+    func refreshForCloudChange(_ notification: Notification) {
+        let changedKeys = notification.userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
+        guard Self.shouldRefreshForCloudChange(changedKeys) else { return }
+        guard let cloudSnapshotData = cloudStore.data(forKey: cloudStorageKey),
+              let cloudSnapshot = snapshot(from: cloudSnapshotData),
+              !Self.representsSameChallengeSet(cloudSnapshot, as: lastAppliedCloudSnapshot) else { return }
+        refresh()
+    }
+
+    static func shouldRefreshForCloudChange(_ changedKeys: [String]) -> Bool {
+        changedKeys.contains(AppStorageKey.todayChallengesSnapshotV2)
+    }
+
+    private static func representsSameChallengeSet(
+        _ snapshot: TodayChallengeSnapshot,
+        as previousSnapshot: TodayChallengeSnapshot?
+    ) -> Bool {
+        guard let previousSnapshot else { return false }
+        return snapshot.dayKey == previousSnapshot.dayKey &&
+            snapshot.challenges == previousSnapshot.challenges
     }
 
     func recordPrayerTimerCompletion(minutes: Int) {
@@ -226,7 +259,7 @@ final class TodayChallengeStore {
 
     // MARK: - History
 
-    private let historyKey = "todayChallengesHistoryV1"
+    private let historyKey = AppStorageKey.todayChallengesHistoryV1
 
     /// Combines this device's history with the synced copy, so tasks shown on another
     /// device count too.
@@ -286,7 +319,8 @@ final class TodayChallengeStore {
     private func loadOrCreateForToday() {
         let now = Date()
         let localSnapshot = snapshot(from: UserDefaults.standard.data(forKey: storageKey))
-        let cloudSnapshot = snapshot(from: cloudStore.data(forKey: cloudStorageKey))
+        let cloudSnapshotData = cloudStore.data(forKey: cloudStorageKey)
+        let cloudSnapshot = snapshot(from: cloudSnapshotData)
 
         if let cloudSnapshot,
            !Self.needsNewChallenges(snapshotDayKey: cloudSnapshot.dayKey, on: now),
@@ -294,6 +328,7 @@ final class TodayChallengeStore {
            !Self.containsRetiredBookmarkTask(in: cloudSnapshot.challenges) {
             let cloudChallenges = cloudSnapshot.challenges.map(repairedChallenge)
             challenges = cloudChallenges
+            lastAppliedCloudSnapshot = cloudSnapshot
             todayChallengesLogger.debug("Loaded Today challenges from the iCloud snapshot; count=\(cloudChallenges.count, privacy: .public).")
             persistLocally(lastModified: cloudSnapshot.lastModified)
 
@@ -387,7 +422,9 @@ final class TodayChallengeStore {
             todayChallengesLogger.error("Could not encode the Today challenge snapshot for iCloud sync.")
             return
         }
+        guard cloudStore.data(forKey: cloudStorageKey) != data else { return }
         cloudStore.set(data, forKey: cloudStorageKey)
+        lastAppliedCloudSnapshot = snapshot
         todayChallengesLogger.debug("Published Today challenge snapshot to iCloud; count=\(snapshot.challenges.count, privacy: .public).")
 
         Task.detached {
@@ -773,13 +810,6 @@ struct HomeTodayCard: View {
         }
         .task {
             await refreshAtNextDayBoundary()
-        }
-        .onNotification(.bibleStatsExternallyUpdated) {
-            store.refresh()
-        }
-        // Only the default key-value store posts this, so no object filter is needed.
-        .onNotification(NSUbiquitousKeyValueStore.didChangeExternallyNotification) {
-            store.refresh()
         }
     }
 

@@ -90,6 +90,25 @@ enum AppStorageKey {
     static let didMigrateReadingPositionV1 = "didMigrateReadingPositionV1"
     static let didCleanSavedVerseTextV1 = "didCleanSavedVerseTextV1"
 
+    // Reading statistics
+    static let bookReadingTimes = "bookReadingTimes"
+    static let dailyReadingTimes = "dailyReadingTimes"
+    static let dailyReadingTimesByBook = "dailyReadingTimesByBook"
+    static let visitedChapters = "visitedChapters"
+    static let lastReadEntry = "lastReadEntry"
+    static let seenVersesByChapter = "seenVersesByChapter"
+    static let chapterCompletionDates = "chapterCompletionDates"
+    static let readingTimeContributionsV2 = "readingTimeContributionsV2"
+    static let chapterResetDates = "chapterResetDates"
+    static let seenVersesUpdatedAt = "seenVersesUpdatedAt"
+    static let readingHistoryArchiveV1 = "readingHistoryArchiveV1"
+    static let didMigrateDailyKeysToLocal = "didMigrateDailyKeysToLocal"
+
+    // Today challenges
+    static let todayChallengesSnapshotV1 = "todayChallengesSnapshotV1"
+    static let todayChallengesSnapshotV2 = "todayChallengesSnapshotV2"
+    static let todayChallengesHistoryV1 = "todayChallengesHistoryV1"
+
     // Statistics ledger
     static let gameStatsLedgerOwnPayloadV1 = "gameStatsLedgerOwnPayload_v1"
     static let gameStatsLedgerOwnInstallationV1 = "gameStatsLedgerOwnInstallation_v1"

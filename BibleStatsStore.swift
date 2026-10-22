@@ -11,22 +11,22 @@ final class BibleStatsStore {
     }
 
     struct Defaults {
-        static let keyTotals = "bookReadingTimes"                   // [String: Int] all-time per-book
-        static let keyDailyTotals = "dailyReadingTimes"             // [String: Int] by ISO date yyyy-MM-dd
-        static let keyDailyTotalsByBook = "dailyReadingTimesByBook" // [String: [String: Int]] date -> (book -> seconds)
-        static let keyVisitedChapters = "visitedChapters"           // [String]
-        static let keyLastRead = "lastReadEntry"                    // JSON of LastRead
-        static let keySeenVersesByChapter = "seenVersesByChapter"   // [String: [Int]] keyed by "Book:Chapter"
-        static let keyChapterCompletionDates = "chapterCompletionDates" // [String: Date] keyed by "Book:Chapter"
-        static let keyReadingContributions = "readingTimeContributionsV2"
-        static let keyChapterResetDates = "chapterResetDates"           // [String: Date] keyed by "Book:Chapter"
-        static let keySeenVersesUpdatedAt = "seenVersesUpdatedAt"       // [String: Date] keyed by "Book:Chapter"
-        static let keyReadingHistoryArchive = "readingHistoryArchiveV1" // ReadingHistoryArchive: totals older than ~2 years
+        static let keyTotals = AppStorageKey.bookReadingTimes                   // [String: Int] all-time per-book
+        static let keyDailyTotals = AppStorageKey.dailyReadingTimes             // [String: Int] by ISO date yyyy-MM-dd
+        static let keyDailyTotalsByBook = AppStorageKey.dailyReadingTimesByBook // [String: [String: Int]] date -> (book -> seconds)
+        static let keyVisitedChapters = AppStorageKey.visitedChapters           // [String]
+        static let keyLastRead = AppStorageKey.lastReadEntry                    // JSON of LastRead
+        static let keySeenVersesByChapter = AppStorageKey.seenVersesByChapter   // [String: [Int]] keyed by "Book:Chapter"
+        static let keyChapterCompletionDates = AppStorageKey.chapterCompletionDates // [String: Date] keyed by "Book:Chapter"
+        static let keyReadingContributions = AppStorageKey.readingTimeContributionsV2
+        static let keyChapterResetDates = AppStorageKey.chapterResetDates           // [String: Date] keyed by "Book:Chapter"
+        static let keySeenVersesUpdatedAt = AppStorageKey.seenVersesUpdatedAt       // [String: Date] keyed by "Book:Chapter"
+        static let keyReadingHistoryArchive = AppStorageKey.readingHistoryArchiveV1 // ReadingHistoryArchive: totals older than ~2 years
         // Swap this to your app group if desired:
         static var provider: UserDefaults { UserDefaults.standard }
 
         // Migration flag
-        static let keyDidMigrateDailyKeysToLocal = "didMigrateDailyKeysToLocal"
+        static let keyDidMigrateDailyKeysToLocal = AppStorageKey.didMigrateDailyKeysToLocal
     }
 
     // MARK: - Models

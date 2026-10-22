@@ -16,6 +16,19 @@ extension View {
             }
         }
     }
+
+    /// Runs `action` with each notification while this view is on screen.
+    /// Use this overload when the notification's object or user-info determines whether work is needed.
+    func onNotification(
+        _ name: Notification.Name,
+        perform action: @escaping @MainActor (Notification) -> Void
+    ) -> some View {
+        task(id: name) {
+            for await notification in NotificationCenter.default.notifications(named: name) {
+                action(notification)
+            }
+        }
+    }
 }
 
 extension View {
@@ -47,6 +60,23 @@ extension NotificationCenter {
             for await _ in NotificationCenter.default.notifications(named: name) {
                 guard let owner else { return }
                 action(owner)
+            }
+        }
+    }
+
+    /// Calls `action` with the notification and `owner` on the main actor for each `name`.
+    /// Use this when the owner needs to inspect the changed key or notification payload.
+    @MainActor
+    @discardableResult
+    static func observe<Owner: AnyObject>(
+        _ name: Notification.Name,
+        for owner: Owner,
+        perform action: @escaping @MainActor (Owner, Notification) -> Void
+    ) -> Task<Void, Never> {
+        Task { @MainActor [weak owner] in
+            for await notification in NotificationCenter.default.notifications(named: name) {
+                guard let owner else { return }
+                action(owner, notification)
             }
         }
     }

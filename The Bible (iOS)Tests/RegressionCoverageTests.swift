@@ -21,8 +21,8 @@ struct RegressionCoverageTests {
 
     @Test
     func searchModelNormalizesQueryTokensAndTracksRecentSearches() {
-        UserDefaults.standard.removeObject(forKey: "bibleRecentSearches")
-        defer { UserDefaults.standard.removeObject(forKey: "bibleRecentSearches") }
+        UserDefaults.standard.removeObject(forKey: AppStorageKey.bibleRecentSearches)
+        defer { UserDefaults.standard.removeObject(forKey: AppStorageKey.bibleRecentSearches) }
 
         let model = BibleSearchModel()
         model.query = "  Faith, hope; LOVE  "
@@ -34,6 +34,50 @@ struct RegressionCoverageTests {
         model.saveRecentSearch()
         model.saveRecentSearch("faith, hope: love")
         #expect(model.recentSearches == ["faith, hope: love"])
+    }
+
+    @Test
+    func persistedKeyRegistryPreservesReleasedStorageIdentifiers() {
+        #expect(AppStorageKey.colorSchemePreference == "colorSchemePreference")
+        #expect(AppStorageKey.wordleDailyCompletedDay == "wordleDailyCompletedDay")
+        #expect(AppStorageKey.wordleDailyProgress == "wordleDailyProgress")
+        #expect(AppStorageKey.lastReadEntry == "lastReadEntry")
+        #expect(AppStorageKey.lastReadBook == "lastReadBook")
+        #expect(AppStorageKey.gameStatsLedgerOwnPayloadV1 == "gameStatsLedgerOwnPayload_v1")
+    }
+
+    @Test
+    func wordAndLastReadStateRoundTripThroughPersistedStorage() throws {
+        let defaults = UserDefaults.standard
+        let keys = [AppStorageKey.wordleDailyCompletedDay, AppStorageKey.lastReadEntry]
+        let originalValues = Dictionary(uniqueKeysWithValues: keys.map { ($0, defaults.object(forKey: $0)) })
+        defer {
+            for key in keys {
+                if let value = originalValues[key] {
+                    defaults.set(value, forKey: key)
+                } else {
+                    defaults.removeObject(forKey: key)
+                }
+            }
+            BibleStatsStore.shared.resetCaches()
+        }
+
+        defaults.set("2026-10-22", forKey: AppStorageKey.wordleDailyCompletedDay)
+        #expect(defaults.string(forKey: AppStorageKey.wordleDailyCompletedDay) == "2026-10-22")
+
+        let expectedLastRead = BibleStatsStore.LastRead(
+            bookName: "John",
+            chapterNumber: 3,
+            verseNumber: 16,
+            date: Date(timeIntervalSince1970: 1_700_000_000)
+        )
+        defaults.set(
+            try JSONEncoder().encode(expectedLastRead),
+            forKey: AppStorageKey.lastReadEntry
+        )
+        BibleStatsStore.shared.resetCaches()
+
+        #expect(BibleStatsStore.shared.loadLastRead() == expectedLastRead)
     }
 
     @Test
@@ -145,6 +189,20 @@ struct RegressionCoverageTests {
 
         #expect(!TodayChallengeStore.needsNewChallenges(snapshotDayKey: todayKey, on: today))
         #expect(TodayChallengeStore.needsNewChallenges(snapshotDayKey: todayKey, on: tomorrow))
+    }
+
+    @Test
+    func todayChallengesIgnoreUnrelatedICloudChanges() {
+        #expect(!TodayChallengeStore.shouldRefreshForCloudChange([
+            AppStorageKey.wordleDailyProgress,
+            AppStorageKey.lastReadEntry
+        ]))
+        #expect(TodayChallengeStore.shouldRefreshForCloudChange([
+            AppStorageKey.todayChallengesSnapshotV2
+        ]))
+        #expect(!TodayChallengeStore.shouldRefreshForCloudChange([
+            AppStorageKey.todayChallengesHistoryV1
+        ]))
     }
 
     @Test
