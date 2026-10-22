@@ -712,26 +712,12 @@ private struct ScriptureCrossReferenceCard: View {
     var showsSource = true
 
     var body: some View {
-        if pair.connectionExplanation != nil {
-            NavigationLink {
-                ScriptureConnectionDetailView(pair: pair)
-            } label: {
-                cardContent
-            }
-            .buttonStyle(.plain)
-            .accessibilityHint("Opens the explanation of this Scripture connection")
-        } else {
-            cardContent
-        }
-    }
-
-    private var cardContent: some View {
         HStack(alignment: .top, spacing: 10) {
             if showsSource {
-                ScriptureExcerpt(
+                ScriptureConnectionLink(
                     reference: pair.source.reference,
                     excerpt: pair.source.excerpt,
-                    showsPassageLink: pair.connectionExplanation == nil
+                    pair: pair
                 )
             }
 
@@ -740,15 +726,31 @@ private struct ScriptureCrossReferenceCard: View {
                 .foregroundStyle(.tint)
                 .padding(.top, 4)
 
-            ScriptureExcerpt(
+            ScriptureConnectionLink(
                 reference: pair.target.reference,
                 excerpt: pair.target.excerpt,
-                showsPassageLink: pair.connectionExplanation == nil
+                pair: pair
             )
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+private struct ScriptureConnectionLink: View {
+    let reference: PassageReference
+    let excerpt: String
+    let pair: ScriptureCrossReference
+
+    var body: some View {
+        NavigationLink {
+            ScriptureConnectionDetailView(pair: pair)
+        } label: {
+            ScriptureExcerpt(reference: reference, excerpt: excerpt)
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens this Scripture connection")
     }
 }
 
@@ -776,9 +778,7 @@ private struct ScriptureConnectionDetailView: View {
 
                         Divider()
 
-                        LinkedScriptureText(pair.connectionExplanation ?? "")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
+                        ScriptureConnectionExplanation(text: pair.relationshipDescription)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -810,23 +810,30 @@ private struct ScriptureConnectionPassage: View {
     }
 }
 
-private struct ScriptureExcerpt: View {
-    let reference: PassageReference
-    let excerpt: String
-    var showsPassageLink = true
+private struct ScriptureConnectionExplanation: View {
+    let text: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if showsPassageLink {
-                Link(destination: reference.url) {
-                    Text(reference.displayTitle)
-                        .font(.subheadline.weight(.semibold))
-                }
-                .accessibilityHint("Shows a preview of the passage")
-            } else {
-                Text(reference.displayTitle)
-                    .font(.subheadline.weight(.semibold))
-            }
+            Text("Relationship")
+                .font(.subheadline.weight(.semibold))
+
+            LinkedScriptureText(text)
+                .font(.body)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct ScriptureExcerpt: View {
+    let reference: PassageReference
+    let excerpt: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(reference.displayTitle)
+                .font(.subheadline.weight(.semibold))
 
             Text("“\(excerpt)”")
                 .font(.caption)
@@ -852,6 +859,38 @@ private struct ScriptureCrossReference: Identifiable, Hashable {
     let source: Source
     let target: Target
     let connectionExplanation: String?
+
+    /// Prefers pair-specific editorial copy. The fallback remains careful not to
+    /// invent a connection that is not represented in the source data.
+    var relationshipDescription: String {
+        ChapterCrossReferenceEditorialCatalog.relationshipDescription(
+            bookName: source.reference.bookName,
+            chapterNumber: source.reference.startChapter,
+            sourceVerse: source.reference.startVerse ?? source.verseNumber,
+            targetBookName: target.reference.bookName,
+            targetChapterNumber: target.reference.startChapter,
+            targetVerse: target.reference.startVerse ?? 0
+        ) ?? connectionExplanation ?? defaultRelationshipDescription
+    }
+
+    private var defaultRelationshipDescription: String {
+        switch target.reference.bookName {
+        case "Genesis":
+            "This connection follows the Genesis narrative, linking the same people, place, promise, or event at another point in the account."
+        case "Exodus", "Numbers", "Deuteronomy", "Joshua", "Judges", "1 Samuel", "2 Samuel":
+            "This later historical passage shows how a person, place, promise, or consequence from Genesis continues in Israel's story."
+        case "1 Chronicles", "2 Chronicles":
+            "This later historical record preserves the Genesis family line, place, or event and places it within Israel's history."
+        case "Psalms", "Job", "Proverbs", "Ecclesiastes":
+            "This poetic or wisdom passage reflects on an image, person, or theme introduced in Genesis and invites the two passages to be read together."
+        case "Isaiah", "Jeremiah", "Ezekiel", "Hosea", "Micah", "Malachi", "Daniel":
+            "This prophetic passage develops an image, place, person, or theological theme first introduced in Genesis."
+        case "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "Galatians", "Ephesians", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "Jude", "Revelation":
+            "This New Testament passage looks back to Genesis to interpret its people, promises, images, or themes in light of Christ and the gospel."
+        default:
+            "These passages are linked for a meaningful biblical connection. Read them together to see how the later passage echoes or develops the Genesis account."
+        }
+    }
 
     var id: String { "\(source.reference.id)-\(target.reference.id)" }
 }

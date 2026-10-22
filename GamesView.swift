@@ -514,10 +514,8 @@ private struct GameCollectionCard: View {
             .padding(.bottom, 10)
 
             if reviewIsAvailable {
-                GameCollectionReviewSection(
-                    usesExpandedLayout: usesExpandedLayout,
-                    onSelect: { onSelect(.reviewRound) }
-                )
+                GameCollectionReviewRow(onSelect: { onSelect(.reviewRound) })
+                    .padding(.bottom, 2)
             }
 
             ForEach(groups) { group in
@@ -558,29 +556,35 @@ private struct GameCollectionCard: View {
     }
 }
 
-private struct GameCollectionReviewSection: View {
-    let usesExpandedLayout: Bool
+private struct GameCollectionReviewRow: View {
     let onSelect: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Review")
-                    .font(.subheadline.weight(.bold))
-                Text("Strengthen the areas that need another pass.")
+        Button(action: onSelect) {
+            HStack(spacing: 10) {
+                Image(systemName: "arrow.clockwise.circle")
+                    .foregroundStyle(.secondary)
+
+                Text("Review missed questions")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: 0)
+
+                Text("Ready")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-            }
-            .padding(.top, 10)
-            .padding(.bottom, 6)
 
-            GameNavigationRow(
-                route: .reviewRound,
-                progress: .standard("Ready"),
-                usesExpandedLayout: usesExpandedLayout,
-                onSelect: onSelect
-            )
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
+            .padding(.vertical, 9)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens Review Round")
     }
 }
 

@@ -319,11 +319,22 @@ actor ChapterInsightsRepository {
 
         var relatedVerses: [ChapterRelatedVerse] = []
         while sqlite3_step(statement) == SQLITE_ROW {
+            let sourceVerse = Int(sqlite3_column_int(statement, 1))
+            let relatedReference = Self.columnText(statement, at: 2)
+            guard !ChapterCrossReferenceReview.excludes(
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                sourceVerse: sourceVerse,
+                relatedReference: relatedReference
+            ) else {
+                continue
+            }
+
             relatedVerses.append(
                 ChapterRelatedVerse(
                     id: Int(sqlite3_column_int(statement, 0)),
-                    sourceVerse: Int(sqlite3_column_int(statement, 1)),
-                    relatedReference: Self.columnText(statement, at: 2),
+                    sourceVerse: sourceVerse,
+                    relatedReference: relatedReference,
                     connectionExplanation: Self.optionalColumnText(statement, at: 3)
                 )
             )
