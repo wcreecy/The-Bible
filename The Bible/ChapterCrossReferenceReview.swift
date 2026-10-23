@@ -418,6 +418,83 @@ enum ChapterCrossReferenceReview {
             sourceVerse: 10,
             relatedReference: "Joshua 7:16",
             reason: "Joshua rising early occurs in unrelated scenes; Achan's lot inquiry does not explain the military preparations for Ai."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 9,
+            sourceVerse: 6,
+            relatedReference: "Joshua 5:10",
+            reason: "Both passages place Israel at Gilgal, but the Gibeonites' embassy does not develop the Passover observance there."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 11,
+            sourceVerse: 12,
+            relatedReference: "Joshua 10:28",
+            reason: "The passages use conquest language for different cities; Makkedah's fall does not interpret the destruction of Hazor's northern coalition."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 12,
+            sourceVerse: 3,
+            relatedReference: "Joshua 13:20",
+            reason: "The Salt Sea boundary of Sihon's former kingdom does not meaningfully explain the separate Reubenite city list."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 15,
+            sourceVerse: 9,
+            relatedReference: "1 Chronicles 13:6",
+            reason: "Both identify Kiriath-jearim by its alternate name Baalah, but Judah's boundary notice does not develop the later ark narrative."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 15,
+            sourceVerse: 35,
+            relatedReference: "1 Samuel 22:1",
+            reason: "The connection rests only on Adullam's place name; the Judahite town list does not contextualize David's refuge there."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 15,
+            sourceVerse: 35,
+            relatedReference: "1 Samuel 17:1",
+            reason: "The connection rests only on the nearby town Socoh; the territorial list does not contextualize the Philistine encampment."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 18,
+            sourceVerse: 16,
+            relatedReference: "2 Kings 23:10",
+            reason: "Both mention the Valley of Hinnom, but Benjamin's boundary marker does not explain Josiah's later reform at Topheth."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 18,
+            sourceVerse: 28,
+            relatedReference: "2 Samuel 21:14",
+            reason: "The connection rests on Zelah's place name; Benjamin's town list does not contextualize Saul's later burial there."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 19,
+            sourceVerse: 18,
+            relatedReference: "1 Samuel 28:4",
+            reason: "The connection rests on Shunem's place name; Issachar's town list does not explain the Philistine camp there."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 19,
+            sourceVerse: 27,
+            relatedReference: "1 Kings 9:13",
+            reason: "Both use the name Cabul, but Asher's boundary town does not establish a contextual link to Solomon's later district."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 24,
+            sourceVerse: 25,
+            relatedReference: "Exodus 15:25",
+            reason: "Both mention a statute and ordinance, but the Marah provision does not explain Joshua's covenant ceremony at Shechem."
         )
     ]
 
