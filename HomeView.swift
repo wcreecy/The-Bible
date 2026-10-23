@@ -116,12 +116,6 @@ struct HomeView: View {
         AppRouter.shared.open(.stats(.reading))
     }
 
-    /// Whether the Reading Streak card is on screen, so the header can skip repeating it.
-    private func isStreaksCardShown(usesDashboard: Bool) -> Bool {
-        guard !hiddenCards.contains(.streaks) else { return false }
-        return !usesDashboard || !showsMinimalHome
-    }
-
     // MARK: - Dynamic body using saved layout
 
     @State private var votdVM = VerseOfDayViewModel()
@@ -381,16 +375,12 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private func homeHeader(usesDashboard: Bool) -> some View {
-        let showsGoalSummary = !isStreaksCardShown(usesDashboard: usesDashboard)
-
+    private func homeHeader() -> some View {
         TitleCardView(
             isPad: isPad,
             goalMinutes: dailyGoalMinutes,
             todayReadingSeconds: bibleVM.todaySeconds,
-            // Only computed when the header actually shows it.
-            streak: showsGoalSummary ? StreakTracker.currentStreak : 0,
-            showsGoalSummary: showsGoalSummary,
+            streak: StreakTracker.currentStreak,
             onOpenGoal: openReadingStats
         )
     }
@@ -411,7 +401,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private var compactHomeContent: some View {
-        homeHeader(usesDashboard: false)
+        homeHeader()
             .frame(maxWidth: .infinity)
         if quickSearchVisible {
             SearchHomeCard(
@@ -445,7 +435,7 @@ struct HomeView: View {
             minimalHomeQuickActions
                 .frame(minHeight: max(0, availableHeight - 96), alignment: .center)
         } else {
-            homeHeader(usesDashboard: true)
+            homeHeader()
 
             if !isEditingLayout {
                 if quickSearchVisible {

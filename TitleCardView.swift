@@ -9,8 +9,6 @@ struct TitleCardView: View {
     let todayReadingSeconds: Int
     let streak: Int
     var date: Date = .now
-    /// Hidden while the Reading Streak card is on screen, so the same numbers aren't shown twice.
-    var showsGoalSummary: Bool = true
     let onOpenGoal: () -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -111,9 +109,7 @@ struct TitleCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             topRow
-            if showsGoalSummary {
-                goalSummary
-            }
+            goalSummary
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)
