@@ -1,10 +1,10 @@
 {
   "Lamentations 1": {
-    "summary": "Jerusalem is portrayed as a once-crowded, prominent city now sitting alone like a bereaved widow (Lamentations 1:1–4). Her former allies bring no comfort; her people face exile, hunger, and humiliation (Lamentations 1:2–11). The poem repeatedly connects the city’s suffering with her sins without treating that explanation as a reason to ignore her pain (Lamentations 1:5), Lamentations 1:8, Lamentations 1:18. The voice shifts into the personified city’s own appeal, asking passersby to notice her sorrow and pleading for the LORD to see her distress and the cruelty of her enemies (Lamentations 1:12–22). Its central purpose is to give words to the devastation of Jerusalem, combining communal grief, an acknowledgement of wrongdoing, and a cry for God to hear.",
-    "whereWeAre": "The Babylonian conquest left Jerusalem’s defenses and temple ruined, displaced members of the population, and disrupted local worship and political life (compare 2 Kings 25:1–21). Vacant roads to festivals, empty gates and the loss of civic dignity are specific ways the poem communicates a devastated capital (1:4–6).",
+    "summary": "Jerusalem is portrayed as a once-crowded, prominent city now sitting alone like a bereaved widow (Lamentations 1:1–4). Her former allies bring no comfort; her people face exile, hunger, and humiliation (Lamentations 1:2–11). The poem repeatedly names the city’s own sin as part of her suffering, yet still gives full voice to her pain rather than treating the explanation as a reason to minimize it (Lamentations 1:5, 1:8, 1:18). The voice shifts into the personified city’s own appeal, asking passersby to notice her sorrow and pleading for the LORD to see her distress and the cruelty of her enemies (Lamentations 1:12–22). Its central purpose is to give words to the devastation of Jerusalem, combining communal grief, an acknowledgement of wrongdoing, and a cry for God to hear.",
+    "whereWeAre": "Jeremiah's final chapter closed with a historical account of Jerusalem's fall and Jehoiachin's unexpected release, a restrained note of hope after decades of warning. Lamentations opens in the wake of that same fall: Jerusalem itself, personified as a grieving widow, voices the grief Jeremiah's warnings finally became. Lamentations 2 continues this same grief, describing the destruction in the stark language of God's own judgment.",
     "keyFigures": [
       {
-        "name": "Daughter of Zion / Jerusalem",
+        "name": "Daughter of Zion (Jerusalem)",
         "role": "Personified city who speaks as an afflicted woman. Embodies the city’s residents, losses and appeals for compassion (1:1, 12–22)."
       },
       {
@@ -23,7 +23,7 @@
     "keyThemes": [
       {
         "theme": "Grief after catastrophe",
-        "explanation": "",
+        "explanation": "Comparing Jerusalem to a widow who once had many lovers but now has no comforter turns a military defeat into a deeply personal loss of relationship and status (1:1-2).",
         "references": [
           "Lamentations 1:1-4",
           "Lamentations 1:12-16"
@@ -31,7 +31,7 @@
       },
       {
         "theme": "Sin and accountability",
-        "explanation": "",
+        "explanation": "The city's own admission, 'the LORD is righteous; for I have rebelled against his commandment,' keeps the poem from blaming the disaster on anyone but Jerusalem itself (1:18).",
         "references": [
           "Lamentations 1:5-9",
           "Lamentations 1:18"
@@ -39,7 +39,7 @@
       },
       {
         "theme": "Abandonment and failed support",
-        "explanation": "",
+        "explanation": "Allies Jerusalem once trusted are named among those who now betray or ignore her, showing that political alliances offered no real security when disaster came (1:2, 1:19).",
         "references": [
           "Lamentations 1:2",
           "Lamentations 1:17-19"
@@ -47,7 +47,7 @@
       },
       {
         "theme": "Appeal for divine attention",
-        "explanation": "",
+        "explanation": "Asking passersby, 'is it nothing to you, all ye that pass by? behold, and see,' and then asking the same of God turns private grief into a public plea for someone, anyone, to notice (1:12, 1:20).",
         "references": [
           "Lamentations 1:20-22"
         ]
@@ -57,14 +57,14 @@
   },
   "Lamentations 2": {
     "summary": "The second poem describes Jerusalem’s devastation in language that attributes overwhelming judgment to the LORD: defenses collapse, royal and priestly leadership are humbled, and the sanctuary is destroyed (Lamentations 2:1–9). The poet portrays elders sitting silently in mourning while children and infants faint for lack of food (Lamentations 2:10–12). Jerusalem’s prophets are criticized for failing to expose wrongdoing, and enemies mock the fallen city (Lamentations 2:13–17). Rather than ending in a neat resolution, the chapter calls Zion to cry out continually and concludes with a desperate appeal over the suffering of children, families, priests and prophets (Lamentations 2:18–22). The chapter’s purpose is to face the scale of the disaster, refuse false reassurance, and articulate prayer in the midst of anguish.",
-    "whereWeAre": "Biblical accounts describe a prolonged siege, the burning of the temple and the removal of leaders (2 Kings 25:1–21; Jeremiah 52:4–27). References to starving children, ruined defenses and disrupted worship reflect the kinds of conditions associated with a besieged and conquered city (2:7–12).",
+    "whereWeAre": "Lamentations 1 gave the devastated city its own voice to mourn her losses. Here the poem describes that same destruction more directly as the LORD's own judgment, picturing ruined defenses, humbled leaders, and starving children, before ending in a call to cry out rather than stay silent. Lamentations 3 turns from this communal description to one suffering individual's own extended lament and fragile hope.",
     "keyFigures": [
       {
         "name": "The LORD",
         "role": "Divine actor described in the poem’s language of judgment. The speaker presents Jerusalem’s defeat as theologically grave, not merely a military reversal (2:1–8, 17)."
       },
       {
-        "name": "Daughter of Zion / Jerusalem",
+        "name": "Daughter of Zion (Jerusalem)",
         "role": "Personified community commanded to cry out. Provides a voice for collective grief and desperate petition (2:13, 18–22)."
       },
       {
@@ -83,14 +83,14 @@
     "keyThemes": [
       {
         "theme": "Judgment and the destruction of institutions",
-        "explanation": "",
+        "explanation": "Listing the fall of the king, the priests, and the sanctuary together shows that this judgment reached every pillar of Judah's public life, not just its army (2:1-9).",
         "references": [
           "Lamentations 2:1-9"
         ]
       },
       {
         "theme": "The suffering of the vulnerable",
-        "explanation": "",
+        "explanation": "Children fainting for bread in the streets and asking their mothers where it is makes the famine's cost impossible to read as a purely political or military matter (2:11-12).",
         "references": [
           "Lamentations 2:10-12",
           "Lamentations 2:19-20"
@@ -98,14 +98,14 @@
       },
       {
         "theme": "Danger of misleading reassurance",
-        "explanation": "",
+        "explanation": "Prophets who saw 'vain and foolish things' instead of exposing Judah's sin are blamed for leaving the people unprepared for the judgment that still came (2:14).",
         "references": [
           "Lamentations 2:13-14"
         ]
       },
       {
         "theme": "Lament as sustained prayer",
-        "explanation": "",
+        "explanation": "Being told to 'pour out thine heart like water' pictures prayer in disaster as something continuous and unguarded, not a single polished request (2:19).",
         "references": [
           "Lamentations 2:18-22"
         ]
@@ -115,7 +115,7 @@
   },
   "Lamentations 3": {
     "summary": "A first-person speaker begins with an extended account of affliction under divine anger, portraying confinement, bodily suffering, unanswered prayer and the near loss of hope (Lamentations 3:1–20). Then the poem turns: remembering the LORD’s steadfast love and mercies gives reason to wait, although grief and judgment have not vanished (Lamentations 3:21–33). The speaker says God does not approve injustice and urges people to examine their conduct and return to him (Lamentations 3:34–42). Fresh tears, fear and persecution follow, along with recollection of a cry from the pit and an appeal for God to vindicate the suffering person (Lamentations 3:43–66). The chapter’s central movement is not from sorrow to easy happiness but from near despair to a fragile, active hope expressed through lament, repentance and prayer.",
-    "whereWeAre": "Judah’s defeat and the distress of survivors and displaced people form the background; some images of imprisonment and pursuit may be figurative, and no distinct biographical episode can be established for the speaker. The sequence of affliction, remembered mercy, social ethics and renewed petition dramatizes how a shattered community could think and pray after disaster.",
+    "whereWeAre": "Lamentations 2 ended calling Zion to cry out continually over her suffering. Here a single voice, 'the man that hath seen affliction,' does exactly that: moving from near despair under God's anger to remembered mercy, and from self-examination to a plea for justice against his enemies. Lamentations 4 returns to the city's own voice, contrasting Jerusalem's former splendor with its present ruin.",
     "keyFigures": [
       {
         "name": "The first-person sufferer (“the man”)",
@@ -126,8 +126,8 @@
         "role": "God addressed amid accusation, trust and petition. The poem holds together divine judgment, mercy and appeals for justice (3:22–33, 55–66)."
       },
       {
-        "name": "The people / the living",
-        "role": "Community addressed with calls to self-examination Broadens personal lament into collective responsibility and repentance (3:39–42)."
+        "name": "The people (the living)",
+        "role": "Community addressed with calls to self-examination. Broadens personal lament into collective responsibility and repentance (3:39–42)."
       },
       {
         "name": "Enemies and pursuers",
@@ -137,35 +137,35 @@
     "keyThemes": [
       {
         "theme": "Steadfast love amid suffering",
-        "explanation": "",
+        "explanation": "Remembering that 'his compassions fail not' and are 'new every morning' becomes the hinge of the whole chapter, turning near despair into grounds for hope without denying the suffering that came first (3:22-23).",
         "references": [
           "Lamentations 3:21-26"
         ]
       },
       {
         "theme": "Waiting and patience",
-        "explanation": "",
+        "explanation": "Calling it 'good' to both hope and 'quietly wait for the salvation of the LORD' treats patience itself as a form of faith, not merely delay (3:25-26).",
         "references": [
           "Lamentations 3:25-33"
         ]
       },
       {
         "theme": "Self-examination and return",
-        "explanation": "",
+        "explanation": "The call to 'search and try our ways, and turn again to the LORD' moves the poem from personal suffering to communal responsibility for what caused it (3:40).",
         "references": [
           "Lamentations 3:39-42"
         ]
       },
       {
         "theme": "Justice and concern for the oppressed",
-        "explanation": "",
+        "explanation": "Insisting that the LORD does not approve crushing prisoners or denying justice shows that God's own character, not just Judah's judgment, is at stake in how the oppressed are treated (3:34-36).",
         "references": [
           "Lamentations 3:34-36"
         ]
       },
       {
         "theme": "Persevering lament",
-        "explanation": "",
+        "explanation": "Recalling a specific past rescue, 'out of the low dungeon,' while still pleading for justice now shows lament continuing even after hope has already been found once (3:55-58).",
         "references": [
           "Lamentations 3:48-58"
         ]
@@ -175,10 +175,10 @@
   },
   "Lamentations 4": {
     "summary": "The fourth lament contrasts Jerusalem’s former splendor with its present degradation. Gold is dimmed, children lack food, and people once privileged now suffer terrible privation (Lamentations 4:1–10). The poem remembers the burning of Zion and attributes disaster partly to wrongdoing among prophets and priests who shed innocent blood (Lamentations 4:11–16). Expectations of rescue from an outside nation proved futile, and the LORD’s anointed king was captured (Lamentations 4:17–20). The conclusion addresses Edom with a warning that its apparent security will not last, while announcing that Zion’s punishment will reach an end (Lamentations 4:21–22). The poem confronts the reversal of fortune, the burden borne by children, leadership failure and the hope that devastation is not the last word.",
-    "whereWeAre": "Biblical histories portray starvation during the siege, the escape and capture of King Zedekiah and the burning of Jerusalem (2 Kings 25:3–10); 4:20 does not explicitly identify the unnamed anointed one. Loss of status, a failed search for foreign help, and leadership misconduct are woven together to interpret the city’s ruin.",
+    "whereWeAre": "Lamentations 3 ended with one sufferer's personal plea for justice. Here the lament widens back out to the whole city, remembering Jerusalem's former honor against its present famine and shame, naming the failures of prophets and priests, and warning Edom that its own judgment is still coming. Lamentations 5 closes the book with the community's own collective prayer.",
     "keyFigures": [
       {
-        "name": "Daughter of Zion / Jerusalem",
+        "name": "Daughter of Zion (Jerusalem)",
         "role": "Personified city and its afflicted population. Represents the destruction of a once honored community (4:1–12, 21–22)."
       },
       {
@@ -194,46 +194,46 @@
         "role": "A royal figure described as captured. Expresses shattered reliance on Judah’s king; the poem does not name him (4:20)."
       },
       {
-        "name": "Edom / daughter of Edom",
+        "name": "Edom (daughter of Edom)",
         "role": "Neighboring people addressed at the poem’s end. The oracle contrasts Edom’s celebration with future accountability (4:21–22)."
       },
       {
         "name": "The LORD",
-        "role": "God whose wrath and future dealings are invoked Judgment and the possibility of an end to Zion’s punishment frame the poem (4:11, 22)."
+        "role": "God whose wrath and future dealings are invoked. Judgment and the possibility of an end to Zion’s punishment frame the poem (4:11, 22)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Reversal of social standing",
-        "explanation": "",
+        "explanation": "Gold grown dim and children once worth their weight in gold now valued like broken clay turns economic language itself into a picture of the city's fall (4:1-2).",
         "references": [
           "Lamentations 4:1-8"
         ]
       },
       {
         "theme": "Famine and civilian suffering",
-        "explanation": "",
+        "explanation": "Babies' tongues cleaving to the roof of their mouths for thirst makes the famine's horror physical and immediate rather than a statistic (4:4).",
         "references": [
           "Lamentations 4:3-10"
         ]
       },
       {
         "theme": "Accountability of religious leaders",
-        "explanation": "",
+        "explanation": "Blaming prophets and priests for shedding 'the blood of the just' names specific moral failure among Judah's own leaders as part of the reason for judgment (4:13).",
         "references": [
           "Lamentations 4:11-16"
         ]
       },
       {
         "theme": "Misplaced hope in political rescue",
-        "explanation": "",
+        "explanation": "Watching in vain 'for a nation that could not save' exposes the people's hope in Egypt as a hope placed in exactly the wrong source (4:17).",
         "references": [
           "Lamentations 4:17-20"
         ]
       },
       {
         "theme": "Judgment and future reversal",
-        "explanation": "",
+        "explanation": "Telling Edom to prepare for its own cup of judgment while promising that Zion's punishment will one day end gives the chapter's final word to reversal rather than permanence (4:21-22).",
         "references": [
           "Lamentations 4:21-22"
         ]
@@ -243,7 +243,7 @@
   },
   "Lamentations 5": {
     "summary": "The final chapter is a collective prayer beginning, “Remember, O LORD,” as the speakers ask God to look at their disgrace (Lamentations 5:1). The community describes dispossession, hunger, forced labor, insecure travel, exploitation and the breakdown of social life (Lamentations 5:2–14). Joy has ceased, and the desolate condition of Mount Zion becomes a symbol of the larger ruin (Lamentations 5:15–18). Against this loss, the community confesses that the LORD reigns forever and asks to be restored to him so that its days may be renewed (Lamentations 5:19–21). The poem ends with an unsettling question about rejection and anger rather than a definite declaration that renewal has already arrived (Lamentations 5:22). Its purpose is to keep communal suffering before God and ask for restored relationship amid uncertainty.",
-    "whereWeAre": "The biblical narrative records deportations, ruined buildings and the collapse of Judah’s monarchy (2 Kings 25:8–21). The chapter portrays the social and economic burdens remaining after such a catastrophe. The collective voice turns the preceding poetic laments into a direct request for the restoration of the community and its relationship with God.",
+    "whereWeAre": "Lamentations 4 warned Edom that celebrating Jerusalem's fall would not go unanswered. Here the book closes with a communal prayer, 'Remember, O LORD,' bringing the community's hunger, forced labor, and lost joy before God and asking to be restored, though the book ends with an honest, unresolved question rather than a settled answer. The next book, Ezekiel, continues this same exile with a very different kind of prophetic voice, visions given to a priest already living among the captives in Babylon.",
     "keyFigures": [
       {
         "name": "The community speaking as “we”",
@@ -259,41 +259,41 @@
       },
       {
         "name": "Servants and oppressors",
-        "role": "Persons described as ruling over or humiliating the community Convey a loss of political freedom and dignity (5:5, 8, 11–13)."
+        "role": "Persons described as ruling over or humiliating the community. Convey a loss of political freedom and dignity (5:5, 8, 11–13)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Collective remembrance and lament",
-        "explanation": "",
+        "explanation": "Opening with 'Remember, O LORD' and 'consider, and behold our reproach' asks God to actively look at the community's situation, not simply to be informed of it in passing (5:1).",
         "references": [
           "Lamentations 5:1-5"
         ]
       },
       {
         "theme": "Social suffering after conquest",
-        "explanation": "",
+        "explanation": "Paying for water and wood that once belonged freely to the people turns conquest's cost into something felt in ordinary daily transactions (5:4).",
         "references": [
           "Lamentations 5:6-14"
         ]
       },
       {
         "theme": "Grief over lost worship and joy",
-        "explanation": "",
+        "explanation": "Noting that 'the joy of our heart is ceased; our dance is turned into mourning' measures the city's loss in terms of its missing celebration, not only its missing buildings (5:15).",
         "references": [
           "Lamentations 5:15-18"
         ]
       },
       {
         "theme": "Divine sovereignty and petition for restoration",
-        "explanation": "",
+        "explanation": "Confessing that the LORD's 'throne from generation to generation' endures even while asking him to 'turn us' shows trust in God's rule surviving even a request that assumes things are not yet right (5:19, 5:21).",
         "references": [
           "Lamentations 5:19-21"
         ]
       },
       {
         "theme": "Unresolved ending",
-        "explanation": "",
+        "explanation": "Ending with 'thou hast utterly rejected us; thou art very wroth against us' instead of a settled answer leaves the book's hope genuinely uncertain rather than resolved (5:22).",
         "references": [
           "Lamentations 5:21-22"
         ]

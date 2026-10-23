@@ -222,6 +222,202 @@ enum ChapterCrossReferenceReview {
             sourceVerse: 34,
             relatedReference: "Leviticus 26:46",
             reason: "Both are editorial closing formulas for Sinai legislation, not a contextual relationship between their respective laws."
+        ),
+        Entry(
+            bookName: "Leviticus",
+            chapterNumber: 23,
+            sourceVerse: 40,
+            relatedReference: "John 12:13",
+            reason: "Both passages mention palm branches, but the Feast of Tabernacles ritual and Jesus' triumphal entry have no direct contextual relationship."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 27,
+            sourceVerse: 14,
+            relatedReference: "Exodus 17:7",
+            reason: "Both recall water-related rebellion, but Rephidim's Massah and Meribah is not the Kadesh rebellion for which Moses is judged."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 27,
+            sourceVerse: 21,
+            relatedReference: "1 Samuel 28:6",
+            reason: "Both mention inquiry by Urim, but Saul's unanswered inquiry does not interpret Joshua's commission through Eleazar."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 29,
+            sourceVerse: 2,
+            relatedReference: "Numbers 28:27",
+            reason: "The passages prescribe similar festival offerings, but the Day of Atonement and the seventh-month trumpet festival are distinct rites."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 29,
+            sourceVerse: 39,
+            relatedReference: "Deuteronomy 12:6",
+            reason: "Both list offerings brought to worship, but the broad central-sanctuary instruction does not explain this festival-offering summary."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 32,
+            sourceVerse: 38,
+            relatedReference: "Isaiah 46:1",
+            reason: "The connection rests on the name Nebo; a rebuilt town and Babylon's god are not contextually linked here."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 34,
+            sourceVerse: 11,
+            relatedReference: "2 Kings 23:33",
+            reason: "Both name Riblah, but the boundary description does not develop Pharaoh Necho's later imprisonment of Jehoahaz there."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 35,
+            sourceVerse: 1,
+            relatedReference: "Numbers 33:50",
+            reason: "Both introduce commands in the plains of Moab, but they govern different laws and share only a setting formula."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 35,
+            sourceVerse: 1,
+            relatedReference: "Numbers 36:13",
+            reason: "The final editorial location formula does not specifically interpret the Levite-city legislation."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 35,
+            sourceVerse: 1,
+            relatedReference: "Numbers 26:63",
+            reason: "Both locate Israel near Jericho, but the census setting does not meaningfully develop the Levite-city law."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 36,
+            sourceVerse: 13,
+            relatedReference: "Numbers 26:3",
+            reason: "Both use the plains-of-Moab setting, but the census command is not a substantive counterpart to this closing formula."
+        ),
+        Entry(
+            bookName: "Numbers",
+            chapterNumber: 36,
+            sourceVerse: 13,
+            relatedReference: "Numbers 35:1",
+            reason: "The chapter's closing formula does not specifically interpret the Levite-city legislation."
+        ),
+        Entry(
+            bookName: "Deuteronomy",
+            chapterNumber: 1,
+            sourceVerse: 6,
+            relatedReference: "Exodus 3:1",
+            reason: "Both name Horeb, but the burning bush account does not explain Israel's later departure from Sinai."
+        ),
+        Entry(
+            bookName: "Deuteronomy",
+            chapterNumber: 1,
+            sourceVerse: 15,
+            relatedReference: "1 Samuel 8:12",
+            reason: "Both mention military officers, but Samuel's warning about royal conscription does not develop Moses' appointment of wilderness officials."
+        ),
+        Entry(
+            bookName: "Deuteronomy",
+            chapterNumber: 1,
+            sourceVerse: 15,
+            relatedReference: "Numbers 31:14",
+            reason: "The shared officer titles do not create a contextual link between appointing judges and disciplining Midian-war commanders."
+        ),
+        Entry(
+            bookName: "Deuteronomy",
+            chapterNumber: 1,
+            sourceVerse: 46,
+            relatedReference: "Numbers 20:1",
+            reason: "Both mention Kadesh, but the extended stay after the spies and the later Meribah episode are distinct events."
+        ),
+        Entry(
+            bookName: "Deuteronomy",
+            chapterNumber: 2,
+            sourceVerse: 37,
+            relatedReference: "Genesis 32:22",
+            reason: "The connection rests on the Jabbok's name; Jacob's crossing does not interpret Israel's Ammonite boundary restriction."
+        ),
+        Entry(
+            bookName: "Deuteronomy",
+            chapterNumber: 3,
+            sourceVerse: 7,
+            relatedReference: "Joshua 8:27",
+            reason: "Both permit taking war booty, but Ai's conquest does not interpret the campaign against Og."
+        ),
+        Entry(
+            bookName: "Deuteronomy",
+            chapterNumber: 3,
+            sourceVerse: 17,
+            relatedReference: "Joshua 3:16",
+            reason: "Both mention the Sea of Arabah, but the Jordan crossing miracle does not develop this territorial boundary description."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 2,
+            sourceVerse: 14,
+            relatedReference: "Genesis 24:49",
+            reason: "Both use a formal loyalty phrase, but Rahab's protection agreement does not interpret the servant's request for Abraham's family." 
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 3,
+            sourceVerse: 7,
+            relatedReference: "1 Chronicles 29:25",
+            reason: "Both describe God magnifying a leader, but Solomon's royal establishment does not develop Joshua's Jordan-crossing vindication."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 3,
+            sourceVerse: 16,
+            relatedReference: "Deuteronomy 3:17",
+            reason: "The connection rests on Jordan and the Sea of Arabah; the territorial boundary does not interpret the crossing miracle."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 5,
+            sourceVerse: 13,
+            relatedReference: "Numbers 22:23",
+            reason: "Both describe an angel with a drawn sword, but Balaam's confrontation does not interpret Joshua's encounter with the Lord's commander."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 6,
+            sourceVerse: 12,
+            relatedReference: "Joshua 3:1",
+            reason: "The link only follows narrative order from Shittim to Jericho and does not connect Rahab's preservation to the departure for the Jordan."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 7,
+            sourceVerse: 2,
+            relatedReference: "Joshua 18:12",
+            reason: "Both mention the Bethel region, but the Benjaminite boundary does not interpret the reconnaissance of Ai."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 7,
+            sourceVerse: 15,
+            relatedReference: "Genesis 34:7",
+            reason: "The passages use a general term for disgraceful wrongdoing but address unrelated offenses and judgments."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 7,
+            sourceVerse: 26,
+            relatedReference: "Joshua 8:29",
+            reason: "Both describe a stone heap after an execution, but Achan's judgment does not interpret the separate treatment of Ai's king."
+        ),
+        Entry(
+            bookName: "Joshua",
+            chapterNumber: 8,
+            sourceVerse: 10,
+            relatedReference: "Joshua 7:16",
+            reason: "Joshua rising early occurs in unrelated scenes; Achan's lot inquiry does not explain the military preparations for Ai."
         )
     ]
 

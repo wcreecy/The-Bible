@@ -50,7 +50,7 @@ THEMES = {
     1: {"Grief after catastrophe": "Comparing Jerusalem to a widow who once had many lovers but now has no comforter turns a military defeat into a deeply personal loss of relationship and status (1:1-2).",
         "Sin and accountability": "The city's own admission, 'the LORD is righteous; for I have rebelled against his commandment,' keeps the poem from blaming the disaster on anyone but Jerusalem itself (1:18).",
         "Abandonment and failed support": "Allies Jerusalem once trusted are named among those who now betray or ignore her, showing that political alliances offered no real security when disaster came (1:2, 1:19).",
-        "Appeal for divine attention": "Asking passersby, 'is it nothing to you... behold, and see,' and then asking the same of God turns private grief into a public plea for someone, anyone, to notice (1:12, 1:20)."},
+        "Appeal for divine attention": "Asking passersby, 'is it nothing to you, all ye that pass by? behold, and see,' and then asking the same of God turns private grief into a public plea for someone, anyone, to notice (1:12, 1:20)."},
     2: {"Judgment and the destruction of institutions": "Listing the fall of the king, the priests, and the sanctuary together shows that this judgment reached every pillar of Judah's public life, not just its army (2:1-9).",
         "The suffering of the vulnerable": "Children fainting for bread in the streets and asking their mothers where it is makes the famine's cost impossible to read as a purely political or military matter (2:11-12).",
         "Danger of misleading reassurance": "Prophets who saw 'vain and foolish things' instead of exposing Judah's sin are blamed for leaving the people unprepared for the judgment that still came (2:14).",
@@ -65,11 +65,11 @@ THEMES = {
         "Accountability of religious leaders": "Blaming prophets and priests for shedding 'the blood of the just' names specific moral failure among Judah's own leaders as part of the reason for judgment (4:13).",
         "Misplaced hope in political rescue": "Watching in vain 'for a nation that could not save' exposes the people's hope in Egypt as a hope placed in exactly the wrong source (4:17).",
         "Judgment and future reversal": "Telling Edom to prepare for its own cup of judgment while promising that Zion's punishment will one day end gives the chapter's final word to reversal rather than permanence (4:21-22)."},
-    5: {"Collective remembrance and lament": "Opening with 'Remember, O LORD' and 'consider... our reproach' asks God to actively look at the community's situation, not simply to be informed of it in passing (5:1).",
+    5: {"Collective remembrance and lament": "Opening with 'Remember, O LORD' and 'consider, and behold our reproach' asks God to actively look at the community's situation, not simply to be informed of it in passing (5:1).",
         "Social suffering after conquest": "Paying for water and wood that once belonged freely to the people turns conquest's cost into something felt in ordinary daily transactions (5:4).",
         "Grief over lost worship and joy": "Noting that 'the joy of our heart is ceased; our dance is turned into mourning' measures the city's loss in terms of its missing celebration, not only its missing buildings (5:15).",
         "Divine sovereignty and petition for restoration": "Confessing that the LORD's 'throne from generation to generation' endures even while asking him to 'turn us' shows trust in God's rule surviving even a request that assumes things are not yet right (5:19, 5:21).",
-        "Unresolved ending": "Closing with a question instead of an answer, 'or hast thou utterly rejected us,' leaves the book's hope genuinely uncertain rather than resolved (5:22)."},
+        "Unresolved ending": "Ending with 'thou hast utterly rejected us; thou art very wroth against us' instead of a settled answer leaves the book's hope genuinely uncertain rather than resolved (5:22)."},
 }
 
 
