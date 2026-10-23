@@ -64,13 +64,12 @@ WWA = {
         "with dishonest scales and can't wait for holy days to end so they can resume business. The chapter's "
         "most severe warning, a coming famine not of food but of hearing God's word, prepares for chapter 9's "
         "final vision, where no hiding place can escape the LORD at all."),
-    9: ("Chapter 8 warned of a coming famine of hearing the words of the LORD, as the people's resistance to "
-        "correction finally closes off access to God's word itself (Amos 8:11–12). Chapter 9 delivers the "
-        "book's final vision: no hiding place, from the depths of the sea to the heights of heaven, can "
-        "shelter those under judgment, yet the LORD promises Israel will not be destroyed completely. The book "
-        "closes with hope rather than ruin, promising to raise up David's fallen house and resettle the people "
-        "securely in their own land, before Obadiah, the next book, turns to a single, focused judgment oracle "
-        "against Edom alone."),
+    9: ("Chapter 8 warned of a coming famine of hearing the words of the LORD (Amos 8:11–12). "
+        "Chapter 9 delivers the book's final vision: no hiding place, from the depths of the sea to the "
+        "heights of heaven, can shelter those under judgment, yet the LORD promises Israel will not be "
+        "destroyed completely. The book closes with hope instead of ruin, promising to raise up David's "
+        "fallen house and resettle the people in their own land, before Obadiah, the next book, turns to a "
+        "single judgment oracle against Edom alone."),
 }
 
 SUMMARY_FIXES = {
@@ -91,6 +90,8 @@ SUMMARY_FIXES = {
     5: [
         ("Amos sings a lament over 'virgin Israel' as though she has already fallen (Amos 5:1–3).",
          "Amos sings a lament over the \"virgin of Israel\" as though she has already fallen (Amos 5:1–3)."),
+        ("deprive the poor of justice (Amos 5:7), Amos 5:10–13.",
+         "deprive the poor of justice (Amos 5:7, 10–13)."),
         ("The 'day of the LORD,' expected by some as deliverance, will instead be darkness for those under "
          "judgment (Amos 5:18–20).",
          "The \"day of the LORD,\" expected by some as deliverance, will instead be darkness for those under "
@@ -128,7 +129,7 @@ ROLE_FIXES = {
     1: {"Uzziah and Jeroboam son of Joash":
         "Kings used in the opening date. Locate Amos in the period of Judah and Israel's divided monarchies "
         "(Amos 1:1)"},
-    3: {"Amos":
+    3: {"Amos / prophets":
         "Prophetic messenger in this oracle. Insists that the LORD reveals his plans to his servants the "
         "prophets before compelling Amos himself to speak (Amos 3:7-8)"},
     6: {"Secure leaders of Zion and Samaria":
@@ -140,7 +141,10 @@ ROLE_FIXES = {
     8: {"Merchants who oppress the needy":
         "Accused economic actors. Manipulate weights, prices, and sale practices (Amos 8:4-6)"},
     9: {"The LORD God of hosts":
-        "Speaker and visionary figure. Pronounces judgment and promises future restoration (Amos 9:1-15)"},
+        "Speaker and visionary figure. Pronounces judgment and promises future restoration (Amos 9:1-15)",
+        "David":
+        "Earlier royal ancestor named in an image. His fallen tabernacle stands for a future restoration "
+        "associated with Davidic rule (Amos 9:11)"},
 }
 
 THEMES = {
@@ -201,7 +205,7 @@ THEMES = {
             "Five disasters, famine, drought, blight, plague, and military defeat, are each followed by the "
             "same refrain, that Israel still did not return to God, showing a pattern of hardened resistance "
             "rather than isolated misfortune (4:6-11).",
-        "God's sovereign authority":
+        "God’s sovereign authority":
             "The closing hymn names God as the one who forms mountains, creates wind, and turns day into "
             "night, grounding the command to prepare to meet him in his power over the whole created order "
             "(4:12-13).",

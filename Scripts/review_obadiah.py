@@ -86,28 +86,25 @@ def apply_chapter_insights():
     entry["summary"] = SUMMARY
 
     figures = entry["keyFigures"]
-    merged_index = None
-    for i, fig in enumerate(figures):
-        if fig["name"] == MERGE_NAME:
-            merged_index = i
-        elif fig["name"] in NAME_FIXES:
+    names = [fig["name"] for fig in figures]
+    if MERGE_NAME in names:
+        rebuilt = []
+        for fig in figures:
+            if fig["name"] == MERGE_NAME:
+                rebuilt.append(MERGED_FIGURE)
+            elif fig["name"] == MERGE_WITH:
+                continue
+            else:
+                rebuilt.append(fig)
+        figures[:] = rebuilt
+    elif not any(fig["name"] == MERGED_FIGURE["name"] for fig in figures):
+        raise SystemExit("merge source figure not found and merge not already applied")
+
+    for fig in figures:
+        if fig["name"] in NAME_FIXES:
             fig["name"] = NAME_FIXES[fig["name"]]
         elif fig["name"] in ROLE_FIXES:
             fig["role"] = ROLE_FIXES[fig["name"]]
-    if merged_index is None:
-        if not any(fig["name"] == MERGED_FIGURE["name"] for fig in figures):
-            raise SystemExit("merge source figure not found and merge not already applied")
-    else:
-        figures[merged_index] = MERGED_FIGURE
-        figures[:] = [fig for fig in figures if fig["name"] != MERGE_WITH or fig is MERGED_FIGURE]
-        # Remove the now-redundant second figure, keeping the merged entry in place.
-        kept = []
-        seen_merge = False
-        for fig in figures:
-            if fig["name"] == MERGE_WITH:
-                continue
-            kept.append(fig)
-        figures[:] = kept
 
     seen = set()
     for theme in entry["keyThemes"]:

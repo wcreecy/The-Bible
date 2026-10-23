@@ -40,7 +40,7 @@ SUMMARY_FIXES = {
     1: [
         ("The shortage disrupts the grain and drink offerings at the house of the LORD (Joel 1:9), Joel 1:13.",
          "The shortage disrupts the grain and drink offerings at the house of the LORD (Joel 1:9, 13)."),
-        ("He names the approaching ‘day of the LORD’ as a time of destruction (Joel 1:15).",
+        ("He names the approaching 'day of the LORD' as a time of destruction (Joel 1:15).",
          "He names the approaching “day of the LORD” as a time of destruction (Joel 1:15)."),
         ("Its main message is that a devastating communal crisis calls for serious lament and a collective "
          "turning toward God; the text does not give an independent historical date for the disaster.",
@@ -52,7 +52,7 @@ SUMMARY_FIXES = {
          "both remains debated.",
          "The imagery may extend the locust plague into something larger, picture a human army, or "
          "deliberately combine both into one picture of unstoppable judgment."),
-        ("and to ‘rend your heart, and not your garments’ (Joel 2:12–13).",
+        ("and to 'rend your heart, and not your garments' (Joel 2:12–13).",
          "and to “rend your heart, and not your garments” (Joel 2:12–13)."),
         ("The chapter connects sincere repentance, promised restoration, and wider participation in God's "
          "Spirit; its images and fulfillment are read differently among religious traditions.",
@@ -60,7 +60,7 @@ SUMMARY_FIXES = {
          "Spirit, a promise the New Testament identifies with the day of Pentecost (Acts 2:16–21)."),
     ],
     3: [
-        ("God summons nations to the ‘valley of Jehoshaphat’ because, according to the oracle,",
+        ("God summons nations to the 'valley of Jehoshaphat' because, according to the oracle,",
          "God summons nations to the “valley of Jehoshaphat” because, according to the oracle,"),
         ("Its central contrast is judgment on oppressive nations and hope for Zion; details such as the "
          "valley's precise location and fulfillment timetable are not established by the text.",
@@ -143,7 +143,7 @@ AUDIENCE_FIXES = {
 }
 
 OVERVIEW_FIX = (
-    "The ‘ministers of the altar,’ summoned to lead the people in fasting and prayer.",
+    "The 'ministers of the altar,' summoned to lead the people in fasting and prayer.",
     "The “ministers of the altar,” summoned to lead the people in fasting and prayer.",
 )
 

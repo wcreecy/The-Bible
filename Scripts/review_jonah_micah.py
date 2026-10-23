@@ -66,6 +66,7 @@ JONAH_SUMMARY_FIXES = {
 }
 
 JONAH_NAME_FIXES = {
+    2: {"Those who regard lying vanities / worthless idols": "Those who regard lying vanities"},
     3: {"The LORD / God": "The LORD"},
     4: {"The LORD / God": "The LORD"},
 }
@@ -101,8 +102,6 @@ JONAH_ROLE_FIXES = {
             "in the narrative (4:11)",
     },
 }
-
-JONAH_NAME_KEY = {"Those who regard lying vanities / worthless idols": "Those who regard lying vanities"}
 
 JONAH_THEMES = {
     1: {
@@ -357,11 +356,9 @@ MICAH_THEMES = {
 }
 
 
-def apply_chapter_insights(path_name, book, chapters, wwa, summary_fixes, name_fixes, role_fixes, themes,
-                            name_key_overrides=None):
+def apply_chapter_insights(path_name, book, chapters, wwa, summary_fixes, name_fixes, role_fixes, themes):
     path = ROOT / "chapter_insights" / path_name
     data = load(path)
-    name_key_overrides = name_key_overrides or {}
     for n in chapters:
         key = f"{book} {n}"
         entry = data[key]
@@ -373,8 +370,7 @@ def apply_chapter_insights(path_name, book, chapters, wwa, summary_fixes, name_f
         for fig in entry["keyFigures"]:
             original_name = fig["name"]
             if original_name in name_fixes.get(n, {}):
-                lookup_key = name_key_overrides.get(original_name, original_name)
-                fig["role"] = role_fixes.get(n, {}).get(lookup_key, fig["role"])
+                fig["role"] = role_fixes.get(n, {}).get(original_name, fig["role"])
                 fig["name"] = name_fixes[n][original_name]
             elif original_name in role_fixes.get(n, {}):
                 fig["role"] = role_fixes[n][original_name]
@@ -389,6 +385,38 @@ def apply_chapter_insights(path_name, book, chapters, wwa, summary_fixes, name_f
         missing = set(theme_map) - seen
         if missing:
             raise SystemExit(f"{key}: drafted themes not in source: {missing}")
+    save(path, data)
+    print(f"Updated {path.relative_to(ROOT)}")
+
+
+AUDIENCE_FIXES = {
+    "Jonah 1": "Israelite hearers who had lived through, or would soon live through, Assyria's destruction "
+               "of their own northern kingdom would recognize Nineveh immediately as the enemy capital, "
+               "making Jonah's resistance to preaching mercy there instantly understandable rather than a "
+               "petty grudge.",
+    "Jonah 2": "Readers familiar with Israel's own psalms of lament and thanksgiving would recognize Jonah's "
+               "prayer as fitting squarely within that tradition, built from phrases and images used "
+               "throughout the Psalms rather than improvised on the spot.",
+    "Jonah 3": "Jesus later pointed to Nineveh's repentance as a rebuke to his own generation, telling "
+               "listeners that the men of Nineveh would rise up in judgment against them for refusing a "
+               "message far greater than Jonah's (Matthew 12:41).",
+    "Micah 1": "Residents of the Shephelah towns Micah names would have caught each pun immediately, since "
+               "the warning was built from the sound of their own town's name, making the coming disaster "
+               "feel personal and local rather than a vague, distant threat.",
+    "Micah 2": "Families who had lost ancestral land this way would hear in Micah's accusation a rare public "
+               "naming of a private, shaming loss, while the powerful who had profited from it would "
+               "recognize themselves as the target of God's own reversal.",
+    "Micah 4": "Later readers who knew Judah's actual exile to Babylon over a century afterward would "
+               "recognize this prophecy's naming of that specific place as an early, precise anticipation of "
+               "exactly where their own national disaster would send them.",
+}
+
+
+def apply_chapter_context():
+    path = ROOT / "chapter_context" / "29_hosea_micah.json"
+    data = load(path)
+    for key, text in AUDIENCE_FIXES.items():
+        data[key]["audience"] = text
     save(path, data)
     print(f"Updated {path.relative_to(ROOT)}")
 
@@ -486,11 +514,12 @@ def apply_story_fixes():
 if __name__ == "__main__":
     apply_chapter_insights(
         "32_jonah.json", "Jonah", range(1, 5), JONAH_WWA, JONAH_SUMMARY_FIXES, JONAH_NAME_FIXES,
-        JONAH_ROLE_FIXES, JONAH_THEMES, name_key_overrides=JONAH_NAME_KEY,
+        JONAH_ROLE_FIXES, JONAH_THEMES,
     )
     apply_chapter_insights(
         "33_micah.json", "Micah", range(1, 8), MICAH_WWA, MICAH_SUMMARY_FIXES, MICAH_NAME_FIXES,
         MICAH_ROLE_FIXES, MICAH_THEMES,
     )
+    apply_chapter_context()
     apply_overview()
     apply_story_fixes()
