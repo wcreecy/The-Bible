@@ -423,12 +423,109 @@ def apply_chapter_context():
     print(f"Updated {path.relative_to(ROOT)}")
 
 
-STORY_PRONOUN_FIXES = []
+STORY_PRONOUN_FIXES = [
+    ("He enters the temple and throws out the money changers and those selling animals, saying,",
+     "he enters the temple and throws out the money changers and those selling animals, saying,"),
+    ("He heals the blind and lame, and children cry out “Hosanna” in the temple. The next morning, "
+     "He curses a fig tree with leaves but no fruit, and it withers.",
+     "he heals the blind and lame, and children cry out “Hosanna” in the temple. The next morning, "
+     "he curses a fig tree with leaves but no fruit, and it withers."),
+    ("Jesus answers with a question about John's baptism that they refuse to answer. Then He tells "
+     "parables aimed at them.",
+     "Jesus answers with a question about John's baptism that they refuse to answer. Then he tells "
+     "parables aimed at them."),
+    ("His opponents try to trap Him with questions.",
+     "His opponents try to trap him with questions."),
+    ("After that, no one dares ask Him anything more.",
+     "After that, no one dares ask him anything more."),
+    ("Seven times He says, “Woe unto you, scribes and Pharisees, hypocrites!”",
+     "Seven times he says, “Woe unto you, scribes and Pharisees, hypocrites!”"),
+    ("Then His anger turns to grief:",
+     "Then his anger turns to grief:"),
+    ("Jesus foretells coming distress and judgment, urging His followers to remain watchful, "
+     "faithful, and prepared for His return.",
+     "Jesus foretells coming distress and judgment, urging his followers to remain watchful, "
+     "faithful, and prepared for his return."),
+    ("the disciples ask when it will happen and what will signal His return and the end of the age.",
+     "the disciples ask when it will happen and what will signal his return and the end of the age."),
+    ("famines, earthquakes, and persecution. “But he that shall endure unto the end, the same shall "
+     "be saved. And this gospel of the kingdom shall be preached in all the world.” He warns of "
+     "“the abomination of desolation,",
+     "famines, earthquakes, and persecution. “But he that shall endure unto the end, the same shall "
+     "be saved. And this gospel of the kingdom shall be preached in all the world.” he warns of "
+     "“the abomination of desolation,"),
+    ("So His followers must be ready.",
+     "So his followers must be ready."),
+    ("Finally, Jesus describes the last judgment. The Son of man will sit on His throne and separate "
+     "the nations “as a shepherd divideth his sheep from the goats.” To those on His right He says,",
+     "Finally, Jesus describes the last judgment. The Son of man will sit on his throne and separate "
+     "the nations “as a shepherd divideth his sheep from the goats.” To those on his right he says,"),
+    ("They ask when they ever did this, and He answers,",
+     "They ask when they ever did this, and he answers,"),
+    ("As religious leaders plot His death, Jesus shares a final meal with His disciples,",
+     "As religious leaders plot his death, Jesus shares a final meal with his disciples,"),
+    ("but Jesus says she has prepared His body for burial:",
+     "but Jesus says she has prepared his body for burial:"),
+    ("Then Jesus takes bread, blesses it, and says, “Take, eat; this is my body.” He takes the cup:",
+     "Then Jesus takes bread, blesses it, and says, “Take, eat; this is my body.” he takes the cup:"),
+    ("In the garden of Gethsemane, Jesus says, “My soul is exceeding sorrowful, even unto death.” He "
+     "falls on His face and prays,",
+     "In the garden of Gethsemane, Jesus says, “My soul is exceeding sorrowful, even unto death.” he "
+     "falls on his face and prays,"),
+    ("Three times He returns to find His disciples asleep:",
+     "Three times he returns to find his disciples asleep:"),
+    ("They spit in His face and beat Him.",
+     "They spit in his face and beat him."),
+    ("In the morning they bind Jesus and hand Him over to Pontius Pilate,",
+     "In the morning they bind Jesus and hand him over to Pontius Pilate,"),
+    ("Pilate asks Jesus, “Art thou the King of the Jews?” and Jesus says, “Thou sayest,” but He does "
+     "not answer the other charges.",
+     "Pilate asks Jesus, “Art thou the King of the Jews?” and Jesus says, “Thou sayest,” but he does "
+     "not answer the other charges."),
+    ("He has Jesus scourged, or whipped, and hands Him over to be crucified.",
+     "He has Jesus scourged, or whipped, and hands him over to be crucified."),
+    ("Jesus is crucified and buried, but on the third day His tomb is found empty, and His "
+     "resurrection is announced.",
+     "Jesus is crucified and buried, but on the third day his tomb is found empty, and his "
+     "resurrection is announced."),
+    ("press a crown of thorns onto His head, and put a reed in His hand as a fake scepter.",
+     "press a crown of thorns onto his head, and put a reed in his hand as a fake scepter."),
+    ("They kneel and mock Him, “Hail, King of the Jews!” Then they spit on Him and beat Him on the "
+     "head.",
+     "They kneel and mock him, “Hail, King of the Jews!” Then they spit on him and beat him on the "
+     "head."),
+    ("they force a man named Simon of Cyrene to carry His cross. At Golgotha, “a place of a skull,” "
+     "they crucify Him between two thieves and gamble for His clothes. Above His head they post the "
+     "charge:",
+     "they force a man named Simon of Cyrene to carry his cross. At Golgotha, “a place of a skull,” "
+     "they crucify him between two thieves and gamble for his clothes. Above his head they post the "
+     "charge:"),
+    ("These are the first words of Psalm 22. He cries out again and “yielded up the ghost.”",
+     "These are the first words of Psalm 22. he cries out again and “yielded up the ghost.”"),
+    ("The chief priests remember that Jesus said He would rise after three days,",
+     "The chief priests remember that Jesus said he would rise after three days,"),
+    ("As they run to tell the disciples, Jesus Himself meets them, and they take hold of His feet "
+     "and worship Him.",
+     "As they run to tell the disciples, Jesus himself meets them, and they take hold of his feet "
+     "and worship him."),
+    ("The risen Jesus meets His disciples in Galilee and commands them to make disciples throughout "
+     "the world, promising His continuing presence.",
+     "The risen Jesus meets his disciples in Galilee and commands them to make disciples throughout "
+     "the world, promising his continuing presence."),
+    ("The eleven disciples go to the mountain in Galilee where Jesus told them to meet Him.",
+     "The eleven disciples go to the mountain in Galilee where Jesus told them to meet him."),
+    ("Matthew begins by tracing Jesus to Abraham and David, placing Him within God's promises to "
+     "Israel. It closes with the risen Jesus claiming authority over heaven and earth and extending "
+     "His mission to every nation. The One introduced as Emmanuel, meaning God with us, sends His "
+     "followers into the world with the assurance that His presence will continue with them.",
+     "Matthew begins by tracing Jesus to Abraham and David, placing him within God's promises to "
+     "Israel. It closes with the risen Jesus claiming authority over heaven and earth and extending "
+     "his mission to every nation. The One introduced as Emmanuel, meaning God with us, sends his "
+     "followers into the world with the assurance that his presence will continue with them."),
+]
 
 
 def apply_story_fixes():
-    if not STORY_PRONOUN_FIXES:
-        return
     path = ROOT / "book_content" / "07_gospels_acts.md"
     text = path.read_text(encoding="utf-8")
     start = text.index("The King Enters Jerusalem and Confronts Its Leaders")

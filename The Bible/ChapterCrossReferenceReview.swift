@@ -559,7 +559,8 @@ enum ChapterCrossReferenceReview {
         Entry(bookName: "2 Samuel", chapterNumber: 19, sourceVerse: 35, relatedReference: "Nehemiah 7:67", reason: "The mention of singers is incidental; Nehemiah's returnee list does not interpret Barzillai's old age."),
         Entry(bookName: "2 Samuel", chapterNumber: 21, sourceVerse: 9, relatedReference: "Ruth 1:22", reason: "Both mention the barley harvest, but seasonal timing does not connect the Gibeonite execution to Naomi's return."),
         Entry(bookName: "2 Samuel", chapterNumber: 21, sourceVerse: 14, relatedReference: "Joshua 18:28", reason: "Zelah is only a shared location; Benjamin's town list does not interpret Saul's burial."),
-        Entry(bookName: "2 Samuel", chapterNumber: 23, sourceVerse: 6, relatedReference: "Deuteronomy 13:13", reason: "The shared term Belial is a general label for wickedness and does not link David's image of worthless men to Deuteronomy's law.")
+        Entry(bookName: "2 Samuel", chapterNumber: 23, sourceVerse: 6, relatedReference: "Deuteronomy 13:13", reason: "The shared term Belial is a general label for wickedness and does not link David's image of worthless men to Deuteronomy's law."),
+        Entry(bookName: "Matthew", chapterNumber: 7, sourceVerse: 28, relatedReference: "Mark 11:18", reason: "Both report a reaction to Jesus' teaching, but Mark's later response from hostile leaders does not interpret the crowd's response to the Sermon on the Mount.")
     ]
 
     nonisolated static func excludes(

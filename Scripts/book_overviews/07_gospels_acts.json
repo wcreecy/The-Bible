@@ -4,12 +4,12 @@
     "audience": "A largely Jewish-Christian audience, while addressing the wider mission to all nations.",
     "purpose": "To present Jesus as Messiah, Son of David, new-Moses-like teacher, and fulfillment of Israel's Scriptures, culminating in the mission to make disciples of all nations.",
     "theme": "Jesus is Israel's Messiah and authoritative King who fulfills Scripture and forms a disciple community for all nations.",
-    "summary": "Matthew traces Jesus from Abraham and David through His teaching, miracles, conflict, death, and resurrection, emphasizing fulfillment of Scripture and the demands of discipleship.",
-    "keyVerse": "Matthew 6:33",
+    "summary": "Matthew traces Jesus from Abraham and David through his teaching, miracles, conflict, death, and resurrection, emphasizing fulfillment of Scripture and the demands of discipleship.",
+    "keyVerse": "Matthew 28:19-20",
     "movements": [
       {
         "title": "Birth and Early Ministry",
-        "description": "Jesus' genealogy, birth, baptism, temptation, and beginning ministry establish His messianic identity.",
+        "description": "Jesus' genealogy, birth, baptism, temptation, and beginning ministry establish his messianic identity.",
         "passages": [
           "Matthew 1-4"
         ]
@@ -52,11 +52,11 @@
       },
       {
         "name": "John the Baptist",
-        "description": "The prophet who prepares the way for Jesus and baptizes Him."
+        "description": "The prophet who prepares the way for Jesus and baptizes him."
       },
       {
         "name": "Peter",
-        "description": "Leader among the twelve disciples, who confesses Jesus as the Messiah but later denies Him."
+        "description": "Leader among the twelve disciples, who confesses Jesus as the Messiah but later denies him."
       },
       {
         "name": "Judas Iscariot",
@@ -72,7 +72,7 @@
       },
       {
         "name": "Mary Magdalene",
-        "description": "A follower of Jesus who witnesses His death and the empty tomb."
+        "description": "A follower of Jesus who witnesses his death and the empty tomb."
       }
     ]
   },
