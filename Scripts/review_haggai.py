@@ -133,7 +133,7 @@ def apply_overview():
         if fig["name"] == "Zerubbabel":
             fig["description"] = fig["description"].replace(
                 "Governor of Judah and descendant of David, called God's 'signet ring.'",
-                "Governor of Judah and descendant of David, called God's \"a signet\" (2:23).",
+                "Governor of Judah and descendant of David, whom God calls \"a signet\" (2:23).",
             )
     save(path, data)
     print(f"Updated {path.relative_to(ROOT)}")
