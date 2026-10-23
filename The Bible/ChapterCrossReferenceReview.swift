@@ -495,7 +495,24 @@ enum ChapterCrossReferenceReview {
             sourceVerse: 25,
             relatedReference: "Exodus 15:25",
             reason: "Both mention a statute and ordinance, but the Marah provision does not explain Joshua's covenant ceremony at Shechem."
-        )
+        ),
+        Entry(bookName: "Judges", chapterNumber: 4, sourceVerse: 6, relatedReference: "Judges 8:18", reason: "Barak's call from Kedesh and Gideon's later questioning of Zebah concern different conflicts; Tabor is only an incidental setting."),
+        Entry(bookName: "Judges", chapterNumber: 6, sourceVerse: 12, relatedReference: "Judges 13:3", reason: "The angel's appearances to Gideon and Manoah's wife are separate commissions, linked only by a general angelic greeting."),
+        Entry(bookName: "Judges", chapterNumber: 6, sourceVerse: 33, relatedReference: "Joshua 17:16", reason: "Both passages locate events in the Jezreel Valley, but the Canaanite chariot problem does not explain the Midianite invasion."),
+        Entry(bookName: "Judges", chapterNumber: 9, sourceVerse: 15, relatedReference: "Isaiah 2:13", reason: "The passages use tree imagery in different rhetorical settings; Isaiah does not develop Jotham's bramble fable."),
+        Entry(bookName: "Judges", chapterNumber: 9, sourceVerse: 15, relatedReference: "Hosea 14:7", reason: "The shared shade-and-tree imagery is metaphorical but does not connect Hosea's restoration promise with Jotham's fable."),
+        Entry(bookName: "Judges", chapterNumber: 11, sourceVerse: 10, relatedReference: "Jeremiah 42:5", reason: "Both invoke the Lord as a witness to an oath, but the Gileadite agreement and Judah's later pledge are unrelated."),
+        Entry(bookName: "Judges", chapterNumber: 11, sourceVerse: 11, relatedReference: "Judges 20:1", reason: "Mizpah is the only connection; Jephthah's installation does not explain Israel's later assembly against Benjamin."),
+        Entry(bookName: "Judges", chapterNumber: 11, sourceVerse: 11, relatedReference: "1 Samuel 10:17", reason: "Mizpah is the only connection; Samuel's assembly to select Saul does not develop Jephthah's appointment."),
+        Entry(bookName: "Judges", chapterNumber: 11, sourceVerse: 13, relatedReference: "Genesis 32:22", reason: "The connection rests on the Jabbok's name; Jacob's crossing does not interpret the Ammonite border dispute."),
+        Entry(bookName: "Judges", chapterNumber: 11, sourceVerse: 33, relatedReference: "Ezekiel 27:17", reason: "Both mention Minnith, but Jephthah's conquest does not explain the later trade reference."),
+        Entry(bookName: "Judges", chapterNumber: 13, sourceVerse: 24, relatedReference: "Luke 1:80", reason: "The accounts share a generic notice that a child grew; John’s preparation in the wilderness does not interpret Samson’s growth."),
+        Entry(bookName: "Judges", chapterNumber: 16, sourceVerse: 21, relatedReference: "2 Chronicles 33:11", reason: "Samson and Manasseh are both captured, but the passages have no direct historical or literary relationship."),
+        Entry(bookName: "Judges", chapterNumber: 16, sourceVerse: 21, relatedReference: "2 Kings 25:7", reason: "The blinding of Zedekiah is not an allusion to Samson and does not develop Samson's capture."),
+        Entry(bookName: "Judges", chapterNumber: 17, sourceVerse: 6, relatedReference: "Proverbs 12:15", reason: "The wording about a person's own way being right is proverbial and does not interpret the book's moral diagnosis."),
+        Entry(bookName: "Judges", chapterNumber: 17, sourceVerse: 7, relatedReference: "Ruth 1:1-2", reason: "Bethlehem and the period of the judges are shared setting details, not a contextual link between the Levite and Elimelech's family."),
+        Entry(bookName: "Judges", chapterNumber: 18, sourceVerse: 28, relatedReference: "2 Samuel 10:6", reason: "The texts share the name Rehob without connecting Dan's capture of Laish to the Aramean force hired against David."),
+        Entry(bookName: "Judges", chapterNumber: 20, sourceVerse: 1, relatedReference: "Judges 11:11", reason: "Mizpah is the only connection; Jephthah's installation does not explain Israel's later assembly against Benjamin.")
     ]
 
     nonisolated static func excludes(
