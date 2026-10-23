@@ -77,8 +77,8 @@ struct BibleTriviaDifficultyProgress: Codable, Equatable {
 final class BibleTriviaProgressStore {
     static let shared = BibleTriviaProgressStore()
 
-    // V2: question IDs were reassigned when the question set was replaced, so the old history is ignored.
-    nonisolated static let storageKey = "bibleTriviaProgressV2"
+    // V3: the updated catalog revises existing questions, so prior completion history is ignored.
+    nonisolated static let storageKey = "bibleTriviaProgressV3"
 
     private var progressByDifficulty: [String: BibleTriviaDifficultyProgress]
     @ObservationIgnored private var observer: NSObjectProtocol?
@@ -1023,6 +1023,10 @@ private struct BibleTriviaAnswerReveal: View {
     let outcome: BibleTriviaAnswerOutcome
     let reference: String
 
+    private var passageReference: PassageReference? {
+        PassageReferenceParser.parse(reference)
+    }
+
     private var verseActionReference: VerseActionReference? {
         guard let parsedReference = BibleReferenceLinker.parse(reference),
               let verseText = BibleData.books
@@ -1052,7 +1056,13 @@ private struct BibleTriviaAnswerReveal: View {
                     .font(.caption.weight(.bold))
                     .foregroundStyle(outcome.tint)
 
-                if !reference.isEmpty {
+                if let passageReference {
+                    Link(destination: passageReference.url) {
+                        Label(reference, systemImage: "book")
+                            .font(.title3.weight(.bold))
+                    }
+                    .accessibilityHint("Shows a preview of the passage")
+                } else if !reference.isEmpty {
                     Text(reference)
                         .font(.title3.weight(.bold))
                         .foregroundStyle(.primary)
@@ -1068,7 +1078,8 @@ private struct BibleTriviaAnswerReveal: View {
         .padding(.horizontal, 16)
         .frame(minHeight: 64)
         .glassEffect(.regular.tint(outcome.tint.opacity(0.35)), in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
-        .accessibilityElement(children: .combine)
+        .scripturePassagePreviews()
+        .accessibilityElement(children: .contain)
     }
 }
 

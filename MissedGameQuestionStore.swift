@@ -58,7 +58,7 @@ final class MissedGameQuestionStore {
     private var entries: [Entry]
 
     /// Bump when the trivia question set is replaced and its IDs no longer refer to the same questions.
-    private static let triviaQuestionSetVersion = 2
+    private static let triviaQuestionSetVersion = 3
     private static let triviaQuestionSetVersionKey = "missedGameQuestionHistory.triviaQuestionSetVersion"
 
     private init() {
