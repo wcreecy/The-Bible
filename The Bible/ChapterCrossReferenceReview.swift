@@ -544,7 +544,22 @@ enum ChapterCrossReferenceReview {
         Entry(bookName: "1 Samuel", chapterNumber: 29, sourceVerse: 1, relatedReference: "1 Samuel 4:1", reason: "Aphek is only a shared location; the earlier ark battle does not explain the Philistine staging against Saul."),
         Entry(bookName: "1 Samuel", chapterNumber: 30, sourceVerse: 27, relatedReference: "Joshua 15:48", reason: "The connection rests on a Judahite place name; the territorial list does not explain David's distribution of spoil."),
         Entry(bookName: "1 Samuel", chapterNumber: 30, sourceVerse: 28, relatedReference: "Joshua 13:16", reason: "Aroer is only a shared location; the Transjordanian boundary list does not explain David's gift of spoil."),
-        Entry(bookName: "1 Samuel", chapterNumber: 30, sourceVerse: 30, relatedReference: "Judges 1:17", reason: "Hormah is only a shared location; Judah's earlier destruction of the city does not interpret David's distribution of spoil.")
+        Entry(bookName: "1 Samuel", chapterNumber: 30, sourceVerse: 30, relatedReference: "Judges 1:17", reason: "Hormah is only a shared location; Judah's earlier destruction of the city does not interpret David's distribution of spoil."),
+        Entry(bookName: "2 Samuel", chapterNumber: 3, sourceVerse: 16, relatedReference: "2 Samuel 16:5", reason: "Bahurim is the only connection; Shimei's later curse of David does not interpret Paltiel's pursuit of Michal."),
+        Entry(bookName: "2 Samuel", chapterNumber: 3, sourceVerse: 16, relatedReference: "2 Samuel 19:16", reason: "Bahurim is the only connection; Shimei's return to David does not interpret Paltiel's separation from Michal."),
+        Entry(bookName: "2 Samuel", chapterNumber: 4, sourceVerse: 2, relatedReference: "Joshua 18:25", reason: "Gibeon is only a shared location; Benjamin's territorial list does not interpret the murder of Ish-bosheth."),
+        Entry(bookName: "2 Samuel", chapterNumber: 4, sourceVerse: 3, relatedReference: "Nehemiah 11:33", reason: "Beeroth is only a shared location; Nehemiah's resettlement list does not interpret the Beerothite fugitives."),
+        Entry(bookName: "2 Samuel", chapterNumber: 14, sourceVerse: 25, relatedReference: "Job 2:7", reason: "The contrast between Absalom's beauty and Job's sores does not establish a contextual or literary relationship."),
+        Entry(bookName: "2 Samuel", chapterNumber: 15, sourceVerse: 12, relatedReference: "Joshua 15:51", reason: "Hebron is only a shared location; Judah's town list does not interpret Absalom's conspiracy."),
+        Entry(bookName: "2 Samuel", chapterNumber: 16, sourceVerse: 5, relatedReference: "2 Samuel 3:16", reason: "Bahurim is the only connection; Shimei's curse does not interpret Paltiel's pursuit of Michal."),
+        Entry(bookName: "2 Samuel", chapterNumber: 17, sourceVerse: 17, relatedReference: "Joshua 15:7", reason: "En-rogel is only a shared location; Judah's boundary description does not interpret the spies' mission."),
+        Entry(bookName: "2 Samuel", chapterNumber: 17, sourceVerse: 17, relatedReference: "Joshua 18:16", reason: "En-rogel is only a shared location; Benjamin's boundary description does not interpret the spies' mission."),
+        Entry(bookName: "2 Samuel", chapterNumber: 17, sourceVerse: 18, relatedReference: "2 Samuel 3:16", reason: "Bahurim is only a shared location; Paltiel's separation from Michal does not interpret the spies' escape."),
+        Entry(bookName: "2 Samuel", chapterNumber: 19, sourceVerse: 35, relatedReference: "Ezra 2:65", reason: "The mention of singers is incidental; Ezra's returnee list does not interpret Barzillai's old age."),
+        Entry(bookName: "2 Samuel", chapterNumber: 19, sourceVerse: 35, relatedReference: "Nehemiah 7:67", reason: "The mention of singers is incidental; Nehemiah's returnee list does not interpret Barzillai's old age."),
+        Entry(bookName: "2 Samuel", chapterNumber: 21, sourceVerse: 9, relatedReference: "Ruth 1:22", reason: "Both mention the barley harvest, but seasonal timing does not connect the Gibeonite execution to Naomi's return."),
+        Entry(bookName: "2 Samuel", chapterNumber: 21, sourceVerse: 14, relatedReference: "Joshua 18:28", reason: "Zelah is only a shared location; Benjamin's town list does not interpret Saul's burial."),
+        Entry(bookName: "2 Samuel", chapterNumber: 23, sourceVerse: 6, relatedReference: "Deuteronomy 13:13", reason: "The shared term Belial is a general label for wickedness and does not link David's image of worthless men to Deuteronomy's law.")
     ]
 
     nonisolated static func excludes(
