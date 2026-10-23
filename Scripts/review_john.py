@@ -146,13 +146,12 @@ WWA = {
          "previously absent Thomas, who confesses him as Lord and God (20:1-31). John then states "
          "his purpose in writing, which chapter 21's epilogue adds one more appearance to confirm."),
     21: ("Chapter 20 closed with John explaining that he wrote these signs so readers might believe "
-         "and have life in Jesus' name (20:30-31). John's epilogue adds one more appearance to that "
-         "testimony: seven disciples fish all night without success until the risen Jesus directs "
-         "them to a catch of a hundred fifty-three fish, then restores Peter by asking three times "
-         "whether he loves him and commanding him to feed his sheep, before the beloved disciple is "
-         "identified as the one whose testimony stands behind this Gospel (21:1-25). That eyewitness "
-         "testimony is where the book of Acts will pick up, describing what the same witnesses did "
-         "next."),
+         "and have life in Jesus' name (20:30-31). John's epilogue adds one more appearance: seven "
+         "disciples fish all night without success until the risen Jesus directs them to a huge "
+         "catch, then restores Peter by asking three times whether he loves him and commanding him "
+         "to feed his sheep, before the beloved disciple is identified as the witness behind this "
+         "Gospel (21:1-25). That testimony is where the book of Acts will pick up, describing what "
+         "the same witnesses did next."),
 }
 
 KEY_FIGURES = {

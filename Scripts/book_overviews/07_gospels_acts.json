@@ -80,9 +80,9 @@
     "author": "Traditionally attributed to John Mark, associated with Peter; the Gospel itself is anonymous.",
     "audience": "Likely Gentile Christians, often associated by tradition with Rome.",
     "purpose": "To present Jesus as the powerful yet suffering Son of God and to define discipleship through the cross.",
-    "theme": "Jesus' identity is revealed through authority, suffering, death, and resurrection; His followers are called to costly discipleship.",
-    "summary": "Mark moves quickly through Jesus' ministry, repeatedly asking who He really is. The turning point comes when Jesus explains that Messiahship leads through suffering and the cross.",
-    "keyVerse": "Mark 10:27",
+    "theme": "Jesus' identity is revealed through authority, suffering, death, and resurrection; his followers are called to costly discipleship.",
+    "summary": "Mark moves quickly through Jesus' ministry, repeatedly asking who he really is. The turning point comes when Jesus explains that Messiahship leads through suffering and the cross.",
+    "keyVerse": "Mark 10:45",
     "movements": [
       {
         "title": "Authority in Galilee",
@@ -117,7 +117,7 @@
       },
       {
         "name": "Peter",
-        "description": "A leading disciple who confesses Jesus as the Christ but denies Him during the trial."
+        "description": "A leading disciple who confesses Jesus as the Christ but denies him during the trial."
       },
       {
         "name": "James and John",
@@ -141,7 +141,7 @@
       },
       {
         "name": "Joseph of Arimathea",
-        "description": "A council member who boldly asks for Jesus' body and buries Him."
+        "description": "A council member who boldly asks for Jesus' body and buries him."
       },
       {
         "name": "Mary Magdalene",
@@ -155,11 +155,11 @@
     "purpose": "To provide an orderly account of Jesus' life and show God's salvation extending to the marginalized and ultimately to all nations.",
     "theme": "In Jesus, God's promised salvation comes for Israel and reaches outward to all peoples, especially the overlooked and excluded.",
     "summary": "Luke presents Jesus as Spirit-anointed Savior, teacher, prophet, and Son of Man. It highlights prayer, the Holy Spirit, women, the poor, outsiders, and the journey toward Jerusalem.",
-    "keyVerse": "Luke 2:11",
+    "keyVerse": "Luke 19:10",
     "movements": [
       {
         "title": "Birth Narratives and Preparation",
-        "description": "The births of John the Baptist and Jesus are announced and connected to Israel's hopes; Jesus is baptized, tempted, and announces His mission in Nazareth.",
+        "description": "The births of John the Baptist and Jesus are announced and connected to Israel's hopes; Jesus is baptized, tempted, and announces his mission in Nazareth.",
         "passages": [
           "Luke 1-4"
         ]
@@ -206,7 +206,7 @@
       },
       {
         "name": "Peter",
-        "description": "A fisherman called to follow Jesus, who later denies Him and is restored."
+        "description": "A fisherman called to follow Jesus, who later denies him and is restored."
       },
       {
         "name": "Mary and Martha",
@@ -218,7 +218,7 @@
       },
       {
         "name": "Pontius Pilate and Herod Antipas",
-        "description": "The Roman governor and the ruler of Galilee who examine Jesus at His trial."
+        "description": "The Roman governor and the ruler of Galilee who examine Jesus at his trial."
       },
       {
         "name": "Cleopas",
@@ -229,7 +229,7 @@
   "John": {
     "author": "Traditionally attributed to John the apostle; the Gospel refers to the 'beloved disciple' and likely reflects testimony preserved within a Johannine community.",
     "audience": "A broad Christian audience, including readers facing questions about Jesus' identity and faith.",
-    "purpose": "To lead readers to believe that Jesus is the Messiah, the Son of God, and to have life in His name.",
+    "purpose": "To lead readers to believe that Jesus is the Messiah, the Son of God, and to have life in his name.",
     "theme": "Jesus is the eternal Word made flesh who reveals the Father and gives eternal life to those who believe.",
     "summary": "John opens with Jesus as the eternal Word and structures much of the story around signs and 'I am' sayings. The Gospel climaxes in Jesus' death and resurrection as the decisive revelation of divine glory and life.",
     "keyVerse": "John 3:16",
@@ -243,7 +243,7 @@
       },
       {
         "title": "Farewell Teaching",
-        "description": "Jesus prepares His disciples for His departure, promising the Holy Spirit and calling them to love and abide in Him.",
+        "description": "Jesus prepares His disciples for His departure, promising the Holy Spirit and calling them to love and abide in him.",
         "passages": [
           "John 13-17"
         ]
@@ -267,11 +267,11 @@
       },
       {
         "name": "Nicodemus",
-        "description": "A Pharisee who comes to Jesus at night and later helps bury Him."
+        "description": "A Pharisee who comes to Jesus at night and later helps bury him."
       },
       {
         "name": "The Samaritan woman",
-        "description": "Meets Jesus at a well and brings her town to hear Him."
+        "description": "Meets Jesus at a well and brings her town to hear him."
       },
       {
         "name": "Lazarus, Martha, and Mary",
@@ -279,7 +279,7 @@
       },
       {
         "name": "Peter",
-        "description": "Leading disciple who denies Jesus and is restored by Him after the resurrection."
+        "description": "Leading disciple who denies Jesus and is restored by him after the resurrection."
       },
       {
         "name": "The beloved disciple",
@@ -287,7 +287,7 @@
       },
       {
         "name": "Thomas",
-        "description": "The disciple who doubts the resurrection until he sees Jesus and confesses, 'My Lord and my God.'"
+        "description": "The disciple who doubts the resurrection until he sees Jesus and confesses, \"My Lord and my God.\""
       },
       {
         "name": "Caiaphas",
@@ -295,7 +295,7 @@
       },
       {
         "name": "Pontius Pilate",
-        "description": "The Roman governor who asks 'What is truth?' and hands Jesus over to be crucified."
+        "description": "The Roman governor who asks \"What is truth?\" and hands Jesus over to be crucified."
       },
       {
         "name": "Mary Magdalene",

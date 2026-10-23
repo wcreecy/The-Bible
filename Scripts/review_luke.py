@@ -44,13 +44,13 @@ WWA = {
         "authority, heals, and casts out demons (4:1-44). That pattern of authority and controversy "
         "continues in chapter 5, where a miraculous catch of fish leads Simon, James, and John to "
         "leave everything and follow him."),
-    5: ("Chapter 4 ended with Jesus insisting he must preach the kingdom message in other towns as "
-        "well as Capernaum (4:43-44). Chapter 5 shows that mission drawing both followers and "
-        "critics: a miraculous catch of fish leads Simon, James, and John to leave their boats, "
-        "Jesus heals and forgives a paralyzed man despite scribes' objections, and he calls the tax "
-        "collector Levi while explaining his new teaching with images of wedding guests and new wine "
-        "(5:1-39). Those same objections sharpen in chapter 6, where Sabbath disputes lead Jesus to "
-        "choose twelve apostles and deliver a sweeping sermon on the kingdom's values."),
+    5: ("Chapter 4 ended with Jesus insisting he must preach the kingdom message in other towns too "
+        "(4:43-44). Chapter 5 shows that mission drawing followers and critics alike: a miraculous "
+        "catch of fish leads Simon, James, and John to leave their boats, Jesus heals and forgives a "
+        "paralyzed man despite scribes' objections, and he calls the tax collector Levi while "
+        "explaining his new teaching with images of wedding guests and new wine (5:1-39). Those "
+        "objections sharpen in chapter 6, where Sabbath disputes lead Jesus to choose twelve "
+        "apostles and deliver a sweeping sermon on the kingdom's values."),
     6: ("Chapter 5 ended with Jesus defending his disciples' new way of following him against the old "
         "patterns of fasting and patched garments (5:36-39). Chapter 6 shows that new way in full: "
         "Sabbath healings provoke his opponents, he chooses twelve apostles after a night of prayer, "
@@ -66,12 +66,12 @@ WWA = {
         "contrast between deep faith and shallow religion carries into chapter 8's parable of seed "
         "falling on different kinds of soil."),
     8: ("Chapter 7 ended with Jesus telling a forgiven woman that her faith had saved her, while his "
-        "host Simon had offered him little welcome at all (7:44-50). Chapter 8 widens that same "
-        "contrast: Jesus travels with the Twelve and the women who support his ministry, teaches that "
-        "only some hearers let the word of God bear fruit, calms a storm, frees a man tormented by "
-        "many demons, and heals a woman with bleeding on the way to raising Jairus's daughter "
-        "(8:1-56). That same combination of teaching and authority continues in chapter 9, where "
-        "Jesus commissions the Twelve to do the same kind of work themselves."),
+        "host Simon had offered little welcome at all (7:44-50). Chapter 8 widens that contrast: "
+        "Jesus travels with the Twelve and the women who support his ministry, teaches that only "
+        "some hearers let the word of God bear fruit, calms a storm, frees a man tormented by many "
+        "demons, and heals a woman with bleeding on the way to raising Jairus's daughter (8:1-56). "
+        "That combination of teaching and authority continues in chapter 9, where Jesus commissions "
+        "the Twelve to do the same kind of work themselves."),
     9: ("Chapter 8 ended with Jesus raising Jairus's daughter and ordering her parents to tell no one "
         "(8:54-56). Chapter 9 sends that same authority outward: Jesus commissions the Twelve to "
         "preach and heal, feeds a crowd of five thousand, receives Peter's confession that he is "
@@ -107,12 +107,12 @@ WWA = {
          "(13:1-35). That lament continues in chapter 14, set at the table of one more Pharisee who "
          "watches Jesus closely."),
     14: ("Chapter 13 ended with Jesus grieving that Jerusalem was not willing to be gathered the way "
-         "a hen gathers her chicks (13:34-35). Chapter 14 shows that same resistance playing out at a "
+         "a hen gathers her chicks (13:34-35). Chapter 14 shows that resistance playing out at a "
          "Pharisee leader's Sabbath table: Jesus heals a man despite the objection, teaches humility "
-         "about seating and hospitality toward people who cannot repay it, tells the parable of a "
-         "great banquet whose invited guests make excuses, and warns crowds to count the cost of "
-         "following him (14:1-35). That demand for total commitment sets up chapter 15's parables "
-         "defending why Jesus welcomes people who seem to have the least to offer him."),
+         "about seating and hospitality toward people who cannot repay it, tells of a great banquet "
+         "whose invited guests make excuses, and warns crowds to count the cost of following him "
+         "(14:1-35). That demand for total commitment sets up chapter 15's parables defending why "
+         "Jesus welcomes people who seem to have little to offer him."),
     15: ("Chapter 14 ended with Jesus warning that whoever does not renounce all he has cannot be his "
          "disciple (14:33-35). Chapter 15 answers why Jesus associates with people who seem to have "
          "renounced nothing at all: when Pharisees and scribes complain that he welcomes sinners, he "
@@ -121,26 +121,26 @@ WWA = {
          "of joining unanswered (15:1-32). That same tension between joy and resentment continues "
          "into chapter 16's warnings about wealth."),
     16: ("Chapter 15 ended with a father pleading for his resentful older son to join the celebration "
-         "over a brother who was dead and is alive again (15:25-32). Chapter 16 turns that same "
-         "concern toward money: Jesus tells of a dismissed manager who secures his future by reducing "
-         "others' debts, warns money-loving Pharisees that no one can serve both God and wealth, and "
-         "contrasts a rich man's comfortable life with the poor man Lazarus at his gate, whose "
-         "situations are completely reversed after death (16:1-31). That reversal leads into chapter "
-         "17's teaching on a kingdom that arrives differently than expected."),
+         "over a brother who was dead and is alive again (15:25-32). Chapter 16 turns to money: "
+         "Jesus tells of a dismissed manager who secures his future by reducing others' debts, warns "
+         "money-loving Pharisees that no one can serve both God and wealth, and contrasts a rich "
+         "man's comfortable life with the poor man Lazarus at his gate, whose situations are "
+         "completely reversed after death (16:1-31). That reversal leads into chapter 17's teaching "
+         "on a kingdom that arrives differently than expected."),
     17: ("Chapter 16 ended with Abraham telling the rich man that if his brothers will not listen to "
-         "Moses and the prophets, neither would they be persuaded by someone risen from the dead "
-         "(16:27-31). Chapter 17 shows that kind of persuasion already failing in small ways: Jesus "
-         "warns against causing others to stumble, heals ten people with a skin disease but sees only "
-         "one, a Samaritan, return to give thanks, and warns that the kingdom's and the Son of man's "
-         "coming will be sudden, not something to chase after on rumor (17:1-37). That warning "
-         "continues in chapter 18's call to persistent, humble prayer in the meantime."),
+         "Moses and the prophets, neither would someone risen from the dead persuade them "
+         "(16:27-31). Chapter 17 shows persuasion already failing in small ways: Jesus warns against "
+         "causing others to stumble, heals ten people with a skin disease but sees only one, a "
+         "Samaritan, return to give thanks, and warns that the kingdom's and the Son of man's coming "
+         "will be sudden, not something to chase after on rumor (17:1-37). That warning continues in "
+         "chapter 18's call to persistent, humble prayer in the meantime."),
     18: ("Chapter 17 ended with Jesus warning that on the day of the Son of man's coming, people must "
-         "not look back, remembering what happened to Lot's wife (17:28-37). Chapter 18 teaches how "
-         "to wait for that day rightly: a persistent widow's story teaches prayer that does not give "
-         "up, a humble tax collector's prayer is accepted over a self-confident Pharisee's, Jesus "
-         "welcomes children and tells a wealthy ruler to sell his possessions, and nearing Jericho he "
-         "restores a blind beggar's sight (18:1-43). That healed beggar leads into chapter 19's "
-         "account of another outcast near Jericho, the tax collector Zacchaeus."),
+         "not look back, remembering Lot's wife (17:28-37). Chapter 18 teaches how to wait for that "
+         "day rightly: a persistent widow's story teaches prayer that does not give up, a humble tax "
+         "collector's prayer is accepted over a self-confident Pharisee's, Jesus welcomes children "
+         "and tells a wealthy ruler to sell his possessions, and nearing Jericho he restores a "
+         "blind beggar's sight (18:1-43). That healed beggar leads into chapter 19's account of "
+         "another outcast near Jericho, the tax collector Zacchaeus."),
     19: ("Chapter 18 ended with a blind beggar near Jericho receiving his sight and the crowd giving "
          "praise to God (18:35-43). Chapter 19 finds another outcast in that same city: Jesus calls "
          "Zacchaeus the tax collector down from a tree and brings salvation to his house, tells a "
@@ -175,14 +175,13 @@ WWA = {
          "instead; Jesus is mocked, dies between two criminals, and is buried by Joseph of Arimathea "
          "before the Sabbath begins (23:1-56). That burial sets up chapter 24's discovery, after the "
          "Sabbath ends, that the tomb is empty."),
-    24: ("Chapter 23 ended with women from Galilee watching where Joseph of Arimathea laid Jesus' "
-         "body, then resting on the Sabbath as the law commanded (23:55-56). Luke's closing chapter "
-         "answers that rest: the same women find the tomb empty and are told Jesus has risen, two "
-         "disciples recognize him on the road to Emmaus in the breaking of bread, and he appears to "
-         "the gathered disciples, opens their understanding of Scripture, and is carried up to heaven "
-         "after commissioning them to preach repentance and forgiveness to all nations (24:1-53). "
-         "That commission is exactly where John's Gospel takes up Jesus' story again, from its own "
-         "distinct beginning in the eternal Word."),
+    24: ("Chapter 23 ended with women from Galilee watching where Joseph laid Jesus' body, then "
+         "resting on the Sabbath as the law commanded (23:55-56). Luke's closing chapter answers "
+         "that rest: the same women find the tomb empty, two disciples recognize the risen Jesus on "
+         "the road to Emmaus in the breaking of bread, and he appears to the gathered disciples and "
+         "is carried up to heaven after commissioning them to preach forgiveness to all nations "
+         "(24:1-53). That commission is where John's Gospel takes up Jesus' story again, from its "
+         "own distinct beginning in the eternal Word."),
 }
 
 KEY_FIGURES = {

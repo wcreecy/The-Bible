@@ -1,62 +1,58 @@
 {
   "John 1": {
     "summary": "John opens by identifying the eternal Word as both with God and divine, the agent of creation and source of life; the Word becomes flesh, revealing God's glory through Jesus Christ (John 1:1–18). John the Baptist denies that he is the Messiah and bears witness to Jesus as the Lamb of God (John 1:19–34). Two of John's disciples follow Jesus; Andrew brings Simon, and Jesus calls Philip, who invites Nathanael (John 1:35–51). The chapter announces Jesus' identity and begins showing how testimony leads others to him.",
-    "whereWeAre": "The opening connects Israel's scriptural traditions with a Judean baptism setting and movement toward Galilee; its precise calendar year is unspecified. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 1 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Luke's Gospel ended with the disciples worshiping the ascended Jesus and waiting in Jerusalem with great joy (Luke 24:50-53). John opens his own account from a different starting point, going back before creation itself: the eternal Word who was with God and was God becomes flesh, John the Baptist testifies that Jesus is the Lamb of God, and the first disciples, Andrew, Simon, Philip, and Nathanael, begin following him (1:1-51). That gathering of the first witnesses leads into chapter 2's first public sign at a wedding in Cana.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "the Word made flesh and the focus of the witnesses Reveals God and calls the first disciples"
+        "role": "Is identified as the eternal Word made flesh, is named the Lamb of God by John the Baptist, and calls his first disciples, including Philip and, through Andrew and Philip, Simon and Nathanael (1:1-51)."
       },
       {
         "name": "John the Baptist",
-        "role": "witness who baptizes and identifies Jesus Directs attention away from himself toward Jesus"
+        "role": "Denies being the Messiah, Elijah, or the Prophet, and instead points two of his own disciples toward Jesus as the Lamb of God (1:19-34,35-37)."
       },
       {
         "name": "Andrew",
-        "role": "disciple who brings Simon to Jesus. Models personal witness"
+        "role": "One of John's former disciples who follows Jesus first, then brings his brother Simon to meet him (1:40-42)."
       },
       {
         "name": "Simon Peter",
-        "role": "Andrew's brother renamed Cephas Introduced as a future disciple"
+        "role": "Is brought to Jesus by his brother Andrew and is given the new name Cephas, meaning a stone (1:41-42)."
       },
       {
         "name": "Philip",
-        "role": "called by Jesus Invites Nathanael to investigate"
+        "role": "Is called directly by Jesus and then finds Nathanael to tell him about the one Moses and the prophets wrote about (1:43-45)."
       },
       {
         "name": "Nathanael",
-        "role": "skeptical prospective disciple Confesses Jesus as Son of God and King of Israel"
-      },
-      {
-        "name": "Moses",
-        "role": "named in connection with the Law and Scripture Provides Israel's scriptural background to Jesus' identity"
+        "role": "Doubts that anything good can come from Nazareth, but confesses Jesus as the Son of God and King of Israel once Jesus reveals he saw him under the fig tree (1:46-49)."
       }
     ],
     "keyThemes": [
       {
         "theme": "The Word and revelation",
-        "explanation": "",
+        "explanation": "John opens by calling Jesus the eternal Word who was with God and was God, the one through whom everything was made and who became flesh to reveal God's glory (1:1-18).",
         "references": [
           "John 1:1–18"
         ]
       },
       {
         "theme": "Witness and belief",
-        "explanation": "",
+        "explanation": "John the Baptist denies being the Messiah himself and instead points to Jesus as the Lamb of God, modeling a witness that leads others to believe rather than drawing attention to himself (1:19-34).",
         "references": [
           "John 1:19–34"
         ]
       },
       {
         "theme": "Calling and invitation",
-        "explanation": "",
+        "explanation": "Andrew brings his brother Simon, and Philip invites the skeptical Nathanael, showing that an ordinary invitation from someone who already believes is often how new disciples first come to Jesus (1:35-51).",
         "references": [
           "John 1:35–51"
         ]
       },
       {
         "theme": "Fulfillment of Israel's hope",
-        "explanation": "",
+        "explanation": "Nathanael confesses Jesus as Son of God and King of Israel the moment Jesus reveals knowledge of him under the fig tree, and Jesus promises he will see even greater things than that (1:45-51).",
         "references": [
           "John 1:45–51"
         ]
@@ -72,54 +68,54 @@
   },
   "John 2": {
     "summary": "At a wedding in Cana, Jesus' mother tells him that the wine has run out. Jesus directs servants to fill stone jars with water, which he turns into wine; John calls this the first of his signs, through which he manifests his glory and his disciples believe (John 2:1–11). Jesus subsequently travels briefly to Capernaum (John 2:12). In Jerusalem at Passover he drives vendors and money changers from the temple precincts, protests making his Father's house a marketplace, and speaks of raising the temple of his body in three days (John 2:13–22). Though many see his signs, Jesus does not entrust himself to them because he knows human hearts (John 2:23–25).",
-    "whereWeAre": "The narrative places the temple incident at a Passover pilgrimage in Jerusalem; its chronological relationship to Synoptic Gospel presentations is debated. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 2 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 1 ended with Jesus promising Nathanael that he would see heaven opened (1:50-51). Chapter 2 shows the first of John's signs fulfilling that promise: Jesus turns water into wine at a wedding in Cana, causing his disciples to believe, then travels to Jerusalem at Passover and drives merchants from the temple, speaking of raising its destroyed structure in three days (2:1-25). That early clash over the temple sets up chapter 3's private conversation with a member of the very council that oversees it, Nicodemus.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "works a sign at Cana and confronts temple commerce. Shows glory and points ahead to his death and resurrection"
+        "role": "Turns water into wine at a wedding in Cana, his first sign, then drives merchants from the Jerusalem temple and speaks of raising the temple of his own body in three days (2:1-22)."
       },
       {
         "name": "Jesus' mother",
-        "role": "alerts Jesus to the wedding shortage. Participates in the Cana episode without being named here"
+        "role": "Tells Jesus the wedding has run out of wine and instructs the servants to do whatever he says (2:3-5)."
       },
       {
         "name": "Servants",
-        "role": "fill the jars and serve the transformed water Obey Jesus' directions and witness the sign"
+        "role": "Fill the stone jars with water at Jesus' direction and then serve it to the guests as wine (2:7-8)."
       },
       {
         "name": "Disciples",
-        "role": "observe the sign and remember his words. Respond in belief and later understanding"
+        "role": "Witness the sign at Cana and believe in Jesus, and later remember his saying about the temple after his resurrection (2:11,22)."
       },
       {
         "name": "Temple merchants and money changers",
-        "role": "conduct trade in temple precincts. Become the focus of Jesus' protest"
+        "role": "Conduct business in the temple courts until Jesus drives them out with a whip of cords, accusing them of making his Father's house a marketplace (2:14-16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Signs and belief",
-        "explanation": "",
+        "explanation": "Turning water into wine at Cana is the first of John's signs, an act that reveals Jesus' glory and leads his disciples to believe in him (2:1-11).",
         "references": [
           "John 2:1–11"
         ]
       },
       {
         "theme": "Worship and integrity",
-        "explanation": "",
+        "explanation": "Jesus drives merchants and money changers from the temple, refusing to let his Father's house become a marketplace (2:13-17).",
         "references": [
           "John 2:13–17"
         ]
       },
       {
         "theme": "Temple and resurrection",
-        "explanation": "",
+        "explanation": "When asked for a sign proving his authority, Jesus speaks of destroying and raising up the temple of his own body, a statement his disciples only understood after his resurrection (2:18-22).",
         "references": [
           "John 2:18–22"
         ]
       },
       {
         "theme": "Knowledge of the human heart",
-        "explanation": "",
+        "explanation": "Jesus does not entrust himself to people whose belief rests only on seeing signs, because he already knows what is in every human heart (2:23-25).",
         "references": [
           "John 2:23–25"
         ]
@@ -135,54 +131,54 @@
   },
   "John 3": {
     "summary": "Nicodemus, a Pharisee and Jewish leader, visits Jesus at night. Jesus tells him that one must be born from above or again, of water and Spirit, to enter God's kingdom; their exchange introduces the Son of Man being lifted up and God's love in giving the Son (John 3:1–21). Later, John the Baptist explains that his own ministry must diminish while Jesus' grows. He rejoices as the bridegroom's friend and stresses the significance of responding to the Son (John 3:22–36). The chapter joins new birth, divine love, faith, and humble witness.",
-    "whereWeAre": "The dialogue takes place within first-century Jewish conversations about purification, Israel's teacherly traditions, and the hope of God's kingdom. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 3 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 2 ended with Jesus not entrusting himself to people whose belief rested only on seeing signs, since he knew what was in their hearts (2:23-25). Chapter 3 shows one such believer going deeper: Nicodemus comes to Jesus by night and is told he must be born again, and the chapter closes with John the Baptist insisting that his own ministry must decrease while Jesus' increases (3:1-36). That theme of Jesus growing while others step back continues in chapter 4, where Jesus leaves Judea and meets a Samaritan woman instead.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "teaches Nicodemus about new birth and life. Connects the Spirit and belief with God's saving purpose"
+        "role": "Tells Nicodemus he must be born again to see God's kingdom and explains that God gave his only Son so that whoever believes in him would have everlasting life (3:1-21)."
       },
       {
         "name": "Nicodemus",
-        "role": "Pharisee and ruler who questions Jesus. Represents earnest inquiry and misunderstanding"
+        "role": "A Pharisee and ruler of the Jews who comes to Jesus by night and struggles to understand how a grown man can be born again (3:1-9)."
       },
       {
         "name": "John the Baptist",
-        "role": "continues bearing witness Rejoices that attention turns to Jesus"
+        "role": "Tells his own disciples that Jesus must increase while he decreases, rejoicing rather than competing when crowds go to Jesus instead (3:25-30)."
       },
       {
         "name": "John's disciples",
-        "role": "raise concerns about Jesus' growing following Prompt John's explanation of his role"
+        "role": "Report to John that Jesus is baptizing and that everyone is going to him instead (3:26)."
       },
       {
         "name": "Moses",
-        "role": "referenced as lifting the serpent in the wilderness. Supplies the analogy for the Son of Man's lifting up"
+        "role": "Cited by Jesus as the one who lifted up the bronze serpent in the wilderness, a picture of the Son of man being lifted up to give life (3:14)."
       }
     ],
     "keyThemes": [
       {
         "theme": "New birth and the Spirit",
-        "explanation": "",
+        "explanation": "Jesus tells Nicodemus that no one can see God's kingdom without being born again, of water and the Spirit, confusing a teacher of Israel who expects a more straightforward answer (3:3-8).",
         "references": [
           "John 3:3–8"
         ]
       },
       {
         "theme": "Divine love and belief",
-        "explanation": "",
+        "explanation": "John says God loved the world enough to give his only Son, so that whoever believes in him would not perish but have everlasting life (3:14-21).",
         "references": [
           "John 3:14–21"
         ]
       },
       {
         "theme": "Humble witness",
-        "explanation": "",
+        "explanation": "Told that Jesus is baptizing more people than he is, John the Baptist rejoices rather than competes, saying Jesus must increase while he himself decreases (3:22-30).",
         "references": [
           "John 3:22–30"
         ]
       },
       {
         "theme": "Response to the Son",
-        "explanation": "",
+        "explanation": "John the Baptist says that whoever believes on the Son has everlasting life, while whoever does not obey him remains under God's wrath (3:31-36).",
         "references": [
           "John 3:31–36"
         ]
@@ -198,58 +194,58 @@
   },
   "John 4": {
     "summary": "Leaving Judea for Galilee, Jesus speaks with a Samaritan woman at Jacob's well near Sychar. He offers living water, reveals knowledge of her life, and explains worship in spirit and truth; she tells her town, and many Samaritans believe (John 4:1–42). Jesus then returns to Galilee, where a royal official asks him to heal his dying son. The official trusts Jesus' word and later learns the child recovered at the hour Jesus spoke; John calls this another sign (John 4:43–54). Both accounts show faith developing across social boundaries and at a distance.",
-    "whereWeAre": "The account crosses the cultural and religious divide between Jews and Samaritans in the region between Judea and Galilee. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 4 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 3 ended with John the Baptist declaring that whoever believes in the Son has everlasting life (3:36). Chapter 4 shows that life reaching an unlikely recipient: a Samaritan woman at Jacob's well believes after Jesus reveals knowledge of her own life, her whole town comes to faith through her testimony, and a Galilean official believes Jesus' word alone that his dying son will live (4:1-54). That pattern of faith growing from a single word continues in chapter 5, where a healed man's recovery becomes evidence in a harder dispute.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "speaks with Samaritans and heals an official's son. Offers living water and calls for trust in his word"
+        "role": "Offers a Samaritan woman living water, reveals knowledge of her past, and heals a royal official's son from a distance by his word alone (4:1-54)."
       },
       {
         "name": "Samaritan woman",
-        "role": "meets Jesus at Jacob's well. Becomes a witness to her village"
+        "role": "Comes to draw water at Jacob's well, is told everything she ever did, and leaves her water jar to tell her whole town about Jesus (4:7-29)."
       },
       {
         "name": "Samaritan townspeople",
-        "role": "listen first to the woman and then to Jesus. Come to believe from hearing him"
+        "role": "Come out to see Jesus because of the woman's testimony, then believe for themselves after hearing him (4:39-42)."
       },
       {
         "name": "Royal official",
-        "role": "asks Jesus to heal his child Believes Jesus' promise before seeing proof"
+        "role": "Asks Jesus to come heal his dying son, then believes Jesus' word alone and starts home before learning his son has already recovered (4:46-50)."
       },
       {
         "name": "Official's son",
-        "role": "sick child healed at a distance. His recovery confirms Jesus' spoken word"
+        "role": "Recovers from his fever at the exact hour Jesus spoke the word of healing, though he is at a distance from Jesus the whole time (4:51-53)."
       },
       {
         "name": "Jesus' disciples",
-        "role": "return to the well and question the encounter. Hear about Jesus' work as spiritual harvest"
+        "role": "Return from buying food to find Jesus talking with the Samaritan woman, and are later told that the fields are already ripe for a spiritual harvest (4:27,35)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Living water",
-        "explanation": "",
+        "explanation": "Jesus offers a Samaritan woman water that will become in her a spring welling up to eternal life, reframing her request for an ordinary drink (4:7-15).",
         "references": [
           "John 4:7–15"
         ]
       },
       {
         "theme": "Worship in spirit and truth",
-        "explanation": "",
+        "explanation": "Jesus tells the woman that true worshippers will worship the Father in spirit and truth, not merely at one sacred mountain or another (4:19-26).",
         "references": [
           "John 4:19–26"
         ]
       },
       {
         "theme": "Witness across boundaries",
-        "explanation": "",
+        "explanation": "The Samaritan woman's testimony brings her whole town to Jesus, crossing a divide between Jews and Samaritans that normally kept the two groups apart (4:28-42).",
         "references": [
           "John 4:28–42"
         ]
       },
       {
         "theme": "Trusting Jesus' word",
-        "explanation": "",
+        "explanation": "A royal official believes Jesus' word that his son will live before he has any proof, and his whole household comes to faith once the boy recovers at the exact hour Jesus spoke (4:46-54).",
         "references": [
           "John 4:46–54"
         ]
@@ -259,54 +255,54 @@
   },
   "John 5": {
     "summary": "At a Jewish festival in Jerusalem, Jesus heals a man disabled for thirty-eight years at the pool of Bethesda, telling him to take up his mat and walk (John 5:1–9). The healing on a Sabbath provokes dispute with Judean religious authorities, and Jesus responds by describing his work as inseparable from the Father's, including giving life and exercising judgment (John 5:10–30). He appeals to the testimony of John, his works, the Father, and the Scriptures, and challenges people who search the Scriptures yet refuse to come to him for life (John 5:31–47).",
-    "whereWeAre": "The chapter is set at Jerusalem's pool complex during an unnamed festival; identification of the festival and some site details remain uncertain. The precise identity of the unnamed festival and variant spellings of Bethesda/Bethzatha are disputed. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 5 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 4 ended with a royal official believing Jesus' word and his whole household coming to faith once the boy recovered (4:50-53). Chapter 5 tests belief in a harder setting: Jesus heals a man disabled for thirty-eight years at the pool of Bethesda on the Sabbath, and when Jewish authorities object, he defends his authority as inseparable from the Father's own work of giving life and judging (5:1-47). That claim to divine authority sets up chapter 6's sign of multiplying bread to feed a hungry crowd.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "heals at Bethesda and explains his authority. Claims to act in union with the Father"
+        "role": "Heals a man disabled for thirty-eight years at the pool of Bethesda and defends the healing by claiming his own work is inseparable from the Father's (5:1-30)."
       },
       {
         "name": "Disabled man",
-        "role": "receives healing and carries his mat. His healing becomes the occasion for a Sabbath dispute"
+        "role": "Has been unable to walk for thirty-eight years and is healed by Jesus at the pool of Bethesda on the Sabbath (5:5-9)."
       },
       {
         "name": "Judean authorities",
-        "role": "challenge the Sabbath activity and Jesus' claims. Represent opposition that intensifies after the sign"
+        "role": "Challenge Jesus over healing on the Sabbath and over his claim to work alongside God as his Father, intensifying their opposition (5:16-18)."
       },
       {
         "name": "John the Baptist",
-        "role": "named as an earlier witness. His testimony is appealed to but not treated as the sole evidence"
+        "role": "Cited by Jesus as an earlier witness to his identity, though Jesus says his own works testify to more than John's words alone did (5:33-36)."
       },
       {
         "name": "Moses",
-        "role": "invoked as witness through writings. Becomes the focus of Jesus' closing accusation"
+        "role": "Invoked by Jesus as the very one whose writings will accuse his listeners, since they refuse to believe the one Moses wrote about (5:45-47)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Healing and mercy",
-        "explanation": "",
+        "explanation": "Jesus heals a man who had been disabled for thirty-eight years simply by telling him to get up and walk, without the man even knowing who had healed him at first (5:1-9).",
         "references": [
           "John 5:1–9"
         ]
       },
       {
         "theme": "Sabbath dispute",
-        "explanation": "",
+        "explanation": "Healing on the Sabbath draws accusations from Jewish authorities, and Jesus responds by saying his Father is still working, so he works too (5:10-18).",
         "references": [
           "John 5:10–18"
         ]
       },
       {
         "theme": "Life and judgment",
-        "explanation": "",
+        "explanation": "Jesus says the Father has given him authority to give life and to execute judgment, since the Father and Son work in complete agreement (5:19-30).",
         "references": [
           "John 5:19–30"
         ]
       },
       {
         "theme": "Scripture and testimony",
-        "explanation": "",
+        "explanation": "Jesus tells people who search the Scriptures for eternal life that those same Scriptures testify about him, yet they refuse to come to him (5:31-47).",
         "references": [
           "John 5:31–47"
         ]
@@ -316,58 +312,58 @@
   },
   "John 6": {
     "summary": "Jesus feeds a large crowd with five loaves and two fish near the Sea of Galilee; the people interpret the sign as prophet-like, while Jesus withdraws when they seek to make him king (John 6:1–15). He walks on the lake toward his disciples at night (John 6:16–21). In Capernaum he challenges the crowd to seek enduring food and calls himself the bread of life, connecting belief with the Father's gift and future resurrection (John 6:22–59). Many disciples find the teaching difficult and leave, while Peter speaks for the Twelve in confessing that Jesus has words of eternal life (John 6:60–71).",
-    "whereWeAre": "The setting includes Galilean lakeshore villages and Passover approaching, explaining both pilgrimage associations and manna imagery. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 6 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 5 ended with Jesus challenging people who search the Scriptures yet refuse to come to him for life (5:39-47). Chapter 6 offers that life in a visible sign: Jesus feeds a crowd of thousands, walks on the sea to his disciples at night, and then teaches in Capernaum that he himself is the bread of life, a saying so hard that many disciples leave while Peter speaks for the Twelve in staying (6:1-71). That division carries into chapter 7, where Jesus' own brothers do not yet believe in him either.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "feeds the crowd, walks on water, and teaches. Identifies himself as the bread of life"
+        "role": "Feeds a crowd of thousands, walks on the sea to his disciples, and teaches that he himself is the bread of life, a saying that costs him many followers (6:1-71)."
       },
       {
         "name": "Large crowd",
-        "role": "eats and seeks more signs Displays both enthusiasm and misunderstanding"
+        "role": "Eats the bread Jesus multiplies and tries to make him king by force, then later follows him across the lake seeking more signs (6:14-15,24-26)."
       },
       {
         "name": "Disciples and the Twelve",
-        "role": "witness the sign and hear difficult teaching. Their contrasting responses frame discipleship"
+        "role": "Witness the feeding and the walking on water, and later split over Jesus' hard teaching about eating his flesh and drinking his blood (6:19,60-66)."
       },
       {
         "name": "Simon Peter",
-        "role": "speaks for the Twelve Confesses Jesus as the Holy One of God"
+        "role": "Speaks for the Twelve when Jesus asks if they too will leave, confessing that Jesus alone has the words of eternal life (6:67-69)."
       },
       {
         "name": "Judas son of Simon Iscariot",
-        "role": "identified as a future betrayer. Introduces an ominous contrast within the Twelve"
+        "role": "Is named by Jesus as the one who will betray him, even while still counted among the Twelve (6:70-71)."
       },
       {
         "name": "Moses",
-        "role": "invoked in discussion of manna. Provides background to the wilderness-bread comparison"
+        "role": "Invoked by the crowd as the one who gave their ancestors manna, a comparison Jesus corrects by saying it was his Father, not Moses, who gave the true bread from heaven (6:31-32)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Abundance and the sign",
-        "explanation": "",
+        "explanation": "Jesus feeds thousands from five loaves and two fish, a sign so impressive the crowd wants to make him king by force, prompting him to withdraw alone (6:1-15).",
         "references": [
           "John 6:1–15"
         ]
       },
       {
         "theme": "Bread of life",
-        "explanation": "",
+        "explanation": "Jesus tells the crowd that he himself is the bread of life, and that whoever comes to him will never hunger again, in contrast to the manna their ancestors ate and still died (6:26-40).",
         "references": [
           "John 6:26–40"
         ]
       },
       {
         "theme": "Difficult teaching",
-        "explanation": "",
+        "explanation": "Jesus' language about eating his flesh and drinking his blood is hard enough that many who had been following him turn back and no longer walk with him (6:51-59).",
         "references": [
           "John 6:51–59"
         ]
       },
       {
         "theme": "Perseverance and confession",
-        "explanation": "",
+        "explanation": "When Jesus asks if the Twelve will also leave, Peter answers that they have nowhere else to go, since Jesus has the words of eternal life (6:60-71).",
         "references": [
           "John 6:60–71"
         ]
@@ -398,54 +394,54 @@
   },
   "John 7": {
     "summary": "Jesus' brothers urge him to go to the Feast of Tabernacles in Jerusalem, but he initially remains in Galilee and later goes privately (John 7:1–13). He teaches in the temple, leading to disputes about his learning, Sabbath healing, his origin, and whether he is the Messiah (John 7:14–36). On the festival's final great day, he invites the thirsty to come to him for living water; the narrator explains this as referring to the Spirit (John 7:37–39). The crowd divides, officers hesitate to arrest him, and Nicodemus asks whether the Law permits judging someone without hearing him (John 7:40–52). Some Bibles include 7:53 as the start of a disputed later textual passage.",
-    "whereWeAre": "The scene is Jerusalem during Sukkot, the autumn Feast of Tabernacles; precise ritual details varied across periods, so specific reconstructions should be qualified. John 7:53 introduces the textually disputed account that continues at 8:11. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 7 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 6 ended with Peter confessing that the Twelve have nowhere else to go, since Jesus has the words of eternal life, even though one of them would betray him (6:66-71). Chapter 7 shows that same mixed response spreading wider: Jesus' own brothers urge him to show himself publicly, he goes up to the Feast of Tabernacles privately instead, and his teaching in the temple divides the crowd over whether he is the Messiah (7:1-52). That division reaches its sharpest point in chapter 8, where the dispute turns to judgment and mercy.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "teaches in Jerusalem during the festival. Provokes debate about his origin and mission"
+        "role": "Goes up to the Feast of Tabernacles privately after refusing his brothers' demand for a public display, then teaches openly in the temple and invites the thirsty to come to him (7:1-39)."
       },
       {
         "name": "Jesus' brothers",
-        "role": "urge him to appear publicly. Reveal family misunderstanding in the narrative"
+        "role": "Urge Jesus to go show himself publicly at the feast, a request John notes they make without yet believing in him themselves (7:3-5)."
       },
       {
         "name": "Crowds and Judean authorities",
-        "role": "debate and investigate Jesus Display conflicting reactions"
+        "role": "Debate whether Jesus is a good man, a deceiver, or the Messiah, while authorities look for a way to arrest him (7:12-13,25-27,40-43)."
       },
       {
         "name": "Temple officers",
-        "role": "are sent to arrest Jesus Return impressed by his words"
+        "role": "Are sent to arrest Jesus but return empty-handed, telling the chief priests and Pharisees that no man ever spoke like this man (7:32,45-46)."
       },
       {
         "name": "Nicodemus",
-        "role": "questions the fairness of judgment without a hearing. Appears as a voice for due process"
+        "role": "Asks his fellow council members whether the law judges a man without first hearing him, drawing their scorn in return (7:50-52)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Timing and mission",
-        "explanation": "",
+        "explanation": "Jesus tells his own unbelieving brothers that his time has not yet come, then goes up to the festival privately rather than on their public terms (7:1-13).",
         "references": [
           "John 7:1–13"
         ]
       },
       {
         "theme": "Judgment and appearances",
-        "explanation": "",
+        "explanation": "Jesus tells the crowd to stop judging by appearances and to judge with right judgment, after they accuse him of breaking the law by healing on the Sabbath (7:14-24).",
         "references": [
           "John 7:14–24"
         ]
       },
       {
         "theme": "Living water and Spirit",
-        "explanation": "",
+        "explanation": "On the festival's last and greatest day, Jesus invites anyone thirsty to come to him, a saying John explains refers to the Spirit believers would later receive (7:37-39).",
         "references": [
           "John 7:37–39"
         ]
       },
       {
         "theme": "Division over Jesus",
-        "explanation": "",
+        "explanation": "The crowd splits over whether Jesus is the Christ, and even the officers sent to arrest him return empty-handed, saying no one ever spoke the way he does (7:40-52).",
         "references": [
           "John 7:40–52"
         ]
@@ -455,58 +451,58 @@
   },
   "John 8": {
     "summary": "In the KJV, the chapter opens with the account of a woman accused of adultery and Jesus' challenge to her accusers; this passage (John 7:53–8:11) is absent from many early manuscripts and is widely regarded as a later addition to John's text (John 8:1–11). Jesus then calls himself the light of the world and debates his testimony, his relationship to the Father, and the consequences of unbelief (John 8:12–30). He teaches that abiding in his word brings freedom through truth, disputes appeals to descent from Abraham, and speaks of the devil as father of lies (John 8:31–47). The argument culminates in his claim, 'Before Abraham was, I am,' after which opponents take up stones (John 8:48–59).",
-    "whereWeAre": "The debate is placed in Jerusalem's temple precincts in a first-century Jewish context; the disputed opening cannot simply be treated as securely original to John. The passage about the accused woman (7:53–8:11) is missing from the earliest major Greek witnesses and is widely understood by textual scholars as secondary to John; the KJV includes it. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 8 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 7 ended with Nicodemus asking whether the law permits judging a man without first giving him a hearing (7:50-51). Chapter 8 opens with that question tested on a woman accused of adultery, whom Jesus declines to condemn, before he calls himself the light of the world and debates his identity with opponents who ultimately take up stones against him (8:1-59). That mounting hostility sets up chapter 9's healing of a blind man, which becomes its own trial-like interrogation.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "teaches about light, freedom, and his relation to the Father. Presents himself as preexistent and life-giving"
+        "role": "Declines to condemn a woman accused of adultery, calls himself the light of the world, and tells opponents that before Abraham was, he is (8:1-59)."
       },
       {
         "name": "Woman accused of adultery",
-        "role": "appears in the manuscript-disputed opening passage. Becomes the subject of a story about judgment and mercy"
+        "role": "Is brought to Jesus by scribes and Pharisees as a test, and is told by Jesus to go and sin no more once her accusers leave (8:3-11)."
       },
       {
         "name": "Scribes and Pharisees",
-        "role": "accuse the woman in the disputed passage Test Jesus' response"
+        "role": "Bring the accused woman to Jesus to test him, then leave one by one once he tells whoever is without sin to cast the first stone (8:3-9)."
       },
       {
         "name": "Pharisees and other opponents",
-        "role": "debate Jesus' testimony and ancestry. Challenge his authority"
+        "role": "Debate Jesus' testimony about himself, his parentage, and his claim to exist before Abraham, ultimately picking up stones to throw at him (8:13,19,48,58-59)."
       },
       {
         "name": "Abraham",
-        "role": "ancestor invoked in the dispute. Represents claimed covenant descent"
+        "role": "Claimed as their father by Jesus' opponents, who are told that doing Abraham's works, not merely claiming his descent, is what would prove it (8:39-40)."
       },
       {
         "name": "The Father",
-        "role": "repeatedly invoked by Jesus Grounds Jesus' testimony and identity"
+        "role": "Repeatedly invoked by Jesus as the one who sent him and who testifies on his behalf (8:16-18,42)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Mercy and judgment in a disputed passage",
-        "explanation": "",
+        "explanation": "In a passage absent from the earliest manuscripts but included in the KJV, Jesus tells a woman's accusers that whoever is without sin may cast the first stone, and then tells her to go and sin no more (8:1-11).",
         "references": [
           "John 8:1–11"
         ]
       },
       {
         "theme": "Light of the world",
-        "explanation": "",
+        "explanation": "Jesus calls himself the light of the world, promising that whoever follows him will never walk in darkness but will have the light of life (8:12-20).",
         "references": [
           "John 8:12–20"
         ]
       },
       {
         "theme": "Freedom and truth",
-        "explanation": "",
+        "explanation": "Jesus tells believers that knowing the truth will make them free, provoking an argument with hearers who insist they have never been anyone's slaves (8:31-36).",
         "references": [
           "John 8:31–36"
         ]
       },
       {
         "theme": "Identity and conflict",
-        "explanation": "",
+        "explanation": "Jesus' claim, \"Before Abraham was, I am,\" is understood as claiming God's own eternal name, provoking his opponents to try to stone him on the spot (8:48-59).",
         "references": [
           "John 8:48–59"
         ]
@@ -516,54 +512,54 @@
   },
   "John 9": {
     "summary": "Jesus encounters a man blind from birth. Rejecting a simple blame of the man's condition on personal or parental sin, he makes mud, sends him to wash in the pool of Siloam, and the man returns seeing (John 9:1–12). Because the healing occurred on a Sabbath, Pharisees question the man, his parents, and Jesus' authority (John 9:13–34). The formerly blind man becomes more forthright about Jesus and is expelled from the group interrogating him. Jesus seeks him out, receives his faith, and speaks of judgment in which those claiming to see may remain blind (John 9:35–41).",
-    "whereWeAre": "The action occurs in Jerusalem and refers to the pool of Siloam, a known feature of the city's water system; the full procedure and social repercussions come from John's account. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 9 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 8 ended with opponents trying to stone Jesus after his claim, \"Before Abraham was, I am\" (8:58-59). Chapter 9 shows that same hostility turned on an ordinary man instead: Jesus heals someone blind from birth, and the man's growing honesty under repeated questioning leads the Pharisees to expel him from the synagogue even as Jesus himself seeks him out (9:1-41). That image of true and false sight leads directly into chapter 10's picture of a shepherd whose sheep recognize his voice.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "heals congenital blindness and teaches about spiritual sight Reveals God's works and challenges confident judgments"
+        "role": "Heals a man born blind by making mud and sending him to wash in the pool of Siloam, then later finds the expelled man and receives his confession of faith (9:1-7,35-38)."
       },
       {
         "name": "Man born blind",
-        "role": "receives sight and testifies before interrogators. Moves from limited knowledge to explicit faith"
+        "role": "Receives his sight, grows bolder under repeated interrogation about how it happened, and is finally cast out of the synagogue for defending Jesus (9:8-34)."
       },
       {
         "name": "Pharisees",
-        "role": "question the healing's Sabbath propriety. Illustrate divided responses among leaders"
+        "role": "Interrogate the healed man and his parents over and over because the healing happened on the Sabbath, and expel the man when he will not back down (9:13-34)."
       },
       {
         "name": "Man's parents",
-        "role": "confirm his identity and prior blindness Fear exclusion and decline to explain the healing"
+        "role": "Confirm that their son was born blind but refuse to say how he was healed, afraid of being expelled from the synagogue themselves (9:18-23)."
       },
       {
         "name": "Disciples",
-        "role": "ask whose sin caused the blindness Prompt Jesus' corrective answer"
+        "role": "Ask Jesus whose sin caused the man's blindness, prompting his answer that the man was born blind so God's works could be displayed in him (9:1-3)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Suffering without easy blame",
-        "explanation": "",
+        "explanation": "Asked whose sin caused a man's blindness from birth, Jesus rejects the assumption that suffering always traces back to someone's specific sin, saying instead that God's works would be displayed in him (9:1-5).",
         "references": [
           "John 9:1–5"
         ]
       },
       {
         "theme": "Healing and witness",
-        "explanation": "",
+        "explanation": "Jesus makes mud, sends the blind man to wash in the pool of Siloam, and the man returns able to see, with no ability yet to explain who healed him or how (9:6-12).",
         "references": [
           "John 9:6–12"
         ]
       },
       {
         "theme": "Sabbath and authority",
-        "explanation": "",
+        "explanation": "Because the healing happened on the Sabbath, Pharisees interrogate the healed man and his parents repeatedly, growing angrier as the man's answers grow bolder (9:13-34).",
         "references": [
           "John 9:13–34"
         ]
       },
       {
         "theme": "Sight and blindness",
-        "explanation": "",
+        "explanation": "Jesus says he came so that the blind would see and those who claim to see would be shown blind, a judgment the Pharisees recognize is aimed at them (9:35-41).",
         "references": [
           "John 9:35–41"
         ]
@@ -573,54 +569,54 @@
   },
   "John 10": {
     "summary": "Jesus compares himself to the gate of the sheep and the good shepherd, contrasting his care with thieves and hired workers. He says he lays down his life for the sheep and will gather other sheep into one flock (John 10:1–21). At the winter Festival of Dedication in Jerusalem, opponents press him to say plainly whether he is the Messiah. Jesus points to his works, speaks of his sheep hearing his voice, and states that he and the Father are one (John 10:22–30). After renewed accusations of blasphemy he quotes Scripture in defense and withdraws across the Jordan, where many believe (John 10:31–42).",
-    "whereWeAre": "The Dedication festival recalls the temple's rededication in the second century BCE; shepherding was familiar in Judean rural life and biblical royal imagery. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 10 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 9 ended with Jesus saying that people who claim to see yet refuse to see him remain guilty in their blindness (9:39-41). Chapter 10 explains that contrast with the image of a shepherd: Jesus calls himself the good shepherd who lays down his life for the sheep, and at the Feast of Dedication he tells opponents who press him for a plain answer that he and the Father are one, provoking another attempt to stone him (10:1-42). That claim to unity with the Father is tested directly in chapter 11, where Jesus delays going to a dying friend.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "speaks as gate and good shepherd. Describes protection, sacrifice, and unity with the Father"
+        "role": "Calls himself the gate for the sheep and the good shepherd who lays down his life for them, then tells opponents at the Feast of Dedication that he and the Father are one (10:1-42)."
       },
       {
         "name": "Sheep",
-        "role": "image for those who hear his voice. Expresses the relationship of belonging and trust"
+        "role": "Hear the shepherd's voice and follow him, pictured as secure in his hand and his Father's, unable to be snatched away by anyone (10:3-5,27-29)."
       },
       {
         "name": "Hired hand and thieves",
-        "role": "contrasting images within Jesus' discourse. Represent abandonment and exploitation"
+        "role": "Images Jesus uses for those who abandon or exploit the sheep, in contrast to the good shepherd who actually lays down his life for them (10:1,10,12-13)."
       },
       {
         "name": "Judean opponents",
-        "role": "question and threaten Jesus. Challenge his identity and divine claims"
+        "role": "Press Jesus to say plainly whether he is the Christ, then try to stone and arrest him once he claims unity with the Father (10:24,31,39)."
       },
       {
         "name": "John the Baptist",
-        "role": "recalled by people beyond the Jordan. His earlier witness is remembered as reliable"
+        "role": "Remembered by believers across the Jordan, who note that everything John said about Jesus turned out to be true (10:41-42)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Good shepherd's care",
-        "explanation": "",
+        "explanation": "Jesus contrasts himself as the good shepherd who lays down his life for the sheep with hired hands who abandon them and thieves who come only to steal and destroy (10:1-18).",
         "references": [
           "John 10:1–18"
         ]
       },
       {
         "theme": "One flock",
-        "explanation": "",
+        "explanation": "Jesus says he has other sheep not of this fold that he must also bring in, so that there will be one flock under one shepherd (10:14-16).",
         "references": [
           "John 10:14–16"
         ]
       },
       {
         "theme": "Hearing and security",
-        "explanation": "",
+        "explanation": "Jesus says his sheep hear his voice and follow him, and that no one is able to snatch them out of his hand or his Father's (10:25-30).",
         "references": [
           "John 10:25–30"
         ]
       },
       {
         "theme": "Claims and controversy",
-        "explanation": "",
+        "explanation": "When Jesus says he and the Father are one, his opponents take up stones again, convinced he is claiming to be God (10:31-39).",
         "references": [
           "John 10:31–39"
         ]
@@ -636,58 +632,58 @@
   },
   "John 11": {
     "summary": "Mary and Martha send for Jesus because their brother Lazarus is ill, but Jesus arrives after Lazarus has been in the tomb four days (John 11:1–17). He speaks with Martha about resurrection and declares himself the resurrection and the life; Mary and other mourners weep, and Jesus is deeply moved (John 11:18–37). At the tomb he orders the stone removed, prays, and calls Lazarus out alive (John 11:38–44). Some witnesses believe, while others report to the authorities. The chief priests and Pharisees convene a council; Caiaphas argues that one man's death is preferable to national catastrophe, and a plot to kill Jesus develops (John 11:45–57).",
-    "whereWeAre": "Bethany lies near Jerusalem; the narrative's political concern reflects the vulnerability of Judean leadership under Roman imperial rule. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 11 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 10 ended with many believing in Jesus across the Jordan, remembering that everything John the Baptist had said about him was true (10:40-42). Chapter 11 puts that developing faith to its hardest test: Jesus deliberately delays going to the dying Lazarus, arrives after he has been four days in the tomb, and calls him back to life, a sign so public that the chief priests and Pharisees begin plotting Jesus' own death to stop it (11:1-57). That plot sets up chapter 12's account of his last journey toward it, beginning with his own anointing for burial.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "raises Lazarus and speaks of resurrection. Reveals power over death within the Gospel's account"
+        "role": "Deliberately delays going to the dying Lazarus, weeps with the mourners once he arrives, and calls Lazarus out of the tomb alive after four days (11:1-44)."
       },
       {
         "name": "Lazarus",
-        "role": "brother raised from the tomb. His restoration becomes a decisive sign"
+        "role": "Dies and lies four days in the tomb before Jesus calls him back to life, becoming the sign that finally moves the authorities to plot Jesus' death (11:14,43-44,53)."
       },
       {
         "name": "Martha",
-        "role": "confesses belief in resurrection and Jesus as Messiah. Offers a substantial statement of faith"
+        "role": "Tells Jesus her brother would not have died if he had come sooner, yet confesses Jesus as the Christ, the Son of God, even before Lazarus is raised (11:21-27)."
       },
       {
         "name": "Mary",
-        "role": "grieves her brother and meets Jesus. Embodies mourning shared by the household"
+        "role": "Falls at Jesus' feet weeping over her brother's death, moving Jesus himself to weep alongside her (11:32-35)."
       },
       {
         "name": "Caiaphas",
-        "role": "high priest who counsels Jesus' death. His statement is given an unintended prophetic meaning by John"
+        "role": "Argues to the council that it is better for one man to die for the people, a statement John says unintentionally prophesies Jesus' death (11:49-51)."
       },
       {
         "name": "Chief priests and Pharisees",
-        "role": "convene a council. Respond to the sign with political fear"
+        "role": "Convene a council after the raising of Lazarus and decide, following Caiaphas's argument, that Jesus must die (11:47-53)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Resurrection and life",
-        "explanation": "",
+        "explanation": "Jesus tells the grieving Martha that he himself is the resurrection and the life, and that whoever believes in him will live even after dying (11:17-27).",
         "references": [
           "John 11:17–27"
         ]
       },
       {
         "theme": "Compassion and grief",
-        "explanation": "",
+        "explanation": "Seeing Mary and the mourners weeping, Jesus himself weeps, showing that his power over death does not erase real grief in the moment (11:28-37).",
         "references": [
           "John 11:28–37"
         ]
       },
       {
         "theme": "The sign at the tomb",
-        "explanation": "",
+        "explanation": "Jesus orders the stone removed, prays aloud for the crowd's sake, and calls Lazarus out of the tomb alive after four days of being dead (11:38-44).",
         "references": [
           "John 11:38–44"
         ]
       },
       {
         "theme": "Power and opposition",
-        "explanation": "",
+        "explanation": "Caiaphas argues that it is better for one man to die for the people, unintentionally prophesying Jesus' death as the council plots to kill him (11:45-57).",
         "references": [
           "John 11:45–57"
         ]
@@ -697,62 +693,58 @@
   },
   "John 12": {
     "summary": "Six days before Passover, Mary anoints Jesus' feet at a meal in Bethany, while Judas objects to the cost; Jesus relates the act to his burial (John 12:1–8). Crowds come to see Jesus and Lazarus, and the chief priests consider killing Lazarus too (John 12:9–11). Jesus enters Jerusalem riding a young donkey, fulfilling the narrative's interpretation of Scripture (John 12:12–19). Greek-speaking worshipers ask to see Jesus, who speaks of a grain of wheat dying to bear fruit, his approaching 'hour,' and being lifted up to draw people (John 12:20–36). John reflects on widespread unbelief despite signs, then summarizes Jesus' mission as light and saving truth (John 12:37–50).",
-    "whereWeAre": "The action is near Jerusalem at Passover season amid crowded pilgrimage and heightened Roman sensitivity to royal claims. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 12 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 11 ended with the council deciding that Jesus must die, so that he no longer moved about publicly among the Jews (11:53-54). Chapter 12 shows him returning anyway: Mary anoints Jesus for burial at Bethany six days before Passover, he enters Jerusalem to crowds waving palm branches, and when Greek pilgrims ask to see him he speaks of a grain of wheat that must die to bear fruit, ending with a summary of why many still do not believe (12:1-50). That reflection on unbelief gives way in chapter 13 to Jesus' own private farewell meal with the disciples who did believe.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "receives anointing and enters Jerusalem. Announces the approach of his death and glorification"
+        "role": "Is anointed for burial at Bethany, enters Jerusalem to a crowd's praise, and tells Greek pilgrims that his hour to be glorified through death has finally come (12:1-36)."
       },
       {
         "name": "Mary of Bethany",
-        "role": "anoints Jesus' feet. Her act is linked by Jesus to burial"
+        "role": "Anoints Jesus' feet with a pound of costly perfume and wipes them with her hair, an act Jesus defends as preparation for his burial (12:3-7)."
       },
       {
         "name": "Martha and Lazarus",
-        "role": "hostess and living witness at Bethany. Their household connects this chapter to the raising sign"
+        "role": "Host the supper at Bethany where Martha serves and the living, raised Lazarus sits at the table as a witness in his own right (12:2)."
       },
       {
         "name": "Judas Iscariot",
-        "role": "objects to the expensive perfume John attributes dishonest motives to him"
+        "role": "Objects to the cost of Mary's perfume, though John notes he says so not out of concern for the poor but because he used to steal from the money bag (12:4-6)."
       },
       {
         "name": "Crowds",
-        "role": "welcome Jesus with palm branches. Express public messianic expectation"
+        "role": "Spread palm branches and shout praise as Jesus enters Jerusalem, hailing him as the King of Israel (12:12-13)."
       },
       {
         "name": "Some Greeks",
-        "role": "pilgrims who seek Jesus Prompt discourse about his approaching hour"
-      },
-      {
-        "name": "Philip and Andrew",
-        "role": "relay the Greeks' request. Serve as intermediaries"
+        "role": "Ask Philip, who tells Andrew, for a chance to see Jesus, prompting his words about a grain of wheat that must die to bear fruit (12:20-24)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Costly devotion",
-        "explanation": "",
+        "explanation": "Mary anoints Jesus' feet with expensive perfume worth a year's wages, and Jesus defends her lavish gift as preparation for his burial despite Judas's objection (12:1-8).",
         "references": [
           "John 12:1–8"
         ]
       },
       {
         "theme": "Kingship and peace",
-        "explanation": "",
+        "explanation": "Jesus enters Jerusalem riding a young donkey rather than a warhorse, fulfilling Zechariah's picture of a humble king coming in peace (12:12-19).",
         "references": [
           "John 12:12–19"
         ]
       },
       {
         "theme": "Fruitfulness through death",
-        "explanation": "",
+        "explanation": "Jesus compares his coming death to a grain of wheat that must fall into the ground and die before it can bear much fruit (12:20-33).",
         "references": [
           "John 12:20–33"
         ]
       },
       {
         "theme": "Light and belief",
-        "explanation": "",
+        "explanation": "John closes the public ministry by noting that many still would not believe despite all Jesus' signs, even as Jesus insists he came as light so that no one who believes in him should remain in darkness (12:35-50).",
         "references": [
           "John 12:35–50"
         ]
@@ -788,54 +780,54 @@
   },
   "John 13": {
     "summary": "Before the Passover, Jesus washes his disciples' feet during a meal, despite Peter's objections, and presents his humble service as an example for them (John 13:1–20). He announces that one of his own will betray him, gives bread to Judas, and Judas goes out into the night (John 13:21–30). Jesus then speaks of his coming glorification and gives a new commandment to love one another as he has loved them, saying this love will mark them as his disciples (John 13:31–35). Peter promises to follow him, but Jesus predicts Peter will deny him three times (John 13:36–38).",
-    "whereWeAre": "A Jerusalem meal near Passover provides the setting, although precise chronology relative to Synoptic accounts is debated. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 13 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 12 ended with Jesus explaining that he came to save the world, not to judge it, even as many continued not to believe (12:44-50). Chapter 13 turns to those who did believe: before the Passover, Jesus washes his disciples' feet as an example of humble service, identifies Judas as his betrayer, and gives a new commandment to love one another, even predicting that Peter will deny him three times that night (13:1-38). That prediction of departure and denial opens the farewell discourse chapter 14 continues.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "washes feet and prepares disciples for his departure. Models humble service and gives the new commandment"
+        "role": "Washes his disciples' feet as an example, identifies Judas as his betrayer, gives a new commandment to love one another, and predicts Peter's three denials (13:1-38)."
       },
       {
         "name": "Simon Peter",
-        "role": "resists the washing and promises loyalty. Shows misunderstanding and vulnerability"
+        "role": "Resists having his feet washed, then asks to be washed completely, and promises to lay down his life for Jesus only to be told he will deny him three times (13:6-9,37-38)."
       },
       {
         "name": "Judas Iscariot",
-        "role": "is identified as betrayer and leaves the meal Advances the Passion narrative"
+        "role": "Is identified as the betrayer when Jesus hands him a piece of bread, then leaves the meal immediately into the night (13:26-30)."
       },
       {
         "name": "Beloved disciple",
-        "role": "reclines close to Jesus and asks about the betrayer. Participates in the private question"
+        "role": "Reclines close to Jesus at the table and, at Peter's signal, asks him who the betrayer is (13:23-25)."
       },
       {
         "name": "Other disciples",
-        "role": "receive Jesus' example and command. Form the community being addressed"
+        "role": "Watch Jesus wash their feet without yet understanding its meaning and receive his new commandment to love one another (13:12-17,34-35)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Servant leadership",
-        "explanation": "",
+        "explanation": "Jesus washes his disciples' feet, a servant's task, and tells them to do the same for one another, since no servant is greater than his master (13:1-17).",
         "references": [
           "John 13:1–17"
         ]
       },
       {
         "theme": "Betrayal and foreknowledge",
-        "explanation": "",
+        "explanation": "Jesus identifies his betrayer by handing Judas a piece of bread, showing that he goes to his death knowingly rather than being caught by surprise (13:18-30).",
         "references": [
           "John 13:18–30"
         ]
       },
       {
         "theme": "Love as discipleship",
-        "explanation": "",
+        "explanation": "Jesus gives a new commandment, to love one another as he has loved them, saying this love, not any outward sign, is what will identify them as his disciples (13:31-35).",
         "references": [
           "John 13:31–35"
         ]
       },
       {
         "theme": "Confidence and weakness",
-        "explanation": "",
+        "explanation": "Peter confidently promises to lay down his life for Jesus, only to be told plainly that he will deny Jesus three times before the rooster crows (13:36-38).",
         "references": [
           "John 13:36–38"
         ]
@@ -850,59 +842,59 @@
     ]
   },
   "John 14": {
-    "summary": "In a farewell discourse, Jesus encourages troubled disciples with the promise of his Father's house and says he is the way, the truth, and the life (John 14:1–7). Philip asks to see the Father, and Jesus explains that knowing and seeing him reveals the Father; he associates his works and the disciples' future prayer with the Father's purpose (John 14:8–14). Love for Jesus is expressed through keeping his commands, and he promises another Advocate, the Holy Spirit, who will teach and remind the disciples (John 14:15–26). Jesus gives them his peace and prepares them for his departure (John 14:27–31).",
-    "whereWeAre": "This is a literary farewell discourse before Jesus' arrest, with echoes of Jewish testament and teacher-disciple farewell conventions. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 14 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "summary": "In a farewell discourse, Jesus encourages troubled disciples with the promise of his Father's house and says he is the way, the truth, and the life (John 14:1–7). Philip asks to see the Father, and Jesus explains that knowing and seeing him reveals the Father; he associates his works and the disciples' future prayer with the Father's purpose (John 14:8–14). Love for Jesus is expressed through keeping his commands, and he promises another Comforter, the Holy Spirit, who will teach and remind the disciples (John 14:15–26). Jesus gives them his peace and prepares them for his departure (John 14:27–31).",
+    "whereWeAre": "Chapter 13 ended with Jesus telling Peter he cannot yet follow where Jesus is going, right after predicting Peter's three denials (13:36-38). Chapter 14 answers that coming absence with comfort: Jesus promises a place in his Father's house, says he himself is the way, the truth, and the life, and promises another Comforter, the Holy Spirit, who will remain with the disciples after he is gone (14:1-31). That promise continues in chapter 15's image of a vine that keeps bearing fruit even after the gardener prunes it.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "comforts and instructs his followers. Promises continued divine presence despite departure"
+        "role": "Comforts his troubled disciples with the promise of his Father's house, calls himself the way, the truth, and the life, and promises the Comforter will remain with them (14:1-31)."
       },
       {
         "name": "Thomas",
-        "role": "asks how the disciples can know the way Prompts Jesus' way-truth-life statement"
+        "role": "Asks how the disciples can know the way to where Jesus is going, prompting Jesus' statement that he himself is the way, the truth, and the life (14:5-6)."
       },
       {
         "name": "Philip",
-        "role": "asks Jesus to show the Father. Prompts teaching about seeing the Father in Jesus"
+        "role": "Asks Jesus to show them the Father, prompting Jesus' answer that whoever has seen him has already seen the Father (14:8-9)."
       },
       {
         "name": "Judas (not Iscariot)",
-        "role": "asks about self-disclosure to disciples. Leads to teaching on loving obedience"
+        "role": "Asks why Jesus will show himself to the disciples but not to the world, prompting Jesus' teaching that obedience, not spectacle, is how his presence is known (14:22-24)."
       },
       {
         "name": "The Father",
-        "role": "identified as sender and source. Central to Jesus' claims about relationship and prayer"
+        "role": "Identified throughout the chapter as the one Jesus is going to, the one he represents, and the one who will send the Comforter in his name (14:2,9,26)."
       },
       {
-        "name": "Holy Spirit/Advocate",
-        "role": "promised teacher and helper. Represents enduring help for the disciples"
+        "name": "Holy Spirit (the Comforter)",
+        "role": "Promised by Jesus as another Comforter who will remain with the disciples forever, teaching them and bringing everything Jesus said back to their memory (14:16-17,26)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Hope amid departure",
-        "explanation": "",
+        "explanation": "Jesus tells his troubled disciples not to let their hearts be troubled, since he is going to prepare a place for them in his Father's house (14:1-7).",
         "references": [
           "John 14:1–7"
         ]
       },
       {
         "theme": "Revealing the Father",
-        "explanation": "",
+        "explanation": "Jesus tells Philip that whoever has seen him has seen the Father, since he and the Father are so united that his own words and works are the Father's (14:8-14).",
         "references": [
           "John 14:8–14"
         ]
       },
       {
         "theme": "Love and obedience",
-        "explanation": "",
+        "explanation": "Jesus says that loving him means keeping his commandments, and promises that he will ask the Father to send another Comforter to remain with the disciples forever (14:15-24).",
         "references": [
           "John 14:15–24"
         ]
       },
       {
         "theme": "Spirit and peace",
-        "explanation": "",
+        "explanation": "Jesus promises a peace unlike anything the world can give, and tells the disciples not to be troubled or afraid even though he is leaving them (14:25-31).",
         "references": [
           "John 14:25–31"
         ]
@@ -911,55 +903,55 @@
     "explainedReferences": []
   },
   "John 15": {
-    "summary": "Jesus calls himself the true vine and his Father the gardener, describing his disciples as branches that bear fruit by remaining in him (John 15:1–8). He calls them to remain in his love, keep his commandments, and love one another, treating them as friends rather than mere servants because he has shared the Father's purpose with them (John 15:9–17). He then warns that the world will hate his followers as it hated him, and says the Advocate, the Spirit of truth, will testify about him, as will the disciples (John 15:18–27).",
-    "whereWeAre": "Vineyards were common agricultural features, and vine imagery also represented Israel in biblical tradition (e.g., Isaiah 5). The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 15 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "summary": "Jesus calls himself the true vine and his Father the gardener, describing his disciples as branches that bear fruit by remaining in him (John 15:1–8). He calls them to remain in his love, keep his commandments, and love one another, treating them as friends rather than mere servants because he has shared the Father's purpose with them (John 15:9–17). He then warns that the world will hate his followers as it hated him, and says the Comforter, the Spirit of truth, will testify about him, as will the disciples (John 15:18–27).",
+    "whereWeAre": "Chapter 14 ended with Jesus telling the disciples to rise and go, since his time with them was ending (14:30-31). Chapter 15 pictures how they will keep bearing fruit without him physically present: Jesus calls himself the true vine and his disciples the branches, commands them to love one another as he has loved them, and warns that the world's hatred toward them will mirror the hatred it showed him first (15:1-27). That warning sets up chapter 16's fuller explanation of the persecution still to come.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "teaches with vine imagery and warns his disciples. Connects love, obedience, and witness"
+        "role": "Calls himself the true vine, tells the disciples to remain in his love as friends rather than servants, and warns that the world will hate them as it hated him (15:1-27)."
       },
       {
         "name": "The Father",
-        "role": "vinegrower who tends the branches. Represents the source of cultivation and fruitful life"
+        "role": "Pictured as the vinegrower who prunes the branches so they bear more fruit, and whose own commandments Jesus has kept by remaining in his love (15:1-2,10)."
       },
       {
         "name": "Disciples",
-        "role": "branches, friends, and future witnesses. Are urged to remain in Jesus and love one another"
+        "role": "Are called branches who can do nothing apart from Jesus, and friends rather than servants because Jesus has told them everything he heard from the Father (15:4-5,14-15)."
       },
       {
-        "name": "Advocate/Spirit of truth",
-        "role": "promised witness about Jesus Supports disciples under opposition"
+        "name": "The Comforter (the Spirit of truth)",
+        "role": "Promised by Jesus to come from the Father and testify about him alongside the disciples' own testimony (15:26)."
       },
       {
         "name": "The world",
-        "role": "collective designation for hostile opposition in this discourse. Contrasts with the disciples' relationship to Jesus"
+        "role": "Pictured as hating the disciples because it hated Jesus first, since they no longer belong to it the way they once did (15:18-19)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Abiding and fruitfulness",
-        "explanation": "",
+        "explanation": "Jesus calls himself the true vine and says branches that do not remain in him can do nothing, while those who do remain bear much fruit (15:1-8).",
         "references": [
           "John 15:1–8"
         ]
       },
       {
         "theme": "Love and friendship",
-        "explanation": "",
+        "explanation": "Jesus tells the disciples he no longer calls them servants but friends, since he has shared with them everything he heard from the Father (15:9-17).",
         "references": [
           "John 15:9–17"
         ]
       },
       {
         "theme": "Opposition and identity",
-        "explanation": "",
+        "explanation": "Jesus warns that the world will hate his disciples exactly as it hated him first, since they do not belong to the world any more than he does (15:18-25).",
         "references": [
           "John 15:18–25"
         ]
       },
       {
         "theme": "Spirit and witness",
-        "explanation": "",
+        "explanation": "Jesus promises that the Comforter, the Spirit of truth, will testify about him, and that the disciples themselves will also bear witness (15:26-27).",
         "references": [
           "John 15:26–27"
         ]
@@ -974,51 +966,51 @@
     ]
   },
   "John 16": {
-    "summary": "Jesus tells his disciples that exclusion and persecution lie ahead, warning that opponents may believe they are serving God (John 16:1–4). He explains that his departure will lead to the Advocate's coming, who will expose the world's error and guide the disciples into truth (John 16:5–15). Jesus describes a little while of grief that will turn to joy, comparing their future sorrow to childbirth (John 16:16–24). The disciples express confidence, but he warns they will scatter, even as he declares that he has overcome the world and offers peace amid trouble (John 16:25–33).",
-    "whereWeAre": "The speech anticipates conflict between Jesus' followers and other communities; the exact social setting of John's audience remains debated. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 16 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "summary": "Jesus tells his disciples that exclusion and persecution lie ahead, warning that opponents may believe they are serving God (John 16:1–4). He explains that his departure will lead to the Comforter's coming, who will expose the world's error and guide the disciples into truth (John 16:5–15). Jesus describes a little while of grief that will turn to joy, comparing their future sorrow to childbirth (John 16:16–24). The disciples express confidence, but he warns they will scatter, even as he declares that he has overcome the world and offers peace amid trouble (John 16:25–33).",
+    "whereWeAre": "Chapter 15 ended with Jesus warning that the world would hate his disciples without a cause, just as it had hated him (15:18-25). Chapter 16 explains why that hatred is still worth facing: Jesus warns of coming exclusion and persecution, promises that his departure will bring the Comforter who guides the disciples into truth, and compares their coming grief to childbirth pain that will turn into joy (16:1-33). That promise of joy leads straight into chapter 17's prayer, where Jesus asks the Father to keep that same joy complete in them.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "forewarns the disciples and promises the Advocate. Frames coming grief within future joy and peace"
+        "role": "Warns the disciples of coming persecution, promises the Comforter will guide them into truth once he departs, and tells them to take courage since he has overcome the world (16:1-33)."
       },
       {
         "name": "Disciples",
-        "role": "struggle to understand and profess belief. Receive warnings about scattering and promise of joy"
+        "role": "Struggle to understand Jesus' talk of going away, then confess belief in him, only to be warned that they will soon scatter and leave him alone (16:17-18,29-32)."
       },
       {
-        "name": "Advocate/Spirit of truth",
-        "role": "promised guide and witness Will glorify Jesus and lead into truth"
+        "name": "The Comforter (the Spirit of truth)",
+        "role": "Will come once Jesus departs to convict the world and guide the disciples into all truth, speaking only what he hears from the Father and the Son (16:7-13)."
       },
       {
         "name": "The Father",
-        "role": "sender addressed by disciples in prayer. Is central to Jesus' explanation of departure and access"
+        "role": "The one Jesus says he is returning to, and the one who will give the disciples whatever they ask of him in Jesus' name (16:23,28)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Witness under persecution",
-        "explanation": "",
+        "explanation": "Jesus warns that opponents will expel his followers from synagogues and even kill them while believing they are serving God, so the warning itself will keep them from being caught off guard (16:1-4).",
         "references": [
           "John 16:1–4"
         ]
       },
       {
         "theme": "Spirit's guiding role",
-        "explanation": "",
+        "explanation": "Jesus says it is actually better for the disciples that he goes away, since only then will the Comforter come to guide them into all truth (16:5-15).",
         "references": [
           "John 16:5–15"
         ]
       },
       {
         "theme": "Sorrow into joy",
-        "explanation": "",
+        "explanation": "Jesus compares the disciples' coming grief to a woman's labor pain, promising that like her sorrow it will turn into a joy no one can take away (16:16-24).",
         "references": [
           "John 16:16–24"
         ]
       },
       {
         "theme": "Peace amid trouble",
-        "explanation": "",
+        "explanation": "Jesus tells the disciples they will have trouble in the world, but to take courage, since he has already overcome the world (16:25-33).",
         "references": [
           "John 16:25–33"
         ]
@@ -1028,54 +1020,54 @@
   },
   "John 17": {
     "summary": "Jesus prays to the Father, asking to be glorified so that he may give eternal life to those entrusted to him, and describing eternal life as knowing the Father and Jesus Christ (John 17:1–5). He prays for the disciples he has taught, asking that they be kept, made holy in the truth, and sent into the world as he was sent (John 17:6–19). He also prays for later believers who will trust through the disciples' message, that they may be one and thus bear witness to the world (John 17:20–26).",
-    "whereWeAre": "The prayer belongs to the farewell narrative and reflects Jewish patterns of intercessory prayer and consecration language. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 17 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 16 ended with Jesus telling the disciples to take courage, since he has already overcome the world (16:33). Chapter 17 shows him turning from speaking to them to praying for them: Jesus asks the Father to glorify him, prays that the disciples he is leaving behind be kept and made holy, and extends that same prayer to everyone who will later believe through their message (17:1-26). That prayer gives way in chapter 18 to the night he is taken from them by force.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "offers prayer for himself and followers. Frames his mission through glory, truth, and unity"
+        "role": "Prays to be glorified, prays for the disciples the Father gave him, and extends that same prayer to everyone who will later believe through their message (17:1-26)."
       },
       {
         "name": "The Father",
-        "role": "addressed throughout Jesus' prayer Giver and protector of those entrusted to Jesus"
+        "role": "Addressed throughout the prayer as the one who gave Jesus his disciples, his work, and his glory, and who is asked to keep and sanctify them (17:1-2,6,11)."
       },
       {
         "name": "Disciples",
-        "role": "recipients of Jesus' revelation. Are prayed for as people remaining in the world"
+        "role": "Are the ones Jesus prays will be kept from the evil one, made holy in the truth, and sent into the world just as the Father sent him (17:11,15,17-18)."
       },
       {
         "name": "Future believers",
-        "role": "those who will believe through the disciples' message. Become explicit beneficiaries of the prayer"
+        "role": "Named explicitly as everyone who will believe through the disciples' message, made the direct object of Jesus' prayer for unity (17:20)."
       },
       {
         "name": "The world",
-        "role": "setting of disciples' mission and often unbelief. Forms the mission context rather than a place to flee"
+        "role": "The setting Jesus prays his disciples will remain in and be sent into, rather than a place from which they should simply be removed (17:15,18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Eternal life as knowing God",
-        "explanation": "",
+        "explanation": "Jesus defines eternal life itself as knowing the only true God and Jesus Christ, whom God has sent (17:1-5).",
         "references": [
           "John 17:1–5"
         ]
       },
       {
         "theme": "Protection and consecration",
-        "explanation": "",
+        "explanation": "Jesus prays that the Father would keep the disciples he is leaving behind and make them holy through the truth of God's word (17:6-19).",
         "references": [
           "John 17:6–19"
         ]
       },
       {
         "theme": "Unity and witness",
-        "explanation": "",
+        "explanation": "Jesus prays that all who believe would be as united as he and the Father are, so that the world would believe the Father sent him (17:20-23).",
         "references": [
           "John 17:20–23"
         ]
       },
       {
         "theme": "Glory and love",
-        "explanation": "",
+        "explanation": "Jesus prays that the disciples would one day see his glory and know that the same love the Father had for him has been in them all along (17:24-26).",
         "references": [
           "John 17:24–26"
         ]
@@ -1085,66 +1077,58 @@
   },
   "John 18": {
     "summary": "Jesus crosses the Kidron Valley to a garden, where Judas arrives with soldiers and officers to arrest him; Jesus identifies himself, and Peter cuts off the high priest's servant's ear before Jesus restrains him (John 18:1–11). Jesus is questioned by Annas; Peter denies knowing him three times near a charcoal fire (John 18:12–27). Jesus is brought before the Roman governor Pilate, who questions him about kingship and truth. Jesus says his kingdom is not from this world; Pilate declares he finds no case against him, but the crowd asks for Barabbas to be released instead (John 18:28–40).",
-    "whereWeAre": "Jesus' arrest is set in Jerusalem under Roman prefect Pontius Pilate and high-priestly authorities; detailed dialogues are chiefly attested in Gospel narratives. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 18 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 17 ended with Jesus praying that his followers would be with him one day to see his glory (17:24-26). Chapter 18 shows that prayer interrupted by arrest: Judas arrives with soldiers in a garden across the Kidron, Peter strikes a servant's ear before Jesus restrains him, Jesus is questioned by Annas while Peter denies him three times nearby, and before Pilate he says his kingdom is not of this world even as the crowd demands Barabbas instead (18:1-40). That demand sets up chapter 19's account of the crucifixion Pilate ultimately allows.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "is arrested and questioned Speaks of a kingdom unlike political force"
+        "role": "Identifies himself to the arresting party, restrains Peter's violence, is questioned by Annas, and tells Pilate that his kingdom is not of this world (18:1-38)."
       },
       {
         "name": "Judas Iscariot",
-        "role": "guides the arresting party Facilitates Jesus' capture"
+        "role": "Leads the armed party of soldiers and officers to the garden where he knows Jesus often meets with his disciples (18:2-3)."
       },
       {
         "name": "Simon Peter",
-        "role": "uses a sword and later denies Jesus. Embodies misguided defense and fear"
-      },
-      {
-        "name": "Malchus",
-        "role": "high priest's servant whose ear is cut. Is named as victim of Peter's blow"
+        "role": "Strikes off the ear of the high priest's servant Malchus with a sword, then denies knowing Jesus three times beside a charcoal fire in the high priest's courtyard (18:10,17,25-27)."
       },
       {
         "name": "Annas",
-        "role": "questions Jesus before transfer to Caiaphas. Participates in priestly interrogation"
+        "role": "Questions Jesus first, before Caiaphas, since he is the father-in-law of the sitting high priest (18:13,19-23)."
       },
       {
         "name": "Caiaphas",
-        "role": "high priest connected to the proceedings. Is named as the one to whom Jesus is sent"
+        "role": "The high priest that year, to whom Jesus is sent bound after Annas questions him (18:13-14,24)."
       },
       {
         "name": "Pilate",
-        "role": "Roman governor Questions Jesus' kingship and controls Roman proceedings"
-      },
-      {
-        "name": "Barabbas",
-        "role": "prisoner demanded for release. Forms the contrasting choice in the narrative"
+        "role": "Questions Jesus about his kingship, declares he finds no case against him, and offers to release him before the crowd demands Barabbas instead (18:29-40)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Surrender over violence",
-        "explanation": "",
+        "explanation": "Jesus stops Peter from fighting with a sword, choosing to go willingly with his arrestors rather than resist the suffering his Father has given him (18:1-11).",
         "references": [
           "John 18:1–11"
         ]
       },
       {
         "theme": "Truthful witness and denial",
-        "explanation": "",
+        "explanation": "While Jesus answers his questioners honestly before Annas, Peter denies even knowing him three times beside a charcoal fire in the courtyard (18:12-27).",
         "references": [
           "John 18:12–27"
         ]
       },
       {
         "theme": "Kingship and truth",
-        "explanation": "",
+        "explanation": "Jesus tells Pilate that his kingdom is not of this world and that he came to bear witness to the truth, leaving Pilate to ask, dismissively, what truth even is (18:28-38).",
         "references": [
           "John 18:28–38"
         ]
       },
       {
         "theme": "Injustice in the trial",
-        "explanation": "",
+        "explanation": "Even after declaring Jesus innocent, Pilate still offers the crowd a choice between Jesus and Barabbas, and they choose to free the convicted criminal instead (18:38-40).",
         "references": [
           "John 18:38–40"
         ]
@@ -1160,66 +1144,58 @@
   },
   "John 19": {
     "summary": "Pilate has Jesus flogged and mocked as king; despite declaring no guilt, he authorizes crucifixion under pressure (John 19:1–16). Jesus is crucified at Golgotha between two others, with an inscription identifying him as King of the Jews. Soldiers divide his garments, and Jesus entrusts his mother to the beloved disciple (John 19:17–27). After saying he thirsts, Jesus declares 'It is finished' and dies; a soldier pierces his side, which John connects with Scripture (John 19:28–37). Joseph of Arimathea and Nicodemus wrap and bury his body in a nearby new tomb before the Sabbath (John 19:38–42).",
-    "whereWeAre": "Roman crucifixion was a public punishment; the account is set in Jerusalem under Pilate during Passover preparations, with chronology debated across Gospels. Outside evidence establishes Roman crucifixion and Pilate's prefecture, not each specific detail of this crucifixion account. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 19 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 18 ended with Pilate offering to release Jesus and the crowd shouting for Barabbas instead (18:39-40). Chapter 19 carries that choice to its conclusion: Pilate has Jesus flogged, mocked, and finally crucified between two others, Jesus entrusts his mother to the beloved disciple from the cross, and after he dies a soldier's spear confirms it before Joseph of Arimathea and Nicodemus bury him in a nearby garden tomb (19:1-42). That burial sets up chapter 20's discovery, after the Sabbath, that the tomb stands empty.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "is condemned, crucified, and buried. His death is narrated as completion of his mission"
+        "role": "Is flogged, mocked, and crucified between two others, entrusts his mother to the beloved disciple, and dies after declaring, \"It is finished\" (19:1-30)."
       },
       {
         "name": "Pontius Pilate",
-        "role": "Roman prefect who orders crucifixion. Represents imperial judicial authority"
+        "role": "Has Jesus flogged, yields to the crowd's pressure despite finding no guilt in him, and insists the inscription over the cross stay as written (19:1,16,19-22)."
       },
       {
         "name": "Roman soldiers",
-        "role": "mock, crucify, divide garments, and pierce Jesus Carry out execution"
+        "role": "Mock Jesus with a crown of thorns and purple robe, crucify him, divide his garments, and pierce his side after he dies (19:2-3,23-24,34)."
       },
       {
-        "name": "Jesus' mother",
-        "role": "stands near the cross. Is entrusted to the beloved disciple"
+        "name": "Jesus' mother and the beloved disciple",
+        "role": "Stand together near the cross, where Jesus gives each into the other's care, telling his mother, \"Behold thy son,\" and the disciple, \"Behold thy mother\" (19:25-27)."
       },
       {
-        "name": "Beloved disciple",
-        "role": "stands at the cross. Receives responsibility for Jesus' mother"
-      },
-      {
-        "name": "Joseph of Arimathea",
-        "role": "requests and buries Jesus' body. Provides burial arrangements"
-      },
-      {
-        "name": "Nicodemus",
-        "role": "brings burial spices and assists Joseph Returns as a participant in burial"
+        "name": "Joseph of Arimathea and Nicodemus",
+        "role": "Two secret followers who come forward openly to claim Jesus' body and bury it, Nicodemus bringing a hundred pounds of myrrh and aloes (19:38-40)."
       },
       {
         "name": "Chief priests",
-        "role": "press for execution and discuss the inscription. Represent opposition in the proceedings"
+        "role": "Press Pilate to crucify Jesus and then object to the wording of the inscription naming him King of the Jews (19:6,21)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Kingship in humiliation",
-        "explanation": "",
+        "explanation": "Soldiers mock Jesus with a crown of thorns and a purple robe, not realizing that the sign Pilate orders over his cross, naming him King of the Jews, states the literal truth (19:1-22).",
         "references": [
           "John 19:1–22"
         ]
       },
       {
         "theme": "Care amid suffering",
-        "explanation": "",
+        "explanation": "Even while dying, Jesus arranges for his own mother's care, entrusting her to the beloved disciple as if to a son (19:25-27).",
         "references": [
           "John 19:25–27"
         ]
       },
       {
         "theme": "Completion and Scripture",
-        "explanation": "",
+        "explanation": "Jesus declares, \"It is finished,\" and dies, and John connects both the unbroken bones and the pierced side to Scriptures written long before (19:28-37).",
         "references": [
           "John 19:28–37"
         ]
       },
       {
         "theme": "Burial and devotion",
-        "explanation": "",
+        "explanation": "Joseph of Arimathea and Nicodemus, two men previously cautious about being associated with Jesus, now openly provide a tomb and an extravagant amount of burial spices for his body (19:38-42).",
         "references": [
           "John 19:38–42"
         ]
@@ -1240,58 +1216,58 @@
   },
   "John 20": {
     "summary": "Mary Magdalene comes to the tomb while it is dark and finds the stone moved; Peter and the disciple whom Jesus loved run to see the empty tomb and burial cloths (John 20:1–10). Mary remains weeping, then encounters Jesus, initially mistaking him for the gardener, and reports seeing the risen Lord (John 20:11–18). That evening Jesus appears among the disciples, says 'Peace,' commissions them, and breathes on them with words about receiving the Holy Spirit (John 20:19–23). Thomas, absent from the first appearance, says he needs to see the wounds; eight days later Jesus appears again, and Thomas confesses him as Lord and God (John 20:24–29). John states his purpose: these signs are written so readers may believe and have life in Jesus' name (John 20:30–31).",
-    "whereWeAre": "The narrative is situated in Jerusalem shortly after the crucifixion; the appearances are Gospel testimony rather than independently documented occurrences. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 20 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 19 ended with Joseph of Arimathea and Nicodemus laying Jesus' body in a new tomb close to where he had been crucified (19:41-42). Chapter 20 answers that burial directly: Mary Magdalene finds the tomb empty while it is still dark, meets the risen Jesus in the garden, and that evening Jesus appears to the gathered disciples and, a week later, to the previously absent Thomas, who confesses him as Lord and God (20:1-31). John then states his purpose in writing, which chapter 21's epilogue adds one more appearance to confirm.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "appears as risen in John's narrative. Commissions followers and receives Thomas's confession"
+        "role": "Appears risen first to Mary Magdalene, then to the gathered disciples, breathing on them and giving them his peace, and finally to Thomas, who confesses him as Lord and God (20:1-29)."
       },
       {
         "name": "Mary Magdalene",
-        "role": "first discovers the open tomb and meets Jesus. Becomes witness to the resurrection appearance"
+        "role": "Finds the tomb empty while it is still dark, then is the first to see and speak with the risen Jesus, mistaking him at first for the gardener (20:1,11-16)."
       },
       {
         "name": "Simon Peter",
-        "role": "inspects the empty tomb. Participates in discovery"
+        "role": "Runs to the tomb with the beloved disciple and goes in first, seeing the linen cloths lying by themselves (20:3-7)."
       },
       {
         "name": "Beloved disciple",
-        "role": "runs to and enters the tomb. Is portrayed as believing after seeing"
+        "role": "Outruns Peter to the tomb and, upon entering, is the first to see and believe (20:4,8)."
       },
       {
         "name": "Disciples",
-        "role": "receive peace and commission. Are sent to continue Jesus' mission"
+        "role": "Are shown Jesus' hands and side and receive his commission and the Holy Spirit when he appears to them that evening (20:19-23)."
       },
       {
         "name": "Thomas",
-        "role": "questions and later confesses. Connects seeing with faith and confession"
+        "role": "Refuses to believe the other disciples' report without seeing the wounds himself, then confesses, \"My Lord and my God,\" once the risen Jesus lets him do exactly that (20:24-28)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Empty tomb and testimony",
-        "explanation": "",
+        "explanation": "Mary Magdalene is the first to see the risen Jesus, mistaking him for the gardener until he speaks her name, and she becomes the first to carry the news to the other disciples (20:1-18).",
         "references": [
           "John 20:1–18"
         ]
       },
       {
         "theme": "Peace and mission",
-        "explanation": "",
+        "explanation": "The risen Jesus appears among the fearful disciples, gives them his peace, and sends them out just as the Father had sent him (20:19-23).",
         "references": [
           "John 20:19–23"
         ]
       },
       {
         "theme": "Doubt and confession",
-        "explanation": "",
+        "explanation": "Thomas insists he will not believe without seeing the wounds himself, and when Jesus lets him do exactly that, Thomas responds with the Gospel's clearest confession, \"My Lord and my God\" (20:24-29).",
         "references": [
           "John 20:24–29"
         ]
       },
       {
         "theme": "Purpose of the Gospel",
-        "explanation": "",
+        "explanation": "John states plainly that he wrote these signs so that readers might believe Jesus is the Christ, the Son of God, and have life in his name (20:30-31).",
         "references": [
           "John 20:30–31"
         ]
@@ -1312,62 +1288,58 @@
   },
   "John 21": {
     "summary": "By the Sea of Tiberias, seven disciples fish at night without success. At dawn Jesus calls from shore and instructs them where to cast the net; they bring in a large catch of 153 fish and share bread and fish with him (John 21:1–14). Jesus asks Simon Peter three times whether he loves him and commands him to feed and tend his sheep, then speaks of the manner of Peter's future death (John 21:15–19). Asked about the beloved disciple, Jesus tells Peter to follow him rather than speculate about the other's fate; the chapter corrects a rumor that the beloved disciple would not die (John 21:20–23). A closing testimony identifies the beloved disciple as witness and notes that Jesus did much more than was written (John 21:24–25).",
-    "whereWeAre": "The scene is at the Galilean Sea of Tiberias and uses fishing imagery; its placement as an epilogue and relationship to chapter 20 is discussed by scholars. The chapter reports specific sayings, conversations, and signs as part of John's narrative; not every narrated detail is independently corroborated. This background helps explain the setting of John 21 without equating a theological claim, a literary image, and an independently documented event. Interpretations that extend beyond the text should be marked as interpretations.",
+    "whereWeAre": "Chapter 20 closed with John explaining that he wrote these signs so readers might believe and have life in Jesus' name (20:30-31). John's epilogue adds one more appearance: seven disciples fish all night without success until the risen Jesus directs them to a huge catch, then restores Peter by asking three times whether he loves him and commanding him to feed his sheep, before the beloved disciple is identified as the witness behind this Gospel (21:1-25). That testimony is where the book of Acts will pick up, describing what the same witnesses did next.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "provides a catch and recommissions Peter. Calls disciples to love, care, and follow"
+        "role": "Appears on the shore of the Sea of Tiberias, fills the disciples' empty net, and restores Peter by asking three times whether he loves him (21:1-19)."
       },
       {
         "name": "Simon Peter",
-        "role": "leads fishing and is questioned three times. Receives a shepherding commission and warning of costly following"
+        "role": "Leads the failed night of fishing, swims to shore once he recognizes Jesus, and is asked three times whether he loves him before being told to feed Jesus' sheep (21:3,7,15-17)."
       },
       {
         "name": "Beloved disciple",
-        "role": "recognizes Jesus and is discussed at the end. Is identified with the testimony underlying the book"
+        "role": "Is the first to recognize that the man on the shore is the Lord, and becomes the subject of a rumor, later corrected, that he would not die (21:7,20-23)."
       },
       {
         "name": "Thomas",
-        "role": "named among those fishing. Participates in the post-resurrection scene"
+        "role": "Is named among the seven disciples present for this final resurrection appearance by the sea (21:2)."
       },
       {
         "name": "Nathanael",
-        "role": "named among the fishermen Reappears after chapter 1"
+        "role": "Reappears among the seven disciples fishing, last seen confessing Jesus as Son of God back in chapter 1 (21:2)."
       },
       {
-        "name": "Sons of Zebedee",
-        "role": "two unnamed disciples in the boat. Join the fishing scene"
-      },
-      {
-        "name": "Two other disciples",
-        "role": "unnamed participants Complete the group of seven"
+        "name": "Sons of Zebedee and two other disciples",
+        "role": "Make up the rest of the seven disciples fishing that night, present for the catch and the meal without any individual action of their own (21:2)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Recognition through provision",
-        "explanation": "",
+        "explanation": "The disciples recognize the risen Jesus on the shore only after he fills their empty nets with a catch too large to haul in, echoing how he first called some of them to follow him (21:1-14).",
         "references": [
           "John 21:1–14"
         ]
       },
       {
         "theme": "Love and shepherding",
-        "explanation": "",
+        "explanation": "Jesus asks Peter three times whether he loves him, matching Peter's three earlier denials, and each time commands him to feed and care for his sheep (21:15-17).",
         "references": [
           "John 21:15–17"
         ]
       },
       {
         "theme": "Personal discipleship",
-        "explanation": "",
+        "explanation": "When Peter asks about the beloved disciple's future, Jesus tells him that is not his concern and simply repeats the call that matters, \"Follow thou me\" (21:18-23).",
         "references": [
           "John 21:18–23"
         ]
       },
       {
         "theme": "Witness and written testimony",
-        "explanation": "",
+        "explanation": "The Gospel closes by identifying the beloved disciple as the witness behind this testimony and noting that Jesus did far more than any book could ever contain (21:24-25).",
         "references": [
           "John 21:24–25"
         ]

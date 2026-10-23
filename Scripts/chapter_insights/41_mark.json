@@ -1,54 +1,54 @@
 {
   "Mark 1": {
     "summary": "Mark begins with John the Baptist preaching repentance and baptizing in the wilderness, preparing the way for the stronger one to come (Mark 1:1–8). Jesus is baptized, the Spirit descends, and a heavenly voice calls him the beloved Son; the Spirit drives him into the wilderness for forty days of testing (Mark 1:9–13). After John's arrest, Jesus announces God's approaching kingdom and calls Simon, Andrew, James, and John (Mark 1:14–20). In Capernaum he teaches with authority, casts out an unclean spirit, heals Simon's mother-in-law and many others, prays alone, and travels to preach elsewhere. He cleanses a man with a skin disease and instructs him to follow the prescribed priestly procedure, but the spreading report makes public entry into towns difficult (Mark 1:21–45). The opening presents Jesus' identity, authority, mission, and growing public attention.",
-    "whereWeAre": "Within the biblical narrative, Mark begins with John the Baptist preaching repentance and baptizing in the wilderness, preparing the way for the stronger one to come (1:1–8). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 1. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Matthew's Gospel ended with the risen Jesus commissioning the eleven to make disciples of all nations (Matthew 28:16-20). Mark opens the New Testament's second Gospel at a faster pace, with no birth story: John the Baptist prepares the way in the wilderness, Jesus is baptized and tested for forty days, and after John's arrest Jesus calls four fishermen and begins teaching, healing, and casting out demons in Capernaum (1:1-45). That burst of authority and healing draws such crowds that chapter 2 opens with a paralyzed man being lowered through a roof just to reach him.",
     "keyFigures": [
       {
         "name": "John the Baptist",
-        "role": "Prophetic preacher who baptizes and announces one greater than himself. Introduces the promised ministry"
+        "role": "Preaches repentance in the wilderness, baptizes crowds in the Jordan, and tells them one mightier than himself is coming (1:2-8)."
       },
       {
         "name": "Jesus",
-        "role": "Central figure baptized, tempted, preaching and healing Proclaimed beloved Son and agent of God's kingdom"
+        "role": "Is baptized and named God's beloved Son, is tested forty days in the wilderness, calls four fishermen to follow him, teaches and heals in Capernaum, and cleanses a man with a skin disease (1:9-45)."
       },
       {
         "name": "Simon Peter",
-        "role": "Fisherman called to follow Jesus and whose mother-in-law is healed Exemplifies the first disciples' call"
+        "role": "Is called from his nets to follow Jesus, and his mother-in-law is healed of a fever in his own house (1:16-18,29-31)."
       },
       {
         "name": "Andrew, James and John",
-        "role": "Fishermen called from their work Join Jesus' first followers"
+        "role": "Are called away from their fishing nets and boats to follow Jesus as his first disciples (1:16-20)."
       },
       {
         "name": "Crowds and those seeking healing",
-        "role": "Receive teaching or seek relief. Reveal the reach of Jesus' ministry"
+        "role": "Gather at Simon's door once the Sabbath ends and later press in from every town once a healed leper spreads the news (1:32-34,45)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Preparation and repentance",
-        "explanation": "",
+        "explanation": "John the Baptist calls Israel to repent and be baptized, deliberately living out Isaiah's picture of a voice preparing the way for the Lord (1:2-8).",
         "references": [
           "Mark 1:2-8"
         ]
       },
       {
         "theme": "Identity and testing",
-        "explanation": "",
+        "explanation": "A voice from heaven names Jesus God's beloved Son at his baptism, and the Spirit immediately drives him into the wilderness to be tested by Satan for forty days (1:9-13).",
         "references": [
           "Mark 1:9-13"
         ]
       },
       {
         "theme": "God's kingdom and discipleship",
-        "explanation": "",
+        "explanation": "Jesus announces that God's kingdom is at hand and calls four fishermen to leave their nets and follow him at once (1:14-20).",
         "references": [
           "Mark 1:14-20"
         ]
       },
       {
         "theme": "Authority with compassion",
-        "explanation": "",
+        "explanation": "Jesus teaches with an authority that amazes the synagogue, casts out an unclean spirit, and heals Simon's mother-in-law, many of the sick, and a man with a skin disease (1:21-45).",
         "references": [
           "Mark 1:21-45"
         ]
@@ -74,54 +74,54 @@
   },
   "Mark 2": {
     "summary": "Jesus returns to Capernaum, where four men lower a paralyzed man through a roof. He first declares the man's sins forgiven, provoking scribes to accuse him of blasphemy; by healing the man he demonstrates the authority he claims (Mark 2:1–12). He then calls Levi from a tax booth and shares a meal with tax collectors and sinners, insisting that he has come to call sinners rather than the self-assured righteous (Mark 2:13–17). Questions about fasting prompt his bridegroom, cloth, and wineskin images (Mark 2:18–22). When disciples pluck grain on the Sabbath, he appeals to David's need and states that the Sabbath was made for humanity and that the Son of Man is lord even of the Sabbath (Mark 2:23–28). The chapter centers on Jesus' authority and conflict over forgiveness, social boundaries, and religious practice.",
-    "whereWeAre": "Within the biblical narrative, Jesus returns to Capernaum, where four men lower a paralyzed man through a roof. Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 2. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 1 ended with a healed man's report drawing such crowds that Jesus could no longer openly enter a town (1:45). Chapter 2 shows him teaching indoors anyway: four men lower a paralyzed friend through the roof, Jesus calls the tax collector Levi to follow him, and he answers questions about fasting and the Sabbath by appealing to his own authority (2:1-28). These first conflicts set up chapter 3's sharper confrontation, where a Sabbath healing leads Pharisees and Herodians to begin plotting against him.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Forgives, heals, calls Levi, and teaches about fasting and Sabbath. Claims authority that challenges prevailing expectations"
+        "role": "Forgives and heals a paralyzed man, calls Levi the tax collector to follow him, and defends his disciples' conduct over fasting and the Sabbath (2:1-28)."
       },
       {
         "name": "Paralyzed man and four carriers",
-        "role": "Receive and seek healing Demonstrate determined approach to Jesus"
+        "role": "The four dig through a roof to lower their friend to Jesus, who forgives his sins and then heals him to prove he has authority to do both (2:1-12)."
       },
       {
         "name": "Levi son of Alphaeus",
-        "role": "Tax collector called to follow. Shows inclusion of a socially suspect occupation"
+        "role": "Leaves his tax booth to follow Jesus and hosts him for a meal with tax collectors and sinners (2:14-15)."
       },
       {
         "name": "Scribes and Pharisees",
-        "role": "Question forgiveness and Sabbath conduct. Represent religious objections"
+        "role": "Accuse Jesus of blasphemy for forgiving sins and later object when his disciples pick grain on the Sabbath (2:6-7,24)."
       },
       {
         "name": "John's disciples",
-        "role": "Named in the fasting question. Provide a comparison of devotional practices"
+        "role": "Are named in a question asking why they and the Pharisees fast while Jesus' disciples do not, drawing his image of wedding guests and a bridegroom (2:18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Forgiveness and authority",
-        "explanation": "",
+        "explanation": "Jesus forgives the paralyzed man's sins before healing him, using the visible healing to prove his authority to forgive what scribes say only God can forgive (2:1-12).",
         "references": [
           "Mark 2:1-12"
         ]
       },
       {
         "theme": "Calling the excluded",
-        "explanation": "",
+        "explanation": "Jesus calls the tax collector Levi and eats with tax collectors and sinners, saying he came to call sinners rather than those who think themselves already righteous (2:13-17).",
         "references": [
           "Mark 2:13-17"
         ]
       },
       {
         "theme": "Newness and religious habits",
-        "explanation": "",
+        "explanation": "Asked why his disciples do not fast like John's disciples, Jesus compares himself to a bridegroom and warns that his new teaching cannot simply be patched onto old practices (2:18-22).",
         "references": [
           "Mark 2:18-22"
         ]
       },
       {
         "theme": "Sabbath and human need",
-        "explanation": "",
+        "explanation": "When Pharisees object to the disciples picking grain on the Sabbath, Jesus answers that the Sabbath was made for people, not people for the Sabbath (2:23-28).",
         "references": [
           "Mark 2:23-28"
         ]
@@ -147,58 +147,58 @@
   },
   "Mark 3": {
     "summary": "In a synagogue Jesus heals a man with a withered hand despite observers watching for grounds to accuse him; he asks whether the Sabbath permits doing good or harm (Mark 3:1–6). Crowds gather from wide areas and Jesus heals many, while unclean spirits identify him (Mark 3:7–12). He appoints twelve to be with him, preach, and cast out demons (Mark 3:13–19). Relatives think he is out of his mind, and scribes from Jerusalem attribute his exorcisms to Beelzebul. Jesus answers with the image of a divided kingdom and a strong man bound, and warns against blaspheming the Holy Spirit in the context of their accusation (Mark 3:20–30). When his mother and brothers seek him, he identifies those who do God's will as his family (Mark 3:31–35). The chapter contrasts the growth of his mission with misunderstanding and resistance.",
-    "whereWeAre": "Within the biblical narrative, In a synagogue Jesus heals a man with a withered hand despite observers watching for grounds to accuse him; he asks whether the Sabbath permits doing good or harm (3:1–6). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 3. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 2 closed with Jesus teaching that the Sabbath was made for people, not people for the Sabbath (2:27-28). Chapter 3 shows the cost of that claim: a Sabbath healing in the synagogue drives Pharisees and Herodians to plot against him, while Jesus responds by appointing twelve apostles and naming those who do God's will as his true family (3:1-35). That contrast between official rejection and a widening circle of followers sets up chapter 4's parables about how the kingdom takes root in different kinds of hearers.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Heals, appoints twelve, and answers critics Defines his mission and true kinship"
+        "role": "Heals a man's withered hand in the synagogue, appoints twelve apostles, answers the charge that he casts out demons by Beelzebul, and names those who do God's will as his true family (3:1-35)."
       },
       {
         "name": "Man with a withered hand",
-        "role": "Healed in the synagogue Focus of a Sabbath dispute"
+        "role": "Is healed by Jesus in the synagogue while observers watch to see whether Jesus will break the Sabbath (3:1-5)."
       },
       {
         "name": "Pharisees and Herodians",
-        "role": "Consult together against Jesus Signal mounting opposition"
+        "role": "Watch for grounds to accuse Jesus after the Sabbath healing, then go out and begin plotting how to destroy him (3:2,6)."
       },
       {
         "name": "The Twelve",
-        "role": "Appointed disciples, including Simon Peter, James, John and Judas Iscariot. Represent authorized companions and messengers"
+        "role": "Are appointed by Jesus, including Simon Peter, James, John, and Judas Iscariot, to be with him, to preach, and to cast out demons (3:13-19)."
       },
       {
         "name": "Scribes from Jerusalem",
-        "role": "Accuse Jesus of demonic power. Their allegation occasions the warning about the Spirit"
+        "role": "Claim Jesus casts out demons by the prince of demons, drawing his warning about blaspheming the Holy Spirit (3:22,29-30)."
       },
       {
         "name": "Jesus' mother and brothers",
-        "role": "Seek him outside Occasion his teaching about spiritual kinship"
+        "role": "Come looking for him outside the house, prompting his teaching that whoever does God's will is his true family (3:31-35)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Mercy and Sabbath",
-        "explanation": "",
+        "explanation": "Jesus heals a man's withered hand in the synagogue and asks whether the Sabbath permits doing good or doing harm, a question his critics will not answer (3:1-6).",
         "references": [
           "Mark 3:1-6"
         ]
       },
       {
         "theme": "Calling and mission",
-        "explanation": "",
+        "explanation": "Jesus appoints twelve men to be with him and to be sent out to preach and to have authority over demons (3:13-19).",
         "references": [
           "Mark 3:13-19"
         ]
       },
       {
         "theme": "Discernment of spiritual work",
-        "explanation": "",
+        "explanation": "When scribes claim Jesus casts out demons by the prince of demons, he answers that a divided kingdom cannot stand and warns against calling the Spirit's work unclean (3:22-30).",
         "references": [
           "Mark 3:22-30"
         ]
       },
       {
         "theme": "Belonging through obedience",
-        "explanation": "",
+        "explanation": "When his mother and brothers come looking for him, Jesus says that whoever does God's will is his brother, sister, and mother (3:31-35).",
         "references": [
           "Mark 3:31-35"
         ]
@@ -208,50 +208,50 @@
   },
   "Mark 4": {
     "summary": "From a boat Jesus teaches a large crowd beside the lake. The parable of the sower pictures varied responses to the word; he explains the parable privately to his followers and speaks about the revealing purpose of a lamp and the responsibility to hear (Mark 4:1–25). The growing seed and mustard seed depict God's kingdom developing in ways that may begin unnoticed yet become extensive (Mark 4:26–34). Afterward a storm threatens their boat while Jesus sleeps; he stills wind and water, asks about the disciples' fear and faith, and they wonder who he is (Mark 4:35–41). The chapter connects hearing the kingdom message with trusting Jesus amid danger.",
-    "whereWeAre": "Within the biblical narrative, From a boat Jesus teaches a large crowd beside the lake. Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 4. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 3 ended with Jesus naming whoever does God's will as his true family, in contrast to the leaders who rejected him (3:31-35). Chapter 4 explains how that family grows: from a boat Jesus tells parables of a sower, a lamp, and seeds that picture the kingdom of God, then stills a storm and asks the disciples why they still have no faith (4:1-41). Their fear in the boat carries into chapter 5, where Jesus crosses the lake to free a man tormented by many unclean spirits.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Tells kingdom parables and calms a storm Teacher with authority in word and action"
+        "role": "Teaches kingdom parables from a boat, explains them privately to his disciples, and calms a storm that terrifies them (4:1-41)."
       },
       {
         "name": "Disciples",
-        "role": "Receive private explanations and fear the storm Demonstrate partial understanding"
+        "role": "Receive Jesus' private explanation of the sower parable and later wake him in panic during a storm, asking if he even cares that they are dying (4:10-20,38)."
       },
       {
         "name": "Crowd",
-        "role": "Hears Jesus' parables from shore. Illustrates the public audience of the message"
+        "role": "Gathers on the shore to hear Jesus' parables about the sower, the lamp, and the growing seed (4:1-2,26-32)."
       },
       {
         "name": "Sower in the parable",
-        "role": "Scatters seed on different soils Literary figure depicting the spread of the word"
+        "role": "A fictional figure in Jesus' parable who scatters seed on four kinds of soil, picturing different responses to God's word (4:3-8,14-20)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Hearing and responding",
-        "explanation": "",
+        "explanation": "The parable of the sower pictures four different responses to God's word, from immediate loss to a harvest thirty, sixty, or a hundred times what was sown (4:1-20).",
         "references": [
           "Mark 4:1-20"
         ]
       },
       {
         "theme": "Revelation and attentiveness",
-        "explanation": "",
+        "explanation": "Jesus says a lamp is meant to be seen, not hidden, and warns that how carefully a person listens determines how much they will be given (4:21-25).",
         "references": [
           "Mark 4:21-25"
         ]
       },
       {
         "theme": "Unexpected kingdom growth",
-        "explanation": "",
+        "explanation": "The growing seed and the mustard seed both show God's kingdom starting small and almost unnoticed before becoming something large (4:26-34).",
         "references": [
           "Mark 4:26-34"
         ]
       },
       {
         "theme": "Faith amid fear",
-        "explanation": "",
+        "explanation": "When a storm threatens to sink their boat, Jesus calms the wind and sea with a word and asks the disciples why they still have no faith (4:35-41).",
         "references": [
           "Mark 4:35-41"
         ]
@@ -277,51 +277,51 @@
   },
   "Mark 5": {
     "summary": "Across the lake in the region called Gerasenes, Jesus encounters a man living among tombs who describes his many unclean spirits as 'Legion.' Jesus expels them, and a herd of pigs rushes into the lake; the frightened residents ask Jesus to leave. He commissions the restored man to tell his household what the Lord has done (Mark 5:1–20). Returning across the lake, Jesus follows Jairus toward his dying daughter. On the way a woman suffering twelve years of bleeding touches his garment and is healed; Jesus addresses her as daughter and speaks of her faith (Mark 5:21–34). After messengers report Jairus's daughter dead, Jesus tells him not to fear, raises the girl, and orders care and discretion (Mark 5:35–43). The chapter portrays restoration from isolation, illness, and death.",
-    "whereWeAre": "Within the biblical narrative, Across the lake in the region called Gerasenes, Jesus encounters a man living among tombs who describes his many unclean spirits as 'Legion. Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 5. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 4 ended with the disciples terrified in a storm, wondering who Jesus could be that even wind and sea obey him (4:35-41). Chapter 5 answers with three acts of rescue: Jesus frees a man possessed by many unclean spirits, heals a woman who had suffered twelve years of bleeding, and raises Jairus's twelve-year-old daughter from death (5:1-43). That sequence of restored lives gives way in chapter 6 to rejection, when Jesus returns to his own hometown and is met with disbelief instead.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Frees an afflicted man and heals two females Demonstrates authority and compassion"
+        "role": "Frees a man controlled by many unclean spirits, heals a woman's twelve-year hemorrhage, and raises Jairus's dead daughter (5:1-43)."
       },
       {
         "name": "Man formerly possessed",
-        "role": "Lives among tombs and afterward bears witness. Illustrates transformation and testimony"
+        "role": "Lives among the tombs crying out and cutting himself until Jesus frees him, after which he is sent home to tell what the Lord has done for him (5:2-5,15-19)."
       },
       {
         "name": "Jairus",
-        "role": "Synagogue leader seeking help for daughter. Models urgent trust despite distress"
+        "role": "A synagogue leader who begs Jesus to heal his dying daughter and is told not to fear but only to believe once she is reported dead (5:22-23,35-36)."
       },
       {
         "name": "Woman with ongoing bleeding",
-        "role": "Seeks healing and is publicly affirmed. Her restoration includes recognition and dignity"
+        "role": "Touches Jesus' garment in secret after twelve years of illness and is healed, then publicly confesses what she did when Jesus calls her out (5:25-33)."
       },
       {
         "name": "Jairus's daughter",
-        "role": "Girl raised by Jesus. Embodies the climax of the intertwined narratives"
+        "role": "A twelve-year-old girl who dies before Jesus arrives, then is raised when he takes her hand and tells her to rise (5:41-42)."
       },
       {
         "name": "Peter, James and John",
-        "role": "Accompany Jesus into Jairus's house Witness the girl's restoration"
+        "role": "Are the only disciples Jesus allows into the room where he raises Jairus's daughter (5:37)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Freedom from destructive power",
-        "explanation": "",
+        "explanation": "Jesus frees a man controlled by many unclean spirits calling themselves Legion, restoring him to his right mind even though the local people respond with fear rather than welcome (5:1-20).",
         "references": [
           "Mark 5:1-20"
         ]
       },
       {
         "theme": "Dignity and healing",
-        "explanation": "",
+        "explanation": "A woman who had spent everything on doctors over twelve years touches Jesus' clothes in secret, but he stops to call her out publicly as a daughter whose faith has healed her (5:25-34).",
         "references": [
           "Mark 5:25-34"
         ]
       },
       {
         "theme": "Faith in crisis",
-        "explanation": "",
+        "explanation": "Jairus pleads for his dying daughter, and when word comes that she has died, Jesus tells him to stop being afraid and simply believe (5:21-24,35-36).",
         "references": [
           "Mark 5:21-24",
           "Mark 5:35-36"
@@ -329,7 +329,7 @@
       },
       {
         "theme": "Life and restoration",
-        "explanation": "",
+        "explanation": "Jesus takes the dead girl's hand and tells her to get up, then has her given something to eat, a small practical detail that confirms she is truly alive (5:37-43).",
         "references": [
           "Mark 5:37-43"
         ]
@@ -355,58 +355,58 @@
   },
   "Mark 6": {
     "summary": "Jesus teaches in his hometown but meets disbelief from people familiar with his family (Mark 6:1–6). He sends the Twelve in pairs to preach repentance, heal, and travel dependently (Mark 6:7–13). Mark then recounts Herod Antipas's imprisonment and execution of John the Baptist after a banquet and a rash oath (Mark 6:14–29). After the apostles return, Jesus seeks rest but has compassion on the crowd, teaches them, and feeds five thousand men with five loaves and two fish, with twelve baskets remaining (Mark 6:30–44). He walks on the lake toward the disciples in a storm, and Mark remarks on their failure to understand the loaves (Mark 6:45–52). At Gennesaret people bring the sick, who seek to touch him and are healed (Mark 6:53–56). The chapter juxtaposes rejection, costly witness, provision, and difficult discipleship.",
-    "whereWeAre": "Within the biblical narrative, Jesus teaches in his hometown but meets disbelief from people familiar with his family (6:1–6). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 6. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 5 ended with Jesus raising Jairus's daughter and ordering those present to tell no one (5:42-43). Chapter 6 shows a harder reception: his own hometown takes offense at him, so he sends the Twelve out two by two instead, Herod Antipas has John the Baptist beheaded after a banquet oath, and Jesus feeds five thousand and walks on the sea while the disciples still do not understand about the loaves (6:1-52). That failure to understand carries into chapter 7, where Pharisees challenge Jesus over handwashing traditions.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Teaches, sends the Twelve, feeds a crowd and walks on water. His mission combines compassion and authority"
+        "role": "Is rejected in his hometown, sends out the Twelve, feeds five thousand, and walks on the sea to his disciples (6:1-52)."
       },
       {
         "name": "The Twelve",
-        "role": "Preach in pairs and return from mission. Learn dependence and ministry"
+        "role": "Are sent out by Jesus in pairs to preach repentance and heal, then return to report what they did and taught (6:7-13,30)."
       },
       {
         "name": "John the Baptist",
-        "role": "Imprisoned and executed. Embodies the danger of prophetic confrontation"
+        "role": "Is imprisoned by Herod for condemning his marriage to Herodias, then beheaded at Herod's command after a banquet oath (6:17-18,27-28)."
       },
       {
         "name": "Herod Antipas",
-        "role": "Tetrarch who orders John's death. Illustrates compromised rule"
+        "role": "The tetrarch who fears and yet listens to John, then has him executed rather than break an oath made in front of his dinner guests (6:20,26-27)."
       },
       {
         "name": "Herodias and her daughter",
-        "role": "Participate in the banquet sequence Key figures in the execution account"
+        "role": "Herodias wants John dead and uses her daughter's dance and Herod's rash oath to obtain his head on a platter (6:19,22-25)."
       },
       {
         "name": "Crowds",
-        "role": "Receive teaching, food and healing. Show human need and Jesus' response"
+        "role": "Follow Jesus by land even after he tries to withdraw, and he feeds five thousand of them with five loaves and two fish (6:33-34,41-44)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Unbelief and mission",
-        "explanation": "",
+        "explanation": "Jesus can do few miracles in his own hometown because of its unbelief, yet he still sends the Twelve out two by two to preach repentance and heal (6:1-13).",
         "references": [
           "Mark 6:1-13"
         ]
       },
       {
         "theme": "Cost of prophetic witness",
-        "explanation": "",
+        "explanation": "Mark recounts how Herod Antipas had John the Baptist beheaded after a rash birthday oath, showing what confronting a ruler's sin can cost a prophet (6:14-29).",
         "references": [
           "Mark 6:14-29"
         ]
       },
       {
         "theme": "Compassionate provision",
-        "explanation": "",
+        "explanation": "Moved with compassion for a crowd like sheep without a shepherd, Jesus feeds five thousand men from five loaves and two fish, with twelve baskets left over (6:30-44).",
         "references": [
           "Mark 6:30-44"
         ]
       },
       {
         "theme": "Understanding and fear",
-        "explanation": "",
+        "explanation": "Jesus walks on the sea to the disciples in their boat, and Mark notes that their hearts were hardened, since they still had not understood about the loaves (6:45-52).",
         "references": [
           "Mark 6:45-52"
         ]
@@ -432,54 +432,54 @@
   },
   "Mark 7": {
     "summary": "Pharisees and scribes challenge disciples' eating with unwashed hands according to elder traditions. Jesus rebukes hypocrisy, cites Isaiah, and criticizes the way a tradition concerning gifts to God can evade care for parents (Mark 7:1–13). He teaches that what comes from the human heart defiles a person, listing destructive thoughts and conduct; Mark adds an explanatory comment about foods (Mark 7:14–23). In the region of Tyre a Syrophoenician woman asks Jesus to free her daughter; after an exchange using the image of children and dogs, he grants her request (Mark 7:24–30). In the Decapolis he heals a deaf man who struggles to speak, eliciting astonishment (Mark 7:31–37). The chapter addresses inward moral purity, the misuse of traditions, and faith expressed beyond Israel's usual boundaries.",
-    "whereWeAre": "Within the biblical narrative, Pharisees and scribes challenge disciples' eating with unwashed hands according to elder traditions. Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 7. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 6 ended by noting that the disciples' hearts were hardened and they still did not understand about the loaves (6:51-52). Chapter 7 presses the same point with Israel's own leaders: Pharisees and scribes challenge Jesus over handwashing traditions, he teaches that defilement comes from the heart rather than from food, and he then grants a Gentile woman's request for her daughter and heals a deaf man in the Decapolis (7:1-37). Those two Gentile-region healings lead into chapter 8, which opens with Jesus again feeding a crowd in that same region.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Teaches purity and heals beyond Galilee. Challenges superficial boundary making"
+        "role": "Teaches that defilement comes from the heart rather than unwashed hands, frees a Gentile girl from an unclean spirit, and heals a deaf man in the Decapolis (7:1-37)."
       },
       {
         "name": "Pharisees and scribes",
-        "role": "Question handwashing traditions Prompt teaching about commandments and customs"
+        "role": "Challenge Jesus over his disciples eating with unwashed hands according to the tradition of the elders (7:1-5)."
       },
       {
         "name": "Syrophoenician woman",
-        "role": "Petitions for daughter's release Persists despite the difficult exchange"
+        "role": "Asks Jesus to free her daughter from an unclean spirit and persists even after his hard answer about children and dogs (7:25-28)."
       },
       {
         "name": "Woman's daughter",
-        "role": "Freed from an unclean spirit. Receives help at a distance"
+        "role": "Is freed from an unclean spirit at a distance once Jesus grants her mother's request (7:29-30)."
       },
       {
         "name": "Deaf man with speech difficulty",
-        "role": "Healed by Jesus. Illustrates restoration of communication"
+        "role": "Is brought to Jesus in the Decapolis and healed when Jesus touches his ears and tongue and says, \"Ephphatha\" (7:32-35)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Commandments and human traditions",
-        "explanation": "",
+        "explanation": "Jesus rebukes Pharisees and scribes for a tradition that lets people dedicate money to God while using it as an excuse to withhold care from their own parents (7:1-13).",
         "references": [
           "Mark 7:1-13"
         ]
       },
       {
         "theme": "Moral source of defilement",
-        "explanation": "",
+        "explanation": "Jesus teaches that food cannot make a person unclean, since defilement comes from the evil thoughts and actions that come out of the human heart (7:14-23).",
         "references": [
           "Mark 7:14-23"
         ]
       },
       {
         "theme": "Persistent petition across boundaries",
-        "explanation": "",
+        "explanation": "A Syrophoenician woman persists in asking Jesus to free her daughter even after a hard answer about children and dogs, and he grants her request (7:24-30).",
         "references": [
           "Mark 7:24-30"
         ]
       },
       {
         "theme": "Restorative compassion",
-        "explanation": "",
+        "explanation": "In the Decapolis, Jesus heals a deaf man who struggles to speak, leaving the crowds astonished that he does all things well (7:31-37).",
         "references": [
           "Mark 7:31-37"
         ]
@@ -505,58 +505,58 @@
   },
   "Mark 8": {
     "summary": "Jesus feeds about four thousand with seven loaves and a few fish, leaving seven baskets (Mark 8:1–10). Pharisees demand a sign; Jesus refuses, and later warns disciples about the yeast of the Pharisees and Herod, while they misunderstand his teaching as a concern about bread (Mark 8:11–21). In Bethsaida he restores a blind man's sight in stages (Mark 8:22–26). Near Caesarea Philippi, Peter identifies Jesus as the Messiah, but when Jesus predicts suffering, rejection, death, and resurrection, Peter objects and is sharply rebuked (Mark 8:27–33). Jesus then calls anyone following him to self-denial and taking up the cross, asking what it profits someone to gain the world but lose life (Mark 8:34–38). The chapter contrasts physical sight with incomplete understanding of the Messiah's suffering vocation.",
-    "whereWeAre": "Within the biblical narrative, Jesus feeds about four thousand with seven loaves and a few fish, leaving seven baskets (8:1–10). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 8. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 7 ended with crowds in the Decapolis astonished that Jesus had healed a deaf man and made the mute speak (7:37). Chapter 8 opens in that same region as Jesus feeds four thousand, then moves toward Caesarea Philippi, where Peter identifies him as the Messiah; when Jesus predicts his own suffering, death, and resurrection, Peter objects and is sharply rebuked, and Jesus tells the crowd that following him requires taking up a cross (8:1-38). Six days later, in chapter 9, three of those same disciples see Jesus briefly transfigured in glory on a mountain.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Feeds, heals, predicts suffering and teaches discipleship Reframes expectations of Messiahship"
+        "role": "Feeds four thousand, refuses the Pharisees a sign, heals a blind man in stages, and predicts his own suffering after Peter names him the Messiah (8:1-38)."
       },
       {
         "name": "Peter",
-        "role": "Confesses Jesus as Messiah then rebukes him. Shows insight mixed with resistance"
+        "role": "Correctly identifies Jesus as the Christ, then rebukes him for predicting his death and is sharply rebuked in turn (8:29,32-33)."
       },
       {
         "name": "Pharisees",
-        "role": "Request a heavenly sign. Represent escalating testing"
+        "role": "Demand a sign from heaven to test Jesus, who refuses and sighs deeply in his spirit (8:11-12)."
       },
       {
         "name": "Disciples",
-        "role": "Misunderstand the bread warning. Show limited comprehension"
+        "role": "Misunderstand Jesus' warning about the Pharisees' and Herod's leaven as a complaint about forgetting bread (8:14-21)."
       },
       {
         "name": "Blind man at Bethsaida",
-        "role": "Healed in stages Narratively parallels emerging understanding"
+        "role": "Receives sight from Jesus in two stages, first seeing people as trees before seeing clearly (8:23-25)."
       },
       {
         "name": "Crowds",
-        "role": "Hear the call to take up the cross. Receive teaching on discipleship"
+        "role": "Are called together with the disciples to hear Jesus' teaching that following him means denying self and taking up a cross (8:34)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Provision and misperception",
-        "explanation": "",
+        "explanation": "Jesus feeds four thousand people with seven loaves, yet the disciples still worry about having no bread, missing his warning about the Pharisees' corrupting influence (8:1-21).",
         "references": [
           "Mark 8:1-21"
         ]
       },
       {
         "theme": "Gradual sight",
-        "explanation": "",
+        "explanation": "Jesus heals a blind man at Bethsaida in two stages, a healing that mirrors the disciples' own slow, incomplete understanding of who Jesus is (8:22-26).",
         "references": [
           "Mark 8:22-26"
         ]
       },
       {
         "theme": "Messiahship and suffering",
-        "explanation": "",
+        "explanation": "Peter correctly names Jesus as the Messiah but then rebukes him for predicting his own suffering and death, earning Jesus' sharp rebuke in return (8:27-33).",
         "references": [
           "Mark 8:27-33"
         ]
       },
       {
         "theme": "Costly discipleship",
-        "explanation": "",
+        "explanation": "Jesus tells the crowd that following him means denying themselves and taking up a cross, since saving one's life by avoiding that cost actually loses it (8:34-38).",
         "references": [
           "Mark 8:34-38"
         ]
@@ -577,58 +577,58 @@
   },
   "Mark 9": {
     "summary": "Jesus tells some followers they will see God's kingdom come with power (Mark 9:1). Six days later he is transfigured before Peter, James and John, with Moses and Elijah appearing; a heavenly voice commands them to listen to him (Mark 9:2–13). Descending, he frees a boy whom the disciples could not help and teaches about prayer amid the father's anguished plea for help with unbelief (Mark 9:14–29). Jesus again predicts betrayal, death, and resurrection, but the disciples do not understand (Mark 9:30–32). After they argue about greatness, he teaches that the first must become servant of all and embraces a child (Mark 9:33–37). He corrects exclusionary attitudes toward a person expelling demons in his name and warns gravely against causing little ones to stumble, using forceful images of judgment and calling for peace (Mark 9:38–50).",
-    "whereWeAre": "Within the biblical narrative, Jesus tells some followers they will see God's kingdom come with power (9:1). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 9. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 8 ended with Jesus warning that whoever is ashamed of him will find the Son of man ashamed of them at his coming in glory (8:38). Chapter 9 shows that glory briefly: Jesus is transfigured before Peter, James, and John, then comes down to free a boy the other disciples could not help, predicts his coming death again, and teaches that true greatness means becoming a servant of all (9:1-50). That same question of status continues in chapter 10, where Pharisees ask about divorce and James and John request the places of highest honor.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Transfigured, heals a boy, and teaches humility. Reveals glory together with the path of suffering"
+        "role": "Is transfigured in glory before three disciples, frees a boy from a spirit the others could not cast out, and teaches that greatness means becoming a servant (9:2-50)."
       },
       {
         "name": "Peter, James and John",
-        "role": "Witness the transfiguration. Hear the command to listen to Jesus"
+        "role": "Witness Jesus transfigured with Moses and Elijah and hear a voice from the cloud command them to listen to him (9:2-7)."
       },
       {
         "name": "Moses and Elijah",
-        "role": "Appear in the vision. Figures from Israel's scriptural tradition"
+        "role": "Appear with Jesus on the mountain, talking with him before the voice from the cloud ends the vision (9:4-7)."
       },
       {
         "name": "Father and afflicted boy",
-        "role": "Seek deliverance. Express need, fragile faith and restoration"
+        "role": "The father pleads for help with his unbelief, and Jesus casts the spirit out of his son after the other disciples had failed to (9:17-18,24-27)."
       },
       {
         "name": "The Twelve",
-        "role": "Argue about rank and outsiders. Receive teaching on service"
+        "role": "Argue on the road about who is greatest and try to stop a man casting out demons in Jesus' name who was not one of their group (9:33-34,38)."
       },
       {
         "name": "Child",
-        "role": "Placed among the disciples. Represents the low-status person they must welcome"
+        "role": "Is placed among the disciples by Jesus as an example of the lowly person they must welcome in his name (9:36-37)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Revelation and listening",
-        "explanation": "",
+        "explanation": "Jesus is transfigured in dazzling glory before Peter, James, and John, and a voice from the cloud commands them simply to listen to him (9:2-13).",
         "references": [
           "Mark 9:2-13"
         ]
       },
       {
         "theme": "Prayer and dependent faith",
-        "explanation": "",
+        "explanation": "A father begs help for his son with the honest cry, \"Lord, I believe; help thou mine unbelief,\" and Jesus casts the spirit out after the other disciples could not (9:14-29).",
         "references": [
           "Mark 9:14-29"
         ]
       },
       {
         "theme": "Greatness as service",
-        "explanation": "",
+        "explanation": "After the disciples argue about who is greatest, Jesus takes a child in his arms and teaches that whoever wants to be first must become servant of all (9:33-37).",
         "references": [
           "Mark 9:33-37"
         ]
       },
       {
         "theme": "Guarding vulnerable people",
-        "explanation": "",
+        "explanation": "Jesus corrects the disciples for stopping a man who cast out demons in his name, then warns in forceful terms against anything that causes one of these little ones to stumble (9:38-50).",
         "references": [
           "Mark 9:38-50"
         ]
@@ -649,65 +649,65 @@
   },
   "Mark 10": {
     "summary": "In Judea beyond the Jordan, Pharisees ask about divorce. Jesus contrasts Moses' concession with the creation ideal and later teaches privately against divorce and remarriage (Mark 10:1–12). He welcomes children when disciples turn them away (Mark 10:13–16). A wealthy man asks about eternal life; Jesus challenges him to sell his possessions and follow, leading to teaching about wealth's difficulty and God's ability to save (Mark 10:17–31). On the road to Jerusalem, Jesus predicts his death and resurrection again (Mark 10:32–34). James and John request high places of honor, but Jesus teaches that greatness requires service and says the Son of Man came to give his life as a ransom for many (Mark 10:35–45). Near Jericho he restores blind Bartimaeus, who then follows him on the road (Mark 10:46–52).",
-    "whereWeAre": "Within the biblical narrative, In Judea beyond the Jordan, Pharisees ask about divorce. Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 10. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 9 ended with Jesus teaching that welcoming a child in his name means welcoming him, and warning against anything that causes the vulnerable to stumble (9:36-37,42). Chapter 10 extends that concern: Jesus teaches against divorce, welcomes children, tells a wealthy man to sell his possessions, and predicts his death again before James and John ask for seats of honor (10:1-45). He answers that the Son of man came to serve and give his life as a ransom for many, fulfilled visibly in chapter 11 as he enters Jerusalem like a humble king.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Teaches marriage, wealth, humble service, and heals Bartimaeus Defines discipleship on the road to suffering"
+        "role": "Teaches against divorce, welcomes children, calls a wealthy man to sell his possessions, predicts his death again, and heals blind Bartimaeus (10:1-52)."
       },
       {
         "name": "Pharisees",
-        "role": "Question divorce Prompt Jesus' teaching"
+        "role": "Ask Jesus whether divorce is lawful, prompting his teaching that Moses only permitted it because of human hardness of heart (10:2-9)."
       },
       {
         "name": "Children",
-        "role": "Welcomed and blessed Model reception of the kingdom"
+        "role": "Are brought to Jesus for a blessing, and he is indignant when the disciples try to turn them away (10:13-16)."
       },
       {
         "name": "Wealthy inquirer",
-        "role": "Asks about inheriting eternal life. Exposes the challenge of attachment to possessions"
+        "role": "Asks Jesus what he must do to inherit eternal life, then goes away sad rather than sell his great possessions (10:17,22)."
       },
       {
         "name": "James and John",
-        "role": "Request seats of honor Occasion teaching on servant leadership"
+        "role": "Ask Jesus to let them sit at his right and left in his glory, drawing both his teaching on servant leadership and the other ten disciples' anger (10:35-41)."
       },
       {
         "name": "Bartimaeus",
-        "role": "Blind beggar healed near Jericho Follows Jesus after receiving sight"
+        "role": "A blind beggar near Jericho who calls out to Jesus despite the crowd's rebuke, receives his sight, and follows Jesus on the road (10:46-52)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Marriage and responsibility",
-        "explanation": "",
+        "explanation": "Jesus traces marriage back to God's creation of male and female as one flesh, teaching that Moses only permitted divorce because of human hardness of heart (10:1-12).",
         "references": [
           "Mark 10:1-12"
         ]
       },
       {
         "theme": "Receiving the kingdom",
-        "explanation": "",
+        "explanation": "When the disciples turn children away, Jesus is indignant and says that whoever does not receive God's kingdom like a child will not enter it at all (10:13-16).",
         "references": [
           "Mark 10:13-16"
         ]
       },
       {
         "theme": "Possessions and trust",
-        "explanation": "",
+        "explanation": "A wealthy man goes away sad rather than sell his possessions, and Jesus tells the astonished disciples that what is impossible for people is possible for God (10:17-31).",
         "references": [
           "Mark 10:17-31"
         ]
       },
       {
         "theme": "Greatness through service",
-        "explanation": "",
+        "explanation": "When James and John ask for the places of highest honor, Jesus teaches that greatness means serving others, since the Son of man came to give his life as a ransom for many (10:35-45).",
         "references": [
           "Mark 10:35-45"
         ]
       },
       {
         "theme": "Faithful response",
-        "explanation": "",
+        "explanation": "Blind Bartimaeus refuses to be silenced, and once Jesus restores his sight he does not go home but follows Jesus on the road (10:46-52).",
         "references": [
           "Mark 10:46-52"
         ]
@@ -768,54 +768,54 @@
   },
   "Mark 11": {
     "summary": "Approaching Jerusalem, Jesus arranges for a colt and enters amid crowds spreading cloaks and branches and acclaiming the coming kingdom of David (Mark 11:1–11). The next day he curses a leafy but fruitless fig tree and enters the temple, driving out buyers and sellers and condemning the corruption of a house meant for prayer for all nations (Mark 11:12–19). The disciples later notice the fig tree withered; Jesus teaches trust in God, prayer, and forgiving others (Mark 11:20–25). When chief priests, scribes, and elders question his authority in the temple, he replies with a question about John's baptism that they decline to answer (Mark 11:27–33). The juxtaposition of fig tree and temple acts signals judgment on fruitless religious practice.",
-    "whereWeAre": "Within the biblical narrative, Approaching Jerusalem, Jesus arranges for a colt and enters amid crowds spreading cloaks and branches and acclaiming the coming kingdom of David (11:1–11). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 11. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 10 ended with the healed beggar Bartimaeus following Jesus on the road to Jerusalem (10:52). Chapter 11 arrives at that city: Jesus enters riding a colt as crowds hail the coming kingdom of David, curses a fruitless fig tree, drives the money changers from the temple, and is challenged by chief priests, scribes, and elders demanding to know his authority (11:1-33). His refusal to answer their question directly sets up chapter 12's series of trap questions and parables aimed at exposing those same leaders.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Enters Jerusalem, confronts temple trade, and teaches prayer Acts with prophetic authority"
+        "role": "Enters Jerusalem on a colt, curses a fruitless fig tree, drives traders from the temple, and refuses to answer the leaders who question his authority (11:1-33)."
       },
       {
         "name": "Disciples",
-        "role": "Obtain colt and observe the fig tree. Learn from symbolic actions"
+        "role": "Bring Jesus the colt he requested and later notice that the fig tree he cursed has withered from the roots (11:1-7,20-21)."
       },
       {
         "name": "Crowds",
-        "role": "Acclaim the arriving kingdom of David. Express hopes about Jesus"
+        "role": "Spread cloaks and branches on the road and shout praise for the coming kingdom of their father David (11:8-10)."
       },
       {
         "name": "Buyers, sellers and money changers",
-        "role": "Conduct business in temple precincts. Become objects of Jesus' prophetic protest"
+        "role": "Conduct business in the temple courts until Jesus drives them out and overturns their tables (11:15-16)."
       },
       {
         "name": "Chief priests, scribes and elders",
-        "role": "Challenge Jesus' authority. Illustrate institutional conflict"
+        "role": "Demand to know by what authority Jesus acts, then refuse to answer his counter-question about John's baptism (11:27-33)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Kingship and expectation",
-        "explanation": "",
+        "explanation": "Jesus enters Jerusalem on a colt as crowds spread cloaks and branches and shout for the coming kingdom of David, acting out the picture of a humble king (11:1-11).",
         "references": [
           "Mark 11:1-11"
         ]
       },
       {
         "theme": "Worship and justice",
-        "explanation": "",
+        "explanation": "Jesus curses a fruitless fig tree and drives the money changers from the temple, pairing both acts as judgment on worship that looks flourishing but produces nothing real (11:12-19).",
         "references": [
           "Mark 11:12-19"
         ]
       },
       {
         "theme": "Faith and forgiveness",
-        "explanation": "",
+        "explanation": "Finding the fig tree withered, Jesus teaches the disciples to pray with unwavering trust in God and to forgive others so that God will forgive them (11:20-25).",
         "references": [
           "Mark 11:20-25"
         ]
       },
       {
         "theme": "Contested authority",
-        "explanation": "",
+        "explanation": "When chief priests, scribes, and elders demand to know his authority, Jesus answers with a question about John's baptism that they refuse to answer (11:27-33).",
         "references": [
           "Mark 11:27-33"
         ]
@@ -856,65 +856,65 @@
   },
   "Mark 12": {
     "summary": "Jesus tells a parable of tenant farmers who mistreat a landowner's servants and kill his beloved son; leaders realize it concerns them (Mark 12:1–12). Pharisees and Herodians ask about paying tax to Caesar; Jesus answers by distinguishing Caesar's claims from God's (Mark 12:13–17). Sadducees raise a resurrection puzzle, and Jesus disputes their understanding of Scripture and God's power (Mark 12:18–27). A scribe asks the chief commandment; Jesus joins love of God from Deuteronomy with love of neighbor from Leviticus (Mark 12:28–34). He then questions assumptions about David's son, warns against scribes who seek honor and exploit widows, and observes a poor widow placing two small coins into the treasury (Mark 12:35–44). The chapter examines authority, faithful love, sincerity, and costly giving.",
-    "whereWeAre": "Within the biblical narrative, Jesus tells a parable of tenant farmers who mistreat a landowner's servants and kill his beloved son; leaders realize it concerns them (12:1–12). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 12. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 11 ended with religious leaders refusing to answer Jesus' question about John's baptism, so he refused to tell them his own authority (11:33). Chapter 12 shows him turning the tables: his parable of the wicked tenants exposes those same leaders, and he answers a series of trap questions about taxes, resurrection, and the greatest commandment before praising a poor widow's small offering over the large gifts of the rich (12:1-44). Leaving the temple at the end of that scene, in chapter 13 Jesus predicts that the temple itself will soon fall.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Teaches through controversy and observation. Places wholehearted love at the center"
+        "role": "Tells the parable of the tenants, answers questions about taxes, resurrection, and the greatest commandment, and praises a poor widow's offering (12:1-44)."
       },
       {
         "name": "Chief priests, scribes and elders",
-        "role": "Recognize the tenants parable's challenge. Are confronted by prophetic critique"
+        "role": "Recognize that Jesus' parable of the wicked tenants is told against them and seek a way to arrest him (12:12)."
       },
       {
         "name": "Pharisees and Herodians",
-        "role": "Ask about imperial taxes Attempt to trap Jesus politically"
+        "role": "Try to trap Jesus with a question about paying tribute to Caesar and are left marveling at his answer (12:13-17)."
       },
       {
         "name": "Sadducees",
-        "role": "Question resurrection Prompt scriptural debate"
+        "role": "Pose a hypothetical case about a widow and seven brothers to challenge belief in the resurrection (12:18-23)."
       },
       {
         "name": "Scribe who asks the first commandment",
-        "role": "Affirms love of God and neighbor Receives Jesus' approval"
+        "role": "Agrees with Jesus that loving God and neighbor matters more than any sacrifice, and is told he is not far from the kingdom of God (12:28-34)."
       },
       {
         "name": "Poor widow",
-        "role": "Contributes two small coins. Illustrates the contrast between small means and costly giving"
+        "role": "Puts two small coins into the temple treasury, a gift Jesus calls greater than all the large sums given by the rich (12:41-44)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Accountability of leaders",
-        "explanation": "",
+        "explanation": "In the parable of the tenant farmers who kill the owner's beloved son, Jesus tells the religious leaders a story that they immediately recognize is aimed at them (12:1-12).",
         "references": [
           "Mark 12:1-12"
         ]
       },
       {
         "theme": "God and political obligation",
-        "explanation": "",
+        "explanation": "Asked whether paying tax to Caesar is lawful, Jesus answers that people should give Caesar what bears his image and give God what bears God's, refusing to let the trap force a simple answer (12:13-17).",
         "references": [
           "Mark 12:13-17"
         ]
       },
       {
         "theme": "Resurrection hope",
-        "explanation": "",
+        "explanation": "Sadducees try to make resurrection absurd with a hypothetical widow, but Jesus answers that they know neither the Scriptures nor the power of God, who is God of the living (12:18-27).",
         "references": [
           "Mark 12:18-27"
         ]
       },
       {
         "theme": "Love as the heart of the law",
-        "explanation": "",
+        "explanation": "Asked which commandment is greatest, Jesus joins loving God with all one's heart from Deuteronomy to loving one's neighbor from Leviticus as the two commands the whole law hangs on (12:28-34).",
         "references": [
           "Mark 12:28-34"
         ]
       },
       {
         "theme": "Integrity in worship",
-        "explanation": "",
+        "explanation": "Jesus warns against scribes who seek honor while exploiting widows, then praises a poor widow whose two small coins were, in his eyes, a greater gift than the large sums thrown in by the rich (12:38-44).",
         "references": [
           "Mark 12:38-44"
         ]
@@ -975,33 +975,29 @@
   },
   "Mark 13": {
     "summary": "Leaving the temple, Jesus predicts its destruction and answers Peter, James, John, and Andrew about coming upheaval (Mark 13:1–4). He warns against deceptive messianic claims, wars, earthquakes, persecution, and betrayal, urging endurance (Mark 13:5–13). He speaks of the 'abomination of desolation,' flight from Judea, severe distress, and misleading signs (Mark 13:14–23). Cosmic imagery accompanies the coming of the Son of Man and gathering of the elect (Mark 13:24–27). The fig tree illustrates attentive discernment, while Jesus insists that the day or hour is unknown and repeatedly calls disciples to remain awake (Mark 13:28–37). Interpretations differ on how the discourse relates to the Roman destruction of the temple in 70 CE and to future fulfillment; the chapter itself emphasizes vigilance rather than date setting.",
-    "whereWeAre": "Within the biblical narrative, Leaving the temple, Jesus predicts its destruction and answers Peter, James, John, and Andrew about coming upheaval (13:1–4). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 13. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 12 ended with Jesus praising a poor widow who gave two small coins, all she had, far more in his eyes than the large gifts of the rich (12:41-44). Chapter 13 leaves that same temple behind: Jesus predicts its coming destruction, and on the Mount of Olives answers the disciples' private questions with warnings about deception, persecution, and cosmic upheaval, insisting that no one knows the day or hour (13:1-37). That call to watchfulness gives way in chapter 14 to the events it was warning about, beginning with the leaders' plot to arrest Jesus near Passover.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Gives warning and reassurance to disciples. Calls followers to discernment and endurance"
+        "role": "Predicts the temple's destruction, warns the disciples about deception and distress to come, and describes himself as the Son of man coming in the clouds with great power and glory to gather his elect (13:1-27)."
       },
       {
         "name": "Peter, James, John and Andrew",
-        "role": "Privately ask about the temple prediction. Receive the discourse"
+        "role": "Ask Jesus privately on the Mount of Olives when the temple will fall and what sign will mark these events (13:3-4)."
       },
       {
         "name": "False claimants",
-        "role": "Predicted figures who mislead people. Serve as objects of warning"
+        "role": "Predicted figures who will come claiming to be the Christ and will try to deceive even the elect if possible (13:6,21-22)."
       },
       {
         "name": "The elect",
-        "role": "People to be gathered by the Son of Man. Objects of divine concern in the vision"
-      },
-      {
-        "name": "Son of Man",
-        "role": "Figure whose coming is described. Central in the discourse's hope and judgment imagery"
+        "role": "Will be gathered by the Son of man's angels from the four winds after the days of distress (13:27)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Discernment amid turmoil",
-        "explanation": "",
+        "explanation": "Jesus warns that wars, earthquakes, and false messiahs will come but tells the disciples not to be deceived into reading any of it as the certain sign of the end (13:5-8,21-23).",
         "references": [
           "Mark 13:5-8",
           "Mark 13:21-23"
@@ -1009,21 +1005,21 @@
       },
       {
         "theme": "Endurance in witness",
-        "explanation": "",
+        "explanation": "Disciples will be handed over to councils and rulers for Jesus' sake, but he promises the Holy Spirit will give them words to say and that the one who endures to the end will be saved (13:9-13).",
         "references": [
           "Mark 13:9-13"
         ]
       },
       {
         "theme": "Crisis and deliverance",
-        "explanation": "",
+        "explanation": "A desolating horror in the temple will bring suffering unlike anything before it, yet Jesus promises the Son of man will come in power to gather his elect out of that same crisis (13:14-27).",
         "references": [
           "Mark 13:14-27"
         ]
       },
       {
         "theme": "Watchfulness without date setting",
-        "explanation": "",
+        "explanation": "Jesus compares the fig tree's leaves to the signs of the end, but insists no one knows the day or hour, so disciples must simply stay awake and ready (13:28-37).",
         "references": [
           "Mark 13:28-37"
         ]
@@ -1033,58 +1029,58 @@
   },
   "Mark 14": {
     "summary": "Chief priests and scribes plot against Jesus near Passover (Mark 14:1–2). In Bethany an unnamed woman anoints Jesus with costly perfume; he defends her act as preparation for his burial, while Judas later seeks to betray him (Mark 14:3–11). At the Passover meal Jesus foretells betrayal, shares bread and cup as his body and covenant blood, and predicts the disciples' scattering and Peter's denial (Mark 14:12–31). In Gethsemane he prays for the cup to pass yet submits to God's will, while the disciples sleep (Mark 14:32–42). Judas arrives with an armed crowd, Jesus is arrested, and followers flee (Mark 14:43–52). Before the high priest and council Jesus is accused and condemned after declaring his identity; Peter denies him three times and weeps (Mark 14:53–72). The chapter portrays devotion, betrayal, suffering, and failed loyalty.",
-    "whereWeAre": "Within the biblical narrative, Chief priests and scribes plot against Jesus near Passover (14:1–2). Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 14. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 13 ended with Jesus commanding his followers to watch, since no one knows when the master of the house will come (13:35-37). Chapter 14 shows the watch failing: as Passover approaches, a woman anoints Jesus for burial even as Judas arranges his betrayal, Jesus shares a final Passover meal and reinterprets its bread and cup around his own body and blood, and in Gethsemane he finds his disciples asleep instead of watching with him (14:1-72). His arrest that same night and Peter's three denials set up chapter 15's account of his trial before Pilate and crucifixion.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Anointed, shares final meal, prays, and is arrested. Faces suffering with deliberate obedience"
+        "role": "Is anointed at Bethany, shares the Passover meal, prays in anguish at Gethsemane, and is arrested and condemned before the council (14:3-65)."
       },
       {
         "name": "Unnamed woman in Bethany",
-        "role": "Anoints Jesus with costly perfume Jesus commends her act"
+        "role": "Pours costly perfume on Jesus' head, an act he defends as preparing his body for burial ahead of time (14:3-9)."
       },
       {
         "name": "Judas Iscariot",
-        "role": "Arranges betrayal and identifies Jesus. Makes the arrest possible"
+        "role": "Goes to the chief priests to arrange Jesus' betrayal for money, then identifies him with a kiss when the armed crowd arrives (14:10-11,44-45)."
       },
       {
         "name": "Peter",
-        "role": "Promises loyalty, follows at a distance and denies Jesus Exemplifies human weakness"
+        "role": "Insists he will never deny Jesus, falls asleep at Gethsemane, and then denies knowing him three times before weeping bitterly (14:29-31,37,66-72)."
       },
       {
         "name": "The Twelve",
-        "role": "Share the meal and fail to stay awake. Form the intimate circle under testing"
+        "role": "Share the Passover meal where Jesus names a betrayer among them and later flee when he is arrested (14:17-21,50)."
       },
       {
         "name": "High priest and council",
-        "role": "Interrogate and condemn Jesus. Represent leadership in the trial account"
+        "role": "Hear false testimony against Jesus, then condemn him to death once he declares his own identity (14:55-56,61-64)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Honor and costly devotion",
-        "explanation": "",
+        "explanation": "An unnamed woman pours costly perfume on Jesus, and when others object to the waste, he defends her act as preparing his body in advance for burial (14:3-9).",
         "references": [
           "Mark 14:3-9"
         ]
       },
       {
         "theme": "Covenant and self-giving",
-        "explanation": "",
+        "explanation": "At the Passover table Jesus calls the bread his body and the cup his blood of the covenant, reinterpreting the meal around his own coming death (14:22-25).",
         "references": [
           "Mark 14:22-25"
         ]
       },
       {
         "theme": "Prayer and surrender",
-        "explanation": "",
+        "explanation": "In Gethsemane Jesus prays that the cup might pass from him, yet submits, \"not what I will, but what thou wilt,\" while his disciples sleep instead of keeping watch (14:32-42).",
         "references": [
           "Mark 14:32-42"
         ]
       },
       {
         "theme": "Betrayal and failed loyalty",
-        "explanation": "",
+        "explanation": "Judas betrays Jesus with a kiss and the other disciples flee, while Peter denies even knowing him three times before the rooster crows and he weeps (14:43-72).",
         "references": [
           "Mark 14:43-72"
         ]
@@ -1125,62 +1121,58 @@
   },
   "Mark 15": {
     "summary": "Early in the morning leaders hand Jesus to Pilate, the Roman governor. Pilate questions him, releases Barabbas after crowd pressure, and orders Jesus flogged and crucified (Mark 15:1–15). Soldiers mock him as king of the Jews and lead him out; Simon of Cyrene is compelled to carry the cross (Mark 15:16–21). Jesus is crucified at Golgotha between two others, mocked by passersby and leaders. Darkness falls, and Jesus cries out with words from Psalm 22 before dying; the temple curtain tears, and a centurion calls him God's Son (Mark 15:22–39). Women followers watch from a distance (Mark 15:40–41). Joseph of Arimathea obtains his body and places it in a rock-cut tomb, while Mary Magdalene and Mary mother of Joses see where he is laid (Mark 15:42–47). The chapter presents Jesus' death as the stark climax of his ministry.",
-    "whereWeAre": "Within the biblical narrative, Early in the morning leaders hand Jesus to Pilate, the Roman governor. Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 15. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "whereWeAre": "Chapter 14 ended with Peter denying Jesus three times and weeping after the rooster crowed (14:72). Chapter 15 carries Jesus from that same night into his execution: the council hands him to Pilate, the crowd chooses to release Barabbas instead, and Jesus is mocked, crucified between two criminals, and dies as the temple curtain tears in two and a Roman centurion calls him God's Son (15:1-47). Joseph of Arimathea buries him in a rock-cut tomb while women watch, setting up chapter 16's discovery that the tomb is empty.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Tried, mocked, crucified and buried. Central sufferer whose identity is contested and confessed"
+        "role": "Is tried before Pilate, mocked, crucified between two criminals, and buried in a borrowed tomb (15:1-47)."
       },
       {
         "name": "Pontius Pilate",
-        "role": "Roman governor who orders execution Exercises imperial capital authority"
-      },
-      {
-        "name": "Barabbas",
-        "role": "Prisoner released instead of Jesus Highlights the choice made under pressure"
+        "role": "Questions Jesus, offers the crowd a choice between Jesus and the convicted rebel Barabbas, who is released instead, and orders Jesus crucified after the crowd shouts him down (15:2-15)."
       },
       {
         "name": "Simon of Cyrene",
-        "role": "Forced to carry Jesus' cross. Witnesses the march to execution"
+        "role": "Is compelled by the soldiers to carry Jesus' cross to Golgotha (15:21)."
       },
       {
         "name": "Roman centurion",
-        "role": "Responds to Jesus' death. Calls him Son of God"
+        "role": "Watches Jesus die and declares, \"Truly this man was the Son of God\" (15:39)."
       },
       {
         "name": "Joseph of Arimathea",
-        "role": "Requests and buries Jesus' body Ensures a known tomb location"
+        "role": "A council member who boldly asks Pilate for Jesus' body and buries it in his own rock-cut tomb (15:43,46)."
       },
       {
         "name": "Mary Magdalene, Mary mother of Joses and Salome",
-        "role": "Women named among Jesus' followers Witness crucial events surrounding death and burial"
+        "role": "Watch the crucifixion from a distance and see exactly where Jesus is laid (15:40,47)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Injustice and political power",
-        "explanation": "",
+        "explanation": "Pilate finds no real charge against Jesus but releases the murderer Barabbas instead and has Jesus flogged and crucified simply to satisfy the crowd (15:1-15).",
         "references": [
           "Mark 15:1-15"
         ]
       },
       {
         "theme": "Mocked kingship",
-        "explanation": "",
+        "explanation": "Soldiers dress Jesus in purple and a crown of thorns to mock him as king, not realizing their taunt will be nailed above his cross as the literal charge against him (15:16-32).",
         "references": [
           "Mark 15:16-32"
         ]
       },
       {
         "theme": "Suffering and disclosure",
-        "explanation": "",
+        "explanation": "Jesus dies crying out the opening words of Psalm 22 as the temple curtain tears in two, and a Roman centurion is the first to call him the Son of God (15:33-39).",
         "references": [
           "Mark 15:33-39"
         ]
       },
       {
         "theme": "Witness and care after death",
-        "explanation": "",
+        "explanation": "Joseph of Arimathea boldly asks for Jesus' body and buries it in his own tomb, while the women who had followed Jesus from Galilee watch and remember exactly where he was laid (15:40-47).",
         "references": [
           "Mark 15:40-47"
         ]
@@ -1210,59 +1202,55 @@
     ]
   },
   "Mark 16": {
-    "summary": "After the Sabbath, Mary Magdalene, Mary the mother of James, and Salome come with spices to anoint Jesus. They find the stone moved and a young man in white inside the tomb who announces that Jesus, the crucified one, has been raised and tells them to inform the disciples and Peter that he goes before them to Galilee (Mark 16:1–7). They flee trembling and astonished and, as Mark 16:8 states, initially say nothing because they are afraid. Many KJV and later manuscript traditions continue with verses 9–20: appearances to Mary Magdalene and others, a commission to preach, signs associated with believers, and Jesus' ascension (Mark 16:9–20). The two earliest surviving complete Greek manuscripts end at 16:8, and many textual scholars regard 9–20 as a later ending; its content is therefore presented here as part of the KJV textual tradition, not as unquestionably original to Mark. The chapter centers on the resurrection announcement and the varied textual witness to the book's conclusion.",
-    "whereWeAre": "Within the biblical narrative, After the Sabbath, Mary Magdalene, Mary the mother of James, and Salome come with spices to anoint Jesus. Independently, first-century Judea and Galilee were under Roman imperial influence, with varied Jewish movements and practices. Individual speeches and miracles are known chiefly from the Gospel accounts. This setting helps clarify the pressures, audiences and imagery of Mark 16. The events and words above are reported by Mark; details without independent corroboration should not be treated as independently documented historical facts.",
+    "summary": "After the Sabbath, Mary Magdalene, Mary the mother of James, and Salome come with spices to anoint Jesus. They find the stone moved and a young man in white inside the tomb who announces that Jesus, the crucified one, has been raised and tells them to inform the disciples and Peter that he goes before them to Galilee (Mark 16:1–7). They flee trembling and astonished and, as Mark 16:8 states, initially say nothing because they are afraid. Many KJV and later manuscript traditions continue with verses 9–20: appearances to Mary Magdalene and others, a commission to preach, signs associated with believers, and Jesus' ascension (Mark 16:9–20). The two earliest surviving complete Greek manuscripts end at 16:8, and the KJV's verses 9–20 are a longer ending found in most later manuscript copies; this chapter presents that longer ending as part of the KJV's own textual tradition, alongside the shorter ending the oldest manuscripts preserve. The chapter centers on the resurrection announcement and the varied textual witness to the book's conclusion.",
+    "whereWeAre": "Chapter 15 ended with Joseph of Arimathea laying Jesus' body in a tomb while Mary Magdalene and Mary the mother of Joses watched where he was laid (15:46-47). Mark's closing chapter answers that sealed tomb directly: the same women find the stone rolled away and are told by a young man in white that Jesus has risen and goes before them to Galilee, though they flee in fear (16:1-8). The KJV's longer ending adds resurrection appearances and a commission to preach the gospel worldwide, the same mission Luke's Gospel will trace again from its own beginning with John the Baptist and Jesus.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Announced as raised from the dead. The focus of the empty-tomb proclamation"
+        "role": "Is announced as risen by a messenger in the tomb and, in the KJV's longer ending, appears to his followers and commissions them before being received into heaven (16:1-20)."
       },
       {
-        "name": "Mary Magdalene",
-        "role": "Comes to the tomb and is named in the longer ending Witness to resurrection news"
-      },
-      {
-        "name": "Mary mother of James and Salome",
-        "role": "Join in visiting the tomb. Named witnesses to the empty tomb"
+        "name": "Mary Magdalene, Mary mother of James and Salome",
+        "role": "Come to anoint Jesus' body with spices and find the tomb's stone already rolled away (16:1-4)."
       },
       {
         "name": "Young man in white",
-        "role": "Speaks from inside the tomb Announces Jesus' resurrection and instructions"
+        "role": "Sits inside the empty tomb and tells the women that Jesus has risen and goes before them to Galilee (16:5-7)."
       },
       {
         "name": "Peter and other disciples",
-        "role": "Recipients of the promised message. Invited to renewed encounter"
+        "role": "Are named as the ones the women are told to tell that Jesus goes before them into Galilee (16:7)."
       },
       {
         "name": "Eleven disciples",
-        "role": "Receive an appearance and commission in 16:14-20. Appear in the disputed longer ending"
+        "role": "Receive the risen Jesus' appearance and commission to preach the gospel to all creation in the KJV's longer ending (16:14-16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Resurrection announcement",
-        "explanation": "",
+        "explanation": "The women find the tomb's stone already rolled away, and a young man inside tells them Jesus has been raised and goes before them to Galilee (16:1-7).",
         "references": [
           "Mark 16:1-7"
         ]
       },
       {
         "theme": "Fear and astonishment",
-        "explanation": "",
+        "explanation": "The women flee the tomb trembling and say nothing to anyone, since fear overtakes them before any word of joy (16:8).",
         "references": [
           "Mark 16:8"
         ]
       },
       {
         "theme": "Witness and proclamation",
-        "explanation": "",
+        "explanation": "In the KJV's longer ending, the risen Jesus appears first to Mary Magdalene and then to others, yet the disciples at first refuse to believe their report (16:9-15).",
         "references": [
           "Mark 16:9-15"
         ]
       },
       {
         "theme": "Commission and exaltation",
-        "explanation": "",
+        "explanation": "Jesus commissions the disciples to preach the gospel to all creation before being received up into heaven to sit at God's right hand (16:15-20).",
         "references": [
           "Mark 16:15-20"
         ]
