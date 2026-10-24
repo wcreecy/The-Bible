@@ -13,376 +13,425 @@ enum ChapterCrossReferenceEditorialCatalog {
         let relationshipDescription: String
     }
 
-    nonisolated static let entries: [Entry] = [
+    nonisolated static let entries: [Entry] = entriesParts.flatMap { $0 }
+
+    private nonisolated static let entriesParts: [[Entry]] = [
+        entriesPart1,
+        entriesPart2,
+        entriesPart3,
+        entriesPart4,
+        entriesPart5,
+        entriesPart6,
+        entriesPart7,
+        entriesPart8,
+        entriesPart9,
+        entriesPart10,
+        entriesPart11,
+        entriesPart12,
+        entriesPart13,
+        entriesPart14,
+        entriesPart15,
+        entriesPart16,
+        entriesPart17,
+        entriesPart18,
+        entriesPart19,
+        entriesPart20,
+        entriesPart21,
+        entriesPart22,
+        entriesPart23,
+        entriesPart24,
+        entriesPart25,
+        entriesPart26,
+        entriesPart27,
+        entriesPart28,
+        entriesPart29,
+        entriesPart30,
+        entriesPart31,
+        entriesPart32,
+        entriesPart33,
+        entriesPart34,
+        entriesPart35,
+        entriesPart36,
+        entriesPart37,
+        entriesPart38,
+        entriesPart39,
+        entriesPart40,
+        entriesPart41,
+        entriesPart42,
+        entriesPart43,
+        entriesPart44
+    ]
+
+    private nonisolated static let entriesPart1: [Entry] = [
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 1,
-            sourceVerse: 27,
-            targetBookName: "Mark",
-            targetChapterNumber: 10,
-            targetVerse: 6,
-            relationshipDescription: "Jesus points back to Genesis to ground his teaching on marriage in God's creation of humanity as male and female."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 1,
+                    sourceVerse: 27,
+                    targetBookName: "Mark",
+                    targetChapterNumber: 10,
+                    targetVerse: 6,
+                    relationshipDescription: "Jesus points back to Genesis to ground his teaching on marriage in God's creation of humanity as male and female."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 1,
-            sourceVerse: 27,
-            targetBookName: "Matthew",
-            targetChapterNumber: 19,
-            targetVerse: 4,
-            relationshipDescription: "Jesus points back to Genesis to ground his teaching on marriage in God's creation of humanity as male and female."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 1,
+                    sourceVerse: 27,
+                    targetBookName: "Matthew",
+                    targetChapterNumber: 19,
+                    targetVerse: 4,
+                    relationshipDescription: "Jesus points back to Genesis to ground his teaching on marriage in God's creation of humanity as male and female."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 2,
-            sourceVerse: 2,
-            targetBookName: "Hebrews",
-            targetChapterNumber: 4,
-            targetVerse: 4,
-            relationshipDescription: "Hebrews cites God's seventh-day rest in Genesis as the foundation for its teaching about entering God's rest."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 2,
+                    sourceVerse: 2,
+                    targetBookName: "Hebrews",
+                    targetChapterNumber: 4,
+                    targetVerse: 4,
+                    relationshipDescription: "Hebrews cites God's seventh-day rest in Genesis as the foundation for its teaching about entering God's rest."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 2,
-            sourceVerse: 7,
-            targetBookName: "1 Corinthians",
-            targetChapterNumber: 15,
-            targetVerse: 45,
-            relationshipDescription: "Paul refers to Genesis' account of God creating Adam and calls Adam the first man, a living soul, as he contrasts him with Christ."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 2,
+                    sourceVerse: 7,
+                    targetBookName: "1 Corinthians",
+                    targetChapterNumber: 15,
+                    targetVerse: 45,
+                    relationshipDescription: "Paul refers to Genesis' account of God creating Adam and calls Adam the first man, a living soul, as he contrasts him with Christ."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 2,
-            sourceVerse: 24,
-            targetBookName: "1 Corinthians",
-            targetChapterNumber: 6,
-            targetVerse: 16,
-            relationshipDescription: "Paul quotes Genesis' one-flesh language to show that bodily union carries the covenantal significance established in creation."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 2,
+                    sourceVerse: 24,
+                    targetBookName: "1 Corinthians",
+                    targetChapterNumber: 6,
+                    targetVerse: 16,
+                    relationshipDescription: "Paul quotes Genesis' one-flesh language to show that bodily union carries the covenantal significance established in creation."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 2,
-            sourceVerse: 24,
-            targetBookName: "Ephesians",
-            targetChapterNumber: 5,
-            targetVerse: 31,
-            relationshipDescription: "Paul cites the creation pattern of leaving, cleaving, and becoming one flesh as the foundation for Christian marriage."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 2,
+                    sourceVerse: 24,
+                    targetBookName: "Ephesians",
+                    targetChapterNumber: 5,
+                    targetVerse: 31,
+                    relationshipDescription: "Paul cites the creation pattern of leaving, cleaving, and becoming one flesh as the foundation for Christian marriage."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 2,
-            sourceVerse: 24,
-            targetBookName: "Mark",
-            targetChapterNumber: 10,
-            targetVerse: 7,
-            relationshipDescription: "Jesus quotes this creation text to teach that marriage joins a man and woman into one flesh by God's design."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 2,
+                    sourceVerse: 24,
+                    targetBookName: "Mark",
+                    targetChapterNumber: 10,
+                    targetVerse: 7,
+                    relationshipDescription: "Jesus quotes this creation text to teach that marriage joins a man and woman into one flesh by God's design."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 2,
-            sourceVerse: 24,
-            targetBookName: "Matthew",
-            targetChapterNumber: 19,
-            targetVerse: 5,
-            relationshipDescription: "Jesus quotes this creation text to teach that marriage joins a man and woman into one flesh by God's design."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 2,
+                    sourceVerse: 24,
+                    targetBookName: "Matthew",
+                    targetChapterNumber: 19,
+                    targetVerse: 5,
+                    relationshipDescription: "Jesus quotes this creation text to teach that marriage joins a man and woman into one flesh by God's design."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 12,
-            sourceVerse: 1,
-            targetBookName: "Acts",
-            targetChapterNumber: 7,
-            targetVerse: 3,
-            relationshipDescription: "Stephen recalls God's call to Abram to show that Israel's story began with God's initiative and Abram's obedient departure."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 12,
+                    sourceVerse: 1,
+                    targetBookName: "Acts",
+                    targetChapterNumber: 7,
+                    targetVerse: 3,
+                    relationshipDescription: "Stephen recalls God's call to Abram to show that Israel's story began with God's initiative and Abram's obedient departure."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 12,
-            sourceVerse: 3,
-            targetBookName: "Acts",
-            targetChapterNumber: 3,
-            targetVerse: 25,
-            relationshipDescription: "The New Testament identifies God's promise to bless all families through Abraham as a promise reaching beyond Israel to the nations."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 12,
+                    sourceVerse: 3,
+                    targetBookName: "Acts",
+                    targetChapterNumber: 3,
+                    targetVerse: 25,
+                    relationshipDescription: "The New Testament identifies God's promise to bless all families through Abraham as a promise reaching beyond Israel to the nations."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 12,
-            sourceVerse: 3,
-            targetBookName: "Galatians",
-            targetChapterNumber: 3,
-            targetVerse: 8,
-            relationshipDescription: "The New Testament identifies God's promise to bless all families through Abraham as a promise reaching beyond Israel to the nations."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 12,
+                    sourceVerse: 3,
+                    targetBookName: "Galatians",
+                    targetChapterNumber: 3,
+                    targetVerse: 8,
+                    relationshipDescription: "The New Testament identifies God's promise to bless all families through Abraham as a promise reaching beyond Israel to the nations."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 15,
-            sourceVerse: 5,
-            targetBookName: "Romans",
-            targetChapterNumber: 4,
-            targetVerse: 18,
-            relationshipDescription: "Paul returns to God's promise of countless descendants to present Abraham as an example of hope and faith in God's promise."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 15,
+                    sourceVerse: 5,
+                    targetBookName: "Romans",
+                    targetChapterNumber: 4,
+                    targetVerse: 18,
+                    relationshipDescription: "Paul returns to God's promise of countless descendants to present Abraham as an example of hope and faith in God's promise."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 15,
-            sourceVerse: 6,
-            targetBookName: "Romans",
-            targetChapterNumber: 4,
-            targetVerse: 3,
-            relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 15,
+                    sourceVerse: 6,
+                    targetBookName: "Romans",
+                    targetChapterNumber: 4,
+                    targetVerse: 3,
+                    relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 15,
-            sourceVerse: 6,
-            targetBookName: "Galatians",
-            targetChapterNumber: 3,
-            targetVerse: 6,
-            relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 15,
+                    sourceVerse: 6,
+                    targetBookName: "Galatians",
+                    targetChapterNumber: 3,
+                    targetVerse: 6,
+                    relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 15,
-            sourceVerse: 6,
-            targetBookName: "James",
-            targetChapterNumber: 2,
-            targetVerse: 23,
-            relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 15,
+                    sourceVerse: 6,
+                    targetBookName: "James",
+                    targetChapterNumber: 2,
+                    targetVerse: 23,
+                    relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 15,
-            sourceVerse: 13,
-            targetBookName: "Acts",
-            targetChapterNumber: 7,
-            targetVerse: 6,
-            relationshipDescription: "Stephen recalls this prophecy to connect Israel's time of oppression in Egypt with God's promised deliverance."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 15,
+                    sourceVerse: 13,
+                    targetBookName: "Acts",
+                    targetChapterNumber: 7,
+                    targetVerse: 6,
+                    relationshipDescription: "Stephen recalls this prophecy to connect Israel's time of oppression in Egypt with God's promised deliverance."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 17,
-            sourceVerse: 5,
-            targetBookName: "Romans",
-            targetChapterNumber: 4,
-            targetVerse: 17,
-            relationshipDescription: "Paul cites God's renaming of Abram to explain Abraham's role as the father of many nations through faith."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 17,
+                    sourceVerse: 5,
+                    targetBookName: "Romans",
+                    targetChapterNumber: 4,
+                    targetVerse: 17,
+                    relationshipDescription: "Paul cites God's renaming of Abram to explain Abraham's role as the father of many nations through faith."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 18,
-            sourceVerse: 10,
-            targetBookName: "Romans",
-            targetChapterNumber: 9,
-            targetVerse: 9,
-            relationshipDescription: "Paul recalls God's promise to Sarah to show that Isaac's birth came through God's chosen promise, not merely human descent."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 18,
+                    sourceVerse: 10,
+                    targetBookName: "Romans",
+                    targetChapterNumber: 9,
+                    targetVerse: 9,
+                    relationshipDescription: "Paul recalls God's promise to Sarah to show that Isaac's birth came through God's chosen promise, not merely human descent."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 21,
-            sourceVerse: 10,
-            targetBookName: "Galatians",
-            targetChapterNumber: 4,
-            targetVerse: 30,
-            relationshipDescription: "Paul uses Sarah's demand in the Genesis story as part of his contrast between slavery and the freedom promised through God's covenant."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 21,
+                    sourceVerse: 10,
+                    targetBookName: "Galatians",
+                    targetChapterNumber: 4,
+                    targetVerse: 30,
+                    relationshipDescription: "Paul uses Sarah's demand in the Genesis story as part of his contrast between slavery and the freedom promised through God's covenant."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 21,
-            sourceVerse: 12,
-            targetBookName: "Romans",
-            targetChapterNumber: 9,
-            targetVerse: 7,
-            relationshipDescription: "These writers recall God's promise that Abraham's covenant line would be named through Isaac."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 21,
+                    sourceVerse: 12,
+                    targetBookName: "Romans",
+                    targetChapterNumber: 9,
+                    targetVerse: 7,
+                    relationshipDescription: "These writers recall God's promise that Abraham's covenant line would be named through Isaac."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 21,
-            sourceVerse: 12,
-            targetBookName: "Hebrews",
-            targetChapterNumber: 11,
-            targetVerse: 18,
-            relationshipDescription: "These writers recall God's promise that Abraham's covenant line would be named through Isaac."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 21,
+                    sourceVerse: 12,
+                    targetBookName: "Hebrews",
+                    targetChapterNumber: 11,
+                    targetVerse: 18,
+                    relationshipDescription: "These writers recall God's promise that Abraham's covenant line would be named through Isaac."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 22,
-            sourceVerse: 16,
-            targetBookName: "Hebrews",
-            targetChapterNumber: 6,
-            targetVerse: 13,
-            relationshipDescription: "Hebrews recalls God's oath to Abraham after his obedience as assurance that God's promise is certain."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 22,
+                    sourceVerse: 16,
+                    targetBookName: "Hebrews",
+                    targetChapterNumber: 6,
+                    targetVerse: 13,
+                    relationshipDescription: "Hebrews recalls God's oath to Abraham after his obedience as assurance that God's promise is certain."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 22,
-            sourceVerse: 18,
-            targetBookName: "Acts",
-            targetChapterNumber: 3,
-            targetVerse: 25,
-            relationshipDescription: "The New Testament reads this promise as God's purpose to bring blessing to all nations through Abraham's offspring."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 22,
+                    sourceVerse: 18,
+                    targetBookName: "Acts",
+                    targetChapterNumber: 3,
+                    targetVerse: 25,
+                    relationshipDescription: "The New Testament reads this promise as God's purpose to bring blessing to all nations through Abraham's offspring."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 22,
-            sourceVerse: 18,
-            targetBookName: "Galatians",
-            targetChapterNumber: 3,
-            targetVerse: 8,
-            relationshipDescription: "The New Testament reads this promise as God's purpose to bring blessing to all nations through Abraham's offspring."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 22,
+                    sourceVerse: 18,
+                    targetBookName: "Galatians",
+                    targetChapterNumber: 3,
+                    targetVerse: 8,
+                    relationshipDescription: "The New Testament reads this promise as God's purpose to bring blessing to all nations through Abraham's offspring."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 3,
-            sourceVerse: 8,
-            targetBookName: "Job",
-            targetChapterNumber: 31,
-            targetVerse: 33,
-            relationshipDescription: "Job invokes Adam's response to sin as he denies concealing his own wrongdoing from God and other people."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 3,
+                    sourceVerse: 8,
+                    targetBookName: "Job",
+                    targetChapterNumber: 31,
+                    targetVerse: 33,
+                    relationshipDescription: "Job invokes Adam's response to sin as he denies concealing his own wrongdoing from God and other people."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 3,
-            sourceVerse: 20,
-            targetBookName: "Genesis",
-            targetChapterNumber: 2,
-            targetVerse: 23,
-            relationshipDescription: "Both verses identify the woman in relation to Adam: first as woman taken from man, then as Eve, mother of all living."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 3,
+                    sourceVerse: 20,
+                    targetBookName: "Genesis",
+                    targetChapterNumber: 2,
+                    targetVerse: 23,
+                    relationshipDescription: "Both verses identify the woman in relation to Adam: first as woman taken from man, then as Eve, mother of all living."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 3,
-            sourceVerse: 22,
-            targetBookName: "Revelation",
-            targetChapterNumber: 2,
-            targetVerse: 7,
-            relationshipDescription: "Revelation presents access to the tree of life as a promise to the victorious, answering humanity's lost access after the fall."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 3,
+                    sourceVerse: 22,
+                    targetBookName: "Revelation",
+                    targetChapterNumber: 2,
+                    targetVerse: 7,
+                    relationshipDescription: "Revelation presents access to the tree of life as a promise to the victorious, answering humanity's lost access after the fall."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 3,
-            sourceVerse: 22,
-            targetBookName: "Revelation",
-            targetChapterNumber: 22,
-            targetVerse: 14,
-            relationshipDescription: "Revelation closes with restored access to the tree of life, reversing the exile from Eden that follows the fall."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 3,
+                    sourceVerse: 22,
+                    targetBookName: "Revelation",
+                    targetChapterNumber: 22,
+                    targetVerse: 14,
+                    relationshipDescription: "Revelation closes with restored access to the tree of life, reversing the exile from Eden that follows the fall."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 4,
-            sourceVerse: 4,
-            targetBookName: "Hebrews",
-            targetChapterNumber: 11,
-            targetVerse: 4,
-            relationshipDescription: "Hebrews interprets Abel's accepted offering as an expression of faith and presents him as an enduring witness."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 4,
+                    sourceVerse: 4,
+                    targetBookName: "Hebrews",
+                    targetChapterNumber: 11,
+                    targetVerse: 4,
+                    relationshipDescription: "Hebrews interprets Abel's accepted offering as an expression of faith and presents him as an enduring witness."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 4,
-            sourceVerse: 8,
-            targetBookName: "Matthew",
-            targetChapterNumber: 23,
-            targetVerse: 35,
-            relationshipDescription: "Jesus names Abel as the first righteous person murdered, placing Cain's act at the beginning of Scripture's account of righteous bloodshed."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 4,
+                    sourceVerse: 8,
+                    targetBookName: "Matthew",
+                    targetChapterNumber: 23,
+                    targetVerse: 35,
+                    relationshipDescription: "Jesus names Abel as the first righteous person murdered, placing Cain's act at the beginning of Scripture's account of righteous bloodshed."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 4,
-            sourceVerse: 8,
-            targetBookName: "1 John",
-            targetChapterNumber: 3,
-            targetVerse: 12,
-            relationshipDescription: "John uses Cain's murder of Abel as the opposite of Christian love, explaining that Cain acted from evil and hatred."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 4,
+                    sourceVerse: 8,
+                    targetBookName: "1 John",
+                    targetChapterNumber: 3,
+                    targetVerse: 12,
+                    relationshipDescription: "John uses Cain's murder of Abel as the opposite of Christian love, explaining that Cain acted from evil and hatred."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 4,
-            sourceVerse: 8,
-            targetBookName: "Jude",
-            targetChapterNumber: 1,
-            targetVerse: 11,
-            relationshipDescription: "Jude invokes Cain as a warning example of rejecting God's way and harming the community."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 4,
+                    sourceVerse: 8,
+                    targetBookName: "Jude",
+                    targetChapterNumber: 1,
+                    targetVerse: 11,
+                    relationshipDescription: "Jude invokes Cain as a warning example of rejecting God's way and harming the community."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 4,
-            sourceVerse: 26,
-            targetBookName: "Psalms",
-            targetChapterNumber: 116,
-            targetVerse: 17,
-            relationshipDescription: "Both passages describe worship through calling on the Lord's name, connecting the early practice of invocation with Israel's thanksgiving."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 4,
+                    sourceVerse: 26,
+                    targetBookName: "Psalms",
+                    targetChapterNumber: 116,
+                    targetVerse: 17,
+                    relationshipDescription: "Both passages describe worship through calling on the Lord's name, connecting the early practice of invocation with Israel's thanksgiving."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 4,
-            sourceVerse: 26,
-            targetBookName: "Luke",
-            targetChapterNumber: 3,
-            targetVerse: 38,
-            relationshipDescription: "Luke's genealogy preserves Enos within the line from Adam, placing the beginning of public worship in the family line leading to humanity's first ancestors."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 4,
+                    sourceVerse: 26,
+                    targetBookName: "Luke",
+                    targetChapterNumber: 3,
+                    targetVerse: 38,
+                    relationshipDescription: "Luke's genealogy preserves Enos within the line from Adam, placing the beginning of public worship in the family line leading to humanity's first ancestors."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 5,
-            sourceVerse: 2,
-            targetBookName: "Genesis",
-            targetChapterNumber: 2,
-            targetVerse: 23,
-            relationshipDescription: "The genealogy's description of male and female recalls the creation account's introduction of woman as Adam's counterpart."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 5,
+                    sourceVerse: 2,
+                    targetBookName: "Genesis",
+                    targetChapterNumber: 2,
+                    targetVerse: 23,
+                    relationshipDescription: "The genealogy's description of male and female recalls the creation account's introduction of woman as Adam's counterpart."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 5,
-            sourceVerse: 2,
-            targetBookName: "Genesis",
-            targetChapterNumber: 1,
-            targetVerse: 27,
-            relationshipDescription: "This summary repeats Genesis' creation teaching that God made humanity as male and female in his image."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 5,
+                    sourceVerse: 2,
+                    targetBookName: "Genesis",
+                    targetChapterNumber: 1,
+                    targetVerse: 27,
+                    relationshipDescription: "This summary repeats Genesis' creation teaching that God made humanity as male and female in his image."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 5,
-            sourceVerse: 3,
-            targetBookName: "Genesis",
-            targetChapterNumber: 4,
-            targetVerse: 25,
-            relationshipDescription: "The birth of Seth continues the family line after Abel's death, a line later identified as the line through which Adam's descendants are traced."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 5,
+                    sourceVerse: 3,
+                    targetBookName: "Genesis",
+                    targetChapterNumber: 4,
+                    targetVerse: 25,
+                    relationshipDescription: "The birth of Seth continues the family line after Abel's death, a line later identified as the line through which Adam's descendants are traced."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 5,
-            sourceVerse: 4,
-            targetBookName: "1 Chronicles",
-            targetChapterNumber: 1,
-            targetVerse: 1,
-            relationshipDescription: "Chronicles preserves the early genealogy beginning with Adam and Seth, confirming the family line recorded in Genesis."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 5,
+                    sourceVerse: 4,
+                    targetBookName: "1 Chronicles",
+                    targetChapterNumber: 1,
+                    targetVerse: 1,
+                    relationshipDescription: "Chronicles preserves the early genealogy beginning with Adam and Seth, confirming the family line recorded in Genesis."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 5,
-            sourceVerse: 24,
-            targetBookName: "Hebrews",
-            targetChapterNumber: 11,
-            targetVerse: 5,
-            relationshipDescription: "Hebrews explains Enoch's departure from ordinary death as God's testimony that Enoch pleased him through faith."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 5,
+                    sourceVerse: 24,
+                    targetBookName: "Hebrews",
+                    targetChapterNumber: 11,
+                    targetVerse: 5,
+                    relationshipDescription: "Hebrews explains Enoch's departure from ordinary death as God's testimony that Enoch pleased him through faith."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 5,
-            sourceVerse: 29,
-            targetBookName: "2 Peter",
-            targetChapterNumber: 2,
-            targetVerse: 5,
-            relationshipDescription: "Peter identifies Noah as a preacher of righteousness, showing the significance of the son whom Lamech expected would bring relief from the curse."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 5,
+                    sourceVerse: 29,
+                    targetBookName: "2 Peter",
+                    targetChapterNumber: 2,
+                    targetVerse: 5,
+                    relationshipDescription: "Peter identifies Noah as a preacher of righteousness, showing the significance of the son whom Lamech expected would bring relief from the curse."
+                ),
         Entry(
-            bookName: "Genesis",
-            chapterNumber: 5,
-            sourceVerse: 29,
-            targetBookName: "Hebrews",
-            targetChapterNumber: 11,
-            targetVerse: 7,
-            relationshipDescription: "Hebrews shows how Noah's faithful obedience became the means by which God preserved his household, developing the hope associated with his birth."
-        ),
+                    bookName: "Genesis",
+                    chapterNumber: 5,
+                    sourceVerse: 29,
+                    targetBookName: "Hebrews",
+                    targetChapterNumber: 11,
+                    targetVerse: 7,
+                    relationshipDescription: "Hebrews shows how Noah's faithful obedience became the means by which God preserved his household, developing the hope associated with his birth."
+                ),
         genesis(6, 9, "Hebrews", 11, 7, "Hebrews presents Noah's faith as the reason he obeyed God's warning and prepared the ark before the flood was seen."),
         genesis(6, 9, "2 Peter", 2, 5, "Peter calls Noah a preacher of righteousness, expanding Genesis' description of Noah as righteous and blameless in his generation."),
         genesis(6, 9, "Genesis", 7, 1, "God's declaration that Noah is righteous directly explains why Noah and his household are invited into the ark."),
@@ -391,7 +440,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         genesis(6, 22, "Genesis", 7, 5, "This verse records Noah carrying out the command he had received to build the ark."),
         genesis(6, 22, "Genesis", 7, 9, "The animals' orderly entrance into the ark confirms that Noah followed God's command exactly."),
         genesis(7, 1, "2 Peter", 2, 5, "Peter recalls Noah as righteous when explaining that God preserved him and his family through the flood."),
-        genesis(7, 1, "Genesis", 6, 9, "God's invitation into the ark follows Genesis' description of Noah as righteous in his generation."),
+        genesis(7, 1, "Genesis", 6, 9, "God's invitation into the ark follows Genesis' description of Noah as righteous in his generation.")
+    ]
+
+    private nonisolated static let entriesPart2: [Entry] = [
         genesis(7, 1, "Hebrews", 11, 7, "Hebrews explains that Noah entered God's salvation by trusting the warning he received and acting in faith."),
         genesis(7, 5, "Genesis", 6, 22, "Noah's obedience as the flood begins completes the earlier statement that he did everything God commanded."),
         genesis(7, 11, "Genesis", 8, 2, "Genesis pairs the opening of the floodwaters with their later closing, framing the beginning and end of the deluge."),
@@ -441,7 +493,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         genesis(14, 18, "Psalms", 110, 4, "Psalm 110 uses Melchizedek's priesthood to describe the enduring priesthood of the promised king."),
         genesis(14, 18, "Psalms", 76, 2, "The Psalm identifies Salem as God's dwelling place, linking Melchizedek's city with the worship center of Zion."),
         genesis(15, 13, "Exodus", 12, 40, "Exodus records the length of Israel's sojourn in Egypt, fulfilling the period of affliction God announced to Abram."),
-        genesis(15, 14, "Exodus", 12, 36, "Israel leaves Egypt with the Egyptians' wealth, fulfilling God's promise that Abram's descendants would depart with great possessions."),
+        genesis(15, 14, "Exodus", 12, 36, "Israel leaves Egypt with the Egyptians' wealth, fulfilling God's promise that Abram's descendants would depart with great possessions.")
+    ]
+
+    private nonisolated static let entriesPart3: [Entry] = [
         genesis(15, 18, "Joshua", 21, 43, "Joshua records God's fulfillment of the land promise first sealed with Abram in this covenant."),
         genesis(16, 1, "Genesis", 12, 16, "Hagar first appears among the servants Pharaoh gave Abram and Sarai during their stay in Egypt."),
         genesis(16, 1, "Genesis", 15, 2, "Sarai's response to childlessness follows Abram's earlier concern that he has no heir."),
@@ -491,7 +546,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         genesis(29, 34, "Exodus", 32, 26, "Levi's birth is the beginning of the tribe later set apart in Israel's worship."),
         genesis(30, 2, "Psalms", 127, 3, "Jacob's answer that children come from God accords with the Psalm's confession that offspring are the Lord's gift."),
         genesis(30, 11, "Genesis", 49, 19, "Gad's birth name anticipates Jacob's later blessing concerning Gad's conflict and victory."),
-        genesis(30, 22, "Genesis", 29, 31, "Rachel's conception answers the earlier contrast between Leah's fertility and Rachel's barrenness."),
+        genesis(30, 22, "Genesis", 29, 31, "Rachel's conception answers the earlier contrast between Leah's fertility and Rachel's barrenness.")
+    ]
+
+    private nonisolated static let entriesPart4: [Entry] = [
         genesis(31, 10, "Genesis", 30, 39, "Jacob's vision interprets the increase in Laban's flocks described during his breeding arrangement."),
         genesis(31, 24, "Genesis", 24, 50, "Laban recognizes God's direction in Jacob's departure, echoing his earlier acknowledgment of God's providence in Rebekah's marriage."),
         genesis(32, 2, "2 Samuel", 2, 8, "Mahanaim later becomes an important refuge and royal center in Israel's history."),
@@ -541,7 +599,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         genesis(28, 14, "Genesis", 12, 3, "God extends to Jacob the promise that all families of the earth will be blessed through Abraham's line."),
         genesis(28, 14, "Genesis", 22, 18, "The blessing of the nations through Abraham's offspring is renewed in God's promise to Jacob."),
         genesis(28, 19, "Genesis", 48, 3, "Jacob later recalls this Bethel encounter when blessing Joseph's sons."),
-        genesis(28, 19, "Hosea", 12, 4, "Hosea recalls Jacob's encounter with God at Bethel as part of his call to return to the Lord."),
+        genesis(28, 19, "Hosea", 12, 4, "Hosea recalls Jacob's encounter with God at Bethel as part of his call to return to the Lord.")
+    ]
+
+    private nonisolated static let entriesPart5: [Entry] = [
         genesis(28, 19, "Genesis", 35, 1, "God later sends Jacob back to Bethel, the place he named after his first vision."),
         genesis(35, 1, "Genesis", 31, 13, "God's command to return to Bethel recalls Jacob's earlier vow and the divine instruction to leave Laban's land."),
         genesis(35, 1, "Hosea", 12, 4, "Hosea recalls Jacob's meeting with God at Bethel as a call for Israel to seek the Lord."),
@@ -591,7 +652,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         genesis(45, 10, "Exodus", 8, 22, "Goshen becomes the protected region where God later distinguishes Israel from Egypt."),
         genesis(45, 10, "Exodus", 9, 26, "Joseph's settlement plan anticipates Goshen as the place spared during Egypt's plagues."),
         genesis(46, 1, "Genesis", 31, 42, "Jacob worships the God who protected him through his earlier departure from Laban."),
-        genesis(46, 1, "Genesis", 28, 10, "Jacob's departure from Beersheba begins another journey shaped by God's covenant promises."),
+        genesis(46, 1, "Genesis", 28, 10, "Jacob's departure from Beersheba begins another journey shaped by God's covenant promises.")
+    ]
+
+    private nonisolated static let entriesPart6: [Entry] = [
         genesis(46, 1, "Genesis", 21, 33, "Beersheba remains a place of worship associated with Abraham's calling on the Lord."),
         genesis(46, 10, "Exodus", 6, 15, "The descendants of Simeon are preserved in the genealogy of Israel's tribes."),
         genesis(46, 16, "Numbers", 26, 15, "Gad's descendants are later counted among Israel's clans in the wilderness."),
@@ -641,7 +705,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         exodus(6, 14, "Genesis", 46, 9, "Reuben's descendants in the Exodus genealogy continue the family list that entered Egypt with Jacob."),
         exodus(6, 15, "1 Chronicles", 4, 24, "Chronicles preserves the tribal line of Simeon named in the Exodus genealogy."),
         exodus(6, 15, "Genesis", 46, 10, "Simeon's sons here are the same family group listed among those who came to Egypt."),
-        exodus(6, 16, "Numbers", 3, 17, "Numbers repeats Levi's three sons as the divisions from which the Levite clans descend."),
+        exodus(6, 16, "Numbers", 3, 17, "Numbers repeats Levi's three sons as the divisions from which the Levite clans descend.")
+    ]
+
+    private nonisolated static let entriesPart7: [Entry] = [
         exodus(6, 16, "Genesis", 46, 11, "Levi's line in Exodus continues the family list of Jacob's household in Egypt."),
         exodus(6, 17, "1 Chronicles", 6, 17, "Chronicles preserves the Gershonite line named in this Levite genealogy."),
         exodus(6, 18, "1 Chronicles", 6, 18, "Chronicles repeats the Kohathite family line from which Moses and Aaron come."),
@@ -691,7 +758,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         exodus(16, 15, "John", 6, 31, "The crowd invokes the manna in the wilderness when asking Jesus for a sign like Moses' bread."),
         exodus(17, 6, "1 Corinthians", 10, 4, "Paul identifies the wilderness rock that supplied Israel with the sustaining presence of Christ."),
         exodus(17, 6, "Exodus", 3, 1, "The water comes from Horeb, the mountain region where Moses first received his call."),
-        exodus(17, 7, "Psalms", 81, 7, "The psalm recalls God's answer at Meribah and Israel's testing in the wilderness."),
+        exodus(17, 7, "Psalms", 81, 7, "The psalm recalls God's answer at Meribah and Israel's testing in the wilderness.")
+    ]
+
+    private nonisolated static let entriesPart8: [Entry] = [
         exodus(17, 7, "Numbers", 20, 13, "Numbers gives the later water-crisis its Meribah name, recalling Israel's quarrel with the Lord."),
         exodus(17, 7, "Deuteronomy", 9, 22, "Moses later names Massah among Israel's wilderness rebellions against the Lord."),
         exodus(17, 8, "Deuteronomy", 25, 17, "Moses commands Israel to remember Amalek's attack and its later judgment."),
@@ -741,7 +811,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         exodus(24, 10, "Ezekiel", 1, 26, "Ezekiel's throne vision likewise uses sapphire imagery to describe God's heavenly presence."),
         exodus(24, 14, "Exodus", 17, 12, "Aaron and Hur, who held up Moses' hands in battle, are entrusted with leadership during Moses' ascent."),
         exodus(25, 40, "Hebrews", 8, 5, "Hebrews cites the mountain pattern to explain the tabernacle as a copy serving the heavenly reality."),
-        exodus(26, 1, "Exodus", 36, 8, "The craftsmen make the tabernacle curtains according to these prescribed materials and dimensions."),
+        exodus(26, 1, "Exodus", 36, 8, "The craftsmen make the tabernacle curtains according to these prescribed materials and dimensions.")
+    ]
+
+    private nonisolated static let entriesPart9: [Entry] = [
         exodus(26, 1, "Exodus", 35, 6, "The congregation brings the blue, purple, scarlet, linen, and goat hair required for the curtains."),
         exodus(26, 1, "Exodus", 25, 4, "The materials for the curtains are among the offerings first requested for the sanctuary."),
         exodus(26, 4, "Exodus", 36, 11, "The makers form the blue loops on the curtain edges exactly as instructed."),
@@ -791,7 +864,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         exodus(30, 3, "Exodus", 25, 11, "Both holy furnishings are overlaid with pure gold and given a gold molding."),
         exodus(30, 5, "Exodus", 25, 13, "The poles for the incense altar use the same acacia-and-gold construction as the table's poles."),
         exodus(30, 13, "Exodus", 38, 26, "The census half-shekel is counted in the silver collected from Israel."),
-        exodus(30, 15, "Leviticus", 17, 11, "Both laws explain atonement through God's appointed life-for-life provision, here a ransom payment and there blood."),
+        exodus(30, 15, "Leviticus", 17, 11, "Both laws explain atonement through God's appointed life-for-life provision, here a ransom payment and there blood.")
+    ]
+
+    private nonisolated static let entriesPart10: [Entry] = [
         exodus(30, 29, "Exodus", 29, 37, "The altar's consecration makes it most holy, as the ordination ritual declares."),
         exodus(31, 2, "Exodus", 36, 1, "Bezalel's divine appointment is fulfilled as he and the skilled workers begin sanctuary construction."),
         exodus(31, 2, "Exodus", 35, 30, "Moses announces Bezalel's calling to the people before the work begins."),
@@ -841,7 +917,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         exodus(39, 2, "Exodus", 28, 6, "The ephod's materials and craftsmanship follow the priestly-garment instructions."),
         exodus(39, 5, "Exodus", 28, 8, "The ephod's skillfully woven band is made from the same required materials."),
         exodus(39, 7, "Exodus", 28, 12, "The engraved onyx stones serve as the memorial of Israel's tribes on Aaron's shoulders."),
-        exodus(39, 11, "Exodus", 28, 18, "The breastpiece's second row follows the specified order of gemstones."),
+        exodus(39, 11, "Exodus", 28, 18, "The breastpiece's second row follows the specified order of gemstones.")
+    ]
+
+    private nonisolated static let entriesPart11: [Entry] = [
         exodus(39, 15, "Exodus", 28, 14, "The gold chains for the breastpiece are made as commanded."),
         exodus(39, 22, "Exodus", 28, 31, "The all-blue robe is woven according to the priestly-garment design."),
         exodus(39, 24, "Exodus", 28, 33, "Pomegranates and bells are placed around the robe's hem as instructed."),
@@ -891,7 +970,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         leviticus(8, 21, "Exodus", 29, 18, "The whole ram is burned as the pleasing ordination offering commanded for Aaron."),
         leviticus(8, 25, "Exodus", 29, 22, "Moses takes the exact fat portions and right thigh prescribed from the ordination ram."),
         leviticus(8, 26, "Exodus", 29, 23, "The unleavened bread placed on the ram follows the ordination offering instructions."),
-        leviticus(8, 30, "Exodus", 29, 21, "Moses sprinkles Aaron, his sons, and their garments with oil and blood as commanded."),
+        leviticus(8, 30, "Exodus", 29, 21, "Moses sprinkles Aaron, his sons, and their garments with oil and blood as commanded.")
+    ]
+
+    private nonisolated static let entriesPart12: [Entry] = [
         leviticus(9, 14, "Leviticus", 8, 21, "Aaron washes the entrails and legs before burning the whole offering, as Moses did at ordination."),
         leviticus(9, 21, "Leviticus", 7, 30, "Aaron waves the breast and thigh, the portions assigned to priests from peace offerings."),
         leviticus(10, 1, "Numbers", 26, 61, "Numbers recalls Nadab and Abihu's death for bringing unauthorized fire before the Lord."),
@@ -941,7 +1023,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         numbers(2, 3, "Ruth", 4, 20, "Nahshon's place as Judah's leader connects the wilderness camp with the Davidic genealogy."),
         numbers(2, 3, "1 Chronicles", 2, 10, "Chronicles preserves Nahshon in Judah's ancestral line."),
         numbers(2, 3, "Numbers", 10, 14, "Judah's first camp position becomes its first place in the marching order."),
-        numbers(2, 4, "Numbers", 26, 22, "The census later records Judah's tribal clans, including Nahshon's line."),
+        numbers(2, 4, "Numbers", 26, 22, "The census later records Judah's tribal clans, including Nahshon's line.")
+    ]
+
+    private nonisolated static let entriesPart13: [Entry] = [
         numbers(2, 4, "Numbers", 1, 27, "Nahshon leads the same counted tribe of Judah."),
         numbers(2, 16, "Numbers", 10, 18, "Reuben's camp moves second, as the marching order later specifies."),
         numbers(2, 18, "Numbers", 10, 22, "Ephraim's camp moves third in the wilderness procession."),
@@ -991,7 +1076,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         numbers(13, 22, "Psalms", 78, 43, "The Psalm recalls God's signs in Egypt as the background for Israel's later unbelief."),
         numbers(13, 22, "Psalms", 78, 12, "The Psalm identifies Zoan as the place where God performed wonders before Israel's ancestors."),
         numbers(13, 27, "Deuteronomy", 31, 20, "Moses later warns that the land's abundance could lead Israel away from God."),
-        numbers(13, 30, "Numbers", 14, 24, "Caleb's confidence anticipates God's promise that he will enter the land."),
+        numbers(13, 30, "Numbers", 14, 24, "Caleb's confidence anticipates God's promise that he will enter the land.")
+    ]
+
+    private nonisolated static let entriesPart14: [Entry] = [
         numbers(13, 30, "Numbers", 14, 6, "Caleb and Joshua together urge Israel to trust God's promise despite the spies' report."),
         numbers(13, 30, "Joshua", 14, 6, "Caleb later recalls his faithful report when receiving Hebron as his inheritance."),
         numbers(13, 33, "Deuteronomy", 9, 2, "Moses recalls the Anakim's strength when warning Israel against self-confidence."),
@@ -1041,7 +1129,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         numbers(24, 18, "Amos", 9, 12, "Amos recalls Edom within the promise of Israel's future restoration."),
         numbers(24, 20, "Exodus", 17, 14, "Balaam's oracle echoes God's declared judgment that Amalek will be blotted out."),
         numbers(25, 3, "Psalms", 106, 28, "The Psalm recalls Israel's attachment to Baal-peor and the resulting judgment."),
-        numbers(25, 3, "Hosea", 9, 10, "Hosea uses Baal-peor as the turning point when Israel devoted itself to shameful worship."),
+        numbers(25, 3, "Hosea", 9, 10, "Hosea uses Baal-peor as the turning point when Israel devoted itself to shameful worship.")
+    ]
+
+    private nonisolated static let entriesPart15: [Entry] = [
         numbers(25, 8, "2 Samuel", 24, 25, "Phinehas' atonement that stops the plague anticipates David's sacrifice ending a later plague."),
         numbers(25, 9, "Numbers", 16, 49, "Both rebellions bring a plague whose death toll is recorded."),
         numbers(25, 15, "Numbers", 31, 8, "Midian's leaders include the father of the woman killed in the Baal-peor judgment."),
@@ -1091,7 +1182,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         numbers(33, 36, "Numbers", 20, 1, "The station at Kadesh in the wilderness of Zin is where Miriam dies and the waters of Meribah follow."),
         numbers(33, 43, "Numbers", 21, 10, "The itinerary returns to Oboth, the camp named immediately after Israel's detour around Edom."),
         numbers(33, 48, "Numbers", 22, 1, "Israel's final camp in the plains of Moab is the setting from which Balak sees them and summons Balaam."),
-        numbers(34, 2, "Genesis", 17, 8, "The boundary allocation gives concrete shape to God's promise to give Abraham and his descendants the land of Canaan."),
+        numbers(34, 2, "Genesis", 17, 8, "The boundary allocation gives concrete shape to God's promise to give Abraham and his descendants the land of Canaan.")
+    ]
+
+    private nonisolated static let entriesPart16: [Entry] = [
         numbers(34, 2, "Psalms", 105, 11, "The psalm recalls Canaan as the land God assigned to Israel, echoing the promise this boundary chapter prepares to distribute."),
         numbers(34, 4, "Numbers", 32, 8, "Kadesh-barnea, named on the southern boundary, is the place from which Moses sent the faithless generation to spy out the land."),
         numbers(34, 5, "Joshua", 15, 4, "Joshua repeats this southern boundary description when defining Judah's allotted territory."),
@@ -1141,7 +1235,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         joshua(1, 5, "Deuteronomy", 7, 24, "God's promise that no enemy will withstand Joshua continues Moses' declaration that Israel would defeat the nations in Canaan."),
         joshua(1, 7, "Deuteronomy", 28, 14, "Joshua's charge not to turn aside from the law echoes the covenant demand to avoid departing from God's commands."),
         joshua(1, 8, "Isaiah", 59, 21, "Isaiah's promise that God's words will remain in his people's mouths echoes Joshua's command to keep the book of the law continually on his lips."),
-        joshua(1, 9, "Deuteronomy", 31, 7, "Moses' public charge to Joshua to be strong and courageous is repeated by God as Joshua begins the mission."),
+        joshua(1, 9, "Deuteronomy", 31, 7, "Moses' public charge to Joshua to be strong and courageous is repeated by God as Joshua begins the mission.")
+    ]
+
+    private nonisolated static let entriesPart17: [Entry] = [
         joshua(2, 1, "Hebrews", 11, 31, "Hebrews remembers Rahab's welcome of the spies as faith that distinguished her from Jericho's disobedient inhabitants."),
         joshua(2, 1, "James", 2, 25, "James points to Rahab's sheltering and sending out the spies as the action that demonstrated her faith."),
         joshua(2, 10, "Numbers", 21, 21, "Rahab reports that Jericho had heard of Israel's victories over Sihon and Og, the Amorite kings defeated east of the Jordan."),
@@ -1191,7 +1288,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         joshua(12, 12, "Joshua", 10, 33, "Gezer's king is named in the conquest list after his failed attempt to aid Lachish in Joshua 10."),
         joshua(12, 16, "Joshua", 10, 28, "Makkedah's king is included in the victory list after Joshua's capture and judgment of him in the southern campaign."),
         joshua(12, 19, "Joshua", 11, 1, "Jabin of Hazor, who gathered the northern coalition, is recorded here among the kings Joshua defeated."),
-        joshua(13, 5, "Joshua", 12, 7, "The remaining northern coast near Baal-gad is measured against the Baal-gad boundary that marked the land Joshua had conquered."),
+        joshua(13, 5, "Joshua", 12, 7, "The remaining northern coast near Baal-gad is measured against the Baal-gad boundary that marked the land Joshua had conquered.")
+    ]
+
+    private nonisolated static let entriesPart18: [Entry] = [
         joshua(13, 6, "Joshua", 11, 8, "Israel pursued the northern coalition to Great Sidon, while God later promises to drive out the Sidonian territory still remaining to be possessed."),
         joshua(13, 12, "Joshua", 12, 4, "The allotment identifies Bashan as Og's former kingdom, matching the conquest list's record of Og's defeat."),
         joshua(13, 16, "Joshua", 12, 2, "Reuben's east-Jordan inheritance is drawn from the territory of Sihon whose former rule Joshua records."),
@@ -1241,7 +1341,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         joshua(20, 7, "1 Chronicles", 6, 76, "Kedesh in Galilee is named both as a refuge city in Naphtali and as a Levitical town in the genealogical record."),
         joshua(20, 7, "Joshua", 21, 32, "Kedesh in Galilee serves both as Naphtali's refuge city and as one of the towns assigned to the Gershonite Levites."),
         joshua(21, 6, "1 Chronicles", 6, 62, "Chronicles' list of Gershonite Levitical towns corresponds to the cities assigned to Gershon's clans in Joshua."),
-        joshua(21, 11, "1 Chronicles", 6, 55, "Hebron and its surrounding lands are listed in Chronicles as Caleb's possession, matching the Levitical-city allocation in Joshua."),
+        joshua(21, 11, "1 Chronicles", 6, 55, "Hebron and its surrounding lands are listed in Chronicles as Caleb's possession, matching the Levitical-city allocation in Joshua.")
+    ]
+
+    private nonisolated static let entriesPart19: [Entry] = [
         joshua(21, 21, "Joshua", 20, 7, "Shechem is both a refuge city for the manslayer and a Levitical city assigned to Kohath's descendants."),
         joshua(21, 34, "1 Chronicles", 6, 77, "Chronicles preserves Jokneam and Rimmon among Merari's towns, corresponding to Joshua's Levitical allocation."),
         joshua(21, 36, "Joshua", 20, 8, "Bezer is named among Merari's Levitical cities and among the east-Jordan cities of refuge."),
@@ -1291,7 +1394,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         judges(4, 11, "Judges", 1, 16, "Heber's clan belongs to the Kenites who had settled in Judah's wilderness after entering Canaan with Israel."),
         judges(5, 4, "Deuteronomy", 33, 2, "Deborah's description of the Lord coming from Seir and Sinai echoes Moses' portrayal of the Lord's appearing from Sinai to bless Israel."),
         judges(5, 5, "Exodus", 19, 18, "The trembling mountains in Deborah's song recall Sinai shaking when the Lord descended in fire."),
-        judges(5, 6, "Judges", 3, 31, "The song places its account in Shamgar's days, linking the road insecurity to the earlier judge named in the narrative."),
+        judges(5, 6, "Judges", 3, 31, "The song places its account in Shamgar's days, linking the road insecurity to the earlier judge named in the narrative.")
+    ]
+
+    private nonisolated static let entriesPart20: [Entry] = [
         judges(5, 18, "Judges", 4, 10, "The song celebrates the costly courage of the two tribes Barak summoned for the battle against Sisera."),
         judges(5, 19, "Judges", 1, 27, "The battle at Taanach occurs in territory where Manasseh had failed to remove Canaanite inhabitants, exposing the unfinished conquest behind the conflict."),
         judges(5, 20, "Judges", 4, 15, "The stars fighting against Sisera poetically interprets the rout the narrative attributes to the Lord's defeat of his army."),
@@ -1341,7 +1447,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         judges(21, 10, "Deuteronomy", 13, 15, "The assembly's destruction of Jabesh-gilead applies the severe covenant judgment prescribed for a community judged to have committed grave unfaithfulness."),
         judges(21, 13, "Judges", 20, 47, "Israel's offer of peace addresses the six hundred Benjaminites who escaped to the rock of Rimmon after the civil war."),
         judges(21, 25, "Deuteronomy", 12, 8, "The book's closing diagnosis repeats Moses' warning against each person doing what seems right in worship."),
-        judges(21, 25, "Judges", 17, 6, "The final refrain repeats the diagnosis that introduced Micah's private shrine and frames the closing stories as its consequence."),
+        judges(21, 25, "Judges", 17, 6, "The final refrain repeats the diagnosis that introduced Micah's private shrine and frames the closing stories as its consequence.")
+    ]
+
+    private nonisolated static let entriesPart21: [Entry] = [
         ruth(1, 4, "Matthew", 1, 5, "Matthew names Ruth and Boaz in the genealogy of Jesus, carrying this Moabite widow's family into the Davidic and messianic line."),
         ruth(1, 8, "Ruth", 2, 20, "Naomi's prayer that Ruth's new family show covenant kindness is answered when she recognizes the Lord's kindness through Boaz."),
         ruth(2, 1, "Ruth", 4, 21, "Boaz, introduced as Naomi's capable relative, is later named in the family line that leads through Obed to David."),
@@ -1391,7 +1500,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         oneSamuel(9, 15, "1 Samuel", 15, 1, "Samuel's private anointing of Saul establishes the royal commission he later invokes when ordering Saul to obey the Lord against Amalek."),
         oneSamuel(10, 1, "1 Samuel", 16, 13, "Samuel's anointing of Saul is later paralleled and superseded by his anointing of David as the next king."),
         oneSamuel(10, 8, "1 Samuel", 11, 14, "Samuel's instruction to wait at Gilgal leads into the public renewal of Saul's kingship there after the Ammonite victory."),
-        oneSamuel(10, 8, "1 Samuel", 13, 4, "Saul's failure to wait for Samuel at Gilgal breaks the instruction Samuel gave at his anointing."),
+        oneSamuel(10, 8, "1 Samuel", 13, 4, "Saul's failure to wait for Samuel at Gilgal breaks the instruction Samuel gave at his anointing.")
+    ]
+
+    private nonisolated static let entriesPart22: [Entry] = [
         oneSamuel(10, 23, "1 Samuel", 9, 2, "The public selection displays the exceptional height first used to describe Saul when Samuel meets him."),
         oneSamuel(10, 26, "1 Samuel", 11, 4, "The men who accompany Saul at Gibeah provide the setting to which the Jabesh-gilead messengers bring their appeal."),
         oneSamuel(11, 1, "1 Samuel", 12, 12, "Samuel later identifies Nahash's attack on Jabesh-gilead as the crisis that made Israel insist on a king."),
@@ -1441,7 +1553,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         oneSamuel(17, 4, "Joshua", 11, 22, "Goliath of Gath belongs to the Anakim remnant Joshua says remained in the Philistine cities."),
         oneSamuel(17, 7, "2 Samuel", 21, 19, "The later battle tradition about a giant from Gath is connected with the same Philistine giant warfare represented by Goliath."),
         oneSamuel(17, 12, "1 Samuel", 16, 10, "David is the youngest son Jesse brought from the flock after Samuel passed over his older brothers."),
-        oneSamuel(17, 12, "1 Samuel", 16, 18, "David's reputation as Jesse's son and a capable young man explains why he has already entered Saul's court."),
+        oneSamuel(17, 12, "1 Samuel", 16, 18, "David's reputation as Jesse's son and a capable young man explains why he has already entered Saul's court.")
+    ]
+
+    private nonisolated static let entriesPart23: [Entry] = [
         oneSamuel(17, 51, "1 Samuel", 21, 9, "Goliath's sword, taken after David's victory, is later kept at Nob and given back to David."),
         oneSamuel(18, 1, "1 Samuel", 20, 17, "Jonathan's love for David is reaffirmed when he makes David swear again by their friendship."),
         oneSamuel(18, 1, "2 Samuel", 1, 26, "David's lament after Jonathan's death remembers the extraordinary love that began with their covenant."),
@@ -1491,7 +1606,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoSamuel(1, 21, "1 Samuel", 31, 1, "David's lament responds to the battle on Mount Gilboa where Saul and Jonathan fell."),
         twoSamuel(1, 22, "1 Samuel", 18, 4, "Jonathan's royal robe and weapons given to David begin the covenant loyalty David now mourns."),
         twoSamuel(1, 26, "1 Samuel", 20, 17, "David remembers the love Jonathan reaffirmed when he made David swear by their friendship."),
-        twoSamuel(1, 26, "1 Samuel", 18, 1, "David's lament recalls the love and covenant that joined Jonathan's soul to his after Goliath's defeat."),
+        twoSamuel(1, 26, "1 Samuel", 18, 1, "David's lament recalls the love and covenant that joined Jonathan's soul to his after Goliath's defeat.")
+    ]
+
+    private nonisolated static let entriesPart24: [Entry] = [
         twoSamuel(1, 26, "1 Samuel", 23, 16, "Jonathan's wilderness visit strengthened David in God and renewed the friendship David now grieves."),
         twoSamuel(2, 1, "1 Samuel", 30, 31, "David's earlier gift to Hebron anticipates his move there when Judah anoints him king."),
         twoSamuel(2, 2, "1 Samuel", 25, 42, "Abigail and Ahinoam, whom David married while fleeing Saul, accompany him to Hebron."),
@@ -1541,7 +1659,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoSamuel(14, 1, "2 Samuel", 13, 39, "Joab's plan to bring Absalom home follows David's growing desire to see the son who had fled to Geshur."),
         twoSamuel(14, 27, "2 Samuel", 18, 18, "Absalom's daughter contrasts with the memorial pillar he raises because he says he has no son to preserve his name."),
         twoSamuel(15, 1, "1 Kings", 1, 5, "Adonijah later imitates Absalom's royal display of chariots, horses, and fifty runners while seeking the throne."),
-        twoSamuel(15, 18, "2 Samuel", 8, 18, "Ittai and the foreign guards accompany David in the same royal household that includes the Cherethites and Pelethites."),
+        twoSamuel(15, 18, "2 Samuel", 8, 18, "Ittai and the foreign guards accompany David in the same royal household that includes the Cherethites and Pelethites.")
+    ]
+
+    private nonisolated static let entriesPart25: [Entry] = [
         twoSamuel(15, 19, "2 Samuel", 18, 2, "Ittai the Gittite remains loyal to David and later commands a third of David's army against Absalom."),
         twoSamuel(15, 24, "2 Samuel", 8, 17, "Zadok's priestly role during David's flight continues the priestly administration listed among David's officials."),
         twoSamuel(15, 27, "2 Samuel", 17, 17, "Hushai's warning reaches David through Jonathan and Ahimaaz, the messengers placed near En-rogel."),
@@ -1591,7 +1712,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoSamuel(22, 2, "Psalms", 71, 3, "Psalm 71 reuses David's prayer for God to be a rock of refuge and fortress."),
         twoSamuel(22, 7, "Psalms", 18, 6, "Psalm 18 repeats David's cry to the Lord from distress and God's answer from his temple."),
         twoSamuel(22, 8, "Psalms", 18, 7, "Psalm 18 repeats the earth's trembling at the Lord's anger in David's song."),
-        twoSamuel(22, 11, "Psalms", 104, 3, "Both poems portray the Lord riding upon the wings of the wind in majestic power."),
+        twoSamuel(22, 11, "Psalms", 104, 3, "Both poems portray the Lord riding upon the wings of the wind in majestic power.")
+    ]
+
+    private nonisolated static let entriesPart26: [Entry] = [
         twoSamuel(22, 11, "Psalms", 18, 10, "Psalm 18 repeats David's vision of the Lord riding on a cherub."),
         twoSamuel(22, 12, "Psalms", 18, 11, "Psalm 18 repeats the darkness, clouds, and waters surrounding the Lord's appearing."),
         twoSamuel(22, 27, "Psalms", 18, 26, "Psalm 18 repeats the contrast between God's purity toward the pure and opposition to the crooked."),
@@ -1641,7 +1765,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         matthew(6, 25, "Luke", 12, 22, "Luke's parallel develops Jesus' command not to be anxious about food and clothing."),
         matthew(6, 27, "Luke", 12, 25, "Luke repeats Jesus' question about whether anxiety can add to one's life."),
         matthew(6, 28, "Luke", 12, 27, "Luke repeats Jesus' call to consider the lilies rather than worry about clothing."),
-        matthew(6, 30, "Luke", 12, 28, "Luke repeats Jesus' contrast between grass's brief life and God's care for his people."),
+        matthew(6, 30, "Luke", 12, 28, "Luke repeats Jesus' contrast between grass's brief life and God's care for his people.")
+    ]
+
+    private nonisolated static let entriesPart27: [Entry] = [
         matthew(6, 30, "Matthew", 8, 26, "Jesus' rebuke of the disciples' little faith applies the anxiety diagnosis from the Sermon on the Mount to the storm."),
         matthew(6, 30, "Matthew", 16, 8, "Jesus later calls the disciples little-faith for worrying about bread despite his provision."),
         matthew(7, 2, "Mark", 4, 24, "Mark preserves Jesus' warning that the measure used in judging will be measured back."),
@@ -1691,7 +1818,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         oneKings(7, 15, "Jeremiah", 52, 21, "Jeremiah records the later Babylonian dismantling of the bronze pillars Solomon commissioned for the temple."),
         oneKings(7, 21, "2 Chronicles", 3, 17, "Chronicles preserves the placement and names of the two temple pillars, Jachin and Boaz."),
         oneKings(7, 23, "2 Chronicles", 4, 2, "Chronicles gives the parallel description of the great bronze sea made for the temple court."),
-        oneKings(7, 24, "2 Chronicles", 4, 3, "Chronicles repeats the decorative oxen that encircled the bronze sea."),
+        oneKings(7, 24, "2 Chronicles", 4, 3, "Chronicles repeats the decorative oxen that encircled the bronze sea.")
+    ]
+
+    private nonisolated static let entriesPart28: [Entry] = [
         oneKings(7, 25, "2 Chronicles", 4, 4, "Chronicles preserves the sea resting on twelve oxen, three facing each direction."),
         oneKings(7, 26, "2 Chronicles", 4, 5, "Chronicles repeats the sea's rim, capacity, and function as a water basin."),
         oneKings(7, 40, "2 Chronicles", 4, 11, "Chronicles summarizes Hiram's completion of the bronze furnishings for Solomon's temple."),
@@ -1741,7 +1871,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         oneKings(14, 23, "Deuteronomy", 12, 2, "Judah's high places and sacred sites violate Moses' command to destroy Canaanite worship places."),
         oneKings(14, 23, "2 Kings", 17, 9, "Israel later repeats Judah's high-place practice throughout its towns, extending the unfaithfulness described here."),
         oneKings(14, 31, "2 Chronicles", 12, 16, "Chronicles repeats Rehoboam's burial with his ancestors and Abijah's succession."),
-        oneKings(15, 5, "2 Samuel", 11, 15, "David's record of faithfulness except for Uriah recalls the order that placed Uriah where he would be killed in battle."),
+        oneKings(15, 5, "2 Samuel", 11, 15, "David's record of faithfulness except for Uriah recalls the order that placed Uriah where he would be killed in battle.")
+    ]
+
+    private nonisolated static let entriesPart29: [Entry] = [
         oneKings(15, 6, "1 Kings", 14, 30, "The war between Asa and Baasha continues the rivalry between Judah and Israel already noted under Rehoboam."),
         oneKings(15, 11, "2 Chronicles", 14, 2, "Chronicles gives the parallel assessment that Asa did what was good and right before the Lord."),
         oneKings(15, 14, "1 Kings", 22, 43, "Jehoshaphat follows Asa's faithful pattern while, like Asa, leaving the high places in place."),
@@ -1791,7 +1924,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoKings(2, 1, "1 Kings", 19, 16, "Elijah's departure begins the transfer to Elisha, whom God had told him to anoint as his successor."),
         twoKings(2, 8, "1 Kings", 19, 19, "Elisha receives Elijah's mantle after the earlier call in which Elijah cast his cloak over him."),
         twoKings(2, 12, "2 Kings", 13, 14, "Joash's cry over dying Elisha repeats Elisha's cry when Elijah was taken, honoring Elisha as Israel's true defense."),
-        twoKings(3, 1, "2 Kings", 1, 17, "Jehoram succeeds Ahaziah because Ahaziah dies without a son."),
+        twoKings(3, 1, "2 Kings", 1, 17, "Jehoram succeeds Ahaziah because Ahaziah dies without a son.")
+    ]
+
+    private nonisolated static let entriesPart30: [Entry] = [
         twoKings(3, 1, "1 Kings", 22, 51, "Jehoram follows his father Ahab's brief successor Ahaziah in Israel's royal line."),
         twoKings(3, 2, "2 Kings", 10, 18, "Jehoram removes Baal's pillar, a partial reform completed later when Jehu destroys Baal worship from Israel."),
         twoKings(3, 3, "1 Kings", 14, 16, "Jehoram continues the sin of Jeroboam that the narrator identifies as the cause of Israel's judgment."),
@@ -1841,7 +1977,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoKings(13, 17, "1 Kings", 20, 26, "Elisha's promise of victory at Aphek returns Israel to the battlefield where Ahab had defeated Ben-hadad."),
         twoKings(13, 20, "2 Kings", 24, 2, "Moabite raids continue as one of the foreign pressures the Lord later sends against Judah."),
         twoKings(13, 22, "2 Kings", 8, 12, "Hazael's oppression of Israel realizes Elisha's prediction of the devastation he would inflict."),
-        twoKings(13, 23, "Exodus", 2, 24, "The Lord's mercy toward Israel under Hazael rests on the covenant with Abraham, Isaac, and Jacob, as in the Exodus deliverance."),
+        twoKings(13, 23, "Exodus", 2, 24, "The Lord's mercy toward Israel under Hazael rests on the covenant with Abraham, Isaac, and Jacob, as in the Exodus deliverance.")
+    ]
+
+    private nonisolated static let entriesPart31: [Entry] = [
         twoKings(14, 6, "Deuteronomy", 24, 16, "Amaziah follows Moses' law by punishing his father's assassins without putting their children to death."),
         twoKings(14, 7, "2 Samuel", 8, 13, "Amaziah's victory in the Valley of Salt revisits the Edomite battlefield where David had won renown."),
         twoKings(14, 7, "1 Chronicles", 18, 12, "Chronicles preserves the earlier Edomite victory in the Valley of Salt that frames Amaziah's later campaign."),
@@ -1891,7 +2030,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoKings(23, 16, "1 Kings", 13, 2, "Josiah's destruction of Bethel's altar and its priests fulfills the man of God's prophecy."),
         twoKings(23, 21, "2 Chronicles", 35, 1, "Chronicles preserves Josiah's Passover, including the larger celebration and its detailed provisions."),
         twoKings(24, 1, "Daniel", 1, 1, "Daniel begins with Nebuchadnezzar's first attack on Jerusalem and the beginning of exile under Jehoiakim."),
-        twoKings(24, 1, "Jeremiah", 25, 1, "Jeremiah dates the fourth year of Jehoiakim to Nebuchadnezzar's first year, the setting for Babylon's rise over Judah."),
+        twoKings(24, 1, "Jeremiah", 25, 1, "Jeremiah dates the fourth year of Jehoiakim to Nebuchadnezzar's first year, the setting for Babylon's rise over Judah.")
+    ]
+
+    private nonisolated static let entriesPart32: [Entry] = [
         twoKings(24, 2, "Jeremiah", 35, 11, "Babylonian and allied raids drive the Rechabites into Jerusalem, the foreign pressure that falls on Judah in Jehoiakim's reign."),
         twoKings(24, 7, "Jeremiah", 46, 2, "Nebuchadnezzar's defeat of Pharaoh at Carchemish explains Egypt's loss of control over Judah's former territory."),
         twoKings(24, 8, "2 Chronicles", 36, 9, "Chronicles gives the parallel accession notice for Jehoiachin."),
@@ -1941,7 +2083,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         oneChronicles(5, 17, "2 Kings", 15, 32, "The Reubenite genealogical registration is dated to Jotham's reign in Judah."),
         oneChronicles(5, 17, "2 Kings", 14, 28, "The same registration is dated to Jeroboam II's reign in Israel, synchronizing the tribal record with the royal history."),
         oneChronicles(5, 17, "2 Kings", 14, 16, "Jeroboam II's accession supplies the northern-regnal setting for the Reubenite record."),
-        oneChronicles(5, 19, "1 Chronicles", 1, 31, "The Hagarites opposed by Reuben's tribes belong to the Arabian peoples associated with Hagar's descendants."),
+        oneChronicles(5, 19, "1 Chronicles", 1, 31, "The Hagarites opposed by Reuben's tribes belong to the Arabian peoples associated with Hagar's descendants.")
+    ]
+
+    private nonisolated static let entriesPart33: [Entry] = [
         oneChronicles(5, 26, "2 Kings", 15, 19, "Pul's Assyrian intervention begins the northern kingdom's submission to the power that later deports the eastern tribes."),
         oneChronicles(5, 26, "2 Kings", 17, 6, "The Transjordan tribes' deportation belongs to the Assyrian exile that later removes the rest of Israel."),
         oneChronicles(5, 26, "2 Kings", 15, 29, "Tiglath-pileser's capture of northern cities anticipates the deportation of Reuben, Gad, and half-Manasseh."),
@@ -1991,7 +2136,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         oneChronicles(16, 34, "Ezra", 3, 11, "The returned exiles sing David's enduring-love refrain as the Second Temple foundation is laid."),
         oneChronicles(16, 39, "1 Kings", 3, 4, "Solomon sacrifices at Gibeon, where Zadok continues the tabernacle service David had assigned."),
         oneChronicles(17, 1, "2 Samuel", 7, 1, "Samuel preserves Nathan's answer to David's desire to build a house and God's covenant promise to David."),
-        oneChronicles(18, 2, "2 Samuel", 8, 2, "Samuel gives the parallel account of David's defeat and subjugation of Moab."),
+        oneChronicles(18, 2, "2 Samuel", 8, 2, "Samuel gives the parallel account of David's defeat and subjugation of Moab.")
+    ]
+
+    private nonisolated static let entriesPart34: [Entry] = [
         oneChronicles(18, 4, "2 Samuel", 8, 4, "Samuel preserves David's capture of Hadadezer's chariots, horsemen, and foot soldiers."),
         oneChronicles(18, 9, "2 Samuel", 8, 9, "Samuel recounts Toi's response to David's defeat of his enemy Hadadezer."),
         oneChronicles(18, 12, "2 Chronicles", 25, 11, "Amaziah's later victory in the Valley of Salt revisits the Edomite battlefield where David's men won renown."),
@@ -2041,7 +2189,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoChronicles(8, 10, "1 Kings", 9, 23, "Kings gives the parallel number and role of Solomon's chief officers overseeing the workforce."),
         twoChronicles(8, 13, "Deuteronomy", 16, 16, "Solomon's three annual festivals follow Moses' command for all Israelite males to appear before the Lord at these appointed feasts."),
         twoChronicles(9, 1, "1 Kings", 10, 1, "Kings recounts the queen of Sheba's visit, her hard questions, and her response to Solomon's wisdom."),
-        twoChronicles(10, 1, "1 Kings", 12, 1, "Kings recounts Rehoboam's harsh answer at Shechem and the division of the kingdom."),
+        twoChronicles(10, 1, "1 Kings", 12, 1, "Kings recounts Rehoboam's harsh answer at Shechem and the division of the kingdom.")
+    ]
+
+    private nonisolated static let entriesPart35: [Entry] = [
         twoChronicles(11, 1, "1 Kings", 12, 21, "Kings records Rehoboam's mustering of Judah and Benjamin before God stops the attack on the northern tribes."),
         twoChronicles(11, 2, "2 Chronicles", 12, 15, "Shemaiah, who restrains Rehoboam's attack, is later named among the prophetic sources for Rehoboam's reign."),
         twoChronicles(11, 17, "2 Chronicles", 12, 1, "Judah's early strengthening under Rehoboam gives way to his later abandonment of the Lord's law."),
@@ -2091,7 +2242,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         twoChronicles(28, 2, "2 Chronicles", 22, 3, "Ahaz follows Ahab's house in the same Baal worship and idolatrous pattern attributed to his ancestor's line."),
         twoChronicles(28, 3, "2 Chronicles", 33, 6, "Manasseh later repeats Ahaz's child sacrifice and occult practices."),
         twoChronicles(28, 3, "2 Chronicles", 33, 2, "Manasseh's evil continues the Canaanite abominations Ahaz had adopted."),
-        twoChronicles(28, 3, "2 Kings", 16, 3, "Kings gives the parallel account of Ahaz making his son pass through fire."),
+        twoChronicles(28, 3, "2 Kings", 16, 3, "Kings gives the parallel account of Ahaz making his son pass through fire.")
+    ]
+
+    private nonisolated static let entriesPart36: [Entry] = [
         twoChronicles(28, 4, "2 Kings", 16, 4, "Kings repeats Ahaz's worship at high places, hills, and under green trees."),
         twoChronicles(28, 4, "Deuteronomy", 12, 2, "Ahaz's high-place worship violates Moses' command to destroy Canaanite worship sites."),
         twoChronicles(28, 5, "Isaiah", 7, 1, "Isaiah's account of the Syro-Ephraimite crisis recounts the attack on Ahaz's Jerusalem."),
@@ -2141,7 +2295,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         ezra(3, 11, "Psalms", 107, 1, "Psalm 107 repeats the enduring-love refrain sung when the Second Temple foundation is laid."),
         ezra(4, 2, "2 Kings", 19, 37, "The settlers' appeal to Esarhaddon follows his succession after Sennacherib's assassination."),
         ezra(5, 1, "Haggai", 1, 1, "Haggai's prophecy to Zerubbabel and Jeshua restarts the temple work described here."),
-        ezra(5, 1, "Zechariah", 1, 1, "Zechariah's prophecy joins Haggai's ministry in encouraging the returned community to rebuild."),
+        ezra(5, 1, "Zechariah", 1, 1, "Zechariah's prophecy joins Haggai's ministry in encouraging the returned community to rebuild.")
+    ]
+
+    private nonisolated static let entriesPart37: [Entry] = [
         ezra(5, 2, "Ezra", 3, 2, "Zerubbabel and Jeshua resume the temple project they had begun by building the altar after the return."),
         ezra(5, 3, "Ezra", 6, 6, "The official inquiry that interrupts the rebuilding is answered by Darius's order to let the work proceed."),
         ezra(5, 6, "Ezra", 4, 11, "The governors' report continues the earlier adversarial correspondence sent to the Persian court."),
@@ -2191,7 +2348,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         nehemiah(9, 7, "Genesis", 11, 31, "God's call of Abram begins in Ur, from which Terah's family had set out toward Canaan."),
         nehemiah(9, 7, "Genesis", 17, 5, "Nehemiah's prayer recalls God's renaming of Abram as Abraham, father of many nations."),
         nehemiah(9, 13, "Exodus", 19, 11, "The giving of the law at Sinai follows God's command for Israel to prepare for his descent on the mountain."),
-        nehemiah(9, 17, "Joel", 2, 13, "The confession calls God gracious and merciful, slow to anger, and abounding in love, as Joel later does in calling Israel to return."),
+        nehemiah(9, 17, "Joel", 2, 13, "The confession calls God gracious and merciful, slow to anger, and abounding in love, as Joel later does in calling Israel to return.")
+    ]
+
+    private nonisolated static let entriesPart38: [Entry] = [
         nehemiah(9, 18, "Exodus", 32, 4, "Israel's golden-calf rebellion is the specific idolatry the Levites confess."),
         nehemiah(11, 21, "Nehemiah", 3, 26, "The temple servants who live in Ophel had repaired the wall near their neighborhood."),
         nehemiah(12, 38, "Nehemiah", 3, 11, "The dedication procession passes the Broad Wall, which had been repaired during the rebuilding."),
@@ -2241,7 +2401,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         esther(9, 10, "Esther", 5, 11, "Haman's ten sons, part of the family pride he boasted about, die in the judgment that overturns his house."),
         esther(9, 12, "Esther", 7, 2, "The king's renewed question after the Jews' victory echoes his offer at Esther's second banquet."),
         esther(9, 12, "Esther", 5, 6, "Esther's petition after the first day of defense develops the request she had delayed at her first banquet."),
-        esther(10, 2, "Esther", 8, 15, "Mordecai's greatness in the royal records grows from the authority and honor he receives after the Jews' deliverance."),
+        esther(10, 2, "Esther", 8, 15, "Mordecai's greatness in the royal records grows from the authority and honor he receives after the Jews' deliverance.")
+    ]
+
+    private nonisolated static let entriesPart39: [Entry] = [
         esther(10, 2, "Esther", 9, 4, "Mordecai's fame through the provinces reflects the growing power that led officials to assist the Jews."),
         job(1, 1, "James", 5, 11, "James points to Job's steadfast endurance and the Lord's compassionate outcome."),
         job(1, 1, "Ezekiel", 14, 14, "Ezekiel names Job with Noah and Daniel as an exemplar whose righteousness could save only himself."),
@@ -2291,7 +2454,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         psalms(1, 3, "Jeremiah", 17, 8, "Jeremiah adapts the psalm's water-fed tree image to describe the person who trusts the Lord."),
         psalms(2, 1, "Acts", 4, 25, "The Jerusalem church quotes the nations' rebellion in Psalm 2 as it interprets the opposition to Jesus and his followers."),
         psalms(2, 7, "Acts", 13, 33, "Paul cites God's declaration to the king as fulfilled in Jesus' resurrection and public vindication."),
-        psalms(2, 7, "Hebrews", 1, 5, "Hebrews quotes this royal declaration to distinguish the Son from the angels."),
+        psalms(2, 7, "Hebrews", 1, 5, "Hebrews quotes this royal declaration to distinguish the Son from the angels.")
+    ]
+
+    private nonisolated static let entriesPart40: [Entry] = [
         psalms(2, 7, "Hebrews", 5, 5, "Hebrews invokes God's address to the Son while explaining Christ's divinely appointed high priesthood."),
         psalms(2, 9, "Revelation", 2, 27, "Christ promises the victorious believer a share in his Psalm 2 authority to rule the nations with an iron rod."),
         psalms(3, 1, "2 Samuel", 16, 15, "The psalm's setting during Absalom's revolt is tied to the episode in which Absalom enters Jerusalem as David flees."),
@@ -2341,7 +2507,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         psalms(37, 28, "Proverbs", 2, 22, "Both passages contrast the Lord's preservation of the righteous with the cutting off of the wicked from the land."),
         psalms(37, 34, "Proverbs", 20, 22, "Both texts call the faithful to wait for the Lord rather than retaliate, trusting him to bring deliverance and justice."),
         psalms(38, 22, "Psalms", 40, 13, "Psalm 40 repeats the urgent plea for the Lord to hasten to help that closes Psalm 38's confession."),
-        psalms(38, 22, "Psalms", 70, 1, "Psalm 70 reuses Psalm 38's urgent appeal for God to hasten to the sufferer's help."),
+        psalms(38, 22, "Psalms", 70, 1, "Psalm 70 reuses Psalm 38's urgent appeal for God to hasten to the sufferer's help.")
+    ]
+
+    private nonisolated static let entriesPart41: [Entry] = [
         psalms(39, 1, "Psalms", 62, 1, "Both headings associate the psalm with Jeduthun, linking these prayers to the same named worship leader or musical tradition."),
         psalms(39, 1, "Psalms", 77, 1, "Both headings identify Jeduthun, connecting the psalms through the same named worship leader or musical tradition."),
         psalms(39, 1, "1 Chronicles", 16, 41, "The heading's Jeduthun is identified in Chronicles among the appointed leaders who gave thanks to the Lord in David's worship ministry."),
@@ -2366,31 +2535,17 @@ enum ChapterCrossReferenceEditorialCatalog {
         psalms(53, 6, "Psalms", 14, 7, "Psalm 53 repeats Psalm 14's longing for Israel's salvation to come from Zion and restore God's people."),
         psalms(56, 13, "Psalms", 116, 8, "Both psalms thank God for deliverance from death and express the resulting resolve to walk before the Lord among the living."),
         psalms(56, 13, "Job", 33, 30, "Elihu's description of rescue from the pit to walk in the light of life echoes the psalmist's praise for God's deliverance from death."),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        psalms(57, 1, "Psalms", 36, 7, "David's plea for refuge beneath God's wings uses the image Psalm 36 employs to praise God's steadfast love as shelter for all who trust him."),
+        psalms(57, 1, "Psalms", 63, 7, "The refuge David seeks under God's wings becomes the setting for his joyful song in Psalm 63."),
+        psalms(57, 7, "Psalms", 108, 1, "Psalm 108 begins by reusing Psalm 57's steadfast-heart praise, turning David's rescue song into a communal hymn."),
+        psalms(57, 10, "Psalms", 108, 4, "Psalm 108 repeats Psalm 57's praise of God's steadfast love and faithfulness reaching to the heavens."),
+        psalms(59, 1, "Psalms", 18, 48, "Psalm 59's setting amid Saul's deadly pursuit belongs to the deliverance from violent enemies that David later celebrates in Psalm 18."),
+        psalms(60, 6, "Psalms", 108, 7, "Psalm 108 reuses God's oracle over Shechem, Succoth, Gilead, and Ephraim from Psalm 60 as a declaration of divine rule."),
+        psalms(60, 8, "2 Samuel", 8, 14, "David's boast over Edom is tied to the campaign in which he established garrisons there and brought Edom under Israel's rule."),
+        psalms(60, 8, "Psalms", 108, 9, "Psalm 108 repeats Psalm 60's imagery of Moab, Edom, and Philistia to proclaim God's dominion over Israel's neighbors."),
+        psalms(60, 11, "Psalms", 108, 12, "Psalm 108 repeats Psalm 60's plea for help against the foe after confessing that human help is vain."),
+        psalms(62, 1, "1 Chronicles", 25, 1, "Psalm 62's Jeduthun heading is linked to Chronicles' identification of Jeduthun among the appointed leaders of David's prophetic music ministry."),
+        psalms(64, 10, "Psalms", 32, 11, "Both psalms close by calling the righteous and upright to rejoice in the Lord because his justice has been made known."),
         matthew(8, 17, "Isaiah", 53, 4, "Matthew applies Isaiah's servant song to Jesus' healing ministry and his bearing of human weakness."),
         matthew(8, 23, "Luke", 8, 22, "Luke's parallel recounts Jesus calming the storm after crossing the lake with his disciples."),
         matthew(8, 23, "Mark", 4, 35, "Mark's parallel recounts the storm and Jesus' authority over wind and sea."),
@@ -2405,7 +2560,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         matthew(10, 22, "Mark", 13, 13, "Mark repeats Jesus' warning of hatred and his promise that endurance to the end brings salvation."),
         matthew(10, 22, "Matthew", 24, 9, "Jesus repeats this warning about hatred and endurance in his teaching about the coming tribulation."),
         matthew(10, 24, "Luke", 6, 40, "Luke preserves Jesus' saying that a disciple is not above the teacher."),
-        matthew(10, 26, "Luke", 8, 17, "Luke repeats Jesus' assurance that what is hidden will be revealed."),
+        matthew(10, 26, "Luke", 8, 17, "Luke repeats Jesus' assurance that what is hidden will be revealed.")
+    ]
+
+    private nonisolated static let entriesPart42: [Entry] = [
         matthew(10, 26, "Mark", 4, 22, "Mark repeats Jesus' saying that hidden things are meant to be disclosed."),
         matthew(10, 30, "Luke", 12, 7, "Luke repeats Jesus' assurance that even the hairs of his disciples' heads are numbered."),
         matthew(10, 32, "Luke", 12, 8, "Luke preserves Jesus' promise to acknowledge before angels those who acknowledge him."),
@@ -2455,7 +2613,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         matthew(21, 5, "Zechariah", 9, 9, "Matthew identifies Jesus' humble entry on a donkey as Zechariah's promised king."),
         matthew(21, 9, "Psalms", 118, 26, "The crowd's blessing repeats the pilgrim psalm's welcome for the one who comes in the Lord's name."),
         matthew(21, 12, "Mark", 11, 15, "Mark's parallel recounts Jesus cleansing the temple and confronting its corruption."),
-        matthew(21, 13, "Isaiah", 56, 7, "Jesus quotes Isaiah's vision of God's house as a house of prayer for all nations."),
+        matthew(21, 13, "Isaiah", 56, 7, "Jesus quotes Isaiah's vision of God's house as a house of prayer for all nations.")
+    ]
+
+    private nonisolated static let entriesPart43: [Entry] = [
         matthew(21, 13, "Jeremiah", 7, 11, "Jesus applies Jeremiah's charge of a den of robbers to the temple's corruption."),
         matthew(21, 16, "Psalms", 8, 2, "Jesus applies the psalm's praise from children to the children crying out in the temple."),
         matthew(21, 42, "Psalms", 118, 22, "Jesus applies the rejected stone made cornerstone to his rejection and vindication."),
@@ -2505,7 +2666,10 @@ enum ChapterCrossReferenceEditorialCatalog {
         matthew(27, 46, "Psalms", 22, 1, "Jesus cries the opening words of Psalm 22 from the cross, identifying his suffering with the psalm's righteous sufferer."),
         matthew(27, 57, "Luke", 23, 50, "Luke's parallel recounts Joseph of Arimathea burying Jesus before the Sabbath."),
         matthew(27, 57, "Mark", 15, 42, "Mark's parallel recounts Joseph of Arimathea taking Jesus' body and laying it in a tomb."),
-        matthew(28, 1, "Mark", 16, 1, "Mark's parallel recounts the women discovering the empty tomb and receiving the resurrection announcement."),
+        matthew(28, 1, "Mark", 16, 1, "Mark's parallel recounts the women discovering the empty tomb and receiving the resurrection announcement.")
+    ]
+
+    private nonisolated static let entriesPart44: [Entry] = [
         mark(1, 2, "Malachi", 3, 1, "Mark identifies John the Baptist as Malachi's messenger preparing the Lord's way."),
         mark(1, 3, "Isaiah", 40, 3, "Mark applies Isaiah's wilderness voice preparing the way of the Lord to John the Baptist."),
         mark(1, 9, "Matthew", 3, 13, "Matthew's parallel recounts Jesus' baptism, the Spirit's descent, and the Father's voice."),

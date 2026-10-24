@@ -182,10 +182,9 @@ WWA = {
          "for the emperor's review (25:26-27). Chapter 26 gives Paul the chance to supply his own "
          "account instead: he retells his Pharisaic training, his persecution of believers, and the "
          "Damascus-road vision that commissioned him to the Gentiles, provoking Festus to call him "
-         "mad before Agrippa admits Paul has nearly persuaded him, and the officials conclude Paul "
-         "has done nothing worthy of death, though his appeal to Caesar now has to go forward "
-         "anyway (26:1-32). That appeal finally puts Paul on the ship chapter 27 follows toward "
-         "Rome."),
+         "mad before Agrippa admits Paul has nearly persuaded him, and the officials conclude he "
+         "has done nothing worthy of death (26:1-32). His appeal to Caesar still has to go "
+         "forward, which puts Paul on the ship chapter 27 follows toward Rome."),
     27: ("Chapter 26 ended with Agrippa and Festus agreeing that Paul could have gone free if he "
          "had not already appealed to Caesar (26:30-32). Chapter 27 follows that appeal onto a ship "
          "bound for Rome: Paul warns against sailing on from Crete, a violent storm proves him "
@@ -196,11 +195,10 @@ WWA = {
     28: ("Chapter 27 ended with everyone aboard reaching land safely after the shipwreck, just as "
          "Paul had promised (27:43-44). Acts' closing chapter brings that promise of reaching Rome "
          "to completion: Malta's islanders show Paul unusual kindness after a viper fails to harm "
-         "him, he finally arrives in Rome, and for two years he preaches the kingdom of God from "
-         "his own rented lodging without anyone forbidding him, the message having traveled, "
-         "exactly as Jesus promised in chapter 1, from Jerusalem to the empire's capital (28:1-31). "
-         "From there the New Testament's letters, beginning with Romans, pick up the ongoing life "
-         "of the very churches Acts has just finished describing."),
+         "him, he finally arrives in Rome, and for two years he preaches the kingdom of God "
+         "unhindered, the message having traveled from Jerusalem to the empire's capital just as "
+         "Jesus promised in chapter 1 (28:1-31). The New Testament's letters, beginning with "
+         "Romans, pick up the life of the churches Acts describes."),
 }
 
 KEY_FIGURES = {

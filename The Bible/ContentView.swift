@@ -63,13 +63,9 @@ struct ContentView: View {
     
     private var tabs: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack(path: $homeCoordinator.path) {
-                HomeView()
-                    .appDestinations(coordinator: homeCoordinator)
-            }
-            .environment(homeCoordinator)
-            .tabItem { Label("Home", systemImage: "house") }
-            .tag(AppTab.home)
+            HomeTabView(path: $homeCoordinator.path, coordinator: homeCoordinator)
+                .tabItem { Label("Home", systemImage: "house") }
+                .tag(AppTab.home)
 
             if usesWideLayout {
                 BibleSplitView(
@@ -612,6 +608,19 @@ struct ContentView: View {
                 body: (body?.isEmpty ?? true) ? nil : body
             )
         }
+    }
+}
+
+private struct HomeTabView: View {
+    @Binding var path: [Route]
+    let coordinator: NavigationCoordinator
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            HomeView()
+                .appDestinations(coordinator: coordinator)
+        }
+        .environment(coordinator)
     }
 }
 

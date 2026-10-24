@@ -130,6 +130,10 @@ THEMES = {
 }
 
 
+def norm(text):
+    return text.replace("\u2019", "'")
+
+
 def apply_chapter_insights():
     path = ROOT / "chapter_insights" / "48_galatians.json"
     data = load(path)
@@ -138,11 +142,11 @@ def apply_chapter_insights():
         entry["summary"] = SUMMARY[n]
         entry["whereWeAre"] = WWA[n]
         entry["keyFigures"] = [{"name": a, "role": b} for a, b in KEY_FIGURES[n]]
-        theme_map = THEMES[n]
+        theme_map = {norm(k): v for k, v in THEMES[n].items()}
         for theme in entry["keyThemes"]:
-            if theme["theme"] not in theme_map:
+            if norm(theme["theme"]) not in theme_map:
                 raise SystemExit(f"{BOOK} {n}: no explanation for {theme['theme']!r}")
-            theme["explanation"] = theme_map[theme["theme"]]
+            theme["explanation"] = theme_map[norm(theme["theme"])]
             refs = []
             for ref in theme["references"]:
                 refs.extend(json.loads(ref) if ref.startswith("[") else [ref])

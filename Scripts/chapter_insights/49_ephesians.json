@@ -1,311 +1,270 @@
 {
   "Ephesians 1": {
-    "summary": "After a brief greeting, Paul bursts into praise to God for blessing believers with every spiritual blessing in Christ. In one long, flowing passage (verses 3-14 are a single sentence in Greek), he describes what God has done: he chose believers before the foundation of the world to be holy, destined them for adoption as his children, redeemed and forgave them through Christ's blood, revealed his plan to unite all things in Christ, gave them an inheritance, and sealed them with the promised Holy Spirit as a guarantee of what is to come. Paul then tells his readers he thanks God for their faith and love and prays that God will give them wisdom and insight to know their hope, their inheritance, and God's great power. That power, he explains, is the same power God used to raise Christ from the dead and seat him above every authority, making him head over all things for the church, which is his body.",
-    "whereWeAre": "Greeting from Paul, an apostle by God's will, to the saints and faithful in Christ Jesus.\n\nPraise to God for choosing believers in Christ before creation and destining them for adoption as his children.\n\nIn Christ believers have redemption and forgiveness through his blood; God has made known his plan to unite all things in heaven and on earth in Christ.\n\nBelievers have received an inheritance and, after hearing and believing the gospel, were sealed with the promised Holy Spirit, the guarantee of their inheritance.\n\nPaul thanks God for the readers and prays they will receive wisdom and understand their hope, inheritance, and God's power.\n\nGod's power raised Christ, seated him at his right hand above every power, put all things under his feet, and made him head over all things for the church, his body. The chapter's emphasis on Christ's supremacy over every 'rule and authority' (1:21) would have spoken directly to readers in a city known for devotion to Artemis and for magical practices aimed at controlling spiritual powers. Its language of God's plan, inheritance, and adoption also told Gentile believers, who had come out of that environment, that they now fully belonged to God's family.",
+    "summary": "Paul greets the saints at Ephesus and blesses God, who hath blessed believers with all spiritual blessings in heavenly places in Christ (Ephesians 1:1–3). God chose them in him before the foundation of the world, predestinated them unto the adoption of children, and gave them redemption through his blood, the forgiveness of sins (Ephesians 1:4–8). He made known the mystery of his will, to gather together in one all things in Christ, and sealed believers with the holy Spirit of promise, the earnest of their inheritance (Ephesians 1:9–14). Paul thanks God for their faith and love and prays that the eyes of their understanding be enlightened to know the hope of his calling and the exceeding greatness of his power (Ephesians 1:15–19). That power raised Christ from the dead, set him above all principality and power, and made him head over all things to the church, which is his body (Ephesians 1:20–23).",
+    "whereWeAre": "Galatians ended with Paul glorying only in the cross and wishing grace on the brethren (Galatians 6:14-18). Ephesians, written while Paul is a prisoner, opens with a long burst of praise for what God has done in Christ, who chose, adopted, redeemed, and sealed his people, and with Paul's prayer that they know the hope of his calling and the power that raised Christ (1:1-23). Chapter 2 shows what that power did for them.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Named as the writer, an apostle of Christ Jesus by the will of God. (Authorship is discussed in the book introduction.). Offers praise to God and prays for the readers. He presents his calling as coming from God's will rather than his own choice, and his prayer shapes what the readers are meant to understand."
+        "role": "Writes as an apostle by the will of God, blesses God for spiritual blessings, and prays that believers' eyes be enlightened (1:1-3,15-19)."
       },
       {
-        "name": "The saints and faithful in Christ Jesus",
-        "role": "The believers receiving the letter. 'Saints' refers to all believers as people set apart for God. Several early manuscripts lack the words 'in Ephesus' (1:1). The recipients of God's blessings and of Paul's prayer. Paul has heard of their faith in the Lord Jesus and their love for all the saints (1:15). The chapter describes their identity as believers before it gives any instructions (which come in chapters 4-6)."
+        "name": "The saints at Ephesus",
+        "role": "The faithful in Christ Jesus to whom Paul writes, for whose faith and love he gives thanks (1:1,15-16)."
       },
       {
         "name": "God the Father",
-        "role": "Called 'the God and Father of our Lord Jesus Christ' (1:3) and 'the Father of glory' (1:17). He blesses, chooses, adopts, reveals his will, works all things according to his purpose, and raised Christ from the dead. The chapter is above all a description of God's initiative and grace."
+        "role": "Chose believers before the foundation of the world, predestinated them to adoption, and raised Christ from the dead (1:3-5,20)."
       },
       {
         "name": "Jesus Christ",
-        "role": "The Lord, described as God's 'Beloved' (1:6). Every blessing is 'in Christ.' Through his blood believers have redemption; all things are to be united in him; he is raised, seated at God's right hand, and made head over all things for the church. Christ is the center of God's plan in this chapter. The phrase 'in Christ' or 'in him' appears repeatedly in 1:3-14."
+        "role": "In whom believers have redemption through his blood, and who is made head over all things to the church (1:7,22)."
       },
       {
         "name": "The Holy Spirit",
-        "role": "The 'Holy Spirit of promise.' Seals believers and serves as the guarantee of their inheritance. The Spirit's presence is presented as God's mark of ownership and a first installment of what is to come. (In 1:17 translations differ on whether 'spirit of wisdom' refers to the Holy Spirit or to a disposition of wisdom.)"
-      },
-      {
-        "name": "'We who first hoped in Christ' and 'you also'",
-        "role": "Two groups of believers. Many scholars think 'we' refers to Jewish believers (including Paul) and 'you' to Gentile believers, anticipating chapter 2; others read 'we' as all believers. Both groups share in the same blessings and the same sealing by the Spirit. If the Jewish/Gentile reading is correct, the chapter already hints at the unity explained in 2:11-22. The text does not state this directly."
-      },
-      {
-        "name": "Rule, authority, power, and dominion",
-        "role": "Powers over which Christ is exalted. In Ephesians these terms often refer to spiritual powers (compare 3:10; 6:12), though some interpreters think human rulers are also included. They are placed beneath Christ, who is above 'every name that is named.' Christ's supremacy over every power would have been reassuring to readers living in a world where many feared spiritual forces."
-      },
-      {
-        "name": "Priscilla, Aquila, Apollos, and the Ephesian elders",
-        "role": "People connected with the early church in Ephesus according to Acts. They do not appear in Ephesians. They are listed only as background on the church Paul knew in Ephesus. Acts shows that Paul had a long and close relationship with the Ephesian believers, which makes the letter's lack of personal greetings notable (see book introduction)."
+        "role": "The Spirit of promise with which believers are sealed, the earnest of their inheritance (1:13-14)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Chosen and adopted by God's grace",
-        "explanation": "God chose believers in Christ before the foundation of the world to be holy and blameless, and in love destined them for adoption as his children, all to the praise of his glorious grace.\n\nThese verses are central to Christian teaching on election and predestination. Christian traditions understand them differently: some emphasize God's choice of individuals, some emphasize God's choice of a people in Christ, and others relate the choice to God's foreknowledge. All agree the passage presents salvation as God's gracious initiative.\n\nBelievers' identity and belonging are presented as rooted in God's love and purpose, not in their own achievement.",
+        "explanation": "God chose believers in Christ before the foundation of the world and predestinated them unto the adoption of children, according to the good pleasure of his will (1:4-6,11).",
         "references": [
-          "[\"Ephesians 1:4-6\", \"Ephesians 1:11\"]"
+          "Ephesians 1:4-6",
+          "Ephesians 1:11"
         ]
       },
       {
         "theme": "Redemption and forgiveness through Christ",
-        "explanation": "In Christ believers have redemption through his blood and the forgiveness of sins, according to the riches of God's grace, which he lavished on them.\n\n'Redemption' means release by payment of a price, a word used for freeing captives or slaves. The chapter ties it directly to Christ's death.\n\nForgiveness is described as a generous gift that flows from God's grace.",
+        "explanation": "In Christ believers have redemption through his blood, the forgiveness of sins, according to the riches of his grace (1:7-8).",
         "references": [
-          "[\"Ephesians 1:7-8\"]"
+          "Ephesians 1:7-8"
         ]
       },
       {
         "theme": "God's plan to unite all things in Christ",
-        "explanation": "God has made known the 'mystery' of his will: his plan, when the time is right, to bring together all things in heaven and on earth under Christ.\n\nThis theme of unity under Christ runs through the whole letter, especially the uniting of Jews and Gentiles in chapter 2.\n\nThe passage presents history as moving toward a goal: everything brought together under Christ.",
+        "explanation": "God made known the mystery of his will, that in the dispensation of the fulness of times he might gather together in one all things in Christ (1:9-10).",
         "references": [
-          "[\"Ephesians 1:9-10\"]"
+          "Ephesians 1:9-10"
         ]
       },
       {
         "theme": "Sealed with the Spirit as a guarantee",
-        "explanation": "When the readers heard the gospel and believed, they were sealed with the promised Holy Spirit, who is the guarantee (or down payment) of their inheritance until God's people are fully redeemed.\n\nThe Spirit is described as both a mark of belonging to God and a first installment of a future inheritance. Christians differ in how they understand the relationship between this sealing and assurance of salvation.\n\nBelievers are encouraged to see the Spirit's presence as God's pledge of a future he will complete.",
+        "explanation": "After believing, they were sealed with that holy Spirit of promise, which is the earnest of our inheritance (1:13-14).",
         "references": [
-          "[\"Ephesians 1:13-14\"]"
+          "Ephesians 1:13-14"
         ]
       },
       {
         "theme": "Christ exalted as head over all for the church",
-        "explanation": "Paul prays that believers will know God's immense power, the power that raised Christ, seated him at God's right hand, placed all things under his feet, and made him head over all things for the church, his body.\n\nThe language echoes Psalm 110:1 (seated at God's right hand) and Psalm 8:6 (all things under his feet). The church is described as Christ's body, closely joined to him.\n\nThe chapter invites believers to pray for deeper understanding of the hope and power God has given them in the risen Christ.",
+        "explanation": "God raised Christ from the dead, set him at his right hand far above all principality and power, and gave him to be the head over all things to the church (1:18-23).",
         "references": [
-          "[\"Ephesians 1:18-23\"]"
+          "Ephesians 1:18-23"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ephesians 2": {
-    "summary": "Paul reminds his readers of what they once were: spiritually dead in sin, following the ways of the world and 'the prince of the power of the air,' and, like everyone else, deserving God's wrath. But God, rich in mercy and great in love, made them alive with Christ, raised them up, and seated them with him. This salvation is by grace through faith; it is God's gift, not earned by works, so no one can boast. Yet believers are God's handiwork, created in Christ for good works. Paul then turns to the Gentile believers specifically. They were once outsiders, separated from Christ, excluded from Israel, strangers to God's covenants, without hope and without God. Now, through Christ's blood, they have been brought near. Christ himself is our peace: he broke down the dividing wall of hostility between Jews and Gentiles, created one new humanity, and reconciled both to God through the cross. As a result, Gentile believers are no longer strangers but fellow citizens and members of God's household, a holy temple built on the foundation of the apostles and prophets, with Christ Jesus as the cornerstone.",
-    "whereWeAre": "Before Christ, the readers were dead in trespasses and sins, following the world and the 'prince of the power of the air.'\n\nGod, rich in mercy, made them alive with Christ, raised them, and seated them with him to show his grace in the coming ages.\n\nSalvation is by grace through faith, God's gift and not from works; believers are created in Christ for good works.\n\nGentiles were once separated from Christ, Israel, the covenants, hope, and God, but are now brought near by Christ's blood.\n\nChrist is our peace: he broke down the dividing wall of hostility, made one new humanity, reconciled both groups to God through the cross, and gave both access to the Father by one Spirit.\n\nGentile believers are fellow citizens and members of God's household, built into a holy temple with Christ as cornerstone. The chapter's description of Gentiles as once 'far off,' 'strangers,' and separated by a 'dividing wall of hostility' reflects real divisions in the first-century world. Paul's message that Gentile believers are fellow citizens and members of God's household would have been striking to both Jews and Gentiles.",
+    "summary": "Paul reminds believers that they were dead in trespasses and sins, walking according to the prince of the power of the air, but God, who is rich in mercy, hath quickened them together with Christ and raised them up together (Ephesians 2:1–7). By grace are they saved through faith, not of works, for they are his workmanship, created in Christ Jesus unto good works (Ephesians 2:8–10). Gentiles who were aliens from the commonwealth of Israel, without Christ, and having no hope, are made nigh by the blood of Christ (Ephesians 2:11–13). Christ is our peace, who hath broken down the middle wall of partition and made of twain one new man, reconciling both unto God in one body by the cross (Ephesians 2:14–18). So they are no more strangers and foreigners but fellowcitizens with the saints and of the household of God, built upon the foundation of the apostles and prophets, Jesus Christ himself being the chief corner stone (Ephesians 2:19–22).",
+    "whereWeAre": "Chapter 1 ended with Christ raised and made head over all things to the church (1:20-23). Chapter 2 shows the same power at work in believers: dead in sins, they were made alive by grace through faith, and Gentiles once far off are brought near, Jew and Gentile made one new man in Christ and built into God's household (2:1-22). Chapter 3 explains this mystery and prays for them.",
     "keyFigures": [
       {
-        "name": "The Gentile believers ('you')",
-        "role": "Non-Jewish believers among the letter's readers, called 'Gentiles in the flesh' (2:11). Paul describes their former separation from God and Israel and their new standing as fellow citizens and members of God's household. Their full inclusion in God's people is a major focus of the chapter and the letter."
+        "name": "Gentile believers",
+        "role": "Once aliens from the commonwealth of Israel, without Christ and having no hope, now made nigh by his blood and fellowcitizens with the saints (2:11-13,19)."
       },
       {
-        "name": "Jewish believers and all people ('we all')",
-        "role": "In 2:3 Paul includes himself: 'we all' once lived in the passions of the flesh. In 2:14-18 'both' refers to Jews and Gentiles. They share the same need for grace and are joined with Gentiles into one new humanity. The chapter presents both Jews and Gentiles as needing God's mercy and both as reconciled through the cross."
+        "name": "Jewish believers",
+        "role": "Included in \"we all\" who once had their conversation in the lusts of the flesh, and are now made one with the Gentiles (2:3,14-16)."
       },
       {
-        "name": "Israel and 'the circumcision'",
-        "role": "God's covenant people, here referred to as 'the commonwealth of Israel' and 'the covenants of promise.' 'The circumcision' was a common label for Jews, and 'the uncircumcision' for Gentiles. Gentiles had been outside Israel's privileges; now they share in God's household. The chapter does not say Israel's covenants are erased; it says Gentiles who were 'strangers' to them have been brought near."
+        "name": "The prince of the power of the air",
+        "role": "The spirit that now worketh in the children of disobedience, whom believers once followed (2:2)."
       },
       {
-        "name": "'The prince of the power of the air'",
-        "role": "A spiritual ruler described as 'the spirit now at work in the sons of disobedience.' Most interpreters understand this as the devil, whom the letter names elsewhere (4:27; 6:11), though this verse does not use that name. Represents the spiritual influence the readers once followed. Shows that the chapter views the human problem as involving spiritual forces, not only individual choices."
-      },
-      {
-        "name": "God the Father",
-        "role": "Described as rich in mercy and great in love. Makes believers alive, saves by grace, prepares good works, and welcomes both groups into his household. Salvation and unity are presented as God's work from start to finish."
+        "name": "God",
+        "role": "Rich in mercy, quickened believers together with Christ and saved them by grace through faith (2:4-8)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Called 'our peace' (2:14) and the cornerstone (2:20). Through his blood and cross, he brings the far near, destroys hostility, and reconciles both groups to God. Christ is the means of both salvation and unity."
+        "role": "Our peace, who broke down the middle wall of partition, made of twain one new man, and is the chief corner stone (2:14-15,20)."
       },
       {
         "name": "The Holy Spirit",
-        "role": "The 'one Spirit.'. Gives both groups access to the Father and makes the church God's dwelling place. The Spirit's shared presence is part of what makes the church one."
-      },
-      {
-        "name": "The apostles and prophets",
-        "role": "The foundation on which God's household is built. Part of the image of the church as a building. Most scholars think these are New Testament prophets, since 3:5 and 4:11 pair apostles and prophets as Christ's gifts in the present age; some interpreters understand them as Old Testament prophets."
-      },
-      {
-        "name": "Trophimus the Ephesian",
-        "role": "A Gentile believer from Ephesus who traveled with Paul. He does not appear in Ephesians. Acts reports that Paul was accused of bringing him into the restricted area of the Jerusalem temple, which led to Paul's arrest. His story illustrates the real separation between Jews and Gentiles at the temple, which helps explain the 'dividing wall' image in 2:14 (see Historical Context)."
+        "role": "The one Spirit by whom both Jew and Gentile have access to the Father (2:18,22)."
       }
     ],
     "keyThemes": [
       {
         "theme": "From death to life by God's mercy",
-        "explanation": "Believers were dead in sin, but God, rich in mercy and great in love, made them alive with Christ, raised them, and seated them with him.\n\nThe contrast 'but God' (2:4) marks the turning point: the change comes from God's action, not human effort.\n\nThe passage presents new life as a gift of God's mercy to people who could not save themselves.",
+        "explanation": "Though dead in trespasses and sins, believers were quickened together with Christ and raised up together, because God is rich in mercy (2:1-7).",
         "references": [
-          "[\"Ephesians 2:1-7\"]"
+          "Ephesians 2:1-7"
         ]
       },
       {
         "theme": "Saved by grace through faith, created for good works",
-        "explanation": "Salvation is by grace through faith, it is God's gift and not the result of works, so no one may boast. Yet believers are God's workmanship, created in Christ for good works God prepared beforehand.\n\nInterpreters discuss whether 'this' in 2:8 ('this is not your own doing') refers to faith, to grace, or to the whole of salvation. The passage clearly places good works as the result of salvation rather than its cause.\n\nGood works are presented as the purpose of a life already saved by grace, not a way to earn God's favor.",
+        "explanation": "By grace are ye saved through faith, not of works, lest any man should boast, for we are his workmanship created unto good works (2:8-10).",
         "references": [
-          "[\"Ephesians 2:8-10\"]"
+          "Ephesians 2:8-10"
         ]
       },
       {
         "theme": "One new humanity: Jews and Gentiles united",
-        "explanation": "Christ broke down the dividing wall of hostility, set aside 'the law of commandments expressed in ordinances,' and created one new humanity in place of two.\n\nInterpreters differ on exactly what it means that Christ 'abolished' or 'set aside' the law of commandments (2:15), especially how it relates to the Old Testament law's moral teaching. The passage clearly says the law's role in dividing Jews and Gentiles has been overcome in Christ.\n\nThe chapter teaches that belonging to Christ creates a new shared identity that overcomes deep ethnic and religious division.",
+        "explanation": "Christ is our peace, who hath made both one and broken down the middle wall of partition, creating in himself one new man (2:11-16).",
         "references": [
-          "[\"Ephesians 2:11-16\"]"
+          "Ephesians 2:11-16"
         ]
       },
       {
         "theme": "Reconciliation and access to God",
-        "explanation": "Through the cross Christ reconciled both groups to God, preached peace to those far off and those near, and gave both access to the Father by one Spirit.\n\nThe words about peace to 'far' and 'near' echo (Isaiah 57:19). Peace with God and peace with one another are tied together.\n\nReconciliation with God and reconciliation with others are presented as inseparable parts of the gospel.",
+        "explanation": "Through the cross both are reconciled unto God in one body, and through Christ both have access by one Spirit unto the Father (2:16-18).",
         "references": [
-          "[\"Ephesians 2:16-18\"]"
+          "Ephesians 2:16-18"
         ]
       },
       {
         "theme": "God's household and holy temple",
-        "explanation": "Gentile believers are no longer strangers but fellow citizens and members of God's household, built on the foundation of the apostles and prophets, with Christ Jesus as cornerstone, growing into a holy temple where God dwells by the Spirit.\n\nThe image moves God's dwelling from a building to a people. The cornerstone language recalls Isaiah 28:16 and Psalm 118:22.\n\nThe church is presented as a living community where God is present, with every member built in together.",
+        "explanation": "Believers are fellowcitizens and of the household of God, built on the foundation of the apostles and prophets, Jesus Christ the chief corner stone (2:19-22).",
         "references": [
-          "[\"Ephesians 2:19-22\"]"
+          "Ephesians 2:19-22"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ephesians 3": {
-    "summary": "Paul begins to pray for his readers, calling himself 'the prisoner of Christ Jesus on behalf of you Gentiles,' but pauses to explain his special calling. God revealed to him a 'mystery,' a truth hidden in earlier generations but now made known by the Spirit to the apostles and prophets: that through the gospel Gentiles are fellow heirs with Israel, members of the same body, and sharers in the promise in Christ Jesus. Paul, who calls himself 'less than the least of all the saints,' was given the grace to preach the unsearchable riches of Christ to the Gentiles. Through the church, God's many-sided wisdom is now being displayed even to rulers and authorities in the heavenly places. Because of this, believers can approach God with boldness and confidence, so Paul asks them not to lose heart over his sufferings. Then he resumes his prayer. Kneeling before the Father, he asks that they be strengthened by the Spirit, that Christ may dwell in their hearts through faith, and that, rooted in love, they may grasp the breadth, length, height, and depth of Christ's love, which surpasses knowledge. He closes with praise to God, who is able to do far more than all we ask or imagine.",
-    "whereWeAre": "Paul, a prisoner for the sake of the Gentiles, explains that God revealed a mystery to him.\n\nThe mystery, now revealed by the Spirit to apostles and prophets, is that Gentiles are fellow heirs, members of the same body, and sharers in the promise.\n\nPaul was given grace to preach Christ's unsearchable riches to the Gentiles and to make known God's plan.\n\nThrough the church God's manifold wisdom is made known to rulers and authorities in the heavenly places; believers have bold access to God.\n\nPaul prays that believers be strengthened by the Spirit, that Christ dwell in their hearts, and that they know Christ's surpassing love and be filled with God's fullness.\n\nDoxology: glory to God, who can do far more than we ask or imagine. Paul's calling himself a prisoner 'for you Gentiles' reflects this link between his mission and his chains. His explanation of the mystery shows why he considered his imprisonment worth it and why his readers should not lose heart.",
+    "summary": "Paul calls himself the prisoner of Jesus Christ for the Gentiles and speaks of the dispensation of the grace of God given to him (Ephesians 3:1–2). By revelation God made known to him the mystery, that the Gentiles should be fellowheirs, and of the same body, and partakers of his promise in Christ by the gospel (Ephesians 3:3–7). Though he is less than the least of all saints, grace was given him to preach among the Gentiles the unsearchable riches of Christ, so that now unto the principalities and powers in heavenly places might be known by the church the manifold wisdom of God (Ephesians 3:8–13). He bows his knees to the Father and prays that they be strengthened by his Spirit, that Christ may dwell in their hearts by faith, and that they know the love of Christ, which passeth knowledge (Ephesians 3:14–19). He ends with praise to him that is able to do exceeding abundantly above all that we ask or think (Ephesians 3:20–21).",
+    "whereWeAre": "Chapter 2 ended with believers built together for a habitation of God through the Spirit (2:22). Chapter 3 explains the mystery that Gentiles are fellowheirs in Christ, tells of Paul's calling to preach it as a prisoner, and prays that they be strengthened and know the love of Christ (3:1-21). Chapter 4 turns from what God has done to how they should live.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "A prisoner 'on behalf of you Gentiles' who received a revelation of the mystery and was made a minister of the gospel by God's grace. Explains his calling and prays for the readers. He calls himself the 'least of all the saints' (3:8), presenting his ministry as a gift of grace rather than a personal achievement. His description of receiving the gospel by revelation matches (Galatians 1:11-12)."
+        "role": "The prisoner of Jesus Christ for the Gentiles, given grace to preach the unsearchable riches of Christ, who bows his knees in prayer for them (3:1,8,14)."
       },
       {
         "name": "The Gentiles",
-        "role": "Non-Jewish peoples, including many of the letter's readers. The mystery concerns them: they are fellow heirs, fellow members, and fellow sharers in the promise. Their inclusion is the heart of the 'mystery' revealed in this chapter."
+        "role": "Fellowheirs, of the same body, and partakers of God's promise in Christ by the gospel (3:6)."
       },
       {
         "name": "The holy apostles and prophets",
-        "role": "Those to whom God revealed the mystery by the Spirit. Recipients of revelation alongside Paul. Shows that Paul does not claim this understanding for himself alone."
+        "role": "Those to whom the mystery of Christ is now revealed by the Spirit (3:5)."
       },
       {
         "name": "The church",
-        "role": "The community of believers, Jew and Gentile together. The means through which God's wisdom is displayed and in which God receives glory. The church's unity is presented as evidence of God's wisdom, even to spiritual powers."
+        "role": "Through whom the manifold wisdom of God is made known to principalities and powers in heavenly places (3:10)."
       },
       {
-        "name": "Rulers and authorities in the heavenly places",
-        "role": "Spiritual powers (compare 1:21; 6:12). The text does not say whether good, evil, or both kinds are meant, and interpreters differ. They are shown God's manifold wisdom through the church. The chapter gives the church a role that reaches beyond the human world."
+        "name": "Principalities and powers",
+        "role": "Heavenly beings who learn God's manifold wisdom through the church (3:10)."
       },
       {
-        "name": "God the Father",
-        "role": "The Creator of all things (3:9) and the Father 'from whom every family in heaven and on earth is named' (3:15). The one to whom Paul prays and who is able to do far more than we ask. The prayer and doxology center the chapter on God's power and glory."
-      },
-      {
-        "name": "Jesus Christ and the Holy Spirit",
-        "role": "Christ is the one in whom God's eternal purpose is realized; the Spirit reveals the mystery and strengthens believers. Through faith in Christ believers have bold access to God; Paul prays for the Spirit's strengthening and Christ's dwelling in their hearts. The prayer involves Father, Spirit, and Christ together."
+        "name": "God the Father, Jesus Christ, and the Spirit",
+        "role": "The Father strengthens by his Spirit, Christ dwells in hearts by faith, and God is able to do exceeding abundantly above all we ask or think (3:14-20)."
       }
     ],
     "keyThemes": [
       {
         "theme": "The mystery revealed: Gentiles as fellow heirs",
-        "explanation": "The 'mystery' is not a secret kept from believers but a part of God's plan that was not made known in earlier generations and is now revealed: Gentiles share fully in the inheritance, the body, and the promise in Christ.\n\nThe Old Testament anticipated blessing for the nations (for example, Genesis 12:3), but the chapter presents the full equality of Gentiles in one body as newly revealed. Interpreters discuss how much was known before.\n\nBelonging to God's people rests on the gospel, not on ethnic background.",
+        "explanation": "The mystery hid from ages is now revealed by the Spirit: the Gentiles are fellowheirs, of the same body, and partakers of the promise in Christ (3:3-6,9).",
         "references": [
-          "[\"Ephesians 3:3-6\", \"Ephesians 3:9\"]"
+          "Ephesians 3:3-6",
+          "Ephesians 3:9"
         ]
       },
       {
         "theme": "Ministry as a gift of grace",
-        "explanation": "Paul describes his ministry as a stewardship of God's grace given to him, though he considers himself the least of all the saints.\n\nPaul's calling rests on God's grace and power, not his own worthiness.\n\nThe passage presents service to God as flowing from grace received, which encourages humility.",
+        "explanation": "Paul says he was made a minister according to the gift of the grace of God, though less than the least of all saints (3:2,7-8).",
         "references": [
-          "[\"Ephesians 3:2\", \"Ephesians 3:7-8\"]"
+          "Ephesians 3:2",
+          "Ephesians 3:7-8"
         ]
       },
       {
         "theme": "The church displays God's wisdom",
-        "explanation": "Through the church, made up of formerly divided peoples, God's manifold wisdom is made known to rulers and authorities in the heavenly places, according to his eternal purpose in Christ. In Christ believers have boldness and access to God with confidence.\n\nThe church is given a role in showing God's wisdom that goes beyond what humans see.\n\nThe unity and life of the church are presented as a testimony to God's wisdom.",
+        "explanation": "Through the church is made known to principalities and powers in heavenly places the manifold wisdom of God, so that believers have boldness and access with confidence (3:10-12).",
         "references": [
-          "[\"Ephesians 3:10-12\"]"
+          "Ephesians 3:10-12"
         ]
       },
       {
         "theme": "Strength and the surpassing love of Christ",
-        "explanation": "Paul prays that believers be strengthened by the Spirit, that Christ dwell in their hearts through faith, and that, rooted in love, they grasp the breadth, length, height, and depth of Christ's love, which surpasses knowledge.\n\nInterpreters have suggested different meanings for the four dimensions; the text does not explain them, and many read them simply as emphasizing the immeasurable greatness of Christ's love.\n\nThe prayer invites believers to seek a deeper, shared experience of Christ's love 'with all the saints' (3:18).",
+        "explanation": "Paul prays that they be strengthened by his Spirit, rooted and grounded in love, and know the love of Christ, which passeth knowledge (3:14-19).",
         "references": [
-          "[\"Ephesians 3:14-19\"]"
+          "Ephesians 3:14-19"
         ]
       },
       {
         "theme": "God is able to do far more",
-        "explanation": "Paul closes with praise to God, who by his power at work within believers is able to do far more abundantly than all they ask or think, and to whom belongs glory in the church and in Christ Jesus forever.\n\nThe doxology ends the first half of the letter, which focuses on what God has done, before the practical instructions of chapters 4-6.\n\nPrayer is encouraged with confidence in God's power that exceeds human expectations.",
+        "explanation": "Unto him that is able to do exceeding abundantly above all that we ask or think be glory in the church by Christ Jesus throughout all ages (3:20-21).",
         "references": [
-          "[\"Ephesians 3:20-21\"]"
+          "Ephesians 3:20-21"
         ]
       }
     ],
     "explainedReferences": []
   },
   "Ephesians 4": {
-    "summary": "With chapter 4 the letter turns from what God has done to how believers should live. Paul, again calling himself a prisoner, urges his readers to live worthy of their calling with humility, gentleness, patience, and love, eager to keep the unity of the Spirit. There is one body, one Spirit, one hope, one Lord, one faith, one baptism, and one God and Father of all. Each believer has received grace as Christ apportioned it. Quoting a psalm, Paul explains that the ascended Christ gave gifts to his people: apostles, prophets, evangelists, shepherds, and teachers, to equip the saints for ministry and build up the body of Christ until all reach unity and maturity. Then believers will no longer be tossed around by every new teaching, but, speaking the truth in love, will grow up into Christ, the head. Paul then insists that his readers no longer live like unbelieving Gentiles, whose thinking is futile and darkened. They are to put off the old self, be renewed in their minds, and put on the new self created in God's likeness. The chapter ends with practical instructions: speak truth, do not let anger lead to sin, stop stealing and work to share with others, speak words that build up, do not grieve the Holy Spirit, and be kind, tenderhearted, and forgiving, as God in Christ forgave you.",
-    "whereWeAre": "Live worthy of your calling with humility, gentleness, patience, and love, keeping the unity of the Spirit; there is one body, one Spirit, one Lord, one faith, one baptism, one God and Father.\n\nEach believer received grace according to Christ's gift; Paul cites a psalm about the ascended one giving gifts.\n\nChrist gave apostles, prophets, evangelists, shepherds, and teachers to equip the saints and build up the body toward unity and maturity.\n\nBelievers should not be tossed by every wind of teaching but, speaking the truth in love, grow up into Christ, from whom the whole body grows.\n\nDo not live like unbelieving Gentiles with futile minds; put off the old self, be renewed in mind, and put on the new self.\n\nPractical commands: speak truth, handle anger, stop stealing and work to share, speak words that build up, do not grieve the Spirit, put away bitterness, and forgive as God forgave. Many readers had come from a background of idol worship and different moral norms, which explains the strong contrast between the 'old self' and the 'new self.' The need for unity among Jews and Gentiles, and among believers with different gifts, explains the emphasis on 'one body.'",
+    "summary": "Paul, the prisoner of the Lord, beseeches believers to walk worthy of their calling, with lowliness and meekness, endeavouring to keep the unity of the Spirit in the bond of peace: one body, one Spirit, one hope, one Lord, one faith, one baptism, one God and Father of all (Ephesians 4:1–6). Christ ascended and gave some apostles, prophets, evangelists, pastors, and teachers for the perfecting of the saints and the edifying of the body of Christ (Ephesians 4:7–12). Speaking the truth in love, they are to grow up into him in all things, no more children tossed to and fro (Ephesians 4:13–16). They are to walk no longer as other Gentiles, but put off the old man and put on the new man, which after God is created in righteousness and true holiness (Ephesians 4:17–24). He urges putting away lying, letting no corrupt communication proceed out of their mouth, not grieving the holy Spirit, and being kind, tenderhearted, forgiving one another, even as God for Christ's sake hath forgiven them (Ephesians 4:25–32).",
+    "whereWeAre": "Chapter 3 ended with glory to God in the church by Christ Jesus throughout all ages (3:21). Chapter 4 turns to conduct: keep the unity of the Spirit, use the gifts Christ gave for building up the body, grow up in truth and love, put off the old man, and put away lying, anger, and bitterness (4:1-32). Chapter 5 continues with walking in love and light.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "'The prisoner in the Lord.' Urges and testifies to the readers about how to live. His chains add weight to his appeal for a worthy life."
+        "role": "The prisoner of the Lord who beseeches believers to walk worthy of their calling (4:1)."
       },
       {
-        "name": "The believers (the readers)",
-        "role": "Members of the body of Christ, each given grace (4:7). Called to unity, growth, and a transformed life. The chapter describes ministry as belonging to all 'the saints' (4:12), not only to leaders."
+        "name": "Believers",
+        "role": "Called to keep the unity of the Spirit, put off the old man, and put on the new (4:3,22-24)."
       },
       {
-        "name": "Christ, the ascended giver of gifts",
-        "role": "The one who descended and ascended 'far above all the heavens' (4:10) and is head of the body (4:15). Gives grace and gifted leaders to the church; the body grows from him. The church's growth and unity depend on Christ's gifts and headship."
+        "name": "Christ",
+        "role": "Ascended on high and gave gifts to men, the head from whom the whole body is joined together (4:8,15-16)."
       },
       {
-        "name": "Apostles, prophets, evangelists, shepherds, and teachers",
-        "role": "People Christ gave to the church. 'Shepherds' is often translated 'pastors.'. They equip the saints for the work of ministry and build up the body. Interpreters debate whether 'shepherds and teachers' are one role or two, and Christian traditions differ on whether apostles and prophets continue today in the same sense."
+        "name": "Apostles, prophets, evangelists, pastors, and teachers",
+        "role": "Given by Christ for the perfecting of the saints and the work of the ministry (4:11-12)."
       },
       {
-        "name": "Unbelieving Gentiles",
-        "role": "Non-Jews who do not know God, described as living with futile, darkened thinking and hardened hearts. A contrast with how believers, though many were Gentiles themselves, should now live. Paul uses 'Gentiles' here in a moral and religious sense, not just an ethnic one."
-      },
-      {
-        "name": "Deceitful teachers (unnamed)",
-        "role": "People using cunning and deceitful schemes to spread teachings. Their influence is what mature believers will no longer be swayed by. The text does not identify any specific group or teaching."
-      },
-      {
-        "name": "The devil",
-        "role": "The spiritual enemy (compare 6:11). Believers are warned not to give him an opportunity through unresolved anger. Everyday behavior is connected to spiritual struggle."
+        "name": "Other Gentiles",
+        "role": "Those who walk in the vanity of their mind, having the understanding darkened, from whom believers are to differ (4:17-19)."
       },
       {
         "name": "The Holy Spirit",
-        "role": "The Spirit who creates unity and by whom believers were sealed. Believers are to keep the Spirit's unity and not grieve the Spirit. That the Spirit can be 'grieved' presents the Spirit as personal and affected by believers' conduct."
-      },
-      {
-        "name": "God the Father",
-        "role": "The one God and Father of all, over all, through all, and in all. The new self is created after God's likeness, and God's forgiveness in Christ is the model for believers. Believers' behavior is meant to reflect God's own character."
-      },
-      {
-        "name": "David",
-        "role": "Israel's king, to whom (Psalm 68) is attributed in its heading. Ephesians 4:8 quotes Psalm 68 but does not name David; it says only 'it says.'. Listed only to identify the source of the quotation."
+        "role": "The Spirit of God whom believers are not to grieve, by whom they are sealed unto the day of redemption (4:30)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Keeping the unity of the Spirit",
-        "explanation": "Believers are urged to live worthy of their calling with humility, gentleness, patience, and love, eager to keep the unity the Spirit has created, because there is one body, one Spirit, one hope, one Lord, one faith, one baptism, and one God and Father of all.\n\nUnity is described as something God has already given and believers must work to protect.\n\nThe passage presents humility and patience as essential to preserving unity in the church.",
+        "explanation": "Believers are to walk with lowliness and meekness, endeavouring to keep the unity of the Spirit, since there is one body, one Spirit, one hope, one Lord, one faith, one baptism, one God (4:1-6).",
         "references": [
-          "[\"Ephesians 4:1-6\"]"
+          "Ephesians 4:1-6"
         ]
       },
       {
         "theme": "Christ's gifts for equipping the church",
-        "explanation": "Each believer has received grace, and the ascended Christ gave apostles, prophets, evangelists, shepherds, and teachers to equip the saints for ministry and build up the body.\n\nEphesians 4:8 quotes Psalm 68:18, but where the psalm speaks of receiving gifts, Ephesians says 'gave gifts.' Scholars explain this in several ways, including Paul interpreting the psalm in light of Christ and the existence of an ancient Jewish Aramaic tradition that also reads 'gave.' Interpreters also differ on whether the 'descent' in 4:9 refers to Christ's coming to earth, a descent to the realm of the dead, or the Spirit's coming.\n\nLeaders are presented as given to equip all believers for ministry, not to do all the ministry themselves.",
+        "explanation": "Christ gave apostles, prophets, evangelists, pastors, and teachers for the perfecting of the saints, for the work of the ministry, and for the edifying of the body (4:7-12).",
         "references": [
-          "[\"Ephesians 4:7-12\"]"
+          "Ephesians 4:7-12"
         ]
       },
       {
         "theme": "Growing to maturity in truth and love",
-        "explanation": "The goal is unity in faith, knowledge of Christ, and maturity, so believers are not tossed by every wind of teaching but, speaking the truth in love, grow up into Christ, with every part working properly.\n\nMaturity is shared and communal: the whole body builds itself up in love.\n\nGrowth in the Christian life is described as holding truth and love together within a community.",
+        "explanation": "Believers are no more to be children tossed to and fro, but speaking the truth in love are to grow up into him which is the head, even Christ (4:13-16).",
         "references": [
-          "[\"Ephesians 4:13-16\"]"
+          "Ephesians 4:13-16"
         ]
       },
       {
         "theme": "Putting off the old self, putting on the new",
-        "explanation": "Believers must no longer live like unbelieving Gentiles in futile thinking. They are to put off the old self, be renewed in the spirit of their minds, and put on the new self, created after God's likeness in righteousness and holiness.\n\nThe change is described using the image of changing clothes, combining a decisive change with ongoing renewal.\n\nThe chapter teaches that a new identity in Christ should lead to a changed mind and changed behavior.",
+        "explanation": "They are to put off the old man, be renewed in the spirit of their mind, and put on the new man, created in righteousness and true holiness (4:17-24).",
         "references": [
-          "[\"Ephesians 4:17-24\"]"
+          "Ephesians 4:17-24"
         ]
       },
       {
         "theme": "Words and actions that build up",
-        "explanation": "Believers are to speak truth, not let anger lead to sin, work honestly in order to share, use words that give grace, avoid grieving the Spirit, put away bitterness and malice, and be kind and forgiving as God forgave them in Christ.\n\nSeveral commands echo the Old Testament: 4:25 recalls Zechariah 8:16, and 4:26 quotes Psalm 4:4 (in the Greek version). Each command gives a positive replacement, not just a prohibition.\n\nForgiveness and kindness are grounded in God's forgiveness, not in whether others deserve it.",
+        "explanation": "Believers are to put away lying, let no corrupt communication proceed out of their mouth, and be kind, tenderhearted, forgiving one another as God for Christ's sake hath forgiven them (4:25-32).",
         "references": [
-          "[\"Ephesians 4:25-32\"]"
+          "Ephesians 4:25-32"
         ]
       }
     ],
@@ -323,76 +282,68 @@
     ]
   },
   "Ephesians 5": {
-    "summary": "Paul tells believers to imitate God as beloved children and to walk in love, just as Christ loved them and gave himself as an offering to God. Sexual immorality, impurity, greed, and crude talk have no place among God's people; instead there should be thanksgiving. Readers must not be deceived by empty words, because such behavior brings God's judgment. Once they were darkness, but now they are light in the Lord, so they should live as children of light, discovering what pleases the Lord and exposing deeds of darkness. Paul urges them to live wisely, making the best use of their time, understanding the Lord's will. Instead of getting drunk with wine, they should be filled with the Spirit, which shows itself in singing psalms, hymns, and spiritual songs, giving thanks always, and submitting to one another out of reverence for Christ. Paul then applies this to marriage: wives are to submit to their husbands as to the Lord, and husbands are to love their wives as Christ loved the church and gave himself up for her. Quoting Genesis, Paul says the two become one flesh, and calls this a profound mystery that refers to Christ and the church.",
-    "whereWeAre": "Imitate God and walk in love, as Christ loved us and gave himself as a fragrant offering.\n\nSexual immorality, impurity, greed, and crude talk should not be found among believers; such conduct brings God's judgment.\n\nOnce darkness, now light in the Lord: live as children of light and expose works of darkness.\n\nWalk wisely, make the best use of time, do not get drunk but be filled with the Spirit, sing, give thanks, and submit to one another.\n\nWives are to submit to their husbands as to the Lord, as the church submits to Christ.\n\nHusbands are to love their wives as Christ loved the church and gave himself for her; marriage reflects the mystery of Christ and the church. The household instructions beginning at 5:22 follow the familiar three-pair pattern (continuing into 6:1-9), but they ground each relationship in Christ and address both parties as responsible. Warnings about immorality and drunkenness addressed real temptations in the readers' surroundings.",
+    "summary": "Paul tells believers to be followers of God as dear children and to walk in love, as Christ also hath loved us, and hath given himself for us (Ephesians 5:1–2). Fornication, uncleanness, and covetousness are not once to be named among saints, and no one is to be deceived with vain words (Ephesians 5:3–7). Once darkness, they are now light in the Lord and are to walk as children of light, having no fellowship with the unfruitful works of darkness (Ephesians 5:8–14). They are to walk circumspectly, redeeming the time, not be drunk with wine but be filled with the Spirit, speaking in psalms and hymns and spiritual songs, and submitting themselves one to another in the fear of God (Ephesians 5:15–21). Wives are to submit to their husbands as unto the Lord, and husbands to love their wives as Christ loved the church and gave himself for it; the two shall be one flesh, a great mystery concerning Christ and the church (Ephesians 5:22–33).",
+    "whereWeAre": "Chapter 4 ended with believers forgiving one another as God for Christ's sake forgave them (4:32). Chapter 5 continues: walk in love as Christ loved us, walk as children of light, be filled with the Spirit, and let that love shape marriage, with Christ and the church as the pattern (5:1-33). Chapter 6 completes the household instructions and ends with spiritual armour.",
     "keyFigures": [
       {
-        "name": "God the Father",
-        "role": "The Father whom believers imitate as beloved children. The one to whom Christ offered himself and whose judgment comes on disobedience. Believers' conduct is meant to reflect their relationship to God as children."
+        "name": "Paul",
+        "role": "Calls believers to be followers of God as dear children, to walk in love, and to be filled with the Spirit (5:1-2,18)."
       },
       {
-        "name": "Jesus Christ",
-        "role": "The one who loved and gave himself up for believers and for the church. His self-giving love is the model for walking in love and for husbands' love; he is head of the church and its Savior. Christ's relationship to the church is the pattern for the marriage teaching."
+        "name": "Christ",
+        "role": "Loved us and gave himself for us, and loved the church and gave himself for it to sanctify and cleanse it (5:2,25-26)."
       },
       {
-        "name": "The Holy Spirit",
-        "role": "The Spirit with whom believers are to be filled. Being filled with the Spirit leads to worship, thanksgiving, and mutual submission. The Spirit's influence is contrasted with drunkenness."
-      },
-      {
-        "name": "Believers as 'beloved children' and 'children of light'",
-        "role": "The readers, described by their new identity. Called to imitate God and walk as children of light. Instructions flow from identity: they are light, so they are to live as light."
-      },
-      {
-        "name": "The 'sons of disobedience'",
-        "role": "People who practice the behaviors listed in 5:3-5 and deceive others with empty words. Believers are told not to become partners with them. The text does not identify a specific group; it describes a pattern of life."
+        "name": "Believers",
+        "role": "Once darkness, now light in the Lord, told to walk as children of light and to redeem the time (5:8,15-16)."
       },
       {
         "name": "Wives and husbands",
-        "role": "Married believers in the church. Wives are told to submit to their husbands and respect them; husbands are told to love their wives as Christ loved the church and as their own bodies. The passage addresses both spouses directly as responsible members of the church. Christians interpret its teaching on headship and submission in different ways (see Key Themes)."
+        "role": "Wives are told to submit to their husbands as unto the Lord, and husbands to love their wives as Christ loved the church (5:22-25)."
       },
       {
         "name": "The church",
-        "role": "The body of Christ. Christ loves, cleanses, nourishes, and cherishes the church. The chapter presents marriage as reflecting the relationship between Christ and the church."
+        "role": "Subject to Christ, and the picture of what husband and wife are to be to each other in the great mystery (5:24,32)."
       },
       {
-        "name": "The first man and woman",
-        "role": "In Genesis, Adam and his wife (later named Eve). Ephesians 5:31 quotes Genesis 2:24 about a man and his wife becoming one flesh but does not name them. Listed only to identify the source of the quotation."
+        "name": "The children of disobedience",
+        "role": "Those on whom the wrath of God comes because of vain words, and with whom believers are not to be partakers (5:6-7)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Imitating God by walking in love",
-        "explanation": "Believers are to imitate God as beloved children and walk in love, following the example of Christ, who gave himself as an offering to God.\n\nLove is defined by Christ's self-sacrifice, not merely by feeling.\n\nThe passage presents self-giving love as the pattern for all of life.",
+        "explanation": "Believers are to be followers of God as dear children and walk in love, as Christ loved us and gave himself for us (5:1-2).",
         "references": [
-          "[\"Ephesians 5:1-2\"]"
+          "Ephesians 5:1-2"
         ]
       },
       {
         "theme": "Holiness in conduct and speech",
-        "explanation": "Sexual immorality, impurity, greed (which Paul calls idolatry), and crude or foolish talk are unfitting for God's people; thanksgiving should replace them.\n\nPaul links greed to idolatry, showing that misplaced desire is a form of false worship.\n\nHoliness is described as extending to speech and desires, not only actions.",
+        "explanation": "Fornication, uncleanness, covetousness, and filthiness are not to be named among saints, but rather giving of thanks (5:3-7).",
         "references": [
-          "[\"Ephesians 5:3-7\"]"
+          "Ephesians 5:3-7"
         ]
       },
       {
         "theme": "Living as children of light",
-        "explanation": "Believers were once darkness but are now light in the Lord, so they should produce what is good, right, and true, discern what pleases the Lord, and expose fruitless works of darkness.\n\nVerse 5:14 ('Awake, O sleeper...') appears to quote a saying whose source is unknown; many scholars think it may come from an early Christian hymn, possibly connected with baptism, and it echoes passages such as Isaiah 60:1.\n\nThe chapter teaches that a believer's life should reflect a change from darkness to light.",
+        "explanation": "Once darkness but now light in the Lord, believers are to walk as children of light and reprove the unfruitful works of darkness (5:8-14).",
         "references": [
-          "[\"Ephesians 5:8-14\"]"
+          "Ephesians 5:8-14"
         ]
       },
       {
         "theme": "Wisdom and being filled with the Spirit",
-        "explanation": "Believers should walk wisely, make the most of their time, understand the Lord's will, and instead of being drunk with wine be filled with the Spirit, expressed in worshipful singing, constant thanksgiving, and submitting to one another out of reverence for Christ.\n\nIn Greek, 5:18-21 is one connected sentence, so singing, thanksgiving, and mutual submission are all described as results of being filled with the Spirit.\n\nThe Spirit-filled life is presented as shaping worship, gratitude, and relationships.",
+        "explanation": "Believers are to walk circumspectly, not be drunk with wine but filled with the Spirit, singing and giving thanks, submitting one to another in the fear of God (5:15-21).",
         "references": [
-          "[\"Ephesians 5:15-21\"]"
+          "Ephesians 5:15-21"
         ]
       },
       {
         "theme": "Marriage reflecting Christ and the church",
-        "explanation": "Wives are to submit to their husbands as to the Lord; husbands are to love their wives as Christ loved the church and gave himself up for her, caring for them as their own bodies. Paul calls the 'one flesh' union a profound mystery that refers to Christ and the church.\n\nChristians interpret this passage in different ways. Some understand it as establishing distinct, lasting roles of husbandly leadership and wifely submission; others emphasize mutual submission (5:21) and read the specific instructions as addressing first-century household structures in a way that pointed beyond them. Many in both groups stress that the husband's model is Christ's sacrificial love.\n\nThe passage presents marriage as a relationship shaped by Christ's self-giving love and reverence for him.",
+        "explanation": "Husbands are to love their wives as Christ loved the church and gave himself for it, and wives are to reverence their husbands, a great mystery concerning Christ and the church (5:21-33).",
         "references": [
-          "[\"Ephesians 5:21-33\"]"
+          "Ephesians 5:21-33"
         ]
       }
     ],
@@ -405,76 +356,68 @@
     ]
   },
   "Ephesians 6": {
-    "summary": "Paul continues his household instructions. Children are to obey their parents in the Lord, honoring father and mother, the first commandment with a promise. Fathers are not to provoke their children to anger but to bring them up in the discipline and instruction of the Lord. Slaves are to obey their earthly masters sincerely, as if serving Christ, knowing the Lord will reward everyone, slave or free, for whatever good they do. Masters are to treat their slaves the same way and stop threatening them, since both have the same Master in heaven, who shows no favoritism. Paul then calls believers to be strong in the Lord and put on the whole armor of God so they can stand against the devil's schemes, because their struggle is not against human enemies but against spiritual forces of evil. He describes the armor: the belt of truth, the breastplate of righteousness, shoes ready with the gospel of peace, the shield of faith, the helmet of salvation, and the sword of the Spirit, which is the word of God. He urges constant prayer for all believers and asks them to pray that he would speak boldly as an 'ambassador in chains.' The letter closes with news that Tychicus is coming to tell them about Paul, and with a blessing of peace, love, faith, and grace.",
-    "whereWeAre": "Children are to obey and honor their parents; fathers are not to provoke their children but raise them in the Lord's discipline and instruction.\n\nSlaves are to serve their masters sincerely as serving Christ; masters are to stop threatening, knowing they share the same Master in heaven.\n\nBe strong in the Lord and put on God's full armor, because the struggle is against spiritual forces of evil.\n\nThe armor: truth, righteousness, readiness from the gospel of peace, faith, salvation, and the word of God.\n\nPray at all times for all the saints and for Paul's boldness as an ambassador in chains.\n\nTychicus will bring news of Paul; final blessing of peace, love, faith, and grace. The household instructions completed the familiar three-pair pattern that began in 5:22. The armor imagery drew on Isaiah and on the sight of Roman soldiers, and the call to stand against spiritual powers spoke to readers who had once sought protection from such powers through magic.",
+    "summary": "Children are to obey their parents in the Lord, for this is the first commandment with promise, and fathers are not to provoke their children to wrath but bring them up in the nurture and admonition of the Lord (Ephesians 6:1–4). Servants are to be obedient to their masters, as unto Christ, and masters are to forbear threatening, knowing that their Master is also in heaven, with whom is no respect of persons (Ephesians 6:5–9). Believers are to be strong in the Lord and put on the whole armour of God to stand against the wiles of the devil, for they wrestle not against flesh and blood (Ephesians 6:10–13). The armour is the girdle of truth, the breastplate of righteousness, feet shod with the preparation of the gospel of peace, the shield of faith, the helmet of salvation, and the sword of the Spirit, which is the word of God (Ephesians 6:14–17). Paul asks prayer for boldness as an ambassador in bonds, and says Tychicus will tell them his affairs, with a closing blessing (Ephesians 6:18–24).",
+    "whereWeAre": "Chapter 5 ended with husbands and wives and the great mystery of Christ and the church (5:32-33). Chapter 6 completes the household instructions to children, fathers, servants, and masters, then calls believers to put on the whole armour of God against the devil's wiles, asks prayer for Paul's boldness, and closes with Tychicus's news (6:1-24). Philippians, also written from prison, follows.",
     "keyFigures": [
       {
-        "name": "Children and parents (especially fathers)",
-        "role": "Members of believing households. Children are to obey and honor their parents; fathers are not to provoke their children but nurture them in the Lord. Children are addressed directly as members of the church, and fathers' authority is limited by concern for their children."
-      },
-      {
-        "name": "Slaves (bondservants) and masters",
-        "role": "People in a common Roman social relationship. The Greek word doulos means slave; older translations such as the KJV say 'servants.' Slaves are to serve sincerely as to Christ; masters are to treat them in the same spirit and stop threatening them. Both are reminded that they answer to the same Lord, who shows no partiality (6:9)."
-      },
-      {
-        "name": "The Lord (Christ) as Master in heaven",
-        "role": "The one Lord over both slaves and masters. Rewards good work and shows no favoritism; believers are to be strong in him. His lordship relativizes every earthly authority."
-      },
-      {
-        "name": "The devil and spiritual forces of evil",
-        "role": "The devil (also called 'the evil one') and rulers, authorities, cosmic powers over this present darkness, and spiritual forces of evil in the heavenly places. The real opponents in believers' struggle. The chapter presents the Christian life as involving spiritual conflict, while focusing on standing firm rather than on describing these powers in detail."
-      },
-      {
         "name": "Paul",
-        "role": "An 'ambassador in chains.'. Asks for prayer for boldness and sends Tychicus with news. Even in prison, his main concern is proclaiming the gospel."
+        "role": "An ambassador in bonds who asks prayer that he may speak boldly the mystery of the gospel (6:19-20)."
       },
       {
         "name": "Tychicus",
-        "role": "A 'beloved brother and faithful minister.' (Acts 20:4) lists him among Paul's companions from Asia; he is also mentioned in Colossians 4:7, 2 Timothy 4:12, and Titus 3:12. Sent to tell the readers about Paul and encourage them; he was probably the letter's carrier. The near-identical note in Colossians 4:7-8 suggests the two letters were sent together."
+        "role": "A beloved brother and faithful minister whom Paul sends to tell them his affairs and comfort their hearts (6:21-22)."
       },
       {
-        "name": "The saints and brothers",
-        "role": "All believers. Objects of prayer and recipients of the final blessing. The letter ends where it began, with grace and peace for God's people (compare 1:2)."
+        "name": "Children and parents",
+        "role": "Children are to obey their parents in the Lord, and fathers are not to provoke them to wrath (6:1-4)."
       },
       {
-        "name": "God the Father",
-        "role": "The giver of the armor and source of peace, love, and faith. The armor is 'of God'; peace and love come from God the Father and the Lord Jesus Christ. Believers' strength comes from God, not from themselves."
+        "name": "Servants and masters",
+        "role": "Servants are to obey as unto Christ, and masters to forbear threatening, since both have the same Master in heaven (6:5-9)."
+      },
+      {
+        "name": "The devil and spiritual wickedness",
+        "role": "The wiles and rulers of darkness against which believers wrestle, not against flesh and blood (6:11-12)."
+      },
+      {
+        "name": "The saints",
+        "role": "Those for whom Paul asks continual prayer and supplication in the Spirit (6:18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Family relationships in the Lord",
-        "explanation": "Children are to obey their parents in the Lord and honor father and mother, the first commandment with a promise; fathers are not to provoke their children but bring them up in the Lord's discipline and instruction.\n\nPaul quotes the commandment from Exodus 20:12 and Deuteronomy 5:16. The instruction to fathers places limits on parental authority.\n\nThe passage presents family life as shaped by mutual responsibility before the Lord.",
+        "explanation": "Children are to obey their parents in the Lord and honour them, and fathers are to bring up their children in the nurture and admonition of the Lord (6:1-4).",
         "references": [
-          "[\"Ephesians 6:1-4\"]"
+          "Ephesians 6:1-4"
         ]
       },
       {
         "theme": "Work and authority before one Master",
-        "explanation": "Slaves are to serve wholeheartedly as serving Christ, and masters are to stop threatening them, because both have the same Master in heaven who shows no favoritism.\n\nPaul addresses slavery as it existed without calling for its abolition, and Christians have long discussed how to understand this. Many note that the passage treats slaves as morally responsible persons equal before God and limits masters' power. Historically, passages like this were cited by both defenders and opponents of slavery, and many abolitionists drew on Christian teaching about human equality before God. Readers today often apply the principles to employment, while recognizing that ancient slavery and modern work are very different.\n\nFaithful work and fair treatment of others are both presented as service to the Lord.",
+        "explanation": "Servants are to obey as unto Christ and masters to forbear threatening, for their Master is in heaven, and there is no respect of persons with him (6:5-9).",
         "references": [
-          "[\"Ephesians 6:5-9\"]"
+          "Ephesians 6:5-9"
         ]
       },
       {
         "theme": "Strength in the Lord for spiritual conflict",
-        "explanation": "Believers are to be strong in the Lord and in his mighty power, putting on God's full armor, because their struggle is not against flesh and blood but against spiritual forces of evil.\n\nThe repeated call to 'stand' (6:11, 13-14) emphasizes holding firm rather than attacking.\n\nThe chapter teaches that believers' ultimate opponents are not other people, and that strength comes from God.",
+        "explanation": "Believers are to be strong in the Lord and put on the whole armour of God, for they wrestle not against flesh and blood but against principalities and powers (6:10-13).",
         "references": [
-          "[\"Ephesians 6:10-13\"]"
+          "Ephesians 6:10-13"
         ]
       },
       {
         "theme": "The armor of God",
-        "explanation": "The armor includes the belt of truth, the breastplate of righteousness, readiness from the gospel of peace, the shield of faith, the helmet of salvation, and the sword of the Spirit, which is the word of God.\n\nMuch of this imagery comes from Isaiah, which describes God and his Messiah wearing righteousness as a breastplate and salvation as a helmet (Isaiah 59:17; compare 11:5; 52:7). The pieces of armor are spiritual qualities and gifts that God provides.\n\nTruth, righteousness, the gospel, faith, salvation, and God's word are presented as the believer's protection.",
+        "explanation": "The armour is truth, righteousness, the preparation of the gospel of peace, faith, salvation, and the word of God as the sword of the Spirit (6:14-17).",
         "references": [
-          "[\"Ephesians 6:14-17\"]"
+          "Ephesians 6:14-17"
         ]
       },
       {
         "theme": "Prayer and bold proclamation",
-        "explanation": "Believers are to pray at all times in the Spirit, stay alert, and pray for all the saints and for Paul, that he would speak the gospel boldly as an ambassador in chains.\n\nPrayer is closely connected to the armor passage; it is how believers 'stand.'\n\nPersistent prayer for one another, and for those who proclaim the gospel, is presented as essential.",
+        "explanation": "Believers are to pray always with all prayer and supplication in the Spirit, and Paul asks that he may open his mouth boldly to make known the mystery of the gospel (6:18-20).",
         "references": [
-          "[\"Ephesians 6:18-20\"]"
+          "Ephesians 6:18-20"
         ]
       }
     ],

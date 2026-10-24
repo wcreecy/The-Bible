@@ -1,50 +1,50 @@
 {
   "2 Corinthians 1": {
     "summary": "Paul and Timothy greet the believers in Corinth and throughout Achaia (2 Corinthians 1:1–2). Paul praises God as the source of mercy and comfort: the consolation he receives in affliction enables him to help others (2 Corinthians 1:3–7). He describes a severe ordeal in Asia that made him despair of life and taught him to rely on God who raises the dead; he requests their prayers (2 Corinthians 1:8–11). Defending his sincerity, Paul explains his changed travel itinerary and insists that his message about Christ is not unreliable, because God’s promises find their Yes in Christ (2 Corinthians 1:12–22). He says he delayed returning to Corinth to spare them a painful encounter, not to dominate their faith (2 Corinthians 1:23–24). The chapter introduces the letter’s intertwined concerns: suffering, trust, strained relationships, and the integrity of apostolic ministry.",
-    "whereWeAre": "The opening references a difficult but unspecified crisis in Asia (1:8) and a change of plans involving Macedonia and Corinth (1:15–16). The precise incident cannot be identified from surviving evidence. These circumstances illuminate why 2 Corinthians 1 addresses reconciliation, suffering, and the credibility of Paul’s ministry.",
+    "whereWeAre": "First Corinthians ended with Paul's travel plans and greetings from Ephesus (1 Corinthians 16:5-24). Second Corinthians, written from Macedonia after more trouble, opens by praising the God of all comfort for rescuing him from a crushing ordeal in Asia, then answers the charge that he is unreliable because he changed his travel plans (1:1-24). Chapter 2 explains why he held back from another painful visit.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Letter writer and apostle. Explains his suffering and the reasons for delaying a visit"
+        "role": "Praises God for comfort in affliction, describes the ordeal in Asia that made him despair of life, and explains why he changed his travel plans (1:3-17)."
       },
       {
         "name": "Timothy",
-        "role": "Coworker named in the opening greeting. Shares the salutation to the churches"
+        "role": "Named with Paul in the greeting, and with Silvanus a preacher of the Son of God whose word was not yea and nay (1:1,19)."
       },
       {
         "name": "Corinthian and Achaian believers",
-        "role": "Recipients of the letter. Are invited to pray and to understand Paul’s intentions"
+        "role": "Addressed in the greeting and asked to help Paul by prayer (1:1,11)."
       },
       {
         "name": "Silvanus (Silas)",
-        "role": "Preacher named alongside Paul and Timothy in 1:19 Supports Paul’s appeal to the reliability of their proclamation"
+        "role": "Named with Paul and Timothy as preaching Jesus Christ among the Corinthians (1:19)."
       }
     ],
     "keyThemes": [
       {
         "theme": "God comforts in affliction",
-        "explanation": "",
+        "explanation": "God comforts Paul in all his tribulation so that he can comfort others with the same comfort (1:3-7).",
         "references": [
           "2 Corinthians 1:3-7"
         ]
       },
       {
         "theme": "Reliance on God, not self",
-        "explanation": "",
+        "explanation": "Paul despaired even of life in Asia so that he would trust not in himself but in God who raises the dead (1:8-11).",
         "references": [
           "2 Corinthians 1:8-11"
         ]
       },
       {
         "theme": "Integrity and God’s promises",
-        "explanation": "",
+        "explanation": "Paul says his word was not yea and nay, because all the promises of God in Christ are yea and Amen (1:12-22).",
         "references": [
           "2 Corinthians 1:12-22"
         ]
       },
       {
         "theme": "Care rather than control",
-        "explanation": "",
+        "explanation": "Paul stayed away to spare them, not because he has dominion over their faith but because he is a helper of their joy (1:23-24).",
         "references": [
           "2 Corinthians 1:23-24"
         ]
@@ -53,55 +53,55 @@
     "explainedReferences": []
   },
   "2 Corinthians 2": {
-    "summary": "Paul explains that he chose not to make another sorrowful visit and had written with tears so that the Corinthians would recognize his love (2 Corinthians 2:1–4). He urges the congregation to forgive, comfort, and reaffirm love for someone who has caused grief and received punishment from the majority (2 Corinthians 2:5–11). The person is unnamed here, and identifying the incident with 1 Corinthians 5 remains uncertain. Paul recounts finding an opening for gospel work in Troas but leaving for Macedonia because he could not find (Titus 2) Corinthians 2:12–13. He then celebrates God’s leading in Christ, describing the gospel ministry through the image of a fragrance perceived differently by those who respond and those who do not (2 Corinthians 2:14–17). The chapter presents restoration after discipline alongside Paul’s vulnerability and responsibility to proclaim sincerely.",
-    "whereWeAre": "The chapter presupposes an earlier painful encounter and letter, but their full details are not extant. Troas and Macedonia were important sites on Paul’s Aegean travel network. These circumstances illuminate why 2 Corinthians 2 addresses reconciliation, suffering, and the credibility of Paul’s ministry.",
+    "summary": "Paul explains that he chose not to make another sorrowful visit and had written with tears so that the Corinthians would recognize his love (2 Corinthians 2:1–4). He urges the congregation to forgive, comfort, and reaffirm love for someone who has caused grief and received punishment from the majority (2 Corinthians 2:5–11). The person is unnamed here, and identifying the incident with 1 Corinthians 5 remains uncertain. Paul recounts finding an opening for gospel work in Troas but leaving for Macedonia because he could not find Titus (2 Corinthians 2:12–13). He then celebrates God’s leading in Christ, describing the gospel ministry through the image of a fragrance perceived differently by those who respond and those who do not (2 Corinthians 2:14–17). The chapter presents restoration after discipline alongside Paul’s vulnerability and responsibility to proclaim sincerely.",
+    "whereWeAre": "Chapter 1 ended with Paul saying he stayed away to spare the Corinthians, not to rule over their faith (1:23-24). Chapter 2 explains the painful letter he wrote instead, urges them to forgive and comfort the person they disciplined, and describes his anxious search for Titus before he thanks God for leading him in triumph in Christ (2:1-17). Chapter 3 answers the question of Paul's credentials.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle writing after painful exchanges. Calls for forgiveness and explains his anxious search for Titus"
+        "role": "Explains that he wrote out of much affliction and anguish of heart and urges forgiveness, then tells of having no rest in Troas because he did not find Titus (2:3-4,10-13)."
       },
       {
         "name": "The person who caused grief",
-        "role": "Unidentified disciplined member. Becomes the focus of the plea for comfort and restoration"
+        "role": "A member punished by the majority, whom Paul now asks the church to forgive and comfort (2:5-8)."
       },
       {
         "name": "The Corinthian majority",
-        "role": "Community that imposed a penalty. Is asked to reaffirm love toward the disciplined person"
+        "role": "Imposed the punishment and are asked to confirm their love toward him (2:6-8)."
       },
       {
         "name": "Titus",
-        "role": "Paul’s coworker. His absence in Troas prompts Paul to travel to Macedonia"
+        "role": "Paul's brother whose absence in Troas left him without rest, so he went on to Macedonia (2:12-13)."
       },
       {
         "name": "Christ",
-        "role": "One proclaimed in the gospel. Central to Paul’s imagery of triumph and fragrance"
+        "role": "The one in whom God always causes Paul to triumph and through whom the knowledge of God spreads like a sweet savour (2:14-15)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Discipline with restoration",
-        "explanation": "",
+        "explanation": "Paul asks the church to forgive and comfort the person punished by the many, lest he be swallowed up with overmuch sorrow (2:5-8).",
         "references": [
           "2 Corinthians 2:5-8"
         ]
       },
       {
         "theme": "Forgiveness and communal health",
-        "explanation": "",
+        "explanation": "Forgiveness keeps Satan from getting an advantage, for believers are not ignorant of his devices (2:9-11).",
         "references": [
           "2 Corinthians 2:9-11"
         ]
       },
       {
         "theme": "Vulnerability in ministry",
-        "explanation": "",
+        "explanation": "Though a door was opened in Troas, Paul had no rest in his spirit because he did not find Titus (2:12-13).",
         "references": [
           "2 Corinthians 2:12-13"
         ]
       },
       {
         "theme": "Integrity in proclamation",
-        "explanation": "",
+        "explanation": "Paul is a sweet savour of Christ in those who are saved and those who perish, and unlike many does not corrupt the word of God (2:14-17).",
         "references": [
           "2 Corinthians 2:14-17"
         ]
@@ -111,50 +111,50 @@
   },
   "2 Corinthians 3": {
     "summary": "Paul rejects the suggestion that he needs letters of recommendation: the Corinthian community itself is a letter from Christ, written not with ink but by the Spirit on human hearts (2 Corinthians 3:1–3). He attributes his ministry’s adequacy to God and contrasts the letter that kills with the Spirit who gives life (2 Corinthians 3:4–6). Using the giving of the Law and Moses’ radiant face as images, he compares a glorious but passing ministry associated with condemnation to the surpassing and lasting glory of the Spirit’s ministry (2 Corinthians 3:7–11). He discusses the veil in Moses’ story and speaks of its removal in turning to the Lord (2 Corinthians 3:12–16). The chapter closes with freedom and transformation as believers behold the Lord’s glory (2 Corinthians 3:17–18). Interpretations of the covenant contrast differ; it should not be turned into a sweeping claim that Jewish people are uniformly spiritually blind.",
-    "whereWeAre": "Paul draws directly on Exodus 34:29–35 and prophetic language of an inwardly written covenant (compare Jeremiah 31:31–34), while addressing the status of his ministry in a mixed first-century Christian congregation. These circumstances illuminate why 2 Corinthians 3 addresses reconciliation, suffering, and the credibility of Paul’s ministry.",
+    "whereWeAre": "Chapter 2 ended with Paul asking who is sufficient for the work of the gospel (2:16-17). Chapter 3 answers that the Corinthians themselves are Christ's letter of recommendation, written by the Spirit on hearts, and that the new covenant's ministry of the Spirit surpasses the glory that faded from Moses' face (3:1-18). Chapter 4 shows how that ministry is carried out.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle defending the basis of his ministry. Describes the congregation as evidence of the Spirit’s work"
+        "role": "Says he needs no letters of commendation, since the Corinthians are his epistle written by the Spirit, and calls himself an able minister of the new testament (3:1-6)."
       },
       {
         "name": "The Corinthians",
-        "role": "Community addressed. Are pictured as Christ’s living letter"
+        "role": "Described as the epistle of Christ, written not with ink but with the Spirit of the living God in fleshy tables of the heart (3:2-3)."
       },
       {
         "name": "Moses",
-        "role": "Scriptural figure from Exodus. Provides the veil and covenant imagery"
+        "role": "Put a veil over his face so Israel could not look on the fading glory, an image Paul uses for the old covenant (3:7,13)."
       },
       {
         "name": "Christ and the Spirit",
-        "role": "Central theological subjects. Represent the new-covenant ministry and transforming freedom"
+        "role": "The one who takes away the veil, and the Lord Spirit who gives liberty and changes believers into the same image (3:14-18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Lives as testimony",
-        "explanation": "",
+        "explanation": "The Corinthians are Christ's epistle, known and read of all men, written by the Spirit of the living God (3:1-3).",
         "references": [
           "2 Corinthians 3:1-3"
         ]
       },
       {
         "theme": "God-enabled ministry",
-        "explanation": "",
+        "explanation": "Paul's sufficiency is of God, who made him an able minister of the new testament, of the spirit and not the letter (3:4-6).",
         "references": [
           "2 Corinthians 3:4-6"
         ]
       },
       {
         "theme": "Covenant glory",
-        "explanation": "",
+        "explanation": "The ministry of the Spirit is more glorious than the ministry of condemnation, whose glory was passing away (3:7-11).",
         "references": [
           "2 Corinthians 3:7-11"
         ]
       },
       {
         "theme": "Freedom and transformation",
-        "explanation": "",
+        "explanation": "Where the Spirit of the Lord is, there is liberty, and believers are changed into the same image from glory to glory (3:12-18).",
         "references": [
           "2 Corinthians 3:12-18"
         ]
@@ -164,50 +164,50 @@
   },
   "2 Corinthians 4": {
     "summary": "Paul says that because ministry comes through God’s mercy, he refuses deceitful methods or manipulation of the message (2 Corinthians 4:1–2). Although some do not recognize the gospel, Paul proclaims Jesus Christ as Lord and describes the God who commanded light at creation as shining in hearts through knowledge of Christ (2 Corinthians 4:3–6). This treasure is held in fragile clay jars so that the extraordinary power is understood to come from God rather than from human strength (2 Corinthians 4:7). He lists pressures, persecution, and hardships that do not finally destroy him and relates his suffering to making Jesus’ life visible (2 Corinthians 4:8–12). Paul trusts the God who raised Jesus and anticipates thanksgiving spreading through the community (2 Corinthians 4:13–15). He concludes that present suffering, real though it is, does not exhaust the story: inward renewal and hope orient attention toward what is unseen and lasting (2 Corinthians 4:16–18).",
-    "whereWeAre": "The letter reflects the vulnerability of itinerant teachers in Roman provincial society, where travel, poverty, public criticism, and imprisonment were real possibilities; the exact troubles listed are not individually dated. These circumstances illuminate why 2 Corinthians 4 addresses reconciliation, suffering, and the credibility of Paul’s ministry.",
+    "whereWeAre": "Chapter 3 ended with believers being changed from glory to glory as they behold the Lord (3:18). Chapter 4 says this ministry needs no trickery, since the light of the gospel shines in hearts, but the treasure is held in earthen vessels so that the power is plainly God's, and present troubles are light beside what is eternal (4:1-18). Chapter 5 looks past the perishing body.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle speaking about ministry. Describes weakness, integrity, and enduring hope"
+        "role": "Renounces hidden dishonesty, preaches Christ Jesus the Lord, and describes carrying the treasure in earthen vessels while troubled on every side (4:1-9)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Lord whom Paul proclaims. His death and life shape Paul’s understanding of ministry"
+        "role": "The Lord whom Paul preaches and whose life is made manifest in believers' mortal flesh (4:5,10-11)."
       },
       {
         "name": "God",
-        "role": "Source of light and resurrection hope Empowers ministry amid frailty"
+        "role": "Commanded the light to shine out of darkness, shines in hearts to give the knowledge of his glory, and raised up the Lord Jesus (4:6,14)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Beneficiaries of Paul’s ministry. Are meant to share in grace and thanksgiving"
+        "role": "Those for whose sakes all things are done, so that abundant grace may increase thanksgiving to the glory of God (4:15)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Truthful ministry",
-        "explanation": "",
+        "explanation": "Paul has renounced the hidden things of dishonesty and commends himself by manifestation of the truth, since God shines in hearts (4:1-6).",
         "references": [
           "2 Corinthians 4:1-6"
         ]
       },
       {
         "theme": "Treasure in fragile vessels",
-        "explanation": "",
+        "explanation": "This treasure is in earthen vessels so the excellency of the power may be of God and not of us (4:7-9).",
         "references": [
           "2 Corinthians 4:7-9"
         ]
       },
       {
         "theme": "Life through suffering",
-        "explanation": "",
+        "explanation": "Always bearing about in the body the dying of the Lord Jesus, that his life may be made manifest, so that death works in Paul and life in them (4:10-15).",
         "references": [
           "2 Corinthians 4:10-15"
         ]
       },
       {
         "theme": "Renewed perspective",
-        "explanation": "",
+        "explanation": "The outward man perisheth but the inward is renewed day by day, and affliction is light compared with the eternal weight of glory (4:16-18).",
         "references": [
           "2 Corinthians 4:16-18"
         ]
@@ -223,50 +223,50 @@
   },
   "2 Corinthians 5": {
     "summary": "Continuing his reflection on mortality, Paul compares the present body to an earthly tent and longs for a lasting dwelling from God (2 Corinthians 5:1–5). He expresses confidence while living by faith rather than sight, acknowledging a longing to be with the Lord (2 Corinthians 5:6–8). Because all must appear before Christ’s judgment seat, he seeks to please Christ and persuade others sincerely (2 Corinthians 5:9–13). Christ’s love constrains him: one died for all, and those who live are called not to live merely for themselves (2 Corinthians 5:14–15). Paul declares that in Christ there is new creation and that God has entrusted the message of reconciliation to his ambassadors (2 Corinthians 5:16–20). The final verse connects Christ’s sinlessness, his bearing of sin, and believers’ becoming God’s righteousness in him (2 Corinthians 5:21). Christians differ about some details of Paul’s imagery of embodiment and the exact theological account of atonement.",
-    "whereWeAre": "Paul’s statements address mortality, apostolic credibility, and communal alienation in the first-century churches rather than offering a full chronological account of the afterlife. These circumstances illuminate why 2 Corinthians 5 addresses reconciliation, suffering, and the credibility of Paul’s ministry.",
+    "whereWeAre": "Chapter 4 ended with Paul fixing his eyes on the things that are not seen, which are eternal (4:18). Chapter 5 pictures the body as a tent and a building from God waiting, says all must appear before the judgment seat of Christ, and describes believers as a new creation given the ministry of reconciliation as ambassadors for Christ (5:1-21). Chapter 6 turns that appeal toward the Corinthians.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle and speaker. Explains hope, accountability, and his ministry of reconciliation"
+        "role": "Groans in the earthly tent, labours to be accepted of the Lord, and says the love of Christ constrains him to be an ambassador (5:2,9,14,20)."
       },
       {
         "name": "Christ",
-        "role": "Risen Lord and reconciler. The center of Paul’s language about judgment and new creation"
+        "role": "Died for all, will judge from his seat, and was made sin for us who knew no sin (5:10,15,21)."
       },
       {
         "name": "God",
-        "role": "Actor in reconciliation. Works through Christ and entrusts its message"
+        "role": "Reconciled us to himself by Jesus Christ and committed to us the word of reconciliation (5:18-19)."
       },
       {
         "name": "Those in Christ",
-        "role": "Community described as new creation. Are addressed as recipients and representatives of reconciliation"
+        "role": "Called a new creature, for old things are passed away and all things are become new (5:17)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Hope beyond mortality",
-        "explanation": "",
+        "explanation": "If the earthly tent is dissolved believers have a building of God, an house not made with hands, and prefer to be present with the Lord (5:1-8).",
         "references": [
           "2 Corinthians 5:1-8"
         ]
       },
       {
         "theme": "Accountable living",
-        "explanation": "",
+        "explanation": "All must appear before the judgment seat of Christ, so Paul labours to be accepted of him and persuades men (5:9-13).",
         "references": [
           "2 Corinthians 5:9-13"
         ]
       },
       {
         "theme": "New creation",
-        "explanation": "",
+        "explanation": "The love of Christ constrains Paul, and if any man be in Christ he is a new creature (5:14-17).",
         "references": [
           "2 Corinthians 5:14-17"
         ]
       },
       {
         "theme": "Reconciliation",
-        "explanation": "",
+        "explanation": "God was in Christ reconciling the world to himself, and Paul and others are ambassadors for Christ, beseeching men to be reconciled (5:18-21).",
         "references": [
           "2 Corinthians 5:18-21"
         ]
@@ -275,51 +275,51 @@
     "explainedReferences": []
   },
   "2 Corinthians 6": {
-    "summary": "Paul appeals to his hearers not to receive God’s grace in vain, citing the time of divine favor and salvation (2 Corinthians 6:1–2). He describes the effort to give no needless offense while enduring afflictions, beatings, imprisonments, sleeplessness, and hunger; he also names patience, sincere love, truthful speech, and God’s power (2 Corinthians 6:3–10). The string of contrasts—sorrowful yet rejoicing, poor yet enriching many—underscores how paradoxical his ministry looks (2 Corinthians 6:8–10). Addressing the Corinthians openly, he asks them to widen their hearts toward him (2 Corinthians 6:11–13). He then warns against unequal partnership with unbelief, contrasting righteousness with lawlessness and God’s temple with idols (2 Corinthians 6:14–18). The passage’s precise application to marriage, civic relationships, and other associations is debated; its explicit imagery centers on holiness and worship.",
-    "whereWeAre": "Paul is defending an embattled mission in Greek-speaking Roman cities. Scholars debate whether 6:14–7:1 originated as part of the surrounding appeal, although it stands in the canonical letter. These circumstances illuminate why 2 Corinthians 6 addresses reconciliation, suffering, and the credibility of Paul’s ministry.",
+    "summary": "Paul appeals to his hearers not to receive God’s grace in vain, citing the time of divine favor and salvation (2 Corinthians 6:1–2). He describes the effort to give no needless offense while enduring afflictions, beatings, imprisonments, sleeplessness, and hunger; he also names patience, sincere love, truthful speech, and God’s power (2 Corinthians 6:3–10). The string of contrasts—sorrowful yet rejoicing, poor yet enriching many—underscores how paradoxical his ministry looks (2 Corinthians 6:8–10). Addressing the Corinthians openly, he asks them to widen their hearts toward him (2 Corinthians 6:11–13). He then warns against unequal partnership with unbelief, contrasting righteousness with lawlessness and God’s temple with idols (2 Corinthians 6:14–18). The passage’s precise application to marriage, civic relationships, and other associations is understood in different ways; its explicit imagery centers on holiness and worship.",
+    "whereWeAre": "Chapter 5 ended with God making Christ to be sin for us so that we might be made the righteousness of God in him (5:21). Chapter 6 urges the Corinthians not to receive God's grace in vain, lists the hardships and virtues of Paul's ministry, asks them to open their hearts, and warns against being unequally yoked with unbelievers (6:1-18). Chapter 7 continues the call to holiness and to reconciliation.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle appealing to the Corinthians Links endurance, honesty, and affection with his ministry"
+        "role": "Beseeches the Corinthians not to receive the grace of God in vain and lists stripes, imprisonments, tumults, labours, watchings, and fastings as marks of his ministry (6:1-5)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Hearers urged to respond. Are asked to open their hearts and live distinctly"
+        "role": "Told Paul's mouth is open to them, his heart enlarged, and that they are straitened in their own affections (6:11-12)."
       },
       {
         "name": "Unbelievers",
-        "role": "Group named in partnership warning. Serve as contrast in the call to holiness, not as a list of identifiable persons"
+        "role": "Named in the warning against being unequally yoked together, set against righteousness, light, and the temple of God (6:14-16)."
       },
       {
         "name": "God and Christ",
-        "role": "Divine figures central to the appeal Ground the promise of God’s presence and the call to consecration"
+        "role": "God promises to dwell in his people and be a Father to them, and Christ stands opposite Belial (6:15-18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Responding to grace",
-        "explanation": "",
+        "explanation": "Now is the accepted time and the day of salvation, so the Corinthians should not receive the grace of God in vain (6:1-2).",
         "references": [
           "2 Corinthians 6:1-2"
         ]
       },
       {
         "theme": "Faithfulness under pressure",
-        "explanation": "",
+        "explanation": "In afflictions, necessities, stripes, and imprisonments, Paul commends himself as sorrowful yet always rejoicing and poor yet making many rich (6:3-10).",
         "references": [
           "2 Corinthians 6:3-10"
         ]
       },
       {
         "theme": "Openness in relationship",
-        "explanation": "",
+        "explanation": "Paul's mouth is open and his heart enlarged, and he asks the Corinthians to be enlarged as well (6:11-13).",
         "references": [
           "2 Corinthians 6:11-13"
         ]
       },
       {
         "theme": "Holiness and loyalties",
-        "explanation": "",
+        "explanation": "Believers are not to be unequally yoked with unbelievers, for they are the temple of the living God (6:14-18).",
         "references": [
           "2 Corinthians 6:14-18"
         ]
@@ -340,50 +340,50 @@
   },
   "2 Corinthians 7": {
     "summary": "Paul begins by urging purification in light of God’s promises (2 Corinthians 7:1), then resumes his appeal for the Corinthians to receive him with open hearts (2 Corinthians 7:2–4). He describes fears and troubles upon arriving in Macedonia but says God comforted him through Titus’s arrival and the news Titus brought of the Corinthians’ concern (2 Corinthians 7:5–7). Although his earlier letter caused sorrow, Paul rejoices that their grief led to repentance rather than lasting harm (2 Corinthians 7:8–10). He distinguishes godly grief, which results in earnest action, from sorrow that does not lead to life; he lists the Corinthians’ renewed concern as evidence of a serious response (2 Corinthians 7:11–12). The meeting with Titus reinforces mutual encouragement and confidence (2 Corinthians 7:13–16). The chapter presents painful correction, when handled rightly, as a possible path to repaired relationships, not an excuse for coercive humiliation.",
-    "whereWeAre": "The letter refers to a difficult prior communication, travel through Macedonia, and Titus’s mission, but does not fully reconstruct the sequence of all visits and letters. These circumstances illuminate why 2 Corinthians 7 addresses reconciliation, suffering, and the credibility of Paul’s ministry.",
+    "whereWeAre": "Chapter 6 ended with God's promise to be a Father to those who come out and are separate (6:16-18). Chapter 7 draws the conclusion, cleansing from all filthiness, and returns to Paul's relationship with the Corinthians: he was troubled in Macedonia until Titus arrived with good news, and rejoices that godly sorrow led them to repentance (7:1-16). Chapters 8 and 9 turn to the collection.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle restoring relations. Explains his relief and the purpose of painful correction"
+        "role": "Urges cleansing from all filthiness, tells of no rest in Macedonia, and rejoices that godly sorrow worketh repentance (7:1,5,9-10)."
       },
       {
         "name": "Titus",
-        "role": "Paul’s coworker and messenger. Reports the Corinthians’ response and is comforted by them"
+        "role": "Arrives with news of the Corinthians' earnest desire, mourning, and fervent mind toward Paul, which comforts him (7:6-7,13)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Community Paul had corrected. Respond with concern and renewed commitment"
+        "role": "Sorrowed after a godly manner and showed carefulness, clearing of themselves, and zeal (7:9-11)."
       },
       {
         "name": "God",
-        "role": "Source of comfort in Paul’s account Comforts Paul through Titus’s arrival"
+        "role": "Comforts those that are cast down by the coming of Titus (7:6)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Pursuing holiness",
-        "explanation": "",
+        "explanation": "Having these promises, believers are to cleanse themselves from all filthiness of the flesh and spirit, perfecting holiness in the fear of God (7:1).",
         "references": [
           "2 Corinthians 7:1"
         ]
       },
       {
         "theme": "Comfort through relationships",
-        "explanation": "",
+        "explanation": "Paul was troubled on every side, but God comforted him by the coming of Titus (7:5-7).",
         "references": [
           "2 Corinthians 7:5-7"
         ]
       },
       {
         "theme": "Sorrow leading to repentance",
-        "explanation": "",
+        "explanation": "Godly sorrow worketh repentance to salvation, but the sorrow of the world worketh death (7:8-11).",
         "references": [
           "2 Corinthians 7:8-11"
         ]
       },
       {
         "theme": "Restored trust",
-        "explanation": "",
+        "explanation": "Paul rejoices that Titus's spirit was refreshed and that he has confidence in the Corinthians in all things (7:12-16).",
         "references": [
           "2 Corinthians 7:12-16"
         ]
@@ -393,54 +393,54 @@
   },
   "2 Corinthians 8": {
     "summary": "Paul turns to the collection for believers in need, holding up the Macedonian churches as examples: despite severe testing and poverty, they gave generously and voluntarily (2 Corinthians 8:1–5). He urges Titus to help the Corinthians complete the contribution they had already begun (2 Corinthians 8:6–7). Rather than issuing a bare command, he appeals to the sincerity of love and to Christ, who became poor so that others might become rich through his grace (2 Corinthians 8:8–9). He asks the Corinthians to finish according to their means, emphasizing willingness and a fair sharing of resources, not an impossible burden (2 Corinthians 8:10–15). Paul thanks God for Titus’s concern and explains that trusted representatives will oversee the gift so that the collection is administered honorably before God and people (2 Corinthians 8:16–24). The chapter connects generosity with integrity, equal concern, and practical financial accountability.",
-    "whereWeAre": "Paul’s collection was intended for believers in Jerusalem (see 1 Corinthians 16:1–4; Romans 15:25–27). The exact participants and the status of every local contribution cannot be established independently. These circumstances illuminate why 2 Corinthians 8 addresses the Jerusalem collection and trusted delegates.",
+    "whereWeAre": "Chapter 7 ended with Paul's confidence in the Corinthians (7:16). Chapter 8 turns to the collection for the saints, using the poor Macedonian churches as an example of generosity, pointing to Christ who became poor, urging the Corinthians to finish what they began, and naming Titus and trusted brothers to handle the gift honestly (8:1-24). Chapter 9 continues the same appeal.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Letter writer organizing relief Encourages willing generosity and transparent administration"
+        "role": "Declares the grace of God given to the churches of Macedonia and urges the Corinthians to perform the doing of it (8:1,10-11)."
       },
       {
         "name": "Macedonian churches",
-        "role": "Communities used as examples Give generously during hardship"
+        "role": "Gave to the utmost of their power, and beyond, in deep poverty and a great trial of affliction, first giving themselves to the Lord (8:2-5)."
       },
       {
         "name": "Titus",
-        "role": "Trusted associate. Helps coordinate the Corinthians’ contribution"
+        "role": "Paul's partner and fellowhelper who earnestly cares for the Corinthians and goes to them by his own accord (8:6,16-17,23)."
       },
       {
-        "name": "Unnamed brother(s)",
-        "role": "Delegates commended by churches. Provide accountability for handling the collection"
+        "name": "Brothers sent with Titus",
+        "role": "Unnamed brethren chosen by the churches to travel with the gift, so that no man blame Paul (8:18-23)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Prospective contributors. Are urged to complete what they began"
+        "role": "Urged to finish the performance of what they had willingly begun a year before (8:10-11)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Grace-filled generosity",
-        "explanation": "",
+        "explanation": "The Macedonians in deep poverty gave beyond their power, praying Paul for the privilege of taking part in the ministering to the saints (8:1-5).",
         "references": [
           "2 Corinthians 8:1-5"
         ]
       },
       {
         "theme": "Christ as model",
-        "explanation": "",
+        "explanation": "Though he was rich, Christ for their sakes became poor, that they through his poverty might be rich (8:6-9).",
         "references": [
           "2 Corinthians 8:6-9"
         ]
       },
       {
         "theme": "Fair sharing",
-        "explanation": "",
+        "explanation": "Giving is accepted according to what a man hath, that there may be equality, as it is written of the manna (8:10-15).",
         "references": [
           "2 Corinthians 8:10-15"
         ]
       },
       {
         "theme": "Financial accountability",
-        "explanation": "",
+        "explanation": "Paul provides for honest things, not only in the sight of the Lord but of men, by sending Titus and trusted brethren (8:16-24).",
         "references": [
           "2 Corinthians 8:16-24"
         ]
@@ -456,54 +456,54 @@
   },
   "2 Corinthians 9": {
     "summary": "Paul continues discussing the gift for believers in need. He says that the Corinthians’ earlier readiness has encouraged others, but he sends representatives ahead so that the promised contribution will be prepared and freely given rather than hurriedly extracted (2 Corinthians 9:1–5). Using agricultural imagery, he teaches that sowing sparingly and generously leads to corresponding harvests, while emphasizing that each giver should decide in the heart, without reluctance or compulsion (2 Corinthians 9:6–7). He says God can provide sufficiency for good works and connects generosity to righteousness, thanksgiving, and the needs of recipients (2 Corinthians 9:8–12). The gift will also demonstrate the Corinthians’ profession of the gospel and deepen bonds of prayer and gratitude (2 Corinthians 9:13–15). The passage encourages generosity, not a guaranteed formula for personal wealth.",
-    "whereWeAre": "The collection linking Achaia, Macedonia, and Jerusalem required coordination and advance notice. Paul’s language about Achaia’s readiness shows the mutual expectations among participating churches. These circumstances illuminate why 2 Corinthians 9 addresses the Jerusalem collection and trusted delegates.",
+    "whereWeAre": "Chapter 8 ended with Paul sending Titus and two brothers so the gift would be handled honestly (8:16-24). Chapter 9 explains why he is sending them ahead: so the Corinthians' gift is ready and given willingly, since he who sows bountifully reaps bountifully and God loves a cheerful giver (9:1-15). Chapter 10 begins the letter's sharpest section.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle arranging the gift. Calls for preparedness and uncoerced generosity"
+        "role": "Boasts of Achaia's readiness to the Macedonians and sends the brethren so that his boasting is not in vain (9:2-5)."
       },
       {
         "name": "Corinthians (Achaian believers)",
-        "role": "Community addressed. Have promised a collection and are asked to complete it"
+        "role": "Told to give each as he purposes in his heart, not grudgingly or of necessity, for God loveth a cheerful giver (9:7)."
       },
       {
         "name": "Macedonians",
-        "role": "Neighboring churches named in comparison. Have heard of Achaia’s readiness"
+        "role": "May come with Paul and find the Corinthians unprepared, to the shame of both (9:2-4)."
       },
       {
         "name": "Brothers sent ahead",
-        "role": "Unnamed delegates. Help ensure that the contribution is ready"
+        "role": "Sent to make up beforehand the Corinthians' bounty so it is ready as a matter of bounty (9:3,5)."
       },
       {
         "name": "Recipients of the service",
-        "role": "Believers receiving the gift Will be supplied and respond in thanksgiving"
+        "role": "The saints whose wants are supplied and who thank God and pray for the Corinthians (9:12-14)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Readiness and integrity",
-        "explanation": "",
+        "explanation": "Paul sends brethren ahead so the gift will be ready as a matter of bounty and not of covetousness (9:1-5).",
         "references": [
           "2 Corinthians 9:1-5"
         ]
       },
       {
         "theme": "Cheerful and voluntary giving",
-        "explanation": "",
+        "explanation": "He which soweth sparingly shall reap sparingly, and each should give as he purposeth in his heart, for God loveth a cheerful giver (9:6-7).",
         "references": [
           "2 Corinthians 9:6-7"
         ]
       },
       {
         "theme": "Resources for good works",
-        "explanation": "",
+        "explanation": "God is able to make all grace abound so that believers, always having sufficiency, may abound to every good work (9:8-11).",
         "references": [
           "2 Corinthians 9:8-11"
         ]
       },
       {
         "theme": "Generosity building gratitude",
-        "explanation": "",
+        "explanation": "The administration of this service supplies the saints' wants and abounds by many thanksgivings unto God (9:12-15).",
         "references": [
           "2 Corinthians 9:12-15"
         ]
@@ -519,50 +519,50 @@
   },
   "2 Corinthians 10": {
     "summary": "Paul begins a sharper defense of his ministry, appealing through Christ’s gentleness while acknowledging accusations that he is timid in person but bold from afar (2 Corinthians 10:1–2). He says that although he lives as a human being, his struggle is not conducted with worldly weapons; he speaks metaphorically of overthrowing arguments that resist the knowledge of God (2 Corinthians 10:3–6). He asks the Corinthians to look beyond outward impressions and reminds them that his authority is for building up, not tearing down (2 Corinthians 10:7–11). Paul rejects self-congratulatory comparison with others and refuses to claim work outside the sphere assigned to him (2 Corinthians 10:12–16). He concludes that boasting should be in the Lord and that true approval comes from God rather than self-praise (2 Corinthians 10:17–18). The chapter challenges rhetorical status competition and attempts to discredit Paul through appearance or speaking style.",
-    "whereWeAre": "In the Greco-Roman world, public speakers were evaluated for presence, rhetorical polish, and recognized status. Paul’s critics exploit these expectations, though their identities remain unknown. These circumstances illuminate why 2 Corinthians 10 addresses competing claims to authority, hardship, and plans for accountability.",
+    "whereWeAre": "Chapter 9 ended with thanks to God for his unspeakable gift (9:15). Chapter 10 changes tone as Paul answers critics who say he is bold in letters but weak in person, insisting his weapons are not carnal and that his authority is for building up, not tearing down (10:1-18). Chapter 11 grows more pointed.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle under criticism. Defends the purpose and limits of his authority"
+        "role": "Beseeches by the meekness and gentleness of Christ and says the weapons of his warfare are not carnal but mighty through God (10:1,4)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Addressees of the appeal. Must weigh accusations and evaluate his ministry"
+        "role": "Told to look on things after the outward appearance and weigh Paul's authority, given for edification (10:7-8)."
       },
       {
         "name": "Paul’s critics",
-        "role": "Unnamed opponents reflected in his quotations and response. Challenge his presence, letters, or credentials"
+        "role": "Say his letters are weighty and powerful, but his bodily presence weak and his speech contemptible (10:10)."
       },
       {
         "name": "Christ",
-        "role": "Model and Lord. His gentleness and approval frame Paul’s argument"
+        "role": "The one by whose meekness and gentleness Paul appeals, and whom he serves in preaching where Christ was not named (10:1,14)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Gentleness and authority",
-        "explanation": "",
+        "explanation": "Paul beseeches by the meekness and gentleness of Christ, who is base among them in presence but bold when absent (10:1-2).",
         "references": [
           "2 Corinthians 10:1-2"
         ]
       },
       {
         "theme": "Spiritual arguments, not physical force",
-        "explanation": "",
+        "explanation": "The weapons of warfare are not carnal but mighty through God to the pulling down of strong holds and every high thing that exalts itself against the knowledge of God (10:3-6).",
         "references": [
           "2 Corinthians 10:3-6"
         ]
       },
       {
         "theme": "Authority to build up",
-        "explanation": "",
+        "explanation": "The authority the Lord gave Paul is for edification and not for destruction (10:7-11).",
         "references": [
           "2 Corinthians 10:7-11"
         ]
       },
       {
         "theme": "Limits of boasting",
-        "explanation": "",
+        "explanation": "Paul will not boast beyond his measure, and he that glorieth is to glory in the Lord, for not he who commends himself is approved (10:12-18).",
         "references": [
           "2 Corinthians 10:12-18"
         ]
@@ -578,54 +578,54 @@
   },
   "2 Corinthians 11": {
     "summary": "Paul asks the Corinthians to bear with his seemingly foolish speech as he expresses protective concern that they remain devoted to Christ (2 Corinthians 11:1–4). He questions the claims of those he sarcastically calls superior apostles and says that although he is not a polished speaker, he is not lacking in knowledge (2 Corinthians 11:5–6). He explains his decision not to require payment from Corinth for his preaching, noting support from other churches and contrasting his conduct with rivals (2 Corinthians 11:7–15). Continuing an intentionally ironic “boast,” he compares credentials and then lists imprisonment, beatings, shipwrecks, journeys, danger, deprivation, and ongoing concern for churches (2 Corinthians 11:16–29). Rather than treating suffering as a badge of social rank, he concludes by boasting in weakness and recounts his escape from Damascus (2 Corinthians 11:30–33). The chapter reveals the costly and contested character of Paul’s ministry.",
-    "whereWeAre": "Paul’s rival teachers are not named and their exact origin is debated. The reference to Aretas IV and an ethnarch at Damascus (11:32) has prompted historical discussion, but the local administrative arrangement is uncertain. These circumstances illuminate why 2 Corinthians 11 addresses competing claims to authority, hardship, and plans for accountability.",
+    "whereWeAre": "Chapter 10 ended with the principle that he who glories should glory in the Lord (10:17-18). Chapter 11 has Paul reluctantly boast like a fool to answer rival apostles who preach another Jesus: he refused payment from the Corinthians, lists his beatings, shipwrecks, and dangers, and recalls being let down a wall in Damascus (11:1-33). Chapter 12 continues the boasting.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle defending his ministry. Uses irony and a hardship catalogue to challenge rivals’ claims"
+        "role": "Reluctantly boasts as a fool, lists his labours, stripes, perils, and cares, and recalls being let down by the wall in a basket (11:1,23-33)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Congregation being warned. Are urged not to accept a different proclamation uncritically"
+        "role": "Warned against being corrupted from the simplicity that is in Christ, as the serpent beguiled Eve (11:3-4)."
       },
       {
-        "name": "Rival apostles or teachers",
-        "role": "Unnamed opponents. Are criticized for claims and practices Paul considers misleading"
+        "name": "False apostles",
+        "role": "Unnamed deceitful workers who transform themselves into the apostles of Christ, as Satan into an angel of light (11:13-15)."
       },
       {
-        "name": "Macedonian brothers",
-        "role": "Supporters named collectively in 11:9. Help meet Paul’s needs"
+        "name": "Macedonian brethren",
+        "role": "Supplied what was lacking to Paul when he was in want at Corinth (11:9)."
       },
       {
-        "name": "King Aretas’s ethnarch",
-        "role": "Official identified in 11:32 Guards Damascus in Paul’s account of his escape"
+        "name": "The governor under Aretas",
+        "role": "Kept the city of the Damascenes with a garrison to catch Paul, who escaped through a window in a basket (11:32-33)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Loyalty to Christ",
-        "explanation": "",
+        "explanation": "Paul is jealous with godly jealousy, having espoused them to one husband that he may present them as a chaste virgin to Christ (11:1-4).",
         "references": [
           "2 Corinthians 11:1-4"
         ]
       },
       {
         "theme": "Integrity in support",
-        "explanation": "",
+        "explanation": "Paul preached the gospel freely, taking wages of other churches, and will keep from burdening them, unlike the false apostles (11:5-15).",
         "references": [
           "2 Corinthians 11:5-15"
         ]
       },
       {
         "theme": "The cost of service",
-        "explanation": "",
+        "explanation": "Paul lists labours, stripes, imprisonments, shipwrecks, perils, hunger, and the care of all the churches (11:16-29).",
         "references": [
           "2 Corinthians 11:16-29"
         ]
       },
       {
         "theme": "Boasting in weakness",
-        "explanation": "",
+        "explanation": "If he must glory, Paul will glory of the things which concern his infirmities, as when he was let down by the wall in a basket (11:30-33).",
         "references": [
           "2 Corinthians 11:30-33"
         ]
@@ -635,54 +635,54 @@
   },
   "2 Corinthians 12": {
     "summary": "Paul continues his reluctant boasting by speaking in the third person about a man in Christ who was caught up to the third heaven and paradise fourteen years earlier; he does not claim to know whether the experience was bodily (2 Corinthians 12:1–6). He then describes a “thorn in the flesh,” without identifying it, and reports that his request for its removal was answered with the assurance that divine grace is sufficient and power is perfected in weakness (2 Corinthians 12:7–10). Paul insists that he seeks the Corinthians themselves, not their possessions, and compares his affection to a parent’s responsibility toward children (2 Corinthians 12:11–15). He denies exploiting them through Titus or other representatives (2 Corinthians 12:16–18). He says his defense is aimed at building them up and fears arriving to find quarrels, jealousy, disorder, and unresolved sexual wrongdoing (2 Corinthians 12:19–21). The passage warns against confident guesses about the thorn’s nature.",
-    "whereWeAre": "Ancient Jewish and early Christian writings sometimes used layered-heaven imagery. Paul refers to a revelation fourteen years earlier, but neither its calendar date nor the nature of his “thorn” is established. These circumstances illuminate why 2 Corinthians 12 addresses competing claims to authority, hardship, and plans for accountability.",
+    "whereWeAre": "Chapter 11 ended with Paul glorying in his infirmities and escaping Damascus in a basket (11:30-33). Chapter 12 turns to a vision of the third heaven, the thorn in the flesh, and Christ's answer, \"My grace is sufficient for thee,\" before Paul states his love for the Corinthians and his fear of what he may find when he comes (12:1-21). Chapter 13 closes with his coming visit.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle describing visions and weakness. Defends sacrificial care and reports his concern for the congregation"
+        "role": "Tells of a vision of the third heaven, receives a thorn in the flesh, and hears that Christ's grace is sufficient and his strength made perfect in weakness (12:1-10)."
       },
       {
         "name": "The man in Christ",
-        "role": "Figure Paul describes indirectly. Experiences a revelation; usually understood as Paul, though described in the third person"
+        "role": "A man Paul knew who was caught up to the third heaven fourteen years before, usually understood as Paul himself (12:2-4)."
       },
       {
         "name": "Titus",
-        "role": "Paul’s coworker Cited as evidence that Paul’s associates did not exploit the community"
+        "role": "Sent to the Corinthians with a brother, walking in the same spirit and steps as Paul (12:18)."
       },
       {
-        "name": "An unnamed brother",
-        "role": "Coworker sent with Titus. Shares in the appeal about transparent conduct"
+        "name": "A brother sent with Titus",
+        "role": "Unnamed companion sent with Titus to the Corinthians (12:18)."
       },
       {
         "name": "Corinthian believers",
-        "role": "People Paul regards with parental affection May need repentance before his visit"
+        "role": "Regarded by Paul as children for whom he will gladly spend and be spent, though he fears finding strife and uncleanness among them (12:14-15,20-21)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Revelation and humility",
-        "explanation": "",
+        "explanation": "Paul speaks of a man caught up into the third heaven, yet keeps from boasting lest anyone think more of him than what he sees or hears from him (12:1-6).",
         "references": [
           "2 Corinthians 12:1-6"
         ]
       },
       {
         "theme": "Grace amid weakness",
-        "explanation": "",
+        "explanation": "Given a thorn in the flesh, Paul hears, My grace is sufficient for thee, for my strength is made perfect in weakness (12:7-10).",
         "references": [
           "2 Corinthians 12:7-10"
         ]
       },
       {
         "theme": "Love without exploitation",
-        "explanation": "",
+        "explanation": "Paul seeks not theirs but them, and will gladly spend and be spent for their souls, though the more he loves the less he is loved (12:11-18).",
         "references": [
           "2 Corinthians 12:11-18"
         ]
       },
       {
         "theme": "Preparing for repentance",
-        "explanation": "",
+        "explanation": "Paul fears he will find debates, envyings, wraths, strifes, and uncleanness, and will mourn over those who have not repented (12:19-21).",
         "references": [
           "2 Corinthians 12:19-21"
         ]
@@ -692,50 +692,50 @@
   },
   "2 Corinthians 13": {
     "summary": "Paul announces that a forthcoming journey would be his third visit to Corinth and refers to the requirement that charges be established by two or three witnesses (2 Corinthians 13:1–2). He warns that he will not overlook persistent wrongdoing, explaining that Christ was crucified in weakness yet lives by God’s power; Paul’s own ministry participates in this pattern (2 Corinthians 13:3–4). Rather than continuing to demand proof from Paul alone, he urges the Corinthians to examine themselves regarding their faith (2 Corinthians 13:5–6). He prays that they will do what is right even if he appears unimpressive and stresses that his authority is to build up, not destroy (2 Corinthians 13:7–10). The letter ends with calls for joy, restoration, encouragement, agreement, and peace, followed by greetings and a blessing naming the grace of Jesus Christ, God’s love, and fellowship of the Holy Spirit (2 Corinthians 13:11–14). The ending seeks repair rather than a permanent rupture.",
-    "whereWeAre": "The letter anticipates another visit but does not document the outcome in this chapter. The previous visit sequence is partly reconstructable from Paul’s letters, yet not every detail is agreed. These circumstances illuminate why 2 Corinthians 13 addresses competing claims to authority, hardship, and plans for accountability.",
+    "whereWeAre": "Chapter 12 ended with Paul fearing quarrels and unrepented sin at his coming (12:20-21). Chapter 13 announces his third visit, says the Corinthians should examine themselves whether they are in the faith, and ends with a call to be perfect, of one mind, and at peace, and with the blessing of the grace of the Lord Jesus Christ (13:1-14). The next letter, Galatians, follows.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle preparing a third visit. Warns of accountability while seeking restoration"
+        "role": "Warns he is coming a third time and will not spare, yet seeks to build up and not to destruction (13:1-2,10)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Those urged to examine themselves. Must respond to his concerns and pursue peace"
+        "role": "Told to examine themselves whether they are in the faith and to be of one mind and live in peace (13:5,11)."
       },
       {
         "name": "Christ",
-        "role": "Crucified and living Lord. Provides the pattern of weakness and divine power"
+        "role": "Crucified through weakness yet living by the power of God (13:4)."
       },
       {
-        "name": "God and the Holy Spirit",
-        "role": "Named in the final blessing. Frame the community’s life through love and fellowship"
+        "name": "God and the Holy Ghost",
+        "role": "Named in the closing blessing with the Lord Jesus Christ: the love of God and the communion of the Holy Ghost (13:14)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Evidence and accountability",
-        "explanation": "",
+        "explanation": "In the mouth of two or three witnesses shall every word be established, and Paul will not spare those who have sinned (13:1-2).",
         "references": [
           "2 Corinthians 13:1-2"
         ]
       },
       {
         "theme": "Power expressed in weakness",
-        "explanation": "",
+        "explanation": "Christ was crucified through weakness yet liveth by the power of God, and Paul is weak in him but will live by God's power toward them (13:3-4).",
         "references": [
           "2 Corinthians 13:3-4"
         ]
       },
       {
         "theme": "Self-examination",
-        "explanation": "",
+        "explanation": "The Corinthians are to examine themselves whether they be in the faith, and Paul's power is for edification and not destruction (13:5-10).",
         "references": [
           "2 Corinthians 13:5-10"
         ]
       },
       {
         "theme": "Restoration and peace",
-        "explanation": "",
+        "explanation": "Paul closes: be perfect, be of good comfort, be of one mind, live in peace, and the God of love and peace shall be with you (13:11-14).",
         "references": [
           "2 Corinthians 13:11-14"
         ]

@@ -5,7 +5,7 @@
     "purpose": "To explain the gospel, address tensions between Jewish and Gentile believers, and prepare for Paul's hoped-for mission farther west.",
     "theme": "God's righteousness is revealed in the gospel: all have sinned, justification is by faith, new life comes through the Spirit, and Jews and Gentiles are united in God's saving plan.",
     "summary": "Romans gives Paul's fullest sustained explanation of the gospel, moving from universal sin to justification, new life, Israel's place in God's purposes, and practical life in a diverse church.",
-    "keyVerse": "Romans 8:28",
+    "keyVerse": "Romans 1:16",
     "movements": [
       {
         "title": "Human Sin and Justification",
@@ -43,8 +43,8 @@
         "description": "Contrasted with Christ: through Adam came sin and death, through Christ grace and life."
       },
       {
-        "name": "Phoebe",
-        "description": "A servant (or deacon) of the church at Cenchreae, likely the letter's carrier."
+        "name": "Phebe",
+        "description": "A servant (or deacon) of the church at Cenchrea, likely the letter's carrier."
       },
       {
         "name": "Priscilla and Aquila",
@@ -62,7 +62,7 @@
     "purpose": "To correct divisions, immorality, lawsuits, disorderly worship, and confusion about marriage, spiritual gifts, the Lord's Supper, and resurrection.",
     "theme": "The cross reshapes Christian identity, relationships, worship, freedom, and hope.",
     "summary": "Paul responds to reports and questions from a gifted but divided church. He repeatedly redirects believers from status and self-interest toward holiness, love, mutual edification, and resurrection hope.",
-    "keyVerse": "1 Corinthians 13:13",
+    "keyVerse": "1 Corinthians 1:18",
     "movements": [
       {
         "title": "Divisions and Moral Problems Addressed",
@@ -123,7 +123,7 @@
     "purpose": "To defend Paul's apostolic ministry, explain the character of Christian ministry, encourage reconciliation, and complete a collection for believers in Jerusalem.",
     "theme": "God's power is displayed through weakness, suffering, integrity, generosity, and reconciliation.",
     "summary": "Paul speaks with unusual personal openness about suffering, ministry, reconciliation, generosity, and his contested relationship with the Corinthians.",
-    "keyVerse": "2 Corinthians 5:17",
+    "keyVerse": "2 Corinthians 12:9",
     "movements": [
       {
         "title": "Ministry through Weakness",
@@ -161,7 +161,7 @@
         "description": "Paul's coworker who brings encouraging news from Corinth and helps organize the collection."
       },
       {
-        "name": "The 'super-apostles'",
+        "name": "The “very chiefest apostles”",
         "description": "Rival teachers who boast in credentials and undermine Paul."
       },
       {
@@ -172,7 +172,7 @@
   },
   "Galatians": {
     "author": "Paul the apostle.",
-    "audience": "Churches in Galatia; the exact geographic identification is debated.",
+    "audience": "Churches in Galatia, in central Asia Minor.",
     "purpose": "To oppose pressure on Gentile believers to adopt circumcision and law observance as necessary for covenant inclusion and to defend justification by faith in Christ.",
     "theme": "In Christ, people are justified by faith and live by the Spirit rather than relying on works of the law for covenant status.",
     "summary": "Paul strongly defends the gospel he preached, argues from Abraham and Scripture, and calls believers to use freedom not for self-indulgence but for Spirit-shaped love.",
@@ -232,7 +232,7 @@
     ]
   },
   "Ephesians": {
-    "author": "Traditionally attributed to Paul; some modern scholars debate Pauline authorship.",
+    "author": "Paul the apostle, writing as a prisoner (Ephesians 3:1; 4:1).",
     "audience": "Christians in and around Ephesus, possibly intended as a circular letter for multiple churches.",
     "purpose": "To describe God's cosmic plan in Christ and call the church to live in unity, holiness, love, and spiritual strength.",
     "theme": "God unites all things in Christ and creates one new people who should live in unity, holiness, love, and spiritual maturity.",

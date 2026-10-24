@@ -1,44 +1,44 @@
 {
   "Acts 1": {
     "summary": "Addressing Theophilus, the narrator recalls Jesus' instruction to the apostles concerning the Holy Spirit and their witness from Jerusalem to the ends of the earth (Acts 1:1–8). After Jesus is taken up, two men in white announce that he will return (Acts 1:9–11). The disciples return from the Mount of Olives to Jerusalem, where they pray together with women, Mary the mother of Jesus, and Jesus' brothers (Acts 1:12–14). Peter cites Scripture in discussing Judas's death and vacant apostolic role; the community selects Matthias by lot from qualified witnesses (Acts 1:15–26). The chapter connects the risen Jesus' commission to the waiting, prayerful community that will carry it forward.",
-    "whereWeAre": "The chapter places the followers in Jerusalem before the Pentecost gathering; the particular ascension and selection scenes are attested here as biblical narrative. These geographic, political, and social conditions help explain the narrative of Acts 1. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "John's Gospel closed with a note that Jesus did far more than any book could contain (John 21:24-25). Acts opens as Luke's second volume to Theophilus, picking up exactly where that Gospel left off: the risen Jesus spends forty days instructing the apostles, promises the Holy Spirit, and ascends from the Mount of Olives, after which the waiting believers choose Matthias to replace Judas among the Twelve (1:1-26). That waiting, prayerful community sets up chapter 2's sudden answer to their wait, the Spirit's arrival at Pentecost.",
     "keyFigures": [
       {
         "name": "Jesus",
-        "role": "Risen Lord who commissions the apostles. Frames the promised Spirit and worldwide mission"
+        "role": "Commissions the apostles with the promise of the Holy Spirit and worldwide witness, then ascends from the Mount of Olives as two men in white promise his return (1:4-11)."
       },
       {
         "name": "Peter",
-        "role": "Apostolic spokesman. Explains replacing Judas"
+        "role": "Explains from Scripture that Judas's office must be filled and leads the process of choosing his replacement (1:15-22)."
       },
       {
         "name": "Matthias",
-        "role": "Chosen replacement apostle. Joins the Eleven as witness"
+        "role": "Chosen by lot to join the Eleven as the twelfth witness to Jesus' resurrection (1:23-26)."
       },
       {
         "name": "Joseph called Barsabbas (Justus)",
-        "role": "Other qualified candidate. Shows the community considered two candidates"
+        "role": "The other candidate considered alongside Matthias, showing that more than one qualified witness was available (1:23)."
       },
       {
         "name": "Mary and the gathered believers",
-        "role": "Praying community Demonstrate communal dependence"
+        "role": "Join the apostles in prayer in the upper room while waiting for the promised Spirit (1:14)."
       },
       {
         "name": "Judas Iscariot",
-        "role": "Deceased betrayer discussed retrospectively. His former role prompts the selection"
+        "role": "His death and vacated office, discussed only after the fact, is the reason the community needs to choose a replacement (1:16-20)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Spirit-empowered witness",
-        "explanation": "",
+        "explanation": "Jesus tells the apostles that the coming Holy Spirit will make them his witnesses from Jerusalem to the ends of the earth, giving the whole book its traveling shape (1:4-8).",
         "references": [
           "Acts 1:4-8"
         ]
       },
       {
         "theme": "Prayerful discernment",
-        "explanation": "",
+        "explanation": "The apostles devote themselves to prayer with the women and Jesus' family, then choose Matthias by lot only after that same kind of prayerful waiting (1:12-14,23-26).",
         "references": [
           "Acts 1:12-14",
           "Acts 1:23-26"
@@ -46,7 +46,7 @@
       },
       {
         "theme": "Continuity of apostolic testimony",
-        "explanation": "",
+        "explanation": "Peter insists that Judas's replacement must be someone who witnessed the whole span of Jesus' ministry, keeping the number of firsthand witnesses complete (1:16-22).",
         "references": [
           "Acts 1:16-22"
         ]
@@ -67,43 +67,43 @@
   },
   "Acts 2": {
     "summary": "At Pentecost, the gathered disciples are filled with the Holy Spirit and speak in other languages understood by visitors from many lands (Acts 2:1–13). Peter addresses the crowd, interprets the event using Joel and the Psalms, proclaims Jesus' death and resurrection, and calls listeners to repent and be baptized (Acts 2:14–40). Luke says about three thousand accept the message (Acts 2:41). The new community devotes itself to apostolic teaching, fellowship, breaking bread, prayers, mutual assistance, temple gatherings, and meals in homes (Acts 2:42–47). The chapter presents the Spirit's arrival as empowerment for witness and the beginning of a distinctive communal life.",
-    "whereWeAre": "Luke portrays a large festival gathering and the earliest post-resurrection public preaching; the reported crowd size is internal to Acts. These geographic, political, and social conditions help explain the narrative of Acts 2. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 1 ended with the apostles completing their number by choosing Matthias, then waiting in Jerusalem (1:26). Chapter 2 answers that wait: the Holy Spirit falls on the gathered believers at Pentecost, they speak in languages understood by pilgrims from many nations, and Peter's sermon leads about three thousand people to repent, be baptized, and join a community marked by shared teaching, fellowship, and meals (2:1-47). That new community's visible unity sets up chapter 3's first public miracle done in its midst.",
     "keyFigures": [
       {
         "name": "Peter",
-        "role": "Chief speaker at Pentecost. Interprets the Spirit's coming and calls for response"
+        "role": "Stands with the Eleven to interpret the Spirit's coming through Joel and the Psalms and calls the crowd to repent and be baptized (2:14-40)."
       },
       {
         "name": "The apostles",
-        "role": "Spirit-filled witnesses Teach and perform signs"
+        "role": "Are filled with the Holy Spirit and speak in languages understood by visitors from many nations (2:4-11)."
       },
       {
         "name": "Pilgrims and Jerusalem hearers",
-        "role": "Multilingual Jewish audience and proselytes. Hear proclamation in their own languages"
+        "role": "Hear the apostles' witness each in their own native language and are pricked in their hearts by Peter's sermon (2:6-8,37)."
       },
       {
         "name": "New believers",
-        "role": "Baptized and gathered community. Form shared practices"
+        "role": "About three thousand are baptized in a single day and devote themselves to the apostles' teaching, fellowship, and shared meals (2:41-47)."
       }
     ],
     "keyThemes": [
       {
         "theme": "The Spirit and intelligible witness",
-        "explanation": "",
+        "explanation": "The Holy Spirit's coming lets pilgrims from many nations each hear the apostles' witness in their own native language, not in confusion but in understanding (2:1-13).",
         "references": [
           "Acts 2:1-13"
         ]
       },
       {
         "theme": "Jesus' resurrection proclaimed",
-        "explanation": "",
+        "explanation": "Peter argues from the Psalms that God raised Jesus because death itself could not hold him, making the resurrection the center of his first sermon (2:22-36).",
         "references": [
           "Acts 2:22-36"
         ]
       },
       {
         "theme": "Repentance and shared life",
-        "explanation": "",
+        "explanation": "About three thousand people repent and are baptized in a single day, forming a community marked by shared teaching, meals, and possessions (2:37-47).",
         "references": [
           "Acts 2:37-47"
         ]
@@ -154,43 +154,43 @@
   },
   "Acts 3": {
     "summary": "Peter and John encounter a man lame from birth begging at the temple's Beautiful Gate. Peter tells him to walk in the name of Jesus Christ; he rises, walks, and praises God (Acts 3:1–10). A crowd gathers at Solomon's Portico, where Peter rejects the idea that the healing came from their own power or piety. He proclaims Jesus as God's servant, the one rejected and killed yet raised, calls for repentance, and speaks of promised restoration (Acts 3:11–26). The chapter turns an act of healing into public testimony and an appeal to Israel's prophetic hopes.",
-    "whereWeAre": "Prayer at the temple and public teaching continue to structure the Jesus movement; the individual healing is reported in Acts rather than independently documented. These geographic, political, and social conditions help explain the narrative of Acts 3. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 2 ended with the Lord adding to the young church daily (2:47). Chapter 3 shows that growth continuing through a public sign: Peter heals a man lame from birth at the temple gate, then uses the crowd's astonishment to preach Jesus as the one Israel's own prophets had pointed toward all along (3:1-26). That same temple setting and message bring the apostles their first arrest in chapter 4.",
     "keyFigures": [
       {
         "name": "Peter",
-        "role": "Apostle who speaks and heals in Jesus' name Redirects attention toward Jesus"
+        "role": "Heals the lame man in Jesus' name and tells the gathered crowd that faith in that name, not his own power, made the man well (3:6,12-16)."
       },
       {
         "name": "John",
-        "role": "Peter's fellow apostle Accompanies him at the temple"
+        "role": "Accompanies Peter to the temple and stands with him before the amazed crowd (3:1,11)."
       },
       {
         "name": "Man lame from birth",
-        "role": "Recipient of healing. His public walking prompts wonder"
+        "role": "Is healed instantly and walks into the temple leaping and praising God, drawing the crowd that Peter then addresses (3:2-10)."
       },
       {
         "name": "Temple worshipers",
-        "role": "Crowd of witnesses Hear Peter's address"
+        "role": "Gather in astonishment at Solomon's Portico to hear Peter explain the healing (3:11-12)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Healing and public witness",
-        "explanation": "",
+        "explanation": "Peter heals a man lame from birth in the name of Jesus Christ, and the man's own walking and leaping become the crowd's first evidence (3:1-10).",
         "references": [
           "Acts 3:1-10"
         ]
       },
       {
         "theme": "Jesus at the center",
-        "explanation": "",
+        "explanation": "Peter refuses to let the crowd credit the healing to his own power or piety, insisting that faith in Jesus' name alone made the man well (3:11-16).",
         "references": [
           "Acts 3:11-16"
         ]
       },
       {
         "theme": "Repentance and covenant hope",
-        "explanation": "",
+        "explanation": "Peter calls the crowd to repent so that God's promised times of refreshing may come, tying the healing back to Israel's own prophetic hope (3:17-26).",
         "references": [
           "Acts 3:17-26"
         ]
@@ -221,47 +221,47 @@
   },
   "Acts 4": {
     "summary": "Temple authorities arrest Peter and John after their teaching about Jesus' resurrection (Acts 4:1–4). Before rulers, elders, and scribes, Peter says the healed man stands well through Jesus, whom God raised, and insists that salvation is found in him (Acts 4:5–12). The council threatens the apostles but releases them because the healing is widely known and the crowd praises God (Acts 4:13–22). The community prays for boldness rather than escape from opposition, then shares resources to meet needs; Barnabas sells a field and brings the proceeds (Acts 4:23–37). The chapter contrasts coercive authority with courageous witness and voluntary generosity.",
-    "whereWeAre": "The movement attracts public attention and institutional opposition; Luke's precise dialogue is preserved as the text's account. These geographic, political, and social conditions help explain the narrative of Acts 4. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 3 ended with Peter calling the temple crowd to repent and turn to God (3:19-26). Chapter 4 shows the cost of that call: temple authorities arrest Peter and John, the council threatens them but cannot deny the healing everyone has seen, and the released believers pray for boldness before sharing their resources so generously that Barnabas becomes a named example (4:1-37). That same generosity is tested by its opposite in chapter 5's account of Ananias and Sapphira.",
     "keyFigures": [
       {
         "name": "Peter and John",
-        "role": "Arrested apostles Testify before the council"
+        "role": "Are arrested for teaching about Jesus' resurrection and tell the council that salvation is found in no other name (4:1-12)."
       },
       {
         "name": "Jewish rulers and temple leaders",
-        "role": "Questioning authorities. Challenge the apostles' preaching"
+        "role": "Threaten the apostles but release them because the healing is too well known to deny and the people are praising God (4:13-22)."
       },
       {
         "name": "The healed man",
-        "role": "Public evidence within the narrative. Stands with the apostles"
+        "role": "Stands beside the apostles before the council as living, undeniable evidence of the healing (4:14)."
       },
       {
         "name": "Believers",
-        "role": "Praying and sharing community. Respond to threats together"
+        "role": "Pray together for boldness rather than for the threats to stop, then share their resources to meet one another's needs (4:23-37)."
       },
       {
         "name": "Barnabas (Joseph)",
-        "role": "Levite who gives sale proceeds. Provides a named example of generosity"
+        "role": "A Levite who sells a field and brings the whole price to the apostles, becoming a named example of the community's generosity (4:36-37)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Courage under pressure",
-        "explanation": "",
+        "explanation": "Peter tells the council there is salvation in no other name than Jesus, and the rulers release the apostles only because the healed man's recovery is undeniable (4:8-20).",
         "references": [
           "Acts 4:8-20"
         ]
       },
       {
         "theme": "Prayer for boldness",
-        "explanation": "",
+        "explanation": "Rather than praying for the threats to stop, the believers pray for courage to keep speaking, and the place where they are gathered shakes in response (4:23-31).",
         "references": [
           "Acts 4:23-31"
         ]
       },
       {
         "theme": "Generosity and practical care",
-        "explanation": "",
+        "explanation": "Believers sell property to meet one another's needs, and Barnabas's gift is singled out as a named example of that shared generosity (4:32-37).",
         "references": [
           "Acts 4:32-37"
         ]
@@ -287,47 +287,47 @@
   },
   "Acts 5": {
     "summary": "Ananias and Sapphira misrepresent the amount received from a property sale; Peter confronts their deceit and both die, producing fear among the believers (Acts 5:1–11). The apostles perform signs, and sick people are brought into Jerusalem's streets (Acts 5:12–16). Arrested by the high priest's party, the apostles are released by an angel and return to teaching. Before the council they affirm obedience to God, while Gamaliel urges restraint; the apostles are flogged and released, yet continue teaching about Jesus (Acts 5:17–42). The chapter juxtaposes integrity within the community and perseverance amid public resistance.",
-    "whereWeAre": "Public acclaim and confinement reflect the narrative's picture of a growing, contested movement. These geographic, political, and social conditions help explain the narrative of Acts 5. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 4 ended with believers selling property and laying the proceeds at the apostles' feet, Barnabas's gift named as one example (4:34-37). Chapter 5 shows a darker version of that same generosity: Ananias and Sapphira lie about what they gave and both die, while the apostles themselves are arrested again, freed by an angel, and flogged, yet continue teaching about Jesus despite the council's and Gamaliel's warnings (5:1-42). That same growing community now needs its first organized leadership structure, which chapter 6 provides.",
     "keyFigures": [
       {
         "name": "Ananias and Sapphira",
-        "role": "Couple who deceive about an offering. Become a grave warning about false presentation"
+        "role": "Sell property, secretly keep back part of the price, and both die after separately lying to Peter about having given it all (5:1-10)."
       },
       {
         "name": "Peter",
-        "role": "Apostolic leader. Confronts the deception and testifies before the council"
+        "role": "Confronts Ananias and Sapphira's deception and later tells the council that the apostles must obey God rather than men (5:3-4,8-9,29)."
       },
       {
         "name": "The apostles",
-        "role": "Healing and preaching witnesses. Continue proclaiming after detention"
+        "role": "Perform signs that draw crowds, are arrested and freed by an angel, and keep teaching about Jesus even after being flogged (5:12-21,40-42)."
       },
       {
         "name": "High priest and council",
-        "role": "Religious authorities Interrogate and punish the apostles"
+        "role": "Arrest and interrogate the apostles, then have them flogged despite Gamaliel's warning (5:17-18,27-28,40)."
       },
       {
         "name": "Gamaliel",
-        "role": "Pharisee and respected teacher Counsels the council against rash action"
+        "role": "A respected Pharisee who urges the council to leave the apostles alone, since a work that is not of God will fail on its own (5:34-39)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Truthfulness in giving",
-        "explanation": "",
+        "explanation": "Ananias and Sapphira die after pretending to give the whole price of their land, a deception about generosity rather than generosity itself that fills the church with fear (5:1-11).",
         "references": [
           "Acts 5:1-11"
         ]
       },
       {
         "theme": "Obedience amid prohibition",
-        "explanation": "",
+        "explanation": "Ordered to stop speaking about Jesus, the apostles answer plainly that they must obey God rather than men (5:27-32).",
         "references": [
           "Acts 5:27-32"
         ]
       },
       {
         "theme": "Perseverance after suffering",
-        "explanation": "",
+        "explanation": "Flogged and released, the apostles leave rejoicing that they were counted worthy to suffer for Jesus' name, and keep right on teaching (5:33-42).",
         "references": [
           "Acts 5:33-42"
         ]
@@ -337,47 +337,47 @@
   },
   "Acts 6": {
     "summary": "As the number of disciples grows, Greek-speaking Jewish widows are reportedly neglected in the daily distribution compared with Hebrew-speaking widows (Acts 6:1). The Twelve ask the community to select seven reputable, Spirit-filled men to oversee the need while the apostles focus on prayer and teaching (Acts 6:2–7). Stephen, one of the seven, performs signs and debates opponents; unable to prevail in debate, some instigate accusations that he speaks against Moses, God, the temple, and the law (Acts 6:8–15). The chapter presents administrative fairness and public testimony as essential challenges of a growing community.",
-    "whereWeAre": "The expanding group develops organized aid and leadership; the seven are chosen within this stated practical dispute. These geographic, political, and social conditions help explain the narrative of Acts 6. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 5 ended with the apostles rejoicing that they were counted worthy to suffer for Jesus' name (5:41-42). Chapter 6 shows the community handling a quieter kind of strain: Greek-speaking widows are being overlooked in the daily food distribution, so the apostles have the community choose seven reputable men, including Stephen, to oversee the need while the Twelve focus on prayer and teaching (6:1-7). Stephen's own gifts then draw opposition that chapter 7 follows all the way to his death.",
     "keyFigures": [
       {
         "name": "The Twelve",
-        "role": "Apostolic leaders Initiate a solution to food-distribution neglect"
+        "role": "Ask the community to choose seven men to oversee the food distribution so the apostles can stay devoted to prayer and teaching (6:2-4)."
       },
       {
         "name": "Hellenists and Hebrews",
-        "role": "Greek-speaking and Hebrew/Aramaic-speaking Jewish believers. Their differing experiences expose an inequity"
+        "role": "Greek-speaking believers whose widows were being overlooked compared to Hebrew-speaking widows, exposing the inequity the seven are chosen to fix (6:1)."
       },
       {
         "name": "The seven chosen men",
-        "role": "Appointed community servants. Receive responsibility for the practical need"
+        "role": "Are selected by the community and set apart by the apostles to oversee the daily distribution of food (6:3,6)."
       },
       {
         "name": "Stephen",
-        "role": "One of the seven. Faces hostility over his teaching"
+        "role": "One of the seven, full of faith and power, performs signs and debates opponents who cannot out-argue him (6:8-10)."
       },
       {
         "name": "Accusers and council",
-        "role": "Opponents of Stephen. Bring the dispute before authorities"
+        "role": "Unable to defeat Stephen in debate, bring false witnesses who accuse him of speaking against Moses, God, the temple, and the law (6:11-13)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Equitable provision",
-        "explanation": "",
+        "explanation": "Greek-speaking widows are being overlooked in the daily distribution, and the community treats that inequity as a problem serious enough to require a structural fix (6:1-3).",
         "references": [
           "Acts 6:1-3"
         ]
       },
       {
         "theme": "Shared responsibility",
-        "explanation": "",
+        "explanation": "The apostles delegate the practical need to seven chosen men so they themselves can stay devoted to prayer and teaching, dividing labor rather than doing everything alone (6:2-7).",
         "references": [
           "Acts 6:2-7"
         ]
       },
       {
         "theme": "Witness and accusations",
-        "explanation": "",
+        "explanation": "Unable to out-argue Stephen, his opponents resort to false accusations that he speaks against Moses, the temple, and the law (6:8-15).",
         "references": [
           "Acts 6:8-15"
         ]
@@ -387,33 +387,33 @@
   },
   "Acts 7": {
     "summary": "Before the council Stephen retells Israel's history from Abraham and Joseph through Moses, the wilderness, the tabernacle, and Solomon's temple (Acts 7:1–50). He argues that God's work is not confined to a building and accuses his hearers of resisting the Holy Spirit and rejecting God's messengers (Acts 7:51–53). Stephen then reports seeing Jesus standing at God's right hand; the enraged audience drives him out and stones him as he calls on Jesus and asks forgiveness for his attackers (Acts 7:54–60). Saul is present, approving the killing in the following chapter's opening. The chapter uses Scripture to contest a narrow understanding of God's presence and depicts the cost of Stephen's witness.",
-    "whereWeAre": "The speech recounts much older periods but is delivered in Luke's first-century narrative frame; individual reported speeches may reflect ancient historiographical shaping. These geographic, political, and social conditions help explain the narrative of Acts 7. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 6 ended with opponents who could not out-argue Stephen instead bringing false accusations against him before the council (6:9-15). Chapter 7 gives Stephen's own answer: a long retelling of Israel's history arguing that God's presence was never confined to one building, followed by a direct accusation that his hearers resist the Holy Spirit the way their ancestors always had, a charge that ends with the enraged crowd stoning him while a young man named Saul looks on approvingly (7:1-60). That persecution breaks fully open in chapter 8, scattering believers out of Jerusalem.",
     "keyFigures": [
       {
         "name": "Stephen",
-        "role": "Accused disciple and principal speaker Recounts Israel's history and is killed"
+        "role": "Retells Israel's history before the council, accuses his hearers of resisting the Holy Spirit, and is stoned after reporting a vision of Jesus standing at God's right hand (7:2-60)."
       },
       {
         "name": "Abraham, Joseph and Moses",
-        "role": "Ancestral figures discussed in the speech Illustrate God's activity across locations and generations"
+        "role": "Ancestral figures in Stephen's speech through whom God worked outside the promised land, long before any temple existed (7:2-45)."
       },
       {
         "name": "Council and hostile crowd",
-        "role": "Stephen's hearers and killers Reject his rebuke"
+        "role": "Grow furious at Stephen's accusation, then drive him out of the city and stone him (7:54,57-58)."
       },
       {
         "name": "Saul",
-        "role": "Young man guarding garments Present at the execution (7:58)"
+        "role": "A young man who approves of Stephen's killing while guarding the coats of those who threw the stones (7:58-60)."
       },
       {
         "name": "Jesus",
-        "role": "Exalted figure in Stephen's vision. Central to Stephen's final testimony"
+        "role": "Appears to Stephen standing at God's right hand, the vision Stephen reports just before he is stoned (7:55-56)."
       }
     ],
     "keyThemes": [
       {
         "theme": "God's work beyond one place",
-        "explanation": "",
+        "explanation": "Stephen retells how God met Abraham, Joseph, and Moses far outside the promised land, arguing that God was never confined to one building or territory (7:2-16,44-50).",
         "references": [
           "Acts 7:2-16",
           "Acts 7:44-50"
@@ -421,7 +421,7 @@
       },
       {
         "theme": "Resistance to God's messengers",
-        "explanation": "",
+        "explanation": "Stephen accuses his hearers of resisting the Holy Spirit exactly as their ancestors resisted Moses, turning Israel's own history into a mirror held up to the council (7:35-43,51-53).",
         "references": [
           "Acts 7:35-43",
           "Acts 7:51-53"
@@ -429,7 +429,7 @@
       },
       {
         "theme": "Costly forgiveness",
-        "explanation": "",
+        "explanation": "As he is being stoned, Stephen asks the Lord to forgive his killers, dying the same way Jesus did, with forgiveness instead of retaliation on his lips (7:54-60).",
         "references": [
           "Acts 7:54-60"
         ]
@@ -470,47 +470,47 @@
   },
   "Acts 8": {
     "summary": "Following Stephen's death, persecution scatters believers from Jerusalem, while the apostles remain there (Acts 8:1–3). Philip preaches in Samaria, heals people, and baptizes many; Simon, known for practicing magic, believes but later offers money for the apostles' authority to confer the Spirit and is strongly rebuked (Acts 8:4–25). Directed toward the Gaza road, Philip explains Isaiah to an Ethiopian court official reading Scripture, proclaims Jesus, and baptizes him (Acts 8:26–40). The chapter shows the message crossing geographic and social boundaries while rejecting attempts to purchase spiritual authority.",
-    "whereWeAre": "Acts narrates regional expansion from a Jerusalem base; the Ethiopian official's personal identity beyond his court role is unknown. These geographic, political, and social conditions help explain the narrative of Acts 8. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 7 ended with Saul approving of Stephen's killing (7:58-60). Chapter 8 shows the persecution Saul helps lead scattering believers out of Jerusalem instead of silencing them: Philip preaches in Samaria and confronts a magician named Simon who tries to buy spiritual power, then is sent to explain Isaiah to an Ethiopian court official on a desert road and baptizes him (8:1-40). That gospel reaching unexpected people continues directly in chapter 9, where the persecutor himself is confronted by Jesus.",
     "keyFigures": [
       {
         "name": "Saul",
-        "role": "Persecutor of the church. Provokes scattering"
+        "role": "Ravages the church house by house, dragging believers to prison, and in doing so helps scatter the very mission he means to destroy (8:1-3)."
       },
       {
         "name": "Philip",
-        "role": "Evangelist Preaches in Samaria and teaches the Ethiopian official"
+        "role": "Preaches and heals in Samaria, then is sent to explain Isaiah to an Ethiopian official on the road to Gaza and baptizes him (8:5-8,26-38)."
       },
       {
         "name": "Simon",
-        "role": "Samaritan practitioner of magic. Offers money for spiritual power and is rebuked"
+        "role": "A Samaritan known for practicing magic who believes Philip's message but later offers money to buy the apostles' power and is sharply rebuked (8:9-13,18-24)."
       },
       {
         "name": "Peter and John",
-        "role": "Apostles visiting Samaria Pray for the new believers"
+        "role": "Travel to Samaria to pray for the new believers there and confront Simon's attempt to buy spiritual authority (8:14-24)."
       },
       {
         "name": "Ethiopian court official",
-        "role": "High-ranking traveler and Scripture reader Receives Philip's teaching and baptism"
+        "role": "A high-ranking treasury official who is reading Isaiah aloud in his chariot and asks Philip to explain it, then is baptized on the spot (8:27-38)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Mission through disruption",
-        "explanation": "",
+        "explanation": "The very persecution meant to crush the church instead scatters believers who keep preaching wherever they go, turning disaster into expansion (8:1-8).",
         "references": [
           "Acts 8:1-8"
         ]
       },
       {
         "theme": "Spiritual gifts are not commodities",
-        "explanation": "",
+        "explanation": "Simon offers money to buy the power of conferring the Holy Spirit, and Peter's sharp rebuke makes clear that God's gift cannot be purchased at any price (8:18-24).",
         "references": [
           "Acts 8:18-24"
         ]
       },
       {
         "theme": "Scripture and welcome",
-        "explanation": "",
+        "explanation": "Philip explains Isaiah's suffering servant to an Ethiopian official reading it alone in his chariot, and baptizes him the moment he asks what could possibly stand in the way (8:26-40).",
         "references": [
           "Acts 8:26-40"
         ]
@@ -526,44 +526,44 @@
   },
   "Acts 9": {
     "summary": "Saul travels toward Damascus with authority to arrest Jesus' followers, but a heavenly light and voice interrupt him; blinded, he is led into the city (Acts 9:1–9). Ananias, despite fear of Saul's reputation, obeys a vision, visits him, and Saul regains sight, is baptized, and begins proclaiming Jesus (Acts 9:10–22). After threats in Damascus and Jerusalem, believers help Saul escape to Tarsus (Acts 9:23–31). Peter heals the paralyzed Aeneas at Lydda and raises Tabitha (Dorcas) at Joppa in the account's concluding scenes (Acts 9:32–43). The chapter presents a dramatic reversal from persecutor to witness and depicts the gospel's continued spread.",
-    "whereWeAre": "The locations and Roman-era travel routes are historically real; the specific encounters and miracles are claims of Acts. These geographic, political, and social conditions help explain the narrative of Acts 9. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 8 ended with the Ethiopian official going on his way rejoicing after his baptism (8:39-40). Chapter 9 turns to the persecutor behind so much of that scattering: Saul is blinded and converted on the road to Damascus, Ananias overcomes his fear to restore his sight, and Peter's own ministry continues with the healing of Aeneas and the raising of Tabitha from death (9:1-43). Peter's stay in Joppa at the chapter's end sets up chapter 10's vision that sends him to a Gentile household.",
     "keyFigures": [
       {
         "name": "Saul",
-        "role": "Former persecutor and new witness. Experiences an encounter that changes his course"
+        "role": "Is blinded by a heavenly light and voice on the road to Damascus, then regains his sight, is baptized, and begins preaching the very faith he came to destroy (9:1-22)."
       },
       {
         "name": "Ananias of Damascus",
-        "role": "Disciple sent to Saul. Welcomes a feared adversary"
+        "role": "Overcomes his fear of Saul's reputation to obey a vision, visit him, and restore his sight (9:10-18)."
       },
       {
         "name": "Barnabas",
-        "role": "Believer who vouches for Saul. Helps him be received in Jerusalem"
+        "role": "Vouches for the converted Saul before suspicious believers, helping him be received in Jerusalem (9:26-28)."
       },
       {
         "name": "Peter",
-        "role": "Apostolic healer Ministers in Lydda and Joppa"
+        "role": "Heals the paralyzed Aeneas at Lydda and raises Tabitha from death at Joppa (9:32-41)."
       },
       {
         "name": "Aeneas",
-        "role": "Paralyzed man. Is healed"
+        "role": "Paralyzed for eight years, he is healed instantly when Peter tells him to rise and make his bed (9:33-34)."
       },
       {
         "name": "Tabitha (Dorcas)",
-        "role": "Disciple known for charitable work. Is raised and mourned by widows"
+        "role": "A disciple known for good works and charity whom Peter raises from death while widows show him the clothing she had made for them (9:36-41)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Transformation and calling",
-        "explanation": "",
+        "explanation": "A blinding light and a voice turn Saul from the church's fiercest persecutor into a preacher of the very faith he came to Damascus to destroy (9:1-22).",
         "references": [
           "Acts 9:1-22"
         ]
       },
       {
         "theme": "Courageous welcome",
-        "explanation": "",
+        "explanation": "Ananias obeys a vision to visit the man he fears most, and Barnabas later vouches for that same converted persecutor before suspicious believers in Jerusalem (9:10-19,26-28).",
         "references": [
           "Acts 9:10-19",
           "Acts 9:26-28"
@@ -571,7 +571,7 @@
       },
       {
         "theme": "Care and restoration",
-        "explanation": "",
+        "explanation": "Peter heals the paralyzed Aeneas and raises Tabitha from death, extending the same restoring power seen in Jesus' own ministry to ordinary believers in Lydda and Joppa (9:32-43).",
         "references": [
           "Acts 9:32-43"
         ]
@@ -597,43 +597,43 @@
   },
   "Acts 10": {
     "summary": "Cornelius, a centurion in Caesarea described as devout and generous, is told by an angel to summon Peter (Acts 10:1–8). At Joppa, Peter sees a vision involving animals and a command not to call unclean what God has cleansed (Acts 10:9–16). Guided by the Spirit, Peter travels to Cornelius's home and declares that God does not show favoritism, then summarizes Jesus' ministry, death, resurrection, and forgiveness through him (Acts 10:17–43). While Peter speaks, the Holy Spirit comes upon the Gentile listeners; astonished Jewish believers see this, and Peter orders their baptism (Acts 10:44–48). The chapter marks a decisive expansion of the community's welcome.",
-    "whereWeAre": "A Roman centurion's position reflects the imperial military presence; the particular vision and Spirit event are Luke's account. These geographic, political, and social conditions help explain the narrative of Acts 10. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 9 ended with Peter staying many days in Joppa with a tanner named Simon (9:43). Chapter 10 picks up right there: an angel directs the centurion Cornelius to send for Peter, a vision teaches Peter not to call any person unclean, and while he is still preaching in Cornelius's house the Holy Spirit falls on these Gentile listeners just as it had on the believers at Pentecost (10:1-48). That unprecedented event needs defending back in Jerusalem, which chapter 11 shows Peter doing.",
     "keyFigures": [
       {
         "name": "Cornelius",
-        "role": "Roman centurion and devout worshiper Invites Peter and gathers his household"
+        "role": "A devout, generous Roman centurion who is told by an angel to send for Peter, then gathers his household and friends to hear him (10:1-8,24)."
       },
       {
         "name": "Peter",
-        "role": "Apostle and visionary speaker Learns not to exclude Gentile hearers"
+        "role": "Receives a vision teaching him not to call any person unclean, then travels to Cornelius's house and declares that God shows no favoritism (10:9-43)."
       },
       {
         "name": "Cornelius's household and friends",
-        "role": "Gentile audience Receive Peter's message and baptism"
+        "role": "Receive Peter's message about Jesus and are baptized after the Holy Spirit falls on them while he is still speaking (10:44-48)."
       },
       {
         "name": "Jewish believers with Peter",
-        "role": "Witnesses. Are surprised by the Spirit's coming"
+        "role": "Are astonished to see the Holy Spirit poured out on Gentile listeners just as it had been on them at Pentecost (10:45-46)."
       }
     ],
     "keyThemes": [
       {
         "theme": "No favoritism in receiving people",
-        "explanation": "",
+        "explanation": "Peter tells Cornelius's household that God shows no favoritism, and that anyone who fears God and does what is right is already accepted by him (10:28-35).",
         "references": [
           "Acts 10:28-35"
         ]
       },
       {
         "theme": "Jesus proclaimed to outsiders",
-        "explanation": "",
+        "explanation": "Peter summarizes Jesus' whole ministry, death, and resurrection for a Gentile household that has never heard any of it before (10:36-43).",
         "references": [
           "Acts 10:36-43"
         ]
       },
       {
         "theme": "The Spirit and Gentile inclusion",
-        "explanation": "",
+        "explanation": "The Holy Spirit falls on Cornelius's household while Peter is still speaking, settling the question of Gentile inclusion before anyone has to argue for it (10:44-48).",
         "references": [
           "Acts 10:44-48"
         ]
@@ -659,51 +659,51 @@
   },
   "Acts 11": {
     "summary": "Believers in Jerusalem question Peter for eating with uncircumcised people; he explains his vision and Cornelius's reception of the Spirit, and the group praises God for granting Gentiles repentance leading to life (Acts 11:1–18). Meanwhile people scattered by persecution carry the message toward Phoenicia, Cyprus, and Antioch, where some preach to Greeks and many believe (Acts 11:19–21). Barnabas arrives, encourages them, and brings Saul from Tarsus to teach with him for a year; the disciples are first called Christians in Antioch (Acts 11:22–26). Agabus predicts a famine, and Antioch believers send relief for Judean believers by Barnabas and Saul (Acts 11:27–30). The chapter highlights inclusion and solidarity between communities.",
-    "whereWeAre": "The famine prediction is placed in Claudius's reign; famines are attested in that era, but the exact local event and chronology remain debated. These geographic, political, and social conditions help explain the narrative of Acts 11. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 10 ended with Peter staying several days with Cornelius after baptizing his Gentile household (10:48). Chapter 11 shows Peter defending that decision in Jerusalem, explaining his vision until the critics fall silent and praise God for granting Gentiles life too, while believers scattered by persecution plant a thriving, mixed congregation in Antioch, where the disciples are first called Christians and a prophesied famine prompts the believers to send relief to Judea (11:1-30). That relief effort, carried by Barnabas and Saul, sets up chapter 12's return of persecution under Herod.",
     "keyFigures": [
       {
         "name": "Peter",
-        "role": "Apostle defending Gentile fellowship Recounts Cornelius's story"
+        "role": "Explains his vision and Cornelius's story to critics in Jerusalem until they stop objecting and praise God for granting Gentiles life (11:1-18)."
       },
       {
         "name": "Jerusalem believers",
-        "role": "Initial critics and later worshipers Acknowledge Gentile repentance"
+        "role": "Question Peter for eating with uncircumcised people, then are silenced and praise God once they hear his explanation (11:2-3,18)."
       },
       {
         "name": "Barnabas",
-        "role": "Teacher and encourager Builds up Antioch believers"
+        "role": "Travels to Antioch, encourages the new believers there, and brings Saul from Tarsus to teach alongside him for a year (11:22-26)."
       },
       {
         "name": "Saul",
-        "role": "Teacher at Antioch. Works with Barnabas"
+        "role": "Is brought by Barnabas from Tarsus to Antioch, where the two of them teach the growing congregation for a full year (11:25-26)."
       },
       {
         "name": "Agabus",
-        "role": "Prophet predicting famine. Prompts relief planning"
+        "role": "A prophet who predicts a coming famine, prompting the Antioch believers to plan relief for Judea (11:27-28)."
       },
       {
         "name": "Antioch disciples",
-        "role": "Mixed growing community Send aid to Judea"
+        "role": "The first believers to be called Christians, who send relief to Judea's believers by the hands of Barnabas and Saul (11:26,29-30)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Reconsidering boundaries",
-        "explanation": "",
+        "explanation": "Peter's explanation of his vision and Cornelius's story is enough to make even his harshest Jerusalem critics praise God for granting Gentiles life (11:1-18).",
         "references": [
           "Acts 11:1-18"
         ]
       },
       {
         "theme": "Teaching a growing community",
-        "explanation": "",
+        "explanation": "Barnabas brings Saul from Tarsus to help teach the new, mixed congregation at Antioch for a full year, the city where believers are first called Christians (11:19-26).",
         "references": [
           "Acts 11:19-26"
         ]
       },
       {
         "theme": "Mutual aid across distance",
-        "explanation": "",
+        "explanation": "Warned of a coming famine by the prophet Agabus, the Antioch believers send relief to the Judean church they have never even met (11:27-30).",
         "references": [
           "Acts 11:27-30"
         ]
@@ -729,51 +729,51 @@
   },
   "Acts 12": {
     "summary": "King Herod persecutes members of the church, has James the brother of John killed, and arrests Peter during the festival of Unleavened Bread (Acts 12:1–4). Peter is guarded in prison but, according to Acts, an angel leads him out; he visits the house of Mary, mother of John Mark, where believers have been praying (Acts 12:5–17). Herod fails to find Peter and punishes the guards (Acts 12:18–19). Later in Caesarea, Herod accepts divine-sounding acclaim and dies after an angelic judgment in the narrative (Acts 12:20–23). The word of God continues to grow, and Barnabas and Saul return with John Mark (Acts 12:24–25). The chapter contrasts political coercion with the movement's survival.",
-    "whereWeAre": "Agrippa I and his death in AD 44 are historically attested; Josephus also recounts his death, though details differ from Acts. These geographic, political, and social conditions help explain the narrative of Acts 12. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 11 ended with Barnabas and Saul carrying famine relief from Antioch to Judea's believers (11:27-30). Chapter 12 shows the danger they are stepping back into: Herod Agrippa kills James and imprisons Peter, who is freed by an angel and surprises the praying believers at Mary's house, while Herod himself dies after accepting worship as a god (12:1-23). The word of God continuing to grow despite that death leads into chapter 13's sending of Barnabas and Saul on a mission of their own.",
     "keyFigures": [
       {
         "name": "Herod Agrippa I",
-        "role": "King persecuting the church Orders James's death and Peter's detention"
+        "role": "Kills James, arrests Peter to please the Jewish leaders, and later dies after accepting the crowd's worship as a god (12:1-4,20-23)."
       },
       {
         "name": "James brother of John",
-        "role": "Apostle killed by Herod. Represents the cost of persecution"
+        "role": "An apostle killed by Herod's sword, his death showing the real cost of the persecution Herod is willing to use (12:2)."
       },
       {
         "name": "Peter",
-        "role": "Imprisoned apostle Escapes according to the account"
+        "role": "Is freed from prison by an angel and goes to Mary's house, where the praying believers can hardly believe he is really there (12:6-17)."
       },
       {
         "name": "Mary mother of John Mark",
-        "role": "Host of a prayer gathering. Her house becomes a point of contact"
+        "role": "Hosts the prayer gathering Peter goes to immediately after his escape (12:12)."
       },
       {
         "name": "Rhoda",
-        "role": "Servant girl Recognizes Peter's voice"
+        "role": "A servant girl so overjoyed to recognize Peter's voice at the gate that she runs to tell the others without even letting him in (12:13-15)."
       },
       {
         "name": "Barnabas and Saul",
-        "role": "Traveling envoys. Appear at the chapter's close"
+        "role": "Return to Antioch from their relief mission to Judea, reappearing just as the chapter closes (12:25)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Cost of persecution",
-        "explanation": "",
+        "explanation": "Herod kills James and, seeing that it pleases the Jewish leaders, arrests Peter too, treating the apostles' deaths and imprisonments as a political strategy (12:1-4).",
         "references": [
           "Acts 12:1-4"
         ]
       },
       {
         "theme": "Prayer and surprise",
-        "explanation": "",
+        "explanation": "The church prays constantly for Peter while he is in prison, yet is so surprised by his actual release that they tell Rhoda she is out of her mind for saying he is at the door (12:5-17).",
         "references": [
           "Acts 12:5-17"
         ]
       },
       {
         "theme": "Limits of power",
-        "explanation": "",
+        "explanation": "Herod accepts the crowd's acclaim as a god and is struck down and eaten by worms, his sudden death showing how little his royal power actually controlled (12:20-24).",
         "references": [
           "Acts 12:20-24"
         ]
@@ -783,51 +783,51 @@
   },
   "Acts 13": {
     "summary": "At Antioch, believers worship and fast before setting apart Barnabas and Saul for mission (Acts 13:1–3). They travel to Cyprus, where Saul—also called Paul—confronts Elymas and the proconsul Sergius Paulus believes (Acts 13:4–12). After reaching Pisidian Antioch, Paul recounts Israel's story, proclaims Jesus as David's promised descendant, and announces forgiveness and justification in him (Acts 13:13–41). Many Jews and Gentiles respond, but opposition intensifies; Paul and Barnabas declare that they will turn to Gentiles, and they leave for Iconium amid persecution (Acts 13:42–52). The chapter shows a commissioned mission navigating both reception and resistance.",
-    "whereWeAre": "Roman provinces and proconsuls provide an attested administrative framework; the precise itinerary and reported speeches are supplied by Acts. These geographic, political, and social conditions help explain the narrative of Acts 13. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 12 ended with the word of God growing and multiplying even after Herod's death, as Barnabas and Saul returned to Antioch (12:24-25). Chapter 13 shows the Antioch church sending that same pair out further: the Holy Spirit sets apart Barnabas and Saul, now called Paul, for a mission that confronts a sorcerer on Cyprus and preaches in a Pisidian synagogue, where Jewish opposition leads Paul and Barnabas to declare that they will turn to the Gentiles instead (13:1-52). That turn to Gentile hearers continues through persecution in chapter 14.",
     "keyFigures": [
       {
         "name": "Barnabas",
-        "role": "Missionary sent from Antioch Partners with Paul"
+        "role": "Is set apart with Saul by the Holy Spirit for the mission that takes them to Cyprus and Pisidian Antioch (13:2-4)."
       },
       {
         "name": "Saul (Paul)",
-        "role": "Missionary preacher Addresses Cyprus and Pisidian Antioch"
+        "role": "Confronts the sorcerer Elymas on Cyprus and preaches Jesus as David's promised descendant in the Pisidian Antioch synagogue (13:9-12,16-41)."
       },
       {
         "name": "Sergius Paulus",
-        "role": "Cypriot proconsul. Hears the message and believes"
+        "role": "The Cypriot proconsul who believes once he sees Elymas struck blind for opposing the message (13:7,12)."
       },
       {
         "name": "Elymas (Bar-Jesus)",
-        "role": "Opposing adviser Attempts to turn the proconsul away"
+        "role": "A sorcerer who tries to turn Sergius Paulus away from the faith and is struck blind by Paul for it (13:8,11)."
       },
       {
         "name": "John Mark",
-        "role": "Traveling assistant Leaves the party at Perga"
+        "role": "Serves as the missionaries' helper on the journey but leaves the party once they reach Perga (13:5,13)."
       },
       {
         "name": "Jewish and Gentile hearers",
-        "role": "Synagogue audiences. Respond in differing ways"
+        "role": "Respond to Paul's synagogue sermon so differently that the resulting opposition drives the missionaries to declare they will turn to the Gentiles instead (13:42-48)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Commissioned service",
-        "explanation": "",
+        "explanation": "The Antioch church worships and fasts before the Holy Spirit itself names Barnabas and Saul for the work they are sent to do (13:1-4).",
         "references": [
           "Acts 13:1-4"
         ]
       },
       {
         "theme": "Scriptural proclamation of Jesus",
-        "explanation": "",
+        "explanation": "Paul traces Israel's history from Egypt to David to argue that Jesus is the promised descendant through whom forgiveness and justification finally come (13:16-41).",
         "references": [
           "Acts 13:16-41"
         ]
       },
       {
         "theme": "Response and opposition",
-        "explanation": "",
+        "explanation": "Many Jews and Gentiles respond with joy, but jealousy among other Jewish leaders drives Paul and Barnabas out of the city entirely (13:42-52).",
         "references": [
           "Acts 13:42-52"
         ]
@@ -863,47 +863,47 @@
   },
   "Acts 14": {
     "summary": "In Iconium, Paul and Barnabas teach in the synagogue, attracting believers but also strong opposition; they flee when threatened (Acts 14:1–7). At Lystra Paul heals a man unable to walk, and the crowd mistakes the missionaries for Hermes and Zeus; the two urgently reject sacrifice to themselves and direct listeners to the living Creator (Acts 14:8–18). Opponents stone Paul and leave him for dead, but he rises and later continues to Derbe (Acts 14:19–21). On the return journey they strengthen disciples, appoint elders with prayer and fasting, and report to Antioch that God has opened a door of faith to Gentiles (Acts 14:21–28). The chapter emphasizes humility, endurance, and care for new congregations.",
-    "whereWeAre": "The narrative depicts Greek civic religion interacting with Jewish and Christian proclamation; local cults to Zeus and Hermes form a plausible historical backdrop. These geographic, political, and social conditions help explain the narrative of Acts 14. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 13 ended with Paul and Barnabas driven out of Pisidian Antioch, shaking its dust off and moving on to Iconium (13:50-52). Chapter 14 follows that same pattern of mixed reception: they heal a man at Lystra only to be mistaken for gods, then watch the same crowd turn and stone Paul, yet they return through the churches they planted to appoint elders before reporting to Antioch that God has opened a door of faith to the Gentiles (14:1-28). That same question of what faith requires from Gentiles becomes the subject of chapter 15's Jerusalem council.",
     "keyFigures": [
       {
         "name": "Paul and Barnabas",
-        "role": "Missionary partners Preach, reject divine honors, and revisit churches"
+        "role": "Preach and heal from Iconium to Derbe, reject being worshiped as gods at Lystra, and revisit their new churches to appoint elders (14:1-23)."
       },
       {
         "name": "Lame man at Lystra",
-        "role": "Recipient of healing Triggers a local religious reaction"
+        "role": "Crippled from birth, he is healed by Paul and his restored walking triggers the crowd's attempt to worship the missionaries as gods (14:8-10)."
       },
       {
         "name": "Priest of Zeus and local crowd",
-        "role": "Would-be sacrificers Misidentify the missionaries"
+        "role": "Mistake Paul and Barnabas for Hermes and Zeus and try to offer sacrifices to them before the missionaries stop them (14:11-13,18)."
       },
       {
         "name": "Opponents from Antioch and Iconium",
-        "role": "Hostile visitors Stir a stoning"
+        "role": "Follow the missionaries to Lystra and stir the same crowd that nearly worshiped Paul into stoning him instead (14:19)."
       },
       {
         "name": "New disciples and elders",
-        "role": "Growing local communities. Receive instruction and leadership"
+        "role": "Are strengthened and given appointed leaders when Paul and Barnabas revisit the churches on their way back (14:21-23)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Rejecting personal glory",
-        "explanation": "",
+        "explanation": "When the Lystra crowd tries to offer sacrifices to Paul and Barnabas as gods, they tear their own clothes in protest, insisting they are only men pointing to the living God (14:8-18).",
         "references": [
           "Acts 14:8-18"
         ]
       },
       {
         "theme": "Perseverance through hardship",
-        "explanation": "",
+        "explanation": "Paul is stoned and left for dead at Lystra, yet gets up and walks back into the very city that just tried to kill him (14:19-22).",
         "references": [
           "Acts 14:19-22"
         ]
       },
       {
         "theme": "Sustaining new communities",
-        "explanation": "",
+        "explanation": "Paul and Barnabas revisit the churches they planted to appoint elders and strengthen disciples before reporting back to Antioch (14:21-28).",
         "references": [
           "Acts 14:21-28"
         ]
@@ -913,51 +913,51 @@
   },
   "Acts 15": {
     "summary": "People from Judea insist Gentile believers must be circumcised, prompting Paul and Barnabas to visit Jerusalem (Acts 15:1–5). After debate, Peter appeals to God's acceptance of Gentiles, Barnabas and Paul report their experience, and James cites the prophets and proposes a letter asking Gentiles to avoid certain practices associated with idolatry, blood, and sexual immorality (Acts 15:6–29). The letter brings encouragement in Antioch (Acts 15:30–35). Paul and Barnabas later disagree sharply about taking John Mark; they separate, with Barnabas taking Mark and Paul traveling with Silas (Acts 15:36–41). The chapter portrays communal deliberation on Gentile inclusion alongside unresolved personal conflict.",
-    "whereWeAre": "Disputes over circumcision and food reflect documented Jewish identity practices; chronology alongside Paul's letters is debated. These geographic, political, and social conditions help explain the narrative of Acts 15. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 14 ended with Paul and Barnabas reporting to the Antioch church that God had opened a door of faith to the Gentiles (14:27-28). Chapter 15 settles exactly what that faith requires: after sharp debate in Jerusalem over circumcision, Peter and James side against imposing the full law on Gentile believers, a letter confirms the decision, and Paul and Barnabas then separate sharply over whether to bring John Mark on their next journey (15:1-41). That split sends Paul off with a new companion, Silas, whose travels fill chapter 16.",
     "keyFigures": [
       {
         "name": "Peter",
-        "role": "Apostolic speaker at Jerusalem. Argues against imposing a burden on Gentiles"
+        "role": "Argues at the Jerusalem council that God made no distinction between Jewish and Gentile believers, so the Gentiles should not be burdened with the full law (15:7-11)."
       },
       {
         "name": "James",
-        "role": "Jerusalem leader Proposes judgment and letter"
+        "role": "Proposes the council's decision and the letter asking Gentile believers to avoid practices tied to idolatry, blood, and sexual immorality (15:13-21)."
       },
       {
         "name": "Paul and Barnabas",
-        "role": "Missionary delegates Report Gentile conversions and later disagree"
+        "role": "Report the signs and wonders God did among the Gentiles through them, then later disagree so sharply over John Mark that they part ways (15:12,36-39)."
       },
       {
         "name": "Judas Barsabbas and Silas",
-        "role": "Envoys carrying the decision. Confirm the letter verbally"
+        "role": "Carry the council's letter to Antioch and confirm its contents in person (15:22,27,32)."
       },
       {
         "name": "Gentile believers",
-        "role": "Community at the center of debate. Receive the council's decision"
+        "role": "Are the subject of the whole debate and receive the council's decision with encouragement once the letter reaches Antioch (15:30-31)."
       },
       {
         "name": "John Mark",
-        "role": "Proposed travel companion. Is the occasion of a later disagreement"
+        "role": "The proposed travel companion whose earlier departure from the mission becomes the reason Paul and Barnabas separate (15:37-39)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Belonging without circumcision",
-        "explanation": "",
+        "explanation": "Peter argues that God made no distinction between Jewish and Gentile believers in giving the Spirit, so the council should not place a burden on Gentiles that even Israel itself could never fully bear (15:6-19).",
         "references": [
           "Acts 15:6-19"
         ]
       },
       {
         "theme": "Discernment and compromise",
-        "explanation": "",
+        "explanation": "James proposes a short list of practices for Gentile believers to avoid, a compromise meant to protect fellowship with their Jewish neighbors without re-imposing the whole law (15:19-31).",
         "references": [
           "Acts 15:19-31"
         ]
       },
       {
         "theme": "Disagreement among leaders",
-        "explanation": "",
+        "explanation": "Paul and Barnabas disagree so sharply over taking John Mark that they part ways entirely, showing that even trusted partners in the same mission can reach an honest impasse (15:36-41).",
         "references": [
           "Acts 15:36-41"
         ]
@@ -973,51 +973,51 @@
   },
   "Acts 16": {
     "summary": "Paul meets Timothy at Lystra and has him circumcised because of local Jewish audiences, then travels with companions sharing the Jerusalem decisions (Acts 16:1–5). A vision leads the mission across to Macedonia; at Philippi Lydia responds to the message and offers hospitality (Acts 16:6–15). After Paul expels a spirit from an enslaved girl used for profit, her owners bring legal accusations; Paul and Silas are beaten and imprisoned (Acts 16:16–24). An earthquake opens the prison, but the prisoners do not flee. The jailer and household are baptized, and Roman citizenship becomes crucial when magistrates seek a quiet release (Acts 16:25–40). The chapter blends cross-cultural mission, economic conflict, and legal status.",
-    "whereWeAre": "Roman citizenship and colonial magistrates are historically established institutions; the prison earthquake and conversions remain narrative claims. These geographic, political, and social conditions help explain the narrative of Acts 16. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 15 ended with Paul choosing Silas as a new traveling companion after parting ways with Barnabas (15:39-41). Chapter 16 follows that new partnership into Europe: a vision calls them to Macedonia, Lydia becomes the first convert at Philippi, and after Paul frees an enslaved girl from a profit-making spirit, he and Silas are beaten and imprisoned, only for an earthquake and their own composure to convert their jailer before their Roman citizenship forces an official apology (16:1-40). That same mission keeps moving through Greece in chapter 17.",
     "keyFigures": [
       {
         "name": "Paul and Silas",
-        "role": "Missionaries and prisoners Preach and contest unlawful treatment"
+        "role": "Travel to Macedonia after a vision, are beaten and imprisoned at Philippi for freeing an enslaved girl from a spirit, and are freed by an earthquake before revealing their Roman citizenship (16:9-10,16-24,35-37)."
       },
       {
         "name": "Timothy",
-        "role": "New traveling companion. Joins the mission"
+        "role": "Joins Paul's mission at Lystra and is circumcised to ease his reception among local Jewish communities (16:1-3)."
       },
       {
         "name": "Lydia",
-        "role": "Seller of purple cloth and host. Welcomes the missionaries at Philippi"
+        "role": "A seller of purple cloth whose heart the Lord opens to Paul's message, becoming Philippi's first convert and offering the missionaries lodging (16:14-15)."
       },
       {
         "name": "Enslaved fortune-telling girl",
-        "role": "Exploited young woman. Her owners lose profits when the spirit departs"
+        "role": "Follows Paul for days until he casts out the spirit that let her owners profit from her, costing them their income (16:16-18)."
       },
       {
         "name": "Philippian jailer",
-        "role": "Prison official. Responds after the earthquake"
+        "role": "Nearly kills himself when he thinks the earthquake let the prisoners escape, then asks what he must do to be saved and is baptized with his household (16:27-33)."
       },
       {
         "name": "Philippian magistrates",
-        "role": "Roman colonial officials Order punishment then learn of citizenship"
+        "role": "Order Paul and Silas beaten and jailed without trial, then apologize once they learn the missionaries are Roman citizens (16:22-23,38-39)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Mission across boundaries",
-        "explanation": "",
+        "explanation": "A vision of a man pleading for help redirects the mission into Macedonia, where Lydia becomes the first convert on European soil (16:6-15).",
         "references": [
           "Acts 16:6-15"
         ]
       },
       {
         "theme": "Exploitation and economic backlash",
-        "explanation": "",
+        "explanation": "Freeing an enslaved girl from a spirit her owners profited from gets Paul and Silas beaten and jailed, since removing her exploitation cost someone else money (16:16-24).",
         "references": [
           "Acts 16:16-24"
         ]
       },
       {
         "theme": "Dignity and legal protection",
-        "explanation": "",
+        "explanation": "An earthquake opens the prison, but it is the missionaries' own composure and later their Roman citizenship, not the earthquake, that actually secures their dignity and an official apology (16:25-40).",
         "references": [
           "Acts 16:25-40"
         ]
@@ -1027,51 +1027,51 @@
   },
   "Acts 17": {
     "summary": "At Thessalonica, Paul reasons from Scripture that the Messiah had to suffer and rise; some believe while opponents provoke civic unrest, alleging disloyalty to Caesar (Acts 17:1–9). At Berea the hearers investigate the Scriptures and many believe, but threats force Paul onward (Acts 17:10–15). In Athens, Paul speaks with synagogue audiences and philosophers, then addresses the Areopagus about the creator God, human dependence, idolatry, repentance, judgment, and the resurrection (Acts 17:16–31). Some mock, some seek further discussion, and others believe (Acts 17:32–34). The chapter shows varied responses in Jewish and Greek civic settings.",
-    "whereWeAre": "Athens was known for philosophical schools and public civic religion; Acts preserves a particular speech whose exact delivery cannot be verified independently. These geographic, political, and social conditions help explain the narrative of Acts 17. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 16 ended with Paul and Silas leaving Philippi after the magistrates' apology (16:39-40). Chapter 17 carries them through three very different audiences: Thessalonica's synagogue erupts into civic unrest, Berea's hearers calmly search the Scriptures to test Paul's claims, and in Athens Paul addresses philosophers at the Areopagus about the God they have unknowingly been worshiping, with mixed results (17:1-34). That same mixed reception continues in chapter 18's long stay in Corinth.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Missionary speaker Reasons in synagogues and addresses Athens"
+        "role": "Reasons from Scripture in Thessalonica and Berea, then addresses the Athenian Areopagus about the God his hearers have unknowingly been worshiping (17:2-3,10-11,22-31)."
       },
       {
         "name": "Silas and Timothy",
-        "role": "Fellow workers Accompany parts of the journey"
+        "role": "Accompany Paul through Thessalonica and Berea before staying behind when he goes on to Athens alone (17:14-15)."
       },
       {
         "name": "Jason",
-        "role": "Thessalonian host. Faces accusations from a crowd"
+        "role": "Hosts Paul in Thessalonica and is dragged before the city officials when a mob accuses him of harboring troublemakers (17:5-9)."
       },
       {
         "name": "Berean listeners",
-        "role": "Scripture examiners Investigate the claims"
+        "role": "Receive Paul's message eagerly and search the Scriptures daily to check whether what he says is true (17:11)."
       },
       {
         "name": "Epicurean and Stoic philosophers",
-        "role": "Athens interlocutors Debate Paul's teaching"
+        "role": "Debate with Paul in the marketplace and bring him to the Areopagus to explain his teaching more fully (17:18-19)."
       },
       {
         "name": "Dionysius and Damaris",
-        "role": "Named Athenian believers. Illustrate a positive response"
+        "role": "Named Athenians who believe Paul's message, a positive response amid a mostly mixed Athenian reaction (17:34)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Reasoned scriptural engagement",
-        "explanation": "",
+        "explanation": "The Berean believers are commended for searching the Scriptures daily to test what Paul tells them, rather than simply taking his word for it (17:1-12).",
         "references": [
           "Acts 17:1-12"
         ]
       },
       {
         "theme": "Faith and civic allegiance",
-        "explanation": "",
+        "explanation": "Opponents in Thessalonica accuse Paul's converts of defying Caesar's decrees by proclaiming another king, turning a religious message into a civic threat (17:5-9).",
         "references": [
           "Acts 17:5-9"
         ]
       },
       {
         "theme": "Speaking in a different culture",
-        "explanation": "",
+        "explanation": "Paul quotes Athenian poets and an altar to an unknown god to explain the Christian message in terms his philosophical hearers could actually recognize (17:22-34).",
         "references": [
           "Acts 17:22-34"
         ]
@@ -1080,52 +1080,52 @@
     "explainedReferences": []
   },
   "Acts 18": {
-    "summary": "Paul comes to Corinth and works alongside Aquila and Priscilla, who had left Rome following Claudius's order concerning Jews there (Acts 18:1–4). He teaches regularly, eventually focusing on Gentiles after opposition; Crispus and other Corinthians believe (Acts 18:5–11). Jewish opponents bring Paul before Gallio, proconsul of Achaea, but Gallio declines to judge a dispute about Jewish law; Sosthenes is beaten in the incident (Acts 18:12–17). Paul leaves Corinth via Cenchreae and Ephesus, returning to Antioch before further travel (Acts 18:18–23). In Ephesus, Priscilla and Aquila explain God's way more accurately to Apollos, an eloquent Scripture teacher, who later ministers in Achaea (Acts 18:24–28).",
-    "whereWeAre": "The Delphi inscription independently attests Gallio's proconsulship around AD 51–52; it anchors a broad chronology but not Paul's specific hearing. Claudius's action affecting Jews in Rome is also reported by ancient writers, though its scope is debated. These geographic, political, and social conditions help explain the narrative of Acts 18. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "summary": "Paul comes to Corinth and works alongside Aquila and Priscilla, who had left Rome following Claudius's order concerning Jews there (Acts 18:1–4). He teaches regularly, eventually focusing on Gentiles after opposition; Crispus and other Corinthians believe (Acts 18:5–11). Jewish opponents bring Paul before Gallio, proconsul of Achaea, but Gallio declines to judge a dispute about Jewish law; Sosthenes is beaten in the incident (Acts 18:12–17). Paul leaves Corinth via Cenchrea and Ephesus, returning to Antioch before further travel (Acts 18:18–23). In Ephesus, Priscilla and Aquila explain God's way more accurately to Apollos, an eloquent Scripture teacher, who later ministers in Achaea (Acts 18:24–28).",
+    "whereWeAre": "Chapter 17 ended with some Athenians mocking Paul's mention of resurrection while others asked to hear more (17:32-34). Chapter 18 finds a more settled hearing in Corinth: Paul works alongside fellow tentmakers Aquila and Priscilla, stays eighteen months despite a failed attempt to have him judged before the proconsul Gallio, and before leaving for Antioch helps the couple give fuller instruction to the eloquent teacher Apollos (18:1-28). That same pattern of deeper teaching continues when Paul reaches Ephesus in chapter 19.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Missionary and tentmaker. Works and teaches in Corinth"
+        "role": "Works as a tentmaker alongside Aquila and Priscilla in Corinth, stays eighteen months teaching, and later leaves by way of Cenchrea for Ephesus and Antioch (18:1-4,11,18)."
       },
       {
         "name": "Aquila and Priscilla",
-        "role": "Jewish artisan couple and instructors Host Paul and teach Apollos"
+        "role": "A Jewish couple expelled from Rome who host Paul in Corinth and later explain God's way more accurately to Apollos in Ephesus (18:2-3,26)."
       },
       {
         "name": "Gallio",
-        "role": "Roman proconsul of Achaea. Declines the plaintiffs' case"
+        "role": "The Roman proconsul of Achaea who refuses to judge the Jewish leaders' case against Paul, dismissing it as an internal dispute about their own law (18:12-17)."
       },
       {
         "name": "Crispus",
-        "role": "Synagogue leader Believes with his household"
+        "role": "A synagogue leader who believes in the Lord along with his whole household (18:8)."
       },
       {
         "name": "Sosthenes",
-        "role": "Synagogue leader beaten before the tribunal. Shows the episode's volatility"
+        "role": "Beaten in front of the tribunal during the uproar against Paul, showing how volatile the episode became (18:17)."
       },
       {
         "name": "Apollos",
-        "role": "Alexandrian Scripture teacher. Receives fuller instruction"
+        "role": "An eloquent, Scripture-trained teacher who receives fuller instruction from Priscilla and Aquila before going on to minister effectively in Achaea (18:24-28)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Work and witness",
-        "explanation": "",
+        "explanation": "Paul supports himself making tents alongside Aquila and Priscilla while still teaching in the synagogue every Sabbath (18:1-11).",
         "references": [
           "Acts 18:1-11"
         ]
       },
       {
         "theme": "Civil jurisdiction and dispute",
-        "explanation": "",
+        "explanation": "Gallio refuses to judge what he considers an internal dispute about Jewish law, a ruling that incidentally protects Paul's ministry from a hostile court (18:12-17).",
         "references": [
           "Acts 18:12-17"
         ]
       },
       {
         "theme": "Humble learning",
-        "explanation": "",
+        "explanation": "Even an eloquent, Scripture-trained teacher like Apollos still has more to learn, and he receives it gladly from Priscilla and Aquila rather than resisting correction (18:24-28).",
         "references": [
           "Acts 18:24-28"
         ]
@@ -1135,51 +1135,51 @@
   },
   "Acts 19": {
     "summary": "In Ephesus Paul encounters disciples familiar only with John's baptism; after instruction, they are baptized in Jesus' name and receive the Holy Spirit (Acts 19:1–7). Paul teaches in a synagogue and later in the lecture hall of Tyrannus, and unusual healings are reported (Acts 19:8–12). The failed attempt of the sons of Sceva to use Jesus' name as a formula leads to fear, confession, and the burning of expensive books used for magic (Acts 19:13–20). A dispute erupts when Demetrius and fellow artisans fear that Paul's message will threaten income connected to Artemis's shrine; a city clerk calms the crowd (Acts 19:21–41). The chapter demonstrates social and economic effects of religious change.",
-    "whereWeAre": "The Artemis cult and Ephesian civic institutions are well attested; the exorcisms and healings are biblical reports. These geographic, political, and social conditions help explain the narrative of Acts 19. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 18 ended with Apollos receiving fuller instruction from Priscilla and Aquila before moving on to minister in Achaia (18:24-28). Chapter 19 shows Paul giving that same kind of fuller instruction in Ephesus: he baptizes disciples who only knew John's baptism, teaches for two years in Tyrannus's hall, and sees the city's magic trade publicly discredited before a riot over the silversmiths' income in Artemis's temple is finally calmed by a city official (19:1-41). Paul's departure from that same city opens chapter 20's travels toward Jerusalem.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Teacher in Ephesus Instructs disciples and challenges idols"
+        "role": "Baptizes disciples who only knew John's baptism, teaches daily in Ephesus for two years, and sees the city's magic trade publicly discredited (19:1-12,17-20)."
       },
       {
         "name": "Followers of John's baptism",
-        "role": "Newly instructed disciples. Receive further teaching and baptism"
+        "role": "Had never heard of the Holy Spirit until Paul instructs them and baptizes them in the name of Jesus (19:1-5)."
       },
       {
         "name": "Seven sons of Sceva",
-        "role": "Itinerant exorcists Fail when invoking Jesus as a formula"
+        "role": "Try to cast out a demon using Jesus' name as a formula and are overpowered and wounded by the possessed man instead (19:13-16)."
       },
       {
         "name": "Demetrius",
-        "role": "Silversmith Mobilizes concern over trade"
+        "role": "A silversmith who mobilizes fellow craftsmen against Paul because his preaching threatens their trade in shrines of Artemis (19:24-27)."
       },
       {
         "name": "Artemis worshipers and artisans",
-        "role": "Local religious-commercial crowd. Respond to perceived economic threat"
+        "role": "Fill the city's theater shouting for about two hours in protest of Paul's preaching (19:28-34)."
       },
       {
         "name": "City clerk",
-        "role": "Ephesian civic officer Dismisses the unlawful assembly"
+        "role": "Calms the riotous assembly and dismisses it before the disturbance can draw Roman intervention (19:35-41)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Learning and baptism",
-        "explanation": "",
+        "explanation": "Disciples who only knew John's baptism are instructed further and receive the Holy Spirit once they are baptized in Jesus' name (19:1-7).",
         "references": [
           "Acts 19:1-7"
         ]
       },
       {
         "theme": "Religion is not a magical technique",
-        "explanation": "",
+        "explanation": "The sons of Sceva try to use Jesus' name like a magic formula and are overpowered by the very spirit they tried to command, proving that the name itself has no power apart from genuine faith (19:11-20).",
         "references": [
           "Acts 19:11-20"
         ]
       },
       {
         "theme": "Economic interests and public order",
-        "explanation": "",
+        "explanation": "Demetrius stirs a riot not over doctrine but over income, since Paul's preaching is cutting into the trade in silver shrines of Artemis (19:23-41).",
         "references": [
           "Acts 19:23-41"
         ]
@@ -1189,43 +1189,43 @@
   },
   "Acts 20": {
     "summary": "After leaving Ephesus, Paul travels through Macedonia and Greece, then returns by way of Troas, where Eutychus falls from an upstairs window during a long gathering; Paul embraces him alive and the believers are comforted (Acts 20:1–12). The journey continues by sea to Miletus (Acts 20:13–16). There Paul summons the Ephesian elders and recalls his teaching, hardships, and service, warns of future dangers to the community, entrusts them to God, and emphasizes working to support the weak rather than seeking silver or clothing (Acts 20:17–35). They pray and part with tears, expecting not to see him again (Acts 20:36–38). The chapter combines intimate community life with a model of accountable leadership.",
-    "whereWeAre": "Sea travel and local congregational leadership structures are plausible first-century realities, while the precise itinerary is narrated by Acts. These geographic, political, and social conditions help explain the narrative of Acts 20. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 19 ended with the Ephesian riot settled and Paul free to continue his travels (19:40-41). Chapter 20 follows him on that onward journey: he raises Eutychus after a fatal fall at Troas, then summons the Ephesian elders to Miletus for a farewell charge recalling his hardships among them and warning of dangers still to come, a meeting that ends in tears since none of them expect to see him again (20:1-38). That same expectation of danger ahead becomes explicit warning in chapter 21.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Traveling teacher and departing mentor. Addresses elders and recalls his work"
+        "role": "Raises Eutychus after his fatal fall at Troas, then summons the Ephesian elders to Miletus to recall his ministry among them and warn of dangers ahead (20:7-12,17-35)."
       },
       {
         "name": "Eutychus",
-        "role": "Young man who falls from a window. Is restored in the narrative"
+        "role": "Falls asleep in a third-floor window during Paul's long sermon, falls to his death, and is restored alive when Paul embraces him (20:9-12)."
       },
       {
         "name": "Ephesian elders",
-        "role": "Community leaders Receive Paul's charge"
+        "role": "Receive Paul's charge to watch over the flock and weep with him, certain they will never see his face again (20:17-18,36-38)."
       },
       {
         "name": "Traveling companions",
-        "role": "Journey witnesses. Travel with Paul through the region"
+        "role": "Travel with Paul through Macedonia and Greece on this stage of the journey toward Jerusalem (20:4-5)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Community care in worship",
-        "explanation": "",
+        "explanation": "Paul interrupts a long night of teaching to go embrace Eutychus after his fatal fall, and the believers are comforted that he is alive before the gathering even continues (20:7-12).",
         "references": [
           "Acts 20:7-12"
         ]
       },
       {
         "theme": "Responsible leadership",
-        "explanation": "",
+        "explanation": "Paul reminds the Ephesian elders that he never held back anything profitable to teach them, and warns that savage wolves will rise even from among their own number (20:17-31).",
         "references": [
           "Acts 20:17-31"
         ]
       },
       {
         "theme": "Generosity and work",
-        "explanation": "",
+        "explanation": "Paul points to his own labor supporting himself and others as proof that it is more blessed to give than to receive (20:32-38).",
         "references": [
           "Acts 20:32-38"
         ]
@@ -1235,51 +1235,51 @@
   },
   "Acts 21": {
     "summary": "Paul and his companions sail toward Jerusalem through Tyre and Caesarea. Believers warn of suffering, and Agabus dramatizes a prediction that Paul will be bound; Paul nevertheless resolves to go to Jerusalem (Acts 21:1–16). There James and the elders welcome Paul but report concerns about rumors he teaches Jewish believers to abandon Moses; he joins men under a vow in a temple purification procedure (Acts 21:17–26). Jews from Asia accuse him of defiling the temple, a crowd seizes him, and Roman soldiers intervene to prevent his killing (Acts 21:27–36). Paul obtains permission to address the people (Acts 21:37–40). The chapter highlights the clash between mission, communal identity, and rumors.",
-    "whereWeAre": "Temple access restrictions and the nearby Roman garrison help explain soldiers' rapid intervention; the allegations are not established by the narrative. These geographic, political, and social conditions help explain the narrative of Acts 21. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 20 ended with the Ephesian elders weeping as they said goodbye to Paul, certain they would not see his face again (20:36-38). Chapter 21 shows exactly the danger they feared arriving in Jerusalem: despite Agabus's dramatic warning and the pleas of friends, Paul goes anyway, joins a temple purification rite to answer rumors about his teaching, and is seized by a mob that Roman soldiers have to fight through to rescue him from (21:1-40). That rescue leaves Paul in Roman custody for the hearings chapter 22 begins.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Missionary arriving in Jerusalem. Faces warnings, temple controversy, and arrest"
+        "role": "Resolves to go to Jerusalem despite warnings, joins a temple purification rite to answer rumors about his teaching, and is rescued from a mob by Roman soldiers (21:13-14,26-27,31-32)."
       },
       {
         "name": "Agabus",
-        "role": "Prophet in Caesarea Acts out coming imprisonment"
+        "role": "A prophet who dramatizes with Paul's own belt that he will be bound in Jerusalem (21:10-11)."
       },
       {
         "name": "Philip the evangelist and his daughters",
-        "role": "Hosts with prophetic connections Receive Paul at Caesarea"
+        "role": "Host Paul and his companions at Caesarea on the way to Jerusalem (21:8-9)."
       },
       {
         "name": "James and Jerusalem elders",
-        "role": "Community leaders Discuss Torah concerns and advise Paul"
+        "role": "Welcome Paul but ask him to join the purification rite to show that he still respects Jewish practice (21:18-24)."
       },
       {
         "name": "Jews from Asia and Jerusalem crowd",
-        "role": "Accusers and rioters Instigate his seizure"
+        "role": "Falsely accuse Paul of defiling the temple and seize him, nearly killing him before soldiers intervene (21:27-31)."
       },
       {
         "name": "Roman tribune and soldiers",
-        "role": "Imperial security force Rescue and detain Paul"
+        "role": "Rescue Paul from the mob and carry him up the barracks stairs because the crowd's violence makes it impossible for him to walk (21:32,35-36)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Commitment despite warning",
-        "explanation": "",
+        "explanation": "Agabus dramatizes a prophecy that Paul will be bound in Jerusalem, and Paul's friends beg him not to go, but he insists he is ready even to die there for Jesus' name (21:8-16).",
         "references": [
           "Acts 21:8-16"
         ]
       },
       {
         "theme": "Diversity within Jewish belief",
-        "explanation": "",
+        "explanation": "James and the Jerusalem elders ask Paul to join a temple purification rite specifically to show that believing in Jesus does not require abandoning Jewish practice (21:17-26).",
         "references": [
           "Acts 21:17-26"
         ]
       },
       {
         "theme": "Rumor and mob violence",
-        "explanation": "",
+        "explanation": "A false rumor that Paul brought a Gentile into the temple's restricted courts is enough to turn a crowd violent before any evidence is actually checked (21:27-40).",
         "references": [
           "Acts 21:27-40"
         ]
@@ -1289,47 +1289,47 @@
   },
   "Acts 22": {
     "summary": "Speaking to the Jerusalem crowd in the local Jewish language, Paul recounts his upbringing, training under Gamaliel, and earlier persecution of Jesus' followers (Acts 22:1–5). He describes his encounter with Jesus on the Damascus road, Ananias's visit, and his baptism (Acts 22:6–16). He then reports a later temple vision commissioning him to Gentiles; the crowd erupts when he mentions that mission (Acts 22:17–22). Roman soldiers plan to examine him by flogging, but Paul reveals his Roman citizenship, preventing the procedure and alarming the tribune (Acts 22:23–30). The chapter portrays Paul defending his continuity with Jewish identity while explaining his unexpected calling.",
-    "whereWeAre": "Roman citizenship conferred important legal protections; the speeches are Acts' presentation of Paul's defense. These geographic, political, and social conditions help explain the narrative of Acts 22. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 21 ended with Paul, rescued from the mob, asking the Roman commander's permission to address the crowd from the barracks stairs (21:37-40). Chapter 22 gives that speech: Paul retells his own story, from training under Gamaliel to persecuting believers to the light that stopped him on the Damascus road, until the crowd erupts again at the mention of a mission to Gentiles, and Paul avoids an illegal flogging only by revealing his Roman citizenship (22:1-30). That citizenship keeps shaping his legal situation through chapter 23's hearing before the council.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Defendant giving personal testimony. Explains his past and Gentile mission"
+        "role": "Recounts his training, persecution of believers, and Damascus-road encounter with Jesus to the Jerusalem crowd, then reveals his Roman citizenship to stop an illegal flogging (22:3-21,25-28)."
       },
       {
         "name": "Ananias",
-        "role": "Devout law-observant visitor in the testimony Restores Paul's sight and urges baptism"
+        "role": "A devout, law-observant believer in Paul's own retelling who restores his sight and urges him to be baptized (22:12-16)."
       },
       {
         "name": "Gamaliel",
-        "role": "Paul's former teacher, recalled by name Anchors Paul's claimed training"
+        "role": "Named by Paul as the teacher at whose feet he was trained, anchoring his claim to a respectable Jewish education (22:3)."
       },
       {
         "name": "Jerusalem audience",
-        "role": "Crowd listening and then protesting. Rejects the Gentile commission"
+        "role": "Listens quietly to Paul's story until he mentions being sent to the Gentiles, then erupts in protest (22:21-22)."
       },
       {
         "name": "Roman tribune and centurion",
-        "role": "Military officers Stop unlawful examination after citizenship claim"
+        "role": "Order Paul examined by flogging, then stop immediately and grow alarmed once he reveals he is a Roman citizen (22:24-29)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Recounting a changed life",
-        "explanation": "",
+        "explanation": "Paul tells the Jerusalem crowd his own story in their own language, tracing his path from persecutor to believer through the light on the Damascus road (22:1-16).",
         "references": [
           "Acts 22:1-16"
         ]
       },
       {
         "theme": "The contested Gentile mission",
-        "explanation": "",
+        "explanation": "The same crowd that listened calmly to Paul's testimony erupts the moment he mentions being sent to the Gentiles, showing exactly where the real offense lies (22:17-22).",
         "references": [
           "Acts 22:17-22"
         ]
       },
       {
         "theme": "Rights under Roman law",
-        "explanation": "",
+        "explanation": "Paul reveals his Roman citizenship just before an illegal flogging begins, stopping the soldiers cold and alarming the commander who ordered it (22:23-30).",
         "references": [
           "Acts 22:23-30"
         ]
@@ -1350,51 +1350,51 @@
   },
   "Acts 23": {
     "summary": "Paul is questioned before the council, where his declaration of hope in the resurrection divides Pharisees and Sadducees (Acts 23:1–10). The Lord encourages him to bear witness in Rome (Acts 23:11). A plot against him is reported by his nephew, and the Roman commander Claudius Lysias sends him under guard to Governor Felix in Caesarea (Acts 23:12–35). The chapter shows both grave danger and the intervention of family and legal authorities.",
-    "whereWeAre": "Council disagreements and Roman provincial legal authority form the historical backdrop; the particular plot is known from Acts. These geographic, political, and social conditions help explain the narrative of Acts 23. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 22 ended with Paul's Roman citizenship alarming the commander who had nearly had him flogged without trial (22:28-30). Chapter 23 shows that same commander trying to manage a volatile situation: Paul's claim of resurrection hope splits the council into open conflict, the Lord assures him in the night that he will testify in Rome just as he has in Jerusalem, and when Paul's own nephew uncovers an assassination plot, the commander sends him under heavy guard to Governor Felix in Caesarea (23:1-35). That transfer to Roman provincial custody begins the hearings chapter 24 covers.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Prisoner and witness. Explains his resurrection hope"
+        "role": "Splits the council by declaring his hope in the resurrection, then is assured by the Lord in the night that he will testify in Rome just as he has in Jerusalem (23:1-6,11)."
       },
       {
         "name": "Ananias",
-        "role": "High priest Orders Paul to be struck"
+        "role": "The high priest who orders Paul struck on the mouth for his opening statement before the council (23:2)."
       },
       {
         "name": "Pharisees and Sadducees",
-        "role": "Council groups Dispute resurrection"
+        "role": "Disagree so sharply over the resurrection that the council dissolves into a shouting match over Paul (23:7-10)."
       },
       {
         "name": "Paul's nephew",
-        "role": "Unnamed relative. Warns of an assassination plot"
+        "role": "An unnamed relative who learns of a plot to kill Paul and warns the Roman commander in time (23:16-22)."
       },
       {
         "name": "Claudius Lysias",
-        "role": "Roman commander Transfers Paul to safety"
+        "role": "The Roman commander who transfers Paul under heavy guard to Governor Felix once he learns of the assassination plot (23:23-30)."
       },
       {
         "name": "Felix",
-        "role": "Governor Receives Paul"
+        "role": "The governor in Caesarea who receives Paul and the commander's letter explaining the situation (23:33-35)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Disputed resurrection hope",
-        "explanation": "",
+        "explanation": "Paul's single statement about his hope in the resurrection splits the council's Pharisees and Sadducees against each other so sharply that soldiers have to rescue him from his own judges (23:6-10).",
         "references": [
           "Acts 23:6-10"
         ]
       },
       {
         "theme": "Human protective action",
-        "explanation": "",
+        "explanation": "Paul's own nephew overhears an assassination plot and reports it, turning ordinary family loyalty into the reason Paul survives the night (23:12-22).",
         "references": [
           "Acts 23:12-22"
         ]
       },
       {
         "theme": "Roman jurisdiction",
-        "explanation": "",
+        "explanation": "The commander transfers Paul to Governor Felix under heavy guard, letting Roman provincial authority settle a dispute Jewish leaders could not resolve themselves (23:23-35).",
         "references": [
           "Acts 23:23-35"
         ]
@@ -1404,51 +1404,51 @@
   },
   "Acts 24": {
     "summary": "The high priest Ananias and elders use an advocate, Tertullus, to accuse Paul of unrest and temple profanation before Felix (Acts 24:1–9). Paul challenges the accusations and affirms his worship of Israel's God and hope in resurrection (Acts 24:10–21). Felix postpones the case, later hears Paul speak with Drusilla present, and keeps him detained for two years; Acts attributes part of his conduct to hoping for a bribe (Acts 24:22–27). The chapter highlights competing testimony and delayed justice.",
-    "whereWeAre": "Both governors are attested elsewhere; details of Paul's hearings are preserved by Acts. These geographic, political, and social conditions help explain the narrative of Acts 24. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 23 ended with Paul arriving safely under guard at Felix's residence in Caesarea (23:33-35). Chapter 24 shows the hearing that follows: the high priest's own lawyer accuses Paul of stirring unrest, Paul answers by affirming his worship of Israel's God and his hope in the resurrection, and Felix, hoping for a bribe that never comes, leaves Paul in custody for two years rather than deciding the case (24:1-27). That stalled case passes to Felix's successor in chapter 25.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Defendant Answers the charges"
+        "role": "Answers the accusations against him point by point, affirming his worship of Israel's God and his hope in the resurrection (24:10-21)."
       },
       {
         "name": "Tertullus",
-        "role": "Advocate. Presents the accusation"
+        "role": "A hired advocate who presents the high priest's accusation that Paul is a troublemaker and temple profaner (24:1-9)."
       },
       {
         "name": "Ananias and elders",
-        "role": "Accusers. Bring their case"
+        "role": "The high priest and Jerusalem leaders who travel to Caesarea to press their case against Paul before Felix (24:1)."
       },
       {
         "name": "Felix",
-        "role": "Governor Postpones judgment"
+        "role": "Postpones Paul's case and keeps him in custody for two years, Acts noting he hoped for a bribe that never came (24:22,26-27)."
       },
       {
         "name": "Drusilla",
-        "role": "Felix's wife Hears Paul"
+        "role": "Felix's wife, present when he later sends for Paul to hear him speak about faith in Christ (24:24)."
       },
       {
         "name": "Festus",
-        "role": "Successor to Felix Inherits the case"
+        "role": "Felix's successor, who inherits Paul's unresolved case at the chapter's close (24:27)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Evidence over accusation",
-        "explanation": "",
+        "explanation": "Paul answers Tertullus's charges point by point, noting that his accusers can produce no actual proof of wrongdoing in the temple (24:1-21).",
         "references": [
           "Acts 24:1-21"
         ]
       },
       {
         "theme": "Resurrection and conscience",
-        "explanation": "",
+        "explanation": "Paul tells Felix that he always tries to keep a clear conscience toward God and man, grounding his defense in his resurrection hope rather than in political argument (24:14-21).",
         "references": [
           "Acts 24:14-21"
         ]
       },
       {
         "theme": "Misuse of judicial power",
-        "explanation": "",
+        "explanation": "Felix leaves Paul in custody for two years not because the case demands it but because he hopes Paul will eventually offer him a bribe (24:22-27).",
         "references": [
           "Acts 24:22-27"
         ]
@@ -1458,47 +1458,47 @@
   },
   "Acts 25": {
     "summary": "Festus hears renewed charges against Paul and rejects a request to move him immediately to Jerusalem, which Acts associates with a concealed assassination plan (Acts 25:1–5). Paul denies wrongdoing in Caesarea and appeals to Caesar when a Jerusalem hearing is proposed (Acts 25:6–12). Agrippa II and Bernice visit, and Festus describes his difficulty specifying any charge worthy of imperial review; Paul is brought before them (Acts 25:13–27). The chapter depicts political pressure intersecting with legal process.",
-    "whereWeAre": "Festus and Agrippa II are historically attested; the precise proceedings come from Acts. These geographic, political, and social conditions help explain the narrative of Acts 25. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 24 ended with Paul still in custody two years later, Felix having been replaced by Festus (24:27). Chapter 25 shows Festus inheriting a case he does not know how to describe: renewed accusations lead Paul to appeal directly to Caesar rather than risk a Jerusalem trial, and when King Agrippa and Bernice visit, Festus admits he has no actual charge to send along with his prisoner (25:1-27). That admission sets up chapter 26's hearing before Agrippa, where Paul finally gets to explain himself at length.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Prisoner and appellant Appeals to Caesar"
+        "role": "Denies any wrongdoing and appeals to Caesar once Festus proposes moving his trial to Jerusalem (25:8-11)."
       },
       {
         "name": "Festus",
-        "role": "Roman governor Oversees hearing"
+        "role": "Hears the renewed charges against Paul, declines to transfer him, and later admits to Agrippa he has no specific charge to report (25:4-5,26-27)."
       },
       {
         "name": "Jewish leaders",
-        "role": "Accusers Seek Paul's transfer"
+        "role": "Press renewed accusations against Paul and seek to have him transferred to Jerusalem, a request Acts ties to a hidden plot (25:2-3,7)."
       },
       {
         "name": "Agrippa II",
-        "role": "Client king Agrees to hear Paul"
+        "role": "A client king who visits Festus and agrees to hear Paul's case for himself (25:13,22)."
       },
       {
         "name": "Bernice",
-        "role": "Agrippa's sister Attends the hearing"
+        "role": "Agrippa's sister, who attends the hearing alongside him (25:13,23)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Legal protections",
-        "explanation": "",
+        "explanation": "Facing a plot disguised as a request to move his trial, Paul uses his right as a Roman citizen to appeal directly to Caesar instead (25:1-12).",
         "references": [
           "Acts 25:1-12"
         ]
       },
       {
         "theme": "Political favor and justice",
-        "explanation": "",
+        "explanation": "Festus considers sending Paul back to Jerusalem to do the Jewish leaders a favor, the same kind of political convenience that has already kept Paul in custody for years (25:9-12).",
         "references": [
           "Acts 25:9-12"
         ]
       },
       {
         "theme": "Responsibility to state charges",
-        "explanation": "",
+        "explanation": "Festus admits to Agrippa that he has no specific charge to write against Paul, exposing how thin the case against him has always actually been (25:13-27).",
         "references": [
           "Acts 25:13-27"
         ]
@@ -1508,47 +1508,47 @@
   },
   "Acts 26": {
     "summary": "Paul speaks before Agrippa, recounting his Pharisaic background, persecution of Jesus' followers, and the Damascus-road appearance of Jesus that redirected his life (Acts 26:1–18). He describes preaching repentance and lives consistent with it, insisting that his message fulfills prophetic hopes (Acts 26:19–23). Festus calls him mad; Paul appeals to Agrippa and the public knowledge of events (Acts 26:24–29). The officials conclude he has done nothing worthy of death or imprisonment but note his appeal to Caesar (Acts 26:30–32).",
-    "whereWeAre": "The named rulers are independently documented; the exact speeches and deliberations are Luke's account. These geographic, political, and social conditions help explain the narrative of Acts 26. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 25 ended with Festus confessing he had no specific charge to write against Paul for the emperor's review (25:26-27). Chapter 26 gives Paul the chance to supply his own account instead: he retells his Pharisaic training, his persecution of believers, and the Damascus-road vision that commissioned him to the Gentiles, provoking Festus to call him mad before Agrippa admits Paul has nearly persuaded him, and the officials conclude he has done nothing worthy of death (26:1-32). His appeal to Caesar still has to go forward, which puts Paul on the ship chapter 27 follows toward Rome.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Defendant. Defends his calling"
+        "role": "Recounts his Pharisaic training, his persecution of believers, and the Damascus-road vision that commissioned him to preach to the Gentiles (26:4-18)."
       },
       {
         "name": "Agrippa II",
-        "role": "King. Hears the case"
+        "role": "Hears Paul's defense and admits that Paul has almost persuaded him to become a Christian (26:27-28)."
       },
       {
         "name": "Festus",
-        "role": "Governor Interrupts the defense"
+        "role": "Interrupts Paul's defense to call him mad, provoking Paul's calm reply that he speaks words of truth and soberness (26:24-25)."
       },
       {
         "name": "Bernice",
-        "role": "Royal companion. Participates in the audience"
+        "role": "Attends the hearing with Agrippa, part of the audience Festus brings together with great ceremony (26:30)."
       },
       {
         "name": "Jesus",
-        "role": "Speaker within Paul's narrated vision. Commissions him"
+        "role": "The speaker in Paul's narrated vision, who commissions him to open the eyes of Jews and Gentiles alike (26:15-18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "A changed vocation",
-        "explanation": "",
+        "explanation": "Paul traces his own transformation from zealous persecutor to commissioned witness back to a single vision of Jesus on the Damascus road (26:9-20).",
         "references": [
           "Acts 26:9-20"
         ]
       },
       {
         "theme": "Repentance and deeds",
-        "explanation": "",
+        "explanation": "Paul insists that his preaching has always called people to repent and then to live in a way that actually matches that repentance, not merely to feel sorry (26:19-23).",
         "references": [
           "Acts 26:19-23"
         ]
       },
       {
         "theme": "Public explanation",
-        "explanation": "",
+        "explanation": "Festus calls Paul mad, but Paul appeals instead to Agrippa's own familiarity with the facts, insisting that none of this was done in a corner (26:24-32).",
         "references": [
           "Acts 26:24-32"
         ]
@@ -1569,47 +1569,47 @@
   },
   "Acts 27": {
     "summary": "Paul travels by sea toward Rome as a prisoner under the centurion Julius (Acts 27:1–8). He warns of sailing dangers near Crete, but the vessel proceeds into a fierce storm (Acts 27:9–20). Paul reports assurance that the people aboard will survive although the ship will be lost (Acts 27:21–26). He tells sailors not to abandon the vessel, encourages everyone to eat, and the ship eventually runs aground and breaks apart (Acts 27:27–44). All 276 aboard reach land in the account. The chapter combines reassurance with practical action during a dangerous voyage.",
-    "whereWeAre": "Seasonal storm risk and sailing practices are independently known; this particular storm is reported in Acts. These geographic, political, and social conditions help explain the narrative of Acts 27. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 26 ended with Agrippa and Festus agreeing that Paul could have gone free if he had not already appealed to Caesar (26:30-32). Chapter 27 follows that appeal onto a ship bound for Rome: Paul warns against sailing on from Crete, a violent storm proves him right, and after two weeks adrift he assures everyone aboard they will survive even though the ship will not, a promise that holds when all 276 people reach land safely after the wreck (27:1-44). That survival on open water leads into the unexpected hospitality of Malta in chapter 28.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Prisoner and counselor Guides the endangered party"
+        "role": "Warns against sailing on from Crete, then assures everyone aboard that they will survive the coming storm even though the ship will be lost (27:9-10,21-26)."
       },
       {
         "name": "Julius",
-        "role": "Centurion Supervises prisoners and protects Paul"
+        "role": "The centurion guarding Paul who treats him kindly and later overrules the soldiers' plan to kill the prisoners (27:1,3,42-43)."
       },
       {
         "name": "Sailors",
-        "role": "Ship crew Navigate and attempt to escape"
+        "role": "Try to sneak away from the sinking ship in the lifeboat before the soldiers cut it loose at Paul's warning (27:30-32)."
       },
       {
         "name": "Shipowner and pilot",
-        "role": "Voyage advisers Favor continuing from Crete"
+        "role": "Favor continuing the voyage from Crete against Paul's own warning, a decision the storm soon proves costly (27:11-12)."
       },
       {
         "name": "Soldiers and passengers",
-        "role": "People aboard. Share the shipwreck and survival"
+        "role": "Share in the shipwreck and the swim to shore, all 276 people reaching land safely (27:37,44)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Risk and judgment",
-        "explanation": "",
+        "explanation": "Paul warns against sailing on from Crete so late in the season, but the centurion trusts the ship's owner and pilot instead, a decision the storm soon proves wrong (27:9-12).",
         "references": [
           "Acts 27:9-12"
         ]
       },
       {
         "theme": "Hope during disaster",
-        "explanation": "",
+        "explanation": "With all hope of survival gone, Paul reports an angel's assurance that everyone aboard will live even though the ship itself will be lost (27:20-26).",
         "references": [
           "Acts 27:20-26"
         ]
       },
       {
         "theme": "Cooperative rescue",
-        "explanation": "",
+        "explanation": "Soldiers, sailors, and prisoners all work together once Paul insists that everyone stay with the ship and eat before the final swim to shore, and all 276 people reach land safely (27:30-44).",
         "references": [
           "Acts 27:30-44"
         ]
@@ -1619,47 +1619,47 @@
   },
   "Acts 28": {
     "summary": "After the shipwreck, islanders on Malta welcome the survivors. Paul is unharmed by a viper and, according to Acts, heals Publius's father and other islanders (Acts 28:1–10). The travelers reach Italy and ultimately Rome, where believers greet Paul (Acts 28:11–16). Under supervised lodging Paul meets Jewish leaders to explain his imprisonment and testify about Jesus; listeners respond differently (Acts 28:17–28). Acts ends with two years of Paul's public teaching in rented quarters, leaving his legal verdict unreported (Acts 28:30–31). The story ends with the message reaching Rome.",
-    "whereWeAre": "Ancient harbors and Roman roads are documented; Acts does not report Paul's death or the outcome of his trial. These geographic, political, and social conditions help explain the narrative of Acts 28. They do not independently establish any miracle, private conversation, or theological assertion recorded there.",
+    "whereWeAre": "Chapter 27 ended with everyone aboard reaching land safely after the shipwreck, just as Paul had promised (27:43-44). Acts' closing chapter brings that promise of reaching Rome to completion: Malta's islanders show Paul unusual kindness after a viper fails to harm him, he finally arrives in Rome, and for two years he preaches the kingdom of God unhindered, the message having traveled from Jerusalem to the empire's capital just as Jesus promised in chapter 1 (28:1-31). The New Testament's letters, beginning with Romans, pick up the life of the churches Acts describes.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Imprisoned missionary. Teaches in Rome after Malta"
+        "role": "Survives a viper's bite on Malta, heals Publius's father and other islanders, and spends two years in Rome preaching without anyone forbidding him (28:3-9,30-31)."
       },
       {
         "name": "Publius",
-        "role": "Leading Maltese official Hosts the travelers"
+        "role": "The leading official on Malta who hosts the shipwrecked travelers and whose father Paul heals (28:7-8)."
       },
       {
         "name": "Islanders",
-        "role": "Local residents. Show hospitality"
+        "role": "Show the shipwrecked survivors unusual kindness, building a fire and later loading them with supplies (28:2,10)."
       },
       {
         "name": "Jewish leaders in Rome",
-        "role": "Listeners Discuss Jesus and differing responses"
+        "role": "Meet with Paul to hear his explanation and respond to his message about Jesus in different ways, some persuaded and some not (28:17-24)."
       },
       {
         "name": "Roman believers",
-        "role": "Welcoming community Meet Paul on arrival"
+        "role": "Walk out to meet Paul at the Forum of Appius and the Three Taverns, encouraging him as he nears the city (28:15)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Hospitality to strangers",
-        "explanation": "",
+        "explanation": "Malta's islanders show Paul and the other survivors unusual kindness, and Paul in turn heals Publius's father and many other sick islanders (28:1-10).",
         "references": [
           "Acts 28:1-10"
         ]
       },
       {
         "theme": "Varied reception",
-        "explanation": "",
+        "explanation": "Some of Rome's Jewish leaders are persuaded by what Paul says about Jesus from the law and the prophets, while others are not, the same divided response his message has drawn everywhere else (28:17-28).",
         "references": [
           "Acts 28:17-28"
         ]
       },
       {
         "theme": "Unfinished legal story, continuing witness",
-        "explanation": "",
+        "explanation": "Acts ends without ever reporting the verdict of Paul's trial, choosing instead to close on two full years of his uninterrupted, unforbidden preaching in Rome (28:30-31).",
         "references": [
           "Acts 28:30-31"
         ]

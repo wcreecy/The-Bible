@@ -1,43 +1,47 @@
 {
   "Romans 1": {
     "summary": "Paul introduces himself as an apostle entrusted with the gospel about Jesus Christ, descended from David and declared Son of God in power through resurrection (Romans 1:1–7). He thanks God for Rome's believers and hopes to visit them (Romans 1:8–15). The gospel reveals God's righteousness and offers salvation to everyone who believes, Jew and Greek alike (Romans 1:16–17). Paul then describes humanity's suppression of the truth, exchange of worship of the Creator for created things, and the ensuing pattern of distorted desires and destructive behavior (Romans 1:18–32). The chapter establishes both the good news and the serious problem of human rebellion that Paul's argument will address.",
-    "whereWeAre": "Paul addresses a community in imperial Rome that he had not yet visited. His words anticipate an extended argument about both Gentile and Jewish accountability. The setting helps explain Romans 1 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Acts closed with Paul under guard in Rome, preaching the kingdom of God to all who came to him (Acts 28:30-31). Romans is the letter he wrote to that city's believers before ever reaching it: he introduces himself as an apostle, says he longs to visit them, and states his theme that the gospel is God's power to save everyone who believes, before describing why the whole world needs it (1:1-32). That diagnosis of human sin turns in chapter 2 toward the person who judges others.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Writer and commissioned apostle. Introduces the gospel and his intended visit"
+        "role": "Introduces himself as an apostle set apart for the gospel, thanks God for Rome's faith, and says he has long wanted to visit them (1:1-15)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Subject of the gospel. His resurrection and lordship ground the letter"
+        "role": "The subject of the gospel, descended from David and declared the Son of God with power by the resurrection from the dead (1:3-4)."
       },
       {
         "name": "Believers in Rome",
-        "role": "Recipients. Called to belong to Jesus and encouraged in faith"
+        "role": "Addressed as beloved of God and called to be saints, with a faith spoken of throughout the whole world (1:7-8)."
       },
       {
         "name": "Gentiles and Greeks",
-        "role": "Groups within Paul’s mission and argument. Show the worldwide reach of gospel and accountability"
+        "role": "Named with the Jews as those the gospel is for, and as those who suppressed the truth about God and turned to idols (1:14,16,18-25)."
+      },
+      {
+        "name": "God",
+        "role": "Reveals his righteousness in the gospel and his wrath against ungodliness, and gives people up to what they have chosen (1:17-18,24-28)."
       }
     ],
     "keyThemes": [
       {
         "theme": "The gospel for all",
-        "explanation": "",
+        "explanation": "Paul says the gospel is the power of God unto salvation to everyone who believes, to the Jew first and also to the Greek (1:16-17).",
         "references": [
           "Romans 1:16-17"
         ]
       },
       {
         "theme": "Creator and idolatry",
-        "explanation": "",
+        "explanation": "Though God's power is plain in creation, people changed the truth of God into a lie and worshiped the creature more than the Creator (1:18-25).",
         "references": [
           "Romans 1:18-25"
         ]
       },
       {
         "theme": "Human accountability",
-        "explanation": "",
+        "explanation": "Paul lists the evils that follow when God gives people up to what they chose, and says those who do them are without excuse (1:28-32).",
         "references": [
           "Romans 1:28-32"
         ]
@@ -53,43 +57,43 @@
   },
   "Romans 2": {
     "summary": "Paul turns the accusation toward those who judge others while doing comparable wrongs (Romans 2:1–5). God's judgment is impartial and considers deeds rather than reputation (Romans 2:6–11). Paul considers people with and without the written Law, including conscience and accountability (Romans 2:12–16). He then addresses a person who identifies as Jewish, values the Law, and yet may fail to practice its requirements (Romans 2:17–24). Circumcision is meaningful when paired with obedience; Paul contrasts outward identity with an inward orientation of the heart (Romans 2:25–29). His central challenge is that possession of sacred instruction does not by itself establish righteousness.",
-    "whereWeAre": "Paul uses a rhetorical opponent, not an identifiable person, to question ethnic or religious self-confidence. Jewish communities in Rome retained distinctive ancestral practices. The setting helps explain Romans 2 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 1 ended with Paul describing a world that exchanged the truth about God for idols (1:18-32). Chapter 2 turns on the reader who agrees and feels superior: God judges everyone impartially by their deeds, those with the written law and those without it, and having the law or circumcision is not enough without a changed heart (2:1-29). That levels the ground for chapter 3's question about what advantage the Jew has.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Speaker arguing through direct address. Confronts judgment and complacency"
+        "role": "Confronts judging and complacency by speaking directly to an imagined questioner and to one who calls himself a Jew (2:1,17)."
       },
       {
         "name": "The judging person",
-        "role": "Representative interlocutor. Shows that condemning others does not excuse oneself"
+        "role": "A representative objector who condemns others while doing the same things, and is told God's goodness is meant to lead him to repentance (2:1-5)."
       },
       {
         "name": "Jews and Gentiles",
-        "role": "Groups discussed. Illustrate impartial judgment"
+        "role": "Both are judged by deeds without partiality, whether they have the written law or only a conscience that bears witness (2:9-16)."
       },
       {
         "name": "God",
-        "role": "Judge in Paul’s argument Judges impartially and knows the heart"
+        "role": "Judges each person impartially according to deeds and sees the secrets of the heart through Jesus Christ (2:6,11,16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Impartial judgment",
-        "explanation": "",
+        "explanation": "God will render to every man according to his deeds, for there is no respect of persons with God (2:6-11).",
         "references": [
           "Romans 2:6-11"
         ]
       },
       {
         "theme": "Hearing and doing",
-        "explanation": "",
+        "explanation": "Not the hearers of the law but the doers are justified, and even Gentiles show the law written in their hearts through conscience (2:12-16).",
         "references": [
           "Romans 2:12-16"
         ]
       },
       {
         "theme": "Inward and outward identity",
-        "explanation": "",
+        "explanation": "Circumcision matters only with obedience, and a true Jew is one inwardly, whose circumcision is of the heart (2:25-29).",
         "references": [
           "Romans 2:25-29"
         ]
@@ -105,43 +109,43 @@
   },
   "Romans 3": {
     "summary": "Paul asks whether Jewish identity and circumcision have any advantage and answers that Jews were entrusted with God's oracles (Romans 3:1–2). Human unfaithfulness does not nullify God's faithfulness (Romans 3:3–8). He then gathers scriptural quotations to portray the universality of sin (Romans 3:9–20). The decisive shift comes when Paul says God's righteousness has been disclosed apart from the Law, though witnessed by the Law and Prophets: justification is through faith in Jesus Christ for believers, with no distinction, because all have sinned (Romans 3:21–26). Boasting is excluded; God is God of Jews and Gentiles, and faith does not cancel the Law (Romans 3:27–31). This is a central presentation of Paul's account of divine grace and human need.",
-    "whereWeAre": "Paul’s argument engages Jewish Scripture and the place of the Torah in a mixed Jewish–Gentile community. The exact makeup of the Roman congregations is not recoverable. The setting helps explain Romans 3 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 2 ended with Paul saying true circumcision is of the heart, not the flesh (2:28-29). Chapter 3 asks what advantage the Jew has, answers that Israel was entrusted with God's words, then strings together Scripture to show that Jews and Gentiles are alike under sin before announcing that God's righteousness comes through faith in Jesus Christ for all who believe (3:1-31). Chapter 4 tests that claim against Abraham.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Letter writer and scriptural interpreter. Explains sin, righteousness and faith"
+        "role": "Answers what advantage the Jew has, gathers Scripture to show all are under sin, and explains righteousness through faith (3:1-31)."
       },
       {
         "name": "Jews and Gentiles",
-        "role": "Peoples discussed. Both are accountable and included in the argument"
+        "role": "Shown by a chain of Psalms and Isaiah to be alike under sin, and both justified by faith in the one God (3:9-20,29-30)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Central figure of redemption. His saving work is presented as the basis of justification"
+        "role": "Set forth by God as a propitiation through faith in his blood, the redemption by which believers are justified freely (3:24-25)."
       },
       {
         "name": "God",
-        "role": "Faithful and just judge Justifies believers in Paul’s explanation"
+        "role": "Stays faithful though every man is a liar, and is both just and the justifier of the one who believes in Jesus (3:3-4,26)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Universal sin",
-        "explanation": "",
+        "explanation": "A chain of Psalms and Isaiah shows that there is none righteous, no, not one, and every mouth is stopped before God (3:9-20).",
         "references": [
           "Romans 3:9-20"
         ]
       },
       {
         "theme": "Justification and grace",
-        "explanation": "",
+        "explanation": "All have sinned, and believers are justified freely by God's grace through the redemption that is in Christ Jesus (3:21-26).",
         "references": [
           "Romans 3:21-26"
         ]
       },
       {
         "theme": "One God of all",
-        "explanation": "",
+        "explanation": "Boasting is excluded, since the one God justifies both the circumcised and the uncircumcised by faith (3:27-31).",
         "references": [
           "Romans 3:27-31"
         ]
@@ -192,43 +196,43 @@
   },
   "Romans 4": {
     "summary": "Paul uses Abraham as the main scriptural example for his teaching on faith. Genesis says Abraham believed God and it was credited to him as righteousness before his circumcision (Romans 4:1–12). David is quoted on the blessing of forgiven sins (Romans 4:6–8). Abraham's promise was not based on law-keeping but on faith; therefore he can be portrayed as father of both circumcised and uncircumcised believers (Romans 4:13–17). Although Abraham faced physical limits and circumstances that made the promise seem impossible, he trusted God's capacity to give life (Romans 4:18–22). Paul then connects the statement about righteousness being credited to Abraham to those who believe in God who raised Jesus (Romans 4:23–25).",
-    "whereWeAre": "Abraham’s story comes from Genesis, many centuries before Paul; Paul interprets it for first-century Roman congregations debating identity and inclusion. The setting helps explain Romans 4 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 3 ended with Paul saying that faith does not cancel the law but establishes it (3:31). Chapter 4 proves the point from Scripture: Abraham believed God and it was counted to him for righteousness before he was circumcised, and David describes the same blessing of forgiven sin (4:1-25). That faith, resting on God who raises the dead, opens chapter 5's picture of peace with God.",
     "keyFigures": [
       {
         "name": "Abraham",
-        "role": "Patriarch used as an example Believed before circumcision and received a promise"
+        "role": "Believed God and it was counted to him for righteousness before he was circumcised, making him father of all who believe (4:3,9-12)."
       },
       {
         "name": "David",
-        "role": "Psalmist quoted by Paul. Describes blessedness of forgiven sin"
+        "role": "Quoted by Paul as describing the blessing of the person whose sins are forgiven and not counted against him (4:6-8)."
       },
       {
         "name": "Paul",
-        "role": "Interpreter of Genesis and the Psalms Connects Abraham’s faith with Christ-believers"
+        "role": "Reads Genesis and the Psalms to show that righteousness comes by faith, not works, and applies it to those who believe in God who raised Jesus (4:1-25)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Risen Lord. His resurrection is central to the final application"
+        "role": "Delivered for our offences and raised again for our justification (4:24-25)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Faith before circumcision",
-        "explanation": "",
+        "explanation": "Abraham was counted righteous in Genesis 15, before he was circumcised in Genesis 17, so he is father of all who believe (4:9-12).",
         "references": [
           "Romans 4:9-12"
         ]
       },
       {
         "theme": "Promise and grace",
-        "explanation": "",
+        "explanation": "The promise came through the righteousness of faith, not the law, so that it might be by grace and sure to all the seed (4:13-17).",
         "references": [
           "Romans 4:13-17"
         ]
       },
       {
         "theme": "Faith amid impossibility",
-        "explanation": "",
+        "explanation": "Abraham, nearly a hundred years old, did not stagger at the promise but was fully persuaded that God could perform it (4:18-25).",
         "references": [
           "Romans 4:18-25"
         ]
@@ -259,43 +263,43 @@
   },
   "Romans 5": {
     "summary": "Having argued for justification through faith, Paul describes peace with God, access to grace, hope, and the possibility of endurance amid suffering (Romans 5:1–5). He emphasizes that Christ died for sinners and enemies as an expression of divine love and reconciliation (Romans 5:6–11). Paul then contrasts Adam and Christ: sin and death entered through one man, while the grace and life offered through Christ surpass the consequences of Adam's disobedience (Romans 5:12–21). The chapter moves from the believer's present relationship with God to a sweeping account of humanity's plight and grace's abundance. Christians disagree over some particulars of how Adam's sin affects descendants, but Paul clearly contrasts sin's reign with grace.",
-    "whereWeAre": "Paul draws on Israel’s account of Adam (Genesis 2–3) to address humanity, not to report a new first-century event. The setting helps explain Romans 5 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 4 ended with Jesus delivered for our offences and raised for our justification (4:25). Chapter 5 describes what that gives believers, peace with God and hope in suffering, then widens to compare Adam, through whom sin and death entered the world, with Christ, through whom grace and life abound (5:1-21). Grace's abundance raises the question chapter 6 answers.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Writer. Explains reconciliation and the Adam–Christ comparison"
+        "role": "Moves from peace with God through justification to a comparison of Adam and Christ (5:1-21)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Reconciler and representative figure. His death and life anchor Paul’s hope"
+        "role": "Dies for the ungodly while they are still sinners, and through his one act of obedience brings justification of life to many (5:6-8,18-19)."
       },
       {
         "name": "Adam",
-        "role": "Primeval figure from Genesis. Used to explain sin and death in humanity"
+        "role": "The one man through whom sin entered the world, and death by sin, passing to all (5:12-14)."
       },
       {
         "name": "Believers",
-        "role": "Recipients of grace. Have peace, hope and reconciliation"
+        "role": "Have peace with God, access into grace, and a hope that does not shame them, even in tribulation (5:1-5)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Peace and hope",
-        "explanation": "",
+        "explanation": "Justified by faith, believers have peace with God, access into grace, and a hope that does not make ashamed even in tribulation (5:1-5).",
         "references": [
           "Romans 5:1-5"
         ]
       },
       {
         "theme": "Love toward sinners",
-        "explanation": "",
+        "explanation": "God commended his love in that Christ died for us while we were yet sinners, and we were reconciled while enemies (5:6-11).",
         "references": [
           "Romans 5:6-11"
         ]
       },
       {
         "theme": "Adam and Christ",
-        "explanation": "",
+        "explanation": "Sin and death entered through one man, but the gift of grace by one man, Jesus Christ, abounds much more (5:12-21).",
         "references": [
           "Romans 5:12-21"
         ]
@@ -305,39 +309,39 @@
   },
   "Romans 6": {
     "summary": "Paul rejects the idea that grace encourages continued wrongdoing (Romans 6:1–2). Baptism into Christ is described as participation in his death and resurrection, symbolizing death to sin and newness of life (Romans 6:3–11). Believers should therefore not let sin rule their bodies but offer themselves to God (Romans 6:12–14). Through an analogy of service, Paul contrasts slavery to sin, which leads to death, with obedience that leads toward righteousness and holiness (Romans 6:15–23). He concludes that sin pays wages of death, while eternal life is God's gift in Christ (Romans 6:23). The chapter makes a practical case that grace calls for transformed living.",
-    "whereWeAre": "Early Christ-followers practiced baptism as initiation into the community; Paul addresses its ethical meaning. The setting helps explain Romans 6 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 5 ended with grace abounding where sin abounded (5:20-21). Chapter 6 answers the objection that this invites more sinning: believers were baptized into Christ's death and resurrection, so they are to count themselves dead to sin, offer themselves to God, and serve righteousness instead of sin (6:1-23). Chapter 7 turns to the law's place in that freedom.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Teacher using questions and analogies. Explains baptism and ethical responsibility"
+        "role": "Rejects the idea that believers should keep sinning so grace can abound, using baptism and slavery as his pictures (6:1-23)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Model and source of new life. His death and resurrection frame baptism"
+        "role": "Died and was raised, so that those baptized into him walk in newness of life (6:3-10)."
       },
       {
         "name": "Baptized believers",
-        "role": "Audience addressed. Called to resist sin and live for God"
+        "role": "Told to count themselves dead to sin and alive to God, and to yield their members to him as instruments of righteousness (6:11-13)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Baptism and new life",
-        "explanation": "",
+        "explanation": "Buried with Christ by baptism into death, believers are raised to walk in newness of life (6:3-11).",
         "references": [
           "Romans 6:3-11"
         ]
       },
       {
         "theme": "Grace is not permission to sin",
-        "explanation": "",
+        "explanation": "Paul answers the question whether to continue in sin that grace may abound with God forbid, since believers died to sin (6:1-2).",
         "references": [
           "Romans 6:1-2"
         ]
       },
       {
         "theme": "Freedom and service",
-        "explanation": "",
+        "explanation": "Everyone serves something, sin that pays death or obedience that leads to righteousness, and eternal life is God's gift through Jesus Christ (6:15-23).",
         "references": [
           "Romans 6:15-23"
         ]
@@ -346,40 +350,40 @@
     "explainedReferences": []
   },
   "Romans 7": {
-    "summary": "Paul first uses marriage as an analogy for how death changes a legal relationship, explaining that believers have died to the Law through Christ in order to bear fruit for God (Romans 7:1–6). He insists that the Law itself is not sin: the commandment exposes sin, which misuses what is good (Romans 7:7–13). Then a dramatic first-person passage describes the struggle of willing the good yet doing what is hated, and the conflict between delight in God's Law and a force of sin at work (Romans 7:14–24). The chapter ends with thanksgiving to God through Jesus Christ (Romans 7:25). Scholars disagree on whether the 'I' depicts Paul’s own present experience, life before Christ, Israel, or a representative human being; the text emphasizes sin's power and the Law's inability by itself to liberate.",
-    "whereWeAre": "The Roman believers lived under civic law as well as Jewish religious teaching; Paul addresses the Torah specifically in his extended argument. The setting helps explain Romans 7 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "summary": "Paul first uses marriage as an analogy for how death changes a legal relationship, explaining that believers have died to the Law through Christ in order to bear fruit for God (Romans 7:1–6). He insists that the Law itself is not sin: the commandment exposes sin, which misuses what is good (Romans 7:7–13). Then a dramatic first-person passage describes the struggle of willing the good yet doing what is hated, and the conflict between delight in God's Law and a force of sin at work (Romans 7:14–24). The chapter ends with thanksgiving to God through Jesus Christ (Romans 7:25). Readers have understood the first-person voice as Paul’s own present experience, his life before Christ, Israel, or a representative human being; the passage emphasizes sin's power and the Law's inability by itself to liberate.",
+    "whereWeAre": "Chapter 6 ended with the wages of sin set against God's gift of eternal life (6:23). Chapter 7 uses marriage to explain how believers have died to the law, defends the law as holy and good, and describes in the first person the struggle of knowing the good yet doing what is hated, ending in thanks to God through Jesus Christ (7:1-25). That cry for deliverance is answered in chapter 8.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Speaker of the argument. Uses legal analogy and first-person rhetoric"
+        "role": "Uses marriage law to show believers have died to the law through Christ, then defends the law as holy and just (7:1-13)."
       },
       {
         "name": "The first-person “I”",
-        "role": "Voice in 7:7–25. Embodies the conflict of desire, law and sin; identity disputed"
+        "role": "The voice of 7:7-25, who delights in God's law yet finds another law at work in his members and cries out for deliverance (7:7-24)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Deliverer named in conclusion. Grounds thanksgiving at the end of the struggle"
+        "role": "Named in the closing thanksgiving as the one through whom God delivers from the body of this death (7:24-25)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Law and sin distinguished",
-        "explanation": "",
+        "explanation": "The law is holy, just, and good; it is sin that took occasion by the commandment and worked death (7:7-13).",
         "references": [
           "Romans 7:7-13"
         ]
       },
       {
         "theme": "Inner struggle",
-        "explanation": "",
+        "explanation": "Paul describes willing the good but doing the evil he hates, a war between the law of his mind and the law in his members (7:14-24).",
         "references": [
           "Romans 7:14-24"
         ]
       },
       {
         "theme": "Liberation through Christ",
-        "explanation": "",
+        "explanation": "The cry, who shall deliver me from the body of this death, is answered with thanks to God through Jesus Christ our Lord (7:24-25).",
         "references": [
           "Romans 7:24-25"
         ]
@@ -395,43 +399,43 @@
   },
   "Romans 8": {
     "summary": "Paul proclaims no condemnation for those in Christ and describes liberation by the Spirit from sin and death (Romans 8:1–11). Believers are called to live by the Spirit, not the flesh, and are named God's children and heirs who can address God as Father (Romans 8:12–17). Present suffering is set against future glory; creation groans, believers await bodily redemption, and the Spirit helps them in weakness (Romans 8:18–27). Paul affirms God's purpose for those called and asks a series of questions about accusation, condemnation, suffering, and separation (Romans 8:28–39). The chapter climaxes by declaring that nothing in all creation can separate believers from God's love in Christ. The 'flesh' and 'Spirit' contrast concerns competing orientations of life, not a simple rejection of the physical body.",
-    "whereWeAre": "The audience included people vulnerable to hardship under Roman rule, although the letter does not identify a particular persecution affecting all recipients. The setting helps explain Romans 8 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 7 ended with Paul thanking God through Jesus Christ for deliverance from the body of this death (7:24-25). Chapter 8 declares no condemnation for those in Christ, describes life by the Spirit, adoption as God's children, and creation groaning for redemption, and closes with the assurance that nothing can separate believers from God's love (8:1-39). Chapter 9 turns to Paul's sorrow over his own people.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Author and encourager Explains Spirit-led life and future hope"
+        "role": "Declares no condemnation for those in Christ and ends with a list of things that cannot separate believers from God's love (8:1,35-39)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Son and intercessor. His death, resurrection and love secure assurance"
+        "role": "Died, rose, and makes intercession at the right hand of God, so that nothing can separate believers from his love (8:34-35)."
       },
       {
         "name": "Holy Spirit",
-        "role": "Divine agent in Paul’s argument. Gives life, adoption and help in prayer"
+        "role": "Frees believers from the law of sin and death, bears witness that they are children of God, and helps their weakness with groanings that cannot be uttered (8:2,15-16,26)."
       },
       {
         "name": "Believers and creation",
-        "role": "Those awaiting redemption. Both are portrayed as groaning in hope"
+        "role": "Both groan while waiting for redemption, believers as adopted children and the creation as in the pains of childbirth (8:19-23)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Life in the Spirit",
-        "explanation": "",
+        "explanation": "There is no condemnation to those in Christ Jesus, because the law of the Spirit of life has made them free from the law of sin and death (8:1-11).",
         "references": [
           "Romans 8:1-11"
         ]
       },
       {
         "theme": "Adoption and suffering",
-        "explanation": "",
+        "explanation": "Those led by the Spirit are children and heirs of God, and present sufferings are not worthy to be compared with the coming glory (8:12-25).",
         "references": [
           "Romans 8:12-25"
         ]
       },
       {
         "theme": "Enduring divine love",
-        "explanation": "",
+        "explanation": "If God is for us, nothing, not death, life, nor any other creature, can separate us from the love of God in Christ Jesus (8:31-39).",
         "references": [
           "Romans 8:31-39"
         ]
@@ -447,47 +451,47 @@
   },
   "Romans 9": {
     "summary": "Paul begins with profound grief for fellow Israelites and lists Israel's covenant privileges (Romans 9:1–5). He argues that God's promise has not failed, distinguishing descent from participation in the promise through examples involving Isaac, Ishmael, Jacob, and Esau (Romans 9:6–13). He then asks whether God is unjust and invokes Moses, Pharaoh, and the potter-clay image to discuss divine mercy and freedom (Romans 9:14–24). Quotations from Hosea and Isaiah frame God's calling of Gentiles and the preservation of a remnant of Israel (Romans 9:25–29). Paul concludes by contrasting Gentiles receiving righteousness by faith with Israel's pursuit through works understood as a stumbling over Christ (Romans 9:30–33). Interpretations of election and human freedom differ widely; the chapter belongs to Paul's larger discussion of Israel in chapters 9–11.",
-    "whereWeAre": "The chapter addresses a first-century question: how Jewish rejection of Paul’s gospel by many contemporaries fits Israel’s scriptural promises. The setting helps explain Romans 9 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 8 ended with nothing able to separate believers from the love of God (8:38-39). Chapter 9 raises the painful question that assurance invites, whether God's word to Israel has failed: Paul grieves for his kinsmen, shows that the promise follows God's call through Isaac and Jacob, and describes God's mercy toward Jews and Gentiles alike (9:1-33). Chapter 10 continues with Israel's response.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Jewish apostle expressing grief. Argues about Israel and God’s promise"
+        "role": "Grieves over his kinsmen according to the flesh and argues that God's word to Israel has not failed (9:1-6)."
       },
       {
         "name": "Israelites",
-        "role": "Paul’s kin and people of covenant history. Their status is the chapter’s central concern"
+        "role": "Paul's kinsmen, to whom belong the adoption, the glory, the covenants, the law, and the promises (9:3-5)."
       },
       {
         "name": "Isaac, Ishmael, Jacob and Esau",
-        "role": "Genesis figures cited. Illustrate promise and choice"
+        "role": "Genesis figures through whom Paul shows that the promise follows God's call, not physical descent alone (9:7-13)."
       },
       {
         "name": "Moses and Pharaoh",
-        "role": "Exodus figures cited. Illustrate mercy and resistance"
+        "role": "Cited from Exodus to show God's mercy on whom he will have mercy and his hardening of Pharaoh (9:15-18)."
       },
       {
         "name": "Gentiles",
-        "role": "People newly called in Paul’s account. Show broad scope of divine mercy"
+        "role": "Called as God's people according to Hosea, and attain righteousness by faith while Israel stumbles at the stumblingstone (9:24-26,30-33)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Sorrow and covenant privilege",
-        "explanation": "",
+        "explanation": "Paul has great heaviness for his kinsmen, to whom belong the adoption, the glory, the covenants, the law, and the promises (9:1-5).",
         "references": [
           "Romans 9:1-5"
         ]
       },
       {
         "theme": "Promise and divine mercy",
-        "explanation": "",
+        "explanation": "God's word has not failed, for the promise follows his call through Isaac and Jacob, and he has mercy on whom he will have mercy (9:6-24).",
         "references": [
           "Romans 9:6-24"
         ]
       },
       {
         "theme": "Remnant and inclusion",
-        "explanation": "",
+        "explanation": "Hosea and Isaiah show God calling a people from the Gentiles and saving a remnant of Israel, who stumbled at the stumblingstone (9:25-33).",
         "references": [
           "Romans 9:25-33"
         ]
@@ -543,50 +547,50 @@
   },
   "Romans 10": {
     "summary": "Paul expresses his heartfelt desire and prayer for Israel's salvation (Romans 10:1). He criticizes zeal lacking knowledge of God's righteousness and explains that Christ is the goal or culmination of the Law for righteousness to everyone who believes (Romans 10:2–4). Contrasting scriptural descriptions of righteousness, he portrays the word of faith as near, connected to confessing Jesus as Lord and believing God raised him from the dead (Romans 10:5–13). Paul's quotations stress that everyone who calls on the Lord will be saved; he then traces the sequence from sending and preaching to hearing and faith (Romans 10:14–17). He closes by asking whether Israel has heard and understood, quoting Moses and Isaiah about God's outreach and Israel's resistance (Romans 10:18–21). The chapter holds together Paul's universal gospel invitation, concern for Israel, and the need for proclamation.",
-    "whereWeAre": "Paul’s concern reflects early Christian debates among Jews and Gentiles over messianic claims, Torah observance and the identity of God’s people. The setting helps explain Romans 10 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 9 ended with Israel stumbling at the stone laid in Zion (9:32-33). Chapter 10 shows Paul praying for his people's salvation, explaining that Christ is the end of the law for righteousness to everyone who believes, and tracing how faith comes through sending, preaching, and hearing (10:1-21). Chapter 11 asks whether Israel's stumbling is final.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Author and intercessor. Expresses desire for Israel’s salvation"
+        "role": "Prays for Israel's salvation, saying they have a zeal of God but not according to knowledge (10:1-3)."
       },
       {
         "name": "Israel",
-        "role": "People discussed in Paul’s argument Paul addresses zeal and response to the message"
+        "role": "Pursues righteousness by the law and stumbles, yet is told that God has stretched out his hands all day long to a disobedient people (10:3,21)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Risen Lord proclaimed. Central to confession and faith"
+        "role": "The end of the law for righteousness to everyone who believes, confessed as Lord and believed raised from the dead (10:4,9)."
       },
       {
         "name": "Moses and Isaiah",
-        "role": "Scriptural witnesses quoted. Supply language for faith, calling and response"
+        "role": "Quoted to describe the word of faith near at hand and to show Gentiles finding God while Israel resists (10:5-8,16,19-21)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Righteousness and faith",
-        "explanation": "",
+        "explanation": "Christ is the end of the law for righteousness to everyone who believes, and confessing him as Lord and believing he was raised brings salvation (10:3-10).",
         "references": [
           "Romans 10:3-10"
         ]
       },
       {
         "theme": "Salvation offered broadly",
-        "explanation": "",
+        "explanation": "There is no difference between Jew and Greek, for whosoever shall call upon the name of the Lord shall be saved (10:11-13).",
         "references": [
           "Romans 10:11-13"
         ]
       },
       {
         "theme": "Hearing and proclamation",
-        "explanation": "",
+        "explanation": "Paul traces calling, believing, hearing, preaching, and sending, ending that faith cometh by hearing and hearing by the word of God (10:14-17).",
         "references": [
           "Romans 10:14-17"
         ]
       },
       {
         "theme": "Israel’s response",
-        "explanation": "",
+        "explanation": "Quoting Moses and Isaiah, Paul says Israel has heard yet remains a disobedient and gainsaying people toward whom God stretches out his hands (10:18-21).",
         "references": [
           "Romans 10:18-21"
         ]
@@ -651,51 +655,51 @@
     ]
   },
   "Romans 11": {
-    "summary": "Paul emphatically denies that God has rejected his people, citing his own identity as an Israelite and Elijah's account of a faithful remnant (Romans 11:1–10). He argues that Israel's stumbling is not the end of the story: salvation has come to Gentiles, and this should not breed arrogance (Romans 11:11–15). In the olive-tree metaphor, Gentile believers are branches grafted into a cultivated tree and warned not to boast over broken-off branches (Romans 11:16–24). Paul speaks of a partial hardening until the fullness of Gentiles comes in, and declares that 'all Israel will be saved,' a phrase interpreted in different ways (Romans 11:25–32). He ends with a doxology praising God's unsearchable wisdom (Romans 11:33–36).",
-    "whereWeAre": "Roman house-church tensions concerning Jewish and Gentile believers may have made the warning against boasting especially relevant; specific incidents are not documented. The setting helps explain Romans 11 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "summary": "Paul emphatically denies that God has rejected his people, citing his own identity as an Israelite and Elijah's account of a faithful remnant (Romans 11:1–10). He argues that Israel's stumbling is not the end of the story: salvation has come to Gentiles, and this should not breed arrogance (Romans 11:11–15). In the olive-tree metaphor, Gentile believers are branches grafted into a cultivated tree and warned not to boast over broken-off branches (Romans 11:16–24). Paul speaks of a partial hardening until the fullness of Gentiles comes in, and declares that “all Israel shall be saved,” a phrase Christians have read in different ways (Romans 11:25–32). He ends with a doxology praising God's unsearchable wisdom (Romans 11:33–36).",
+    "whereWeAre": "Chapter 10 ended with God stretching out his hands to a disobedient and contrary people (10:21). Chapter 11 answers that God has not cast them away: Paul points to himself and a remnant, pictures Gentile believers as wild branches grafted into Israel's olive tree, and praises the depth of God's wisdom (11:1-36). That doxology closes the argument and opens chapter 12's call to live it out.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Israelite apostle and writer Shows Israel has not been rejected"
+        "role": "Points to himself as an Israelite to show God has not cast away his people, and warns Gentile believers against boasting (11:1,13-24)."
       },
       {
         "name": "Elijah",
-        "role": "Prophet recalled from 1 Kings. Illustrates a remnant preserved by grace"
+        "role": "Recalled for complaining that he alone was left, and for the answer that God had reserved seven thousand men (11:2-4)."
       },
       {
         "name": "Israel and Gentiles",
-        "role": "Groups compared. Portrayed within a single olive-tree metaphor"
+        "role": "Pictured as natural branches broken off and wild olive branches grafted in, with a promise that all Israel shall be saved (11:17-26)."
       },
       {
         "name": "God",
-        "role": "Subject of concluding praise Mercy and wisdom frame the argument"
+        "role": "Has not cast away his people, grafts branches in and can graft them in again, and is praised for the depth of his wisdom and knowledge (11:1-2,23,33-36)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Israel not abandoned",
-        "explanation": "",
+        "explanation": "God has not cast away his people; Paul is himself an Israelite, and a remnant exists according to the election of grace (11:1-6).",
         "references": [
           "Romans 11:1-6"
         ]
       },
       {
         "theme": "Humility of Gentile believers",
-        "explanation": "",
+        "explanation": "Gentile believers are wild branches grafted into the olive tree and are warned not to boast against the branches (11:17-24).",
         "references": [
           "Romans 11:17-24"
         ]
       },
       {
         "theme": "Mystery and mercy",
-        "explanation": "",
+        "explanation": "Blindness in part has happened to Israel until the fulness of the Gentiles comes in, and God has concluded all in unbelief that he might have mercy on all (11:25-32).",
         "references": [
           "Romans 11:25-32"
         ]
       },
       {
         "theme": "Divine wisdom",
-        "explanation": "",
+        "explanation": "Paul ends in praise for the depth of the riches of God's wisdom and knowledge, for of him, and through him, and to him are all things (11:33-36).",
         "references": [
           "Romans 11:33-36"
         ]
@@ -726,46 +730,46 @@
   },
   "Romans 12": {
     "summary": "Paul shifts from sustained theological argument to practical exhortation. He urges believers to present their bodies as a living sacrifice and be transformed by renewed minds rather than molded by the age (Romans 12:1–2). He calls for humble judgment about oneself and describes the church as one body with many members and different gifts (Romans 12:3–8). A series of instructions urges sincere love, mutual honor, hospitality, perseverance, prayer, empathy and peace (Romans 12:9–18). Rather than retaliate, believers are told to leave vengeance to God and overcome evil with good, even feeding a hungry enemy (Romans 12:19–21). The chapter shows how Paul's theology is meant to shape relationships.",
-    "whereWeAre": "Early Christians often gathered in households and depended on networks of hospitality and mutual aid. The setting helps explain Romans 12 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 11 ended with praise that all things are of God, through him, and to him (11:36). Chapter 12 turns from argument to life: Paul urges believers, in view of God's mercies, to present themselves as a living sacrifice, serve as one body with different gifts, love sincerely, and overcome evil with good (12:1-21). Chapter 13 extends that conduct to governing authorities and neighbors.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Letter writer giving instruction. Calls the community to transformation"
+        "role": "Beseeches believers by God's mercies to present their bodies as a living sacrifice and be transformed by the renewing of their minds (12:1-2)."
       },
       {
         "name": "Believers as one body",
-        "role": "Collective image of Christ-followers Different gifts serve mutual flourishing"
+        "role": "Many members in one body in Christ, each with a different gift to use for the others (12:4-8)."
       },
       {
         "name": "Enemies and persecutors",
-        "role": "People believers may encounter. Recipients of nonretaliatory conduct"
+        "role": "Those who curse or wrong believers, who are told to bless and not curse, and to overcome evil with good (12:14,17-21)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Renewed living",
-        "explanation": "",
+        "explanation": "In view of God's mercies, believers present their bodies a living sacrifice and are transformed by the renewing of their minds (12:1-2).",
         "references": [
           "Romans 12:1-2"
         ]
       },
       {
         "theme": "One body, many gifts",
-        "explanation": "",
+        "explanation": "Believers are many members in one body, each using a different gift for the others (12:3-8).",
         "references": [
           "Romans 12:3-8"
         ]
       },
       {
         "theme": "Sincere love",
-        "explanation": "",
+        "explanation": "Paul urges love without dissimulation, kindness, hospitality, rejoicing with those who rejoice and weeping with those who weep (12:9-16).",
         "references": [
           "Romans 12:9-16"
         ]
       },
       {
         "theme": "Overcome evil with good",
-        "explanation": "",
+        "explanation": "Believers are told not to repay evil for evil but to feed a hungry enemy and overcome evil with good (12:17-21).",
         "references": [
           "Romans 12:17-21"
         ]
@@ -785,44 +789,44 @@
     ]
   },
   "Romans 13": {
-    "summary": "Paul tells believers to recognize governing authorities and explains authority in relation to public order and accountability (Romans 13:1–7). He urges payment of taxes and appropriate respect, although Christians have debated how these instructions apply when rulers act unjustly. He then says that the continuing debt is to love one another, citing commandments against adultery, murder, theft and coveting, all summed up in love of neighbor (Romans 13:8–10). With the time of salvation nearer, Paul uses day-and-night imagery to urge rejection of destructive conduct and a life shaped by Christ (Romans 13:11–14). The chapter joins civic responsibility, neighbor-love and moral vigilance, not an unconditional endorsement of every state action.",
-    "whereWeAre": "Rome was the empire’s capital and the setting of taxation and governing authority; the specific circumstances prompting these instructions are not known. The setting helps explain Romans 13 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "summary": "Paul tells believers to recognize governing authorities and explains authority in relation to public order and accountability (Romans 13:1–7). He urges payment of taxes and appropriate respect, although Christians have long asked how these instructions apply when rulers act unjustly. He then says that the continuing debt is to love one another, citing commandments against adultery, murder, theft and coveting, all summed up in love of neighbor (Romans 13:8–10). With the time of salvation nearer, Paul uses day-and-night imagery to urge rejection of destructive conduct and a life shaped by Christ (Romans 13:11–14). The chapter joins civic responsibility, neighbor-love and moral vigilance, not an unconditional endorsement of every state action.",
+    "whereWeAre": "Chapter 12 ended with the call to overcome evil with good (12:21). Chapter 13 applies it publicly: believers are to be subject to governing authorities and pay what they owe, to owe no one anything but love, and to wake from sleep because salvation is nearer than when they believed (13:1-14). Chapter 14 brings the same love to disagreements inside the church.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Teacher of civic and moral responsibilities Exhorts believers to peaceable conduct"
+        "role": "Tells believers to be subject to the higher powers, to pay what is owed, and to owe no one anything but love (13:1-8)."
       },
       {
         "name": "Governing authorities",
-        "role": "Rulers described in general terms Discussed as exercising civil power"
+        "role": "Described as God's ministers who bear the sword, praise good conduct, and punish evil (13:1-4)."
       },
       {
         "name": "Neighbors and fellow believers",
-        "role": "Recipients of love. Their welfare is central to the law’s fulfillment"
+        "role": "The ones believers are told to love, since love is the fulfilling of the law (13:8-10)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Model of conduct Believers are urged to put on the Lord Jesus Christ"
+        "role": "The Lord whom believers are told to put on, making no provision for the flesh (13:14)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Public authority and accountability",
-        "explanation": "",
+        "explanation": "Believers are to be subject to the higher powers as God's ministers, and to render tribute, custom, fear, and honor to whom each is due (13:1-7).",
         "references": [
           "Romans 13:1-7"
         ]
       },
       {
         "theme": "Love fulfills the Law",
-        "explanation": "",
+        "explanation": "Owing no one anything but to love one another, believers fulfil the law, since love works no ill to his neighbour (13:8-10).",
         "references": [
           "Romans 13:8-10"
         ]
       },
       {
         "theme": "Living in wakefulness",
-        "explanation": "",
+        "explanation": "Because salvation is nearer, believers are to cast off the works of darkness and put on the Lord Jesus Christ (13:11-14).",
         "references": [
           "Romans 13:11-14"
         ]
@@ -853,43 +857,43 @@
   },
   "Romans 14": {
     "summary": "Paul instructs believers to welcome those whose convictions about food differ, rather than quarrel over disputable matters (Romans 14:1–4). Some observe particular days while others regard every day alike; each should act with conviction before the Lord (Romans 14:5–9). Because all will answer to God, believers should not despise or judge one another (Romans 14:10–12). Freedom should not become a cause of stumbling for another: the kingdom of God is characterized by righteousness, peace and joy in the Holy Spirit rather than food and drink (Romans 14:13–18). Paul urges mutual peace and building up the community, and warns against violating one's conscience (Romans 14:19–23).",
-    "whereWeAre": "Jewish food traditions and calendar observance could overlap with Gentile practices in Roman house churches; Paul does not specify the exact dispute’s origin. The setting helps explain Romans 14 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 13 ended with Paul telling believers to put on the Lord Jesus Christ (13:14). Chapter 14 shows what that means among believers who disagree about food and holy days: welcome one another, stop judging, answer to the Lord, and do not cause a brother to stumble, since the kingdom of God is righteousness, peace, and joy in the Holy Ghost (14:1-23). Chapter 15 carries that unity into Paul's plans.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Instructor addressing internal disagreements. Calls for welcome and mutual restraint"
+        "role": "Calls believers to welcome one another without quarreling over doubtful things such as food and days (14:1-6)."
       },
       {
         "name": "The weak in faith",
-        "role": "Believers with restrictive convictions To be welcomed without contempt"
+        "role": "Believers who eat only herbs or esteem one day above another, and are told not to be judged or despised (14:1-6)."
       },
       {
         "name": "Those who eat all things",
-        "role": "Believers exercising broader freedom. Told not to despise or harm others"
+        "role": "Believers with broader freedom, told not to despise the weak or put a stumblingblock in a brother's way (14:3,13-21)."
       },
       {
         "name": "The Lord",
-        "role": "Authority before whom each stands. Grounds both accountability and freedom"
+        "role": "The master before whom each believer stands or falls, and before whose judgment seat all will give account (14:4,10-12)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Welcome amid disagreement",
-        "explanation": "",
+        "explanation": "Believers are to receive the one who is weak in faith without quarreling over doubtful things such as food and days (14:1-6).",
         "references": [
           "Romans 14:1-6"
         ]
       },
       {
         "theme": "Responsibility before God",
-        "explanation": "",
+        "explanation": "Whether living or dying, believers are the Lord's, and each will give account of himself to God at the judgment seat of Christ (14:7-12).",
         "references": [
           "Romans 14:7-12"
         ]
       },
       {
         "theme": "Love limits liberty",
-        "explanation": "",
+        "explanation": "The kingdom of God is righteousness, peace, and joy in the Holy Ghost, so believers avoid putting a stumblingblock before a brother (14:13-23).",
         "references": [
           "Romans 14:13-23"
         ]
@@ -905,50 +909,50 @@
   },
   "Romans 15": {
     "summary": "Paul continues the theme of mutual care: the strong should bear with the weak, following Christ's example of self-giving rather than self-pleasing (Romans 15:1–6). He commands mutual welcome and argues from Scripture that Jesus' ministry confirms God's promises to Israel while Gentiles also praise God (Romans 15:7–13). Paul then speaks personally of his ministry among Gentiles, his desire to preach where Christ is not yet named, and his travel plan: take a collection for impoverished believers in Jerusalem, visit Rome and continue toward Spain (Romans 15:14–29). He requests prayer for protection and a welcomeable outcome in Jerusalem (Romans 15:30–33). The chapter joins communal unity and practical mission planning.",
-    "whereWeAre": "Paul likely wrote before his journey carrying a collection to Jerusalem; a mid-first-century date around the late 50s CE is widely proposed. The setting helps explain Romans 15 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "whereWeAre": "Chapter 14 ended with Paul warning against acting against conscience (14:23). Chapter 15 asks the strong to bear with the weak as Christ did, urges Jews and Gentiles to glorify God together, and shares Paul's plans to carry a collection to Jerusalem and then visit Rome on the way to Spain (15:1-33). Chapter 16 fills in the people behind those plans.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle writing about ministry and travel Plans to visit Rome after Jerusalem"
+        "role": "Describes his ministry to the Gentiles, his plan to bring a collection to Jerusalem, and his hope to visit Rome on the way to Spain (15:14-29)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Servant of Israel’s promises. Grounds welcome of Jews and Gentiles"
+        "role": "Pleased not himself and became a minister of the circumcision to confirm the promises, so that Gentiles might glorify God for his mercy (15:3,8-9)."
       },
       {
         "name": "Gentile believers",
-        "role": "Recipients and participants in Paul’s mission. Share in worship and material giving"
+        "role": "Share in the collection for the poor saints at Jerusalem, having been made partakers of their spiritual things (15:26-27)."
       },
       {
         "name": "Poor believers in Jerusalem",
-        "role": "Beneficiaries of a collection. Reveal practical solidarity across communities"
+        "role": "The recipients of a gift from Macedonia and Achaia that Paul carries to them (15:25-26)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Mutual welcome",
-        "explanation": "",
+        "explanation": "The strong bear the infirmities of the weak, receiving one another as Christ received them to the glory of God (15:1-7).",
         "references": [
           "Romans 15:1-7"
         ]
       },
       {
         "theme": "Jews and Gentiles praising God",
-        "explanation": "",
+        "explanation": "Christ confirmed the promises to the fathers so that Gentiles might also glorify God for his mercy, as the Scriptures foretold (15:8-13).",
         "references": [
           "Romans 15:8-13"
         ]
       },
       {
         "theme": "Mission and generosity",
-        "explanation": "",
+        "explanation": "Paul describes preaching where Christ was not named, and his plan to carry the Macedonian and Achaian gift to Jerusalem before going to Spain (15:14-29).",
         "references": [
           "Romans 15:14-29"
         ]
       },
       {
         "theme": "Prayer and uncertainty",
-        "explanation": "",
+        "explanation": "Paul asks the Romans to strive with him in prayer that he may be delivered from unbelievers in Judea and that his service be accepted (15:30-33).",
         "references": [
           "Romans 15:30-33"
         ]
@@ -988,55 +992,55 @@
     ]
   },
   "Romans 16": {
-    "summary": "Paul commends Phoebe, described as a servant or deacon of the church at Cenchreae and a benefactor of many, asking the Romans to receive and help her (Romans 16:1–2). He greets Prisca and Aquila, the church in their house, and numerous other believers, women and men, acknowledging their labor and relationships (Romans 16:3–16). He warns against people who create division through teaching contrary to what the community learned (Romans 16:17–20). Greetings follow from companions, including Timothy and Tertius, who identifies himself as the one who wrote the letter down (Romans 16:21–23). The book closes with praise to God for the revealed gospel (Romans 16:25–27); the placement of this doxology varies in ancient manuscript traditions. The chapter vividly illustrates a geographically dispersed, collaborative network of early Christian communities.",
-    "whereWeAre": "Cenchreae was Corinth’s eastern port and appears in the book of Acts; Paul’s numerous greetings reflect mobile networks in the Roman world. The setting helps explain Romans 16 as part of Paul’s argument addressed to real first-century communities, without presuming a documented local incident caused this chapter.",
+    "summary": "Paul commends Phebe, described as a servant or deacon of the church at Cenchrea and a benefactor of many, asking the Romans to receive and help her (Romans 16:1–2). He greets Priscilla and Aquila, the church in their house, and numerous other believers, women and men, acknowledging their labor and relationships (Romans 16:3–16). He warns against people who create division through teaching contrary to what the community learned (Romans 16:17–20). Greetings follow from companions, including Timothy and Tertius, who identifies himself as the one who wrote the letter down (Romans 16:21–23). The book closes with praise to God for the revealed gospel (Romans 16:25–27); the placement of this doxology varies in ancient manuscript traditions. The chapter vividly illustrates a geographically dispersed, collaborative network of early Christian communities.",
+    "whereWeAre": "Chapter 15 ended with Paul asking for prayer for his journey to Jerusalem (15:30-33). Chapter 16 commends Phebe, who probably carried the letter, greets many named believers, warns against those who cause divisions, and closes with greetings and a doxology (16:1-27). That personal network leads into the letters Paul wrote to the churches he had already planted, beginning with 1 Corinthians.",
     "keyFigures": [
       {
-        "name": "Phoebe",
-        "role": "Servant or deacon associated with Cenchreae Commended to the Roman believers as helper and benefactor"
+        "name": "Phebe",
+        "role": "A servant of the church at Cenchrea and a succourer of many, commended to the Romans and probably the letter's carrier (16:1-2)."
       },
       {
-        "name": "Prisca and Aquila",
-        "role": "Co-workers who host a house church. Exemplify shared ministry and hospitality"
+        "name": "Priscilla and Aquila",
+        "role": "Paul's helpers in Christ Jesus who risked their necks for his life and host a church in their house (16:3-5)."
       },
       {
         "name": "Andronicus and Junia",
-        "role": "Believers greeted by Paul Noted for association with apostolic work; wording debated"
+        "role": "Paul's kinsmen and fellow prisoners, described as of note among the apostles and in Christ before Paul (16:7)."
       },
       {
         "name": "Timothy and Tertius",
-        "role": "Paul’s associates Timothy sends greetings; Tertius identifies as the letter’s writer"
+        "role": "Timothy sends greetings, and Tertius identifies himself as the one who wrote the letter (16:21-22)."
       },
       {
         "name": "Other greeted believers",
-        "role": "Numerous named women, men and households. Show the breadth of the Roman Christian network"
+        "role": "Many named men, women, and households whom Paul greets and honors for their labor in the Lord (16:5-16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Shared ministry",
-        "explanation": "",
+        "explanation": "Paul commends Phebe and greets Priscilla, Aquila, Andronicus, and Junia as fellow workers and fellow prisoners in Christ (16:1-7).",
         "references": [
           "Romans 16:1-7"
         ]
       },
       {
         "theme": "House churches and hospitality",
-        "explanation": "",
+        "explanation": "Paul greets a church in Priscilla and Aquila's house and many named believers, women and men, for their labor in the Lord (16:3-16).",
         "references": [
           "Romans 16:3-16"
         ]
       },
       {
         "theme": "Guarding community unity",
-        "explanation": "",
+        "explanation": "Paul urges believers to mark those who cause divisions contrary to the doctrine they learned, and promises that God will bruise Satan under their feet (16:17-20).",
         "references": [
           "Romans 16:17-20"
         ]
       },
       {
         "theme": "Praise and revelation",
-        "explanation": "",
+        "explanation": "The letter ends in glory to God, who is able to establish believers according to the gospel and the revelation of the mystery now made known to all nations (16:25-27).",
         "references": [
           "Romans 16:25-27"
         ]

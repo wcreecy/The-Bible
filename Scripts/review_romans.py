@@ -243,7 +243,7 @@ THEMES = {
         "Righteousness and faith": "Christ is the end of the law for righteousness to everyone who believes, and confessing him as Lord and believing he was raised brings salvation (10:3-10).",
         "Salvation offered broadly": "There is no difference between Jew and Greek, for whosoever shall call upon the name of the Lord shall be saved (10:11-13).",
         "Hearing and proclamation": "Paul traces calling, believing, hearing, preaching, and sending, ending that faith cometh by hearing and hearing by the word of God (10:14-17).",
-        "Israel's response": "Quoting Moses and Isaiah, Paul says Israel has heard yet remains a disobedient and gainsaying people toward whom God stretches out his hands (10:18-21).",
+        "Israel’s response": "Quoting Moses and Isaiah, Paul says Israel has heard yet remains a disobedient and gainsaying people toward whom God stretches out his hands (10:18-21).",
     },
     11: {
         "Israel not abandoned": "God has not cast away his people; Paul is himself an Israelite, and a remnant exists according to the election of grace (11:1-6).",

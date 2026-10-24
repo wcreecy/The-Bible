@@ -32,6 +32,11 @@ struct PlayerStatSheetCardView: View {
     }
 
     var body: some View {
+        cardBody
+    }
+
+    /// Keeps the detailed stat table behind an opaque result boundary for the Swift type checker.
+    private var cardBody: some View {
         HeroCard(title: "Player Stat Sheet", icon: "tablecells", tint: .indigo) {
             let _ = stats.version
 

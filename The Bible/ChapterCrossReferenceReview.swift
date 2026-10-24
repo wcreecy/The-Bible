@@ -695,6 +695,15 @@ enum ChapterCrossReferenceReview {
         ,Entry(bookName: "Psalms", chapterNumber: 55, sourceVerse: 1, relatedReference: "Psalms 64:1", reason: "The shared Davidic choir heading does not interpret either prayer.")
         ,Entry(bookName: "Psalms", chapterNumber: 56, sourceVerse: 1, relatedReference: "Psalms 16:1", reason: "The shared miktam label is a genre designation and does not relate the distinct prayers' contexts.")
         ,Entry(bookName: "Psalms", chapterNumber: 56, sourceVerse: 1, relatedReference: "Psalms 59:1", reason: "Both headings concern David in danger, but they identify separate episodes and neither interprets the other.")
+        ,Entry(bookName: "Psalms", chapterNumber: 57, sourceVerse: 1, relatedReference: "Psalms 56:1", reason: "Both headings identify David in danger and use the miktam label, but they concern separate episodes and do not interpret one another.")
+        ,Entry(bookName: "Psalms", chapterNumber: 58, sourceVerse: 1, relatedReference: "Psalms 57:1", reason: "The shared al-tashcheth musical direction is a performance label, not a contextual relationship between the prayers.")
+        ,Entry(bookName: "Psalms", chapterNumber: 59, sourceVerse: 1, relatedReference: "Psalms 57:1", reason: "The Davidic headings concern separate episodes of danger and do not establish a relationship beyond their general setting.")
+        ,Entry(bookName: "Psalms", chapterNumber: 60, sourceVerse: 6, relatedReference: "Joshua 13:27", reason: "The shared place names are geographic details; Joshua's tribal boundary record does not interpret God's royal oracle in the psalm.")
+        ,Entry(bookName: "Psalms", chapterNumber: 61, sourceVerse: 1, relatedReference: "Psalms 4:1", reason: "The shared plea to hear prayer is general individual-lament language and does not establish a specific connection.")
+        ,Entry(bookName: "Psalms", chapterNumber: 61, sourceVerse: 1, relatedReference: "Psalms 55:1-2", reason: "The shared plea for God to hear is a broad prayer formula and does not relate the two laments' contexts.")
+        ,Entry(bookName: "Psalms", chapterNumber: 62, sourceVerse: 1, relatedReference: "Psalms 40:1", reason: "Both express waiting for the Lord, but the general devotional posture does not establish a specific literary or contextual relationship.")
+        ,Entry(bookName: "Psalms", chapterNumber: 62, sourceVerse: 1, relatedReference: "Psalms 65:1", reason: "The shared Davidic choir heading does not connect the quiet trust of Psalm 62 with Psalm 65's thanksgiving for answered prayer.")
+        ,Entry(bookName: "Psalms", chapterNumber: 63, sourceVerse: 7, relatedReference: "Psalms 27:9", reason: "Both refer to God as help, but the general prayer language does not connect the sanctuary confidence of the two psalms.")
     ]
 
     nonisolated static func excludes(

@@ -1,54 +1,54 @@
 {
   "1 Corinthians 1": {
     "summary": "Paul greets the church in Corinth with Sosthenes, thanks God for the grace and gifts given to the believers, and reminds them that they await Christ's revealing (1 Corinthians 1:1–9). He then addresses reports from Chloe's people that groups are rallying around Paul, Apollos, Cephas, or Christ (1 Corinthians 1:10–17). Rather than treating a teacher or impressive speech as the church's foundation, Paul centers the message of Christ crucified (1 Corinthians 1:18–25). God's choice of many who lack worldly status overturns human boasting (1 Corinthians 1:26–31). The chapter calls a divided community back to a common identity in Christ.",
-    "whereWeAre": "Corinth was a Roman colony and commercial center in Achaia, where status, rhetoric, and patronage shaped public life. Reports of rival loyalties (1:11–12) fit this environment, though their exact social causes are not documented. The chapter addresses issues facing Corinthian believers in this setting: corinth was a roman colony and commercial center in achaia, where status, rhetoric, and patronage shaped public life. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Romans closed with Paul's greetings to a church he had not yet visited (Romans 16:1-27). First Corinthians is written to a church he founded and knows well: from Ephesus he thanks God for the Corinthians' gifts, then addresses reports from Chloe's household that they are splitting into groups around Paul, Apollos, Cephas, or Christ, and answers with the message of Christ crucified (1:1-31). Chapter 2 continues that contrast between worldly wisdom and God's.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle and letter writer. Calls divided believers to unity"
+        "role": "Greets the Corinthians with Sosthenes, thanks God for their gifts, and calls them to be joined together in the same mind (1:1-10)."
       },
       {
         "name": "Sosthenes",
-        "role": "Brother named in the greeting. Associated with the opening salutation"
+        "role": "Named with Paul in the greeting as the brother who joins in sending the letter (1:1)."
       },
       {
         "name": "Chloe’s people",
-        "role": "Informants named by Paul. Report quarrels in Corinth"
+        "role": "Members of Chloe's household who report to Paul that there are contentions among the Corinthians (1:11)."
       },
       {
         "name": "Apollos and Cephas (Peter)",
-        "role": "Teachers invoked as party labels. Illustrate misguided allegiances; the text does not say they encouraged factions"
+        "role": "Teachers whose names are used as rallying labels, though Paul does not say they encouraged the groups (1:12)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Recipients of the letter Need to understand their shared identity"
+        "role": "Divided into groups claiming Paul, Apollos, Cephas, or Christ, and reminded that few of them were wise, mighty, or noble when called (1:12,26)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Thanksgiving and grace",
-        "explanation": "",
+        "explanation": "Paul thanks God for the grace given to the Corinthians, enriched in all utterance and knowledge, waiting for the coming of the Lord (1:4-9).",
         "references": [
           "1 Corinthians 1:4-9"
         ]
       },
       {
         "theme": "Unity over factions",
-        "explanation": "",
+        "explanation": "Paul begs them to be perfectly joined together in the same mind, since Christ is not divided and they were not baptized in Paul's name (1:10-17).",
         "references": [
           "1 Corinthians 1:10-17"
         ]
       },
       {
         "theme": "Wisdom of the cross",
-        "explanation": "",
+        "explanation": "The preaching of the cross is foolishness to those perishing but the power of God to those being saved, and God's foolishness is wiser than men (1:18-25).",
         "references": [
           "1 Corinthians 1:18-25"
         ]
       },
       {
         "theme": "Boasting in the Lord",
-        "explanation": "",
+        "explanation": "God chose the foolish, weak, and base things so that no flesh should glory in his presence; let him that glorieth glory in the Lord (1:26-31).",
         "references": [
           "1 Corinthians 1:26-31"
         ]
@@ -69,54 +69,50 @@
   },
   "1 Corinthians 2": {
     "summary": "Paul recalls coming to Corinth without a display of impressive rhetoric, resolving to proclaim Jesus Christ crucified in weakness so the Corinthians' faith would depend on God's power (1 Corinthians 2:1–5). Yet he does speak wisdom among the mature: not the passing wisdom of this age's rulers but God's previously hidden purpose, now made known through the Spirit (1 Corinthians 2:6–10). The Spirit searches the depths of God and enables understanding of what God gives (1 Corinthians 2:10–13). Paul contrasts the person who does not receive the things of the Spirit with the spiritual person who discerns them, concluding that believers have the mind of Christ (1 Corinthians 2:14–16). The argument continues chapter 1's contrast between status-driven wisdom and God's revelation.",
-    "whereWeAre": "Greek and Roman cities prized public rhetoric and displays of learning. Paul writes in a society where public orators could gain followers; he rejects the idea that those conventions establish the truth of his message. The chapter addresses issues facing Corinthian believers in this setting: greek and roman cities prized public rhetoric and displays of learning. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 1 ended with God choosing the weak and lowly so that no one may boast before him (1:26-31). Chapter 2 shows Paul living that out: he came to Corinth in weakness and fear preaching Christ crucified, yet speaks God's hidden wisdom, revealed by the Spirit, to the mature (2:1-16). Chapter 3 turns that wisdom on the church's quarrels over its leaders.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "First-person teacher and apostle. Explains his approach to preaching"
+        "role": "Recalls coming to Corinth in weakness and fear, preaching Christ crucified rather than excellency of speech (2:1-5)."
       },
       {
         "name": "Jesus Christ",
-        "role": "The crucified Lord Center of Paul’s message"
+        "role": "The crucified Lord whom Paul determined to know among the Corinthians, and whose mind believers have (2:2,16)."
       },
       {
         "name": "Holy Spirit",
-        "role": "Divine revealer. Makes divine wisdom known"
+        "role": "Searches the deep things of God and reveals them to believers, who receive the Spirit that is of God (2:10-12)."
       },
       {
         "name": "Rulers of this age",
-        "role": "Unnamed authorities in Paul’s argument. Exemplify limited worldly wisdom"
-      },
-      {
-        "name": "Corinthian believers",
-        "role": "Recipients. Invited to value God’s wisdom"
+        "role": "Unnamed authorities who did not know God's hidden wisdom, for otherwise they would not have crucified the Lord of glory (2:6-8)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Faith founded on divine power",
-        "explanation": "",
+        "explanation": "Paul came without excellency of speech so that their faith should stand in the power of God, not in the wisdom of men (2:1-5).",
         "references": [
           "1 Corinthians 2:1-5"
         ]
       },
       {
         "theme": "Hidden wisdom revealed",
-        "explanation": "",
+        "explanation": "The wisdom of God in a mystery, which the rulers of this age did not know, God has revealed to believers by his Spirit (2:6-10).",
         "references": [
           "1 Corinthians 2:6-10"
         ]
       },
       {
         "theme": "Role of the Spirit",
-        "explanation": "",
+        "explanation": "The Spirit searches the deep things of God, and believers have received that Spirit so they may know what God has freely given (2:10-13).",
         "references": [
           "1 Corinthians 2:10-13"
         ]
       },
       {
         "theme": "Mind of Christ",
-        "explanation": "",
+        "explanation": "The natural man does not receive the things of the Spirit, but he that is spiritual judges all things, for believers have the mind of Christ (2:14-16).",
         "references": [
           "1 Corinthians 2:14-16"
         ]
@@ -132,54 +128,54 @@
   },
   "1 Corinthians 3": {
     "summary": "Paul calls the Corinthians immature because jealousy and strife still govern them (1 Corinthians 3:1–4). He portrays himself and Apollos as servants with different tasks: one plants, another waters, but God brings growth (1 Corinthians 3:5–9). Using a building image, Paul says Jesus Christ is the only foundation and warns every builder to take care how they build; the quality of each person's work will be tested (1 Corinthians 3:10–15). He then identifies the gathered believers as God's temple, warns against destroying that community, and criticizes boasting in human leaders (1 Corinthians 3:16–23). The chapter teaches that ministers belong to God's work, not that the church belongs to them.",
-    "whereWeAre": "Corinthians knew agricultural work, skilled building, and temples in an urban colony. Paul uses familiar imagery to explain a community united by God rather than by individual patrons. The chapter addresses issues facing Corinthian believers in this setting: corinthians knew agricultural work, skilled building, and temples in an urban colony. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 2 ended with believers having the mind of Christ (2:16). Chapter 3 says the quarrels prove the Corinthians are still infants: Paul and Apollos are only servants, one planting and one watering while God gives the growth, and the church is God's building and temple on the one foundation, Jesus Christ (3:1-23). Chapter 4 applies this to how the church should view its apostles.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Planter and foundation-layer in the metaphor. Models servant leadership"
+        "role": "Planted the church and laid its foundation as a wise masterbuilder, while calling the Corinthians babes still ruled by envy and strife (3:1-10)."
       },
       {
         "name": "Apollos",
-        "role": "Teacher who watered in the metaphor. Shows complementary ministry"
+        "role": "Watered what Paul planted, one of the servants through whom the Corinthians believed (3:5-6)."
       },
       {
         "name": "God",
-        "role": "Giver of growth and owner of the building Source of the church’s life"
+        "role": "Gives the increase, owns the field and building, and will destroy anyone who defiles his temple (3:6-9,16-17)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Sole foundation Defines lasting Christian ministry"
+        "role": "The only foundation on which anyone can build (3:11)."
       },
       {
         "name": "Corinthian believers",
-        "role": "God’s field, building, and temple. Responsible for communal unity"
+        "role": "Called God's husbandry, God's building, and the temple of God in which the Spirit dwells (3:9,16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Immaturity and jealousy",
-        "explanation": "",
+        "explanation": "Envying, strife, and divisions show the Corinthians are still carnal babes fed with milk, not meat (3:1-4).",
         "references": [
           "1 Corinthians 3:1-4"
         ]
       },
       {
         "theme": "Shared ministry",
-        "explanation": "",
+        "explanation": "Paul planted, Apollos watered, but God gave the increase, so neither the planter nor the waterer is anything (3:5-9).",
         "references": [
           "1 Corinthians 3:5-9"
         ]
       },
       {
         "theme": "Building on Christ",
-        "explanation": "",
+        "explanation": "No other foundation can be laid than Jesus Christ, and each builder's work will be tried by fire (3:10-15).",
         "references": [
           "1 Corinthians 3:10-15"
         ]
       },
       {
         "theme": "Community as temple",
-        "explanation": "",
+        "explanation": "The church is the temple of God, and God will destroy anyone who defiles it (3:16-17).",
         "references": [
           "1 Corinthians 3:16-17"
         ]
@@ -200,50 +196,50 @@
   },
   "1 Corinthians 4": {
     "summary": "Paul asks the Corinthians to consider apostolic workers as servants of Christ and stewards of God's mysteries, accountable finally to the Lord rather than to premature human judgments (1 Corinthians 4:1–5). He applies this to himself and Apollos, exposing the pride of people who act as if their gifts originated with them (1 Corinthians 4:6–8). With biting irony he contrasts the Corinthians' supposed success with apostles' hardships, shame, manual labor, and patient endurance (1 Corinthians 4:9–13). Speaking as a father to beloved children, he urges imitation, explains that he sent Timothy, and says he intends to come if the Lord wills; he asks whether they prefer correction or gentleness (1 Corinthians 4:14–21). The chapter combines accountability with pastoral affection.",
-    "whereWeAre": "Teachers and patrons could enjoy public honors in cities such as Corinth; itinerant apostles’ poverty and manual work did not fit conventional prestige. Paul uses irony as a rhetorical means of correction. The chapter addresses issues facing Corinthian believers in this setting: teachers and patrons could enjoy public honors in cities such as corinth; itinerant apostles’ poverty and manual work did not fit conventional prestige. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 3 ended with Paul telling the Corinthians not to boast in men, since all things are theirs and they are Christ's (3:21-23). Chapter 4 asks them to see Paul and Apollos as stewards of God's mysteries who answer to the Lord, contrasts their own proud self-confidence with the apostles' hardships, and promises to come, with a rod or in love (4:1-21). Chapter 5 shows pride that has already tolerated a serious wrong.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle and paternal mentor. Rebukes pride while seeking restoration"
+        "role": "Describes himself and Apollos as ministers of Christ and stewards of God's mysteries, answerable only to the Lord's judgment, and warns as a father (4:1-5,14-15)."
       },
       {
         "name": "Apollos",
-        "role": "Ministry colleague. Example for avoiding factional boasting"
+        "role": "Paul uses him and himself as the example of not thinking of men above what is written (4:6)."
       },
       {
         "name": "Timothy",
-        "role": "Paul’s trusted child in the faith. Sent to remind the church of Paul’s ways"
+        "role": "Paul's beloved and faithful son in the Lord, sent to remind the Corinthians of Paul's ways (4:17)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Recipients of correction. Asked to replace arrogance with faithful practice"
+        "role": "Rebuked as already full, already rich, and puffed up, while the apostles are hungry, naked, and buffeted (4:6-13,18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Faithful stewardship",
-        "explanation": "",
+        "explanation": "Ministers are stewards of the mysteries of God, and it is required in stewards that a man be found faithful, judged finally by the Lord (4:1-5).",
         "references": [
           "1 Corinthians 4:1-5"
         ]
       },
       {
         "theme": "Humility about gifts",
-        "explanation": "",
+        "explanation": "Paul asks who makes one to differ and what they have that they did not receive, since there is nothing to glory in as if not received (4:6-8).",
         "references": [
           "1 Corinthians 4:6-8"
         ]
       },
       {
         "theme": "Apostolic suffering",
-        "explanation": "",
+        "explanation": "Apostles are made a spectacle, fools for Christ's sake, hungry, buffeted, and reviled, in contrast to the Corinthians' pride (4:9-13).",
         "references": [
           "1 Corinthians 4:9-13"
         ]
       },
       {
         "theme": "Corrective love",
-        "explanation": "",
+        "explanation": "Paul warns as a beloved father, not to shame them, and asks whether he should come with a rod or in love (4:14-21).",
         "references": [
           "1 Corinthians 4:14-21"
         ]
@@ -253,54 +249,50 @@
   },
   "1 Corinthians 5": {
     "summary": "Paul confronts a report that a man has his father's wife, a relationship he judges intolerable even by standards he invokes outside the church (1 Corinthians 5:1). The community's pride and failure to grieve over the situation deepen the offense (1 Corinthians 5:2). Although absent bodily, Paul gives instructions for communal discipline with the stated purpose of eventual salvation (1 Corinthians 5:3–5). He compares tolerated corruption to leaven spreading through dough and invokes Christ as the Passover sacrifice to urge sincerity and truth (1 Corinthians 5:6–8). Clarifying an earlier letter, he distinguishes withdrawal of fellowship from professing believers who persist in listed abuses from avoidance of all nonbelievers; ultimate judgment of outsiders belongs to God (1 Corinthians 5:9–13). The chapter addresses boundaries and integrity within the church.",
-    "whereWeAre": "Roman Corinth operated amid Greek and Roman kinship norms; the precise legal classification of the reported relationship cannot be established from this brief account alone. Paul also invokes Israel’s Passover imagery for a mixed Jewish and Gentile audience. The chapter addresses issues facing Corinthian believers in this setting: roman corinth operated amid greek and roman kinship norms; the precise legal classification of the reported relationship cannot be established from this brief account alone. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 4 ended with Paul asking whether he should come with a rod or in love (4:21). Chapter 5 shows why the question matters: the church is proud of tolerating a man living with his father's wife, and Paul tells them to remove him, using the picture of leaven and Christ our passover, and clarifies an earlier letter about associating with sinners (5:1-13). Chapter 6 moves from that discipline to disputes among believers.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Letter writer and authority giving direction. Calls for corrective action"
+        "role": "Judges, though absent in body, that the man living with his father's wife should be delivered to Satan for the destruction of the flesh (5:3-5)."
       },
       {
-        "name": "Unnamed man",
-        "role": "Member reported in a prohibited sexual relationship Focus of the disciplinary instruction"
-      },
-      {
-        "name": "Father’s wife",
-        "role": "Woman identified by her relation to the man. Part of the reported relationship; the passage does not describe her membership or motives"
+        "name": "The man in the relationship",
+        "role": "A church member living with his father's wife, a sin Paul says is not even named among the Gentiles (5:1)."
       },
       {
         "name": "Corinthian church",
-        "role": "Community addressed. Responsible for responding to open misconduct"
+        "role": "Puffed up rather than mourning, and told to purge out the old leaven and not keep company with a professing brother who persists in sin (5:2,6-13)."
       },
       {
         "name": "Christ",
-        "role": "Passover figure in Paul’s analogy Ground for communal integrity"
+        "role": "Our passover, sacrificed for us, the reason believers keep the feast with sincerity and truth (5:7-8)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Accountability within the church",
-        "explanation": "",
+        "explanation": "The church is puffed up instead of mourning over a man living with his father's wife and is told to remove him from among them (5:1-5).",
         "references": [
           "1 Corinthians 5:1-5"
         ]
       },
       {
         "theme": "Leaven and integrity",
-        "explanation": "",
+        "explanation": "A little leaven leavens the whole lump, so believers are to purge it out and keep the feast with sincerity and truth (5:6-8).",
         "references": [
           "1 Corinthians 5:6-8"
         ]
       },
       {
         "theme": "Community versus outsiders",
-        "explanation": "",
+        "explanation": "Paul explains that he did not mean avoiding all sinners of this world, but not keeping company with a professing brother who persists in sin, while God judges those outside (5:9-13).",
         "references": [
           "1 Corinthians 5:9-13"
         ]
       },
       {
         "theme": "Discipline and hoped-for restoration",
-        "explanation": "",
+        "explanation": "The man is delivered to Satan for the destruction of the flesh, that the spirit may be saved in the day of the Lord Jesus (5:4-5).",
         "references": [
           "1 Corinthians 5:4-5"
         ]
@@ -310,54 +302,50 @@
   },
   "1 Corinthians 6": {
     "summary": "Paul criticizes believers who take disputes against one another before unbelieving judges rather than finding a wise mediator within the church (1 Corinthians 6:1–8). He warns that wrongdoing is inconsistent with inheriting God's kingdom, yet reminds the Corinthians that some have been washed, sanctified, and justified in the name of Jesus and by the Spirit (1 Corinthians 6:9–11). He then challenges the slogan that all things are lawful by insisting not everything is beneficial and that he will not be mastered by anything (1 Corinthians 6:12). The body is for the Lord, destined for resurrection, and not to be joined to prostitution; the chapter closes by describing believers' bodies as temples of the Holy Spirit and calling them to honor God bodily (1 Corinthians 6:13–20). The unifying concern is conduct consistent with belonging to Christ.",
-    "whereWeAre": "Roman civil litigation could involve wealth and public standing, although the passage does not identify actual lawsuits. Prostitution existed in Greco-Roman cities, but sensational claims about a specific Corinthian temple-prostitution system are not established by this text. The chapter addresses issues facing Corinthian believers in this setting: roman civil litigation could involve wealth and public standing, although the passage does not identify actual lawsuits. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 5 ended with Paul telling the church to judge those inside it and put away the wicked person (5:12-13). Chapter 6 asks why believers who will judge the world take one another to court before unbelievers, reminds them that some of them were washed, sanctified, and justified, and calls them to glorify God in their bodies, which are temples of the Holy Ghost (6:1-20). Chapter 7 begins answering the church's own written questions.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostolic adviser. Addresses disputes and sexual ethics"
+        "role": "Rebukes believers who sue one another before the unjust and reminds them that they were washed, sanctified, and justified (6:1-11)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Parties in lawsuits and recipients of warnings. Called to reflect their new identity"
+        "role": "Wrong and defraud one another in lawsuits, yet are called to glorify God in their bodies, which are members of Christ (6:7-8,15,20)."
       },
       {
         "name": "Judges outside the church",
-        "role": "Unnamed arbiters in Paul’s example Contrast with internal dispute resolution"
+        "role": "Called the unjust, those whose judgment the believers should not seek when they have saints able to judge (6:1-6)."
       },
       {
-        "name": "Prostitute",
-        "role": "Representative person in the ethical argument. Appears in a hypothetical warning, not as an identified event"
-      },
-      {
-        "name": "Holy Spirit",
-        "role": "Indwelling divine presence Grounds Paul’s bodily temple image"
+        "name": "Holy Ghost",
+        "role": "Dwells in the believer's body as in a temple, which is not his own (6:19)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Disputes and witness",
-        "explanation": "",
+        "explanation": "Paul asks why believers who will judge the world take one another to law before the unjust, when it is better to suffer wrong (6:1-8).",
         "references": [
           "1 Corinthians 6:1-8"
         ]
       },
       {
         "theme": "Changed identity",
-        "explanation": "",
+        "explanation": "The unrighteous will not inherit God's kingdom, but some of the Corinthians were washed, sanctified, and justified in the name of the Lord Jesus (6:9-11).",
         "references": [
           "1 Corinthians 6:9-11"
         ]
       },
       {
         "theme": "Freedom and benefit",
-        "explanation": "",
+        "explanation": "All things are lawful, but not all are expedient, and Paul will not be brought under the power of any (6:12-13).",
         "references": [
           "1 Corinthians 6:12-13"
         ]
       },
       {
         "theme": "Bodily dignity",
-        "explanation": "",
+        "explanation": "Believers' bodies are members of Christ and temples of the Holy Ghost, bought with a price, so they are to glorify God in their bodies (6:15-20).",
         "references": [
           "1 Corinthians 6:15-20"
         ]
@@ -372,62 +360,62 @@
     ]
   },
   "1 Corinthians 7": {
-    "summary": "Responding to matters the Corinthians wrote about, Paul discusses sexual relations within marriage, mutual obligations between spouses, and periods of agreed abstinence (1 Corinthians 7:1–7). He counsels unmarried and widowed people, spouses considering separation, and believers married to nonbelievers (1 Corinthians 7:8–16), carefully distinguishing commands he attributes to the Lord from advice he gives as an apostle. He urges people not to treat circumcision or social status as barriers to obeying God, using slavery and freedom to make his point (1 Corinthians 7:17–24). Addressing virgins or the unmarried, he advises discernment in view of a 'present distress' and a world whose present form is passing away (1 Corinthians 7:25–35). He allows marriage without calling it sinful and closes with counsel about remarriage after a spouse dies (1 Corinthians 7:36–40). His central concern is faithful living amid different circumstances, not one universal marital state.",
-    "whereWeAre": "Paul explicitly replies to questions raised by the Corinthians (7:1). Household authority, marriage arrangements, slavery, and economic security shaped first-century life; the precise “present distress” in 7:26 is unknown. The chapter addresses issues facing Corinthian believers in this setting: paul explicitly replies to questions raised by the corinthians (7:1). The passage itself is the primary evidence for the particular teaching and episode.",
+    "summary": "Responding to matters the Corinthians wrote about, Paul discusses sexual relations within marriage, mutual obligations between spouses, and periods of agreed abstinence (1 Corinthians 7:1–7). He counsels unmarried and widowed people, spouses considering separation, and believers married to nonbelievers (1 Corinthians 7:8–16), carefully distinguishing commands he attributes to the Lord from advice he gives as an apostle. He urges people not to treat circumcision or social status as barriers to obeying God, using slavery and freedom to make his point (1 Corinthians 7:17–24). Addressing virgins or the unmarried, he advises discernment in view of a “present distress” and a world whose present form is passing away (1 Corinthians 7:25–35). He allows marriage without calling it sinful and closes with counsel about remarriage after a spouse dies (1 Corinthians 7:36–40). His central concern is faithful living amid different circumstances, not one universal marital state.",
+    "whereWeAre": "Chapter 6 ended with believers' bodies being temples of the Holy Ghost, bought with a price (6:19-20). Chapter 7 starts answering what the Corinthians wrote: Paul speaks about marriage and singleness, spouses' mutual duties, mixed households, and staying in the calling one was in when called, separating the Lord's command from his own judgment (7:1-40). Chapter 8 takes up the next question, food offered to idols.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Respondent to the church’s questions. Offers commands, distinctions, and judgments"
+        "role": "Answers the church's written questions, distinguishing what the Lord commands from what he gives as judgment (7:1,10,12,25)."
       },
       {
         "name": "Married believers",
-        "role": "Spouses under discussion. Called to mutual responsibility"
+        "role": "Told that husband and wife each owe the other due benevolence and should not defraud one another (7:2-5)."
       },
       {
         "name": "Unmarried and widows",
-        "role": "Groups addressed Offered options without condemnation"
+        "role": "Told it is good to remain as Paul is, but that it is better to marry than to burn (7:8-9)."
       },
       {
         "name": "Believers with unbelieving spouses",
-        "role": "Mixed-faith households. Addressed regarding continuing marriage and peace"
+        "role": "Told not to leave a spouse who is pleased to stay, since God hath called us to peace (7:12-16)."
       },
       {
         "name": "Enslaved and free believers",
-        "role": "Social groups used in illustration. Called to remember belonging to Christ"
+        "role": "Told that the enslaved is the Lord's freeman and the free is Christ's servant, bought with a price (7:21-23)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Mutuality in marriage",
-        "explanation": "",
+        "explanation": "Husband and wife owe each other due benevolence, and neither has power over his or her own body alone (7:3-5).",
         "references": [
           "1 Corinthians 7:3-5"
         ]
       },
       {
         "theme": "Marriage, singleness, and gift",
-        "explanation": "",
+        "explanation": "Each has a proper gift of God, one after this manner and another after that, and it is better to marry than to burn (7:6-9).",
         "references": [
           "1 Corinthians 7:6-9"
         ]
       },
       {
         "theme": "Peace in mixed households",
-        "explanation": "",
+        "explanation": "A believer should not leave a spouse who is pleased to dwell with him, for God has called us to peace (7:12-16).",
         "references": [
           "1 Corinthians 7:12-16"
         ]
       },
       {
         "theme": "Calling and circumstances",
-        "explanation": "",
+        "explanation": "Each should abide in the calling in which he was called, since circumcision and slavery are not what matter before God (7:17-24).",
         "references": [
           "1 Corinthians 7:17-24"
         ]
       },
       {
         "theme": "Present distress and judgment",
-        "explanation": "",
+        "explanation": "Because of the present distress and the passing fashion of the world, Paul gives his judgment about the unmarried and widows, allowing marriage without sin (7:25-40).",
         "references": [
           "1 Corinthians 7:25-40"
         ]
@@ -436,51 +424,47 @@
     "explainedReferences": []
   },
   "1 Corinthians 8": {
-    "summary": "Paul turns to food associated with idols and challenges those who prize superior 'knowledge' without regard for fellow believers (1 Corinthians 8:1–3). He affirms that an idol is nothing in the sense claimed by the Corinthians and speaks of one God, the Father, and one Lord, Jesus Christ (1 Corinthians 8:4–6). Yet not everyone can eat food associated with former worship practices with the same conscience; someone with a vulnerable conscience may be harmed by another's example 1 Corinthians 8:7–12. Paul concludes that he would abstain from food rather than lead a brother or sister to stumble (1 Corinthians 8:13). The chapter frames liberty through love and attention to the effect of one's actions on others.",
-    "whereWeAre": "In Greco-Roman Corinth, meat could be associated with sacrifices and dining in temple precincts. The chapter refers to this setting, but does not reveal each person’s eating circumstances. The chapter addresses issues facing Corinthian believers in this setting: in greco-roman corinth, meat could be associated with sacrifices and dining in temple precincts. The passage itself is the primary evidence for the particular teaching and episode.",
+    "summary": "Paul turns to food associated with idols and challenges those who prize superior “knowledge” without regard for fellow believers (1 Corinthians 8:1–3). He affirms that an idol is nothing in the sense claimed by the Corinthians and speaks of one God, the Father, and one Lord, Jesus Christ (1 Corinthians 8:4–6). Yet not everyone can eat food associated with former worship practices with the same conscience; someone with a vulnerable conscience may be harmed by another's example (1 Corinthians 8:7–12). Paul concludes that he would abstain from food rather than lead a brother or sister to stumble (1 Corinthians 8:13). The chapter frames liberty through love and attention to the effect of one's actions on others.",
+    "whereWeAre": "Chapter 7 ended with Paul's counsel about remarriage and his sense that he too has the Spirit of God (7:40). Chapter 8 answers the question of food offered to idols: knowledge puffs up but love builds up, an idol is nothing, yet a brother with a weak conscience can be wounded by another's example, so Paul would give up meat rather than make him stumble (8:1-13). Chapter 9 offers Paul's own surrendered rights as the model.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Teacher answering a church question Prioritizes love over status-oriented knowledge"
+        "role": "Answers the question about things offered to idols, saying knowledge puffs up but charity edifies, and that he will eat no flesh while the world stands if it makes his brother stumble (8:1,13)."
       },
       {
         "name": "Corinthian believers with knowledge",
-        "role": "Group confident about idols. Asked to consider the effect of their example"
+        "role": "Confident that an idol is nothing, and warned that their liberty must not become a stumblingblock to the weak (8:4,9)."
       },
       {
-        "name": "Believers with vulnerable consciences",
-        "role": "People affected by former idolatry. Their well-being frames Paul’s argument"
-      },
-      {
-        "name": "God the Father and Jesus Christ",
-        "role": "Named as one God and one Lord in Paul’s confession. Supply the theological ground for his teaching"
+        "name": "Believers with weak consciences",
+        "role": "Those who eat as if the meat still belonged to an idol and whose conscience is defiled (8:7-12)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Love over pride",
-        "explanation": "",
+        "explanation": "Knowledge puffs up but charity edifies, and the one who loves God is known of him (8:1-3).",
         "references": [
           "1 Corinthians 8:1-3"
         ]
       },
       {
         "theme": "One God and one Lord",
-        "explanation": "",
+        "explanation": "An idol is nothing in the world; there is one God, the Father, and one Lord Jesus Christ (8:4-6).",
         "references": [
           "1 Corinthians 8:4-6"
         ]
       },
       {
         "theme": "Conscience and sensitivity",
-        "explanation": "",
+        "explanation": "Not every believer has this knowledge, and a weak conscience can be defiled and a brother perish through another's example (8:7-12).",
         "references": [
           "1 Corinthians 8:7-12"
         ]
       },
       {
         "theme": "Voluntary restraint",
-        "explanation": "",
+        "explanation": "Paul says he will eat no flesh while the world stands rather than make his brother to offend (8:13).",
         "references": [
           "1 Corinthians 8:13"
         ]
@@ -490,54 +474,50 @@
   },
   "1 Corinthians 9": {
     "summary": "Paul defends his apostleship by pointing to his encounter with the risen Jesus and the Corinthians' existence as the fruit of his work (1 Corinthians 9:1–2). Using examples from soldiers, farmers, shepherds, Torah, and temple workers, he argues that those who preach have a right to support (1 Corinthians 9:3–14). Nevertheless, he says he has not exercised this right, preferring to announce the gospel without creating an obstacle (1 Corinthians 9:15–18). He describes adapting himself to Jews, those under the law, those outside it, and the weak in order to win people, while remaining under Christ's law (1 Corinthians 9:19–23). He closes with athletic images of training and self-discipline (1 Corinthians 9:24–27). The chapter illustrates freedom directed toward service rather than self-advancement.",
-    "whereWeAre": "Corinth hosted the Isthmian Games nearby, so athletic contests were familiar, although this chapter does not identify a specific race. Teachers’ financial support and patronage were important social concerns. The chapter addresses issues facing Corinthian believers in this setting: corinth hosted the isthmian games nearby, so athletic contests were familiar, although this chapter does not identify a specific race. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 8 ended with Paul declining to eat meat if it made his brother stumble (8:13). Chapter 9 gives his own example: he defends his apostleship and his right to support, yet gave up that right so the gospel would not be hindered, became all things to all men to win some, and disciplines himself like an athlete (9:1-27). Chapter 10 warns what happens without that discipline.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle defending and voluntarily limiting his rights. Models mission-driven self-restraint"
+        "role": "Defends his apostleship and right to support, yet gives up that right, becoming all things to all men and keeping his body under (9:1-27)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Risen Lord seen by Paul Ground for Paul’s apostolic claim"
+        "role": "The Lord whom Paul has seen, making him an apostle (9:1)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Paul’s “seal” in the Lord Evidence of his work among them"
+        "role": "Paul's work in the Lord and the seal of his apostleship (9:1-2)."
       },
       {
         "name": "Barnabas",
-        "role": "Fellow worker named in Paul’s question. Example in the discussion of labor and support"
-      },
-      {
-        "name": "Jews, Gentiles, and the weak",
-        "role": "Groups within Paul’s missionary examples Explain his adaptable approach"
+        "role": "Named with Paul as another who has the right to forbear working (9:6)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Rights of gospel workers",
-        "explanation": "",
+        "explanation": "Paul argues from soldiers, vineyards, flocks, the law, and the temple that they which preach the gospel should live of the gospel (9:3-14).",
         "references": [
           "1 Corinthians 9:3-14"
         ]
       },
       {
         "theme": "Rights voluntarily set aside",
-        "explanation": "",
+        "explanation": "Paul has not used this power, preferring to make the gospel of Christ without charge (9:15-18).",
         "references": [
           "1 Corinthians 9:15-18"
         ]
       },
       {
         "theme": "Adaptation in mission",
-        "explanation": "",
+        "explanation": "Paul became all things to all men, a servant to all, that he might by all means save some (9:19-23).",
         "references": [
           "1 Corinthians 9:19-23"
         ]
       },
       {
         "theme": "Disciplined purpose",
-        "explanation": "",
+        "explanation": "Like a runner and fighter, Paul keeps under his body so that after preaching to others he himself should not be a castaway (9:24-27).",
         "references": [
           "1 Corinthians 9:24-27"
         ]
@@ -553,54 +533,50 @@
   },
   "1 Corinthians 10": {
     "summary": "Paul recalls Israel's wilderness experience: the ancestors shared passage through the sea and spiritual food and drink, yet many fell under judgment through idolatry, sexual misconduct, testing, and grumbling (1 Corinthians 10:1–13). These accounts become warnings for the Corinthians, who must not presume immunity to temptation and should seek the way of endurance God provides. Paul then contrasts participation in the cup and bread of Christ with sharing in idolatrous worship, urging the community to flee idolatry (1 Corinthians 10:14–22). Finally he distinguishes food sold in markets or served by nonbelievers from cases where sacrificial association is explicitly raised, urging consideration of conscience, God's glory, and others' good (1 Corinthians 10:23–33). The chapter brings together caution, communion, and responsible freedom.",
-    "whereWeAre": "Paul appeals to stories in Exodus and Numbers, applying them to gatherings in a city with sacrificial temples, markets, and shared meals. The chapter’s illustrations do not establish the details of every Corinthian practice. The chapter addresses issues facing Corinthian believers in this setting: paul appeals to stories in exodus and numbers, applying them to gatherings in a city with sacrificial temples, markets, and shared meals. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 9 ended with Paul fearing that after preaching to others he himself might be a castaway (9:27). Chapter 10 uses Israel in the wilderness as a warning against idolatry and presumption, contrasts the Lord's table with idols' tables, and returns to meat sold in the market, telling believers to do everything to the glory of God (10:1-33). Chapter 11 turns to worship when the church gathers.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Interpreter of Israel’s wilderness narratives Warns Corinthians and guides decisions"
+        "role": "Warns that Israel's wilderness fall was written for our admonition and tells the Corinthians to flee idolatry and do all to the glory of God (10:6-14,31)."
       },
       {
         "name": "Israelites in the wilderness",
-        "role": "Collective scriptural example Demonstrate privileges do not eliminate accountability"
+        "role": "All under the cloud and passed through the sea, yet overthrown for lusting, idolatry, fornication, tempting Christ, and murmuring (10:1-10)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Addressed audience. Told to flee idolatry and pursue others’ good"
+        "role": "Told that God is faithful and will provide a way to escape temptation, and that the cup and bread are communion in Christ (10:13,16)."
       },
       {
         "name": "Christ",
-        "role": "Source of communion and spiritual imagery Defines Christian participation"
-      },
-      {
-        "name": "Nonbelieving host and concerned informant",
-        "role": "People in Paul’s meal scenarios. Show how context shapes his guidance"
+        "role": "The spiritual Rock that followed Israel, and the one in whose cup and bread believers share (10:4,16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Warnings from Israel",
-        "explanation": "",
+        "explanation": "Israel's fathers were all baptized unto Moses, yet most fell in the wilderness, and these things are examples written for our admonition (10:1-12).",
         "references": [
           "1 Corinthians 10:1-12"
         ]
       },
       {
         "theme": "Temptation and endurance",
-        "explanation": "",
+        "explanation": "God is faithful and will not allow believers to be tempted above what they are able, but will make a way to escape (10:12-13).",
         "references": [
           "1 Corinthians 10:12-13"
         ]
       },
       {
         "theme": "Communion and idolatry",
-        "explanation": "",
+        "explanation": "The cup and bread are communion of the blood and body of Christ, and believers cannot partake of the Lord's table and the table of devils (10:14-22).",
         "references": [
           "1 Corinthians 10:14-22"
         ]
       },
       {
         "theme": "Freedom for others’ good",
-        "explanation": "",
+        "explanation": "Whatever believers eat or drink, they are to do all to the glory of God, seeking not their own profit but that of many (10:23-33).",
         "references": [
           "1 Corinthians 10:23-33"
         ]
@@ -621,54 +597,50 @@
   },
   "1 Corinthians 11": {
     "summary": "Paul first discusses head coverings or head-related appearance during prayer and prophecy, appealing to honor, creation, and mutual dependence while acknowledging varied customs (1 Corinthians 11:2–16). Interpretations of the precise practice and its enduring application differ. He then sharply rebukes congregational meals marked by divisions and inequality: some go hungry while others eat and drink excessively (1 Corinthians 11:17–22). Paul recounts the Lord Jesus' words over bread and cup on the night he was betrayed and explains the meal as proclaiming the Lord's death until he comes (1 Corinthians 11:23–26). He warns against participating without discerning the body and urges self-examination and considerate waiting for one another (1 Corinthians 11:27–34). The two discussions address how worship should honor God and fellow worshipers.",
-    "whereWeAre": "Roman dining practices could reinforce rank, with unequal access to food. Chapter 11 offers direct evidence that such inequality troubled the Corinthian gathering, although the specific architecture and schedule are not given. The chapter addresses issues facing Corinthian believers in this setting: roman dining practices could reinforce rank, with unequal access to food. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 10 ended with Paul seeking the profit of many so that they may be saved (10:33). Chapter 11 turns to the gathered church: he addresses head coverings in prayer and prophecy, rebukes meals where one is hungry and another drunken, and recalls the Lord Jesus' words over the bread and cup, calling believers to examine themselves (11:2-34). Chapter 12 moves to spiritual gifts.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Letter writer offering correction. Addresses worship customs and abuse of communal meals"
+        "role": "Praises the church for remembering him, then corrects head coverings and abuse of the Lord's supper (11:2,17-22)."
       },
       {
         "name": "Men and women who pray or prophesy",
-        "role": "Participants in congregational worship Subjects of Paul’s instructions"
+        "role": "Worshipers whose conduct in prayer and prophecy Paul addresses (11:4-5)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Lord whose meal is recalled Center of the Lord’s Supper"
+        "role": "The Lord Jesus who, the same night in which he was betrayed, took bread and the cup and said do this in remembrance of me (11:23-25)."
       },
       {
         "name": "Wealthier and poorer meal participants",
-        "role": "Groups implied by the unequal eating. Their divisions reveal disregard for the community"
-      },
-      {
-        "name": "Corinthian church",
-        "role": "Gathered recipients. Called to worship with mutual respect"
+        "role": "Those in whose gatherings one is hungry and another drunken, despising the church of God and shaming those who have nothing (11:21-22)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Honor in public worship",
-        "explanation": "",
+        "explanation": "Paul addresses how men and women are to pray and prophesy, appealing to creation and noting that in the Lord neither is without the other (11:2-16).",
         "references": [
           "1 Corinthians 11:2-16"
         ]
       },
       {
         "theme": "Equality at the table",
-        "explanation": "",
+        "explanation": "When they come together, one is hungry and another is drunken, and Paul asks if they despise the church of God and shame those who have nothing (11:17-22).",
         "references": [
           "1 Corinthians 11:17-22"
         ]
       },
       {
         "theme": "Remembering Christ",
-        "explanation": "",
+        "explanation": "The Lord Jesus, the night he was betrayed, took bread and the cup, and as often as believers eat and drink they shew the Lord's death till he come (11:23-26).",
         "references": [
           "1 Corinthians 11:23-26"
         ]
       },
       {
         "theme": "Self-examination and community",
-        "explanation": "",
+        "explanation": "Let a man examine himself, discerning the Lord's body, and tarry one for another when they come together (11:27-34).",
         "references": [
           "1 Corinthians 11:27-34"
         ]
@@ -678,54 +650,50 @@
   },
   "1 Corinthians 12": {
     "summary": "Paul turns to spiritual gifts, reminding the Corinthians that no one speaking by God's Spirit curses Jesus and that confessing Jesus as Lord is linked to the Holy Spirit (1 Corinthians 12:1–3). Gifts, services, and activities differ, but the same Spirit, Lord, and God work through them for the common good (1 Corinthians 12:4–11). Paul compares the church to one body with many interdependent members, all baptized in one Spirit regardless of ethnic or social differences (1 Corinthians 12:12–27). He names apostles, prophets, teachers, miracles, healings, helps, administrations, and tongues, then asks whether everyone has the same gift (1 Corinthians 12:28–30). He points toward a still more excellent way (1 Corinthians 12:31), developed in the next chapter. The emphasis is shared belonging with different contributions.",
-    "whereWeAre": "Voluntary associations and civic bodies used body metaphors, sometimes to defend hierarchy. Paul emphasizes mutual need and special honor for vulnerable members within one Spirit-led community. The chapter addresses issues facing Corinthian believers in this setting: voluntary associations and civic bodies used body metaphors, sometimes to defend hierarchy. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 11 ended with Paul promising to set the rest in order when he comes (11:34). Chapter 12 begins spiritual gifts: no one speaking by the Spirit calls Jesus accursed, there are diversities of gifts but one Spirit, and the church is one body with many members that need one another (12:1-31). Chapter 13 shows the more excellent way he promises at its close.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostle explaining spiritual gifts Reframes rivalry around mutual dependence"
+        "role": "Does not want the Corinthians ignorant about spiritual gifts and compares the church to one body with many members (12:1,12-27)."
       },
       {
-        "name": "Holy Spirit",
-        "role": "Giver of diverse gifts. Works for the shared good"
+        "name": "Holy Ghost",
+        "role": "The same Spirit who gives diversities of gifts to each as he will, for the profit of all (12:4-11)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Confessed Lord and body’s identity Unites many members"
+        "role": "Confessed as Lord by the Spirit, and the Christ whose body the church is (12:3,12,27)."
       },
       {
         "name": "Corinthian believers",
-        "role": "The body with many members. Called to honor each gift and member"
-      },
-      {
-        "name": "Apostles, prophets, and teachers",
-        "role": "Ministry roles named. Examples of diversity, not a single hierarchy for all"
+        "role": "Baptized by one Spirit into one body, each a member in particular and told no member can say to another, I have no need of thee (12:13,21,27)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Diversity from one Spirit",
-        "explanation": "",
+        "explanation": "There are diversities of gifts, administrations, and operations, but the same Spirit, Lord, and God, working all in all for the profit of all (12:4-11).",
         "references": [
           "1 Corinthians 12:4-11"
         ]
       },
       {
         "theme": "One body, many members",
-        "explanation": "",
+        "explanation": "As the body is one and has many members, so also is Christ, and all were baptized by one Spirit into one body (12:12-20).",
         "references": [
           "1 Corinthians 12:12-20"
         ]
       },
       {
         "theme": "Honor for vulnerable members",
-        "explanation": "",
+        "explanation": "The members which seem more feeble are necessary, and God has tempered the body together so that there be no schism (12:21-26).",
         "references": [
           "1 Corinthians 12:21-26"
         ]
       },
       {
         "theme": "Not everyone has the same gift",
-        "explanation": "",
+        "explanation": "God has set apostles, prophets, teachers, miracles, healings, helps, governments, and tongues in the church, and not all have the same gift (12:27-31).",
         "references": [
           "1 Corinthians 12:27-31"
         ]
@@ -735,46 +703,42 @@
   },
   "1 Corinthians 13": {
     "summary": "Paul imagines extraordinary speech, prophecy, knowledge, faith, giving, and personal sacrifice, and insists that without love these accomplish nothing of lasting worth (1 Corinthians 13:1–3). He describes love in active terms: it is patient and kind, refuses envy and arrogance, does not insist on its own way, and rejoices with truth (1 Corinthians 13:4–7). Prophecies, tongues, and knowledge in their present partial forms will cease, while love remains (1 Corinthians 13:8–12). Paul concludes that faith, hope, and love endure, and that love is greatest (1 Corinthians 13:13). Situated between discussions of spiritual gifts, this chapter does not merely celebrate sentiment; it measures their exercise by concern for other people.",
-    "whereWeAre": "In a church debating status and gifts, Paul places moral character before public displays of speech or insight. The chapter does not provide a fixed account of Corinthian rituals or a particular incident. The chapter addresses issues facing Corinthian believers in this setting: in a church debating status and gifts, paul places moral character before public displays of speech or insight. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 12 ended with Paul showing the Corinthians a more excellent way (12:31). Chapter 13 is that way: without love, tongues, prophecy, knowledge, faith, and sacrifice profit nothing, love is patient and kind, and of faith, hope, and love the greatest is love (13:1-13). Chapter 14 applies it to how gifts are used in worship.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Apostolic speaker using first-person hypotheticals. Contrasts extraordinary gifts with love"
+        "role": "Describes tongues, prophecy, knowledge, faith, and sacrifice as nothing without charity, and charity as never failing (13:1-8)."
       },
       {
         "name": "Corinthian believers",
-        "role": "Recipients of the teaching. Called to put love before prestige"
-      },
-      {
-        "name": "People who prophesy, speak tongues, or give",
-        "role": "Hypothetical examples. Show that spectacular actions alone are insufficient"
+        "role": "Shown the more excellent way, to put love above gifts and to grow from childish things to the full knowledge they now see only in part (13:11-12)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Love beyond gifts",
-        "explanation": "",
+        "explanation": "Without charity, tongues become sounding brass, prophecy and faith are nothing, and even giving all to the poor profits nothing (13:1-3).",
         "references": [
           "1 Corinthians 13:1-3"
         ]
       },
       {
         "theme": "Practices of love",
-        "explanation": "",
+        "explanation": "Charity suffereth long and is kind, envieth not, vaunteth not itself, seeketh not her own, and beareth all things (13:4-7).",
         "references": [
           "1 Corinthians 13:4-7"
         ]
       },
       {
         "theme": "Partial knowledge",
-        "explanation": "",
+        "explanation": "Prophecies shall fail, tongues cease, and knowledge vanish, for now we see through a glass darkly but then face to face (13:8-12).",
         "references": [
           "1 Corinthians 13:8-12"
         ]
       },
       {
         "theme": "Love’s enduring priority",
-        "explanation": "",
+        "explanation": "Now abideth faith, hope, charity, these three, but the greatest of these is charity (13:13).",
         "references": [
           "1 Corinthians 13:13"
         ]
@@ -783,62 +747,62 @@
     "explainedReferences": []
   },
   "1 Corinthians 14": {
-    "summary": "Paul urges the Corinthians to pursue love and desire spiritual gifts, especially prophecy, because intelligible speech can build up a gathered community (1 Corinthians 14:1–5). Through examples from music, foreign languages, and prayer, he argues that uninterpreted tongues do not instruct hearers, whereas understandable words can strengthen them (1 Corinthians 14:6–19). He uses Scripture and examples of visitors to consider the effects of speech on outsiders (1 Corinthians 14:20–25). Paul then lays out orderly procedures for tongues, interpretation, prophecy, and discernment, insisting that God is not a God of disorder (1 Corinthians 14:26–33, 1) Corinthians 14:39–40. Verses 34–35 address women’s speech in the assemblies; the scope, setting, and manuscript position of these verses are debated. The chapter's central concern is worship that benefits others rather than showcasing speakers.",
-    "whereWeAre": "First-century house-church meetings lacked a single universally documented liturgy. Paul describes participatory gatherings and addresses how speech affects both believers and visitors. The chapter addresses issues facing Corinthian believers in this setting: first-century house-church meetings lacked a single universally documented liturgy. The passage itself is the primary evidence for the particular teaching and episode.",
+    "summary": "Paul urges the Corinthians to pursue love and desire spiritual gifts, especially prophecy, because intelligible speech can build up a gathered community (1 Corinthians 14:1–5). Through examples from music, foreign languages, and prayer, he argues that uninterpreted tongues do not instruct hearers, whereas understandable words can strengthen them (1 Corinthians 14:6–19). He uses Scripture and examples of visitors to consider the effects of speech on outsiders (1 Corinthians 14:20–25). Paul then lays out orderly procedures for tongues, interpretation, prophecy, and discernment, insisting that God is not a God of disorder (1 Corinthians 14:26–33,39–40). Verses 34–35 address women’s speech in the assemblies; the scope, setting, and manuscript position of these verses are read in different ways. The chapter's central concern is worship that benefits others rather than showcasing speakers.",
+    "whereWeAre": "Chapter 13 ended with love as the greatest of faith, hope, and love (13:13). Chapter 14 applies that love to worship: prophecy that builds up is preferred to tongues no one understands, outsiders should be able to follow what is said, and all things are to be done decently and in order (14:1-40). Chapter 15 turns to what the church believes about the dead.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Teacher regulating congregational speech Prioritizes intelligibility and order"
+        "role": "Prefers prophecy that edifies to tongues without interpretation, and tells the church to let all things be done decently and in order (14:1-5,40)."
       },
       {
         "name": "People speaking in tongues",
-        "role": "Worship participants with a gift. Directed toward interpretation and limits"
+        "role": "Told to keep silent in the church if there is no interpreter, and to pray that they may interpret (14:13,28)."
       },
       {
-        "name": "Prophets and those discerning",
-        "role": "Members who speak and assess messages Contribute to communal edification"
+        "name": "Prophets",
+        "role": "Told to speak two or three while the others judge, since the spirits of the prophets are subject to the prophets (14:29-32)."
       },
       {
         "name": "Visitors or unbelievers",
-        "role": "People imagined entering worship. Show impact of practices on outsiders"
+        "role": "Pictured coming into a meeting where all speak with tongues, and saying that the church is mad, or falling down and confessing that God is among them (14:23-25)."
       },
       {
         "name": "Women in the assembly",
-        "role": "Group mentioned in 14:34-35. Part of a disputed instruction requiring contextual care"
+        "role": "Addressed in 14:34-35, a passage Paul gives with the instruction that they ask their husbands at home (14:34-35)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Pursuing intelligible encouragement",
-        "explanation": "",
+        "explanation": "Prophecy speaks to men for edification, exhortation, and comfort, while one speaking in an unknown tongue edifies himself (14:1-12).",
         "references": [
           "1 Corinthians 14:1-12"
         ]
       },
       {
         "theme": "Understanding in prayer",
-        "explanation": "",
+        "explanation": "Paul will pray and sing with the spirit and with the understanding also, and would rather speak five words with understanding than ten thousand in an unknown tongue (14:13-19).",
         "references": [
           "1 Corinthians 14:13-19"
         ]
       },
       {
         "theme": "Outsiders and witness",
-        "explanation": "",
+        "explanation": "If all speak with tongues, an unbeliever coming in will say they are mad, but through prophecy he may fall down and say God is among them (14:20-25).",
         "references": [
           "1 Corinthians 14:20-25"
         ]
       },
       {
         "theme": "Order and discernment",
-        "explanation": "",
+        "explanation": "Tongues are to be limited and interpreted and prophecies judged, for God is not the author of confusion but of peace (14:26-33).",
         "references": [
           "1 Corinthians 14:26-33"
         ]
       },
       {
         "theme": "Interpretive care about women’s speech",
-        "explanation": "",
+        "explanation": "Paul instructs that women keep silence in the churches and ask their husbands at home, and ends that all things be done decently and in order (14:34-40).",
         "references": [
           "1 Corinthians 14:34-40"
         ]
@@ -853,62 +817,62 @@
     ]
   },
   "1 Corinthians 15": {
-    "summary": "Paul reminds the Corinthians of the gospel they received: Christ died for sins, was buried, was raised on the third day, and appeared to Cephas, the Twelve, many others, James, the apostles, and finally Paul (1 Corinthians 15:1–11). Confronting some who say there is no resurrection of the dead, he argues that denying resurrection undermines proclamation, faith, and hope (1 Corinthians 15:12–19). He presents Christ as the firstfruits of those who have died and contrasts Adam's death with life through Christ (1 Corinthians 15:20–28). Paul then challenges the practical implications of denying resurrection and discusses the character of the raised body through seed and heavenly-earthly analogies (1 Corinthians 15:29–49). He concludes with the promised transformation at the last trumpet, death's defeat, and a call to steadfast work (1 Corinthians 15:50–58). Some individual verses remain much debated, but the central argument is clear: Christ's resurrection grounds Christian hope.",
-    "whereWeAre": "Ancient Jewish views on resurrection were diverse, and broader Greek and Roman ideas about death also varied. Paul debates a claim within the Corinthian church; the text does not identify its precise philosophical source. The chapter addresses issues facing Corinthian believers in this setting: ancient jewish views on resurrection were diverse, and broader greek and roman ideas about death also varied. The passage itself is the primary evidence for the particular teaching and episode.",
+    "summary": "Paul reminds the Corinthians of the gospel they received: Christ died for sins, was buried, was raised on the third day, and appeared to Cephas, the Twelve, many others, James, the apostles, and finally Paul (1 Corinthians 15:1–11). Confronting some who say there is no resurrection of the dead, he argues that denying resurrection undermines proclamation, faith, and hope (1 Corinthians 15:12–19). He presents Christ as the firstfruits of those who have died and contrasts Adam's death with life through Christ (1 Corinthians 15:20–28). Paul then challenges the practical implications of denying resurrection and discusses the character of the raised body through seed and heavenly-earthly analogies (1 Corinthians 15:29–49). He concludes with the promised transformation at the last trumpet, death's defeat, and a call to steadfast work (1 Corinthians 15:50–58). Some individual verses are read in different ways, but the central argument is clear: Christ's resurrection grounds Christian hope.",
+    "whereWeAre": "Chapter 14 ended with the call to do all things decently and in order (14:40). Chapter 15 turns to the heart of the gospel: Christ died, was buried, rose the third day, and was seen by many, so those who say there is no resurrection of the dead are wrong, for Christ is the firstfruits and the dead will be raised incorruptible (15:1-58). Chapter 16 closes with practical matters.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Witness and apostolic author Rehearses testimony and defends resurrection"
+        "role": "Recites the gospel he received and preached, counts himself the least of the apostles, and argues from Christ's resurrection to the resurrection of the dead (15:1-58)."
       },
       {
         "name": "Jesus Christ",
-        "role": "Risen Messiah and firstfruits Ground for hope of resurrection"
+        "role": "Died for our sins, was buried, rose the third day, and is become the firstfruits of them that slept (15:3-4,20)."
       },
       {
         "name": "Cephas, the Twelve, and James",
-        "role": "Witnesses named in the tradition Paul recites. Part of the early resurrection proclamation"
+        "role": "Among those to whom the risen Christ appeared, named in the tradition Paul delivered (15:5-7)."
       },
       {
         "name": "Adam",
-        "role": "Scriptural figure used in comparison. Represents mortality in Paul’s argument"
+        "role": "The man in whom all die, set against Christ in whom all shall be made alive (15:21-22,45)."
       },
       {
         "name": "Some Corinthians denying resurrection",
-        "role": "Group Paul confronts. Their position prompts the chapter’s main reasoning"
+        "role": "Those who say there is no resurrection of the dead, whose claim Paul answers (15:12)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Received gospel and testimony",
-        "explanation": "",
+        "explanation": "Paul rehearses that Christ died for our sins, was buried, and rose again the third day, and was seen by Cephas, the Twelve, above five hundred brethren, James, and last of all himself (15:1-11).",
         "references": [
           "1 Corinthians 15:1-11"
         ]
       },
       {
         "theme": "Resurrection and Christian hope",
-        "explanation": "",
+        "explanation": "If there is no resurrection of the dead, Christ is not risen, preaching and faith are vain, and those who have fallen asleep in Christ are perished (15:12-19).",
         "references": [
           "1 Corinthians 15:12-19"
         ]
       },
       {
         "theme": "Christ and Adam",
-        "explanation": "",
+        "explanation": "As in Adam all die, so in Christ shall all be made alive, with Christ the firstfruits and death the last enemy to be destroyed (15:20-28).",
         "references": [
           "1 Corinthians 15:20-28"
         ]
       },
       {
         "theme": "Raised bodies and transformation",
-        "explanation": "",
+        "explanation": "The dead are raised as a sown seed becomes a different body: sown in corruption, raised in incorruption; first Adam a living soul, the last Adam a quickening spirit (15:35-49).",
         "references": [
           "1 Corinthians 15:35-49"
         ]
       },
       {
         "theme": "Victory and perseverance",
-        "explanation": "",
+        "explanation": "At the last trump we shall all be changed, death is swallowed up in victory, and believers are to be stedfast, unmoveable, abounding in the work of the Lord (15:50-58).",
         "references": [
           "1 Corinthians 15:50-58"
         ]
@@ -939,65 +903,65 @@
   },
   "1 Corinthians 16": {
     "summary": "Paul gives directions for a collection for God's people, requesting regular saving on the first day of each week and proposing accountable delegates to carry the gift to Jerusalem (1 Corinthians 16:1–4). He explains plans to travel through Macedonia and possibly spend time in Corinth, while remaining for a time in Ephesus because of an open door for work amid opponents (1 Corinthians 16:5–9). He asks the Corinthians to welcome Timothy without intimidation and explains that Apollos is not presently willing to visit (1 Corinthians 16:10–12). After urging watchfulness, courage, and love, he commends the household of Stephanas for service and notes the arrival of Stephanas, Fortunatus, and Achaicus (1 Corinthians 16:13–18). Greetings follow from churches in Asia and Aquila and Priscilla, ending with Paul's own greeting, a warning, a prayer for the Lord's coming, and love in Christ (1 Corinthians 16:19–24). The closing chapter joins generosity, cooperation, travel, and personal affection.",
-    "whereWeAre": "Paul writes from Ephesus according to 16:8, with travel through Macedonia anticipated. The collection for believers in Jerusalem reflects ties between churches across Roman provinces; its exact transport arrangements were not yet finalized. The chapter addresses issues facing Corinthian believers in this setting: paul writes from ephesus according to 16:8, with travel through macedonia anticipated. The passage itself is the primary evidence for the particular teaching and episode.",
+    "whereWeAre": "Chapter 15 ended with Paul urging the Corinthians to be steadfast because their labor in the Lord is not in vain (15:58). Chapter 16 comes down to practical matters: the collection for the saints at Jerusalem, Paul's travel plans, Timothy and Apollos, the household of Stephanas, and greetings in his own hand (16:1-24). The next letter, 2 Corinthians, follows this correspondence.",
     "keyFigures": [
       {
         "name": "Paul",
-        "role": "Author arranging collection and travel Coordinates support and ministry"
+        "role": "Gives directions for the collection for the saints, plans to pass through Macedonia, and writes the closing greeting with his own hand (16:1-9,21)."
       },
       {
         "name": "Timothy",
-        "role": "Coworker expected in Corinth Should be received without fear"
+        "role": "A coworker Paul asks the Corinthians to receive without fear, for he works the work of the Lord as Paul does (16:10-11)."
       },
       {
         "name": "Apollos",
-        "role": "Fellow teacher. Declines to visit at this time"
+        "role": "A brother Paul greatly desired to come, who was not willing at this time (16:12)."
       },
       {
         "name": "Stephanas, Fortunatus, and Achaicus",
-        "role": "Named Corinthian associates Recognized for service and encouragement"
+        "role": "Corinthian believers who supplied what was lacking and refreshed Paul's spirit, worthy of acknowledgement (16:15-18)."
       },
       {
         "name": "Aquila and Priscilla",
-        "role": "Believing coworkers sending greetings Host an assembly in their house"
+        "role": "Send greetings from the church in their house (16:19)."
       },
       {
         "name": "Churches in Asia",
-        "role": "Communities sending greetings Evidence of connections across regions"
+        "role": "Send greetings to the Corinthians (16:19)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Organized generosity",
-        "explanation": "",
+        "explanation": "On the first day of the week each is to lay by in store as God has prospered him, and the gift is to be carried to Jerusalem by approved men (16:1-4).",
         "references": [
           "1 Corinthians 16:1-4"
         ]
       },
       {
         "theme": "Open doors and opposition",
-        "explanation": "",
+        "explanation": "Paul will tarry at Ephesus until Pentecost because a great door and effectual is opened to him, and there are many adversaries (16:5-9).",
         "references": [
           "1 Corinthians 16:5-9"
         ]
       },
       {
         "theme": "Receiving coworkers",
-        "explanation": "",
+        "explanation": "Timothy is to be received without fear, and Apollos was not at all willing to come at this time but will when he has convenient time (16:10-12).",
         "references": [
           "1 Corinthians 16:10-12"
         ]
       },
       {
         "theme": "Courage governed by love",
-        "explanation": "",
+        "explanation": "Believers are to watch, stand fast in the faith, quit themselves like men, be strong, and let all their things be done with charity (16:13-18).",
         "references": [
           "1 Corinthians 16:13-18"
         ]
       },
       {
         "theme": "Shared networks of faith",
-        "explanation": "",
+        "explanation": "The churches of Asia, Aquila and Priscilla with the church in their house, and all the brethren send greetings, and Paul writes the last salutation with his own hand (16:19-24).",
         "references": [
           "1 Corinthians 16:19-24"
         ]

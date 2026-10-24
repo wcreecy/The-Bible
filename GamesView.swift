@@ -192,9 +192,13 @@ struct GamesView: View {
     private var todayChallengeStore: TodayChallengeStore { .shared }
 
     private var verseToRemember: HomeVerseRef? {
+        verseToRemember(from: favorites, offset: verseToRememberOffset)
+    }
+
+    /// Selects a stable daily favorite without building a nested map-and-sort expression.
+    private func verseToRemember(from favorites: [Favorite], offset: Int) -> HomeVerseRef? {
         guard !favorites.isEmpty else { return nil }
-        // Count local days; `ordinality(of: .day, in: .era)` counts in UTC and would change
-        // the verse in the evening rather than at midnight.
+
         let calendar = Calendar.current
         let reference = calendar.date(from: DateComponents(year: 2001, month: 1, day: 1)) ?? .distantPast
         let day = calendar.dateComponents(
@@ -203,17 +207,20 @@ struct GamesView: View {
             to: calendar.startOfDay(for: Date())
         ).day ?? 0
 
-        // Rank each favorite by a hash of (day, verse) and show the top one. The order looks
-        // shuffled from day to day, stays fixed within a day, and adding or removing other
-        // favorites doesn't change today's pick unless the new one outranks it.
-        // "Another" walks down the ranking, so it repeats only after cycling the whole list.
-        let ranked = favorites
-            .map { favorite -> (score: UInt64, key: String, favorite: Favorite) in
-                let key = "\(favorite.bookName)|\(favorite.chapterNumber)|\(favorite.verseNumber)"
-                return (Self.stableHash("\(day)|\(key)"), key, favorite)
-            }
-            .sorted { $0.score != $1.score ? $0.score > $1.score : $0.key < $1.key }
-        let favorite = ranked[verseToRememberOffset % ranked.count].favorite
+        var ranked: [(score: UInt64, key: String, favorite: Favorite)] = []
+        ranked.reserveCapacity(favorites.count)
+
+        for favorite in favorites {
+            let key = "\(favorite.bookName)|\(favorite.chapterNumber)|\(favorite.verseNumber)"
+            let score = Self.stableHash("\(day)|\(key)")
+            ranked.append((score: score, key: key, favorite: favorite))
+        }
+
+        ranked.sort {
+            $0.score != $1.score ? $0.score > $1.score : $0.key < $1.key
+        }
+
+        let favorite = ranked[offset % ranked.count].favorite
         return HomeVerseRef(
             bookName: favorite.bookName,
             chapterNumber: favorite.chapterNumber,
