@@ -840,7 +840,7 @@ Paul suggests that God had a purpose in all this: “For perhaps he therefore de
 
 **Paul Offers to Carry Onesimus's Debt (Philemon 1:17–21)** — Paul asks Philemon to welcome Onesimus as he would welcome Paul himself and personally offers to repay anything Onesimus owes.
 
-Paul makes his request plain: “If thou count me therefore a partner, receive him as myself.” Then he offers to pay any debt: “If he hath wronged thee, or oweth thee ought, put that on mine account; I Paul have written it with mine own hand, I will repay it.” Many readers see in this a picture of what Christ does for sinners, taking their debt on Himself. With a gentle nudge, Paul adds that Philemon owes Paul “even thine own self,” since Paul led him to Christ.
+Paul makes his request plain: “If thou count me therefore a partner, receive him as myself.” Then he offers to pay any debt: “If he hath wronged thee, or oweth thee ought, put that on mine account; I Paul have written it with mine own hand, I will repay it.” Many readers see in this a picture of what Christ does for sinners, taking their debt on himself. With a gentle nudge, Paul adds that Philemon owes Paul “even thine own self,” since Paul led him to Christ.
 
 “Yea, brother, let me have joy of thee in the Lord: refresh my bowels in the Lord.” Paul is confident Philemon will obey, “knowing that thou wilt also do more than I say.” Some think this hints that Paul hoped Philemon would set Onesimus free.
 

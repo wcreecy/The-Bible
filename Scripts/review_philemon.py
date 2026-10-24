@@ -102,7 +102,7 @@ def apply_story_fixes():
     path = ROOT / "book_content" / "08_pauls_letters.md"
     text = path.read_text(encoding="utf-8")
     start = text.index("\n# Philemon") + 1
-    end = text.index("\n# Hebrews", start)
+    end = len(text)
     section = text[start:end]
     for old, new in STORY_FIXES:
         if section.count(old) == 0 and section.count(new) >= 1:
