@@ -796,7 +796,7 @@ Titus himself must be a role model: “In all things shewing thyself a pattern o
 
 Paul explains why believers live this way: “For the grace of God that bringeth salvation hath appeared to all men, Teaching us that, denying ungodliness and worldly lusts, we should live soberly, righteously, and godly, in this present world.” God's grace does not just forgive. It trains believers to live differently.
 
-And it gives them hope: “Looking for that blessed hope, and the glorious appearing of the great God and our Saviour Jesus Christ; Who gave himself for us, that he might redeem us from all iniquity, and purify unto himself a peculiar people, zealous of good works.” Peculiar here means His own special possession. Titus must teach these things with full authority: “Let no man despise thee.”
+And it gives them hope: “Looking for that blessed hope, and the glorious appearing of the great God and our Saviour Jesus Christ; Who gave himself for us, that he might redeem us from all iniquity, and purify unto himself a peculiar people, zealous of good works.” Peculiar here means his own special possession. Titus must teach these things with full authority: “Let no man despise thee.”
 
 **Believers Must Demonstrate Goodness in Society (Titus 3:1–2)** — Paul reminds Titus that Christians should respect governing authorities, avoid unnecessary conflict, and treat everyone with gentleness and consideration.
 
