@@ -1,6 +1,6 @@
 {
   "Revelation 1": {
-    "audience": "John writes to seven churches in the Roman province of Asia from the island of Patmos, where he was \"for the word of God, and for the testimony of Jesus Christ\" (Revelation 1:9). Early writers such as Irenaeus date it to the end of Domitian's reign, around AD 95.",
+    "audience": "Churches under pressure in Asia would have heard that the one who walks among them is alive, holds their leaders in his hand, and will be seen by every eye.",
     "culture": [
       {
         "title": "Patmos",
@@ -20,7 +20,7 @@
     ]
   },
   "Revelation 2": {
-    "audience": "Jesus gives messages to the churches at Ephesus, Smyrna, Pergamos, and Thyatira. The seven cities lay along a circular route in the order they are listed.",
+    "audience": "Believers in four cities, some tempted to compromise and some facing death, would have heard Christ say he knew their works and offer the crown of life to them that overcome.",
     "culture": [
       {
         "title": "Smyrna",
@@ -40,7 +40,7 @@
     ]
   },
   "Revelation 3": {
-    "audience": "The messages continue to Sardis, Philadelphia, and Laodicea.",
+    "audience": "Believers in a church that seemed dead, a small faithful one, and a rich self-satisfied one would each have heard what Christ knew of them and a promise to him that overcometh.",
     "culture": [
       {
         "title": "Sardis",
@@ -60,7 +60,7 @@
     ]
   },
   "Revelation 4": {
-    "audience": "John is called up through \"a door\" in heaven and sees God's throne, with four living creatures and twenty-four elders.",
+    "audience": "Believers who were pressed to call the emperor lord would have heard that the one worthy of glory, honour, and power sits on a throne in heaven and made all things.",
     "culture": [
       {
         "title": "The four beasts",
@@ -75,12 +75,12 @@
       {
         "title": "Thou art worthy",
         "reference": "Revelation 4:11",
-        "text": "Crowds greeted emperors with acclamations. Domitian liked to be addressed as ‘our Lord and God’ (Suetonius)."
+        "text": "Crowds greeted emperors with acclamations. Domitian liked to be called both lord and god (Suetonius)."
       }
     ]
   },
   "Revelation 5": {
-    "audience": "A scroll sealed with seven seals is opened by \"the Lion of the tribe of Juda\" who appears as \"a Lamb as it had been slain\" (Revelation 5:5–6).",
+    "audience": "Troubled readers wondering who could set the world right would have heard that the Lamb that was slain is worthy and that people from every nation are redeemed.",
     "culture": [
       {
         "title": "Seven seals",
@@ -100,7 +100,7 @@
     ]
   },
   "Revelation 6": {
-    "audience": "The Lamb opens six seals, bringing four horsemen, martyrs crying out, and a great earthquake.",
+    "audience": "Believers who knew war, hunger, and killing under the empire would have heard that the Lamb himself opens each seal and that their slain brothers are remembered and given white robes.",
     "culture": [
       {
         "title": "Four horses",
@@ -115,7 +115,7 @@
     ]
   },
   "Revelation 7": {
-    "audience": "Before the seventh seal, 144,000 from the tribes of Israel are sealed and John sees a great multitude from every nation.",
+    "audience": "Believers who feared they would not last through hard times would have heard that God marks his own and that people of every nation will one day worship him in white robes.",
     "culture": [
       {
         "title": "Sealing the servants",
@@ -135,7 +135,7 @@
     ]
   },
   "Revelation 8": {
-    "audience": "The seventh seal is opened, and seven angels are given seven trumpets.",
+    "audience": "Believers who prayed for justice would have heard that their prayers rise before God with incense and that the warnings sound only a third at a time.",
     "culture": [
       {
         "title": "Incense and prayers",
@@ -155,7 +155,7 @@
     ]
   },
   "Revelation 9": {
-    "audience": "The fifth and sixth trumpets release locusts from the bottomless pit and an army from the river Euphrates.",
+    "audience": "Readers who knew the fear of invading armies and locust swarms would have heard that these powers are held within limits and cannot touch those sealed by God.",
     "culture": [
       {
         "title": "Locusts",
@@ -175,7 +175,7 @@
     ]
   },
   "Revelation 10": {
-    "audience": "A mighty angel holds a little book, which John is told to eat, as Ezekiel ate a scroll (Ezekiel 3:1–3).",
+    "audience": "Readers who knew the prophets would have recognized John's eating of the book as his call to speak God's word again to many peoples and kings.",
     "culture": [
       {
         "title": "Seven thunders",
@@ -190,7 +190,7 @@
     ]
   },
   "Revelation 11": {
-    "audience": "John is told to measure the temple, and two witnesses prophesy for 1,260 days before the seventh trumpet sounds.",
+    "audience": "Believers who might be killed for their witness would have heard that God's witnesses are raised and that the kingdoms of the world become his.",
     "culture": [
       {
         "title": "Measuring the temple",
@@ -210,7 +210,7 @@
     ]
   },
   "Revelation 12": {
-    "audience": "John sees a woman clothed with the sun, a great red dragon, and war in heaven between Michael and the dragon.",
+    "audience": "Believers who felt hunted for their faith would have heard that a great enemy was already cast down and that God had made a safe place for his people.",
     "culture": [
       {
         "title": "Sun, moon, and twelve stars",
@@ -230,7 +230,7 @@
     ]
   },
   "Revelation 13": {
-    "audience": "A beast rises from the sea and another from the earth, demanding worship and a mark on the hand or forehead.",
+    "audience": "Believers in cities that honored the emperor as a god would have heard how the dragon's two beasts demand worship and what it could cost to refuse.",
     "culture": [
       {
         "title": "Out of the sea",
@@ -250,7 +250,7 @@
     ]
   },
   "Revelation 14": {
-    "audience": "John sees the Lamb with the 144,000 on mount Sion, three angels with messages, and harvests of grain and grapes.",
+    "audience": "Faithful believers weary of persecution would have heard that the Lamb stands with his people and that the dead who die in the Lord rest from their labours.",
     "culture": [
       {
         "title": "Babylon is fallen",
@@ -270,7 +270,7 @@
     ]
   },
   "Revelation 15": {
-    "audience": "Seven angels prepare the last seven plagues while the victors sing \"the song of Moses ... and the song of the Lamb\" (Revelation 15:3).",
+    "audience": "Believers who knew the story of Moses at the sea would have heard that the victors over the beast sing his song and that God's ways are just and true.",
     "culture": [
       {
         "title": "A sea of glass mingled with fire",
@@ -290,7 +290,7 @@
     ]
   },
   "Revelation 16": {
-    "audience": "The seven vials of wrath are poured out, and the kings of the earth are gathered at Armageddon.",
+    "audience": "Readers watching evil grow bolder would have heard that God's wrath is poured out in fair judgment and that they should watch and keep their garments.",
     "culture": [
       {
         "title": "Armageddon",
@@ -310,7 +310,7 @@
     ]
   },
   "Revelation 17": {
-    "audience": "An angel shows John a woman named \"Babylon the great\" seated on a scarlet beast with seven heads.",
+    "audience": "Believers living under a city that ruled the kings of the earth would have heard an angel explain that her power was shown for what it was and would not last.",
     "culture": [
       {
         "title": "Seven mountains",
@@ -330,7 +330,7 @@
     ]
   },
   "Revelation 18": {
-    "audience": "An angel announces Babylon's fall, and kings, merchants, and sailors mourn over her.",
+    "audience": "Believers who saw the empire's trade and wealth would have heard that the city's riches would end in one hour and that God would answer the blood of the saints.",
     "culture": [
       {
         "title": "The merchandise",
@@ -350,7 +350,7 @@
     ]
   },
   "Revelation 19": {
-    "audience": "A great multitude praises God, the marriage of the Lamb is announced, and a rider on a white horse called \"Faithful and True\" goes out to war.",
+    "audience": "Believers mocked for their faith would have heard a shout of Alleluia and met the judge who comes on a white horse, the Word of God, whose name is King of kings.",
     "culture": [
       {
         "title": "Alleluia",
@@ -370,7 +370,7 @@
     ]
   },
   "Revelation 20": {
-    "audience": "Satan is bound for a thousand years, then released, and the dead are judged before a great white throne.",
+    "audience": "Believers who feared the dragon would have heard that he is bound, loosed, and finally cast into the lake of fire, and that the dead are judged before God.",
     "culture": [
       {
         "title": "Gog and Magog",
@@ -385,7 +385,7 @@
     ]
   },
   "Revelation 21": {
-    "audience": "John sees a new heaven and a new earth (Isaiah 65:17) and the holy city, new Jerusalem, coming down from God.",
+    "audience": "Weary believers who had lost loved ones and comfort would have heard that God will dwell with them, wipe away all tears, and make all things new.",
     "culture": [
       {
         "title": "Twelve gates",
@@ -400,7 +400,7 @@
     ]
   },
   "Revelation 22": {
-    "audience": "The book closes with the river of life, the tree of life, and Jesus saying, \"Surely I come quickly\" (Revelation 22:20).",
+    "audience": "Believers hearing the book read aloud in worship would have heard Christ's promise to come quickly and the invitation to come and take the water of life freely.",
     "culture": [
       {
         "title": "The river and the tree",
@@ -415,7 +415,7 @@
       {
         "title": "Even so, come",
         "reference": "Revelation 22:20",
-        "text": "Paul wrote the Aramaic prayer Maranatha, ‘Our Lord, come’ (1 Corinthians 16:22)."
+        "text": "Paul wrote the Aramaic prayer Maranatha, which means Our Lord, come (1 Corinthians 16:22)."
       }
     ]
   }

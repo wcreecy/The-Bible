@@ -322,12 +322,12 @@
     ]
   },
   "Colossians": {
-    "author": "Traditionally attributed to Paul, with Timothy named in the greeting; some modern scholars debate Pauline authorship.",
+    "author": "Paul the apostle, with Timothy named in the greeting (Colossians 1:1; 4:18).",
     "audience": "The church in Colossae.",
-    "purpose": "To affirm the supremacy and sufficiency of Christ and warn against teachings that diminish His centrality.",
-    "theme": "Christ is supreme over creation and the church, and believers are complete in Him.",
+    "purpose": "To affirm the supremacy and sufficiency of Christ and warn against teachings that diminish his centrality.",
+    "theme": "Christ is supreme over creation and the church, and believers are complete in him.",
     "summary": "Colossians presents an exalted picture of Christ, warns against spiritual systems that promise fullness elsewhere, and calls believers to put off the old life and put on a Christlike one.",
-    "keyVerse": "Colossians 3:23",
+    "keyVerse": "Colossians 1:18",
     "movements": [
       {
         "title": "Supremacy of Christ",
@@ -379,12 +379,12 @@
     ]
   },
   "1 Thessalonians": {
-    "author": "Paul the apostle, with Silvanus and Timothy named in the greeting.",
+    "author": "Paul the apostle, with Silvanus and Timothy named in the greeting (1 Thessalonians 1:1).",
     "audience": "The church in Thessalonica.",
     "purpose": "To encourage a young persecuted church, affirm their faith, call for holy living, and clarify hope concerning believers who had died before Christ's return.",
     "theme": "Faithful Christian life combines hope in Christ's return, holiness, mutual love, and perseverance under pressure.",
     "summary": "Paul warmly remembers the Thessalonians' conversion, encourages sexual holiness and brotherly love, and reassures them that deceased believers will share fully in Christ's return.",
-    "keyVerse": "1 Thessalonians 5:17",
+    "keyVerse": "1 Thessalonians 4:14",
     "movements": [
       {
         "title": "Conversion and Perseverance Remembered",
@@ -424,7 +424,7 @@
     ]
   },
   "2 Thessalonians": {
-    "author": "Traditionally attributed to Paul, with Silvanus and Timothy named in the greeting; authorship is debated by some modern scholars.",
+    "author": "Paul the apostle, with Silvanus and Timothy named in the greeting (2 Thessalonians 1:1; 3:17).",
     "audience": "The church in Thessalonica.",
     "purpose": "To encourage persecuted believers, correct confusion about the day of the Lord, and address idleness within the community.",
     "theme": "Persevere faithfully, do not be deceived about the end, and continue responsible Christian living.",
@@ -440,7 +440,7 @@
       },
       {
         "title": "Correction about the Day of the Lord",
-        "description": "The church is told not to panic and is given difficult teaching about rebellion and the 'man of lawlessness.'",
+        "description": "The church is told not to panic and is given difficult teaching about the falling away and the man of sin.",
         "passages": [
           "2 Thessalonians 2"
         ]
@@ -463,7 +463,7 @@
         "description": "Named as co-senders."
       },
       {
-        "name": "The man of lawlessness",
+        "name": "The man of sin",
         "description": "A figure of rebellion who must be revealed before the day of the Lord."
       }
     ]

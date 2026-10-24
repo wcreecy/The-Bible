@@ -1,6 +1,6 @@
 {
   "1 Thessalonians 1": {
-    "audience": "Paul, Silvanus, and Timothy write to a young church in Thessalonica, founded on Paul's second journey after he left Philippi (Acts 17:1–9). Written from Corinth around AD 50–51, it is probably one of Paul's earliest letters.",
+    "audience": "Gentile believers who had turned from the gods of their city and had suffered for it would have heard that their faith was known across Macedonia and Achaia.",
     "culture": [
       {
         "title": "Thessalonica",
@@ -35,7 +35,7 @@
     ]
   },
   "1 Thessalonians 3": {
-    "audience": "Paul tells how he sent Timothy from Athens to check on them and how Timothy brought back good news (1 Thessalonians 3:1–6; compare Acts 17:14–15; 18:5).",
+    "audience": "Young believers under pressure, who may have feared that Paul had forgotten them, would have heard of his longing to see them and his prayer that they grow in love.",
     "culture": [
       {
         "title": "Left at Athens alone",
@@ -60,7 +60,7 @@
       {
         "title": "Grief without hope",
         "reference": "1 Thessalonians 4:13",
-        "text": "Greek and Roman tombstones often express hopelessness; one common formula reads ‘I was not, I was, I am not, I care not.’"
+        "text": "Greek and Roman tombstones often express hopelessness; one common formula said that the dead person once was not, then was, and now is not and cares not."
       },
       {
         "title": "To meet the Lord",
@@ -70,12 +70,12 @@
     ]
   },
   "1 Thessalonians 5": {
-    "audience": "Paul writes about the day of the Lord and closes with short commands and a request that the letter \"be read unto all the holy brethren\" (1 Thessalonians 5:27).",
+    "audience": "Believers worried about the day of the Lord would have heard that they were children of light, not appointed to wrath, and received short commands for daily life together.",
     "culture": [
       {
         "title": "Peace and safety",
         "reference": "1 Thessalonians 5:3",
-        "text": "Roman coins and inscriptions celebrated the ‘peace’ (pax) and ‘security’ (securitas) of Roman rule."
+        "text": "Roman coins and inscriptions celebrated the peace (pax) and security (securitas) of Roman rule."
       },
       {
         "title": "As a thief in the night",
@@ -90,7 +90,7 @@
     ]
   },
   "2 Thessalonians 1": {
-    "audience": "Paul, Silvanus, and Timothy write again to Thessalonica, probably soon after the first letter, while the church is under persecution (2 Thessalonians 1:4).",
+    "audience": "Persecuted believers would have heard that their endurance was a token of the righteous judgment of God and that rest would come when the Lord Jesus is revealed from heaven.",
     "culture": [
       {
         "title": "Flaming fire",
@@ -105,7 +105,7 @@
     ]
   },
   "2 Thessalonians 2": {
-    "audience": "Some in Thessalonica had been told, perhaps by a letter claiming to be from Paul, that \"the day of Christ is at hand\" (2 Thessalonians 2:2).",
+    "audience": "Believers upset by rumours about the end would have heard calm instruction to stand fast and hold the traditions they were taught, with a prayer that God stablish them in every good word and work.",
     "culture": [
       {
         "title": "Forged letters",

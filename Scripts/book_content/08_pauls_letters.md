@@ -472,17 +472,17 @@ Paul and Timothy write to the believers in Colosse, a church Paul had never visi
 
 Ever since he heard about them, Paul has prayed that they would be filled with the knowledge of God's will, “That ye might walk worthy of the Lord unto all pleasing, being fruitful in every good work,” strengthened with God's power, and giving thanks with joy. For God the Father “hath delivered us from the power of darkness, and hath translated us into the kingdom of his dear Son: In whom we have redemption through his blood, even the forgiveness of sins.”
 
-**Jesus Christ Holds Authority Over All Creation (Colossians 1:15–23)** — Paul describes Jesus as supreme over creation and the church, explaining how His death makes reconciliation with God possible.
+**Jesus Christ Holds Authority Over All Creation (Colossians 1:15–23)** — Paul describes Jesus as supreme over creation and the church, explaining how his death makes reconciliation with God possible.
 
 False teachers in Colosse seem to have taught that Christ was only one of many spiritual powers. Paul answers with one of the greatest descriptions of Christ in the Bible, likely an early Christian hymn. Christ is “the image of the invisible God, the firstborn of every creature.” Firstborn here means first in rank, the heir over all creation. “For by him were all things created, that are in heaven, and that are in earth, visible and invisible, whether they be thrones, or dominions, or principalities, or powers: all things were created by him, and for him: And he is before all things, and by him all things consist.” Consist means hold together.
 
 “And he is the head of the body, the church,” the first to rise from the dead, “that in all things he might have the preeminence,” or first place. “For it pleased the Father that in him should all fulness dwell; And, having made peace through the blood of his cross, by him to reconcile all things unto himself.”
 
-This includes the Colossians themselves. Once they were “alienated and enemies in your mind by wicked works, yet now hath he reconciled” them through Christ's death, so He can present them holy and blameless before God. All they must do is continue in the faith, “grounded and settled,” and not drift away from the hope of the gospel.
+This includes the Colossians themselves. Once they were “alienated and enemies in your mind by wicked works, yet now hath he reconciled” them through Christ's death, so he can present them holy and blameless before God. All they must do is continue in the faith, “grounded and settled,” and not drift away from the hope of the gospel.
 
 **Paul Labors to Make Christ Fully Known (Colossians 1:24–2:7)** — Paul explains his responsibility to proclaim Christ and urges believers to remain firmly rooted in the faith they have received.
 
-Paul says, “Who now rejoice in my sufferings for you.” He suffers gladly for the sake of Christ's body, the church. God made him a servant to fully proclaim His word, “the mystery which hath been hid from ages and from generations, but now is made manifest to his saints.” That mystery, now revealed even to Gentiles, is “Christ in you, the hope of glory: Whom we preach, warning every man, and teaching every man in all wisdom; that we may present every man perfect in Christ Jesus.”
+Paul says, “Who now rejoice in my sufferings for you.” He suffers gladly for the sake of Christ's body, the church. God made him a servant to fully proclaim his word, “the mystery which hath been hid from ages and from generations, but now is made manifest to his saints.” That mystery, now revealed even to Gentiles, is “Christ in you, the hope of glory: Whom we preach, warning every man, and teaching every man in all wisdom; that we may present every man perfect in Christ Jesus.”
 
 Paul wants them to know how hard he struggles in prayer for them, for the believers in nearby Laodicea, and for all who have never met him. He wants their hearts to be encouraged and joined together in love, so they may fully know Christ, “In whom are hid all the treasures of wisdom and knowledge.” He warns them not to be fooled by smooth-sounding arguments. Instead, “As ye have therefore received Christ Jesus the Lord, so walk ye in him: Rooted and built up in him, and stablished in the faith,” overflowing with thanksgiving.
 
@@ -490,7 +490,7 @@ Paul wants them to know how hard he struggles in prayer for them, for the believ
 
 “Beware lest any man spoil you through philosophy and vain deceit, after the tradition of men, after the rudiments of the world, and not after Christ.” Spoil here means to carry off as plunder. Believers do not need anything more than Christ: “For in him dwelleth all the fulness of the Godhead bodily. And ye are complete in him.”
 
-In Christ they have received a spiritual circumcision, cutting away the sinful nature. They were buried with Him in baptism and raised with Him through faith. God forgave all their sins, “Blotting out the handwriting of ordinances that was against us... nailing it to his cross.” This is the record of debt that stood against them. And on the cross, Christ disarmed the evil powers: “having spoiled principalities and powers, he made a shew of them openly, triumphing over them in it.”
+In Christ they have received a spiritual circumcision, cutting away the sinful nature. They were buried with him in baptism and raised with him through faith. God forgave all their sins, “Blotting out the handwriting of ordinances that was against us... nailing it to his cross.” This is the record of debt that stood against them. And on the cross, Christ disarmed the evil powers: “having spoiled principalities and powers, he made a shew of them openly, triumphing over them in it.”
 
 So they must not let anyone judge them over religious rules: “Let no man therefore judge you in meat, or in drink, or in respect of an holyday, or of the new moon, or of the sabbath days: Which are a shadow of things to come; but the body is of Christ.” A shadow points to the real thing. They must not let anyone cheat them by insisting on false humility, the worship of angels, and claims of special visions. Such people lose touch with Christ, the head. If they died with Christ, why follow rules like “Touch not; taste not; handle not”? Those rules have “a shew of wisdom,” but they cannot stop the desires of the sinful nature.
 
@@ -520,7 +520,7 @@ Paul is sending Tychicus with the letter, along with “Onesimus, a faithful and
 
 Paul sends greetings from his companions. There is Aristarchus, “my fellowprisoner,” and “Marcus, sister's son to Barnabas.” This is the same John Mark that Paul once refused to take on a journey, but now Paul tells the church to welcome him. Epaphras is with Paul, “always labouring fervently for you in prayers.” “Luke, the beloved physician, and Demas” also send greetings. Paul greets the believers in Laodicea and Nymphas and the church in his house. He asks the Colossians to share this letter with the church at Laodicea and to read the letter he sent there. He also has a message for a man named Archippus: “Take heed to the ministry which thou hast received in the Lord, that thou fulfil it.”
 
-Paul signs the letter himself: “The salutation by the hand of me Paul. Remember my bonds. Grace be with you. Amen.” Colossians declares that Christ is supreme over all things and that believers are complete in Him, needing no other spiritual power or rule.
+Paul signs the letter himself: “The salutation by the hand of me Paul. Remember my bonds. Grace be with you. Amen.” Colossians declares that Christ is supreme over all things and that believers are complete in him, needing no other spiritual power or rule.
 
 # 1 Thessalonians
 When it happened: Written from Corinth around AD 50–51, shortly after Paul founded the church in Thessalonica (Acts 17–18; 1 Thessalonians 3:6). It is likely one of Paul's earliest letters.
@@ -554,7 +554,7 @@ Paul now turns to how they should live. In a city where sexual immorality was no
 
 About loving each other, Paul says he hardly needs to write, “for ye yourselves are taught of God to love one another.” They already do this, but he urges them to do it more and more. He also tells them to “study to be quiet, and to do your own business, and to work with your own hands.” Some of them may have stopped working, perhaps because they expected Jesus to return any day. Living this way will win the respect of outsiders, and they will not depend on anyone.
 
-**Christ's Return Brings Hope Beyond Death (1 Thessalonians 4:13–18)** — Paul comforts believers grieving fellow Christians who have died, assuring them that those who belong to Christ will share in His return.
+**Christ's Return Brings Hope Beyond Death (1 Thessalonians 4:13–18)** — Paul comforts believers grieving fellow Christians who have died, assuring them that those who belong to Christ will share in his return.
 
 Since Paul left, some believers in Thessalonica have died, and the church is worried that those who died will miss out when Jesus returns. Paul writes, “But I would not have you to be ignorant, brethren, concerning them which are asleep, that ye sorrow not, even as others which have no hope.” Christians still grieve, but not without hope. “For if we believe that Jesus died and rose again, even so them also which sleep in Jesus will God bring with him.”
 
@@ -564,7 +564,7 @@ Then Paul describes the Lord's return: “For the Lord himself shall descend fro
 
 The Thessalonians want to know when this will happen. Paul says they already know the answer: “the day of the Lord so cometh as a thief in the night.” “For when they shall say, Peace and safety; then sudden destruction cometh upon them, as travail upon a woman with child; and they shall not escape.”
 
-But believers do not need to be caught by surprise. “But ye, brethren, are not in darkness, that that day should overtake you as a thief. Ye are all the children of light, and the children of the day.” So they must stay awake: “let us not sleep, as do others; but let us watch and be sober.” Paul pictures armor again: they should put on “the breastplate of faith and love; and for an helmet, the hope of salvation. For God hath not appointed us to wrath, but to obtain salvation by our Lord Jesus Christ.” Whether they are alive or dead when He comes, they will live with Him. “Wherefore comfort yourselves together, and edify one another, even as also ye do.”
+But believers do not need to be caught by surprise. “But ye, brethren, are not in darkness, that that day should overtake you as a thief. Ye are all the children of light, and the children of the day.” So they must stay awake: “let us not sleep, as do others; but let us watch and be sober.” Paul pictures armor again: they should put on “the breastplate of faith and love; and for an helmet, the hope of salvation. For God hath not appointed us to wrath, but to obtain salvation by our Lord Jesus Christ.” Whether they are alive or dead when he comes, they will live with him. “Wherefore comfort yourselves together, and edify one another, even as also ye do.”
 
 **Paul Calls the Church to Peace and Faithfulness (1 Thessalonians 5:12–22)** — Paul gives practical instructions for church life, urging respect for leaders, patience with others, continual prayer, gratitude, and careful spiritual discernment.
 
@@ -586,11 +586,11 @@ The world at the time: Persecution continued. Some were teaching that the day of
 
 Paul, Silas, and Timothy write again, probably only a few months later. Paul says, “We are bound to thank God always for you, brethren, as it is meet, because that your faith groweth exceedingly, and the charity of every one of you all toward each other aboundeth.” Meet means right or fitting. Their persecution has not stopped, but neither has their faith. Paul is so proud of them that he boasts about them to other churches, “for your patience and faith in all your persecutions and tribulations that ye endure.”
 
-**God Promises Justice and Rest at Christ's Return (2 Thessalonians 1:5–12)** — Paul assures the suffering believers that God will judge wrongdoing, bring relief to His people, and reveal the glory of Jesus Christ.
+**God Promises Justice and Rest at Christ's Return (2 Thessalonians 1:5–12)** — Paul assures the suffering believers that God will judge wrongdoing, bring relief to his people, and reveal the glory of Jesus Christ.
 
-Paul explains that their suffering is not a sign that God has forgotten them. It is “a manifest token of the righteous judgment of God, that ye may be counted worthy of the kingdom of God, for which ye also suffer.” God will set things right. He will repay with trouble those who trouble them, “And to you who are troubled rest with us, when the Lord Jesus shall be revealed from heaven with his mighty angels, In flaming fire taking vengeance on them that know not God, and that obey not the gospel.” Those who reject Him “shall be punished with everlasting destruction from the presence of the Lord.”
+Paul explains that their suffering is not a sign that God has forgotten them. It is “a manifest token of the righteous judgment of God, that ye may be counted worthy of the kingdom of God, for which ye also suffer.” God will set things right; he will repay with trouble those who trouble them, “And to you who are troubled rest with us, when the Lord Jesus shall be revealed from heaven with his mighty angels, In flaming fire taking vengeance on them that know not God, and that obey not the gospel.” Those who reject him “shall be punished with everlasting destruction from the presence of the Lord.”
 
-That day will be a day of glory for believers, “When he shall come to be glorified in his saints.” So Paul keeps praying that God will make them worthy of His calling and fulfill every good purpose in them, “That the name of our Lord Jesus Christ may be glorified in you, and ye in him.”
+That day will be a day of glory for believers, “When he shall come to be glorified in his saints.” So Paul keeps praying that God will make them worthy of his calling and fulfill every good purpose in them, “That the name of our Lord Jesus Christ may be glorified in you, and ye in him.”
 
 **Paul Corrects Confusion About the Day of the Lord (2 Thessalonians 2:1–5)** — Paul warns the Thessalonians against alarming claims that the day of Christ has already arrived and reminds them of what he previously taught.
 
@@ -622,7 +622,7 @@ He had given them a clear rule when he was with them: “if any would not work, 
 
 **Paul Closes with Peace and a Personal Greeting (2 Thessalonians 3:16–18)** — Paul ends by asking the Lord to give the Thessalonians lasting peace and confirms the authenticity of his letter with his own handwriting.
 
-Paul closes with a prayer: “Now the Lord of peace himself give you peace always by all means. The Lord be with you all.” Then, because of the fake letter that had confused them, he takes the pen and adds a line in his own handwriting: “The salutation of Paul with mine own hand, which is the token in every epistle: so I write.” In other words, this is how they can tell a real letter from him. He ends, “The grace of our Lord Jesus Christ be with you all. Amen.” The letter calms a frightened church, telling them that Christ's return is certain, but that they should keep working faithfully until He comes.
+Paul closes with a prayer: “Now the Lord of peace himself give you peace always by all means. The Lord be with you all.” Then, because of the fake letter that had confused them, he takes the pen and adds a line in his own handwriting: “The salutation of Paul with mine own hand, which is the token in every epistle: so I write.” In other words, this is how they can tell a real letter from him. He ends, “The grace of our Lord Jesus Christ be with you all. Amen.” The letter calms a frightened church, telling them that Christ's return is certain, but that they should keep working faithfully until he comes.
 
 # 1 Timothy
 When it happened: Written after Paul left Timothy in Ephesus and went on to Macedonia (1 Timothy 1:3), often placed after Paul's first imprisonment in Rome, around AD 62–64.
