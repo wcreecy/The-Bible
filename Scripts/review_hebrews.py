@@ -79,7 +79,7 @@ KEY_FIGURES = {
         ("The fathers who entered not", "Heard the gospel but it profited them not, for they believed not (4:2,6)."),
         ("Joshua", "Called Jesus in the text, who did not give them the final rest (4:8)."),
         ("David", "In whom God spoke again of a day called To day (4:7)."),
-        ("The readers", "Told to labour to enter into that rest and to come boldly unto the throne of grace (4:11,16)."),
+        ("The believers addressed", "Told to labour to enter into that rest and to come boldly unto the throne of grace (4:11,16)."),
     ],
     5: [
         ("Every high priest", "Taken from among men, ordained to offer gifts and sacrifices, and compassed with infirmity (5:1-3)."),
@@ -87,10 +87,10 @@ KEY_FIGURES = {
         ("Christ", "Glorified not himself, offered up prayers with strong crying and tears, learned obedience, and became the author of eternal salvation (5:5-9)."),
         ("God", "Said unto Christ Thou art my Son, and called him an high priest after the order of Melchisedec (5:5-6,10)."),
         ("Melchisedec", "The order after which Christ is a priest for ever (5:6,10)."),
-        ("The readers", "Dull of hearing, who ought to be teachers but need milk and not strong meat (5:11-14)."),
+        ("The believers addressed", "Dull of hearing, who ought to be teachers but need milk and not strong meat (5:11-14)."),
     ],
     6: [
-        ("The readers", "Told to go on unto perfection, show diligence to the end, and be followers of them who inherit the promises (6:1,11-12)."),
+        ("The believers addressed", "Told to go on unto perfection, show diligence to the end, and be followers of them who inherit the promises (6:1,11-12)."),
         ("Those who fall away", "Once enlightened, they crucify the Son of God afresh and are nigh unto cursing (6:4-8)."),
         ("God", "Not unrighteous to forget their work, and he confirmed his promise by an oath (6:10,13-18)."),
         ("Abraham", "Patiently endured and obtained the promise (6:13-15)."),
@@ -139,13 +139,13 @@ KEY_FIGURES = {
     12: [
         ("Jesus", "The author and finisher of our faith, who endured the cross and is set down at the right hand of the throne of God (12:2-3)."),
         ("God, the Father of spirits", "Chastens whom he loveth for our profit, that we might be partakers of his holiness (12:6-10)."),
-        ("The readers", "Told to run with patience, lift up the hands which hang down, and follow peace and holiness (12:1,12-14)."),
+        ("The believers addressed", "Told to run with patience, lift up the hands which hang down, and follow peace and holiness (12:1,12-14)."),
         ("Esau", "Sold his birthright for one morsel of meat and found no place of repentance (12:16-17)."),
         ("Moses and Israel at Sinai", "Heard the voice of words and feared exceedingly (12:18-21)."),
         ("The angels and the church of the firstborn", "The company at mount Sion to which the readers have come (12:22-24)."),
     ],
     13: [
-        ("The readers", "Told to let brotherly love continue, entertain strangers, be content, and go forth unto Jesus without the camp (13:1-6,13)."),
+        ("The believers addressed", "Told to let brotherly love continue, entertain strangers, be content, and go forth unto Jesus without the camp (13:1-6,13)."),
         ("Jesus Christ", "The same yesterday, and to day, and for ever, who suffered without the gate to sanctify the people (13:8,12)."),
         ("God", "Hath said I will never leave thee, and is the God of peace who brought again from the dead our Lord Jesus (13:5,20)."),
         ("Them that have the rule", "Spoke the word of God, and watch for the souls of the readers (13:7,17)."),
@@ -343,7 +343,7 @@ def lower_divine(text):
         parts = re.split(r"(“[^”]*”)", body)
         for i, part in enumerate(parts):
             if not part.startswith("“"):
-                parts[i] = re.sub(r"\b(His|Him|Himself)\b", lambda m: m.group(0).lower(), part)
+                parts[i] = re.sub(r"(?<=[a-z,;:—] )(His|Him|Himself)\b", lambda m: m.group(0).lower(), part)
         out.append(prefix + "".join(parts))
     return "\n".join(out)
 

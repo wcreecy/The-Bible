@@ -1,53 +1,37 @@
 {
   "James 1": {
-    "summary": "James, a servant of God and of the Lord Jesus Christ, greets 'the twelve tribes in the Dispersion' (James 1:1). He opens by urging his readers to count trials as joy because the testing of their faith produces steadfastness, which leads to maturity (James 1:2-4). Anyone who lacks wisdom should ask God, who gives generously, but must ask in faith without doubting (James 1:5-8). The lowly brother is told to boast in his exaltation and the rich in his humiliation, since riches fade like grass in the sun (James 1:9-11). Those who endure trial are blessed and will receive the crown of life (James 1:12). James insists that temptation does not come from God; it arises from a person's own desires, and God is the giver of every good gift (James 1:13-18). He then calls his readers to be quick to hear, slow to speak and slow to anger, to put away moral filth and humbly receive the implanted word (James 1:19-21), and to be doers of the word, not hearers only, like someone who looks in a mirror and forgets what he looks like James 1:22-25. The chapter ends by describing 'pure and undefiled' religion: controlling the tongue, caring for orphans and widows in their affliction, and keeping oneself unstained by the world (James 1:26-27).",
-    "whereWeAre": "The readers faced trials 'of various kinds.' The chapter does not say what kinds; later chapters mention conflict among believers, favoritism and oppression by the wealthy.\n\nJewish Christians were scattered after the persecution that followed the death of Stephen (Acts 8:1; 11:19). Whether James's readers include people scattered in this way is not stated in the letter.\n\nJames the brother of Jesus is described in the New Testament as a leader in the Jerusalem church (Acts 12:17; 15:13; Galatians 1:19; 2:9). Josephus (Antiquities 20.200) reports that he was put to death in Jerusalem around AD 62.\n\nA great famine in Judea is described in Acts 11:28-30 and in Josephus (Antiquities 20.101) around the mid-40s AD. Whether this affected the readers is not stated. The chapter addresses believers under pressure and teaches how to respond with endurance, wisdom, honest self-examination and practical care. Its emphasis on widows and orphans fits a community in which some were poor and vulnerable.",
+    "summary": "James, a servant of God and of the Lord Jesus Christ, writes to the twelve tribes which are scattered abroad (James 1:1). He tells the brethren to count it all joy when they fall into divers temptations, knowing that the trying of their faith worketh patience, and to let patience have her perfect work (James 1:2–4). If any lack wisdom, let him ask of God, that giveth to all liberally, but let him ask in faith, nothing wavering, for a double minded man is unstable in all his ways (James 1:5–8). The brother of low degree is to rejoice in that he is exalted, and the rich in that he is made low, because as the flower of the grass he shall pass away (James 1:9–11). Blessed is the man that endureth temptation, for he shall receive the crown of life (James 1:12). No man is to say he is tempted of God, for God tempteth no man, but every man is tempted when he is drawn away of his own lust, which brings forth sin, and sin brings forth death, while every good gift and every perfect gift cometh down from the Father of lights (James 1:13–18). Every man is to be swift to hear, slow to speak, slow to wrath, to lay apart all filthiness and receive with meekness the engrafted word (James 1:19–21). They are to be doers of the word, and not hearers only, like a man who beholds his natural face in a glass and straightway forgetteth what manner of man he was (James 1:22–25). Pure religion and undefiled before God and the Father is to visit the fatherless and widows in their affliction, and to keep himself unspotted from the world (James 1:26–27).",
+    "whereWeAre": "James follows Hebrews among the general letters. Writing to the twelve tribes scattered abroad, James tells them to count trials joy, to ask God for wisdom, to see that temptation comes from our own lust and not from God, and to be doers of the word, not hearers only (1:1-27). Chapter 2 turns to partiality and a faith that works.",
     "keyFigures": [
       {
         "name": "James",
-        "role": "Greets the readers and gives practical teaching about trials, wisdom, temptation, speech and doing the word. Writes with pastoral authority as a leader known to his readers."
+        "role": "A servant of God and of the Lord Jesus Christ who writes to the twelve tribes and gives plain commands about trials, wisdom, and speech (1:1-27)."
       },
       {
-        "name": "The twelve tribes in the Dispersion",
-        "role": "The people being encouraged, taught and warned. The whole chapter is addressed to them as people undergoing trials."
+        "name": "The twelve tribes scattered abroad",
+        "role": "The brethren told to count their trials joy and to be doers of the word (1:1-2,22)."
       },
       {
-        "name": "God (the Father of lights)",
-        "role": "Source of wisdom, good gifts, new birth and the promised crown of life. James defends God's goodness against the idea that he is the source of temptation."
+        "name": "God, the Father of lights",
+        "role": "Giveth wisdom liberally, tempteth no man, and sends down every good gift and every perfect gift (1:5,13,17)."
       },
       {
-        "name": "The Lord Jesus Christ",
-        "role": "Mentioned in the opening address. Establishes the Christian setting of the letter. Jesus is mentioned by name only here and in 2:1 in the whole letter."
+        "name": "The double minded man",
+        "role": "Wavers like a wave of the sea and is unstable in all his ways (1:6-8)."
       },
       {
-        "name": "The one who doubts",
-        "role": "A picture of instability. Illustrates the double-mindedness James warns against."
+        "name": "The brother of low degree and the rich man",
+        "role": "The first is told to rejoice in being exalted and the second in being made low (1:9-11)."
       },
       {
-        "name": "The lowly brother and the rich",
-        "role": "Each is told to boast in a reversal of the usual standards. Introduces the theme of wealth and poverty developed in chapters 2 and 5."
-      },
-      {
-        "name": "The one tempted",
-        "role": "Shows the process from desire to sin to death. Places responsibility for temptation in the person's own desire, not in God."
-      },
-      {
-        "name": "The hearer who forgets (the man at the mirror)",
-        "role": "An image of someone who hears the word but does not act. Makes the call to be a doer of the word vivid."
-      },
-      {
-        "name": "Orphans and widows",
-        "role": "The people whom pure religion visits in their affliction. Shows what practical care is central to genuine devotion."
-      },
-      {
-        "name": "Moses and the law (background)",
-        "role": "Background only. Helps explain why the commands of 1:25-27 would be familiar to Jewish readers."
+        "name": "The fatherless and widows",
+        "role": "Those to be visited in their affliction as pure religion (1:27)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Trials that mature faith",
-        "explanation": "Trials test faith and produce steadfastness, leading to maturity; those who endure are blessed and will receive the crown of life.\n\nFaith can grow through difficulty when it is met with perseverance.",
+        "explanation": "The trying of their faith worketh patience, and the man that endureth temptation shall receive the crown of life (1:2-4,12).",
         "references": [
           "James 1:2-4",
           "James 1:12"
@@ -55,21 +39,21 @@
       },
       {
         "theme": "Asking God for wisdom in faith",
-        "explanation": "God gives wisdom generously and without reproach, but the one who asks must not be double-minded.\n\nBelievers can bring their need for wisdom to a generous God.",
+        "explanation": "If any lack wisdom, let him ask of God, that giveth to all liberally, but ask in faith, nothing wavering (1:5-8).",
         "references": [
           "James 1:5-8"
         ]
       },
       {
         "theme": "God is good; temptation comes from within",
-        "explanation": "God does not tempt; desire gives birth to sin and sin to death, while every good gift comes from the unchanging Father of lights.\n\nTemptation should not be blamed on God; the source of good is God.",
+        "explanation": "God tempteth no man, but every man is tempted when he is drawn away of his own lust, and every good gift is from the Father of lights (1:13-18).",
         "references": [
           "James 1:13-18"
         ]
       },
       {
         "theme": "Listening well and controlling anger and speech",
-        "explanation": "Be quick to hear, slow to speak and slow to anger, because anger does not produce God's righteousness, and an uncontrolled tongue makes religion worthless.\n\nSelf-control in speech and temper is part of living out faith.",
+        "explanation": "Every man is to be swift to hear, slow to speak, slow to wrath, and to bridle his tongue (1:19-21,26).",
         "references": [
           "James 1:19-21",
           "James 1:26"
@@ -77,7 +61,7 @@
       },
       {
         "theme": "Doing the word, not only hearing it",
-        "explanation": "True hearing leads to action; pure religion includes care for orphans and widows and keeping oneself unstained by the world.\n\nHearing God's word is meant to shape what a person does, especially toward the vulnerable.",
+        "explanation": "They are to be doers of the word and not hearers only, and pure religion is to visit the fatherless and widows and keep unspotted from the world (1:22-27).",
         "references": [
           "James 1:22-27"
         ]
@@ -86,91 +70,59 @@
     "explainedReferences": []
   },
   "James 2": {
-    "summary": "James tells his readers not to show partiality in holding the faith of the Lord Jesus Christ, the Lord of glory (James 2:1). He gives an example: a rich man in fine clothes and a poor man in shabby clothes enter the assembly, and the rich man is offered a good seat while the poor man is told to stand over there or sit at the rich man's feet. This makes distinctions among themselves and makes them judges with evil thoughts (James 2:2-4). God has chosen the poor in the world to be rich in faith and heirs of the kingdom, yet the readers have dishonored the poor, while it is the rich who oppress them and drag them into court (James 2:5-7). Keeping the 'royal law' of loving one's neighbor is good; showing partiality is sin, and breaking the law at one point makes one accountable to the law as a whole (James 2:8-11). They should speak and act as those who will be judged by the law of liberty; judgment is without mercy to the one who has shown no mercy, but mercy triumphs over judgment (James 2:12-13). The second half argues that faith without works is dead: wishing a poorly clothed and hungry brother well without helping him is useless, even the demons believe and shudder, Abraham was justified by works when he offered Isaac, and Rahab was likewise justified when she received the messengers (James 2:14-25). The chapter concludes that as the body without the spirit is dead, so faith apart from works is dead (James 2:26).",
-    "whereWeAre": "The readers were showing favoritism toward wealthy visitors and dishonoring the poor, or at least were at risk of doing so. James treats the scene as an illustration; he does not say that a specific event occurred.\n\nWealthy people were involved in oppression and lawsuits against the readers (2:6). The letter does not say who the specific people were or what the cases involved.\n\nWealthy patrons commonly held influence in ancient Mediterranean communities, and seating at gatherings and banquets reflected rank. Documented examples include Roman dining customs and Jewish assemblies, though James's own setting is not described in detail.\n\nDebates about faith and works existed in early Christianity; Paul's letters on justification (Romans, Galatians) were written in the 50s AD. Whether James is responding to Paul directly, to Paul's teaching misunderstood, or to a separate issue is debated. The first half addresses the social tension between rich and poor in the community. The second half addresses the question of whether a claim to faith is real without deeds. Both are about integrity between belief and behavior.",
+    "summary": "James tells his brethren not to hold the faith of our Lord Jesus Christ, the Lord of glory, with respect of persons (James 2:1). If a man with a gold ring in goodly apparel comes into the assembly, and a poor man in vile raiment, and they say to the rich Sit thou here in a good place and to the poor Stand thou there, they are partial in themselves and become judges of evil thoughts (James 2:2–4). God hath chosen the poor of this world rich in faith, and heirs of the kingdom, but they have despised the poor, though rich men oppress them and draw them before the judgment seats (James 2:5–7). If they fulfil the royal law, Thou shalt love thy neighbour as thyself, they do well, but if they have respect to persons they commit sin, for whosoever shall keep the whole law and yet offend in one point is guilty of all (James 2:8–11). They are to speak and do as they that shall be judged by the law of liberty, for he shall have judgment without mercy that hath shewed no mercy, and mercy rejoiceth against judgment (James 2:12–13). What doth it profit, though a man say he hath faith and have not works, as if one said to a naked and destitute brother Depart in peace, be warmed and filled, and gave him not those things which are needful, for faith, if it hath not works, is dead, being alone (James 2:14–17). The devils also believe, and tremble, and faith without works is dead (James 2:18–20). Abraham was justified by works when he offered Isaac his son upon the altar, faith wrought with his works, and he was called the Friend of God, and Rahab the harlot was justified by works when she had received the messengers (James 2:21–25). As the body without the spirit is dead, so faith without works is dead also (James 2:26).",
+    "whereWeAre": "Chapter 1 ended with pure religion: visiting the fatherless and widows and keeping unspotted from the world (1:27). Chapter 2 forbids respect of persons in the assembly, calls for the royal law of love, and argues that faith without works is dead, citing Abraham and Rahab (2:1-26). Chapter 3 turns to the tongue.",
     "keyFigures": [
       {
-        "name": "The readers (the community's members)",
-        "role": "They are corrected about favoritism and challenged to show their faith by works. The passage is a corrective for a real or potential problem within the community."
+        "name": "The brethren in the assembly",
+        "role": "Told not to hold the faith with respect of persons (2:1-4)."
       },
       {
-        "name": "The Lord Jesus Christ, the Lord of glory",
-        "role": "The object of the readers' faith, whose status makes human status distinctions inappropriate. The title 'Lord of glory' underlines that no one's worldly glory compares to his."
-      },
-      {
-        "name": "The man with the gold ring",
-        "role": "Receives honor because of his appearance. Represents the pull of status and wealth."
-      },
-      {
-        "name": "The poor man in shabby clothing",
-        "role": "Is told to stand over there or sit at someone's feet. Represents those dishonored by the community's favoritism."
-      },
-      {
-        "name": "The rich",
-        "role": "Serve as a reason why favoring them makes no sense. Reflects tension between wealthy and poor in the setting."
+        "name": "The man with a gold ring and the poor man",
+        "role": "The rich man is given a good place, and the poor man in vile raiment is told to stand (2:2-3)."
       },
       {
         "name": "God",
-        "role": "The lawgiver and judge to whom believers answer. God's choice of the poor is a basis for James's argument against favoritism."
+        "role": "Hath chosen the poor of this world rich in faith, and heirs of the kingdom (2:5)."
       },
       {
-        "name": "A brother or sister poorly clothed and lacking food",
-        "role": "Illustrates that empty words do not meet real need. Shows what a faith without works looks like in practice."
-      },
-      {
-        "name": "The objector ('Someone will say')",
-        "role": "Raises a challenge to James's argument. Part of James's diatribe-style argument."
-      },
-      {
-        "name": "The demons",
-        "role": "Used as an example of belief that does not lead to a changed life. Shows that intellectual belief alone is not what James calls faith."
+        "name": "The devils",
+        "role": "Believe that there is one God, and tremble (2:19)."
       },
       {
         "name": "Abraham",
-        "role": "Offered his son Isaac on the altar; his faith was active along with his works. James's main Old Testament example of faith that acts."
-      },
-      {
-        "name": "Isaac",
-        "role": "Mentioned as the son Abraham offered. The episode is the occasion for Abraham's act of obedience."
+        "role": "Justified by works when he offered Isaac his son upon the altar, and called the Friend of God (2:21-23)."
       },
       {
         "name": "Rahab",
-        "role": "Offered as a second example of justification by works. A Gentile example next to Abraham, showing faith expressed in action."
-      },
-      {
-        "name": "The messengers",
-        "role": "The recipients of Rahab's action. Her act on their behalf is James's example of faith in action."
-      },
-      {
-        "name": "Paul (background)",
-        "role": "None in the text. Included only because the relationship between James 2 and Paul's letters is a common question."
+        "role": "The harlot who was justified by works when she received the messengers and sent them out another way (2:25)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Rejecting favoritism and honoring the poor",
-        "explanation": "James rebukes treating the rich better than the poor in the assembly, noting that God chose the poor to be rich in faith and heirs of the kingdom.\n\nFaith in the Lord of glory is incompatible with ranking people by wealth or appearance.",
+        "explanation": "God hath chosen the poor of this world rich in faith, so the brethren are not to hold the faith with respect of persons (2:1-7).",
         "references": [
           "James 2:1-7"
         ]
       },
       {
         "theme": "The royal law of love and the unity of the law",
-        "explanation": "Loving one's neighbor fulfills the royal law, while partiality is sin, and breaking one part of the law shows disregard for the lawgiver.\n\nLove of neighbor is a central expression of obedience to God.",
+        "explanation": "The royal law is Thou shalt love thy neighbour as thyself, and whosoever keepeth the whole law and offendeth in one point is guilty of all (2:8-11).",
         "references": [
           "James 2:8-11"
         ]
       },
       {
         "theme": "Mercy and judgment",
-        "explanation": "Believers will be judged under the law of liberty, judgment is without mercy for the unmerciful, but mercy triumphs over judgment.\n\nA merciful life is consistent with having received mercy.",
+        "explanation": "He shall have judgment without mercy that hath shewed no mercy, and mercy rejoiceth against judgment (2:12-13).",
         "references": [
           "James 2:12-13"
         ]
       },
       {
         "theme": "Faith that is alive and active",
-        "explanation": "Faith without works is dead; empty words do not help the needy; even the demons believe; Abraham and Rahab show faith expressed in action.\n\nGenuine faith in God leads to action; belief that remains only an idea is incomplete.",
+        "explanation": "Faith, if it hath not works, is dead, being alone, and the devils also believe, and tremble (2:14-20,26).",
         "references": [
           "James 2:14-20",
           "James 2:26"
@@ -178,7 +130,7 @@
       },
       {
         "theme": "Examples from Scripture: Abraham and Rahab",
-        "explanation": "James uses Abraham's offering of Isaac and Rahab's welcome of the messengers as examples of justification shown by works.\n\nBiblical examples show faith expressing itself in obedience, whatever one's tradition on how justification works.",
+        "explanation": "Abraham was justified by works when he offered Isaac, and Rahab the harlot when she received the messengers (2:21-25).",
         "references": [
           "James 2:21-25"
         ]
@@ -208,82 +160,62 @@
     ]
   },
   "James 3": {
-    "summary": "James warns that not many should become teachers, because teachers will be judged with greater strictness, and everyone stumbles in many ways (James 3:1-2). Anyone who does not stumble in what he says is perfect, able to bridle the whole body, as a small bit steers a horse and a small rudder steers a large ship (James 3:2-4). In the same way the tongue is a small member that boasts of great things, like a small spark setting a great forest ablaze (James 3:5). It is described as a fire, a world of unrighteousness, staining the whole body and 'set on fire by hell' (James 3:6). People have tamed every kind of animal, but no human can tame the tongue, which is a restless evil full of deadly poison (James 3:7-8). With it people bless the Lord and Father and curse people made in God's likeness; this should not be, and James asks whether a spring can give both fresh and salt water or a fig tree bear olives (James 3:9-12). He then asks who is wise and understanding, and answers that the wise show it by good conduct in meekness; bitter jealousy and selfish ambition are 'earthly, unspiritual, demonic' and lead to disorder, while wisdom from above is pure, peaceable, gentle, open to reason, full of mercy and good fruits, impartial and sincere, and a harvest of righteousness is sown in peace by those who make peace (James 3:13-18).",
-    "whereWeAre": "Teachers served in early Christian communities (Acts 13:1; 1 Corinthians 12:28; Ephesians 4:11). James writes as someone aware of the seriousness of the role.\n\nThe community seems to have had conflicts rooted in jealousy and selfish ambition (3:14, 3:16), which continue in chapter 4. The chapter does not describe specific incidents.\n\nAncient Jewish writings warned about the dangers of speech. Proverbs 18:21 says that death and life are in the power of the tongue, and Sirach 28:12-26 speaks of the tongue as a fire and a source of harm. Sirach is part of the Apocrypha and is counted as Scripture in some Christian traditions but not others.\n\nHorses were controlled with bits and bridles, and large ships were steered with rudders, in the ancient world. These were everyday images for James's readers. James draws on common images and on Jewish wisdom traditions to apply a warning about speech to a community with rivalries. His contrast between two kinds of wisdom responds to people who claim wisdom but cause disorder.",
+    "summary": "James says, be not many masters, knowing that we shall receive the greater condemnation, for in many things we offend all, and if any man offend not in word, he is a perfect man, able also to bridle the whole body (James 3:1–2). We put bits in the horses' mouths and turn about the great ships with a very small helm, even so the tongue is a little member and boasteth great things, and how great a matter a little fire kindleth (James 3:3–5). The tongue is a fire, a world of iniquity, that defileth the whole body and is set on fire of hell (James 3:6). Every kind of beasts, and of birds, and of serpents is tamed of mankind, but the tongue can no man tame, an unruly evil full of deadly poison (James 3:7–8). Therewith bless we God, even the Father, and therewith curse we men, which are made after the similitude of God, and out of the same mouth proceedeth blessing and cursing, which ought not so to be (James 3:9–12). A wise man endued with knowledge will shew out of a good conversation his works with meekness of wisdom, but bitter envying and strife is earthly, sensual, devilish, and where it is there is confusion and every evil work (James 3:13–16). The wisdom that is from above is first pure, then peaceable, gentle, easy to be intreated, full of mercy and good fruits, without partiality, and without hypocrisy, and the fruit of righteousness is sown in peace of them that make peace (James 3:17–18).",
+    "whereWeAre": "Chapter 2 ended with faith without works being dead (2:26). Chapter 3 warns teachers, shows the tongue as a little fire that no man can tame, and sets the wisdom from above against envy and strife (3:1-18). Chapter 4 asks where wars and fightings come from.",
     "keyFigures": [
       {
-        "name": "Teachers",
-        "role": "Warned that they will be judged more strictly. Teaching carries heavy responsibility because speech is powerful."
+        "name": "The masters, or teachers",
+        "role": "Told that they shall receive the greater condemnation (3:1)."
       },
       {
-        "name": "James (and 'we')",
-        "role": "Identifies with his readers in the weakness of speech. Presents his warning as shared and not as condescension."
+        "name": "James and the brethren",
+        "role": "Say we all offend in many things, and bless God and curse men with the same mouth (3:2,9)."
       },
       {
-        "name": "Horses and ships (illustrations)",
-        "role": "Illustrate how something small can direct something large. Make the tongue's power vivid."
+        "name": "God, the Father",
+        "role": "He whom we bless and in whose likeness men are made (3:9)."
       },
       {
-        "name": "The tongue (personified)",
-        "role": "The main subject of 3:2-12. Shows that speech reflects and shapes the whole person."
+        "name": "The wise man endued with knowledge",
+        "role": "Shews out of a good conversation his works with meekness of wisdom (3:13)."
       },
       {
-        "name": "Humankind (all people)",
-        "role": "Both the speakers and the targets of speech. Underlines the dignity of the people cursed."
-      },
-      {
-        "name": "God, the Lord and Father",
-        "role": "The one who is blessed and the one whose likeness people bear. Cursing others is inconsistent with blessing God."
-      },
-      {
-        "name": "The wise and understanding",
-        "role": "Contrasted with the jealous and ambitious. Wisdom is defined by behavior, not claim."
-      },
-      {
-        "name": "The jealous and selfishly ambitious",
-        "role": "Examples of false wisdom. Their attitudes lead to disorder."
-      },
-      {
-        "name": "Peacemakers",
-        "role": "Whether they sow the harvest or receive it is debated (see 3:18). The chapter ends with a positive picture."
-      },
-      {
-        "name": "The devil / demonic forces (background)",
-        "role": "Background to the language of 3:6 and 3:15. Helps explain the strong language, though the chapter does not discuss it further."
+        "name": "Those with bitter envying and strife",
+        "role": "Their wisdom is earthly, sensual, devilish and brings confusion (3:14-16)."
       }
     ],
     "keyThemes": [
       {
         "theme": "The power of speech",
-        "explanation": "The tongue is small yet can direct a whole life and set a great forest ablaze; words can build or destroy.\n\nWords matter and deserve care.",
+        "explanation": "The tongue is a little member that boasteth great things, a fire that defileth the whole body (3:1-6).",
         "references": [
           "James 3:1-6"
         ]
       },
       {
         "theme": "Human inability to tame the tongue",
-        "explanation": "Animals of every kind can be tamed by people, but no human can tame the tongue, a restless evil full of deadly poison.\n\nHonest recognition of weakness is a starting point for change, and the letter points elsewhere to God as the source of help.",
+        "explanation": "Every kind of beasts, and birds, and serpents is tamed of mankind, but the tongue can no man tame (3:7-8).",
         "references": [
           "James 3:7-8"
         ]
       },
       {
         "theme": "Consistency between worship and treatment of others",
-        "explanation": "People bless God and curse people made in his likeness with the same mouth, which James says should not be.\n\nHow we speak to and about others reflects how we regard the God who made them.",
+        "explanation": "Out of the same mouth proceedeth blessing and cursing, which ought not so to be, as a fountain does not send forth sweet and bitter (3:9-12).",
         "references": [
           "James 3:9-12"
         ]
       },
       {
         "theme": "Wisdom shown by conduct",
-        "explanation": "True wisdom is displayed in good conduct and meekness, not in boasting or rivalry.\n\nClaims to wisdom are tested by how a person lives.",
+        "explanation": "A wise man shews out of a good conversation his works with meekness of wisdom, while bitter envying and strife bring confusion (3:13-16).",
         "references": [
           "James 3:13-16"
         ]
       },
       {
         "theme": "The wisdom from above and peacemaking",
-        "explanation": "Wisdom from above is pure, peaceable, gentle, open to reason, merciful, impartial and sincere, and produces a harvest of righteousness for peacemakers.\n\nA peaceable, merciful character is the mark of God's wisdom.",
+        "explanation": "The wisdom from above is first pure, then peaceable, gentle, and full of mercy, and the fruit of righteousness is sown in peace of them that make peace (3:17-18).",
         "references": [
           "James 3:17-18"
         ]
@@ -292,78 +224,62 @@
     "explainedReferences": []
   },
   "James 4": {
-    "summary": "James asks what causes quarrels and fights among his readers, and answers that they come from the passions at war within them (James 4:1). They desire and do not have; they covet and cannot obtain; they do not have because they do not ask, or they ask wrongly to spend it on their passions (James 4:2-3). He calls them 'adulterous people' and says friendship with the world is enmity with God (James 4:4). God gives more grace, and 'opposes the proud but gives grace to the humble' (James 4:5-6). A series of commands follows: submit to God, resist the devil, draw near to God, cleanse hands and purify hearts, grieve, and humble yourselves before the Lord so that he may exalt you (James 4:7-10). Believers must not speak evil against one another, because doing so judges the law and there is only one lawgiver and judge (James 4:11-12). Finally, James addresses those who say they will travel to a town, spend a year and make a profit, reminding them that they do not know what tomorrow will bring and that life is like a mist; they ought to say, 'If the Lord wills' (James 4:13-16). The chapter ends with a general principle: whoever knows the right thing to do and fails to do it, for him it is sin (James 4:17).",
-    "whereWeAre": "The community was experiencing quarrels and fights (4:1-2). The text does not describe specific incidents.\n\nSome members were planning commercial ventures and travel (4:13). The letter does not say who they were or where they traveled.\n\nRoman rule made travel and trade across the Mediterranean easier than in earlier periods, through roads, sea routes and relative security. This is documented, though James does not discuss it.\n\nJewish communities scattered around the Mediterranean (the Dispersion) often depended on trade and craft work, and many Jews and early Christians traveled for business (compare Acts 18:1-3). The call for humility and the warnings against conflict and arrogant planning address both inner community life and everyday economic life. The business example reflects the real conditions of mobile traders.",
+    "summary": "James asks from whence come wars and fightings among them, and answers that they come of their lusts that war in their members, for they lust, and have not, and ask not, or ask amiss that they may consume it upon their lusts (James 4:1–3). He calls them adulterers and adulteresses and says the friendship of the world is enmity with God, but God resisteth the proud and giveth grace unto the humble (James 4:4–6). They are to submit themselves to God, resist the devil, draw nigh to God, cleanse their hands, purify their hearts, be afflicted and mourn, and humble themselves in the sight of the Lord, and he shall lift them up (James 4:7–10). They are not to speak evil one of another, for he that judgeth his brother judgeth the law, and there is one lawgiver, who is able to save and to destroy (James 4:11–12). To those who say To day or to morrow we will go into such a city and buy and sell and get gain, James says they know not what shall be on the morrow, for life is even a vapour, and they ought to say If the Lord will, we shall live, and do this, or that (James 4:13–16). Therefore to him that knoweth to do good, and doeth it not, to him it is sin (James 4:17).",
+    "whereWeAre": "Chapter 3 ended with the fruit of righteousness sown in peace by them that make peace (3:18). Chapter 4 traces quarrels to lusts, calls for humility and drawing nigh to God, forbids speaking evil of a brother, and warns against planning without the Lord (4:1-17). Chapter 5 speaks to the rich and calls for patience and prayer.",
     "keyFigures": [
       {
-        "name": "The readers (the community)",
-        "role": "Challenged about their conflicts, their worldliness and their pride. The passage addresses real tensions in the community."
+        "name": "The brethren who war and fight",
+        "role": "Their lusts war in their members, and they ask amiss (4:1-3)."
       },
       {
         "name": "God",
-        "role": "The one to whom believers submit and before whom they humble themselves. Friendship with God is the central concern of the chapter."
+        "role": "Resisteth the proud and giveth grace unto the humble, and is the one lawgiver, who is able to save and to destroy (4:6,12)."
       },
       {
         "name": "The devil",
-        "role": "Named as the one believers are to resist. Shows a spiritual dimension to the community's conflicts."
+        "role": "He that is to be resisted and will flee (4:7)."
       },
       {
-        "name": "The world (as an opposing system)",
-        "role": "Represents the allure that draws believers away from God. Explains the 'adultery' image."
+        "name": "He that speaketh evil of his brother",
+        "role": "Judgeth the law and not a doer of the law, but a judge (4:11)."
       },
       {
-        "name": "The proud and the humble",
-        "role": "Frame the commands to humble oneself. The pattern that governs the rest of the chapter."
-      },
-      {
-        "name": "The double-minded and sinners",
-        "role": "Called to cleanse hands and purify hearts. Applies the call to repentance to the community."
-      },
-      {
-        "name": "The one who speaks evil of a brother",
-        "role": "Warned that he is judging the law and usurping the role of the judge. Links the call to humility with how believers treat each other."
-      },
-      {
-        "name": "The traveling merchants ('You who say, Today or tomorrow ...')",
-        "role": "Illustrate planning that leaves God out. Applies humility to business and future plans."
-      },
-      {
-        "name": "Hosea and the prophets (background)",
-        "role": "Background for the 'adulterous people' language. Explains the covenant imagery behind 4:4."
+        "name": "The merchants who plan a year's gain",
+        "role": "Say To day or to morrow we will go into such a city, and know not what shall be on the morrow (4:13-14)."
       }
     ],
     "keyThemes": [
       {
         "theme": "The roots of conflict in inner desires",
-        "explanation": "Quarrels arise from passions at war within, from unmet desires, and from asking with wrong motives.\n\nConflicts often have roots in our own desires, not only in other people.",
+        "explanation": "Wars and fightings come of the lusts that war in their members, for they ask not or ask amiss (4:1-3).",
         "references": [
           "James 4:1-3"
         ]
       },
       {
         "theme": "Friendship with God versus the world",
-        "explanation": "Friendship with the world is enmity with God; loyalty cannot be divided.\n\nDevotion to God cannot be combined with devotion to the values opposed to him.",
+        "explanation": "The friendship of the world is enmity with God (4:4-5).",
         "references": [
           "James 4:4-5"
         ]
       },
       {
         "theme": "Humility, repentance and grace",
-        "explanation": "God opposes the proud and gives grace to the humble; believers are to submit, resist the devil, draw near to God, repent and humble themselves.\n\nHumble submission opens the way for God's grace.",
+        "explanation": "God resisteth the proud and giveth grace unto the humble, so they are to submit to God, draw nigh to him, and humble themselves in his sight (4:6-10).",
         "references": [
           "James 4:6-10"
         ]
       },
       {
         "theme": "Not judging one another",
-        "explanation": "Speaking evil against a fellow believer takes the role of the one lawgiver and judge.\n\nJudging others puts us in God's place.",
+        "explanation": "They are not to speak evil one of another, for there is one lawgiver, who is able to save and to destroy (4:11-12).",
         "references": [
           "James 4:11-12"
         ]
       },
       {
         "theme": "Dependence on God in planning",
-        "explanation": "Life is a mist; plans should be made in awareness of God's will, and arrogant boasting is evil; failing to do the good that one knows is sin.\n\nPlanning is not wrong, but it should be held with humility before God.",
+        "explanation": "They ought to say If the Lord will, we shall live, and do this, or that, for life is even a vapour (4:13-17).",
         "references": [
           "James 4:13-17"
         ]
@@ -378,98 +294,66 @@
     ]
   },
   "James 5": {
-    "summary": "James speaks sharply to the rich: they are to weep and howl over the miseries coming upon them, because their wealth has rotted, their garments are moth-eaten, and their gold and silver are corroded, and the corrosion will be evidence against them (James 5:1-3). The wages they withheld from the laborers who mowed their fields cry out, and the cries have reached 'the ears of the Lord of hosts'; they have lived in luxury and self-indulgence and have condemned and murdered the righteous person, who does not resist them (James 5:4-6). He then urges the believers to be patient until the coming of the Lord, as a farmer waits for the rains and the harvest, to establish their hearts, not to grumble against one another, and to take as examples the prophets and Job (James 5:7-11). He forbids swearing oaths, telling them to let their 'yes' be yes and their 'no' be no (James 5:12). He then speaks about prayer: the suffering should pray, the cheerful should sing, and the sick should call the elders of the church to pray and anoint them with oil in the Lord's name; the prayer of faith will save the sick and the Lord will raise him up, and sins will be forgiven (James 5:13-15). They are to confess sins to one another and pray for one another, because the prayer of a righteous person has great power, as Elijah's prayers show (James 5:16-18). The letter ends by encouraging believers to bring back anyone who wanders from the truth, because the one who does so will save a soul from death and cover a multitude of sins (James 5:19-20).",
-    "whereWeAre": "Wealthy landowners hired day laborers to work their fields, and the Old Testament law required that wages be paid on the same day (Deuteronomy 24:14-15; Leviticus 19:13). Jesus' parable in Matthew 20:1-16 also presupposes hired day laborers.\n\nWithholding wages is condemned in the Old Testament (Jeremiah 22:13; Malachi 3:5). James does not say who the specific wealthy people were.\n\nJames the brother of Jesus was put to death in Jerusalem around AD 62, according to Josephus (Antiquities 20.200). Some interpreters have wondered whether 'the righteous person' in 5:6 alludes to this or to Jesus, but the letter itself does not say so, and the connection is speculative.\n\nBelievers expected the Lord's coming soon, as in many New Testament writings. James gives no date.\n\nElders led local churches (Acts 14:23; 20:17; Titus 1:5), as presupposed in 5:14. The denunciation of the rich builds on the prophetic tradition and on the earlier teaching about favoritism. The call to patience would suit believers who could not easily change their circumstances. The instructions about prayer and restoration may suggest a close-knit congregation that cared for its members.",
+    "summary": "James tells the rich men to weep and howl for their miseries, for their riches are corrupted, their garments motheaten, and their gold and silver cankered, and the rust shall be a witness against them (James 5:1–3). The hire of the labourers who have reaped their fields, kept back by fraud, crieth, and the cries have entered into the ears of the Lord of sabaoth, while the rich have lived in pleasure and condemned and killed the just (James 5:4–6). The brethren are to be patient unto the coming of the Lord, as the husbandman waiteth for the precious fruit of the earth, to stablish their hearts, and not to grudge one against another, for the judge standeth before the door (James 5:7–9). They are to take the prophets for an example of suffering affliction and patience and remember the patience of Job and the end of the Lord, that the Lord is very pitiful, and of tender mercy (James 5:10–11). Above all things they are to swear not, but let their yea be yea and their nay, nay (James 5:12). The afflicted is to pray, the merry to sing psalms, and the sick to call for the elders of the church, who pray over him, anointing him with oil in the name of the Lord, and the prayer of faith shall save the sick (James 5:13–15). They are to confess their faults one to another and pray one for another, for the effectual fervent prayer of a righteous man availeth much, as with Elias, a man subject to like passions, who prayed that it might not rain, and it rained not for three years and six months, and then prayed again and the heaven gave rain (James 5:16–18). If any do err from the truth and one convert him, he shall save a soul from death and hide a multitude of sins (James 5:19–20).",
+    "whereWeAre": "Chapter 4 ended with the warning that to him that knoweth to do good and doeth it not, it is sin (4:17). Chapter 5 condemns the rich who keep back wages, calls the brethren to patience until the coming of the Lord, and closes with prayer for the sick and care for those who err (5:1-20). 1 Peter follows.",
     "keyFigures": [
       {
-        "name": "The rich (the wealthy oppressors)",
-        "role": "Addressed with a prophetic warning of coming misery. Shows God's concern for justice for the poor."
+        "name": "The rich men",
+        "role": "Told to weep and howl, for they have kept back the hire of the labourers by fraud and condemned the just (5:1-6)."
       },
       {
-        "name": "The laborers who mowed the fields",
-        "role": "Their cries reach the Lord. Shows that God hears the cries of the exploited."
+        "name": "The labourers who reaped the fields",
+        "role": "Their cries have entered into the ears of the Lord of sabaoth (5:4)."
       },
       {
-        "name": "The Lord of hosts",
-        "role": "The one who hears and will judge. Echoes Old Testament prophecy about justice."
+        "name": "The Lord of sabaoth",
+        "role": "Hears the cries and is the judge that standeth before the door (5:4,9)."
       },
       {
-        "name": "The righteous person",
-        "role": "Condemned and murdered by the rich. Evidence of injustice for which God will hold the rich to account."
-      },
-      {
-        "name": "The believers (brothers)",
-        "role": "Told to be patient, steadfast, honest in speech, prayerful and caring. The chapter's practical instructions are addressed to them."
-      },
-      {
-        "name": "The Lord and the Judge",
-        "role": "The one who will come, judge, heal, forgive and show compassion. The expectation of the Lord's coming shapes the call to patience."
-      },
-      {
-        "name": "The farmer",
-        "role": "A model of patience. Makes the call to patience concrete."
-      },
-      {
-        "name": "The prophets",
-        "role": "Examples of suffering and patience. Link the readers' hardship to that of earlier faithful people."
-      },
-      {
-        "name": "Job",
-        "role": "An example of steadfastness and of the Lord's compassion and mercy. Shows that suffering can be followed by the Lord's compassionate outcome."
-      },
-      {
-        "name": "The suffering, the cheerful and the sick",
-        "role": "Each is given a response: pray, sing praise, call for the elders. Shows prayer as the natural response to every circumstance."
+        "name": "The brethren",
+        "role": "Told to be patient, swear not, pray, and confess their faults (5:7-16)."
       },
       {
         "name": "The elders of the church",
-        "role": "Called to pray over and anoint the sick. Shows the role of church leaders in care for the sick."
+        "role": "Called to pray over the sick and anoint him with oil in the name of the Lord (5:14)."
       },
       {
-        "name": "Elijah",
-        "role": "An example of effective prayer. Shows that great answers to prayer are not limited to extraordinary people."
-      },
-      {
-        "name": "The one who wanders and the one who brings him back",
-        "role": "Closes the letter with a call to restoration. Emphasizes care for one another's spiritual wellbeing."
-      },
-      {
-        "name": "Job's and Elijah's stories (background)",
-        "role": "Background. Readers familiar with them would understand the references."
+        "name": "Elias",
+        "role": "A man subject to like passions who prayed that it might not rain, and then prayed again for rain (5:17-18)."
       }
     ],
     "keyThemes": [
       {
         "theme": "God's justice toward the exploited",
-        "explanation": "The rich who hoard wealth and withhold wages are warned; the cries of the laborers reach the Lord of hosts.\n\nGod hears the cries of those who are wronged and holds the powerful accountable.",
+        "explanation": "The hire of the labourers kept back by fraud crieth, and the cries have entered into the ears of the Lord of sabaoth (5:1-6).",
         "references": [
           "James 5:1-6"
         ]
       },
       {
         "theme": "Patient endurance until the Lord comes",
-        "explanation": "Believers are to wait like a farmer, establish their hearts, avoid grumbling, and follow the example of the prophets and Job.\n\nPatience is active steadfastness grounded in the Lord's compassion.",
+        "explanation": "The brethren are to be patient unto the coming of the Lord, like the husbandman, the prophets, and Job (5:7-11).",
         "references": [
           "James 5:7-11"
         ]
       },
       {
         "theme": "Integrity in speech",
-        "explanation": "Believers are to let their 'yes' be yes and their 'no' be no, avoiding oaths.\n\nHonest words should need no extra guarantees.",
+        "explanation": "They are to swear not, but let their yea be yea and their nay, nay (5:12).",
         "references": [
           "James 5:12"
         ]
       },
       {
         "theme": "The power of prayer in community",
-        "explanation": "Believers should pray in suffering and sickness, call the elders, confess sins to one another and pray for each other; Elijah shows that the prayer of a righteous person is powerful.\n\nPrayer is a shared practice for every circumstance, and not only for individuals.",
+        "explanation": "The prayer of faith shall save the sick, and the effectual fervent prayer of a righteous man availeth much, as Elias showed (5:13-18).",
         "references": [
           "James 5:13-18"
         ]
       },
       {
         "theme": "Restoring those who wander",
-        "explanation": "Bringing back a sinner from error saves a soul from death and covers a multitude of sins.\n\nBelievers are responsible to help one another stay faithful.",
+        "explanation": "He which converteth the sinner from the error of his way shall save a soul from death and hide a multitude of sins (5:19-20).",
         "references": [
           "James 5:19-20"
         ]

@@ -1,11 +1,11 @@
 {
   "Hebrews": {
-    "author": "Anonymous; early Christians proposed various authors, but the text does not identify its writer.",
+    "author": "Credited to Paul in the KJV title, though the letter itself names no writer (Hebrews 13:22-23).",
     "audience": "Christians under pressure who appear tempted to drift from their confession.",
-    "purpose": "To show the supremacy of Christ, the sufficiency of His priesthood and sacrifice, and the need for persevering faith.",
+    "purpose": "To show the supremacy of Christ, the sufficiency of his priesthood and sacrifice, and the need for persevering faith.",
     "theme": "Jesus is the definitive Son, high priest, and sacrifice; therefore believers must hold fast in faith and draw near to God.",
-    "summary": "Hebrews compares Jesus with angels, Moses, priests, and sacrifices, arguing that He fulfills and surpasses them all. Strong warnings against drifting are paired with encouragement to endure by faith.",
-    "keyVerse": "Hebrews 11:1",
+    "summary": "Hebrews compares Jesus with angels, Moses, priests, and sacrifices, arguing that he fulfills and surpasses them all. Strong warnings against drifting are paired with encouragement to endure by faith.",
+    "keyVerse": "Hebrews 4:14",
     "movements": [
       {
         "title": "The Son Is Supreme",
@@ -16,7 +16,7 @@
       },
       {
         "title": "Superior High Priest and Sacrifice",
-        "description": "Jesus' priesthood is associated with Melchizedek, and His once-for-all sacrifice inaugurates the new covenant.",
+        "description": "Jesus' priesthood is associated with Melchizedek, and his once-for-all sacrifice inaugurates the new covenant.",
         "passages": [
           "Hebrews 5-10"
         ]
@@ -57,12 +57,12 @@
     ]
   },
   "James": {
-    "author": "Traditionally attributed to James, the brother of Jesus and leader in the Jerusalem church.",
-    "audience": "The 'twelve tribes in the Dispersion,' understood as Jewish Christians scattered outside their homeland.",
+    "author": "Traditionally attributed to James, the brother of Jesus and leader in the Jerusalem church (James 1:1).",
+    "audience": "The twelve tribes which are scattered abroad, understood as Jewish Christians living outside their homeland.",
     "purpose": "To call believers to mature, practical faith expressed through endurance, controlled speech, impartiality, generosity, wisdom, and prayer.",
     "theme": "Genuine faith becomes visible in practical obedience, wisdom, mercy, and perseverance.",
     "summary": "James is direct and practical. It urges believers to endure trials, do the word rather than merely hear it, avoid favoritism, control the tongue, reject selfish ambition, and pray faithfully.",
-    "keyVerse": "James 1:5",
+    "keyVerse": "James 1:22",
     "movements": [
       {
         "title": "Trials and Doing the Word",
