@@ -57,6 +57,7 @@ enum ChapterCrossReferenceEditorialCatalog {
         entriesPart39,
         entriesPart40,
         entriesPart41,
+        entriesPart45,
         entriesPart42,
         entriesPart43,
         entriesPart44
@@ -2561,6 +2562,35 @@ enum ChapterCrossReferenceEditorialCatalog {
         matthew(10, 22, "Matthew", 24, 9, "Jesus repeats this warning about hatred and endurance in his teaching about the coming tribulation."),
         matthew(10, 24, "Luke", 6, 40, "Luke preserves Jesus' saying that a disciple is not above the teacher."),
         matthew(10, 26, "Luke", 8, 17, "Luke repeats Jesus' assurance that what is hidden will be revealed.")
+    ]
+
+    private nonisolated static let entriesPart45: [Entry] = [
+        psalms(67, 4, "Psalms", 96, 10, "Psalm 96 expands Psalm 67's confidence that God judges the peoples fairly into a proclamation that the Lord reigns over all nations."),
+        psalms(68, 18, "Ephesians", 4, 8, "Paul quotes Psalm 68's ascent imagery to portray the ascended Christ giving gifts that equip his church."),
+        psalms(69, 9, "John", 2, 17, "After Jesus clears the temple, the disciples recall the psalmist's consuming zeal for God's house as the scriptural pattern for his action."),
+        psalms(69, 9, "Romans", 15, 3, "Paul cites the psalmist's bearing of reproach to show that Christ did not please himself but accepted insults directed at God."),
+        psalms(69, 21, "John", 19, 28, "John presents the sour wine given to Jesus in his thirst as the fulfillment of the psalmist's lament over gall and vinegar."),
+        psalms(69, 22, "Romans", 11, 9, "Paul quotes the psalm's imprecation that a table become a snare when explaining Israel's hardening and the warning against presumption."),
+        psalms(69, 25, "Acts", 1, 20, "Peter applies the psalm's plea for a desolate dwelling to Judas as the disciples prepare to replace him among the Twelve."),
+        psalms(70, 1, "Psalms", 40, 13, "Psalm 70 opens by reusing Psalm 40's urgent plea for God to hasten and deliver the sufferer."),
+        psalms(70, 3, "Psalms", 40, 15, "Psalm 70 repeats Psalm 40's request that mockers be turned back in shame for their taunt."),
+        psalms(70, 4, "Psalms", 40, 16, "Psalm 70 repeats Psalm 40's prayer that those who seek God rejoice and magnify the Lord."),
+        psalms(70, 5, "Psalms", 40, 17, "Psalm 70 repeats Psalm 40's closing confession of need and plea for the Lord not to delay."),
+        psalms(71, 1, "Psalms", 31, 1, "Psalm 71 opens by reusing Psalm 31's appeal for refuge in the Lord and deliverance from shame."),
+        psalms(71, 3, "Psalms", 18, 2, "Psalm 71 calls God its rock and fortress, taking up the paired titles David uses to celebrate the Lord's deliverance in Psalm 18."),
+        psalms(72, 10, "1 Kings", 10, 1, "The queen of Sheba's tribute to Solomon offers a historical picture of the distant rulers' gifts and homage for which Psalm 72 prays."),
+        psalms(72, 10, "Isaiah", 60, 6, "Isaiah's vision of Sheba bringing gold and frankincense to Zion develops Psalm 72's hope that distant kings will bring tribute to God's righteous king."),
+        psalms(74, 13, "Nehemiah", 9, 11, "Nehemiah's prayer recalls God dividing the sea and casting down Israel's pursuers, the exodus deliverance Psalm 74 celebrates in sea-conquest imagery."),
+        psalms(76, 2, "Genesis", 14, 18, "Psalm 76 names Salem as God's dwelling, linking Zion's worship with the Salem ruled by Melchizedek in Abraham's day."),
+        psalms(78, 24, "John", 6, 31, "The crowd's description of manna as bread from heaven recalls Psalm 78's account of God raining heavenly grain on Israel in the wilderness."),
+        psalms(79, 1, "Psalms", 74, 1, "Psalm 79 joins Psalm 74's lament over the devastated sanctuary by naming the nations' defilement of Jerusalem and God's temple."),
+        psalms(79, 4, "Psalms", 44, 13, "Psalm 79 repeats Psalm 44's complaint that God's people have become their neighbors' reproach and derision amid national humiliation."),
+        psalms(81, 7, "Numbers", 20, 13, "Psalm 81 recalls the waters of Meribah, where Israel quarreled and the Lord's holiness was displayed before the people."),
+        psalms(81, 16, "Deuteronomy", 32, 13, "Psalm 81 recalls the Song of Moses' image of honey from the rock as it describes the abundance God would give his obedient people."),
+        psalms(82, 6, "John", 10, 34, "Jesus quotes Psalm 82's address to Israel's judges as gods while answering the charge that he blasphemed by calling himself God's Son."),
+        psalms(83, 11, "Judges", 7, 25, "Psalm 83 invokes the deaths of Oreb and Zeeb as precedents for God to defeat the coalition threatening Israel."),
+        psalms(85, 12, "Leviticus", 26, 4, "Psalm 85's hope that the land will yield its increase echoes the covenant blessing in which God gives rain and a fruitful land to an obedient Israel."),
+        psalms(87, 1, "Psalms", 48, 1, "Psalm 87's praise of Zion founded on God's holy mountains echoes Psalm 48's celebration of the holy mountain and city where the Lord dwells.")
     ]
 
     private nonisolated static let entriesPart42: [Entry] = [
