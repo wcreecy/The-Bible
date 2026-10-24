@@ -40,9 +40,9 @@ struct BookOrderGameView: View {
                             tint: .purple,
                             experienceLevel: vm.difficulty == .fullBible ? nil : experienceLevel,
                             experienceDetails: GameExperienceDetails(
-                                learn: "Arrange up to 5 books in order.",
-                                standard: "Arrange up to 10 books in order.",
-                                challenge: "Arrange up to 15 books in order."
+                                learn: "Arrange 5 books.",
+                                standard: "Arrange 10 books.",
+                                challenge: "Arrange 15 books."
                             ),
                             startAction: startGame
                         ) {
@@ -548,7 +548,7 @@ private struct BookOrderSetupControls: View {
             HStack(alignment: .top, spacing: 8) {
                 modeCard(
                     title: "Quick Rounds",
-                    detail: "Choose a part of the Bible and arrange a shorter run.",
+                    detail: "Select section of the Bible.",
                     systemImage: "arrow.triangle.2.circlepath",
                     isSelected: !isFullBibleMode
                 ) {
@@ -557,7 +557,7 @@ private struct BookOrderSetupControls: View {
 
                 modeCard(
                     title: "Full Bible Order",
-                    detail: "Arrange all 66 books in canonical order.",
+                    detail: "Arrange all 66 books.",
                     systemImage: "books.vertical.fill",
                     isSelected: isFullBibleMode
                 ) {

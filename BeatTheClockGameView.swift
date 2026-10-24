@@ -320,9 +320,9 @@ struct BeatTheClockGameView: View {
             tint: .indigo,
             experienceLevel: experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Known names • 25 sec • clue shown.",
-                standard: "More names • 15 sec • clue −3 sec.",
-                challenge: "All names • 10 sec • clue −3 sec."
+                learn: "Known names • 25 sec.",
+                standard: "More names • 15 sec.",
+                challenge: "All names • 10 sec."
             ),
             experienceTitle: reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: reviewQuestionIDs.isEmpty,
