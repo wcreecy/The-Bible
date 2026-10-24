@@ -167,8 +167,8 @@ struct TitleCardView: View {
 
     private var dateText: some View {
         Text(date, format: .dateTime.weekday(.abbreviated).month(.abbreviated).day())
-            .font(.subheadline.weight(.medium))
-            .foregroundStyle(.secondary)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.white)
     }
 
     // MARK: - Goal and streak
