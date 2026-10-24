@@ -284,7 +284,7 @@ The story ends with a surprise: Obed "is the father of Jesse, the father of Davi
 
 # 1 Samuel
 When it happened: From the end of the judges to the death of King Saul, roughly 1100–1010 BC.
-When it was written: 1 and 2 Samuel were originally one book. It continues past Samuel's death (1 Samuel 25:1), and 1 Chronicles 29:29 mentions records kept by Samuel, Nathan, and Gad. Many scholars think it was compiled from earlier records during the monarchy.
+When it was written: 1 and 2 Samuel were originally one book. It continues past Samuel's death (1 Samuel 25:1), and 1 Chronicles 29:29 mentions records kept by Samuel, Nathan, and Gad. Jewish tradition credits Samuel, with Nathan and Gad adding to it.
 Where: Shiloh, Ramah, Mizpeh, Gibeah, Bethlehem, the valley of Elah, the wilderness of Judah around En-gedi, the Philistine cities of Gath and Ziklag, and Mount Gilboa.
 The world at the time: The Philistines held the coastal plain and controlled iron-working, so that Israel had few swords (1 Samuel 13:19–22). Pressed by enemies, Israel asked for a king "like all the nations" (1 Samuel 8:5).
 
@@ -304,7 +304,7 @@ Eli's two sons, Hophni and Phinehas, are priests, but “the sons of Eli were so
 
 A man of God comes to Eli with a terrible message. Because Eli honors his sons more than God, his family will lose the priesthood. As a sign, both his sons will die on the same day. “For them that honour me I will honour, and they that despise me shall be lightly esteemed.”
 
-In those days, “the word of the LORD was precious,” meaning rare. One night young Samuel is lying down in the tabernacle near the ark, and the LORD calls, “Samuel.” He runs to Eli: “Here am I; for thou calledst me.” Eli says, “I called not; lie down again.” It happens three times. Finally Eli realizes God is calling the boy. He tells Samuel to answer, “Speak, LORD; for thy servant heareth.” God comes and calls again, “Samuel, Samuel.” Samuel answers, “Speak; for thy servant heareth.” God tells him He is about to judge Eli's house, as He warned.
+In those days, “the word of the LORD was precious,” meaning rare. One night young Samuel is lying down in the tabernacle near the ark, and the LORD calls, “Samuel.” He runs to Eli: “Here am I; for thou calledst me.” Eli says, “I called not; lie down again.” It happens three times. Finally Eli realizes God is calling the boy. He tells Samuel to answer, “Speak, LORD; for thy servant heareth.” God comes and calls again, “Samuel, Samuel.” Samuel answers, “Speak; for thy servant heareth.” God tells him he is about to judge Eli's house, as he warned.
 
 In the morning Samuel is afraid to tell Eli, but Eli insists on hearing everything. Samuel tells him all of it. Eli says, “It is the LORD: let him do what seemeth him good.” As Samuel grows up, God is with him and lets none of his words fail. “And all Israel from Dan even to Beersheba knew that Samuel was established to be a prophet of the LORD.”
 
@@ -336,7 +336,7 @@ Samuel tells them what a king will do. He will take their sons to drive his char
 
 **God Chooses Saul as Israel's First King (1 Samuel 9:1–10:27)** — God directs Saul to Samuel, who anoints him as king before Saul is publicly chosen to lead the nation.
 
-A wealthy man of the tribe of Benjamin, named Kish, has a son named Saul, “a choice young man, and a goodly,” the most handsome man in Israel, a head taller than anyone else. When his father's donkeys wander off, Saul and a servant search for days without finding them. Finally the servant suggests asking the man of God in a nearby town. That man is Samuel. The day before, God had told Samuel that He would send him a man from Benjamin to anoint as leader. When Samuel sees Saul, God says, “Behold the man whom I spake to thee of!”
+A wealthy man of the tribe of Benjamin, named Kish, has a son named Saul, “a choice young man, and a goodly,” the most handsome man in Israel, a head taller than anyone else. When his father's donkeys wander off, Saul and a servant search for days without finding them. Finally the servant suggests asking the man of God in a nearby town. That man is Samuel. The day before, God had told Samuel that he would send him a man from Benjamin to anoint as leader. When Samuel sees Saul, God says, “Behold the man whom I spake to thee of!”
 
 Samuel tells Saul the donkeys have been found, and then he hints at something much bigger: “on whom is all the desire of Israel? Is it not on thee?” Saul protests that he is from the smallest tribe and the least family. But Samuel seats him at the head of a feast. The next morning, Samuel pours oil on Saul's head and kisses him: “Is it not because the LORD hath anointed thee to be captain over his inheritance?” He gives Saul signs that will happen on his way home. All the signs come true. God gives Saul “another heart,” and when he meets a group of prophets, the Spirit comes on him and he prophesies with them. People who know him ask, “Is Saul also among the prophets?”
 

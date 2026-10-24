@@ -1,47 +1,51 @@
 {
   "1 Samuel 1": {
-    "summary": "Elkanah travels with his family to worship at Shiloh. Hannah, hurt by childlessness, prays and promises that a son will serve the LORD (1 Samuel 1:1–18). The LORD gives Hannah a son, Samuel. After he is weaned, she brings him to Eli at Shiloh to serve the LORD (1 Samuel 1:19–28).",
-    "whereWeAre": "Ruth 4 closes with Ruth's family line leading to David. Elkanah travels with his family to worship at Shiloh. Chapter 2 continues the consequences of these events.",
+    "summary": "Elkanah goes up every year to worship at Shiloh with his two wives, Hannah and Peninnah, and Peninnah makes Hannah weep because she has no children (1 Samuel 1:1–8). Hannah prays at the tabernacle with bitter tears and vows that if the LORD gives her a son, she will give him to the LORD all his life, and Eli, who first thought she was drunk, blesses her (1 Samuel 1:9–18). The LORD remembers Hannah, and she bears a son and names him Samuel (1 Samuel 1:19–20). When the boy is weaned, she brings him to Eli at Shiloh and lends him to the LORD (1 Samuel 1:21–28).",
+    "whereWeAre": "1 Samuel follows Ruth, which ended with the family line of David. The book opens in the days of the judges at Shiloh, where the tabernacle stands. Hannah has no children, prays for a son, and gives him to the LORD (1:1-28). Chapter 2 gives her song and shows the sins of Eli's sons.",
     "keyFigures": [
       {
         "name": "Hannah",
-        "role": "Samuel’s mother who prays and dedicates him"
+        "role": "Has no children, prays for a son with bitter tears, and gives Samuel to the LORD (1:5-11,24-28)."
       },
       {
         "name": "Elkanah",
-        "role": "Hannah’s husband, a worshiper at Shiloh"
+        "role": "Hannah's husband, who goes up to Shiloh every year and tries to comfort her (1:1-8)."
       },
       {
         "name": "Peninnah",
-        "role": "Elkanah’s other wife who provokes Hannah"
+        "role": "Elkanah's other wife, who makes Hannah weep (1:2,6-7)."
       },
       {
         "name": "Eli",
-        "role": "Priest who blesses Hannah"
+        "role": "The priest who thinks Hannah is drunk, then blesses her (1:12-17)."
       },
       {
         "name": "Samuel",
-        "role": "Son given in response to Hannah’s prayer"
+        "role": "The son born in answer to Hannah's prayer, lent to the LORD at Shiloh (1:20,27-28)."
+      },
+      {
+        "name": "The LORD",
+        "role": "Remembers Hannah and gives her a son (1:19-20)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Prayer amid distress",
-        "explanation": "Hannah openly brings suffering before God",
+        "theme": "Praying through pain",
+        "explanation": "Hannah pours out her soul before the LORD instead of hiding her sorrow (1:10-18).",
         "references": [
           "1 Samuel 1:10-18"
         ]
       },
       {
-        "theme": "Keeping commitments",
-        "explanation": "Hannah acts on the vow she freely made",
+        "theme": "Keeping a promise",
+        "explanation": "Hannah keeps her vow and gives Samuel to the LORD when he is weaned (1:24-28).",
         "references": [
           "1 Samuel 1:24-28"
         ]
       },
       {
-        "theme": "Family tensions and compassion",
-        "explanation": "The household illustrates pain that social expectations can intensify",
+        "theme": "A family in pain",
+        "explanation": "Peninnah's teasing and Elkanah's loving but awkward comfort show how hard Hannah's trouble was (1:4-8).",
         "references": [
           "1 Samuel 1:4-8"
         ]
@@ -50,48 +54,48 @@
     "explainedReferences": []
   },
   "1 Samuel 2": {
-    "summary": "Hannah praises the LORD for reversing human fortunes: the strong can fall, the weak be raised, and God judges and sustains (1 Samuel 2:1–10). Samuel ministers at Shiloh, while Eli’s sons Hophni and Phinehas abuse the sacrificial system and treat offerings with contempt (1 Samuel 2:11–17, 22–25). Hannah visits Samuel and receives further children (1 Samuel 2:18–21). Eli rebukes his sons, and an unnamed man of God announces judgment on Eli’s house for dishonoring God (1 Samuel 2:27–36). The chapter contrasts faithful worship with religious exploitation.",
-    "whereWeAre": "Chapter 1 has just moved the story forward. Hannah praises the LORD for reversing human fortunes: the strong can fall, the weak be raised, and God judges and sustains. (1 Samuel 2:1–10). Chapter 3 continues the consequences of these events.",
+    "summary": "Hannah prays a song of praise, saying there is none holy as the LORD, who maketh poor and maketh rich, bringeth low and lifteth up (1 Samuel 2:1–10). The child Samuel serves the LORD before Eli, while Eli's sons, Hophni and Phinehas, take the best of the sacrifices by force (1 Samuel 2:11–17). Hannah brings Samuel a little coat every year, and the LORD gives her three more sons and two daughters (1 Samuel 2:18–21). Eli hears how his sons sin and scolds them, but they do not listen, and a man of God tells Eli that his house will lose the priesthood and both his sons will die on one day (1 Samuel 2:22–36).",
+    "whereWeAre": "Chapter 1 ended with Hannah leaving Samuel at Shiloh. Chapter 2 opens with her song of praise, then shows how wicked Eli's sons are while young Samuel grows in favour with the LORD. A man of God warns Eli of judgment (2:1-36). Chapter 3 tells how the LORD calls Samuel.",
     "keyFigures": [
       {
         "name": "Hannah",
-        "role": "Offers a song of praise"
+        "role": "Sings that the LORD lifts up the poor and brings down the proud, and brings Samuel a little coat each year (2:1-10,19)."
       },
       {
         "name": "Samuel",
-        "role": "Young sanctuary servant"
+        "role": "A child who serves the LORD before Eli and grows in favour with God and men (2:11,18,26)."
       },
       {
         "name": "Eli",
-        "role": "Priest reproving his sons"
+        "role": "The old priest who scolds his sons but does not stop them (2:22-25)."
       },
       {
         "name": "Hophni and Phinehas",
-        "role": "Priests accused of abusing worshipers and offerings"
+        "role": "Eli's sons, who take the best of the sacrifices and sin with the women at the tabernacle door (2:12-17,22)."
       },
       {
-        "name": "Unnamed man of God",
-        "role": "Announces judgment on Eli’s house"
+        "name": "The man of God",
+        "role": "Tells Eli that his house will lose the priesthood (2:27-36)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "God reverses status",
-        "explanation": "Hannah celebrates divine justice beyond human power",
+        "theme": "God lifts up the lowly",
+        "explanation": "Hannah sings that the LORD maketh poor, and maketh rich, and lifteth up the poor out of the dust (2:1-10).",
         "references": [
           "1 Samuel 2:1-10"
         ]
       },
       {
-        "theme": "Integrity in worship",
-        "explanation": "Priestly office does not excuse abuse",
+        "theme": "Priests who abused their office",
+        "explanation": "Hophni and Phinehas take the best meat by force and treat the offering of the LORD with contempt (2:12-17,22-25).",
         "references": [
           "1 Samuel 2:12-17"
         ]
       },
       {
-        "theme": "Accountability for leaders",
-        "explanation": "Eli’s family faces judgment for dishonoring the LORD",
+        "theme": "Honour for those who honour God",
+        "explanation": "The man of God tells Eli that the LORD will honour them that honour him, and take the priesthood from Eli's house (2:27-36).",
         "references": [
           "1 Samuel 2:27-36"
         ]
@@ -100,40 +104,40 @@
     "explainedReferences": []
   },
   "1 Samuel 3": {
-    "summary": "As Samuel ministers under Eli, divine revelation is described as uncommon (1 Samuel 3:1). The LORD calls Samuel repeatedly at night; after Eli recognizes what is happening, he instructs the boy how to respond (1 Samuel 3:2–10). God announces judgment on Eli’s household, and Samuel reluctantly reports the message honestly the following morning (1 Samuel 3:11–18). Samuel grows in credibility as a prophet, and word of the LORD continues to reach him at Shiloh (1 Samuel 3:19–21). The account marks Samuel’s emergence as a reliable messenger despite the painful content of his first recorded revelation.",
-    "whereWeAre": "Chapter 2 has just moved the story forward. As Samuel ministers under Eli, divine revelation is described as uncommon. (1 Samuel 3:1). Chapter 4 continues the consequences of these events.",
+    "summary": "The word of the LORD is precious in those days, and the boy Samuel lies down to sleep near the ark of God (1 Samuel 3:1–3). The LORD calls Samuel three times, and he runs to Eli each time, until Eli tells him to answer Speak, LORD; for thy servant heareth (1 Samuel 3:4–10). The LORD tells Samuel he will judge Eli's house for ever, because his sons made themselves vile and Eli restrained them not (1 Samuel 3:11–14). In the morning Samuel is afraid to tell Eli, but Eli makes him tell it all, and Eli says It is the LORD: let him do what seemeth him good (1 Samuel 3:15–18). Samuel grows, the LORD is with him, and all Israel from Dan even to Beersheba knows he is established to be a prophet of the LORD (1 Samuel 3:19–21).",
+    "whereWeAre": "Chapter 2 ended with a warning of judgment on Eli's house. Chapter 3 tells how the LORD calls young Samuel at night and gives him his first message, which is that same judgment (3:1-21). Chapter 4 shows the judgment begin in battle.",
     "keyFigures": [
       {
         "name": "Samuel",
-        "role": "Young servant called to deliver God’s word"
+        "role": "A boy who hears the LORD call, answers, and tells Eli the whole message (3:4-18)."
       },
       {
         "name": "Eli",
-        "role": "Priest who helps Samuel recognize the call and accepts its message"
+        "role": "Tells Samuel how to answer and accepts the message, saying It is the LORD (3:8-9,18)."
       },
       {
         "name": "The LORD",
-        "role": "Calls Samuel and announces judgment"
+        "role": "Calls Samuel by name and tells him he will judge Eli's house (3:4,10-14)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Listening and response",
-        "explanation": "Samuel learns to recognize and answer a divine call",
+        "theme": "Learning to listen",
+        "explanation": "Samuel does not know it is the LORD calling until Eli tells him to say Speak, LORD; for thy servant heareth (3:4-10).",
         "references": [
           "1 Samuel 3:4-10"
         ]
       },
       {
-        "theme": "Truthful witness",
-        "explanation": "He reports an unwelcome message without concealing it",
+        "theme": "Telling the truth when it hurts",
+        "explanation": "Samuel is afraid, but he tells Eli everything and hides nothing (3:15-18).",
         "references": [
           "1 Samuel 3:15-18"
         ]
       },
       {
-        "theme": "Prophetic reliability",
-        "explanation": "The narrator portrays Samuel as recognized throughout Israel",
+        "theme": "A prophet known to all Israel",
+        "explanation": "The LORD lets none of Samuel's words fall to the ground, and all Israel from Dan to Beersheba knows he is a prophet (3:19-21).",
         "references": [
           "1 Samuel 3:19-21"
         ]
@@ -142,48 +146,52 @@
     "explainedReferences": []
   },
   "1 Samuel 4": {
-    "summary": "Israel loses a battle against the Philistines and brings the ark of the covenant from Shiloh, hoping its presence will ensure victory (1 Samuel 4:1–5). The Philistines fight again, defeat Israel, capture the ark, and kill Eli’s sons Hophni and Phinehas (1 Samuel 4:6–11). News of the defeat and ark’s capture reaches Eli, who falls and dies (1 Samuel 4:12–18). Phinehas’s wife gives birth as she dies and names the child Ichabod, linking the disaster with departed glory (1 Samuel 4:19–22). The chapter warns against treating a sacred object as a guarantee of success.",
-    "whereWeAre": "Chapter 3 has just moved the story forward. Israel loses a battle against the Philistines and brings the ark of the covenant from Shiloh, hoping its presence will ensure victory. (1 Samuel 4:1–5). Chapter 5 continues the consequences of these events.",
+    "summary": "Israel is beaten by the Philistines and loses about four thousand men, so the elders send to Shiloh for the ark of the covenant of the LORD, with Hophni and Phinehas (1 Samuel 4:1–4). The Philistines are afraid when they hear the shout, but they fight, and Israel loses thirty thousand footmen, the ark of God is taken, and Hophni and Phinehas are slain (1 Samuel 4:5–11). A man of Benjamin runs to Shiloh with his clothes rent and earth on his head, and when Eli, ninety and eight years old and blind, hears that the ark is taken, he falls backward from his seat and his neck breaks (1 Samuel 4:12–18). Phinehas's wife bears a son as she dies and names him Ichabod, saying The glory is departed from Israel (1 Samuel 4:19–22).",
+    "whereWeAre": "Chapter 3 gave Samuel's first word, that judgment would fall on Eli's house. Chapter 4 begins to carry it out: Israel loses to the Philistines, the ark of God is taken, and Eli and his sons die (4:1-22). Chapter 5 follows the ark into the Philistine cities.",
     "keyFigures": [
       {
-        "name": "Israelite elders and troops",
-        "role": "Bring the ark into battle"
+        "name": "The elders and men of Israel",
+        "role": "Lose a battle, then bring the ark from Shiloh hoping it will save them (4:1-5)."
       },
       {
-        "name": "Philistines",
-        "role": "Defeat Israel and capture the ark"
+        "name": "The Philistines",
+        "role": "Are afraid when the ark comes, but fight and take it (4:6-11)."
       },
       {
         "name": "Hophni and Phinehas",
-        "role": "Priests killed in battle"
+        "role": "Eli's sons, who come with the ark and are slain (4:4,11)."
       },
       {
         "name": "Eli",
-        "role": "Priest who dies on hearing the news"
+        "role": "Ninety and eight years old, he falls backward and dies when he hears the ark is taken (4:15-18)."
       },
       {
-        "name": "Phinehas’s wife",
-        "role": "Names her newborn Ichabod"
+        "name": "The man of Benjamin",
+        "role": "Runs to Shiloh with his clothes rent to tell the news (4:12-17)."
+      },
+      {
+        "name": "Phinehas's wife",
+        "role": "Dies in childbirth and names her son Ichabod (4:19-22)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Sacred symbols are not guarantees",
-        "explanation": "Possessing the ark does not ensure victory",
+        "theme": "Treating the ark like a charm",
+        "explanation": "The elders bring the ark to win the battle, as if it could save them without the LORD (4:3-11).",
         "references": [
           "1 Samuel 4:3-11"
         ]
       },
       {
-        "theme": "Leadership failure and loss",
-        "explanation": "The calamity includes both priestly deaths and Eli’s end",
+        "theme": "The fall of Eli's house",
+        "explanation": "Hophni and Phinehas die on one day, and Eli dies when he hears the news (4:11,17-18).",
         "references": [
           "1 Samuel 4:11-18"
         ]
       },
       {
-        "theme": "Grief over violated worship",
-        "explanation": "Ichabod expresses the family’s perception of national catastrophe",
+        "theme": "The glory is departed",
+        "explanation": "The name Ichabod shows how the loss of the ark felt like the loss of God's presence (4:19-22).",
         "references": [
           "1 Samuel 4:19-22"
         ]
@@ -192,40 +200,44 @@
     "explainedReferences": []
   },
   "1 Samuel 5": {
-    "summary": "The Philistines place the captured ark in Dagon’s temple at Ashdod. Their deity’s statue falls before it, and on the second morning its head and hands are broken (1 Samuel 5:1–5). Severe affliction strikes Ashdod and later Gath and Ekron as the ark is moved among Philistine cities (1 Samuel 5:6–12). The Philistines come to fear keeping it. The narrative presents the LORD as sovereign even when Israel has lost and the ark is outside Israelite control. The exact medical nature of the affliction is not identified with certainty.",
-    "whereWeAre": "Chapter 4 has just moved the story forward. The Philistines place the captured ark in Dagon’s temple at Ashdod. Chapter 6 continues the consequences of these events.",
+    "summary": "The Philistines carry the ark of God to Ashdod and set it in the house of Dagon (1 Samuel 5:1–2). The next morning Dagon is fallen on his face before the ark, and the morning after his head and hands are cut off upon the threshold (1 Samuel 5:3–5). The hand of the LORD is heavy upon Ashdod, which is smitten with emerods, and the people send the ark to Gath and then to Ekron, where the same plague comes and the cry of the city goes up to heaven (1 Samuel 5:6–12).",
+    "whereWeAre": "Chapter 4 ended with the ark taken. Chapter 5 shows the Philistines learning that the God of Israel is not beaten: Dagon falls before the ark, and plague strikes Ashdod, Gath, and Ekron (5:1-12). Chapter 6 tells how the ark is sent home.",
     "keyFigures": [
       {
-        "name": "Philistines of Ashdod, Gath, and Ekron",
-        "role": "Communities affected by the ark’s presence"
+        "name": "The Philistines of Ashdod, Gath, and Ekron",
+        "role": "Move the ark from city to city and are struck with emerods (5:1,6-12)."
       },
       {
         "name": "Dagon",
-        "role": "Philistine deity whose image falls in the narrative"
+        "role": "The Philistine god, found fallen on his face before the ark, with his head and hands cut off (5:2-5)."
       },
       {
         "name": "The LORD",
-        "role": "Portrayed as acting against Philistine centers"
+        "role": "His hand is heavy on the Philistine cities (5:6,9,11)."
+      },
+      {
+        "name": "The lords of the Philistines",
+        "role": "Are gathered to decide what to do with the ark (5:8,11)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Divine power beyond borders",
-        "explanation": "Israel’s defeat does not imply that the LORD is defeated",
+        "theme": "The LORD is not defeated",
+        "explanation": "Israel lost the battle, but the LORD shows his power inside the Philistine temple (5:1-5).",
         "references": [
           "1 Samuel 5:1-5"
         ]
       },
       {
-        "theme": "Judgment and fear",
-        "explanation": "The cities respond to calamity with dread",
+        "theme": "Dagon falls",
+        "explanation": "The idol falls before the ark twice, the second time with its head and hands broken off (5:2-5).",
         "references": [
           "1 Samuel 5:6-12"
         ]
       },
       {
-        "theme": "Limits of rival images",
-        "explanation": "The toppled idol dramatizes the contrast made by the narrator",
+        "theme": "Fear spreads from city to city",
+        "explanation": "Ashdod, Gath, and Ekron each want the ark gone, and the cry of the city goes up to heaven (5:6-12).",
         "references": [
           "1 Samuel 5:2-5"
         ]
@@ -234,40 +246,48 @@
     "explainedReferences": []
   },
   "1 Samuel 6": {
-    "summary": "After seven months the Philistines consult priests and diviners about returning the ark (1 Samuel 6:1–9). They send it on a new cart drawn by two cows with offerings of gold models representing their afflictions and rodents (1 Samuel 6:10–12). The cows go to Beth-shemesh, where people rejoice and offer sacrifices (1 Samuel 6:13–18). Yet some Beth-shemesh residents are struck down in connection with their treatment of the ark, and the community asks the people of Kiriath-jearim to take it away (1 Samuel 6:19–21). Manuscripts and translations differ about the exact death toll in verse 19.",
-    "whereWeAre": "Chapter 5 has just moved the story forward. After seven months the Philistines consult priests and diviners about returning the ark. (1 Samuel 6:1–9). Chapter 7 continues the consequences of these events.",
+    "summary": "After seven months the Philistines ask their priests and diviners how to send the ark back, and they say to send a trespass offering of five golden emerods and five golden mice (1 Samuel 6:1–9). The Philistines put the ark on a new cart drawn by two milch kine whose calves are shut up at home, and the kine go straight toward Bethshemesh (1 Samuel 6:10–12). The men of Bethshemesh, reaping their wheat harvest, see the ark and rejoice, and they offer the kine as a burnt offering (1 Samuel 6:13–18). But the LORD smites the men of Bethshemesh because they looked into the ark, and the people ask the men of Kirjathjearim to come and take it (1 Samuel 6:19–21). The number of the dead in verse 19 differs in the manuscripts.",
+    "whereWeAre": "Chapter 5 ended with the cry of Ekron. Chapter 6 tells how the Philistines, after seven months, send the ark home on a cart, and how it is met with joy and then with fear at Bethshemesh (6:1-21). Chapter 7 begins twenty years of waiting.",
     "keyFigures": [
       {
-        "name": "Philistine rulers, priests, and diviners",
-        "role": "Arrange return and guilt offering"
+        "name": "The Philistine priests and diviners",
+        "role": "Tell the lords to send the ark back with a trespass offering (6:2-9)."
       },
       {
-        "name": "People of Beth-shemesh",
-        "role": "Receive the ark with joy and fear"
+        "name": "The lords of the Philistines",
+        "role": "Send five golden emerods and five golden mice, and follow the cart to the border (6:4,16)."
       },
       {
-        "name": "People of Kiriath-jearim",
-        "role": "Asked to take custody of the ark"
+        "name": "The men of Bethshemesh",
+        "role": "Rejoice at the ark, then are struck because they looked into it (6:13-19)."
+      },
+      {
+        "name": "The men of Kirjathjearim",
+        "role": "Are asked to come and take the ark (6:21)."
+      },
+      {
+        "name": "The LORD",
+        "role": "Smites those who looked into the ark (6:19)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Acknowledging wrongdoing",
-        "explanation": "Philistine advisers urge an offering when returning the ark",
+        "theme": "A guilt offering",
+        "explanation": "The Philistine priests say to send gold images of the plague as a trespass offering to the God of Israel (6:3-9).",
         "references": [
           "1 Samuel 6:3-9"
         ]
       },
       {
-        "theme": "Guidance under uncertainty",
-        "explanation": "The test with cows expresses a desire to identify the cause of calamity",
+        "theme": "A test with two cows",
+        "explanation": "If the milch kine leave their calves and go straight to Israel, the Philistines will know the LORD sent the plague (6:7-12).",
         "references": [
           "1 Samuel 6:7-12"
         ]
       },
       {
-        "theme": "Reverence for sacred things",
-        "explanation": "The narrative balances celebration with warning",
+        "theme": "Respect for holy things",
+        "explanation": "Joy at the ark turns to fear when men look into it (6:13-21).",
         "references": [
           "1 Samuel 6:19-21"
         ]
@@ -276,44 +296,44 @@
     "explainedReferences": []
   },
   "1 Samuel 7": {
-    "summary": "The ark is taken to Kiriath-jearim, where Eleazar is appointed to guard it; many years pass (1 Samuel 7:1–2). Samuel calls Israel to put away foreign gods and return to the LORD, and the people gather at Mizpah for confession and prayer (1 Samuel 7:3–6). As Philistines approach, Samuel offers sacrifice and cries to God; Israel wins the encounter and Samuel erects a memorial stone named Ebenezer (1 Samuel 7:7–12). The narrator describes a period of relief from Philistine pressure and Samuel’s continuing circuit as judge (1 Samuel 7:13–17).",
-    "whereWeAre": "Chapter 6 has just moved the story forward. The ark is taken to Kiriath-jearim, where Eleazar is appointed to guard it; many years pass. (1 Samuel 7:1–2). Chapter 8 continues the consequences of these events.",
+    "summary": "The men of Kirjathjearim take the ark into the house of Abinadab and sanctify Eleazar his son to keep it, and the ark stays there twenty years (1 Samuel 7:1–2). Samuel tells Israel to put away the strange gods and Ashtaroth and serve the LORD only, and they gather at Mizpeh, draw water and pour it out before the LORD, fast, and say We have sinned against the LORD (1 Samuel 7:3–6). When the Philistines come up, Samuel offers a sucking lamb and cries to the LORD, who thunders upon the Philistines and discomfits them, and Israel chases them (1 Samuel 7:7–11). Samuel sets up a stone and calls it Ebenezer, saying Hitherto hath the LORD helped us (1 Samuel 7:12–14). Samuel judges Israel all his days, going each year to Bethel, Gilgal, and Mizpeh, and returning to Ramah (1 Samuel 7:15–17).",
+    "whereWeAre": "Chapter 6 ended with the ark sent to Kirjathjearim. Chapter 7 tells how Israel, after twenty years, turns back to the LORD at Mizpeh, wins over the Philistines, and has Samuel as judge (7:1-17). Chapter 8 shows Samuel old and Israel asking for a king.",
     "keyFigures": [
       {
         "name": "Samuel",
-        "role": "Prophet and judge leading repentance and prayer"
+        "role": "Tells Israel to put away the strange gods, prays for them at Mizpeh, and judges them (7:3-6,9,15-17)."
       },
       {
-        "name": "Eleazar son of Abinadab",
-        "role": "Consecrated to guard the ark"
+        "name": "Eleazar",
+        "role": "Abinadab's son, sanctified to keep the ark (7:1)."
       },
       {
-        "name": "Israelites",
-        "role": "Renounce idols and gather at Mizpah"
+        "name": "The children of Israel",
+        "role": "Put away Baalim and Ashtaroth, fast, and confess their sin (7:4-6)."
       },
       {
-        "name": "Philistines",
-        "role": "Opponents in the battle"
+        "name": "The Philistines",
+        "role": "Come up against Israel at Mizpeh and are discomfited (7:7-11)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Return to the LORD",
-        "explanation": "Repentance includes changing religious practice",
+        "theme": "Turning back to the LORD",
+        "explanation": "Samuel says to put away the strange gods and serve him only, and Israel does (7:3-6).",
         "references": [
           "1 Samuel 7:3-6"
         ]
       },
       {
-        "theme": "Prayer and deliverance",
-        "explanation": "Samuel intercedes during a military threat",
+        "theme": "Prayer and rescue",
+        "explanation": "Samuel cries to the LORD, and he thunders upon the Philistines (7:7-11).",
         "references": [
           "1 Samuel 7:7-11"
         ]
       },
       {
         "theme": "Remembering help",
-        "explanation": "The memorial connects gratitude to a specific event",
+        "explanation": "The stone Ebenezer stands for Hitherto hath the LORD helped us (7:12).",
         "references": [
           "1 Samuel 7:12"
         ]
@@ -322,44 +342,44 @@
     "explainedReferences": []
   },
   "1 Samuel 8": {
-    "summary": "Samuel becomes old, and his sons Joel and Abijah pervert justice in Beersheba (1 Samuel 8:1–3). Israel’s elders ask for a king to judge them like surrounding nations (1 Samuel 8:4–5). God tells Samuel to heed them but explain how a king may conscript sons, employ daughters, seize resources, and tax the people (1 Samuel 8:6–18). The elders insist that a king should judge and lead them in battle (1 Samuel 8:19–22). The chapter explores the tension between understandable concerns about corrupt leadership and the danger of centralized power.",
-    "whereWeAre": "Chapter 7 has just moved the story forward. Samuel becomes old, and his sons Joel and Abijah pervert justice in Beersheba. (1 Samuel 8:1–3). Chapter 9 continues the consequences of these events.",
+    "summary": "When Samuel is old, he makes his sons Joel and Abiah judges in Beersheba, but they turn aside after lucre, take bribes, and pervert judgment (1 Samuel 8:1–3). The elders of Israel come to Ramah and say Make us a king to judge us like all the nations (1 Samuel 8:4–5). Samuel prays, and the LORD tells him they have not rejected Samuel but have rejected the LORD, so he is to hearken to them but warn them (1 Samuel 8:6–9). Samuel tells them a king will take their sons and daughters, their fields and a tenth of their crops and flocks, and they will cry out in that day (1 Samuel 8:10–18). The people refuse to obey Samuel and say Nay; but we will have a king over us, and the LORD tells Samuel to make them a king (1 Samuel 8:19–22).",
+    "whereWeAre": "Chapter 7 ended with Samuel judging Israel from Ramah. Chapter 8 shows Samuel old, his sons corrupt, and the elders asking for a king like the other nations (8:1-22). Chapter 9 introduces Saul.",
     "keyFigures": [
       {
         "name": "Samuel",
-        "role": "Judge who warns against royal abuses"
+        "role": "Prays about the elders' request and warns them what a king will do (8:6,10-18)."
       },
       {
-        "name": "Joel and Abijah",
-        "role": "His sons who distort justice"
+        "name": "Joel and Abiah",
+        "role": "Samuel's sons, judges at Beersheba, who take bribes and pervert judgment (8:2-3)."
       },
       {
-        "name": "Elders of Israel",
-        "role": "Ask for a monarchy"
+        "name": "The elders of Israel",
+        "role": "Ask for a king like all the nations (8:4-5)."
       },
       {
         "name": "The LORD",
-        "role": "Interprets the request and instructs Samuel"
+        "role": "Tells Samuel they have rejected him, and to hearken to them (8:7-9,22)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Justice and corruption",
-        "explanation": "Abusive judges contribute to a leadership crisis",
+        "theme": "Why they asked",
+        "explanation": "Samuel's sons took bribes, and the elders wanted a king to judge them like all the nations (8:1-5).",
         "references": [
           "1 Samuel 8:1-5"
         ]
       },
       {
-        "theme": "Costs of royal power",
-        "explanation": "Samuel warns that kings can demand labor and goods",
+        "theme": "The cost of a king",
+        "explanation": "Samuel warns that a king will take their sons, daughters, fields, and a tenth of their flocks (8:10-18).",
         "references": [
           "1 Samuel 8:10-18"
         ]
       },
       {
         "theme": "Whom Israel trusts",
-        "explanation": "The LORD links the request to a deeper rejection of divine kingship",
+        "explanation": "The LORD says they have not rejected Samuel, but have rejected him from reigning over them (8:6-9).",
         "references": [
           "1 Samuel 8:6-9"
         ]
@@ -368,44 +388,48 @@
     "explainedReferences": []
   },
   "1 Samuel 9": {
-    "summary": "Saul, a Benjaminite son of Kish, searches for his father’s missing donkeys with a servant (1 Samuel 9:1–5). The servant suggests consulting a man of God; they travel to a town where Samuel is expected (1 Samuel 9:6–14). The LORD has informed Samuel that a Benjaminite will arrive and is to be designated as leader over Israel (1 Samuel 9:15–17). Samuel meets Saul, assures him the donkeys are found, seats him at a sacrificial meal, and prepares to disclose God’s message (1 Samuel 9:18–27). An ordinary errand becomes the setting for Saul’s public life.",
-    "whereWeAre": "Chapter 8 has just moved the story forward. Saul, a Benjaminite son of Kish, searches for his father’s missing donkeys with a servant. (1 Samuel 9:1–5). Chapter 10 continues the consequences of these events.",
+    "summary": "Kish, a Benjamite, has a son named Saul, a choice young man and a goodly, and when his father's asses are lost, Saul and a servant go to seek them (1 Samuel 9:1–5). The servant says there is a man of God in the city, and Saul agrees to go, taking the fourth part of a shekel of silver (1 Samuel 9:6–10). The day before, the LORD had told Samuel that he would send a man out of Benjamin to be captain over his people, and when Samuel sees Saul, the LORD says Behold the man (1 Samuel 9:11–17). Samuel tells Saul the asses are found, and Saul says he is of the smallest tribe, but Samuel sets him at the head of the guests and gives him the shoulder (1 Samuel 9:18–24). Saul sleeps on Samuel's housetop, and in the morning Samuel says he will shew him the word of God (1 Samuel 9:25–27).",
+    "whereWeAre": "Chapter 8 ended with the LORD telling Samuel to make them a king. Chapter 9 tells how Saul, looking for lost donkeys, finds Samuel, who has been told by the LORD that this is the man (9:1-27). Chapter 10 tells how Saul is anointed and chosen.",
     "keyFigures": [
       {
         "name": "Saul",
-        "role": "Benjaminite searching for lost donkeys"
+        "role": "Kish's son, a choice young man, who goes looking for his father's asses (9:1-5)."
       },
       {
         "name": "Kish",
-        "role": "Saul’s father"
+        "role": "Saul's father, a mighty man of power from Benjamin (9:1-3)."
       },
       {
-        "name": "Saul’s servant",
-        "role": "Suggests seeking the seer"
+        "name": "Saul's servant",
+        "role": "Suggests going to the man of God and pays with a quarter shekel (9:6-10)."
       },
       {
         "name": "Samuel",
-        "role": "Seer who welcomes Saul and prepares to anoint him"
+        "role": "Told by the LORD that Saul is the man, he feeds Saul at a feast (9:15-24)."
+      },
+      {
+        "name": "The LORD",
+        "role": "Tells Samuel the day before that he will send a man of Benjamin (9:15-17)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Guidance in ordinary events",
-        "explanation": "The narrative links a common search with a major turning point",
+        "theme": "God at work in an ordinary errand",
+        "explanation": "A search for lost donkeys leads Saul to the very man who has been told to look for him (9:3-17).",
         "references": [
           "1 Samuel 9:3-17"
         ]
       },
       {
-        "theme": "Hospitality and preparation",
-        "explanation": "Samuel receives Saul with honor before explaining his calling",
+        "theme": "Honour at the feast",
+        "explanation": "Samuel gives Saul the chief place and the shoulder before telling him why he came (9:18-24).",
         "references": [
           "1 Samuel 9:18-27"
         ]
       },
       {
-        "theme": "Humble beginnings",
-        "explanation": "Saul expresses surprise at being singled out",
+        "theme": "A humble start",
+        "explanation": "Saul says he is of the smallest tribe, and his family the least (9:20-21).",
         "references": [
           "1 Samuel 9:20-21"
         ]
@@ -414,44 +438,48 @@
     "explainedReferences": []
   },
   "1 Samuel 10": {
-    "summary": "Samuel privately anoints Saul as ruler and gives three signs that are fulfilled on Saul’s journey (1 Samuel 10:1–13). Samuel assembles Israel at Mizpah and reminds them of the LORD’s past deliverance before selecting Saul publicly by lot (1 Samuel 10:17–24). Saul is found hiding among supplies, then presented to the people; some celebrate him while others question his ability (1 Samuel 10:23–27). The chapter brings together private designation, confirming signs, and public recognition while preserving the narrator’s unease about Israel’s demand for a king.",
-    "whereWeAre": "Chapter 9 has just moved the story forward. Samuel privately anoints Saul as ruler and gives three signs that are fulfilled on Saul’s journey. (1 Samuel 10:1–13). Chapter 11 continues the consequences of these events.",
+    "summary": "Samuel takes a vial of oil, pours it on Saul's head, and kisses him, saying the LORD has anointed him captain over his inheritance (1 Samuel 10:1). Samuel gives him three signs, and God gives Saul another heart, and he prophesies among the prophets, so that people ask Is Saul also among the prophets (1 Samuel 10:2–13). Samuel calls the people to Mizpeh, reminds them they have rejected God, and the lot falls on Benjamin, then Matri, then Kish's son Saul, who is hid among the stuff (1 Samuel 10:17–22). When he stands, he is higher than any of the people, and Samuel says See ye him whom the LORD hath chosen, and they shout God save the king (1 Samuel 10:23–24). Samuel tells the people the manner of the kingdom and writes it in a book, and Saul goes home to Gibeah, but certain children of Belial despise him, and he holds his peace (1 Samuel 10:25–27).",
+    "whereWeAre": "Chapter 9 ended with Saul on Samuel's housetop, waiting for the word of God. Chapter 10 tells how Samuel anoints Saul in private, gives him signs, and then the tribes choose him by lot at Mizpeh (10:1-27). Chapter 11 shows his first test.",
     "keyFigures": [
       {
         "name": "Samuel",
-        "role": "Anoints Saul and oversees the assembly"
+        "role": "Anoints Saul, gives him signs, and presents him to Israel at Mizpeh (10:1-8,17-25)."
       },
       {
         "name": "Saul",
-        "role": "Chosen king who receives confirming signs"
+        "role": "The king chosen, who hides among the stuff, and holds his peace when some despise him (10:21-27)."
       },
       {
-        "name": "Israel’s tribes",
-        "role": "Gather for selection"
+        "name": "The prophets",
+        "role": "A company with psaltery and pipe whom Saul meets and prophesies with (10:5-13)."
       },
       {
-        "name": "Supporters and detractors",
-        "role": "Respond differently to Saul"
+        "name": "The tribes of Israel",
+        "role": "Gather at Mizpeh to see the lot cast (10:17-24)."
+      },
+      {
+        "name": "The children of Belial",
+        "role": "Despise Saul and bring him no presents (10:27)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Calling and confirmation",
-        "explanation": "Samuel gives signs connected to Saul’s new responsibility",
+        "theme": "The anointing and the signs",
+        "explanation": "Samuel pours oil on Saul and gives him signs that all come true that day (10:1-9).",
         "references": [
           "1 Samuel 10:1-9"
         ]
       },
       {
-        "theme": "Public legitimacy",
-        "explanation": "Selection before the tribes establishes Saul’s role",
+        "theme": "A public choice",
+        "explanation": "The lot falls to Benjamin, then Matri, then Saul, so all Israel sees the choice (10:17-24).",
         "references": [
           "1 Samuel 10:17-24"
         ]
       },
       {
-        "theme": "Division at leadership change",
-        "explanation": "Not everyone welcomes the new king",
+        "theme": "Not everyone agreed",
+        "explanation": "Some call Saul worthless and refuse him gifts, and Saul holds his peace (10:26-27).",
         "references": [
           "1 Samuel 10:26-27"
         ]
@@ -460,44 +488,48 @@
     "explainedReferences": []
   },
   "1 Samuel 11": {
-    "summary": "Nahash the Ammonite besieges Jabesh-gilead and proposes a humiliating condition of surrender (1 Samuel 11:1–2). The besieged send messengers, and Saul, hearing the news, rallies Israelites to confront the threat (1 Samuel 11:3–8). Saul’s forces attack the Ammonites and deliver Jabesh-gilead (1 Samuel 11:9–11). He refuses to execute those who had opposed him, and Samuel calls the people to Gilgal, where Saul’s kingship is reaffirmed with sacrifices and celebration (1 Samuel 11:12–15). The episode shows Saul’s early effectiveness and a moment of national solidarity.",
-    "whereWeAre": "Chapter 10 has just moved the story forward. Nahash the Ammonite besieges Jabesh-gilead and proposes a humiliating condition of surrender. (1 Samuel 11:1–2). Chapter 12 continues the consequences of these events.",
+    "summary": "Nahash the Ammonite comes up against Jabeshgilead and says he will make a covenant only if he may thrust out all their right eyes (1 Samuel 11:1–2). The elders ask for seven days, and messengers bring the news to Gibeah, where the people lift up their voices and weep (1 Samuel 11:3–4). Saul comes in from the field after the herd, and the Spirit of God comes upon him, and he cuts a yoke of oxen in pieces and sends the pieces through Israel, and the fear of the LORD falls on the people, so that three hundred thousand of Israel and thirty thousand of Judah come out (1 Samuel 11:5–8). Saul divides them into three companies and smites the Ammonites in the morning watch until the heat of the day (1 Samuel 11:9–11). Saul says Not a man shall be put to death this day, for the LORD hath wrought salvation in Israel, and Samuel tells them to go to Gilgal and renew the kingdom (1 Samuel 11:12–15).",
+    "whereWeAre": "Chapter 10 ended with some despising Saul. Chapter 11 shows his first victory as king, saving Jabeshgilead from Nahash, after which the people renew the kingdom at Gilgal (11:1-15). Chapter 12 gives Samuel's farewell speech.",
     "keyFigures": [
       {
         "name": "Saul",
-        "role": "Rallies forces and rescues Jabesh-gilead"
+        "role": "Rallies Israel and wins at Jabeshgilead, then refuses to put anyone to death (11:5-13)."
       },
       {
         "name": "Nahash the Ammonite",
-        "role": "Besieges the city"
+        "role": "Besieges Jabeshgilead and asks for every man's right eye (11:1-2)."
       },
       {
-        "name": "People of Jabesh-gilead",
-        "role": "Threatened community seeking help"
+        "name": "The men of Jabeshgilead",
+        "role": "Ask for seven days and send messengers for help (11:3-10)."
       },
       {
         "name": "Samuel",
-        "role": "Calls for royal confirmation at Gilgal"
+        "role": "Calls the people to Gilgal to renew the kingdom (11:12-15)."
+      },
+      {
+        "name": "The people of Israel",
+        "role": "Come out as one man when the fear of the LORD falls on them (11:7-8)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Defending the vulnerable",
-        "explanation": "The threatened town receives help rather than abandonment",
+        "theme": "Rescue for a town in danger",
+        "explanation": "Saul does not leave Jabeshgilead to Nahash (11:1-11).",
         "references": [
           "1 Samuel 11:1-11"
         ]
       },
       {
-        "theme": "Shared action under threat",
-        "explanation": "Israel is summoned to respond together",
+        "theme": "One people",
+        "explanation": "When the fear of the LORD falls on them, Israel comes out as one man (11:6-8).",
         "references": [
           "1 Samuel 11:6-8"
         ]
       },
       {
-        "theme": "Restraint after victory",
-        "explanation": "Saul rejects retaliatory executions",
+        "theme": "Mercy after the win",
+        "explanation": "Saul says Not a man shall be put to death this day, for the LORD hath wrought salvation (11:12-13).",
         "references": [
           "1 Samuel 11:12-15"
         ]
@@ -506,44 +538,44 @@
     "explainedReferences": []
   },
   "1 Samuel 12": {
-    "summary": "Samuel challenges the people to name any way he has defrauded or exploited them; they affirm his integrity (1 Samuel 12:1–5). He reviews the LORD’s acts of deliverance and Israel’s repeated failures to remember them (1 Samuel 12:6–12). Although the monarchy is now established, he urges both king and people to fear and obey the LORD (1 Samuel 12:13–15). Samuel calls for thunder and rain during wheat harvest as a sign; the people acknowledge wrongdoing, and he promises to continue praying for them and teaching the good way (1 Samuel 12:16–25).",
-    "whereWeAre": "Chapter 11 has just moved the story forward. Samuel challenges the people to name any way he has defrauded or exploited them; they affirm his integrity. (1 Samuel 12:1–5). Chapter 13 continues the consequences of these events.",
+    "summary": "Samuel says he has walked before them from his youth, and asks them to witness against him before the LORD whether he has taken any man's ox or ass or defrauded anyone, and they say he has not (1 Samuel 12:1–5). He reminds them how the LORD brought Jacob into Egypt, sent Moses and Aaron, and delivered them when they forgot him, through Jerubbaal, Bedan, Jephthah, and Samuel (1 Samuel 12:6–11). When they saw Nahash they said Nay; but a king shall reign over us, when the LORD their God was their king (1 Samuel 12:12–15). Samuel calls for thunder and rain in wheat harvest, and the LORD sends it, and all the people greatly fear the LORD and Samuel, and ask him to pray for them (1 Samuel 12:16–19). Samuel says Fear not, for the LORD will not forsake his people for his great name's sake, and God forbid he should sin in ceasing to pray for them, but if they still do wickedly, they shall be consumed, both they and their king (1 Samuel 12:20–25).",
+    "whereWeAre": "Chapter 11 ended with Saul made king again at Gilgal. Chapter 12 gives Samuel's farewell speech: he proves his honesty, reminds Israel of the LORD's help, sends thunder in harvest, and says he will keep praying for them (12:1-25). Chapter 13 shows Saul's first big failure.",
     "keyFigures": [
       {
         "name": "Samuel",
-        "role": "Delivers the public address and vows to intercede"
+        "role": "Gives his farewell speech, asks for witnesses to his honesty, and says he will not stop praying for them (12:1-5,23)."
+      },
+      {
+        "name": "The people of Israel",
+        "role": "Say Samuel has taken nothing, then confess they asked for a king in sin (12:4-5,19)."
       },
       {
         "name": "Saul",
-        "role": "Current king mentioned alongside the people"
-      },
-      {
-        "name": "Israelites",
-        "role": "Witnesses who respond and confess"
+        "role": "The king the LORD has set over them, mentioned in the people's request (12:13)."
       },
       {
         "name": "The LORD",
-        "role": "Sends the requested sign"
+        "role": "Sends thunder and rain at wheat harvest and will not forsake his people for his great name's sake (12:17-22)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Accountable leadership",
-        "explanation": "Samuel invites public examination of his conduct",
+        "theme": "An honest leader",
+        "explanation": "Samuel asks the people to say if he has taken any man's ox or ass, and they say he has not (12:1-5).",
         "references": [
           "1 Samuel 12:1-5"
         ]
       },
       {
-        "theme": "Covenant obligations remain",
-        "explanation": "A king does not replace moral responsibility",
+        "theme": "The covenant still stands",
+        "explanation": "A king does not replace obeying the LORD, for if they do wickedly they shall be consumed, both they and their king (12:13-15,25).",
         "references": [
           "1 Samuel 12:13-15"
         ]
       },
       {
-        "theme": "Intercession and instruction",
-        "explanation": "Samuel continues praying and teaching after the transition",
+        "theme": "Praying and teaching",
+        "explanation": "Samuel says he will not stop praying for them and will teach them the good and the right way (12:19-23).",
         "references": [
           "1 Samuel 12:19-25"
         ]
@@ -552,44 +584,48 @@
     "explainedReferences": []
   },
   "1 Samuel 13": {
-    "summary": "A new phase of conflict with the Philistines begins after Jonathan attacks a Philistine post (1 Samuel 13:1–5). The Philistine response frightens Israelite forces, who scatter or hide (1 Samuel 13:5–7). Saul waits for Samuel at Gilgal but offers the burnt offering himself before Samuel arrives (1 Samuel 13:8–10). Samuel rebukes him for disobeying divine instruction and announces that Saul’s dynasty will not endure (1 Samuel 13:11–14). The chapter ends by stressing Israel’s military disadvantage, including restricted access to ironworking and weapons (1 Samuel 13:15–23). The Hebrew text of 13:1 has numerical problems, so Saul’s age and regnal total there are uncertain.",
-    "whereWeAre": "Chapter 12 has just moved the story forward. A new phase of conflict with the Philistines begins after Jonathan attacks a Philistine post. (1 Samuel 13:1–5). Chapter 14 continues the consequences of these events.",
+    "summary": "Saul chooses three thousand men, and his son Jonathan smites the garrison of the Philistines in Geba, so the Philistines gather with thirty thousand chariots and six thousand horsemen (1 Samuel 13:1–5). The men of Israel see they are in a strait, and they hide in caves, thickets, rocks, and pits, while Saul is in Gilgal and the people follow him trembling (1 Samuel 13:6–7). Saul waits seven days for Samuel, but when the people scatter, he offers the burnt offering himself (1 Samuel 13:8–10). Samuel comes and says Thou hast done foolishly, and tells Saul his kingdom shall not continue, for the LORD hath sought him a man after his own heart (1 Samuel 13:11–14). Saul numbers only about six hundred men, and there is no smith found in all Israel, so only Saul and Jonathan have a sword or spear (1 Samuel 13:15–22). The verse about Saul's age and years (13:1) is unclear in the Hebrew.",
+    "whereWeAre": "Chapter 12 ended with Samuel's warning to Israel and their king. Chapter 13 shows Saul facing a huge Philistine army, losing his men, and offering the sacrifice himself because Samuel is late, so Samuel says his kingdom will not last (13:1-23). Chapter 14 tells of Jonathan's bold attack.",
     "keyFigures": [
       {
         "name": "Saul",
-        "role": "King who offers the sacrifice before Samuel arrives"
+        "role": "Waits for Samuel, then offers the burnt offering himself (13:8-12)."
       },
       {
         "name": "Jonathan",
-        "role": "Saul’s son who strikes the Philistine garrison"
+        "role": "Smites the Philistine garrison at Geba (13:3)."
       },
       {
         "name": "Samuel",
-        "role": "Prophet condemning Saul’s disobedience"
+        "role": "Comes after the offering and says Saul has done foolishly (13:10-14)."
       },
       {
-        "name": "Philistines",
-        "role": "Stronger enemy forces confronting Israel"
+        "name": "The Philistines",
+        "role": "Gather with chariots and horsemen, and keep Israel without smiths (13:5,19-22)."
+      },
+      {
+        "name": "The people of Israel",
+        "role": "Hide in caves and thickets, or tremble behind Saul (13:6-7)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Pressure and obedience",
-        "explanation": "Military urgency does not erase the command Samuel reports",
+        "explanation": "Saul feels the army scattering and does not wait, though Samuel had told him to (13:8-14).",
         "references": [
           "1 Samuel 13:8-14"
         ]
       },
       {
-        "theme": "Fragile security",
-        "explanation": "Israel’s soldiers scatter under threat",
+        "theme": "An army that melts away",
+        "explanation": "Israel's men hide in caves, thickets, rocks, high places, and pits (13:5-7).",
         "references": [
           "1 Samuel 13:5-7"
         ]
       },
       {
-        "theme": "Power imbalance",
-        "explanation": "The account emphasizes limited access to weapons",
+        "theme": "No weapons",
+        "explanation": "There is no smith in Israel, so the people go to the Philistines to sharpen their tools (13:19-22).",
         "references": [
           "1 Samuel 13:19-23"
         ]
@@ -598,48 +634,48 @@
     "explainedReferences": []
   },
   "1 Samuel 14": {
-    "summary": "Jonathan and his armor-bearer climb toward a Philistine position, trusting that the LORD is able to save with few or many (1 Samuel 14:1–15). Panic spreads among the Philistines, and Saul joins the pursuit (1 Samuel 14:16–23). Saul has bound the troops with a fasting oath; Jonathan, unaware, eats honey and later challenges the decision’s effect on the exhausted men (1 Samuel 14:24–30). The troops sin by eating meat with blood, and Saul attempts to deal with the violation (1 Samuel 14:31–35). When a lot identifies Jonathan as the oath-breaker, the people prevent his execution (1 Samuel 14:36–46). The chapter closes with Saul’s wars and household (1 Samuel 14:47–52).",
-    "whereWeAre": "Chapter 13 has just moved the story forward. Jonathan and his armor-bearer climb toward a Philistine position, trusting that the LORD is able to save with few or many. (1 Samuel 14:1–15). Chapter 15 continues the consequences of these events.",
+    "summary": "Jonathan says to his armourbearer Come, and let us go over to the Philistines' garrison, for there is no restraint to the LORD to save by many or by few (1 Samuel 14:1–7). They climb up between two rocks, kill about twenty men, an earthquake comes, and the host melts away in confusion (1 Samuel 14:8–16). Saul and the people come to the battle, and every man's sword is against his fellow, and the Hebrews with the Philistines turn to Israel (1 Samuel 14:17–23). Saul has charged the people with an oath, Cursed be the man that eateth any food until evening, and Jonathan, who did not hear it, eats honey, and the faint people later eat flesh with the blood (1 Samuel 14:24–35). When God does not answer, Saul casts the lot and it falls on Jonathan, and Saul says he must die, but the people say There shall not one hair of his head fall to the ground, and they rescue him (1 Samuel 14:36–46). Saul fights against all his enemies, and the chapter lists his sons, his daughters Merab and Michal, and his captain Abner (1 Samuel 14:47–52).",
+    "whereWeAre": "Chapter 13 ended with Israel having no weapons. Chapter 14 tells how Jonathan and his armourbearer start a great rout of the Philistines, how Saul's rash oath nearly costs Jonathan his life, and how the people save him (14:1-52). Chapter 15 gives the war with Amalek.",
     "keyFigures": [
       {
         "name": "Jonathan",
-        "role": "Leads bold attack and unknowingly breaks the oath"
+        "role": "Attacks the garrison with his armourbearer, eats honey not knowing the oath, and is rescued by the people (14:1-14,27,45)."
       },
       {
-        "name": "Jonathan’s armor-bearer",
-        "role": "Accompanies him"
+        "name": "Jonathan's armourbearer",
+        "role": "Says he is with Jonathan's heart and follows him up the rocks (14:6-7,13)."
       },
       {
         "name": "Saul",
-        "role": "Commands forces and imposes the oath"
+        "role": "Joins the chase and swears a rash oath that nearly kills his own son (14:20,24,44)."
       },
       {
-        "name": "Israelite troops",
-        "role": "Exhausted and later defend Jonathan"
+        "name": "The people of Israel",
+        "role": "Grow faint, eat flesh with the blood, and stop Saul from killing Jonathan (14:31-32,45)."
       },
       {
-        "name": "Philistines",
-        "role": "Opposing army routed"
+        "name": "The Philistines",
+        "role": "Melt away in panic and strike each other with swords (14:15-23)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Courage amid weakness",
-        "explanation": "Jonathan acts despite a numerical disadvantage",
+        "theme": "Courage with few men",
+        "explanation": "Jonathan says there is no restraint to the LORD to save by many or by few (14:6-15).",
         "references": [
           "1 Samuel 14:6-15"
         ]
       },
       {
-        "theme": "Harmful rash vows",
-        "explanation": "Saul’s oath burdens the troops",
+        "theme": "A rash oath",
+        "explanation": "Saul's curse on anyone who eats before evening leaves the people faint and leads them to break the law (14:24-35).",
         "references": [
           "1 Samuel 14:24-30"
         ]
       },
       {
-        "theme": "Communal discernment",
-        "explanation": "The people resist an unjust fatal outcome",
+        "theme": "The people speak up",
+        "explanation": "They will not let Jonathan die, for he hath wrought with God this day (14:43-46).",
         "references": [
           "1 Samuel 14:43-46"
         ]
@@ -648,44 +684,48 @@
     "explainedReferences": []
   },
   "1 Samuel 15": {
-    "summary": "Samuel instructs Saul to carry out judgment against Amalek, including a command of total destruction in the narrative (1 Samuel 15:1–3). Saul defeats Amalek but spares King Agag and keeps prized livestock (1 Samuel 15:4–9). Samuel confronts him, and Saul attempts to defend his actions by invoking sacrifice (1 Samuel 15:10–21). Samuel insists that obedience matters more than offerings (1 Samuel 15:22–23). Saul acknowledges sin, Samuel announces rejection of Saul’s kingship, Agag is killed, and Samuel separates from Saul (1 Samuel 15:24–35). The chapter records a severe command of judgment and Saul's refusal to carry it out fully (1 Samuel 15:1–35).",
-    "whereWeAre": "Chapter 14 has just moved the story forward. Samuel instructs Saul to carry out judgment against Amalek, including a command of total destruction in the narrative. (1 Samuel 15:1–3). Chapter 16 continues the consequences of these events.",
+    "summary": "Samuel tells Saul the LORD has sent him to smite Amalek and utterly destroy all they have, because of what Amalek did to Israel in the way when they came up from Egypt (1 Samuel 15:1–3). Saul gathers two hundred thousand footmen and ten thousand men of Judah, smites the Amalekites, but spares Agag and the best of the sheep and the oxen (1 Samuel 15:4–9). The LORD tells Samuel It repenteth me that I have set up Saul, and Samuel cries to the LORD all night (1 Samuel 15:10–11). Samuel finds Saul at Gilgal, and Saul says he has performed the commandment, but Samuel asks What meaneth then this bleating of the sheep, and Saul blames the people (1 Samuel 15:12–21). Samuel says To obey is better than sacrifice, rebellion is as the sin of witchcraft, and because Saul rejected the word of the LORD, the LORD has rejected him from being king (1 Samuel 15:22–23). Saul says I have sinned, grasps Samuel's mantle so that it rends, and Samuel says the LORD hath rent the kingdom from him this day (1 Samuel 15:24–29). Samuel hews Agag in pieces before the LORD in Gilgal, goes to Ramah, and comes no more to see Saul until his death, though he mourns for him (1 Samuel 15:30–35).",
+    "whereWeAre": "Chapter 14 ended with Saul's wars and his family. Chapter 15 tells how the LORD sends Saul against Amalek, how Saul keeps back Agag and the best of the flocks, and how Samuel tells him the LORD has rejected him as king (15:1-35). Chapter 16 turns to David.",
     "keyFigures": [
       {
         "name": "Samuel",
-        "role": "Prophet delivering the command and judgment"
+        "role": "Gives the command, confronts Saul, and hews Agag in pieces (15:1-3,14-33)."
       },
       {
         "name": "Saul",
-        "role": "King who incompletely carries out instructions"
+        "role": "Spares Agag and the best animals, blames the people, and says I have sinned (15:9,15,24)."
       },
       {
         "name": "Agag",
-        "role": "Amalekite king spared then killed"
+        "role": "The king of the Amalekites, spared and then put to death (15:8-9,32-33)."
       },
       {
-        "name": "Amalekites",
-        "role": "People targeted in the campaign"
+        "name": "The Amalekites",
+        "role": "The people Saul was sent to destroy because of what they did to Israel in the way (15:2-3,7)."
+      },
+      {
+        "name": "The LORD",
+        "role": "Says it repenteth him that he set up Saul (15:10-11)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Obedience rather than display",
-        "explanation": "Sacrifice cannot substitute for the instruction described",
+        "theme": "To obey is better than sacrifice",
+        "explanation": "Saul says the people kept the best for sacrifice, but Samuel says the LORD wants obedience (15:15,22-23).",
         "references": [
           "1 Samuel 15:20-23"
         ]
       },
       {
-        "theme": "Responsibility for decisions",
-        "explanation": "Saul shifts explanations when confronted",
+        "theme": "Excuses",
+        "explanation": "Saul says he has performed the commandment, then blames the people when Samuel hears the sheep bleating (15:13-21).",
         "references": [
           "1 Samuel 15:13-21"
         ]
       },
       {
-        "theme": "Consequences of kingship failure",
-        "explanation": "Samuel announces Saul’s rejection",
+        "theme": "The kingdom torn away",
+        "explanation": "Saul grabs Samuel's robe and it tears, and Samuel says the LORD has torn the kingdom from him (15:26-29).",
         "references": [
           "1 Samuel 15:26-29"
         ]
@@ -694,48 +734,52 @@
     "explainedReferences": []
   },
   "1 Samuel 16": {
-    "summary": "The LORD sends Samuel to Bethlehem to anoint a son of Jesse as Saul’s successor (1 Samuel 16:1–5). Samuel sees Jesse’s older sons, but none is chosen; the LORD tells him that divine evaluation is not limited to outward appearance (1 Samuel 16:6–10). David, tending sheep, is brought in and anointed, and the Spirit comes upon him (1 Samuel 16:11–13). Meanwhile Saul is afflicted by a troubling spirit in the narrative, and David is brought to play the lyre and serve in Saul’s court (1 Samuel 16:14–23). David’s rise begins before he receives political power.",
-    "whereWeAre": "Chapter 15 has just moved the story forward. The LORD sends Samuel to Bethlehem to anoint a son of Jesse as Saul’s successor. (1 Samuel 16:1–5). Chapter 17 continues the consequences of these events.",
+    "summary": "The LORD tells Samuel to stop mourning for Saul and to fill his horn with oil and go to Jesse the Bethlehemite, for he has provided himself a king among his sons (1 Samuel 16:1–5). Samuel sees Eliab and thinks he is the one, but the LORD says Look not on his countenance, for the LORD seeth not as man seeth, for man looketh on the outward appearance, but the LORD looketh on the heart (1 Samuel 16:6–10). Seven sons pass by, and the youngest, David, is keeping the sheep, and when he comes, ruddy and of a beautiful countenance, the LORD says Arise, anoint him, and the Spirit of the LORD comes upon David from that day (1 Samuel 16:11–13). The Spirit of the LORD departs from Saul, and an evil spirit from the LORD troubles him, so his servants say to find a man who can play on the harp (1 Samuel 16:14–18). David, Jesse's son, comes to Saul and Saul loves him greatly and makes him his armourbearer, and when David plays, Saul is refreshed and the evil spirit departs (1 Samuel 16:19–23).",
+    "whereWeAre": "Chapter 15 ended with Samuel mourning for Saul. Chapter 16 tells how the LORD sends Samuel to Bethlehem to anoint David, the youngest son of Jesse, while the Spirit of the LORD leaves Saul and David comes to play the harp for him (16:1-23). Chapter 17 tells how David meets Goliath.",
     "keyFigures": [
       {
         "name": "Samuel",
-        "role": "Anoints David"
+        "role": "Goes to Bethlehem, looks at the sons of Jesse, and anoints David (16:1-13)."
       },
       {
         "name": "Jesse",
-        "role": "Bethlehemite father presenting his sons"
+        "role": "A Bethlehemite who brings his sons before Samuel and sends David with gifts to Saul (16:5-11,20)."
       },
       {
         "name": "David",
-        "role": "Young shepherd selected and later musician at court"
+        "role": "The youngest son, keeping sheep, anointed by Samuel and then called to play the harp for Saul (16:11-13,21-23)."
+      },
+      {
+        "name": "Eliab and Jesse's other sons",
+        "role": "Seven sons pass before Samuel, and the LORD chooses none of them (16:6-10)."
       },
       {
         "name": "Saul",
-        "role": "King who receives David’s service"
+        "role": "Troubled by an evil spirit from the LORD, he loves David and is refreshed by his harp (16:14-23)."
       },
       {
-        "name": "Jesse’s sons",
-        "role": "Considered but not selected"
+        "name": "The LORD",
+        "role": "Looks on the heart and chooses David (16:7,12)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Beyond appearance",
-        "explanation": "The narrative emphasizes the heart over visible stature",
+        "theme": "The LORD looks on the heart",
+        "explanation": "Samuel judges by looks, but the LORD says he seeth not as man seeth (16:6-7).",
         "references": [
           "1 Samuel 16:6-7"
         ]
       },
       {
-        "theme": "Unexpected selection",
-        "explanation": "The youngest son receives the anointing",
+        "theme": "The youngest is chosen",
+        "explanation": "David is not even called in until the other sons have passed by (16:10-13).",
         "references": [
           "1 Samuel 16:10-13"
         ]
       },
       {
-        "theme": "Service before authority",
-        "explanation": "David serves in an existing royal household",
+        "theme": "Serving in the king's house",
+        "explanation": "David enters Saul's service as a harp player and armourbearer before he is king (16:18-23).",
         "references": [
           "1 Samuel 16:18-23"
         ]
@@ -744,48 +788,52 @@
     "explainedReferences": []
   },
   "1 Samuel 17": {
-    "summary": "Philistine and Israelite forces face each other in the Valley of Elah, where Goliath challenges Israel (1 Samuel 17:1–11). David arrives bringing supplies to his brothers and questions the fear that grips the camp (1 Samuel 17:12–30). Saul initially doubts David’s readiness, but David recalls protecting sheep from predators and attributes rescue to the LORD (1 Samuel 17:31–37). Refusing Saul’s armor, David confronts Goliath with a sling and stone, kills him, and the Philistines flee (1 Samuel 17:38–54). Saul asks about David’s family (1 Samuel 17:55–58). Ancient witnesses differ in the length and details of this chapter, and the stated height of Goliath varies among textual traditions.",
-    "whereWeAre": "Chapter 16 has just moved the story forward. Philistine and Israelite forces face each other in the Valley of Elah, where Goliath challenges Israel. (1 Samuel 17:1–11). Chapter 18 continues the consequences of these events.",
+    "summary": "The Philistines gather at Shochoh, and Saul and Israel are in the valley of Elah, where Goliath of Gath, whose height is six cubits and a span, comes out and challenges Israel for forty days (1 Samuel 17:1–11,16). Jesse sends David with corn and loaves to his three oldest brothers, and David hears Goliath and asks Who is this uncircumcised Philistine, that he should defy the armies of the living God (1 Samuel 17:12–30). David tells Saul he has killed a lion and a bear, and the LORD that delivered him out of their paw will deliver him from this Philistine, and Saul says Go, and the LORD be with thee (1 Samuel 17:31–37). David refuses Saul's armour, takes five smooth stones from the brook, and goes out with his sling, saying he comes in the name of the LORD of hosts (1 Samuel 17:38–47). David slings a stone that sinks into Goliath's forehead, and then cuts off his head with Goliath's own sword, and the Philistines flee (1 Samuel 17:48–54). Abner brings David to Saul, who asks whose son he is, and David says he is the son of Jesse the Bethlehemite (1 Samuel 17:55–58). Some manuscripts have a shorter chapter, and Goliath's height varies in them.",
+    "whereWeAre": "Chapter 16 ended with David serving Saul with his harp. Chapter 17 tells how David goes to the army with food for his brothers, hears Goliath's challenge, and kills him with a sling and a stone in the name of the LORD (17:1-58). Chapter 18 shows what David's win leads to.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Shepherd who defeats Goliath"
+        "role": "A shepherd who brings food to his brothers and kills Goliath with a stone (17:15,17-20,40-51)."
       },
       {
         "name": "Goliath",
-        "role": "Philistine champion from Gath"
+        "role": "The Philistine champion of Gath who defies the armies of the living God (17:4-10,23)."
       },
       {
         "name": "Saul",
-        "role": "Israelite king who speaks with David"
+        "role": "Says David is but a youth, then lets him go and arms him (17:31-39)."
       },
       {
-        "name": "Eliab and David’s brothers",
-        "role": "Soldiers in the Israelite camp"
+        "name": "Eliab and David's brothers",
+        "role": "Soldiers in the army, where Eliab is angry at David (17:13,28)."
       },
       {
         "name": "Jesse",
-        "role": "David’s father who sends supplies"
+        "role": "Sends David with parched corn and loaves to his brothers (17:12-20)."
+      },
+      {
+        "name": "Abner",
+        "role": "Saul's captain, who brings David before the king (17:55-58)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Confidence under threat",
-        "explanation": "David recalls earlier dangers rather than denying the challenge",
+        "theme": "The LORD delivered me before",
+        "explanation": "David says the LORD that delivered him from the lion and the bear will deliver him from Goliath (17:32-37).",
         "references": [
           "1 Samuel 17:32-37"
         ]
       },
       {
-        "theme": "Power not measured by equipment",
-        "explanation": "The account contrasts armor with David’s trust",
+        "theme": "Not armour but trust",
+        "explanation": "David puts off Saul's armour and goes in the name of the LORD of hosts (17:38-47).",
         "references": [
           "1 Samuel 17:38-47"
         ]
       },
       {
-        "theme": "Deliverance as divine gift",
-        "explanation": "David attributes anticipated victory to the LORD",
+        "theme": "The battle is the LORD's",
+        "explanation": "David says all this assembly shall know that the LORD saveth not with sword and spear (17:45-50).",
         "references": [
           "1 Samuel 17:45-50"
         ]
@@ -794,48 +842,48 @@
     "explainedReferences": []
   },
   "1 Samuel 18": {
-    "summary": "Jonathan forms a close covenant relationship with David and gives him clothing and weapons as tokens of commitment (1 Samuel 18:1–4). David succeeds in military service and becomes widely praised, while Saul grows angry and fearful (1 Samuel 18:5–16). Saul offers Merab, then Michal, in marriage under circumstances designed to expose David to danger; David marries Michal after fulfilling Saul’s demanded bride-price (1 Samuel 18:17–29). Saul increasingly views David as an enemy (1 Samuel 18:29–30). The narrator contrasts Jonathan’s loyalty with Saul’s escalating hostility.",
-    "whereWeAre": "Chapter 17 has just moved the story forward. Jonathan forms a close covenant relationship with David and gives him clothing and weapons as tokens of commitment. (1 Samuel 18:1–4). Chapter 19 continues the consequences of these events.",
+    "summary": "The soul of Jonathan is knit with the soul of David, and Jonathan loves him as his own soul and makes a covenant with him, giving him his robe, garments, sword, bow, and girdle (1 Samuel 18:1–4). David behaves himself wisely and Saul sets him over the men of war, but when the women sing Saul hath slain his thousands, and David his ten thousands, Saul is wroth and eyes David from that day (1 Samuel 18:5–9). The next day an evil spirit comes on Saul, and he casts a javelin at David twice, but David escapes, and Saul is afraid of him because the LORD is with David (1 Samuel 18:10–16). Saul offers his daughter Merab, then gives her to another, and Michal loves David, and Saul asks a hundred foreskins of the Philistines, hoping David will fall by their hand (1 Samuel 18:17–25). David slays two hundred and Saul gives him Michal, and Saul is yet the more afraid, and becomes David's enemy continually (1 Samuel 18:26–30).",
+    "whereWeAre": "Chapter 17 ended with David before Saul with Goliath's head. Chapter 18 shows Jonathan's love for David, the women's song that makes Saul jealous, and Saul's plots to have David killed (18:1-30). Chapter 19 tells how Saul openly tries to kill him.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Successful warrior and royal son-in-law"
+        "role": "Behaves wisely, wins battles, and marries Michal after bringing two hundred foreskins (18:5,13-14,27)."
       },
       {
         "name": "Jonathan",
-        "role": "Saul’s son who makes a covenant with David"
+        "role": "Loves David as his own soul and gives him his robe, sword, bow, and girdle (18:1-4)."
       },
       {
         "name": "Saul",
-        "role": "King jealous of David"
+        "role": "Grows jealous and afraid, casts a javelin, and sets traps for David (18:8-12,17-25)."
       },
       {
         "name": "Michal",
-        "role": "Saul’s daughter who marries David"
+        "role": "Saul's daughter, who loves David and becomes his wife (18:20-27)."
       },
       {
         "name": "Merab",
-        "role": "Saul’s daughter initially proposed as wife"
+        "role": "Saul's elder daughter, first offered and then given to Adriel (18:17-19)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Loyalty in friendship",
-        "explanation": "Jonathan voluntarily binds himself to David",
+        "theme": "A friend who loves like a brother",
+        "explanation": "Jonathan makes a covenant with David and gives him the robe he was wearing (18:1-4).",
         "references": [
           "1 Samuel 18:1-4"
         ]
       },
       {
-        "theme": "Envy and fear",
-        "explanation": "Praise for David fuels Saul’s hostility",
+        "theme": "Jealousy",
+        "explanation": "The women's song that David has ten thousands makes Saul angry and afraid (18:6-12).",
         "references": [
           "1 Samuel 18:6-12"
         ]
       },
       {
-        "theme": "Manipulation in power",
-        "explanation": "Saul uses marriage proposals to endanger David",
+        "theme": "Plots dressed as honour",
+        "explanation": "Saul offers his daughters hoping the Philistines will kill David (18:17-25).",
         "references": [
           "1 Samuel 18:17-29"
         ]
@@ -844,52 +892,52 @@
     "explainedReferences": []
   },
   "1 Samuel 19": {
-    "summary": "Saul orders David’s death, but Jonathan warns David and persuades his father to spare him temporarily (1 Samuel 19:1–7). When conflict returns, Saul attacks David, and David escapes (1 Samuel 19:8–10). Michal helps David flee through a window and delays the pursuers using a household image in his bed (1 Samuel 19:11–17). David reaches Samuel at Ramah, where successive groups sent to seize him, and finally Saul himself, prophesy in an episode presented as frustrating the arrest (1 Samuel 19:18–24). The chapter underscores David’s vulnerability even within the royal family.",
-    "whereWeAre": "Chapter 18 has just moved the story forward. Saul orders David’s death, but Jonathan warns David and persuades his father to spare him temporarily. (1 Samuel 19:1–7). Chapter 20 continues the consequences of these events.",
+    "summary": "Saul tells Jonathan and his servants to kill David, but Jonathan tells David to hide and speaks good of David to his father, and Saul swears As the LORD liveth, he shall not be slain (1 Samuel 19:1–7). There is war again, David slays the Philistines, and an evil spirit from the LORD comes on Saul, who smites at David with a javelin, but David flees (1 Samuel 19:8–10). Saul sends messengers to David's house, but Michal lets him down through a window, and she lays an image in the bed and says He is sick (1 Samuel 19:11–17). David flees to Samuel at Ramah, and Saul's messengers prophesy, and the second and third messengers prophesy, and Saul himself goes and prophesies, stripped of his clothes, all that day and night (1 Samuel 19:18–24).",
+    "whereWeAre": "Chapter 18 ended with Saul fearing David more. Chapter 19 shows Saul trying again and again to kill David, and Jonathan, Michal, and Samuel each helping David escape (19:1-24). Chapter 20 tells of the covenant between David and Jonathan.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Target of Saul’s violence"
+        "role": "Escapes the javelin, flees through a window, and goes to Samuel at Ramah (19:9-12,18)."
       },
       {
         "name": "Saul",
-        "role": "King seeking David’s death"
+        "role": "Tries to kill David and ends up prophesying stripped of his clothes (19:1,10-11,23-24)."
       },
       {
         "name": "Jonathan",
-        "role": "Intercedes for his friend"
+        "role": "Warns David and speaks good of him to Saul (19:1-7)."
       },
       {
         "name": "Michal",
-        "role": "Helps David escape"
+        "role": "Lets David down through a window and puts an image in his bed (19:11-17)."
       },
       {
         "name": "Samuel",
-        "role": "Receives David at Ramah"
+        "role": "Receives David at Naioth in Ramah (19:18-20)."
       },
       {
-        "name": "Saul’s messengers",
-        "role": "Sent to arrest David"
+        "name": "Saul's messengers",
+        "role": "Come to take David and prophesy instead (19:20-21)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Protecting life",
-        "explanation": "Jonathan challenges an unjust order",
+        "theme": "A son who speaks up",
+        "explanation": "Jonathan tells his father not to sin against David, who hath not sinned against thee (19:1-7).",
         "references": [
           "1 Samuel 19:1-7"
         ]
       },
       {
-        "theme": "Courageous assistance",
-        "explanation": "Michal risks defying Saul to aid David",
+        "theme": "A wife who takes a risk",
+        "explanation": "Michal helps David escape and tells her father's men that David is sick (19:11-17).",
         "references": [
           "1 Samuel 19:11-17"
         ]
       },
       {
-        "theme": "Limits on coercive force",
-        "explanation": "The narrative depicts attempts at arrest repeatedly frustrated",
+        "theme": "The LORD stops the men",
+        "explanation": "Messengers sent to take David begin to prophesy instead (19:18-24).",
         "references": [
           "1 Samuel 19:18-24"
         ]
@@ -898,44 +946,44 @@
     "explainedReferences": []
   },
   "1 Samuel 20": {
-    "summary": "David tells Jonathan he fears Saul intends to kill him, despite Jonathan’s initial disbelief (1 Samuel 20:1–11). The friends renew their covenant, including concern for Jonathan’s descendants (1 Samuel 20:12–23). Jonathan tests Saul’s intentions during a new-moon meal and discovers his father’s hostility toward David and toward Jonathan’s loyalty (1 Samuel 20:24–34). Jonathan signals the danger by shooting arrows near a boy, then meets David for a tearful farewell and reaffirmation of their oath (1 Samuel 20:35–42). The chapter shows costly loyalty amid the rupture of family and political bonds.",
-    "whereWeAre": "Chapter 19 has just moved the story forward. David tells Jonathan he fears Saul intends to kill him, despite Jonathan’s initial disbelief. (1 Samuel 20:1–11). Chapter 21 continues the consequences of these events.",
+    "summary": "David asks Jonathan what he has done that Saul seeks his life, and Jonathan says he will do whatever David desires, and they agree that David will hide in the field while Jonathan tests his father at the new moon feast (1 Samuel 20:1–23). David's place is empty for two days, and when Jonathan speaks for him, Saul is angry and throws a javelin at Jonathan, and Jonathan knows his father is set on killing David (1 Samuel 20:24–34). In the morning Jonathan goes into the field and shoots arrows beyond the lad, and cries Is not the arrow beyond thee as the sign (1 Samuel 20:35–40). David comes out and bows three times, and the two kiss one another and weep, and Jonathan says Go in peace, forasmuch as we have sworn in the name of the LORD (1 Samuel 20:41–42).",
+    "whereWeAre": "Chapter 19 ended with David at Naioth in Ramah. Chapter 20 tells how David and Jonathan renew their covenant, test Saul at the new moon feast, learn he means to kill David, and part in tears (20:1-42). Chapter 21 follows David as a fugitive.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Seeks to learn Saul’s intentions"
+        "role": "Hides in the field and says there is but a step between him and death (20:3,24)."
       },
       {
         "name": "Jonathan",
-        "role": "Tests his father and protects David"
+        "role": "Tests his father and warns David with arrows (20:12-22,35-40)."
       },
       {
         "name": "Saul",
-        "role": "King whose anger confirms the threat"
+        "role": "Is angry at the empty seat, and throws a javelin at his own son (20:25-33)."
       },
       {
-        "name": "Jonathan’s attendant",
-        "role": "Unaware messenger in the arrow signal"
+        "name": "The lad",
+        "role": "Gathers the arrows without knowing what the signal means (20:35-39)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Covenant friendship",
-        "explanation": "The friends commit to enduring kindness",
+        "explanation": "Jonathan and David promise kindness to each other and to each other's house for ever (20:12-17,42).",
         "references": [
           "1 Samuel 20:12-17"
         ]
       },
       {
-        "theme": "Truth tested carefully",
-        "explanation": "Jonathan seeks evidence rather than relying only on assurances",
+        "theme": "Testing the truth",
+        "explanation": "Jonathan arranges a way to learn his father's mind instead of guessing (20:5-7,18-34).",
         "references": [
           "1 Samuel 20:18-34"
         ]
       },
       {
-        "theme": "Loyalty at personal cost",
-        "explanation": "Jonathan protects David despite family conflict",
+        "theme": "Loyalty that costs",
+        "explanation": "Jonathan sides with David though it makes his father angry (20:30-34,41-42).",
         "references": [
           "1 Samuel 20:30-42"
         ]
@@ -944,44 +992,44 @@
     "explainedReferences": []
   },
   "1 Samuel 21": {
-    "summary": "David arrives at Nob and receives consecrated bread from Ahimelech the priest after giving an explanation of his mission (1 Samuel 21:1–6). He also obtains Goliath’s sword, which had been kept there (1 Samuel 21:7–9). Doeg the Edomite, a servant of Saul, is present (1 Samuel 21:7). David then flees to Achish, king of Gath; fearful when recognized, he alters his behavior to appear insane, and Achish dismisses him (1 Samuel 21:10–15). The narrative stresses the uncertainty and precarious improvisation of David’s flight, while raising questions about his misleading speech at Nob.",
-    "whereWeAre": "Chapter 20 has just moved the story forward. David arrives at Nob and receives consecrated bread from Ahimelech the priest after giving an explanation of his mission. (1 Samuel 21:1–6). Chapter 22 continues the consequences of these events.",
+    "summary": "David comes to Nob to Ahimelech the priest, who is afraid, and David tells him the king has sent him on a business, and Ahimelech gives him the hallowed bread because there is no common bread (1 Samuel 21:1–6). Doeg the Edomite, chief of Saul's herdmen, is there that day, and David takes the sword of Goliath that is wrapped in a cloth behind the ephod (1 Samuel 21:7–9). David flees to Achish king of Gath, whose servants say Is not this David the king of the land, and David is sore afraid (1 Samuel 21:10–12). David changes his behaviour, scrabbles on the doors of the gate, and lets spittle fall down his beard, and Achish says Have I need of mad men (1 Samuel 21:13–15).",
+    "whereWeAre": "Chapter 20 ended with David and Jonathan parting. Chapter 21 shows David fleeing alone, eating the holy bread at Nob, taking Goliath's sword, and acting mad before Achish king of Gath (21:1-15). Chapter 22 tells where David goes next.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Fugitive seeking food and safety"
+        "role": "Hungry and without a weapon, he eats the hallowed bread, takes Goliath's sword, and pretends to be mad at Gath (21:2-9,12-13)."
       },
       {
         "name": "Ahimelech",
-        "role": "Priest who gives bread and sword"
+        "role": "The priest at Nob, who is afraid and gives David the hallowed bread and the sword (21:1-9)."
       },
       {
         "name": "Doeg the Edomite",
-        "role": "Saul’s servant present at Nob"
+        "role": "Saul's chief herdman, who is there that day (21:7)."
       },
       {
         "name": "Achish",
-        "role": "Philistine king at Gath"
+        "role": "King of Gath, who sends David away as a madman (21:10-15)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Need and sacred provision",
-        "explanation": "David receives food normally reserved for priests",
+        "theme": "Holy bread for a hungry man",
+        "explanation": "Ahimelech gives David the hallowed bread because there is none other (21:1-6).",
         "references": [
           "1 Samuel 21:1-6"
         ]
       },
       {
-        "theme": "Threat and vulnerability",
-        "explanation": "David fears capture in Gath",
+        "theme": "Fear and a quick plan",
+        "explanation": "David is sore afraid of Achish and acts as a madman to escape (21:10-15).",
         "references": [
           "1 Samuel 21:10-15"
         ]
       },
       {
-        "theme": "Choices under pressure",
-        "explanation": "The account records David’s misleading claim without explicitly praising it",
+        "theme": "A false story",
+        "explanation": "David tells Ahimelech the king sent him, which was not true, and the book does not praise it (21:2-9).",
         "references": [
           "1 Samuel 21:2-9"
         ]
@@ -1006,52 +1054,52 @@
     ]
   },
   "1 Samuel 22": {
-    "summary": "David gathers family members and distressed or indebted followers at the cave of Adullam, then seeks shelter for his parents in Moab (1 Samuel 22:1–5). Meanwhile Saul accuses his servants and Jonathan of conspiring against him (1 Samuel 22:6–8). Doeg reports Ahimelech’s assistance to David; Saul summons the priests of Nob and orders their execution despite Ahimelech’s defense (1 Samuel 22:9–18). Doeg kills the priests, and Nob’s population is slaughtered (1 Samuel 22:18–19). Abiathar escapes to David, who accepts responsibility for the danger that befell his family (1 Samuel 22:20–23).",
-    "whereWeAre": "Chapter 21 has just moved the story forward. David gathers family members and distressed or indebted followers at the cave of Adullam, then seeks shelter for his parents in Moab. (1 Samuel 22:1–5). Chapter 23 continues the consequences of these events.",
+    "summary": "David escapes to the cave of Adullam, and his brethren and his father's house come to him, and every one that is in distress, in debt, or discontented, about four hundred men, gather to him (1 Samuel 22:1–2). David takes his father and mother to the king of Moab, and the prophet Gad tells him to go into the land of Judah (1 Samuel 22:3–5). Saul, sitting under a tree in Ramah, says none of his servants tells him that his son made a league with David, and Doeg the Edomite says he saw David come to Ahimelech (1 Samuel 22:6–10). Saul sends for Ahimelech and all the priests of Nob, accuses them, and says Thou shalt surely die, and his servants will not touch the priests, but Doeg kills fourscore and five persons that wear a linen ephod and smites Nob (1 Samuel 22:11–19). Abiathar escapes to David, and David says he has occasioned the death of all his father's house, and tells him Abide thou with me, fear not (1 Samuel 22:20–23).",
+    "whereWeAre": "Chapter 21 ended with David escaping from Gath. Chapter 22 tells how David gathers four hundred men at Adullam, and how Saul, hearing from Doeg, has the priests of Nob killed (22:1-23). Chapter 23 shows David still on the run.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Leader of fugitives who shelters Abiathar"
+        "role": "Hides at Adullam, leads a band of four hundred, and takes Abiathar in (22:1-5,20-23)."
       },
       {
         "name": "Saul",
-        "role": "Orders violence against priests"
+        "role": "Accuses the priests of helping David and orders them killed (22:6-19)."
       },
       {
-        "name": "Doeg",
-        "role": "Reports and executes the order"
+        "name": "Doeg the Edomite",
+        "role": "Tells Saul about Ahimelech and kills the priests when Saul's servants will not (22:9-10,18)."
       },
       {
         "name": "Ahimelech",
-        "role": "Priest accused of helping David"
+        "role": "The priest of Nob, who says David is the king's faithful son-in-law (22:11-16)."
       },
       {
         "name": "Abiathar",
-        "role": "Surviving priest who escapes"
+        "role": "Ahimelech's son, who alone escapes and flees to David (22:20-21)."
       },
       {
-        "name": "David’s followers",
-        "role": "People gathering around him"
+        "name": "The men gathered to David",
+        "role": "Those in distress, in debt, and discontented, about four hundred (22:2)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Abuse of authority",
-        "explanation": "Saul’s command brings violence upon innocents",
+        "theme": "Saul's cruel command",
+        "explanation": "Saul has eighty-five priests killed and the city of Nob smitten (22:16-19).",
         "references": [
           "1 Samuel 22:16-19"
         ]
       },
       {
-        "theme": "Refuge for the exposed",
-        "explanation": "David becomes a center for displaced people",
+        "theme": "A refuge for the troubled",
+        "explanation": "Those in distress, in debt, or discontented gather to David at Adullam (22:1-2).",
         "references": [
           "1 Samuel 22:1-5"
         ]
       },
       {
-        "theme": "Responsibility and protection",
-        "explanation": "David acknowledges danger and shelters Abiathar",
+        "theme": "David takes the blame",
+        "explanation": "David says he has occasioned the death of the priests' house and promises Abiathar safe keeping (22:20-23).",
         "references": [
           "1 Samuel 22:20-23"
         ]
@@ -1060,52 +1108,52 @@
     "explainedReferences": []
   },
   "1 Samuel 23": {
-    "summary": "David learns that Philistines are raiding Keilah and consults the LORD before attacking and rescuing the city (1 Samuel 23:1–5). Saul prepares to trap him there, but David consults the LORD again through Abiathar and leaves before being handed over (1 Samuel 23:6–13). Jonathan visits David and strengthens him with reassurance (1 Samuel 23:14–18). The Ziphites reveal David’s location, and Saul pursues him in the wilderness until news of a Philistine raid forces Saul to withdraw (1 Samuel 23:19–29). The chapter shows both David’s help to others and his continuing instability.",
-    "whereWeAre": "Chapter 22 has just moved the story forward. David learns that Philistines are raiding Keilah and consults the LORD before attacking and rescuing the city. (1 Samuel 23:1–5). Chapter 24 continues the consequences of these events.",
+    "summary": "David hears that the Philistines fight against Keilah and rob the threshingfloors, and he inquires of the LORD, who says Go and smite the Philistines, and David saves Keilah (1 Samuel 23:1–5). Saul hears and says God hath delivered him into his hand, and David asks the LORD through Abiathar's ephod, and learns the men of Keilah will deliver him up, so David and his six hundred men leave (1 Samuel 23:6–13). David stays in the wilderness of Ziph, and Jonathan goes to him and strengthens his hand in God, saying Thou shalt be king over Israel, and I shall be next unto thee (1 Samuel 23:14–18). The Ziphites tell Saul where David is, and Saul comes after him in the wilderness of Maon, but a messenger says the Philistines have invaded the land, and Saul returns, and David goes up to the strongholds at Engedi (1 Samuel 23:19–29).",
+    "whereWeAre": "Chapter 22 ended with David taking Abiathar in. Chapter 23 shows David saving Keilah, learning by the ephod that Keilah will give him up, meeting Jonathan one last time, and slipping away from Saul in the wilderness (23:1-29). Chapter 24 tells how David spares Saul.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Rescues Keilah while fleeing Saul"
+        "role": "Saves Keilah, asks the LORD twice, and moves from place to place with six hundred men (23:2-5,9-13)."
       },
       {
         "name": "Abiathar",
-        "role": "Priest carrying the ephod"
+        "role": "The priest who brings the ephod to David (23:6,9)."
       },
       {
         "name": "Saul",
-        "role": "Pursues David"
+        "role": "Plans to besiege David at Keilah and chases him in the wilderness (23:7-8,24-28)."
       },
       {
         "name": "Jonathan",
-        "role": "Encourages David"
+        "role": "Goes to David and strengthens his hand in God (23:16-18)."
       },
       {
-        "name": "Ziphites",
-        "role": "Inform Saul about David"
+        "name": "The Ziphites",
+        "role": "Tell Saul where David is hiding (23:19-20)."
       },
       {
-        "name": "Philistines",
-        "role": "Raid Keilah and later Israel"
+        "name": "The Philistines",
+        "role": "Raid Keilah and later invade the land, so Saul must stop (23:1,27-28)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Guidance before action",
-        "explanation": "David seeks direction before rescuing Keilah",
+        "theme": "Asking the LORD first",
+        "explanation": "David asks the LORD before he goes to Keilah and again before he leaves (23:1-5,9-13).",
         "references": [
           "1 Samuel 23:1-5"
         ]
       },
       {
-        "theme": "Uncertain alliances",
-        "explanation": "A liberated city cannot guarantee sanctuary",
+        "theme": "Not safe even among friends",
+        "explanation": "The men of Keilah would have given David up, so he cannot stay (23:10-13).",
         "references": [
           "1 Samuel 23:10-13"
         ]
       },
       {
-        "theme": "Encouragement in danger",
-        "explanation": "Jonathan renews trust and loyalty",
+        "theme": "A friend's last visit",
+        "explanation": "Jonathan tells David not to fear, for Saul shall not find him (23:16-18).",
         "references": [
           "1 Samuel 23:16-18"
         ]
@@ -1114,40 +1162,40 @@
     "explainedReferences": []
   },
   "1 Samuel 24": {
-    "summary": "Saul pursues David into the wilderness of En-gedi and enters a cave where David’s men are hiding (1 Samuel 24:1–3). David cuts off a corner of Saul’s robe but regrets even that gesture and refuses to kill the LORD’s anointed king (1 Samuel 24:4–7). After Saul departs, David calls out, shows the cloth as proof he spared Saul, and appeals for judgment from the LORD (1 Samuel 24:8–15). Saul acknowledges David’s restraint, foresees his rise, and asks for protection of his descendants (1 Samuel 24:16–22). The chapter contrasts opportunity for revenge with chosen restraint.",
-    "whereWeAre": "Chapter 23 has just moved the story forward. Saul pursues David into the wilderness of En-gedi and enters a cave where David’s men are hiding. (1 Samuel 24:1–3). Chapter 25 continues the consequences of these events.",
+    "summary": "Saul takes three thousand chosen men to seek David in the wilderness of Engedi, and goes into a cave to cover his feet, where David and his men are hiding (1 Samuel 24:1–3). David's men say Behold the day of which the LORD said unto thee, and David cuts off the skirt of Saul's robe privily, but his heart smites him, and he says The LORD forbid that I should do this thing unto my master, the LORD'S anointed (1 Samuel 24:4–7). David goes out of the cave and cries after Saul, My lord the king, and shows him the skirt, and says The LORD judge between me and thee, after whom is the king of Israel come out, after a dead dog, after a flea (1 Samuel 24:8–15). Saul lifts up his voice and weeps, and says Is this thy voice, my son David, thou art more righteous than I, and I know well that thou shalt surely be king (1 Samuel 24:16–20). Saul asks David to swear that he will not cut off his seed, and David swears, and Saul goes home while David gets up to the hold (1 Samuel 24:21–22).",
+    "whereWeAre": "Chapter 23 ended with David going up to the strongholds of Engedi. Chapter 24 tells how Saul walks into the very cave where David is hiding, and David spares his life and cuts only his robe, so that Saul weeps and admits David will be king (24:1-22). Chapter 25 turns to Samuel's death and to Abigail.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Spares Saul and appeals his case"
+        "role": "Cuts the skirt of Saul's robe but will not kill the LORD's anointed (24:4-7)."
       },
       {
         "name": "Saul",
-        "role": "Pursuing king who acknowledges mercy"
+        "role": "Enters the cave, then weeps and says David is more righteous than he (24:3,16-20)."
       },
       {
-        "name": "David’s men",
-        "role": "Urge David to exploit the opportunity"
+        "name": "David's men",
+        "role": "Tell David this is the day the LORD has given his enemy into his hand (24:4)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Restraint instead of revenge",
-        "explanation": "David refuses a killing he could have attempted",
+        "theme": "Mercy instead of revenge",
+        "explanation": "David could have killed Saul, but says The LORD forbid that I should stretch forth mine hand against the LORD'S anointed (24:4-7).",
         "references": [
           "1 Samuel 24:4-7"
         ]
       },
       {
-        "theme": "Evidence and honest appeal",
-        "explanation": "He presents proof while asking for justice",
+        "theme": "An honest appeal",
+        "explanation": "David shows the skirt as proof and asks the LORD to judge between them (24:8-15).",
         "references": [
           "1 Samuel 24:8-15"
         ]
       },
       {
-        "theme": "Mercy for descendants",
-        "explanation": "Saul seeks a promise about his family’s future",
+        "theme": "Saul sees clearly for a moment",
+        "explanation": "Saul says he knows David will be king and asks David to spare his seed (24:16-22).",
         "references": [
           "1 Samuel 24:20-22"
         ]
@@ -1156,52 +1204,52 @@
     "explainedReferences": []
   },
   "1 Samuel 25": {
-    "summary": "Samuel dies and is mourned (1 Samuel 25:1). David’s men ask the wealthy Nabal for provisions after having been near his shepherds, but Nabal contemptuously refuses (1 Samuel 25:2–13). Abigail, Nabal’s wife, gathers food and intervenes before David can attack his household, urging him not to incur bloodguilt and appealing to his future (1 Samuel 25:14–31). David praises her discretion and withdraws (1 Samuel 25:32–35). Nabal later dies, Abigail marries David, and the chapter also reports David’s marriage to Ahinoam and Saul’s giving Michal to another man (1 Samuel 25:36–44).",
-    "whereWeAre": "Chapter 24 has just moved the story forward. Samuel dies and is mourned. (1 Samuel 25:1). Chapter 26 continues the consequences of these events.",
+    "summary": "Samuel dies, and all Israel gathers and laments him and buries him at Ramah (1 Samuel 25:1). In Maon there is a man named Nabal, very great and churlish, shearing his sheep at Carmel, and David sends ten young men to greet him and ask for food, but Nabal answers Who is David and sends them away (1 Samuel 25:2–13). A servant tells Abigail, who takes two hundred loaves, two bottles of wine, five sheep, parched corn, raisins, and figs, and rides to meet David without telling Nabal (1 Samuel 25:14–20). David has sworn to kill every male of Nabal's house, but Abigail falls at his feet and says Let this iniquity be on me, and David says Blessed be the LORD God of Israel, which sent thee this day to meet me (1 Samuel 25:21–35). Abigail finds Nabal feasting and drunk, and in the morning when she tells him his heart dies within him, and about ten days later the LORD smites him and he dies (1 Samuel 25:36–38). David takes Abigail as his wife, and also Ahinoam of Jezreel, but Saul has given Michal to Phalti (1 Samuel 25:39–44).",
+    "whereWeAre": "Chapter 24 ended with Saul going home. Chapter 25 opens with the death of Samuel, then shows David nearly killing Nabal's house in anger until Abigail stops him, and ends with David marrying her (25:1-44). Chapter 26 tells how David spares Saul a second time.",
     "keyFigures": [
       {
         "name": "Abigail",
-        "role": "Intervenes to avert violence"
+        "role": "A woman of good understanding who brings food to David and stops him before he sheds blood (25:3,18-35)."
       },
       {
         "name": "David",
-        "role": "Nearly retaliates against Nabal"
+        "role": "Is angry at Nabal and sets out with four hundred men, then thanks Abigail (25:12-13,32-35)."
       },
       {
         "name": "Nabal",
-        "role": "Wealthy flock owner who insults David’s men"
+        "role": "A rich and churlish man who insults David's young men and dies ten days after learning of it (25:3,10-11,36-38)."
       },
       {
-        "name": "Samuel",
-        "role": "Dies at the chapter’s opening"
+        "name": "David's young men",
+        "role": "Greet Nabal and ask for food (25:5-9)."
       },
       {
-        "name": "Ahinoam",
-        "role": "Named as David’s wife"
+        "name": "A servant of Nabal",
+        "role": "Tells Abigail what has happened (25:14-17)."
       },
       {
-        "name": "Michal",
-        "role": "Given by Saul to Palti"
+        "name": "The LORD",
+        "role": "Smites Nabal and keeps David from avenging himself (25:26,38-39)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Peacemaking in conflict",
-        "explanation": "Abigail’s actions interrupt threatened bloodshed",
+        "theme": "A peacemaker steps in",
+        "explanation": "Abigail rides out with food and meets David before he reaches her husband's house (25:18-35).",
         "references": [
           "1 Samuel 25:18-35"
         ]
       },
       {
-        "theme": "The danger of wounded pride",
-        "explanation": "David’s anger moves toward excessive violence",
+        "theme": "Anger that goes too far",
+        "explanation": "Nabal's insult makes David swear to kill every man in his house (25:10-13,21-22).",
         "references": [
           "1 Samuel 25:10-13"
         ]
       },
       {
-        "theme": "Wise restraint",
-        "explanation": "David recognizes he has been kept from bloodguilt",
+        "theme": "Kept from shedding blood",
+        "explanation": "David says Blessed be thy advice, and blessed be thou, which hast kept me this day from coming to shed blood (25:32-34).",
         "references": [
           "1 Samuel 25:32-34"
         ]
@@ -1210,48 +1258,48 @@
     "explainedReferences": []
   },
   "1 Samuel 26": {
-    "summary": "Ziphites alert Saul to David’s position near Hachilah, and Saul camps nearby (1 Samuel 26:1–5). David and Abishai enter Saul’s camp by night and find him asleep; Abishai offers to kill him, but David refuses and takes only Saul’s spear and water jar (1 Samuel 26:6–12). From a distance David rebukes Abner for failing to guard the king, then challenges Saul to explain the pursuit (1 Samuel 26:13–20). Saul acknowledges wrongdoing, and the two part ways after David returns the spear (1 Samuel 26:21–25). This is a distinct narrated episode that echoes chapter 24.",
-    "whereWeAre": "Chapter 25 has just moved the story forward. Ziphites alert Saul to David’s position near Hachilah, and Saul camps nearby. (1 Samuel 26:1–5). Chapter 27 continues the consequences of these events.",
+    "summary": "The Ziphites tell Saul that David hides in the hill of Hachilah, and Saul goes down with three thousand chosen men (1 Samuel 26:1–5). David and Abishai go down to the host by night, and Saul lies sleeping within the trench with his spear stuck in the ground at his bolster, and a deep sleep from the LORD is fallen on them all (1 Samuel 26:6–12). Abishai says God hath delivered thine enemy into thine hand, but David says Destroy him not, for who can stretch forth his hand against the LORD'S anointed and be guiltless, and takes the spear and the cruse of water (1 Samuel 26:8–12). David cries from the top of a hill to Abner and Saul, and shows the spear, and Saul says I have sinned, I have played the fool (1 Samuel 26:13–21). David tells a young man to come and fetch the spear, and Saul says Blessed be thou, my son David, thou shalt both do great things, and also shalt still prevail (1 Samuel 26:22–25).",
+    "whereWeAre": "Chapter 25 ended with David's new wives. Chapter 26 tells how Saul again hunts David, and David again spares him, taking only his spear and water jar (26:1-25). Chapter 27 shows David giving up on Israel.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Enters the camp but spares Saul"
-      },
-      {
-        "name": "Saul",
-        "role": "King pursuing David"
+        "role": "Goes into Saul's camp at night and takes the spear but will not harm the LORD's anointed (26:6-12)."
       },
       {
         "name": "Abishai",
-        "role": "Companion urging David to strike"
+        "role": "Offers to smite Saul with one stroke (26:6-8)."
+      },
+      {
+        "name": "Saul",
+        "role": "Comes with three thousand men, then says I have sinned (26:2,21-25)."
       },
       {
         "name": "Abner",
-        "role": "Saul’s military commander"
+        "role": "Saul's captain, whom David mocks for not guarding the king (26:14-16)."
       },
       {
-        "name": "Ziphites",
-        "role": "Disclose David’s location"
+        "name": "The Ziphites",
+        "role": "Tell Saul where David is (26:1)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Life preserved despite opportunity",
-        "explanation": "David resists a second chance for violence",
+        "theme": "The same choice again",
+        "explanation": "David again will not take the life of the LORD's anointed, though Abishai urges it (26:8-12).",
         "references": [
           "1 Samuel 26:7-12"
         ]
       },
       {
-        "theme": "Accountability for guarding life",
-        "explanation": "David reproves the commander’s negligence",
+        "theme": "Who guards the king",
+        "explanation": "David tells Abner he is worthy to die for not keeping his master (26:13-16).",
         "references": [
           "1 Samuel 26:13-16"
         ]
       },
       {
-        "theme": "Justice entrusted beyond retaliation",
-        "explanation": "The protagonists part without David attacking Saul",
+        "theme": "Leaving the matter with the LORD",
+        "explanation": "David says The LORD render to every man his righteousness and his faithfulness (26:21-24).",
         "references": [
           "1 Samuel 26:21-24"
         ]
@@ -1260,44 +1308,40 @@
     "explainedReferences": []
   },
   "1 Samuel 27": {
-    "summary": "David concludes Saul will eventually capture him and moves with six hundred men and their households to Achish of Gath (1 Samuel 27:1–4). Achish grants him Ziklag as a base (1 Samuel 27:5–7). David raids groups in the southern region, reports misleading targets to Achish, and leaves no survivors to contradict him (1 Samuel 27:8–12). Achish comes to trust David, believing he has made himself offensive to Israel. The chapter describes morally troubling violence and deception without issuing a blanket endorsement of David’s conduct.",
-    "whereWeAre": "Chapter 26 has just moved the story forward. David concludes Saul will eventually capture him and moves with six hundred men and their households to Achish of Gath. (1 Samuel 27:1–4). Chapter 28 continues the consequences of these events.",
+    "summary": "David says in his heart I shall now perish one day by the hand of Saul, and he and his six hundred men and their households go over to Achish king of Gath (1 Samuel 27:1–3). Saul hears that David has fled to Gath and seeks him no more (1 Samuel 27:4). Achish gives David Ziklag, where he dwells a full year and four months (1 Samuel 27:5–7). David and his men invade the Geshurites, the Gezrites, and the Amalekites, and leave neither man nor woman alive, but he tells Achish he has made a road against the south of Judah (1 Samuel 27:8–10). Achish believes David and says He will be my servant for ever (1 Samuel 27:11–12). The chapter reports the killing and the lie without praising David for them.",
+    "whereWeAre": "Chapter 26 ended with Saul blessing David. Chapter 27 tells how David, still afraid of Saul, goes to live among the Philistines at Ziklag, where he raids Israel's old enemies and tells Achish a false story (27:1-12). Chapter 28 shows Saul facing the Philistines.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Fugitive living under Philistine protection"
+        "role": "Goes to Gath with six hundred men, lives at Ziklag, and raids the Geshurites, Gezrites, and Amalekites (27:2-9)."
       },
       {
         "name": "Achish",
-        "role": "King of Gath who grants Ziklag"
+        "role": "King of Gath, who gives David Ziklag and believes his story (27:5-6,12)."
       },
       {
-        "name": "David’s men and households",
-        "role": "Relocate with him"
-      },
-      {
-        "name": "Raided groups",
-        "role": "Targets of David’s campaigns"
+        "name": "David's men and their households",
+        "role": "Go with him to Gath and Ziklag (27:2-3)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Fear and difficult choices",
-        "explanation": "David relocates to escape Saul’s pursuit",
+        "theme": "Fear drives a hard choice",
+        "explanation": "David says he will perish by Saul's hand and goes to the Philistines (27:1-4).",
         "references": [
           "1 Samuel 27:1-4"
         ]
       },
       {
-        "theme": "Ambiguity of survival strategies",
-        "explanation": "The narrative reports deception and killing without praise",
+        "theme": "Killing and lying",
+        "explanation": "David leaves no one alive to tell Achish where he really raided (27:8-12).",
         "references": [
           "1 Samuel 27:8-12"
         ]
       },
       {
-        "theme": "Dependence on foreign patronage",
-        "explanation": "David gains a base by serving Achish",
+        "theme": "Living under a Philistine king",
+        "explanation": "Achish gives David a town in return for his service (27:5-7).",
         "references": [
           "1 Samuel 27:5-7"
         ]
@@ -1306,48 +1350,52 @@
     "explainedReferences": []
   },
   "1 Samuel 28": {
-    "summary": "As the Philistines gather, Saul sees their camp and is afraid; he receives no answer through the channels of inquiry the account lists (1 Samuel 28:1–6). Despite having expelled mediums, he seeks one at En-dor in disguise and asks her to summon Samuel (1 Samuel 28:7–11). The narrative describes an appearance identified as Samuel, who announces that the kingdom has been torn from Saul and predicts defeat and death (1 Samuel 28:12–19). Saul collapses, and the woman and his servants persuade him to eat before departing (1 Samuel 28:20–25). Interpretations differ on the mechanics of the apparition; the narrative’s stated identification should be distinguished from later explanations.",
-    "whereWeAre": "Chapter 27 has just moved the story forward. As the Philistines gather, Saul sees their camp and is afraid; he receives no answer through the channels of inquiry the account lists. (1 Samuel 28:1–6). Chapter 29 continues the consequences of these events.",
+    "summary": "The Philistines gather to fight Israel, and Achish tells David he must go out with him to battle (1 Samuel 28:1–2). Samuel is dead, and Saul has put the familiar spirits and wizards out of the land (1 Samuel 28:3). When Saul sees the host of the Philistines at Shunem, he is afraid, and he inquires of the LORD, but the LORD answers him not, neither by dreams, nor by Urim, nor by prophets (1 Samuel 28:4–6). Saul disguises himself and goes by night to a woman at Endor who has a familiar spirit, and asks her to bring up Samuel (1 Samuel 28:7–14). Samuel says Why hast thou disquieted me, and tells Saul that the LORD has rent the kingdom from him because he obeyed not the voice of the LORD against Amalek, and that tomorrow Saul and his sons shall be with him (1 Samuel 28:15–19). Saul falls all along on the earth, and the woman and his servants urge him to eat, and the woman kills a fatted calf and bakes unleavened bread, and Saul goes away that night (1 Samuel 28:20–25).",
+    "whereWeAre": "Chapter 27 ended with David at Ziklag. Chapter 28 shows the Philistines gathering for war, Saul afraid and answered by no one, and a visit to the woman at Endor, where Saul is told he will die (28:1-25). Chapter 29 shows David sent away from the Philistine army.",
     "keyFigures": [
       {
         "name": "Saul",
-        "role": "King who seeks forbidden counsel"
+        "role": "Afraid of the Philistines, he goes in disguise to the woman at Endor (28:5-8)."
       },
       {
-        "name": "Medium of En-dor",
-        "role": "Woman who conducts the consultation"
+        "name": "The woman of Endor",
+        "role": "A woman with a familiar spirit, who brings up one that Saul takes for Samuel (28:7-14)."
       },
       {
         "name": "Samuel",
-        "role": "Figure identified in the narrated apparition"
+        "role": "The one who appears, saying the LORD has rent the kingdom from Saul (28:15-19)."
       },
       {
-        "name": "Philistines",
-        "role": "Threatening army"
+        "name": "The Philistines",
+        "role": "Gather at Shunem to fight Israel (28:1,4)."
       },
       {
-        "name": "Saul’s servants",
-        "role": "Accompany and assist him"
+        "name": "Saul's servants",
+        "role": "Go with Saul and urge him to eat (28:8,23)."
+      },
+      {
+        "name": "Achish",
+        "role": "Tells David he must go to battle with him (28:1-2)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Fear without guidance",
-        "explanation": "Saul faces danger and perceived divine silence",
+        "theme": "Fear and silence",
+        "explanation": "Saul is afraid, and the LORD answers him neither by dreams, nor by Urim, nor by prophets (28:5-6).",
         "references": [
           "1 Samuel 28:5-6"
         ]
       },
       {
-        "theme": "Contradictory choices",
-        "explanation": "He uses a practice he had outlawed",
+        "theme": "Breaking his own rule",
+        "explanation": "Saul had put out those with familiar spirits, yet he looks for one (28:3,7-8).",
         "references": [
           "1 Samuel 28:7-11"
         ]
       },
       {
-        "theme": "Judgment recalled",
-        "explanation": "The reported message echoes Saul’s earlier rejection",
+        "theme": "The old message again",
+        "explanation": "Samuel repeats that the kingdom is torn from Saul and that he and his sons will die the next day (28:16-19).",
         "references": [
           "1 Samuel 28:16-19"
         ]
@@ -1356,44 +1404,44 @@
     "explainedReferences": []
   },
   "1 Samuel 29": {
-    "summary": "As the Philistines assemble at Aphek and the Israelites near Jezreel, David and his men march with Achish (1 Samuel 29:1–2). Other Philistine commanders object to David’s participation, fearing he could change sides in battle (1 Samuel 29:3–5). Although Achish defends David’s conduct, he sends him back to Philistine territory to avoid provoking the commanders (1 Samuel 29:6–11). David’s words suggest a willingness to fight, but the narrative does not disclose with certainty what he intended to do had he been allowed to participate.",
-    "whereWeAre": "Chapter 28 has just moved the story forward. As the Philistines assemble at Aphek and the Israelites near Jezreel, David and his men march with Achish. (1 Samuel 29:1–2). Chapter 30 continues the consequences of these events.",
+    "summary": "The Philistines gather at Aphek, and the Israelites camp by a fountain in Jezreel, and the lords of the Philistines pass on by hundreds and by thousands, and David and his men pass on in the rereward with Achish (1 Samuel 29:1–2). The princes of the Philistines say What do these Hebrews here, and Achish says he has found no fault in David since he came (1 Samuel 29:3). The princes are wroth and say Make this fellow return, lest in the battle he be an adversary, and remind them of the song Saul slew his thousands, and David his ten thousands (1 Samuel 29:4–5). Achish tells David he has been upright, but the lords favour him not, and David says What have I done, but he must go back (1 Samuel 29:6–10). David and his men rise early and go back into the land of the Philistines, and the Philistines go up to Jezreel (1 Samuel 29:11).",
+    "whereWeAre": "Chapter 28 ended with Saul's night at Endor. Chapter 29 tells how the Philistine princes will not let David fight beside them, so he is sent back to Ziklag and spared from going against Israel (29:1-11). Chapter 30 tells what he finds there.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Philistine client dismissed from the army"
+        "role": "Marches in the rereward with Achish, then is sent back (29:2,6-11)."
       },
       {
         "name": "Achish",
-        "role": "King who trusts David"
+        "role": "Says David has been upright but must go back because the lords favour him not (29:3,6-9)."
       },
       {
-        "name": "Philistine commanders",
-        "role": "Reject David’s presence"
+        "name": "The princes of the Philistines",
+        "role": "Fear David may turn on them in battle and demand he be sent back (29:3-5)."
       },
       {
-        "name": "Israelite forces",
-        "role": "Opposing army awaiting battle"
+        "name": "The Israelites",
+        "role": "Camp by a fountain in Jezreel (29:1)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Distrust across divided loyalties",
-        "explanation": "The commanders question David’s military allegiance",
+        "theme": "Who can be trusted",
+        "explanation": "The Philistine princes ask Is not this David, of whom they sang one to another in dances (29:3-5).",
         "references": [
           "1 Samuel 29:3-5"
         ]
       },
       {
-        "theme": "Limits of personal favor",
-        "explanation": "Achish cannot override collective military opposition",
+        "theme": "A friend who cannot overrule his lords",
+        "explanation": "Achish speaks well of David, but he cannot go against the other princes (29:6-10).",
         "references": [
           "1 Samuel 29:6-10"
         ]
       },
       {
-        "theme": "Uncertain motives",
-        "explanation": "The narrative leaves David’s actual battle intentions undisclosed",
+        "theme": "David's heart is not told",
+        "explanation": "The chapter does not say what David would have done in the battle (29:8-11).",
         "references": [
           "1 Samuel 29:8-11"
         ]
@@ -1402,48 +1450,52 @@
     "explainedReferences": []
   },
   "1 Samuel 30": {
-    "summary": "David and his men return to Ziklag to find it burned and their families taken captive by Amalekite raiders (1 Samuel 30:1–6). Under pressure from his distressed followers, David finds strength in the LORD, seeks guidance through Abiathar, and sets out in pursuit (1 Samuel 30:6–10). An abandoned Egyptian servant provides information, and David’s force defeats the raiders and recovers the captives and goods (1 Samuel 30:11–20). David requires those who stayed with supplies to share the recovered goods with those who fought, and sends gifts to Judahite towns (1 Samuel 30:21–31).",
-    "whereWeAre": "Chapter 29 has just moved the story forward. David and his men return to Ziklag to find it burned and their families taken captive by Amalekite raiders. (1 Samuel 30:1–6). Chapter 31 continues the consequences of these events.",
+    "summary": "On the third day David and his men come to Ziklag and find that the Amalekites have burned it and taken the women captive, including David's two wives, and David and the people lift up their voice and weep until they have no more power to weep (1 Samuel 30:1–5). David is greatly distressed, for the people speak of stoning him, but David encourages himself in the LORD his God (1 Samuel 30:6). David asks the LORD through Abiathar's ephod, and the LORD says Pursue, for thou shalt surely overtake them, and without fail recover all (1 Samuel 30:7–10). At the brook Besor two hundred men are too faint to go on, and in a field they find an Egyptian who has had no food for three days, and he leads David to the Amalekites (1 Samuel 30:9–16). David smites them from the twilight even unto the evening of the next day, and only four hundred young men on camels escape, and David recovers all (1 Samuel 30:17–20). When the wicked men would not share with the two hundred, David says As his part is that goeth down to the battle, so shall his part be that tarrieth by the stuff, and he sends gifts to the elders of Judah (1 Samuel 30:21–31).",
+    "whereWeAre": "Chapter 29 ended with David sent back to Ziklag. Chapter 30 tells how he finds the town burned and his family gone, asks the LORD, pursues the Amalekites, recovers everything, and shares the spoil with all (30:1-31). Chapter 31 turns back to Saul's last battle.",
     "keyFigures": [
       {
         "name": "David",
-        "role": "Leads rescue and establishes fair sharing"
+        "role": "Strengthens himself in the LORD, pursues the raiders, and says all shall share alike (30:6-8,17-25)."
       },
       {
         "name": "Abiathar",
-        "role": "Priest consulted before pursuit"
+        "role": "The priest who brings the ephod for David to ask the LORD (30:7-8)."
       },
       {
-        "name": "Amalekite raiders",
-        "role": "Attack and burn Ziklag"
+        "name": "The Amalekites",
+        "role": "Burn Ziklag and carry off the families (30:1-2)."
       },
       {
-        "name": "Abandoned Egyptian servant",
-        "role": "Guides David’s force"
+        "name": "The Egyptian servant",
+        "role": "Left sick by his master, he leads David to the raiders (30:11-16)."
       },
       {
-        "name": "David’s troops and families",
-        "role": "Suffer loss and receive restoration"
+        "name": "David's six hundred men",
+        "role": "Weep over their loss, then follow David, though two hundred stay at Besor (30:4,9-10)."
+      },
+      {
+        "name": "The elders of Judah",
+        "role": "Receive a present of the spoil (30:26-31)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "Strength in crisis",
-        "explanation": "David seeks guidance amid grief and threat",
+        "theme": "Strength in the LORD",
+        "explanation": "When his men talk of stoning him, David encourages himself in the LORD his God (30:6-8).",
         "references": [
           "1 Samuel 30:1-8"
         ]
       },
       {
-        "theme": "Care for an abandoned person",
-        "explanation": "The recovered servant becomes central to finding the raiders",
+        "theme": "Kindness to a stranger",
+        "explanation": "David feeds the sick Egyptian, who then guides him to the camp (30:11-16).",
         "references": [
           "1 Samuel 30:11-15"
         ]
       },
       {
-        "theme": "Equitable sharing",
-        "explanation": "David gives a portion to guards and fighters alike",
+        "theme": "Fair shares",
+        "explanation": "David says those who stay with the baggage shall share alike with those who fight, and it becomes a statute in Israel (30:21-25).",
         "references": [
           "1 Samuel 30:21-25"
         ]
@@ -1452,48 +1504,48 @@
     "explainedReferences": []
   },
   "1 Samuel 31": {
-    "summary": "The Philistines rout the Israelites on Mount Gilboa and kill Saul’s sons Jonathan, Abinadab, and Malchi-shua (1 Samuel 31:1–2). Saul is severely wounded by archers and, fearing abuse by the enemy, falls on his own sword after his armor-bearer refuses to kill him (1 Samuel 31:3–6). Israelites abandon nearby towns, and the Philistines display the bodies of Saul and his sons at Beth-shan (1 Samuel 31:7–10). Men of Jabesh-gilead retrieve the bodies, burn them, bury their bones, and fast seven days (1 Samuel 31:11–13). The book ends with royal defeat, grief, and an act of remembered loyalty.",
-    "whereWeAre": "Chapter 30 has just moved the story forward. The Philistines rout the Israelites on Mount Gilboa and kill Saul’s sons Jonathan, Abinadab, and Malchi-shua. (1 Samuel 31:1–2). The account hands off to 2 Samuel 1, where David hears of Saul's death.",
+    "summary": "The Philistines fight against Israel, and the men of Israel flee, and Saul's sons Jonathan, Abinadab, and Melchishua are slain on mount Gilboa (1 Samuel 31:1–2). The archers hit Saul, and he asks his armourbearer to draw his sword and thrust him through, lest these uncircumcised thrust him through and abuse him, but the armourbearer is sore afraid, so Saul takes a sword and falls upon it (1 Samuel 31:3–5). The armourbearer sees Saul dead and falls on his sword and dies with him, so Saul, his three sons, and his armourbearer die that same day (1 Samuel 31:5–6). The men of Israel forsake their cities and the Philistines dwell in them, and the next day the Philistines cut off Saul's head, put his armour in the house of Ashtaroth, and fasten his body to the wall of Bethshan (1 Samuel 31:7–10). The valiant men of Jabeshgilead go all night, take the bodies from the wall, burn them, bury the bones under a tree, and fast seven days (1 Samuel 31:11–13).",
+    "whereWeAre": "Chapter 30 ended with David sharing the spoil. Chapter 31 tells how Saul and his three sons die on mount Gilboa, how the Philistines hang their bodies at Bethshan, and how the men of Jabeshgilead bury them (31:1-13). 2 Samuel follows, with David hearing the news.",
     "keyFigures": [
       {
         "name": "Saul",
-        "role": "King killed during the battle"
+        "role": "Is hit by the archers and falls on his own sword (31:3-4)."
       },
       {
-        "name": "Jonathan, Abinadab, and Malchi-shua",
-        "role": "Saul’s sons killed by Philistines"
+        "name": "Jonathan, Abinadab, and Melchishua",
+        "role": "Saul's sons, slain at Gilboa (31:2)."
       },
       {
-        "name": "Philistines",
-        "role": "Victorious forces who display the bodies"
+        "name": "The Philistines",
+        "role": "Defeat Israel and fasten Saul's body to the wall of Bethshan (31:1,8-10)."
       },
       {
-        "name": "Saul’s armor-bearer",
-        "role": "Refuses Saul’s request and dies"
+        "name": "Saul's armourbearer",
+        "role": "Will not kill Saul, then falls on his own sword (31:4-5)."
       },
       {
-        "name": "Men of Jabesh-gilead",
-        "role": "Recover and bury the royal remains"
+        "name": "The men of Jabeshgilead",
+        "role": "Take the bodies and bury the bones, and fast seven days (31:11-13)."
       }
     ],
     "keyThemes": [
       {
-        "theme": "The costs of war",
-        "explanation": "Military defeat devastates a royal household and communities",
+        "theme": "The cost of war",
+        "explanation": "Saul, three of his sons, and his armourbearer all die on one day, and Israel flees from its cities (31:1-7).",
         "references": [
           "1 Samuel 31:1-7"
         ]
       },
       {
-        "theme": "Dishonor and dignity",
-        "explanation": "The display of bodies is answered by retrieval and burial",
+        "theme": "Shame and honour",
+        "explanation": "The Philistines fasten the bodies to the wall, but the men of Jabeshgilead take them down (31:8-13).",
         "references": [
           "1 Samuel 31:8-13"
         ]
       },
       {
-        "theme": "Loyalty after defeat",
-        "explanation": "Jabesh-gilead honors Saul despite his fall",
+        "theme": "Loyalty remembered",
+        "explanation": "Jabeshgilead remembers that Saul saved them at the start of his reign (31:11-13).",
         "references": [
           "1 Samuel 31:11-13"
         ]
