@@ -150,7 +150,7 @@ def apply_book_overview():
 
 STORY_FIXES = [
     ("by His own purpose and grace", "by his own purpose and grace"),
-    ("preserve him unto His heavenly kingdom", "preserve him unto his heavenly kingdom"),
+    ("preserve him for His heavenly kingdom", "preserve him for his heavenly kingdom"),
     ("Trophimus sick at Miletus", "Trophimus sick at Miletum"),
 ]
 

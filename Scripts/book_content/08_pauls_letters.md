@@ -638,13 +638,13 @@ Paul reminds Timothy of the goal of all true teaching: “Now the end of the com
 
 **Paul Remembers the Mercy He Received (1 Timothy 1:12–20)** — Paul recalls his former persecution of Christians and explains how God's mercy transformed him into a servant of Jesus Christ.
 
-Paul thanks Christ for trusting him with the ministry, even though he “was before a blasphemer, and a persecutor, and injurious.” Injurious means violent. “But I obtained mercy, because I did it ignorantly in unbelief.” God's grace overflowed toward him. Then Paul gives one of the clearest summaries of the gospel: “This is a faithful saying, and worthy of all acceptation, that Christ Jesus came into the world to save sinners; of whom I am chief.” If God could save the worst sinner, He can save anyone. Thinking of this, Paul bursts into praise: “Now unto the King eternal, immortal, invisible, the only wise God, be honour and glory for ever and ever. Amen.”
+Paul thanks Christ for trusting him with the ministry, even though he “was before a blasphemer, and a persecutor, and injurious.” Injurious means violent. “But I obtained mercy, because I did it ignorantly in unbelief.” God's grace overflowed toward him. Then Paul gives one of the clearest summaries of the gospel: “This is a faithful saying, and worthy of all acceptation, that Christ Jesus came into the world to save sinners; of whom I am chief.” If God could save the worst sinner, he can save anyone. Thinking of this, Paul bursts into praise: “Now unto the King eternal, immortal, invisible, the only wise God, be honour and glory for ever and ever. Amen.”
 
 Paul charges Timothy to “war a good warfare,” holding onto faith and a good conscience. Some have thrown these away and “made shipwreck” of their faith, including Hymenaeus and Alexander. Paul has put them out of the church, “delivered unto Satan, that they may learn not to blaspheme.”
 
 **The Church Must Pray for Everyone (1 Timothy 2:1–15)** — Paul gives instructions concerning public prayer, the conduct of men and women, and the importance of worship that honors God.
 
-Paul begins his instructions for church life with prayer. “Supplications, prayers, intercessions, and giving of thanks, be made for all men; For kings, and for all that are in authority; that we may lead a quiet and peaceable life in all godliness and honesty.” God wants everyone to hear the gospel. He “will have all men to be saved, and to come unto the knowledge of the truth. For there is one God, and one mediator between God and men, the man Christ Jesus; Who gave himself a ransom for all.” A mediator stands between two sides to bring them together.
+Paul begins his instructions for church life with prayer. “Supplications, prayers, intercessions, and giving of thanks, be made for all men; For kings, and for all that are in authority; that we may lead a quiet and peaceable life in all godliness and honesty.” God wants everyone to hear the gospel; he “will have all men to be saved, and to come unto the knowledge of the truth. For there is one God, and one mediator between God and men, the man Christ Jesus; Who gave himself a ransom for all.” A mediator stands between two sides to bring them together.
 
 Paul wants the men everywhere to pray, “lifting up holy hands, without wrath and doubting.” He wants the women to dress “in modest apparel,” “not with broided hair, or gold, or pearls, or costly array; But (which becometh women professing godliness) with good works.” Broided means braided, a sign of wealth and showy fashion at the time.
 
@@ -708,7 +708,7 @@ Paul remembers “the unfeigned faith that is in thee, which dwelt first in thy 
 
 **The Gospel Is Worth Suffering For (2 Timothy 1:8–18)** — Paul urges Timothy not to be ashamed of Christ or Paul's imprisonment, but to remain faithful to the gospel despite suffering and abandonment.
 
-“Be not thou therefore ashamed of the testimony of our Lord, nor of me his prisoner.” Instead, Timothy should be willing to share in suffering for the gospel. God saved us and called us, not because of our works, but by His own purpose and grace. Christ Jesus “hath abolished death, and hath brought life and immortality to light through the gospel.”
+“Be not thou therefore ashamed of the testimony of our Lord, nor of me his prisoner.” Instead, Timothy should be willing to share in suffering for the gospel. God saved us and called us, not because of our works, but by his own purpose and grace. Christ Jesus “hath abolished death, and hath brought life and immortality to light through the gospel.”
 
 Paul is suffering for that gospel, but he is not ashamed: “for I know whom I have believed, and am persuaded that he is able to keep that which I have committed unto him against that day.” He tells Timothy, “Hold fast the form of sound words,” guarding the truth with the Holy Spirit's help.
 
@@ -752,7 +752,7 @@ Now Paul speaks about his own death, which he knows is near. “For I am now rea
 
 And he looks forward with confidence: “Henceforth there is laid up for me a crown of righteousness, which the Lord, the righteous judge, shall give me at that day: and not to me only, but unto all them also that love his appearing.” The reward is not for Paul alone. It is for everyone who longs for Christ's return.
 
-**Paul Faces His Final Days with Trust in God (2 Timothy 4:9–18)** — Paul shares personal requests and disappointments, describes his abandonment during a legal defense, and expresses confidence that the Lord will preserve him for His heavenly kingdom.
+**Paul Faces His Final Days with Trust in God (2 Timothy 4:9–18)** — Paul shares personal requests and disappointments, describes his abandonment during a legal defense, and expresses confidence that the Lord will preserve him for his heavenly kingdom.
 
 Paul is lonely. “Do thy diligence to come shortly unto me: For Demas hath forsaken me, having loved this present world.” Others have gone to different places to serve. “Only Luke is with me.” Then Paul writes, “Take Mark, and bring him with thee: for he is profitable to me for the ministry.” This is the same Mark that Paul once refused to take on a journey. Now Paul asks for him by name.
 
@@ -762,7 +762,7 @@ At his first hearing in court, everyone deserted him: “At my first answer no m
 
 **Paul Closes with Final Greetings and Grace (2 Timothy 4:19–22)** — Paul ends his letter with personal greetings, news of fellow workers, a request for Timothy's arrival, and a final blessing of grace.
 
-Paul sends greetings to “Prisca and Aquila, and the household of Onesiphorus.” He mentions that he left Trophimus sick at Miletus. Then he repeats his request with new urgency: “Do thy diligence to come before winter.” Believers in Rome named Eubulus, Pudens, Linus, and Claudia send their greetings. Paul's very last written words are a blessing: “The Lord Jesus Christ be with thy spirit. Grace be with you. Amen.” According to early church tradition, Paul was beheaded in Rome under the emperor Nero not long after writing this letter. We do not know whether Timothy arrived in time.
+Paul sends greetings to “Prisca and Aquila, and the household of Onesiphorus.” He mentions that he left Trophimus sick at Miletum. Then he repeats his request with new urgency: “Do thy diligence to come before winter.” Believers in Rome named Eubulus, Pudens, Linus, and Claudia send their greetings. Paul's very last written words are a blessing: “The Lord Jesus Christ be with thy spirit. Grace be with you. Amen.” According to early church tradition, Paul was beheaded in Rome under the emperor Nero not long after writing this letter. We do not know whether Timothy arrived in time.
 
 # Titus
 When it happened: Written after Paul left Titus on the island of Crete (Titus 1:5), likely around AD 62–64. Paul planned to spend the winter at Nicopolis (Titus 3:12).
