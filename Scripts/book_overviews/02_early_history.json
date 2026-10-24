@@ -261,16 +261,16 @@
     "movements": [
       {
         "title": "David Becomes King",
-        "description": "David is first king over Judah and then over all Israel; Jerusalem becomes his capital.",
+        "description": "David is first king over Judah and then over all Israel, and Jerusalem becomes his capital with the ark.",
         "passages": [
           "2 Samuel 1-6"
         ]
       },
       {
-        "title": "The Davidic Covenant",
-        "description": "God promises David an enduring dynasty and future royal line.",
+        "title": "The Davidic Covenant and Victories",
+        "description": "God promises David an enduring dynasty, David wins his wars, and he shows kindness to Jonathan's son.",
         "passages": [
-          "2 Samuel 7"
+          "2 Samuel 7-10"
         ]
       },
       {
@@ -278,6 +278,13 @@
         "description": "David's adultery and arranged killing are followed by conflict, rebellion, and grief within his household.",
         "passages": [
           "2 Samuel 11-20"
+        ]
+      },
+      {
+        "title": "Songs, Warriors, and the Census",
+        "description": "A famine, David's song of thanks, his last words, his mighty men, and a census that ends at Araunah's threshingfloor close the book.",
+        "passages": [
+          "2 Samuel 21-24"
         ]
       }
     ],
