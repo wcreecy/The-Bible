@@ -214,7 +214,7 @@ One day a young Levite from Bethlehem passes through, looking for a place to liv
 
 Meanwhile, the tribe of Dan still has not conquered the land given to them, so they send five spies to find a new home. At Micah's house, they ask the Levite to inquire of God, and he tells them their journey will succeed. They find the city of Laish, far to the north, where the people live quietly and peacefully, with no allies nearby. Six hundred armed men from Dan set out to attack. On the way, they stop at Micah's house and steal his idol, ephod, and household gods. When the Levite protests, they ask, "Is it better for thee to be a priest unto the house of one man, or that thou be a priest unto a tribe and a family in Israel?" He gladly goes with them. Micah chases after them and cries, "Ye have taken away my gods which I made, and the priest, and ye are gone away: and what have I more?" But they are too strong, and he goes home.
 
-The Danites attack Laish, kill its peaceful people, burn the city, rebuild it, and rename it Dan. There they set up Micah's idol and make the Levite and his sons their priests. The book reveals that this Levite was Jonathan, a grandson of Gershom, the son of Moses. Many ancient copies changed the name to Manasseh to hide the shame. His family served as priests to the idol until Israel went into exile.
+The Danites attack Laish, kill its peaceful people, burn the city, rebuild it, and rename it Dan. There they set up Micah's idol and make the Levite and his sons their priests. The book reveals that this Levite was Jonathan, the son of Gershom, who was the son of Moses. Many ancient copies changed the name to Manasseh to hide the shame. His family served as priests to the idol until Israel went into exile.
 
 **Violence in Gibeah Leads to Civil War (Judges 19:1–20:48)** — A Levite's concubine suffers horrific abuse in Gibeah, leading the tribes of Israel into a devastating war against Benjamin.
 
@@ -236,7 +236,7 @@ The book ends with the same words that have echoed through its final chapters: "
 
 # Ruth
 When it happened: "In the days when the judges ruled" (Ruth 1:1)—the period between Joshua and the first king, Saul, often placed around the 1100s BC. Exact dates are uncertain.
-When it was written: The book ends with David's genealogy (Ruth 4:17–22), so it was written down no earlier than David's time; scholars propose dates from the early monarchy to after the exile.
+When it was written: Jewish tradition credits Samuel, though the book does not name its writer. It ends with David's family line (Ruth 4:17–22), so it was written down in David's time or later.
 Where: Bethlehem in Judah, and the country of Moab across the Dead Sea to the east.
 The world at the time: Israel had no king, and the tribes lived in the cycles of unfaithfulness and rescue described in Judges. Moab was a neighboring people that had at times oppressed Israel (Judges 3:12–30), which makes a Moabite woman's place in David's family line all the more striking.
 
