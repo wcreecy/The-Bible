@@ -1,85 +1,65 @@
 {
   "1 Peter 1": {
-    "summary": "Peter greets Christians scattered across several regions of Asia Minor, calling them God's chosen 'exiles' (1 Peter 1:1-2). He praises God for the 'living hope' given through Jesus' resurrection and for an inheritance that cannot perish, kept safe for them while God guards them through faith (1 Peter 1:3-5). Their present trials, he says, are real but temporary, and they test the genuineness of faith the way fire tests gold; though they have not seen Jesus, they love him and rejoice (1 Peter 1:6-9). The salvation they now enjoy was something the prophets searched and angels long to look into 1 Peter 1:10-12. On that basis Peter calls them to prepare their minds, set their hope fully on grace, and be holy in all their conduct, because God is holy (1 Peter 1:13-16). They were ransomed not with silver or gold but with the precious blood of Christ, 'like that of a lamb without blemish or spot,' who was known before the world's foundation and made known in the last times for their sake (1 Peter 1:17-21). Having been made new by the 'living and abiding word of God,' they are to love one another earnestly from the heart (1 Peter 1:22-25).",
-    "whereWeAre": "The readers were undergoing 'various trials' and being 'grieved.' The chapter does not specify what the trials were, though later chapters mention insults and slander (2:12, 3:16, 4:4, 4:14) and a 'fiery trial' (4:12).\n\nThe churches addressed seem to have included many people who once lived by pagan customs ('the passions of your former ignorance,' 1:14; 'futile ways inherited from your forefathers,' 1:18). Some Jewish Christians may also have been among them. The letter does not identify the proportions.\n\nThe gospel had reached these regions through preaching (1:12, 1:25). The New Testament mentions people from Pontus, Cappadocia and Asia among those in Jerusalem at Pentecost (Acts 2:9-10) and Paul's work in Asia (Acts 19), but the letter does not say how these specific communities began.\n\nNo empire-wide law against Christianity is documented for the first century; the evidence is of local, case-by-case action (Tacitus, Annals 15.44; Pliny, Letters 10.96-97). Nero is recorded by the Roman historian Tacitus (Annals 15.44) as having punished Christians in Rome after the great fire of AD 64. Whether the suffering in 1 Peter is local social hostility or official action is debated, and the chapter itself does not say. The letter's opening gives hope and identity to people who were suffering social pressure for their faith. The 'exile' language, the contrast between the readers' present trials and future glory, and the call to holiness all speak to Christians who no longer shared their neighbors' way of life and paid a price for it.",
+    "summary": "Peter, an apostle of Jesus Christ, writes to the strangers scattered throughout Pontus, Galatia, Cappadocia, Asia, and Bithynia, elect according to the foreknowledge of God the Father, through sanctification of the Spirit, unto obedience and sprinkling of the blood of Jesus Christ (1 Peter 1:1–2). Blessed be the God and Father of our Lord Jesus Christ, which according to his abundant mercy hath begotten us again unto a lively hope by the resurrection of Jesus Christ from the dead, to an inheritance incorruptible, and undefiled, and that fadeth not away, reserved in heaven for them, who are kept by the power of God through faith unto salvation (1 Peter 1:3–5). They greatly rejoice, though now for a season they are in heaviness through manifold temptations, that the trial of their faith, much more precious than gold that perisheth, might be found unto praise and honour and glory at the appearing of Jesus Christ, whom having not seen they love (1 Peter 1:6–9). The prophets enquired and searched diligently of this salvation, searching what the Spirit of Christ which was in them did signify when it testified beforehand the sufferings of Christ and the glory that should follow (1 Peter 1:10–12). They are to gird up the loins of their mind, be sober, hope to the end, and as obedient children be holy in all manner of conversation, because it is written Be ye holy, for I am holy (1 Peter 1:13–17). They were redeemed not with corruptible things, silver and gold, but with the precious blood of Christ, as of a lamb without blemish and without spot, foreordained before the foundation of the world (1 Peter 1:18–21). Seeing they have purified their souls in obeying the truth, they are to love one another with a pure heart fervently, being born again by the word of God, which liveth and abideth for ever, for the word of the Lord endureth for ever (1 Peter 1:22–25).",
+    "whereWeAre": "1 Peter follows James among the general letters. Peter writes to strangers scattered through the provinces of Asia Minor, blessing God for a lively hope by the resurrection of Jesus Christ, telling of the trial of their faith as gold tried with fire, and calling them to be holy and to love one another (1:1-25). Chapter 2 tells them who they are in Christ.",
     "keyFigures": [
       {
         "name": "Peter",
-        "role": "Greets the readers, praises God for salvation, and urges them to hope, holiness and love. His apostolic voice gives the letter its authority and pastoral tone."
+        "role": "An apostle of Jesus Christ who writes to the strangers and blesses God for a lively hope (1:1,3)."
       },
       {
-        "name": "The elect exiles in Asia Minor",
-        "role": "They are the people being encouraged, reminded of their identity, and called to holiness and love. The whole chapter is addressed to them as chosen people under pressure who need hope."
+        "name": "The strangers scattered abroad",
+        "role": "Elect according to the foreknowledge of God, kept by his power, and tried with manifold temptations (1:1-2,5-7)."
       },
       {
         "name": "God the Father",
-        "role": "Source of mercy, new birth, inheritance and protection. The chapter's hope rests on what the Father has done in Christ."
+        "role": "Hath begotten us again unto a lively hope, calls them holy, and judges every man's work without respect of persons (1:3,15-17)."
       },
       {
         "name": "Jesus Christ",
-        "role": "The one through whom believers have hope, redemption and faith in God. His sufferings and glory are the center of the prophets' message and of the readers' hope."
+        "role": "Raised from the dead, whose precious blood redeemed them, as a lamb without blemish and without spot (1:3,18-21)."
       },
       {
-        "name": "The Holy Spirit / the Spirit of Christ",
-        "role": "Sanctifies the readers, inspired the prophets, and empowers the preachers of the good news. Shows that the Father, Son and Spirit are all involved in salvation, a pattern many Christians describe in Trinitarian terms; the text does not use that term."
+        "name": "The Holy Ghost, the Spirit of Christ",
+        "role": "The Spirit of Christ testified in the prophets, and the gospel was preached with the Holy Ghost sent down from heaven (1:11-12)."
       },
       {
-        "name": "The Old Testament prophets",
-        "role": "They foretold the sufferings of Christ and the glories that would follow, and learned that they were serving future believers. Connects the readers' experience to the long story of God's promises."
-      },
-      {
-        "name": "Angels",
-        "role": "Mentioned to show how remarkable the gospel is. Underlines the value of the salvation the readers have received."
-      },
-      {
-        "name": "Those who preached the good news to the readers",
-        "role": "They announced the gospel 'by the Holy Spirit sent from heaven.'. Shows that the readers' faith began with the preaching of the word."
-      },
-      {
-        "name": "The readers' forefathers",
-        "role": "Represent the former way of life from which the readers were ransomed. Helps show the cost of redemption and the break from the past."
-      },
-      {
-        "name": "Isaiah",
-        "role": "His words are quoted to affirm the lasting power of God's word. Shows the writer grounding his message in the Old Testament."
-      },
-      {
-        "name": "Israel at the exodus (the Passover lamb background)",
-        "role": "Provide background imagery for the chapter's teaching. Many interpreters see Passover and sacrificial imagery behind the verse; the text does not state the connection directly."
+        "name": "The prophets",
+        "role": "Enquired and searched diligently of this salvation and ministered it to us (1:10-12)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Living hope rooted in the resurrection",
-        "explanation": "Believers have been born again 'to a living hope through the resurrection of Jesus Christ from the dead,' and are told to set their hope fully on the grace to come.\n\nChristian hope is grounded in the resurrection of Jesus, which gives a reason to endure present difficulty.",
+        "explanation": "God hath begotten us again unto a lively hope by the resurrection of Jesus Christ from the dead, to an inheritance reserved in heaven (1:3-5).",
         "references": [
           "1 Peter 1:3"
         ]
       },
       {
         "theme": "Joy and refinement through suffering",
-        "explanation": "Trials are described as temporary and as tests of the genuineness of faith, comparable to fire refining gold, leading to praise and honor at Christ's revelation. Believers rejoice even though they have not seen Jesus.\n\nFaith can be strengthened and proved genuine under pressure, and joy and grief can exist side by side.",
+        "explanation": "The trial of their faith, much more precious than gold that perisheth, is found unto praise and honour and glory at the appearing of Jesus Christ (1:6-9).",
         "references": [
           "1 Peter 1:6-9"
         ]
       },
       {
         "theme": "Chosen, protected and heirs",
-        "explanation": "The readers are called elect, born again, and heirs of an imperishable inheritance, and God's power guards them through faith.\n\nIdentity and security rest on God's action and promise, not on social standing.",
+        "explanation": "They are elect according to the foreknowledge of God the Father, kept by the power of God through faith unto salvation (1:1-5).",
         "references": [
           "1 Peter 1:1-5"
         ]
       },
       {
         "theme": "Holiness as the response to redemption",
-        "explanation": "Because God is holy and because believers were ransomed at the cost of Christ's precious blood, they are to leave their former passions behind and live in reverent fear of the Father.\n\nGrace and gratitude, not mere rule-keeping, are the foundation for a changed life.",
+        "explanation": "Because God is holy, they are to be holy in all manner of conversation, redeemed with the precious blood of Christ and not with silver and gold (1:13-21).",
         "references": [
           "1 Peter 1:13-21"
         ]
       },
       {
         "theme": "Love for one another and the enduring word",
-        "explanation": "Obeying the truth purifies the soul for sincere brotherly love, and new birth comes through the 'living and abiding word of God,' which outlasts everything human.\n\nA community formed by God's word is meant to show earnest, heartfelt love.",
+        "explanation": "They are to love one another with a pure heart fervently, being born again by the word of God, which liveth and abideth for ever (1:22-25).",
         "references": [
           "1 Peter 1:22-25"
         ]
@@ -104,82 +84,66 @@
     ]
   },
   "1 Peter 2": {
-    "summary": "Peter tells his readers to lay aside malice, deceit, hypocrisy, envy and slander, and to long for pure spiritual milk like newborn infants, so that they may grow up into salvation (1 Peter 2:1-3). Coming to Christ, the living stone rejected by people but chosen and precious to God, they themselves are built up as living stones into a spiritual house and a holy priesthood that offers spiritual sacrifices (1 Peter 2:4-5). Old Testament passages about a cornerstone show that those who believe will not be put to shame, while those who do not believe stumble (1 Peter 2:6-8). The readers are described with titles once used of Israel: a chosen race, a royal priesthood, a holy nation, a people for God's own possession, who once were not a people but now are God's people (1 Peter 2:9-10). As sojourners and exiles they are to live honorably among the Gentiles so that outsiders who slander them may see their good deeds and glorify God (1 Peter 2:11-12). They are told to submit to human authorities, including the emperor and governors, as free people who serve God (1 Peter 2:13-17), and household servants are told to submit to their masters, even harsh ones (1 Peter 2:18-20). The chapter closes by pointing to Christ's suffering as an example and as the means by which sins are borne and wounds healed, so that those who were straying sheep have now returned to the Shepherd and Overseer of their souls (1 Peter 2:21-25).",
-    "whereWeAre": "Christians were being spoken against as 'evildoers' by their Gentile neighbors (2:12). The chapter does not say what they were accused of.\n\nAncient sources show that early Christians were sometimes accused of atheism (for not worshiping the gods), of disloyalty, or of immoral behavior. The Roman governor Pliny, writing to the emperor Trajan around AD 112 about Christians in Bithynia-Pontus, a region addressed in 1 Peter 1:1, treats the 'name' of Christian as a matter for punishment. That is later than the usual dates proposed for 1 Peter, so it shows what could happen in the region, not the situation of these readers.\n\nEnslaved and servant populations were a significant part of the Roman economy and household. Some members of the churches were household servants (2:18). Many Roman households were headed by a master whose religion the household was expected to follow.\n\nRoman governors had authority to punish wrongdoers; 2:14 describes them as sent by the emperor to punish evildoers and praise those who do good. The call to submit, honor and do good makes sense for a vulnerable minority whose reputation was damaged. The instructions to servants are addressed to people with little legal power. The 'exile' language gives them a way of understanding their social position.",
+    "summary": "Laying aside all malice, and all guile, and hypocrisies, and envies, and all evil speakings, the believers are as newborn babes to desire the sincere milk of the word, that they may grow thereby, if so be they have tasted that the Lord is gracious (1 Peter 2:1–3). Coming to Christ, a living stone, disallowed of men but chosen of God, precious, they as lively stones are built up a spiritual house, an holy priesthood, to offer up spiritual sacrifices acceptable to God by Jesus Christ (1 Peter 2:4–5). He that believeth on the chief corner stone shall not be confounded, but to them which be disobedient the stone which the builders disallowed is made a stone of stumbling and a rock of offence (1 Peter 2:6–8). But they are a chosen generation, a royal priesthood, an holy nation, a peculiar people, that they should shew forth the praises of him who hath called them out of darkness into his marvellous light, who in time past were not a people but are now the people of God (1 Peter 2:9–10). As strangers and pilgrims they are to abstain from fleshly lusts, have their conversation honest among the Gentiles, that they may by good works glorify God in the day of visitation (1 Peter 2:11–12). They are to submit to every ordinance of man for the Lord's sake, whether to the king or to governors, as free but not using liberty for a cloke of maliciousness, honouring all men, loving the brotherhood, fearing God, and honouring the king (1 Peter 2:13–17). Servants are to be subject to their masters with all fear, not only to the good and gentle but also to the froward, for it is thankworthy if a man for conscience toward God endure grief, suffering wrongfully (1 Peter 2:18–20). Christ also suffered for us, leaving us an example, who did no sin, neither was guile found in his mouth, who when he was reviled reviled not again, and who his own self bare our sins in his own body on the tree, by whose stripes they were healed (1 Peter 2:21–24). They were as sheep going astray, but are now returned unto the Shepherd and Bishop of their souls (1 Peter 2:25).",
+    "whereWeAre": "Chapter 1 ended with the word of the Lord that endureth for ever (1:25). Chapter 2 tells believers to desire the milk of the word, calls them lively stones, a chosen generation and a royal priesthood, and shows how strangers and servants should live and follow Christ's example (2:1-25). Chapter 3 turns to wives, husbands, and suffering for righteousness.",
     "keyFigures": [
       {
-        "name": "Christ (the living stone, the Shepherd and Overseer)",
-        "role": "Foundation of the community, model for conduct and the one who brings healing. Everything in the chapter's instructions is tied to who he is and what he has done."
+        "name": "Christ",
+        "role": "The living stone, chosen of God and precious, who bare our sins on the tree and is the Shepherd and Bishop of their souls (2:4,24-25)."
       },
       {
-        "name": "The believing community (living stones, a holy priesthood, God's people)",
-        "role": "They are addressed with their identity and their calling to proclaim God's excellencies and live honorably. The chapter shows how a minority community can understand itself as belonging to God."
+        "name": "The believers",
+        "role": "Lively stones built up a spiritual house, a chosen generation, a royal priesthood, an holy nation (2:5,9)."
       },
       {
-        "name": "Those who do not believe (the builders who rejected the stone)",
-        "role": "They contrast with believers; they stumble because they disobey the word. Shows that Christ divides people into those who trust him and those who reject him."
+        "name": "The disobedient",
+        "role": "They which stumble at the word, to whom the stone the builders disallowed is a rock of offence (2:7-8)."
       },
       {
-        "name": "The Gentiles (outsiders)",
-        "role": "The audience for the believers' public conduct. The chapter wants believers' behavior to answer slander and, if possible, lead to praise of God."
+        "name": "The Gentiles",
+        "role": "Speak against the believers as evildoers but may glorify God by seeing their good works (2:12)."
       },
       {
-        "name": "The emperor and governors",
-        "role": "Readers are told to submit to them and honor the emperor, and are told that governors punish evildoers and praise those who do good. Shows the writer's expectation that Christians would be good citizens within Roman society."
+        "name": "The king and governors",
+        "role": "To whom believers are to submit for the Lord's sake (2:13-14,17)."
       },
       {
-        "name": "Household servants",
-        "role": "They are addressed directly and told to submit and to endure unjust suffering. Christ's example in suffering is offered to them in a particular way."
-      },
-      {
-        "name": "Masters",
-        "role": "Mentioned as those the servants are to respect. The passage does not give instructions to masters here."
-      },
-      {
-        "name": "God",
-        "role": "The one to whom the community belongs and to whom they answer. Behind the chapter's commands is the idea that believers live before God."
-      },
-      {
-        "name": "Straying sheep",
-        "role": "Closes the chapter with an image of restoration. Echoes Isaiah 53:6 and Old Testament shepherd imagery."
-      },
-      {
-        "name": "Israel",
-        "role": "Background for how the letter describes the church. Shows continuity with the Old Testament, though interpreters differ on how to explain the relationship."
+        "name": "Servants",
+        "role": "Told to be subject to their masters, even the froward, and to take suffering wrongfully patiently (2:18-20)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Growth through longing for God's word",
-        "explanation": "Believers are called to put away destructive attitudes and long for 'pure spiritual milk' so that they may grow up in salvation, having tasted that the Lord is good.\n\nSpiritual growth involves both leaving behind what harms community and regularly seeking what nourishes faith.",
+        "explanation": "As newborn babes they are to desire the sincere milk of the word, that they may grow thereby (2:1-3).",
         "references": [
           "1 Peter 2:1-3"
         ]
       },
       {
         "theme": "A people with a new identity",
-        "explanation": "The readers are living stones in a spiritual house, a holy priesthood, a chosen race, a holy nation and God's own people, who have received mercy.\n\nIdentity as God's people comes from God's choice and mercy, and carries a calling to proclaim his excellencies.",
+        "explanation": "They are a chosen generation, a royal priesthood, an holy nation, a peculiar people, once not a people but now the people of God (2:4-10).",
         "references": [
           "1 Peter 2:4-10"
         ]
       },
       {
         "theme": "Honorable conduct as witness",
-        "explanation": "Believers are to live so honorably among their critics that their good deeds may lead others to glorify God, and are to submit to authority and honor everyone as free people who serve God.\n\nGood conduct and respect can answer slander and show that faith is not a threat, though the text doesn't promise that critics will be convinced.",
+        "explanation": "They are to have their conversation honest among the Gentiles, that by good works the Gentiles may glorify God, and to submit to every ordinance of man for the Lord's sake (2:11-17).",
         "references": [
           "1 Peter 2:11-17"
         ]
       },
       {
         "theme": "Enduring unjust suffering after Christ's example",
-        "explanation": "Servants, and by extension all believers, are told that patiently enduring unjust suffering is commendable before God, because Christ suffered and did not retaliate.\n\nChrist's response to mistreatment offers a pattern; the passage does not say that suffering abuse is itself a good, or that injustice should be accepted without limit.",
+        "explanation": "Servants are to take suffering wrongfully patiently, because Christ also suffered for us, leaving us an example that we should follow his steps (2:18-25).",
         "references": [
           "1 Peter 2:18-25"
         ]
       },
       {
         "theme": "Christ's saving work: healing and return to the Shepherd",
-        "explanation": "Christ bore sins in his body on the tree, so that believers may die to sin and live to righteousness; they are healed by his wounds and have returned to the Shepherd.\n\nChrist's death both forgives and enables a changed life.",
+        "explanation": "He his own self bare our sins in his own body on the tree, by whose stripes they were healed, and they are returned unto the Shepherd and Bishop of their souls (2:21-25).",
         "references": [
           "1 Peter 2:21-25"
         ]
@@ -204,90 +168,66 @@
     ]
   },
   "1 Peter 3": {
-    "summary": "Peter continues his instructions for life in a hostile society. He tells wives to be subject to their husbands so that even husbands who do not obey the word may be won 'without a word' by their wives' conduct, and he points them to the 'hidden person of the heart' and a gentle, quiet spirit as true adornment, with Sarah as an example 1 Peter 3:1-6. He tells husbands to live with their wives in an understanding way and to honor them as fellow heirs of the grace of life, so that their prayers are not hindered (1 Peter 3:7). He then addresses the whole community: be united, sympathetic, loving and humble, and do not repay evil for evil but bless, using words from Psalm 34 1 Peter 3:8-12. Suffering for doing good is not to be feared; believers are to honor Christ as Lord, be ready to give a gentle and respectful answer for their hope, and keep a good conscience, since it is better to suffer for doing good than for doing wrong (1 Peter 3:13-17). The ground for this is Christ, who suffered once for sins, the righteous for the unrighteous, to bring us to God, and who was made alive in the spirit; the passage mentions his proclamation to 'spirits in prison' from the days of Noah, compares the flood to baptism, and ends with Christ's resurrection, ascension and rule over angels, authorities and powers (1 Peter 3:18-22).",
-    "whereWeAre": "Some Christian wives were married to men who did not believe, and the passage assumes that their faith could cause tension in the household.\n\nChristians were being reviled for their good conduct (3:16) and might suffer for righteousness (3:14). The passage does not say what form this took.\n\nRoman writers of the time, such as Plutarch in his marriage advice, expected wives to worship their husbands' gods and to avoid foreign cults. This helps explain why a wife's different faith might be controversial.\n\nWealthy Roman women were sometimes criticized by moralists for elaborate hairstyles and costly jewelry and clothing, and similar warnings appear in other Jewish and Christian writings. Whether this was a problem in these specific churches is not stated. The wife-husband instructions address a real tension: how to live faithfully when a spouse does not share one's faith. The call to bless rather than retaliate and to give a gentle answer fits a community under verbal pressure. The Noah reference may have resonated with readers who were a small minority, though the text does not say so.",
+    "summary": "Wives are to be in subjection to their own husbands, that if any obey not the word they also may without the word be won by the conversation of the wives, whose adorning is not outward plaiting of the hair and wearing of gold, but the hidden man of the heart, a meek and quiet spirit, which is in the sight of God of great price, as Sara obeyed Abraham, calling him lord (1 Peter 3:1–6). Husbands are to dwell with their wives according to knowledge, giving honour unto the wife as unto the weaker vessel, and as being heirs together of the grace of life, that their prayers be not hindered (1 Peter 3:7). All are to be of one mind, having compassion one of another, loving as brethren, pitiful, courteous, not rendering evil for evil, but contrariwise blessing, for the eyes of the Lord are over the righteous and his ears are open unto their prayers (1 Peter 3:8–12). Who is he that will harm them, if they be followers of that which is good, but if they suffer for righteousness' sake, happy are they, and they are to sanctify the Lord God in their hearts and be ready always to give an answer to every man that asketh a reason of the hope that is in them with meekness and fear (1 Peter 3:13–15). Having a good conscience, that they which falsely accuse their good conversation in Christ may be ashamed, for it is better to suffer for well doing than for evil doing (1 Peter 3:16–17). Christ also hath once suffered for sins, the just for the unjust, that he might bring us to God, being put to death in the flesh but quickened by the Spirit, by which he went and preached unto the spirits in prison, which sometime were disobedient in the days of Noah, while the ark was a preparing, wherein eight souls were saved by water (1 Peter 3:18–20). Baptism doth also now save us, the answer of a good conscience toward God, by the resurrection of Jesus Christ, who is gone into heaven and is on the right hand of God, angels and authorities and powers being made subject unto him (1 Peter 3:21–22).",
+    "whereWeAre": "Chapter 2 ended with Christ the Shepherd and Bishop of their souls (2:25). Chapter 3 speaks to wives and husbands, calls all to be of one mind and to bless, tells them to be ready to give a reason of their hope, and shows Christ suffering for the unjust and now at God's right hand (3:1-22). Chapter 4 calls them to arm themselves with the same mind.",
     "keyFigures": [
       {
-        "name": "Christian wives",
-        "role": "They are addressed first, and are told to be subject, to keep respectful and pure conduct, and to focus on inner beauty. The chapter recognizes that some of them faced religious division at home."
+        "name": "Wives",
+        "role": "Told to be in subjection, with a meek and quiet spirit, that husbands may be won without the word (3:1-6)."
       },
       {
-        "name": "Husbands, including non-believing husbands",
-        "role": "The first group may be won by conduct; the second group is told to show honor to their wives. The letter addresses both mixed-faith and Christian households."
+        "name": "Husbands",
+        "role": "Told to dwell with their wives according to knowledge and give honour, that their prayers be not hindered (3:7)."
       },
       {
-        "name": "Sarah",
-        "role": "Provides an example of respectful conduct. The text says she 'obeyed Abraham, calling him lord.'. Anchors the instruction in Old Testament models."
-      },
-      {
-        "name": "Abraham",
-        "role": "Mentioned only as the one Sarah called 'lord.' A limited role in the chapter."
-      },
-      {
-        "name": "The believing community as a whole",
-        "role": "They are told to be like-minded, loving and humble, to bless in return for reviling, and to be ready to explain their hope. The chapter's ethic is meant to mark the whole community."
-      },
-      {
-        "name": "Those who revile the readers' good behavior",
-        "role": "They may be put to shame by the readers' good conduct. Part of the pressure the readers were under."
+        "name": "The brethren",
+        "role": "Told to be of one mind, to bless, and to be ready to give an answer of the hope that is in them (3:8-9,15)."
       },
       {
         "name": "Christ",
-        "role": "The ground for the readers' hope and endurance. He suffered once for sins, was made alive, proclaimed to spirits, rose, ascended and is at God's right hand. Everything in the chapter's second half rests on him."
+        "role": "Suffered for sins, the just for the unjust, was quickened by the Spirit, and is on the right hand of God (3:18-22)."
       },
       {
-        "name": "The spirits in prison",
-        "role": "The recipients of Christ's proclamation. A debated detail in the passage; the surrounding point is Christ's victory and the pattern of judgment and rescue."
-      },
-      {
-        "name": "Noah and the eight in the ark",
-        "role": "Presented as those brought safely through water, which corresponds to baptism. Used to illustrate rescue through judgment."
+        "name": "The spirits in prison and Noah's eight souls",
+        "role": "Disobedient in the days of Noah while the ark was preparing, wherein eight souls were saved by water (3:19-20)."
       },
       {
         "name": "God",
-        "role": "Source of blessing, patient with the disobedient, and the one to whom believers are brought. Provides the basis for their confidence."
-      },
-      {
-        "name": "Angels, authorities and powers",
-        "role": "They show the extent of his rule. Reassures readers that no power is above Christ."
-      },
-      {
-        "name": "David (the psalmist)",
-        "role": "Source of the quoted words. Shows the writer using the Psalms to support practical teaching."
+        "role": "Waited with longsuffering in the days of Noah, and his eyes are over the righteous (3:12,20)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Winning others by conduct and inner character",
-        "explanation": "Wives married to unbelieving husbands are told that their pure and respectful behavior can win them 'without a word,' and that inner beauty is precious to God.\n\nThe way believers live can speak persuasively, and character matters more than appearance.",
+        "explanation": "Wives may win unbelieving husbands without the word by a chaste conversation and a meek and quiet spirit, which is of great price in the sight of God (3:1-6).",
         "references": [
           "1 Peter 3:1-6"
         ]
       },
       {
         "theme": "Honor and shared standing within the household",
-        "explanation": "Husbands are to live in an understanding way with their wives and honor them as fellow heirs of the grace of life.\n\nSpiritual equality calls for honor and consideration in how people treat each other.",
+        "explanation": "Husbands are to give honour to the wife as being heirs together of the grace of life (3:7).",
         "references": [
           "1 Peter 3:7"
         ]
       },
       {
         "theme": "Blessing instead of retaliation",
-        "explanation": "Believers are to be united, sympathetic and humble, and are not to repay evil for evil or insult for insult, but to bless, because they were called to inherit a blessing.\n\nResponding to insult with blessing breaks the cycle of retaliation.",
+        "explanation": "All are to be of one mind, compassionate, not rendering evil for evil, but contrariwise blessing (3:8-12).",
         "references": [
           "1 Peter 3:8-12"
         ]
       },
       {
         "theme": "Ready, gentle witness and a clear conscience",
-        "explanation": "Believers are told to set Christ apart as Lord in their hearts, to be ready to explain their hope with gentleness and respect, and to keep a good conscience.\n\nBeing ready to explain one's hope should be paired with humility and respect.",
+        "explanation": "They are to sanctify the Lord God in their hearts and be ready to give an answer of the hope that is in them with meekness and fear, having a good conscience (3:13-17).",
         "references": [
           "1 Peter 3:13-17"
         ]
       },
       {
         "theme": "Christ's suffering, vindication and rule",
-        "explanation": "Christ suffered once for sins, was made alive, proclaimed to spirits, rose, ascended and rules over all powers; baptism is linked to the flood and to his resurrection.\n\nChrist's path of suffering followed by victory gives hope to those who suffer for doing good.",
+        "explanation": "Christ hath once suffered for sins, the just for the unjust, and is gone into heaven, angels and authorities and powers being made subject unto him (3:18-22).",
         "references": [
           "1 Peter 3:18-22"
         ]
@@ -302,78 +242,62 @@
     ]
   },
   "1 Peter 4": {
-    "summary": "Because Christ suffered in the flesh, Peter tells his readers to arm themselves with the same way of thinking, since whoever has suffered in the flesh has finished with sin, and to live no longer by human passions but by God's will (1 Peter 4:1-2). They have spent enough time doing what the Gentiles want to do; former friends are surprised that they no longer join in and so they malign them, but those people will give account to the one who is ready to judge the living and the dead (1 Peter 4:3-5). The chapter says the gospel was preached even to those who are dead (1 Peter 4:6). Since the end of all things is at hand, believers are to be self-controlled and sober-minded for prayer, to love one another earnestly because love covers a multitude of sins, to show hospitality without grumbling, and to use their gifts to serve one another so that God may be glorified in everything (1 Peter 4:7-11). They should not be surprised at the 'fiery trial,' but rejoice in sharing Christ's sufferings; to be insulted for the name of Christ is a blessing, but no one should suffer as a murderer, thief, evildoer or meddler (1 Peter 4:12-15). To suffer 'as a Christian' is no shame; judgment begins with God's household, and those who suffer according to God's will should entrust their souls to a faithful Creator while continuing to do good (1 Peter 4:16-19).",
-    "whereWeAre": "The readers' former friends were surprised that the believers no longer shared in their activities and so maligned them.\n\nThe readers were undergoing a 'fiery trial' and were being insulted for the name of Christ. The text suggests the possibility of more severe suffering, but does not describe it in detail.\n\nThe Roman historian Tacitus (Annals 15.44) says that Nero punished Christians in Rome after the fire of AD 64, and that the name 'Christians' was in use. This shows the name was known and could bring danger by that time in Rome. It does not show that the same thing was happening in Asia Minor.\n\nAround AD 112, the governor Pliny wrote to the emperor Trajan from Bithynia-Pontus about how to handle people accused of being Christians, and said that persistent Christians were to be punished. This is later than the likely date of 1 Peter and shows what could happen in the same region. The chapter reflects a community whose faith had cost them social ties and whose critics were hostile. The Christian name was becoming a public label that could bring trouble. The chapter's guidance to avoid wrongdoing, to love and serve, and to trust God applies to a minority that could not assume protection.",
+    "summary": "Forasmuch as Christ hath suffered for us in the flesh, the believers are to arm themselves with the same mind, for he that hath suffered in the flesh hath ceased from sin, that he no longer should live to the lusts of men but to the will of God (1 Peter 4:1–2). The time past may suffice to have wrought the will of the Gentiles, when they walked in lasciviousness, lusts, excess of wine, revellings, banquetings, and abominable idolatries, wherein the Gentiles think it strange that they run not with them to the same excess of riot, speaking evil of them, who shall give account to him that is ready to judge the quick and the dead (1 Peter 4:3–6). The end of all things is at hand, so they are to be sober, watch unto prayer, have fervent charity among themselves, for charity shall cover the multitude of sins, and use hospitality one to another without grudging (1 Peter 4:7–9). As every man hath received the gift, he is to minister the same one to another, as good stewards of the manifold grace of God, that God in all things may be glorified through Jesus Christ (1 Peter 4:10–11). They are not to think it strange concerning the fiery trial which is to try them, but rejoice inasmuch as they are partakers of Christ's sufferings, and if they are reproached for the name of Christ, happy are they, for the spirit of glory and of God resteth upon them (1 Peter 4:12–14). Let none of them suffer as a murderer, or a thief, or an evildoer, or a busybody in other men's matters, yet if any man suffer as a Christian, let him not be ashamed, but glorify God on this behalf (1 Peter 4:15–16). Judgment must begin at the house of God, and if first at us, what shall the end be of them that obey not the gospel of God, so let them that suffer according to the will of God commit the keeping of their souls to him in well doing, as unto a faithful Creator (1 Peter 4:17–19).",
+    "whereWeAre": "Chapter 3 ended with Christ gone into heaven, angels and powers subject to him (3:22). Chapter 4 tells believers to live no longer to the lusts of men, to love and use hospitality, not to think the fiery trial strange, and to commit their souls to a faithful Creator (4:1-19). Chapter 5 gives instructions for elders and closes the letter.",
     "keyFigures": [
       {
         "name": "Christ",
-        "role": "The model and basis for believers' endurance, and the one through whom God is glorified. The chapter ties every instruction to sharing in Christ's sufferings and future glory."
+        "role": "Suffered for us in the flesh, is partaker of whose sufferings the believers are, and will be glad when his glory is revealed (4:1,13)."
       },
       {
-        "name": "The readers (believers in the churches)",
-        "role": "They are told to change their lives, love one another, serve with their gifts, and endure fiery trials. The chapter is about how a community under pressure should live."
+        "name": "The believers",
+        "role": "Told to arm themselves with the same mind, be sober, use hospitality, and not think the fiery trial strange (4:1,7-12)."
       },
       {
-        "name": "The Gentiles / former companions",
-        "role": "They are surprised by the readers' changed behavior and malign them. Explains the source of the readers' social tension."
-      },
-      {
-        "name": "The living and the dead",
-        "role": "Everyone will give account to God. Establishes that no one escapes God's judgment and that the readers' critics will answer to him."
-      },
-      {
-        "name": "God",
-        "role": "The one to whom believers entrust their souls. Provides the grounds for hope and endurance."
+        "name": "The Gentiles",
+        "role": "Think it strange that believers run not with them to the same excess of riot, and speak evil of them (4:3-4)."
       },
       {
         "name": "The Spirit of glory and of God",
-        "role": "A sign of God's presence in suffering. Gives comfort to those who are reviled."
+        "role": "Resteth upon those reproached for the name of Christ (4:14)."
       },
       {
-        "name": "Murderers, thieves, evildoers and meddlers",
-        "role": "A contrast to suffering 'as a Christian.' Insists that any suffering believers face should be for Christ, not for wrongdoing."
-      },
-      {
-        "name": "Those who do not obey the gospel",
-        "role": "Contrasted with believers in the discussion of judgment. Underlines the seriousness of the gospel message."
-      },
-      {
-        "name": "Noah's generation and the 'spirits in prison' of chapter 3",
-        "role": "Background to a debated verse. Interpreters link the passages in different ways."
+        "name": "God, the faithful Creator",
+        "role": "Ready to judge the quick and the dead, and keeps the souls of those who suffer according to his will (4:5,17-19)."
       }
     ],
     "keyThemes": [
       {
         "theme": "A changed life in place of the old way",
-        "explanation": "Believers are to live for God's will rather than human passions, having spent enough time on the lifestyle of their former companions. This change leads to misunderstanding and slander.\n\nA commitment to Christ often means leaving habits and social patterns behind, and it can be misunderstood.",
+        "explanation": "They are to arm themselves with the same mind as Christ, and live no longer to the lusts of men but to the will of God (4:1-6).",
         "references": [
           "1 Peter 4:1-6"
         ]
       },
       {
         "theme": "Love, hospitality and serving with one's gifts",
-        "explanation": "In light of the end being near, believers are to pray, love earnestly, welcome each other without grumbling and use their gifts as stewards of God's grace.\n\nOrdinary acts of service and welcome are a way of glorifying God.",
+        "explanation": "The end of all things is at hand, so they are to be sober, have fervent charity, use hospitality, and minister their gifts as good stewards of the manifold grace of God (4:7-11).",
         "references": [
           "1 Peter 4:7-11"
         ]
       },
       {
         "theme": "Suffering as sharing in Christ's sufferings",
-        "explanation": "Believers should not be surprised by fiery trials, but rejoice because they are sharing Christ's sufferings, and the Spirit of glory rests on them.\n\nSuffering for Christ is not a sign of God's absence.",
+        "explanation": "They are not to think the fiery trial strange but to rejoice as partakers of Christ's sufferings, for the spirit of glory and of God resteth upon them (4:12-14).",
         "references": [
           "1 Peter 4:12-14"
         ]
       },
       {
         "theme": "Suffering for the right reasons",
-        "explanation": "Believers must not suffer as wrongdoers; suffering 'as a Christian' is no cause for shame.\n\nThe reason for suffering matters; wrongdoing is not persecution.",
+        "explanation": "If any suffer as a Christian, let him not be ashamed, but let none suffer as a murderer, a thief, an evildoer, or a busybody (4:15-16).",
         "references": [
           "1 Peter 4:15-16"
         ]
       },
       {
         "theme": "God's judgment and trust in the faithful Creator",
-        "explanation": "Judgment begins with God's household, and the outcome for those who reject the gospel is more serious. Those who suffer according to God's will entrust their souls to a faithful Creator and keep doing good.\n\nBelievers can face uncertainty with trust in God's faithfulness while continuing to do good.",
+        "explanation": "Judgment begins at the house of God, and those who suffer according to God's will are to commit the keeping of their souls to a faithful Creator (4:17-19).",
         "references": [
           "1 Peter 4:17-19"
         ]
@@ -388,94 +312,66 @@
     ]
   },
   "1 Peter 5": {
-    "summary": "Peter, as a 'fellow elder' and witness of Christ's sufferings who shares in the glory to be revealed, urges the elders among his readers to shepherd God's flock willingly rather than under compulsion, eagerly rather than for shameful gain, and as examples rather than by domineering; when the Chief Shepherd appears they will receive an unfading crown of glory (1 Peter 5:1-4). Younger people are to be subject to the elders, and all are to clothe themselves with humility toward one another, since 'God opposes the proud but gives grace to the humble' (1 Peter 5:5). Believers are to humble themselves under God's mighty hand, trusting him to lift them up at the proper time, and to cast all their anxieties on him because he cares for them (1 Peter 5:6-7). They are to be sober-minded and watchful because their adversary the devil prowls like a roaring lion, and they are to resist him, firm in faith, knowing their fellow believers around the world are going through the same sufferings (1 Peter 5:8-9). After a brief time of suffering, the God of all grace will restore, confirm, strengthen and establish them (1 Peter 5:10-11). Peter closes by saying he wrote briefly through Silvanus, sending greetings from the church in 'Babylon' and from Mark, urging a kiss of love, and wishing peace on all who are in Christ (1 Peter 5:12-14).",
-    "whereWeAre": "Local churches were led by elders, a role seen elsewhere in Acts and the letters (Acts 14:23; 20:17-28; Titus 1:5). The letter shows these leaders being instructed about motives and style of leadership.\n\nChristians in the provinces were suffering, and the author says that believers around the world were undergoing similar experiences (5:9). The letter does not describe the details or scope.\n\nEarly Christian tradition places Peter in Rome and connects him with Mark; this tradition is old, but it is not itself a first-century document, and so the connection of 'Babylon' with Rome is an inference supported by the tradition and by the use of 'Babylon' in other Jewish and Christian writings.\n\nJewish writers after AD 70 sometimes used 'Babylon' to refer to Rome, since both had destroyed Jerusalem and its temple (compare 2 Baruch and 4 Ezra). This is later than the likely date of 1 Peter if Peter wrote it, though some think the usage was already established by then. The call for humble shepherding responds to the needs of churches under pressure, where leadership could be tested by hardship. The warning about the devil and the assurance of restoration are linked to the broader suffering described throughout the letter. The closing greetings show a network of relationships among early Christian leaders.",
+    "summary": "Peter, who is also an elder and a witness of the sufferings of Christ, exhorts the elders to feed the flock of God, taking the oversight not by constraint but willingly, not for filthy lucre but of a ready mind, neither as being lords over God's heritage but being ensamples to the flock (1 Peter 5:1–3). When the chief Shepherd shall appear, they shall receive a crown of glory that fadeth not away (1 Peter 5:4). The younger are to submit themselves unto the elder, and all are to be clothed with humility, for God resisteth the proud and giveth grace to the humble (1 Peter 5:5). They are to humble themselves under the mighty hand of God, casting all their care upon him, for he careth for them (1 Peter 5:6–7). They are to be sober and vigilant, because their adversary the devil, as a roaring lion, walketh about seeking whom he may devour, whom they are to resist stedfast in the faith, knowing that the same afflictions are accomplished in their brethren in the world (1 Peter 5:8–9). The God of all grace, who hath called us unto his eternal glory by Christ Jesus, after that they have suffered a while, make them perfect, stablish, strengthen, settle them (1 Peter 5:10–11). Peter has written briefly by Silvanus, a faithful brother, exhorting and testifying that this is the true grace of God wherein they stand, and the church that is at Babylon and Marcus his son salute them, with peace to all that are in Christ Jesus (1 Peter 5:12–14).",
+    "whereWeAre": "Chapter 4 ended with a call to commit the keeping of their souls to a faithful Creator in well doing (4:19). Chapter 5 tells elders to feed the flock, the younger to submit, all to cast their care on God and resist the devil, and closes with a prayer, greetings from Babylon, and peace (5:1-14). 2 Peter follows.",
     "keyFigures": [
       {
         "name": "Peter",
-        "role": "Exhorts the elders and the community, and concludes the letter. His self-description as 'fellow elder' shows a pastoral tone rather than a distant authority."
+        "role": "An elder and a witness of the sufferings of Christ, who exhorts the elders and writes by Silvanus (5:1,12)."
       },
       {
         "name": "The elders",
-        "role": "They are told how to lead: as shepherds, willingly, eagerly and by example. The chapter gives early teaching on the character of church leadership."
+        "role": "Told to feed the flock of God willingly, as ensamples and not lords (5:1-3)."
       },
       {
-        "name": "The younger ones",
-        "role": "They are told to be subject to the elders. Shows that humility is expected in both directions."
+        "name": "The younger",
+        "role": "Told to submit themselves unto the elder and be clothed with humility (5:5)."
       },
       {
-        "name": "The flock of God",
-        "role": "The people whom the elders shepherd. Applies the Old Testament image of God's people as a flock."
+        "name": "The chief Shepherd",
+        "role": "Shall appear and give a crown of glory that fadeth not away (5:4)."
       },
       {
-        "name": "The Chief Shepherd (Christ)",
-        "role": "He will reward faithful elders with an unfading crown of glory. Reminds elders that they serve under him."
+        "name": "The devil",
+        "role": "The adversary who walketh about as a roaring lion, seeking whom he may devour (5:8)."
       },
       {
-        "name": "God",
-        "role": "The one to whom believers humble themselves and entrust their anxieties. The chapter ends with confidence that God will restore and establish his people."
-      },
-      {
-        "name": "The devil (the adversary)",
-        "role": "The opponent believers are to resist. Shows a spiritual dimension to the pressures the readers face."
-      },
-      {
-        "name": "Fellow believers throughout the world",
-        "role": "Their shared experience encourages the readers. Connects local suffering to a worldwide community."
-      },
-      {
-        "name": "Silvanus",
-        "role": "Helped write or deliver the letter. His role is a clue to the letter's composition, which is debated."
-      },
-      {
-        "name": "'She who is at Babylon' (the church there)",
-        "role": "Sends greetings. Offers a possible clue to where the letter was written."
-      },
-      {
-        "name": "Mark",
-        "role": "Sends greetings. Early tradition connects him with Peter, but the letter does not describe their relationship in detail."
-      },
-      {
-        "name": "Those who are in Christ",
-        "role": "Receive the final wish for peace. Closes the letter by identifying the community by its relationship to Christ."
-      },
-      {
-        "name": "Nero and Roman authorities",
-        "role": "Background only. Offered for context, not as part of the text."
+        "name": "The God of all grace",
+        "role": "Called us unto his eternal glory and will make them perfect, stablish, strengthen, settle them (5:10)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Servant leadership",
-        "explanation": "Elders are to shepherd willingly and eagerly, not for gain, and not by domineering, but as examples, knowing they serve under the Chief Shepherd.\n\nThose with responsibility are to lead through example and care, not control or self-interest.",
+        "explanation": "The elders are to feed the flock of God willingly, not as lords over God's heritage, but as ensamples to the flock (5:1-4).",
         "references": [
           "1 Peter 5:1-4"
         ]
       },
       {
         "theme": "Humility before God and one another",
-        "explanation": "Everyone is to clothe themselves with humility, because God opposes the proud and gives grace to the humble, and to humble themselves under God's mighty hand.\n\nHumility is the proper posture toward God and one another.",
+        "explanation": "All are to be clothed with humility, for God resisteth the proud and giveth grace to the humble (5:5-6).",
         "references": [
           "1 Peter 5:5-6"
         ]
       },
       {
         "theme": "Trusting God with anxiety",
-        "explanation": "Believers are told to cast all their anxieties on God because he cares for them.\n\nGod invites people to bring their worries to him, trusting his care.",
+        "explanation": "They are to cast all their care upon God, for he careth for them (5:7).",
         "references": [
           "1 Peter 5:7"
         ]
       },
       {
         "theme": "Spiritual watchfulness and steadfast resistance",
-        "explanation": "Believers are to be sober-minded and watchful against the devil, who prowls like a lion, and to resist him, firm in faith, knowing others suffer too.\n\nAlertness and faith, not fear, are the proper response to spiritual opposition.",
+        "explanation": "They are to be sober and vigilant and resist the devil stedfast in the faith (5:8-9).",
         "references": [
           "1 Peter 5:8-9"
         ]
       },
       {
         "theme": "God's restoring grace after brief suffering",
-        "explanation": "The God of all grace, who called believers to eternal glory in Christ, will himself restore, confirm, strengthen and establish them after they have suffered a little while.\n\nPresent suffering is real but limited, and God is the one who sustains and completes his people.",
+        "explanation": "After they have suffered a while, the God of all grace will make them perfect, stablish, strengthen, settle them (5:10-11).",
         "references": [
           "1 Peter 5:10-11"
         ]

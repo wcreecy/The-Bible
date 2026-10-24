@@ -1,85 +1,65 @@
 {
   "3 John 1": {
-    "summary": "Third John is a short, personal letter from a man who calls himself ‘the elder’ to a Christian named Gaius, whom he loves ‘in truth.’ The elder opens with a prayer that all may go well with Gaius and that he may be in good health, just as it is going well with his soul. He rejoices because traveling believers have come and reported that Gaius is walking in the truth, and he says he has no greater joy than hearing that his ‘children’ are walking in the truth. He praises Gaius for acting faithfully toward the ‘brothers,’ even though they were strangers to him. These traveling Christians told the church about Gaius’s love. The elder asks him to continue sending them on their way ‘in a manner worthy of God,’ because they went out ‘for the sake of the name,’ taking nothing from the Gentiles, and so believers should support such people and become ‘fellow workers for the truth.’ He then reports a problem. He has written something to the church, but Diotrephes, who loves to be first, does not acknowledge the elder’s authority. The elder says that if he comes he will bring up what Diotrephes is doing: spreading malicious nonsense against ‘us,’ refusing to welcome the brothers, stopping those who want to welcome them, and putting them out of the church. The elder urges Gaius not to imitate evil but good, because whoever does good is from God and whoever does evil has not seen God. He commends a man named Demetrius, who has a good testimony from everyone and from the truth itself, and the elder adds his own testimony. He closes by saying he had much more to write but would rather talk face to face, hopes to visit soon, and sends greetings of peace from the friends with a request that Gaius greet the friends by name.",
-    "whereWeAre": "Early Christians moved around the Roman Empire to preach and teach. Jesus had sent out disciples dependent on hospitality (Matthew 10:9-14), and New Testament letters repeatedly urge believers to show hospitality (Romans 12:13; Hebrews 13:2; 1 Peter 4:9).\n\nAncient writers often describe public inns as rough, unsafe, or morally disreputable, so travelers who could rely on a host’s home had a great advantage. For Christians, a network of believers’ homes served this purpose.\n\nChurches in the first century commonly met in private homes (Romans 16:5; Colossians 4:15; Philemon 1:2). A host had considerable influence, and decisions about who was welcomed could be made by the person who controlled the house or the meeting. This is a probable background to Diotrephes’s ability to refuse and expel, though the letter does not describe how he held his position.\n\nThe Didache, an early Christian manual probably from the late first or early second century, instructs churches to welcome traveling apostles and prophets, limits their stay to a short period, and warns against those who ask for money or exploit hospitality (Didache 11–12). It shows that hospitality toward traveling teachers needed both generosity and discernment. It does not mention Diotrephes or this letter.\n\nPapias’s preface, as read by Eusebius (Church History 3.39), mentions both the apostle John and an ‘elder John,’ and Eusebius takes these to be two different people. Eusebius lists 2 and 3 John among the books some disputed (3.25), and reports that Origen said the second and third letters might not be accepted by all as genuine (6.25). The letters were short and less widely quoted than 1 John, which probably explains why they were slower to be widely recognized.\n\nThe second letter of John (2 John 1:10-11) tells readers not to receive those who do not bring the true teaching of Christ. Whether the dispute with Diotrephes relates to a conflict over teaching or to personal rivalry is unknown. Because traveling believers relied on local hosts, Diotrephes’s refusal to welcome them would have cut off their ministry in his church and also cut off the elder’s influence there. Gaius’s hospitality kept the network of care working. The letter’s request to continue helping the travelers, together with its commendation of Demetrius, fit this setting of mutual support among connected churches.",
+    "summary": "The elder writes unto the wellbeloved Gaius, whom he loves in the truth, wishing above all things that he may prosper and be in health, even as his soul prospereth (3 John 1:1–2). He rejoiced greatly when the brethren came and testified of the truth that is in Gaius, even as he walketh in the truth, for he hath no greater joy than to hear that his children walk in truth (3 John 1:3–4). Gaius doeth faithfully whatsoever he doeth to the brethren and to strangers, who have borne witness of his charity before the church, and he will do well to bring them forward on their journey after a godly sort, because for his name's sake they went forth, taking nothing of the Gentiles, so we ought to receive such, that we might be fellowhelpers to the truth (3 John 1:5–8). The elder wrote unto the church, but Diotrephes, who loveth to have the preeminence among them, receiveth us not, and if the elder comes, he will remember his deeds, prating against us with malicious words, and neither doth he himself receive the brethren, and forbiddeth them that would, and casteth them out of the church (3 John 1:9–10). Gaius is told to follow not that which is evil but that which is good, for he that doeth good is of God, but he that doeth evil hath not seen God, and Demetrius hath good report of all men and of the truth itself (3 John 1:11–12). The elder had many things to write but will not with ink and pen, trusting shortly to see Gaius and speak face to face, and he closes with peace and greetings from the friends (3 John 1:13–14).",
+    "whereWeAre": "3 John follows 2 John and is the elder's letter to the wellbeloved Gaius. It praises him for walking in truth and for kindness to the brethren and strangers, tells of Diotrephes who loveth the preeminence, and commends Demetrius (1:1-14). Jude follows.",
     "keyFigures": [
       {
-        "name": "The elder (the author)",
-        "role": "He writes to commend Gaius, warn about Diotrephes, recommend Demetrius, and announce a possible visit. He shows pastoral concern that reaches Gaius and a church through letters and messengers."
+        "name": "The elder",
+        "role": "Writes to Gaius, rejoices that his children walk in truth, and will remember the deeds of Diotrephes (1:1,4,10)."
       },
       {
         "name": "Gaius",
-        "role": "He is praised for faithfulness and asked to continue helping the travelers, to avoid imitating evil, and is told of Demetrius’s good testimony. He is the example of practical hospitality and truth lived out."
+        "role": "The wellbeloved, who walks in the truth and doeth faithfully to the brethren and to strangers (1:1,3,5)."
       },
       {
-        "name": "The ‘brothers’ (the traveling Christians)",
-        "role": "They are the recipients of Gaius’s hospitality and the people Diotrephes refuses to welcome. They represent the mission work that relied on the support of local believers."
-      },
-      {
-        "name": "The church",
-        "role": "It hears the report about Gaius and is the setting of Diotrephes’s actions. It shows that early churches were connected by traveling believers and letters."
+        "name": "The brethren and strangers",
+        "role": "They testified of Gaius' truth and went forth for his name's sake, taking nothing of the Gentiles (1:3,5-7)."
       },
       {
         "name": "Diotrephes",
-        "role": "He rejects the elder’s authority, spreads malicious accusations, refuses to welcome the brothers, and expels those who do. He is the negative example of pride and abuse of influence."
+        "role": "Loveth to have the preeminence, receiveth not the elder, prates with malicious words, and casteth them out of the church (1:9-10)."
       },
       {
         "name": "Demetrius",
-        "role": "He is recommended to Gaius. He is the positive example, in contrast with Diotrephes."
+        "role": "Hath good report of all men and of the truth itself (1:12)."
       },
       {
-        "name": "‘My children’",
-        "role": "The elder’s greatest joy is to hear that they walk in the truth. It shows his fatherly care for them."
-      },
-      {
-        "name": "‘The Gentiles’ (non-believers)",
-        "role": "They are mentioned in explaining why the travelers need the support of believers. It clarifies why local believers are the travelers’ providers."
-      },
-      {
-        "name": "‘The friends’",
-        "role": "They exchange greetings. It shows the personal ties among the believers."
-      },
-      {
-        "name": "God and ‘the name’ (Christ)",
-        "role": "They are the basis of the elder’s instructions. The letter’s ethics rest on belonging to God."
-      },
-      {
-        "name": "John the apostle / ‘John the elder’",
-        "role": "They are not characters in the letter. Their mention reflects an unresolved discussion about authorship."
+        "name": "The church",
+        "role": "Before which Gaius's charity was witnessed, and from which Diotrephes casts out those who would receive the brethren (1:6,9-10)."
       }
     ],
     "keyThemes": [
       {
         "theme": "Walking in the truth",
-        "explanation": "The elder rejoices that Gaius ‘is walking in the truth’ and that his children walk in truth, and he says Demetrius has a testimony from the truth itself.\n\nThe letter links sound belief with a life of love and integrity.",
+        "explanation": "The elder has no greater joy than to hear that his children walk in truth, and Gaius walketh in the truth (1:3-4).",
         "references": [
           "3 John 1:3-4"
         ]
       },
       {
         "theme": "Hospitality as partnership in gospel work",
-        "explanation": "Gaius is praised for supporting traveling believers, and the elder says that by doing so believers become ‘fellow workers for the truth.’\n\nPractical help for those serving Christ is presented as real participation in their work.",
+        "explanation": "Gaius is to bring the brethren forward on their journey, for we ought to receive such, that we might be fellowhelpers to the truth (1:5-8).",
         "references": [
           "3 John 1:5-8"
         ]
       },
       {
         "theme": "Pride and abuse of influence",
-        "explanation": "Diotrephes ‘likes to put himself first,’ rejects the elder, slanders others, and blocks and expels those who would show hospitality.\n\nThe text warns against self-promotion and control in leadership.",
+        "explanation": "Diotrephes loveth to have the preeminence, receiveth not the elder, and casteth out those who would receive the brethren (1:9-10).",
         "references": [
           "3 John 1:9-10"
         ]
       },
       {
         "theme": "Imitating good, not evil",
-        "explanation": "Gaius is told to imitate what is good, since ‘whoever does good is from God; whoever does evil has not seen God.’ Demetrius is an example of a good testimony.\n\nReaders are encouraged to follow good examples and to evaluate leaders by their conduct.",
+        "explanation": "Gaius is told to follow not that which is evil but that which is good, for he that doeth good is of God, and Demetrius hath good report (1:11-12).",
         "references": [
           "3 John 1:11-12"
         ]
       },
       {
         "theme": "Pastoral care and personal friendship",
-        "explanation": "The elder prays for Gaius’s health, calls him beloved, hopes to talk face to face, and sends greetings by name.\n\nThe text values personal presence and warmth alongside doctrinal and practical guidance.",
+        "explanation": "The elder hopes shortly to see Gaius and speak face to face, and sends peace and greetings from the friends (1:13-14).",
         "references": [
           "3 John 1:13-14"
         ]

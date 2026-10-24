@@ -194,7 +194,7 @@ Since they have been purified by obeying the truth, they must “love one anothe
 
 **Believers Become God's Spiritual Household (1 Peter 2:4–12)** — Peter describes Christians as living stones in God's spiritual house and urges them to demonstrate their new identity through honorable conduct.
 
-Peter, whose name means rock, pictures Jesus as “a living stone, disallowed indeed of men, but chosen of God, and precious.” Believers too are “lively stones,” being built into “a spiritual house, an holy priesthood, to offer up spiritual sacrifices.” He quotes the prophecy that God would lay “a chief corner stone, elect, precious.” To those who believe, Jesus is precious. To those who reject Him, He is “The stone which the builders disallowed,” and “a stone of stumbling, and a rock of offence.”
+Peter, whose name means rock, pictures Jesus as “a living stone, disallowed indeed of men, but chosen of God, and precious.” Believers too are “lively stones,” being built into “a spiritual house, an holy priesthood, to offer up spiritual sacrifices.” He quotes the prophecy that God would lay “a chief corner stone, elect, precious.” To those who believe, Jesus is precious. To those who reject him, he is “The stone which the builders disallowed,” and “a stone of stumbling, and a rock of offence.”
 
 Then Peter gives his readers titles that once belonged to Israel: “But ye are a chosen generation, a royal priesthood, an holy nation, a peculiar people; that ye should shew forth the praises of him who hath called you out of darkness into his marvellous light.” Peculiar here means God's own special possession. “Which in time past were not a people, but are now the people of God.”
 
@@ -204,7 +204,7 @@ Because they are “strangers and pilgrims” in this world, they must avoid sin
 
 Believers must respect human authority “for the Lord's sake,” whether the emperor or his governors. By doing good, they will silence foolish critics. They are free, but they should not use freedom as a cover for evil. Peter sums it up: “Honour all men. Love the brotherhood. Fear God. Honour the king.” The king at that time was likely the emperor Nero.
 
-Peter tells slaves to respect their masters, not only kind ones but also harsh ones. There is no credit in being punished for doing wrong. But suffering for doing good is pleasing to God. That is what Christ did, “leaving us an example, that ye should follow his steps.” He “did no sin, neither was guile found in his mouth: Who, when he was reviled, reviled not again; when he suffered, he threatened not.” Instead, He trusted God.
+Peter tells slaves to respect their masters, not only kind ones but also harsh ones. There is no credit in being punished for doing wrong. But suffering for doing good is pleasing to God. That is what Christ did, “leaving us an example, that ye should follow his steps.” Christ “did no sin, neither was guile found in his mouth: Who, when he was reviled, reviled not again; when he suffered, he threatened not.” Instead, he trusted God.
 
 Peter draws on Isaiah 53 to describe what Christ's suffering accomplished: “Who his own self bare our sins in his own body on the tree, that we, being dead to sins, should live unto righteousness: by whose stripes ye were healed. For ye were as sheep going astray; but are now returned unto the Shepherd and Bishop of your souls.”
 
@@ -220,11 +220,11 @@ Then Peter speaks to everyone: “Finally, be ye all of one mind, having compass
 
 “And who is he that will harm you, if ye be followers of that which is good?” Even if they suffer for doing right, they are blessed. They should not be afraid of their persecutors. “But sanctify the Lord God in your hearts: and be ready always to give an answer to every man that asketh you a reason of the hope that is in you with meekness and fear.” They should keep a clear conscience, so that those who slander them will be ashamed. “For it is better, if the will of God be so, that ye suffer for well doing, than for evil doing.”
 
-Christ is the example: “For Christ also hath once suffered for sins, the just for the unjust, that he might bring us to God, being put to death in the flesh, but quickened by the Spirit.” Then Peter adds a mysterious passage about Christ preaching “unto the spirits in prison,” connected with the disobedient people of Noah's day. Christians have understood this in different ways. Noah's family was saved through water, and Peter says baptism now saves believers, not by washing dirt from the body, but as the pledge of a good conscience toward God, through the resurrection of Jesus. Christ has gone into heaven and sits at God's right hand, with angels and powers subject to Him.
+Christ is the example: “For Christ also hath once suffered for sins, the just for the unjust, that he might bring us to God, being put to death in the flesh, but quickened by the Spirit.” Then Peter adds a mysterious passage about Christ preaching “unto the spirits in prison,” connected with the disobedient people of Noah's day. Christians have understood this in different ways. Noah's family was saved through water, and Peter says baptism now saves believers, not by washing dirt from the body, but as the pledge of a good conscience toward God, through the resurrection of Jesus. Christ has gone into heaven and sits at God's right hand, with angels and powers subject to him.
 
 **Living for God's Will Rather Than Sinful Desires (1 Peter 4:1–11)** — Peter calls believers to abandon their former behavior, remain spiritually alert, and serve one another faithfully through love and God's gifts.
 
-Since Christ suffered in His body, believers should arm themselves with the same attitude. They should live the rest of their lives for God's will, not for human desires. They have already spent enough time doing what pagans like to do, including sexual immorality, drunken parties, and idol worship. Their old friends are surprised that they no longer join in, and they insult them for it. But those friends will have to give an account to God, who is ready to judge the living and the dead.
+Since Christ suffered in his body, believers should arm themselves with the same attitude. They should live the rest of their lives for God's will, not for human desires. They have already spent enough time doing what pagans like to do, including sexual immorality, drunken parties, and idol worship. Their old friends are surprised that they no longer join in, and they insult them for it. But those friends will have to give an account to God, who is ready to judge the living and the dead.
 
 “But the end of all things is at hand: be ye therefore sober, and watch unto prayer.” “And above all things have fervent charity among yourselves: for charity shall cover the multitude of sins.” They should welcome guests into their homes “without grudging.” Every believer has received a gift and should use it to serve others, “as good stewards of the manifold grace of God.” Whoever speaks should speak as one bringing God's words. Whoever serves should serve with the strength God supplies, “that God in all things may be glorified through Jesus Christ.”
 
@@ -254,7 +254,7 @@ The world at the time: False teachers were exploiting the churches, and scoffers
 
 **God Provides Everything Needed for a Godly Life (2 Peter 1:1–11)** — Peter encourages believers to grow in faith and godly character, reminding them that God's power and promises provide everything necessary for spiritual life.
 
-Simon Peter writes to “them that have obtained like precious faith with us.” God's “divine power hath given unto us all things that pertain unto life and godliness,” through knowing Him. He has given them “exceeding great and precious promises,” so that they might share in God's nature and escape the corruption in the world caused by evil desires.
+Simon Peter writes to “them that have obtained like precious faith with us.” God's “divine power hath given unto us all things that pertain unto life and godliness,” through knowing him. God has given them “exceeding great and precious promises,” so that they might share in God's nature and escape the corruption in the world caused by evil desires.
 
 So they must make every effort to grow. Peter lists qualities that build on each other like steps: “add to your faith virtue; and to virtue knowledge; And to knowledge temperance; and to temperance patience; and to patience godliness; And to godliness brotherly kindness; and to brotherly kindness charity.” Temperance means self-control, and charity means love. If they keep growing in these things, they will be fruitful in knowing Christ. Anyone who lacks them is blind and has forgotten that he was cleansed from his old sins. “Wherefore the rather, brethren, give diligence to make your calling and election sure.” Then they will receive a rich welcome into the everlasting kingdom of Jesus Christ.
 
@@ -270,7 +270,7 @@ They also have “a more sure word of prophecy,” the Scriptures, which are lik
 
 Just as false prophets arose in Israel, “even as there shall be false teachers among you, who privily shall bring in damnable heresies, even denying the Lord that bought them.” Privily means secretly. Many will follow their immoral ways, and the way of truth will be insulted because of them. Out of greed, they will exploit believers with made-up stories. But their judgment is coming.
 
-Peter gives three examples from the past. God did not spare the angels who sinned but cast them down to hell to await judgment. He did not spare the ancient world but brought the flood, while saving “Noah the eighth person, a preacher of righteousness.” And He turned Sodom and Gomorrah to ashes, while rescuing “just Lot,” who was sickened by the evil around him. So, “The Lord knoweth how to deliver the godly out of temptations, and to reserve the unjust unto the day of judgment to be punished.” This is especially true of those who chase sinful desires and despise authority.
+Peter gives three examples from the past. God did not spare the angels who sinned but cast them down to hell to await judgment. God did not spare the ancient world but brought the flood, while saving “Noah the eighth person, a preacher of righteousness.” And he turned Sodom and Gomorrah to ashes, while rescuing “just Lot,” who was sickened by the evil around him. So, “The Lord knoweth how to deliver the godly out of temptations, and to reserve the unjust unto the day of judgment to be punished.” This is especially true of those who chase sinful desires and despise authority.
 
 **Corrupt Teachers Promise Freedom but Spread Slavery (2 Peter 2:11–22)** — Peter exposes the greed, arrogance, and moral corruption of false teachers who promise freedom while remaining controlled by sinful desires.
 
@@ -282,17 +282,17 @@ These false teachers are bold and arrogant. They insult things they do not under
 
 This is Peter's second letter, written to stir up their minds and remind them of what the prophets and apostles taught. First, they should know “that there shall come in the last days scoffers, walking after their own lusts, And saying, Where is the promise of his coming? for since the fathers fell asleep, all things continue as they were from the beginning of the creation.” The mockers claim that nothing ever changes, so Jesus will never return.
 
-But they deliberately forget that God created the world by His word and once destroyed it with water in the flood. By the same word, “the heavens and the earth, which are now,” are being kept for fire, “against the day of judgment and perdition of ungodly men.”
+But they deliberately forget that God created the world by his word and once destroyed it with water in the flood. By the same word, “the heavens and the earth, which are now,” are being kept for fire, “against the day of judgment and perdition of ungodly men.”
 
 **God's Patience Reveals His Desire for Repentance (2 Peter 3:8–13)** — Peter explains that God's apparent delay is an expression of patience, while the coming day of the Lord will bring judgment and renewal.
 
-Why has the Lord not returned yet? “But, beloved, be not ignorant of this one thing, that one day is with the Lord as a thousand years, and a thousand years as one day.” God does not measure time as we do. “The Lord is not slack concerning his promise, as some men count slackness; but is longsuffering to us-ward, not willing that any should perish, but that all should come to repentance.” The delay is God's patience, giving people time to turn to Him.
+Why has the Lord not returned yet? “But, beloved, be not ignorant of this one thing, that one day is with the Lord as a thousand years, and a thousand years as one day.” God does not measure time as we do. “The Lord is not slack concerning his promise, as some men count slackness; but is longsuffering to us-ward, not willing that any should perish, but that all should come to repentance.” The delay is God's patience, giving people time to turn to him.
 
 “But the day of the Lord will come as a thief in the night; in the which the heavens shall pass away with a great noise, and the elements shall melt with fervent heat, the earth also and the works that are therein shall be burned up.” Since everything will be dissolved, “what manner of persons ought ye to be in all holy conversation and godliness?” Believers look forward to that day. “Nevertheless we, according to his promise, look for new heavens and a new earth, wherein dwelleth righteousness.”
 
 **Believers Must Remain Steadfast and Grow in Grace (2 Peter 3:14–18)** — Peter closes by urging believers to remain faithful, recognize God's patience as an opportunity for salvation, and continue growing in the knowledge of Jesus Christ.
 
-So while they wait, they should make every effort to be found by Him “in peace, without spot, and blameless.” They should see the Lord's patience as a chance for people to be saved. Peter adds that “our beloved brother Paul” wrote about these same things. Some of Paul's letters contain things “hard to be understood,” which ignorant and unstable people twist, “as they do also the other scriptures,” to their own destruction. Peter treats Paul's letters as Scripture.
+So while they wait, they should make every effort to be found by him “in peace, without spot, and blameless.” They should see the Lord's patience as a chance for people to be saved. Peter adds that “our beloved brother Paul” wrote about these same things. Some of Paul's letters contain things “hard to be understood,” which ignorant and unstable people twist, “as they do also the other scriptures,” to their own destruction. Peter treats Paul's letters as Scripture.
 
 He gives a final warning: since they know these things in advance, they must be on guard so they are not carried away by the errors of the wicked. “But grow in grace, and in the knowledge of our Lord and Saviour Jesus Christ. To him be glory both now and for ever. Amen.” Written as he faced death, Peter's last letter calls believers to keep growing, to trust God's word, and to wait for Christ's certain return.
 
@@ -302,13 +302,13 @@ When it was written: The writer speaks as an eyewitness of Jesus (1 John 1:1–3
 Where: Probably sent to churches in and around Ephesus.
 The world at the time: A group had left the fellowship (1 John 2:19) and was teaching that Jesus Christ had not truly come in the flesh (1 John 4:2–3). John wrote to reassure the believers who remained.
 
-**The Word of Life Brings Fellowship with God (1 John 1:1–4)** — John begins by declaring that Jesus Christ truly came into the world and that knowing Him brings fellowship with God and other believers.
+**The Word of Life Brings Fellowship with God (1 John 1:1–4)** — John begins by declaring that Jesus Christ truly came into the world and that knowing him brings fellowship with God and other believers.
 
-Like John's Gospel, this letter starts at “the beginning.” John writes about the Word of life as an eyewitness: “That which was from the beginning, which we have heard, which we have seen with our eyes, which we have looked upon, and our hands have handled, of the Word of life.” Some false teachers were saying that Jesus only seemed to have a real human body. John insists that he heard, saw, and touched Him. “For the life was manifested, and we have seen it.”
+Like John's Gospel, this letter starts at “the beginning.” John writes about the Word of life as an eyewitness: “That which was from the beginning, which we have heard, which we have seen with our eyes, which we have looked upon, and our hands have handled, of the Word of life.” Some false teachers were saying that Jesus only seemed to have a real human body. John insists that he heard, saw, and touched him. “For the life was manifested, and we have seen it.”
 
 He shares this so his readers can join in the same fellowship: “and truly our fellowship is with the Father, and with his Son Jesus Christ. And these things write we unto you, that your joy may be full.”
 
-**Walking in God's Light Requires Honesty About Sin (1 John 1:5–2:2)** — John teaches that God is light and that genuine fellowship with Him requires truthful confession, obedience, and trust in Jesus Christ's forgiveness.
+**Walking in God's Light Requires Honesty About Sin (1 John 1:5–2:2)** — John teaches that God is light and that genuine fellowship with him requires truthful confession, obedience, and trust in Jesus Christ's forgiveness.
 
 John's message is simple: “God is light, and in him is no darkness at all.” If someone claims to have fellowship with God but lives in darkness, he is lying. “But if we walk in the light, as he is in the light, we have fellowship one with another, and the blood of Jesus Christ his Son cleanseth us from all sin.”
 
@@ -318,7 +318,7 @@ John writes so that his “little children” will not sin. “And if any man si
 
 **Obedience and Love Reveal Genuine Faith (1 John 2:3–17)** — John explains that knowing God becomes visible through obedience and love, while warning believers against allowing worldly desires to control their hearts.
 
-How can someone know he truly knows God? “And hereby we do know that we know him, if we keep his commandments.” Anyone who claims to know Him but disobeys is a liar. “He that saith he abideth in him ought himself also so to walk, even as he walked.” The command to love is both old and new. “He that saith he is in the light, and hateth his brother, is in darkness even until now.”
+How can someone know he truly knows God? “And hereby we do know that we know him, if we keep his commandments.” Anyone who claims to know him but disobeys is a liar. “He that saith he abideth in him ought himself also so to walk, even as he walked.” The command to love is both old and new. “He that saith he is in the light, and hateth his brother, is in darkness even until now.”
 
 John writes warmly to believers of every stage, to “little children,” to “fathers,” and to “young men,” because their sins are forgiven, they know God, and they have overcome the evil one. Then he warns, “Love not the world, neither the things that are in the world. If any man love the world, the love of the Father is not in him.” He names three kinds of worldly desire: “the lust of the flesh, and the lust of the eyes, and the pride of life.” “And the world passeth away, and the lust thereof: but he that doeth the will of God abideth for ever.”
 
@@ -326,13 +326,13 @@ John writes warmly to believers of every stage, to “little children,” to “
 
 “Little children, it is the last time: and as ye have heard that antichrist shall come, even now are there many antichrists.” John is the only Bible writer to use the word antichrist. Some people had left the church, “They went out from us, but they were not of us,” and their leaving showed they never truly belonged. But the believers have “an unction from the Holy One,” an anointing from the Spirit, and they know the truth.
 
-“Who is a liar but he that denieth that Jesus is the Christ? He is antichrist, that denieth the Father and the Son.” Whoever denies the Son does not have the Father either. So the believers must let what they heard from the beginning remain in them. Then they will remain in the Son and the Father, “And this is the promise that he hath promised us, even eternal life.” They should abide in Christ, so that when He appears, they will have confidence and not be ashamed before Him.
+“Who is a liar but he that denieth that Jesus is the Christ? He is antichrist, that denieth the Father and the Son.” Whoever denies the Son does not have the Father either. So the believers must let what they heard from the beginning remain in them. Then they will remain in the Son and the Father, “And this is the promise that he hath promised us, even eternal life.” They should abide in Christ, so that when he appears, they will have confidence and not be ashamed before him.
 
 **God's Children Must Practice Righteousness and Love (1 John 3:1–10)** — John celebrates the love that makes believers God's children and explains why their new identity should lead them away from habitual sin.
 
-John is amazed at God's love: “Behold, what manner of love the Father hath bestowed upon us, that we should be called the sons of God.” The world does not recognize them, because it did not recognize Him. “Beloved, now are we the sons of God, and it doth not yet appear what we shall be: but we know that, when he shall appear, we shall be like him; for we shall see him as he is.” Everyone who has this hope purifies himself.
+John is amazed at God's love: “Behold, what manner of love the Father hath bestowed upon us, that we should be called the sons of God.” The world does not recognize them, because it did not recognize him. “Beloved, now are we the sons of God, and it doth not yet appear what we shall be: but we know that, when he shall appear, we shall be like him; for we shall see him as he is.” Everyone who has this hope purifies himself.
 
-Sin is “the transgression of the law,” and Christ came to take away sins. So whoever lives in Him does not keep on sinning as a way of life. “Little children, let no man deceive you.” The one who keeps on sinning belongs to the devil, who has sinned from the beginning. “For this purpose the Son of God was manifested, that he might destroy the works of the devil.” By this, God's children and the devil's children are made plain: those who do not do right and do not love their brother are not of God.
+Sin is “the transgression of the law,” and Christ came to take away sins. So whoever lives in him does not keep on sinning as a way of life. “Little children, let no man deceive you.” The one who keeps on sinning belongs to the devil, who has sinned from the beginning. “For this purpose the Son of God was manifested, that he might destroy the works of the devil.” By this, God's children and the devil's children are made plain: those who do not do right and do not love their brother are not of God.
 
 **True Love Must Be Shown Through Actions (1 John 3:11–24)** — John contrasts hatred with Christ's sacrificial love and teaches that genuine love is demonstrated through practical care for others.
 
@@ -340,7 +340,7 @@ Sin is “the transgression of the law,” and Christ came to take away sins. So
 
 Jesus showed what love really is: “Hereby perceive we the love of God, because he laid down his life for us: and we ought to lay down our lives for the brethren.” Love must be practical. If someone has plenty and sees a brother in need but shuts his heart, “how dwelleth the love of God in him? My little children, let us not love in word, neither in tongue; but in deed and in truth.”
 
-Even when our hearts condemn us, “God is greater than our heart, and knoweth all things.” His command is “That we should believe on the name of his Son Jesus Christ, and love one another.” Those who obey live in Him, and He in them, and they know it by the Spirit He has given.
+Even when our hearts condemn us, “God is greater than our heart, and knoweth all things.” His command is “That we should believe on the name of his Son Jesus Christ, and love one another.” Those who obey live in him, and he in them, and they know it by the Spirit he has given.
 
 **Believers Must Test Every Spiritual Message (1 John 4:1–6)** — John warns that not every spiritual claim comes from God and provides a test centered on the truth about Jesus Christ.
 
@@ -348,17 +348,17 @@ Even when our hearts condemn us, “God is greater than our heart, and knoweth a
 
 **God's Perfect Love Overcomes Fear (1 John 4:7–21)** — John explains that love comes from God, was revealed through Jesus Christ, and must shape the way believers treat one another.
 
-“Beloved, let us love one another: for love is of God; and every one that loveth is born of God, and knoweth God. He that loveth not knoweth not God; for God is love.” God showed His love by sending His only Son into the world, “that we might live through him. Herein is love, not that we loved God, but that he loved us, and sent his Son to be the propitiation for our sins. Beloved, if God so loved us, we ought also to love one another.”
+“Beloved, let us love one another: for love is of God; and every one that loveth is born of God, and knoweth God. He that loveth not knoweth not God; for God is love.” God showed his love by sending his only Son into the world, “that we might live through him. Herein is love, not that we loved God, but that he loved us, and sent his Son to be the propitiation for our sins. Beloved, if God so loved us, we ought also to love one another.”
 
-No one has ever seen God, but when we love each other, God lives in us and His love is made complete in us. “God is love; and he that dwelleth in love dwelleth in God, and God in him.” Because of this, believers can face the day of judgment with confidence. “There is no fear in love; but perfect love casteth out fear.” “We love him, because he first loved us.”
+No one has ever seen God, but when we love each other, God lives in us and his love is made complete in us. “God is love; and he that dwelleth in love dwelleth in God, and God in him.” Because of this, believers can face the day of judgment with confidence. “There is no fear in love; but perfect love casteth out fear.” “We love him, because he first loved us.”
 
 John closes with a test: “If a man say, I love God, and hateth his brother, he is a liar: for he that loveth not his brother whom he hath seen, how can he love God whom he hath not seen?” Loving God and loving others cannot be separated.
 
 **Faith in Jesus Brings Victory and Eternal Life (1 John 5:1–12)** — John explains that those who believe Jesus is the Christ are born of God and possess victory through faith and the testimony concerning God's Son.
 
-“Whosoever believeth that Jesus is the Christ is born of God.” Loving God means keeping His commandments, “and his commandments are not grievous,” not a heavy burden. “For whatsoever is born of God overcometh the world: and this is the victory that overcometh the world, even our faith.” “Who is he that overcometh the world, but he that believeth that Jesus is the Son of God?”
+“Whosoever believeth that Jesus is the Christ is born of God.” Loving God means keeping his commandments, “and his commandments are not grievous,” not a heavy burden. “For whatsoever is born of God overcometh the world: and this is the victory that overcometh the world, even our faith.” “Who is he that overcometh the world, but he that believeth that Jesus is the Son of God?”
 
-Jesus came “by water and blood,” probably meaning His baptism and His death, and the Spirit also bears witness to Him. If we accept human testimony, God's testimony is greater. “And this is the record, that God hath given to us eternal life, and this life is in his Son. He that hath the Son hath life; and he that hath not the Son of God hath not life.”
+Jesus came “by water and blood,” probably meaning his baptism and his death, and the Spirit also bears witness to him. If we accept human testimony, God's testimony is greater. “And this is the record, that God hath given to us eternal life, and this life is in his Son. He that hath the Son hath life; and he that hath not the Son of God hath not life.”
 
 In the King James Version, verse 7 adds, “For there are three that bear record in heaven, the Father, the Word, and the Holy Ghost: and these three are one.” These words are not found in the oldest Greek manuscripts and were likely added later, though the teaching of the Trinity rests on many other passages.
 
@@ -428,7 +428,7 @@ The danger is real: “For there are certain men crept in unawares.” These ung
 
 **Past Judgments Reveal the Danger of Rebellion (Jude 1:5–7)** — Jude recalls examples from Israel's history and earlier judgments to demonstrate that rejecting God's authority carries serious consequences.
 
-Jude reminds them of three warnings from the past. First, the Lord saved Israel out of Egypt, but afterward He destroyed those who did not believe. Second, there were angels “which kept not their first estate,” who left their proper place. God holds them “in everlasting chains under darkness unto the judgment of the great day.” Third, “Even as Sodom and Gomorrha, and the cities about them,” which gave themselves to sexual immorality and went after “strange flesh,” serve as an example, “suffering the vengeance of eternal fire.” Each example shows that God's people cannot take His patience for granted.
+Jude reminds them of three warnings from the past. First, the Lord saved Israel out of Egypt, but afterward he destroyed those who did not believe. Second, there were angels “which kept not their first estate,” who left their proper place. God holds them “in everlasting chains under darkness unto the judgment of the great day.” Third, “Even as Sodom and Gomorrha, and the cities about them,” which gave themselves to sexual immorality and went after “strange flesh,” serve as an example, “suffering the vengeance of eternal fire.” Each example shows that God's people cannot take his patience for granted.
 
 **False Teachers Reject Authority and Corrupt Others (Jude 1:8–13)** — Jude exposes the arrogance, greed, and destructive influence of false teachers who reject authority while participating in the believers' gatherings.
 
@@ -438,7 +438,7 @@ The false teachers are just like those examples. They defile the flesh, reject a
 
 **God's Judgment Will Expose Ungodliness (Jude 1:14–16)** — Jude warns that God will judge ungodly conduct and speech, recalling a prophecy attributed to Enoch and describing the selfish character of the deceivers.
 
-Jude quotes a prophecy from “Enoch also, the seventh from Adam,” found in an ancient Jewish book called 1 Enoch: “Behold, the Lord cometh with ten thousands of his saints, To execute judgment upon all.” The Lord will convict the ungodly of all their ungodly deeds and of all the harsh words they have spoken against Him. Jude describes the false teachers as “murmurers, complainers, walking after their own lusts.” They speak proud words and flatter people to gain an advantage.
+Jude quotes a prophecy from “Enoch also, the seventh from Adam,” found in an ancient Jewish book called 1 Enoch: “Behold, the Lord cometh with ten thousands of his saints, To execute judgment upon all.” The Lord will convict the ungodly of all their ungodly deeds and of all the harsh words they have spoken against him. Jude describes the false teachers as “murmurers, complainers, walking after their own lusts.” They speak proud words and flatter people to gain an advantage.
 
 **The Apostles Warned That Mockers Would Come (Jude 1:17–19)** — Jude reminds believers that the apostles had already warned about people who would follow ungodly desires, create divisions, and reject the Spirit's influence.
 
@@ -448,7 +448,7 @@ But the believers should not be surprised. “But, beloved, remember ye the word
 
 In contrast, Jude tells the believers how to stay strong: “But ye, beloved, building up yourselves on your most holy faith, praying in the Holy Ghost, Keep yourselves in the love of God, looking for the mercy of our Lord Jesus Christ unto eternal life.” And they must care for others who are wavering: “And of some have compassion, making a difference: And others save with fear, pulling them out of the fire.” They should help people escape sin while hating even the clothing stained by it.
 
-**God Is Able to Keep His People from Falling (Jude 1:24–25)** — Jude closes with praise to God, expressing confidence in His power to preserve believers and bring them into His glorious presence with joy.
+**God Is Able to Keep His People from Falling (Jude 1:24–25)** — Jude closes with praise to God, expressing confidence in his power to preserve believers and bring them into his glorious presence with joy.
 
 Jude ends with one of the most beloved blessings in the Bible: “Now unto him that is able to keep you from falling, and to present you faultless before the presence of his glory with exceeding joy, To the only wise God our Saviour, be glory and majesty, dominion and power, both now and ever. Amen.” After a letter full of warnings, Jude reminds them that their safety does not depend on their own strength. God is able to keep them.
 

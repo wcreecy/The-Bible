@@ -110,12 +110,12 @@
     ]
   },
   "1 Peter": {
-    "author": "Traditionally attributed to Peter the apostle; some modern scholars debate authorship.",
+    "author": "Peter the apostle, writing with Silvanus (1 Peter 1:1; 5:12).",
     "audience": "Christians scattered across provinces of Asia Minor.",
     "purpose": "To encourage believers facing social hostility and suffering to live holy, hopeful, honorable lives because of their new identity in Christ.",
     "theme": "Christians are a holy, pilgrim people whose hope in Christ enables faithful witness through suffering.",
     "summary": "1 Peter reminds believers of new birth and living hope, describes them as God's chosen people, and repeatedly connects Christ's suffering with patient, holy endurance.",
-    "keyVerse": "1 Peter 5:7",
+    "keyVerse": "1 Peter 1:3",
     "movements": [
       {
         "title": "Living Hope and Holy Identity",
@@ -150,7 +150,7 @@
       },
       {
         "name": "Mark",
-        "description": "Called Peter's 'son,' sending greetings."
+        "description": "Called Peter's son, sending greetings."
       },
       {
         "name": "Sarah",
@@ -163,7 +163,7 @@
     ]
   },
   "2 Peter": {
-    "author": "Traditionally attributed to Peter the apostle; authorship is widely debated in modern scholarship.",
+    "author": "Simon Peter, a servant and an apostle of Jesus Christ (2 Peter 1:1).",
     "audience": "Christians threatened by false teaching and skepticism about Christ's return.",
     "purpose": "To urge growth in godliness, oppose corrupt teachers, and reaffirm the certainty of the day of the Lord.",
     "theme": "God's apparent delay is patience, not failure; believers should grow in holiness while awaiting final judgment and renewal.",
@@ -199,7 +199,7 @@
       },
       {
         "name": "Paul",
-        "description": "Called 'our beloved brother,' whose letters some twist."
+        "description": "Called our beloved brother, whose letters some twist."
       },
       {
         "name": "Noah and Lot",
@@ -212,7 +212,7 @@
     ]
   },
   "1 John": {
-    "author": "Traditionally associated with John the apostle and the Johannine community; the letter itself is anonymous.",
+    "author": "Traditionally associated with John the apostle; the letter itself does not name its writer (1 John 1:1-3).",
     "audience": "Churches troubled by secession, false teaching, and uncertainty about genuine faith.",
     "purpose": "To give assurance of eternal life, defend the true confession of Jesus Christ, and emphasize obedience and love as marks of authentic Christian life.",
     "theme": "True knowledge of God is shown by right belief about Jesus, obedience, and love for fellow believers.",
@@ -257,8 +257,8 @@
     ]
   },
   "2 John": {
-    "author": "Written by 'the elder,' traditionally associated with John the apostle.",
-    "audience": "The 'elect lady and her children,' possibly an individual household or a local church.",
+    "author": "The elder, traditionally identified with John the apostle (2 John 1:1).",
+    "audience": "The elect lady and her children, possibly an individual household or a local church.",
     "purpose": "To encourage truth and love while warning against supporting teachers who deny the true incarnation of Christ.",
     "theme": "Christian love must remain joined to truth about Jesus Christ.",
     "summary": "2 John urges believers to continue in love and obedience but not to provide support to deceivers who deny that Jesus Christ came in the flesh.",
@@ -302,7 +302,7 @@
     ]
   },
   "3 John": {
-    "author": "Written by 'the elder,' traditionally associated with John the apostle.",
+    "author": "The elder, traditionally identified with John the apostle (3 John 1:1).",
     "audience": "Gaius, a Christian believer known for hospitality.",
     "purpose": "To commend faithful hospitality, criticize Diotrephes' controlling behavior, and recommend Demetrius.",
     "theme": "Faithful Christian leadership is hospitable, truthful, and humble rather than controlling or self-promoting.",
@@ -351,7 +351,7 @@
     ]
   },
   "Jude": {
-    "author": "Jude identifies himself as a servant of Jesus Christ and brother of James; traditionally understood as a brother of Jesus.",
+    "author": "Jude, a servant of Jesus Christ and brother of James, traditionally understood as a brother of Jesus (Jude 1:1).",
     "audience": "Christians threatened by corrupt teachers within the community.",
     "purpose": "To urge believers to contend for the faith against teachers who distort grace into moral license and reject rightful authority.",
     "theme": "God's people must defend the apostolic faith, resist corrupt teaching, and persevere in God's love while showing mercy wisely.",
