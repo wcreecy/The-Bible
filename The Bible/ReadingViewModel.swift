@@ -72,22 +72,29 @@ final class ReadingViewModel {
         ReadingTimeTracker.shared.start(bookName: currentBook.name, chapter: currentChapter.number)
         ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
 
-        // Scroll to initial verse
-        topVisibleVerseID = rowID(for: currentVerse)
-
-        // Initial highlight
-        if highlightOnAppear {
-            highlightedVerse = currentVerse
-            Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 3_000_000_000)
-                withAnimation { self.highlightedVerse = nil }
-            }
-            highlightOnAppear = false
-        }
-
         // Inactivity and reading-progress tracking
         verseReadingTracker.setActive(true)
         markActivity()
+    }
+
+    /// Moves to the navigation target after the reader has received stable layout geometry.
+    func positionInitialVerse() {
+        topVisibleVerseID = rowID(for: currentVerse)
+    }
+
+    /// Shows the initial navigation target after its row has been laid out.
+    func showInitialHighlight() {
+        guard highlightOnAppear else { return }
+        highlightOnAppear = false
+        highlightedVerse = currentVerse
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            guard !Task.isCancelled else { return }
+            withAnimation {
+                self.highlightedVerse = nil
+            }
+        }
     }
 
     func onDisappear() {

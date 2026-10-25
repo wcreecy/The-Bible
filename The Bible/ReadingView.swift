@@ -214,6 +214,19 @@ struct ReadingView: View {
                 saveReaderPosition(verseNumber: viewModel.currentVerse)
                 refreshSeenVerses()
             }
+            .task(id: "\(book.name)-\(chapter.number)-\(startVerse)") {
+                // Install the initial target only after the reader receives its final width.
+                // Setting a scroll position during the navigation transition can otherwise
+                // preserve the transition's temporary horizontal geometry.
+                await Task.yield()
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                guard !Task.isCancelled else { return }
+                viewModel.positionInitialVerse()
+
+                await Task.yield()
+                guard !Task.isCancelled else { return }
+                viewModel.showInitialHighlight()
+            }
             .onDisappear {
                 saveVisibleReaderPosition()
                 ReadingPositionStore.shared.flush()
@@ -450,6 +463,7 @@ struct ReadingView: View {
                     }
                 }
                 .padding(AppDesignMetrics.cardPadding)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .heroCardSurface()
                 .padding(.horizontal, 16)
                 .padding(.vertical)
@@ -461,11 +475,6 @@ struct ReadingView: View {
                     refreshSeenVerses()
                 }
                 .onAppear {
-                    DispatchQueue.main.async {
-                        withAnimation(.easeInOut(duration: 0.35)) {
-                            viewModel.topVisibleVerseID = viewModel.rowID(for: viewModel.currentVerse)
-                        }
-                    }
                     viewModel.markActivity()
                 }
                 .onTapGesture {

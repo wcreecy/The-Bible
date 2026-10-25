@@ -178,7 +178,7 @@ At the Jordan, Elijah rolls up his cloak and strikes the water. The river divide
 
 Elisha picks up Elijah's cloak, which has fallen, and goes back to the Jordan. He strikes the water and asks, “Where is the LORD God of Elijah?” The river parts again, and he crosses. The prophets at Jericho say, “The spirit of Elijah doth rest on Elisha,” and they bow to him. They insist on sending fifty men to search for Elijah's body for three days, but they find nothing.
 
-The men of Jericho tell Elisha that their water is bad. He throws salt into the spring, and the water is healed. Then, on the road to Bethel, a gang of young men comes out of the city and mocks him: “Go up, thou bald head; go up, thou bald head.” They may be taunting him to go up to heaven like Elijah. Elisha turns and curses them in the name of the LORD. Two female bears come out of the woods and maul forty-two of them.
+The men of Jericho tell Elisha that their water is bad. He throws salt into the spring, and the water is healed. Then, on the road to Bethel, a gang of young men comes out of the city and mocks him: “Go up, thou bald head; go up, thou bald head.” They are mocking him to go up to heaven as Elijah did. Elisha turns and curses them in the name of the LORD. Two female bears come out of the woods and maul forty-two of them.
 
 **God Delivers Israel and Judah from Moab (2 Kings 3:1–27)** — Elisha promises water and victory when three kings march against Moab.
 
@@ -216,7 +216,7 @@ The king of Syria is at war with Israel. Every time he plans an ambush, Elisha w
 
 Early the next morning, Elisha's servant goes out and sees the army all around the city. “Alas, my master! how shall we do?” Elisha answers, “Fear not: for they that be with us are more than they that be with them.” Then he prays, “LORD, I pray thee, open his eyes, that he may see.” God opens the young man's eyes, “and, behold, the mountain was full of horses and chariots of fire round about Elisha.”
 
-As the Syrians come down toward him, Elisha prays for God to strike them with blindness, and He does. Elisha tells them, “This is not the way, neither is this the city: follow me,” and he leads them straight into Samaria, Israel's capital. Then he prays for their eyes to be opened, and they find themselves surrounded. The king of Israel asks, “My father, shall I smite them?” Elisha says no. Instead, the king should give them food and water and send them home. The king prepares a great feast for them and sends them back to their master. After that, the Syrian raiding bands stop coming into Israel.
+As the Syrians come down toward him, Elisha prays for God to strike them with blindness, and he does. Elisha tells them, “This is not the way, neither is this the city: follow me,” and he leads them straight into Samaria, Israel's capital. Then he prays for their eyes to be opened, and they find themselves surrounded. The king of Israel asks, “My father, shall I smite them?” Elisha says no. Instead, the king should give them food and water and send them home. The king prepares a great feast for them and sends them back to their master. After that, the Syrian raiding bands stop coming into Israel.
 
 **God Ends the Famine in Samaria (2 Kings 6:24–7:20)** — During a terrible siege, God ends the famine overnight, as Elisha had promised.
 
@@ -314,7 +314,7 @@ Then messengers come from Merodachbaladan, the king of Babylon, with letters and
 
 Hezekiah's son Manasseh becomes king at only twelve years old and reigns fifty-five years, longer than any other king of Judah. He is also the worst. He rebuilds the high places his father destroyed, sets up altars to Baal, and makes an idol pole as Ahab did. He worships the stars and builds altars to them right inside the courts of the temple. He burns his own son in the fire, practices witchcraft, consults mediums, and places a carved idol in the temple. He leads Judah to do more evil than the nations God destroyed before Israel. “Moreover Manasseh shed innocent blood very much, till he had filled Jerusalem from one end to another.” Jewish tradition says he had the prophet Isaiah sawn in two.
 
-God speaks through his prophets: because of Manasseh's sins, He will bring such disaster on Jerusalem and Judah that whoever hears of it will have both ears tingle. “I will wipe Jerusalem as a man wipeth a dish, wiping it, and turning it upside down.” God will abandon them to their enemies.
+God speaks through his prophets: because of Manasseh's sins, he will bring such disaster on Jerusalem and Judah that whoever hears of it will have both ears tingle. “I will wipe Jerusalem as a man wipeth a dish, wiping it, and turning it upside down.” God will abandon them to their enemies.
 
 Manasseh's son Amon becomes king and is just as wicked. After two years, his own servants assassinate him in his palace. The people of the land execute the assassins and make Amon's eight-year-old son, Josiah, king.
 
@@ -342,7 +342,7 @@ In Zedekiah's ninth year, Nebuchadnezzar comes with his whole army and builds si
 
 They bring Zedekiah to Nebuchadnezzar at Riblah. There “they slew the sons of Zedekiah before his eyes, and put out the eyes of Zedekiah, and bound him with fetters of brass, and carried him to Babylon.” The last thing he ever sees is the death of his sons.
 
-A month later, Nebuzaradan, captain of Nebuchadnezzar's guard, comes to Jerusalem. “And he burnt the house of the LORD, and the king's house, and all the houses of Jerusalem.” his army breaks down the walls around the city. He carries away into exile the rest of the people, leaving only some of the poorest to work the vineyards and fields. The Babylonians break up the great bronze pillars, the bronze Sea, and the stands that Solomon made, and carry the bronze to Babylon, along with every gold and silver vessel. They take the chief priest and other leaders to Riblah, where they are executed. “So Judah was carried away out of their land.” This happened in 586 BC.
+A month later, Nebuzaradan, captain of Nebuchadnezzar's guard, comes to Jerusalem. “And he burnt the house of the LORD, and the king's house, and all the houses of Jerusalem.” His army breaks down the walls around the city. He carries away into exile the rest of the people, leaving only some of the poorest to work the vineyards and fields. The Babylonians break up the great bronze pillars, the bronze Sea, and the stands that Solomon made, and carry the bronze to Babylon, along with every gold and silver vessel. They take the chief priest and other leaders to Riblah, where they are executed. “So Judah was carried away out of their land.” This happened in 586 BC.
 
 **The Survivors Scatter and Jehoiachin Receives Mercy (2 Kings 25:22–30)** — Gedaliah is murdered, but the book closes with mercy for David's line in Babylon.
 

@@ -125,6 +125,33 @@ enum ChapterCrossReferenceEditorialCatalog {
         entriesPart110,
         entriesPart111,
         entriesPart112,
+        entriesPart113,
+        entriesPart114,
+        entriesPart115,
+        entriesPart116,
+        entriesPart117,
+        entriesPart118,
+        entriesPart119,
+        entriesPart120,
+        entriesPart121,
+        entriesPart122,
+        entriesPart123,
+        entriesPart124,
+        entriesPart125,
+        entriesPart126,
+        entriesPart127,
+        entriesPart128,
+        entriesPart129,
+        entriesPart130,
+        entriesPart131,
+        entriesPart132,
+        entriesPart133,
+        entriesPart134,
+        entriesPart135,
+        entriesPart136,
+        entriesPart137,
+        entriesPart138,
+        entriesPart139,
         entriesPart42,
         entriesPart43,
         entriesPart44
@@ -228,7 +255,7 @@ enum ChapterCrossReferenceEditorialCatalog {
                     targetBookName: "Galatians",
                     targetChapterNumber: 3,
                     targetVerse: 8,
-                    relationshipDescription: "The New Testament identifies God's promise to bless all families through Abraham as a promise reaching beyond Israel to the nations."
+                    relationshipDescription: "Paul calls this promise to bless all nations through Abraham the gospel announced beforehand, grounding Gentile justification by faith in the Abrahamic covenant."
                 ),
         Entry(
                     bookName: "Genesis",
@@ -255,7 +282,7 @@ enum ChapterCrossReferenceEditorialCatalog {
                     targetBookName: "Galatians",
                     targetChapterNumber: 3,
                     targetVerse: 6,
-                    relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
+                    relationshipDescription: "Paul quotes Abraham's credited faith to show that those who trust God, rather than rely on works of the law, belong to Abraham's family."
                 ),
         Entry(
                     bookName: "Genesis",
@@ -264,7 +291,7 @@ enum ChapterCrossReferenceEditorialCatalog {
                     targetBookName: "James",
                     targetChapterNumber: 2,
                     targetVerse: 23,
-                    relationshipDescription: "The New Testament cites Abraham's trust in God to explain faith counted as righteousness and the faithful life that follows from it."
+                    relationshipDescription: "James cites Abraham's credited faith to show that his obedient offering of Isaac brought his faith to its intended completion and displayed him as God's friend."
                 ),
         Entry(
                     bookName: "Genesis",
@@ -318,7 +345,7 @@ enum ChapterCrossReferenceEditorialCatalog {
                     targetBookName: "Hebrews",
                     targetChapterNumber: 11,
                     targetVerse: 18,
-                    relationshipDescription: "These writers recall God's promise that Abraham's covenant line would be named through Isaac."
+                    relationshipDescription: "Hebrews cites God's declaration that Abraham's promised descendants would be named through Isaac to explain Abraham's faith when he offered Isaac to God."
                 ),
         Entry(
                     bookName: "Genesis",
@@ -345,7 +372,7 @@ enum ChapterCrossReferenceEditorialCatalog {
                     targetBookName: "Galatians",
                     targetChapterNumber: 3,
                     targetVerse: 8,
-                    relationshipDescription: "The New Testament reads this promise as God's purpose to bring blessing to all nations through Abraham's offspring."
+                    relationshipDescription: "Paul treats God's promise of blessing for all nations through Abraham's offspring as the scriptural basis for Gentile inclusion by faith."
                 ),
         Entry(
                     bookName: "Genesis",
@@ -3872,6 +3899,212 @@ Entry(bookName:"Romans",chapterNumber:16,sourceVerse:3,targetBookName:"2 Timothy
 Entry(bookName:"Romans",chapterNumber:16,sourceVerse:21,targetBookName:"Acts",targetChapterNumber:20,targetVerse:4,relationshipDescription:"Timothy, listed among Paul's travel companions, sends greetings from Corinth."),
 Entry(bookName:"Romans",chapterNumber:16,sourceVerse:23,targetBookName:"Acts",targetChapterNumber:19,targetVerse:22,relationshipDescription:"Erastus, named among Paul's associates, sends greetings from Corinth as the city's treasurer."),
 Entry(bookName:"Romans",chapterNumber:16,sourceVerse:23,targetBookName:"1 Corinthians",targetChapterNumber:1,targetVerse:14,relationshipDescription:"Gaius, Paul's host in Corinth, is likely the Gaius Paul personally baptized there.")
+]
+
+    private nonisolated static let entriesPart113: [Entry] = [
+Entry(bookName:"1 Corinthians",chapterNumber:4,sourceVerse:17,targetBookName:"1 Corinthians",targetChapterNumber:16,targetVerse:10,relationshipDescription:"Paul's later instruction to welcome Timothy confirms that the coworker sent to remind Corinth of Paul's ways is the same trusted representative."),
+Entry(bookName:"1 Corinthians",chapterNumber:4,sourceVerse:17,targetBookName:"1 Thessalonians",targetChapterNumber:3,targetVerse:2,relationshipDescription:"Both letters show Paul sending Timothy as his dependable coworker: to remind the Corinthians of Paul's teaching and to strengthen the Thessalonians under pressure."),
+Entry(bookName:"1 Corinthians",chapterNumber:5,sourceVerse:5,targetBookName:"1 Timothy",targetChapterNumber:1,targetVerse:20,relationshipDescription:"Paul uses the same severe disciplinary formula for the Corinthian offender and for Hymenaeus and Alexander, aiming at correction rather than unchecked sin.")
+]
+
+    private nonisolated static let entriesPart114: [Entry] = [
+Entry(bookName:"1 Corinthians",chapterNumber:7,sourceVerse:10,targetBookName:"Mark",targetChapterNumber:10,targetVerse:9,relationshipDescription:"Paul grounds his command against divorce in Jesus' teaching that God has joined husband and wife and people must not separate them.")
+]
+
+    private nonisolated static let entriesPart115: [Entry] = [
+Entry(bookName:"1 Corinthians",chapterNumber:11,sourceVerse:23,targetBookName:"Luke",targetChapterNumber:22,targetVerse:19,relationshipDescription:"Paul and Luke preserve Jesus' words over the bread at the Last Supper: it is his body given for his followers and is to be received in remembrance of him."),
+Entry(bookName:"1 Corinthians",chapterNumber:11,sourceVerse:25,targetBookName:"Matthew",targetChapterNumber:26,targetVerse:27,relationshipDescription:"Paul's account of the cup as the new covenant in Christ's blood corresponds to Jesus giving the cup to his disciples and identifying it as his covenant blood in Matthew's Last Supper account.")
+]
+
+    private nonisolated static let entriesPart116: [Entry] = [
+Entry(bookName:"1 Corinthians",chapterNumber:16,sourceVerse:5,targetBookName:"Acts",targetChapterNumber:19,targetVerse:21,relationshipDescription:"Paul's stated plan to pass through Macedonia on his way to Corinth matches the itinerary he forms while ministering at Ephesus."),
+Entry(bookName:"1 Corinthians",chapterNumber:16,sourceVerse:15,targetBookName:"1 Corinthians",targetChapterNumber:1,targetVerse:16,relationshipDescription:"Paul's description of Stephanas's household as devoted servants identifies the same household he recalls baptizing at the beginning of the letter.")
+]
+
+    private nonisolated static let entriesPart117: [Entry] = [
+Entry(bookName:"2 Corinthians",chapterNumber:1,sourceVerse:16,targetBookName:"1 Corinthians",targetChapterNumber:16,targetVerse:5,relationshipDescription:"Paul's intended route through Macedonia and then Corinth revisits the travel plan he had set out in First Corinthians, now explaining why his visit changed."),
+Entry(bookName:"2 Corinthians",chapterNumber:2,sourceVerse:11,targetBookName:"2 Corinthians",targetChapterNumber:11,targetVerse:14,relationshipDescription:"Paul's warning not to be outwitted by Satan's schemes is developed later when he exposes Satan's ability to disguise himself as an angel of light."),
+Entry(bookName:"2 Corinthians",chapterNumber:2,sourceVerse:13,targetBookName:"2 Corinthians",targetChapterNumber:7,targetVerse:5,relationshipDescription:"Paul's unrest at not finding Titus in Troas leads into his later account of the same anxiety in Macedonia and God's comfort when Titus arrived."),
+Entry(bookName:"2 Corinthians",chapterNumber:2,sourceVerse:13,targetBookName:"2 Corinthians",targetChapterNumber:12,targetVerse:18,relationshipDescription:"Titus, whom Paul sought in Troas, is the trusted coworker Paul later says he sent to Corinth with the same pastoral concern."),
+Entry(bookName:"2 Corinthians",chapterNumber:3,sourceVerse:3,targetBookName:"Exodus",targetChapterNumber:31,targetVerse:18,relationshipDescription:"Paul contrasts the Spirit's inscription on human hearts with the stone tablets God gave Moses, presenting the Corinthians as a living covenant letter."),
+Entry(bookName:"2 Corinthians",chapterNumber:3,sourceVerse:7,targetBookName:"Exodus",targetChapterNumber:34,targetVerse:29,relationshipDescription:"Paul develops Moses' shining face after Sinai to contrast the fading glory of the old covenant's ministry with the surpassing glory of the Spirit's ministry."),
+Entry(bookName:"2 Corinthians",chapterNumber:4,sourceVerse:13,targetBookName:"Psalms",targetChapterNumber:116,targetVerse:10,relationshipDescription:"Paul quotes the psalmist's faith-filled confession to explain why confidence in God makes him speak despite suffering.")
+]
+
+    private nonisolated static let entriesPart118: [Entry] = [
+Entry(bookName:"2 Corinthians",chapterNumber:6,sourceVerse:2,targetBookName:"Isaiah",targetChapterNumber:49,targetVerse:8,relationshipDescription:"Paul applies Isaiah's promise of God's favorable time and saving help to the present proclamation of reconciliation, pressing the Corinthians not to receive grace in vain."),
+Entry(bookName:"2 Corinthians",chapterNumber:6,sourceVerse:17,targetBookName:"Isaiah",targetChapterNumber:52,targetVerse:11,relationshipDescription:"Paul takes Isaiah's summons for the exiles to leave Babylon's uncleanness and applies it to the church's separation from idolatrous partnerships."),
+Entry(bookName:"2 Corinthians",chapterNumber:8,sourceVerse:15,targetBookName:"Exodus",targetChapterNumber:16,targetVerse:18,relationshipDescription:"Paul cites the equal distribution of manna to frame the Corinthians' collection as a grace of sharing in which abundance meets another church's need."),
+Entry(bookName:"2 Corinthians",chapterNumber:9,sourceVerse:9,targetBookName:"Psalms",targetChapterNumber:112,targetVerse:9,relationshipDescription:"Paul quotes the psalm's picture of the righteous giving freely to the poor to encourage generous giving that reflects enduring righteousness."),
+Entry(bookName:"2 Corinthians",chapterNumber:10,sourceVerse:17,targetBookName:"Jeremiah",targetChapterNumber:9,targetVerse:24,relationshipDescription:"Paul repeats Jeremiah's command to boast in the Lord, rejecting self-commendation in favor of God's approval.")
+]
+
+    private nonisolated static let entriesPart119: [Entry] = [
+Entry(bookName:"2 Corinthians",chapterNumber:11,sourceVerse:22,targetBookName:"Philippians",targetChapterNumber:3,targetVerse:5,relationshipDescription:"Paul's claim to be a Hebrew and Israelite belongs to the same Jewish credentials he lists in Philippians before declaring them loss for Christ."),
+Entry(bookName:"2 Corinthians",chapterNumber:13,sourceVerse:1,targetBookName:"Deuteronomy",targetChapterNumber:19,targetVerse:15,relationshipDescription:"Paul invokes Moses' requirement for two or three witnesses as the standard by which the Corinthians' unresolved wrongdoing must be established on his coming visit.")
+]
+
+    private nonisolated static let entriesPart120: [Entry] = [
+Entry(bookName:"Galatians",chapterNumber:1,sourceVerse:19,targetBookName:"Matthew",targetChapterNumber:13,targetVerse:55,relationshipDescription:"Paul identifies James as the Lord's brother, the same family relationship named when Jesus' hometown audience questions his authority."),
+Entry(bookName:"Galatians",chapterNumber:1,sourceVerse:21,targetBookName:"Acts",targetChapterNumber:15,targetVerse:41,relationshipDescription:"Paul's early ministry in Syria and Cilicia is continued when he later travels through those regions strengthening the churches."),
+Entry(bookName:"Galatians",chapterNumber:2,sourceVerse:14,targetBookName:"Acts",targetChapterNumber:10,targetVerse:28,relationshipDescription:"Peter's withdrawal from Gentile table fellowship contradicts the lesson he received at Cornelius's house: God has made Gentiles clean and must not be treated as unclean."),
+Entry(bookName:"Galatians",chapterNumber:3,sourceVerse:10,targetBookName:"Deuteronomy",targetChapterNumber:27,targetVerse:26,relationshipDescription:"Paul quotes the covenant curse on anyone who fails to keep the law completely to show why relying on law-works places people under a curse."),
+Entry(bookName:"Galatians",chapterNumber:3,sourceVerse:13,targetBookName:"Deuteronomy",targetChapterNumber:21,targetVerse:23,relationshipDescription:"Paul applies the law's curse on one hanged on a tree to Christ's crucifixion, explaining how he bore the law's curse to redeem others.")
+]
+
+    private nonisolated static let entriesPart121: [Entry] = [
+Entry(bookName:"Galatians",chapterNumber:6,sourceVerse:15,targetBookName:"Galatians",targetChapterNumber:5,targetVerse:6,relationshipDescription:"Paul restates his earlier point that circumcision and uncircumcision have no saving value; what matters is the new creation expressed through faith working in love.")
+]
+
+    private nonisolated static let entriesPart122: [Entry] = [
+Entry(bookName:"Ephesians",chapterNumber:1,sourceVerse:7,targetBookName:"Colossians",targetChapterNumber:1,targetVerse:14,relationshipDescription:"Paul uses the same confession in both letters: redemption in Christ's blood brings the forgiveness of sins, grounding the believers' new standing in him."),
+Entry(bookName:"Ephesians",chapterNumber:1,sourceVerse:17,targetBookName:"Isaiah",targetChapterNumber:11,targetVerse:2,relationshipDescription:"Paul's prayer for wisdom through the Spirit echoes Isaiah's portrait of the Spirit of wisdom resting on the Messiah, whose knowledge of God believers are brought to know."),
+Entry(bookName:"Ephesians",chapterNumber:1,sourceVerse:22,targetBookName:"Psalms",targetChapterNumber:8,targetVerse:6,relationshipDescription:"Paul applies the psalm's vision of all things under humanity's feet to the risen Christ, whom God has made head over all things for the church."),
+Entry(bookName:"Ephesians",chapterNumber:2,sourceVerse:17,targetBookName:"Isaiah",targetChapterNumber:57,targetVerse:19,relationshipDescription:"Paul echoes Isaiah's promise of peace to those far and near to describe Christ proclaiming peace to Gentiles and Jews and joining them to God.")
+]
+
+    private nonisolated static let entriesPart123: [Entry] = [
+Entry(bookName:"Ephesians",chapterNumber:6,sourceVerse:2,targetBookName:"Deuteronomy",targetChapterNumber:5,targetVerse:16,relationshipDescription:"Paul invokes Moses' command to honor father and mother, including its promise of well-being and long life, while instructing Christian children in the household.")
+]
+
+    private nonisolated static let entriesPart124: [Entry] = [
+Entry(bookName:"Philippians",chapterNumber:2,sourceVerse:19,targetBookName:"1 Corinthians",targetChapterNumber:4,targetVerse:17,relationshipDescription:"Paul's plan to send Timothy to learn of the Philippians' condition continues his use of Timothy as the trusted representative who reminds churches of Paul's teaching and cares for them."),
+Entry(bookName:"Philippians",chapterNumber:2,sourceVerse:19,targetBookName:"1 Thessalonians",targetChapterNumber:3,targetVerse:6,relationshipDescription:"Timothy's expected return with news from Philippi recalls his earlier return to Paul with a report of the Thessalonians' faith and love."),
+Entry(bookName:"Philippians",chapterNumber:2,sourceVerse:19,targetBookName:"1 Thessalonians",targetChapterNumber:3,targetVerse:2,relationshipDescription:"Paul's intent to send Timothy to Philippi echoes the earlier mission in which he sent the same coworker to strengthen the Thessalonians."),
+Entry(bookName:"Philippians",chapterNumber:2,sourceVerse:25,targetBookName:"Philippians",targetChapterNumber:4,targetVerse:18,relationshipDescription:"Epaphroditus is the Philippians' messenger who brought their gift to Paul; Paul sends that same fellow worker back after receiving their support."),
+Entry(bookName:"Philippians",chapterNumber:3,sourceVerse:5,targetBookName:"Acts",targetChapterNumber:23,targetVerse:6,relationshipDescription:"Paul's description of himself as a Pharisee in his former religious credentials matches his public testimony before the council that he belonged to the Pharisees.")
+]
+
+    private nonisolated static let entriesPart125: [Entry] = [
+Entry(bookName:"Colossians",chapterNumber:1,sourceVerse:7,targetBookName:"Colossians",targetChapterNumber:4,targetVerse:12,relationshipDescription:"Epaphras, who taught the Colossians the grace of God, is the same devoted servant later reported to be laboring in prayer for their maturity."),
+Entry(bookName:"Colossians",chapterNumber:1,sourceVerse:7,targetBookName:"Philemon",targetChapterNumber:1,targetVerse:23,relationshipDescription:"Epaphras, the Colossians' teacher, is the fellow prisoner with Paul who sends greetings in the letter to Philemon."),
+Entry(bookName:"Colossians",chapterNumber:3,sourceVerse:11,targetBookName:"Galatians",targetChapterNumber:3,targetVerse:28,relationshipDescription:"Both letters declare that ethnic and social divisions do not determine standing in Christ; Colossians grounds that unity in Christ being all and in all."),
+Entry(bookName:"Colossians",chapterNumber:3,sourceVerse:11,targetBookName:"Romans",targetChapterNumber:10,targetVerse:12,relationshipDescription:"Paul's declaration that Christ is all and in all parallels his teaching that the same Lord richly gives to Jews and Greeks without distinction."),
+Entry(bookName:"Colossians",chapterNumber:3,sourceVerse:16,targetBookName:"Ephesians",targetChapterNumber:5,targetVerse:19,relationshipDescription:"Paul pairs being filled by Christ's word with teaching and singing spiritual songs, paralleling his instruction to Spirit-filled believers in Ephesus."),
+Entry(bookName:"Colossians",chapterNumber:3,sourceVerse:18,targetBookName:"Ephesians",targetChapterNumber:5,targetVerse:22,relationshipDescription:"Paul gives the same household instruction to wives in both letters, rooting submission in the Lord."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:7,targetBookName:"Ephesians",targetChapterNumber:6,targetVerse:21,relationshipDescription:"Tychicus is the trusted messenger who carries Paul's news to both the Colossian and Ephesian churches."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:7,targetBookName:"Acts",targetChapterNumber:20,targetVerse:4,relationshipDescription:"Tychicus, who carries news to Colossae, is the Asian companion who traveled with Paul during his later mission journey."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:7,targetBookName:"2 Timothy",targetChapterNumber:4,targetVerse:12,relationshipDescription:"Paul's faithful messenger Tychicus is later sent to Ephesus, continuing the service for which he is commended to the Colossians."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:8,targetBookName:"Ephesians",targetChapterNumber:6,targetVerse:22,relationshipDescription:"Paul gives Tychicus the same purpose in both letters: to report his circumstances and encourage the believers' hearts."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:9,targetBookName:"Philemon",targetChapterNumber:1,targetVerse:10,relationshipDescription:"Onesimus, sent with Tychicus to Colossae, is the formerly estranged servant for whom Paul appeals to Philemon as his spiritual son."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:12,targetBookName:"Philemon",targetChapterNumber:1,targetVerse:23,relationshipDescription:"Epaphras sends greetings both to his home church in Colossae and to Philemon as Paul's fellow prisoner."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:14,targetBookName:"Philemon",targetChapterNumber:1,targetVerse:24,relationshipDescription:"Luke, the beloved physician, is also named among Paul's fellow workers sending greetings to Philemon."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:14,targetBookName:"2 Timothy",targetChapterNumber:4,targetVerse:10,relationshipDescription:"The greeting from Luke and Demas anticipates Paul's later contrast: Demas has deserted him, but Luke remains at his side."),
+Entry(bookName:"Colossians",chapterNumber:4,sourceVerse:17,targetBookName:"Philemon",targetChapterNumber:1,targetVerse:2,relationshipDescription:"Archippus, urged to complete his ministry in Colossae, is the same fellow soldier greeted with Philemon and the church in his house.")
+]
+
+    private nonisolated static let entriesPart126: [Entry] = [
+Entry(bookName:"2 Thessalonians",chapterNumber:2,sourceVerse:9,targetBookName:"2 Corinthians",targetChapterNumber:11,targetVerse:14,relationshipDescription:"Paul's warning that the lawless one's counterfeit signs operate through Satan develops his earlier warning that Satan can disguise himself to advance deceptive ministry.")
+]
+
+    private nonisolated static let entriesPart127: [Entry] = [
+Entry(bookName:"1 Timothy",chapterNumber:1,sourceVerse:2,targetBookName:"2 Timothy",targetChapterNumber:1,targetVerse:2,relationshipDescription:"Paul addresses Timothy as his true child in faith and later as his beloved child, expressing the same enduring pastoral relationship across the two letters."),
+Entry(bookName:"1 Timothy",chapterNumber:1,sourceVerse:18,targetBookName:"1 Timothy",targetChapterNumber:6,targetVerse:20,relationshipDescription:"Paul's charge to Timothy to fight faithfully according to prophecy is renewed at the letter's close as a charge to guard the gospel entrusted to him against false teaching."),
+Entry(bookName:"1 Timothy",chapterNumber:1,sourceVerse:20,targetBookName:"2 Timothy",targetChapterNumber:2,targetVerse:17,relationshipDescription:"Hymenaeus, handed over to Satan with Alexander for blasphemy, later appears as a teacher whose false message spreads destructively."),
+Entry(bookName:"1 Timothy",chapterNumber:2,sourceVerse:13,targetBookName:"Genesis",targetChapterNumber:2,targetVerse:7,relationshipDescription:"Paul appeals to Adam's priority in creation, rooted in Genesis' formation of Adam from the ground, when explaining his instruction about teaching authority."),
+Entry(bookName:"1 Timothy",chapterNumber:2,sourceVerse:14,targetBookName:"Genesis",targetChapterNumber:3,targetVerse:6,relationshipDescription:"Paul recalls Eve's deception in Genesis as part of his appeal to the creation and fall narratives in this instruction."),
+Entry(bookName:"1 Timothy",chapterNumber:5,sourceVerse:18,targetBookName:"Deuteronomy",targetChapterNumber:25,targetVerse:4,relationshipDescription:"Paul cites the law protecting an ox at work to support the principle that elders who labor in preaching and teaching are worthy of material support.")
+]
+
+    private nonisolated static let entriesPart128: [Entry] = [
+Entry(bookName:"2 Timothy",chapterNumber:1,sourceVerse:16,targetBookName:"2 Timothy",targetChapterNumber:4,targetVerse:19,relationshipDescription:"Paul's thanks for Onesiphorus's household anticipates his final greeting to that same household, preserving the relationship that sustained him in imprisonment."),
+Entry(bookName:"2 Timothy",chapterNumber:4,sourceVerse:19,targetBookName:"1 Corinthians",targetChapterNumber:16,targetVerse:19,relationshipDescription:"Prisca and Aquila, whom Paul asks Timothy to greet, are the same coworkers whose house church sends greetings to Corinth.")
+]
+
+    private nonisolated static let entriesPart129: [Entry] = [
+Entry(bookName:"Philemon",chapterNumber:1,sourceVerse:24,targetBookName:"Colossians",targetChapterNumber:4,targetVerse:10,relationshipDescription:"Aristarchus and Mark, listed among the coworkers greeting Philemon, are the same companions who send greetings to the Colossian church."),
+Entry(bookName:"Philemon",chapterNumber:1,sourceVerse:24,targetBookName:"2 Timothy",targetChapterNumber:4,targetVerse:10,relationshipDescription:"Philemon's greeting names Demas and Luke together; Paul's final letter later records Demas's desertion while Luke remains with him.")
+]
+
+    private nonisolated static let entriesPart130: [Entry] = [
+Entry(bookName:"Hebrews",chapterNumber:9,sourceVerse:7,targetBookName:"Leviticus",targetChapterNumber:16,targetVerse:2,relationshipDescription:"Hebrews draws on the Day of Atonement regulations, where only the high priest enters the Most Holy Place with blood, to explain the limits of the old covenant sanctuary."),
+Entry(bookName:"Hebrews",chapterNumber:9,sourceVerse:20,targetBookName:"Exodus",targetChapterNumber:24,targetVerse:8,relationshipDescription:"Hebrews recalls Moses sprinkling covenant blood and declaring it the blood of the covenant to contrast the old covenant's inauguration with Christ's superior sacrifice."),
+Entry(bookName:"Hebrews",chapterNumber:10,sourceVerse:30,targetBookName:"Deuteronomy",targetChapterNumber:32,targetVerse:35,relationshipDescription:"Hebrews cites God's claim that vengeance belongs to him to warn against treating Christ's sacrifice with contempt."),
+Entry(bookName:"Hebrews",chapterNumber:10,sourceVerse:30,targetBookName:"Deuteronomy",targetChapterNumber:32,targetVerse:36,relationshipDescription:"Hebrews applies Moses' assurance that the Lord will judge his people as a solemn warning to covenant members who turn away.")
+]
+
+    private nonisolated static let entriesPart131: [Entry] = [
+Entry(bookName:"James",chapterNumber:1,sourceVerse:1,targetBookName:"Galatians",targetChapterNumber:2,targetVerse:9,relationshipDescription:"James, writing to the dispersed tribes, is the Jerusalem leader Paul names with Cephas and John as pillars who recognized his Gentile mission."),
+Entry(bookName:"James",chapterNumber:1,sourceVerse:1,targetBookName:"Acts",targetChapterNumber:15,targetVerse:13,relationshipDescription:"The letter's author is the James who gives the decisive judgment at the Jerusalem council concerning Gentile believers."),
+Entry(bookName:"James",chapterNumber:1,sourceVerse:1,targetBookName:"Acts",targetChapterNumber:21,targetVerse:18,relationshipDescription:"James, who writes to Jewish Christians scattered abroad, is the Jerusalem leader Paul later visits with the elders after returning from his mission."),
+Entry(bookName:"James",chapterNumber:2,sourceVerse:11,targetBookName:"Exodus",targetChapterNumber:20,targetVerse:14,relationshipDescription:"James quotes the command against adultery alongside the command against murder to show that breaking any command makes a person accountable to the whole law."),
+Entry(bookName:"James",chapterNumber:5,sourceVerse:11,targetBookName:"Job",targetChapterNumber:42,targetVerse:10,relationshipDescription:"James points to the Lord's compassionate outcome for Job, fulfilled when God restored Job after he prayed for his friends, as encouragement for steadfast endurance."),
+Entry(bookName:"James",chapterNumber:5,sourceVerse:11,targetBookName:"Job",targetChapterNumber:2,targetVerse:10,relationshipDescription:"Job's refusal to curse God when receiving suffering illustrates the steadfast endurance James commends to believers under trial."),
+Entry(bookName:"James",chapterNumber:5,sourceVerse:17,targetBookName:"Luke",targetChapterNumber:4,targetVerse:25,relationshipDescription:"James's three-and-a-half-year drought under Elijah matches Jesus' recollection of the same famine when Elijah was sent to the widow of Zarephath."),
+Entry(bookName:"James",chapterNumber:5,sourceVerse:18,targetBookName:"1 Kings",targetChapterNumber:18,targetVerse:42,relationshipDescription:"James's example of Elijah praying for rain recalls Elijah's persistent prayer on Carmel before the rain returned to the land.")
+]
+
+    private nonisolated static let entriesPart132: [Entry] = [
+Entry(bookName:"2 Peter",chapterNumber:1,sourceVerse:17,targetBookName:"Matthew",targetChapterNumber:17,targetVerse:5,relationshipDescription:"Peter recalls the Father's voice at the transfiguration, preserving the event Matthew records as testimony to Jesus' beloved Sonship and glory."),
+Entry(bookName:"2 Peter",chapterNumber:3,sourceVerse:13,targetBookName:"Isaiah",targetChapterNumber:65,targetVerse:17,relationshipDescription:"Peter looks for the new heavens and new earth promised by Isaiah, framing the coming renewal as the home of righteousness.")
+]
+
+    private nonisolated static let entriesPart133: [Entry] = [
+Entry(bookName:"1 John",chapterNumber:3,sourceVerse:12,targetBookName:"Hebrews",targetChapterNumber:11,targetVerse:4,relationshipDescription:"John identifies Cain as the brother-murderer whose evil works opposed Abel's righteousness, while Hebrews commends Abel's faith and accepted offering as his enduring witness."),
+Entry(bookName:"1 John",chapterNumber:3,sourceVerse:12,targetBookName:"Genesis",targetChapterNumber:4,targetVerse:25,relationshipDescription:"Cain's murder of Abel creates the family loss after which Seth is given as another offspring, preserving the immediate consequence of the brotherly hatred John condemns."),
+Entry(bookName:"1 John",chapterNumber:3,sourceVerse:12,targetBookName:"Jude",targetChapterNumber:1,targetVerse:11,relationshipDescription:"John's portrayal of Cain's murderous evil aligns with Jude's warning that false teachers follow Cain's destructive way.")
+]
+
+    private nonisolated static let entriesPart134: [Entry] = [
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:7,targetBookName:"Deuteronomy",targetChapterNumber:29,targetVerse:23,relationshipDescription:"Jude's warning from Sodom and Gomorrah is reinforced by Moses' depiction of their destruction as the enduring pattern of land laid waste under God's judgment."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:7,targetBookName:"2 Peter",targetChapterNumber:2,targetVerse:6,relationshipDescription:"Jude and Peter both present Sodom and Gomorrah's destruction as a warning example of judgment on ungodliness and sexual rebellion."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:7,targetBookName:"Genesis",targetChapterNumber:18,targetVerse:20,relationshipDescription:"Jude's reference to Sodom's judgment develops the outcry over the city's grave sin that prompted God's announced investigation in Genesis."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:9,targetBookName:"Revelation",targetChapterNumber:12,targetVerse:7,relationshipDescription:"Michael's conflict with the devil in Jude parallels Revelation's vision of Michael and his angels fighting the dragon and his angels in heaven."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:9,targetBookName:"Daniel",targetChapterNumber:12,targetVerse:1,relationshipDescription:"Jude's archangel Michael is the same heavenly protector Daniel identifies as standing for God's people in the time of final distress."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:9,targetBookName:"Daniel",targetChapterNumber:10,targetVerse:21,relationshipDescription:"Jude's Michael is the heavenly prince Daniel calls the defender of God's people, providing the angelic-conflict setting for Jude's account."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:11,targetBookName:"2 Peter",targetChapterNumber:2,targetVerse:15,relationshipDescription:"Jude's warning about Balaam's profit-driven error aligns with Peter's portrayal of Balaam abandoning the right way for the wages of wrongdoing."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:11,targetBookName:"Revelation",targetChapterNumber:2,targetVerse:14,relationshipDescription:"Jude's Balaam warning corresponds to the teaching of Balaam in Revelation, which enticed God's people toward idolatry and sexual immorality."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:14,targetBookName:"Hebrews",targetChapterNumber:11,targetVerse:5,relationshipDescription:"Jude identifies Enoch as seventh from Adam, while Hebrews recalls the same patriarch's faithful walk with God and translation before death."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:14,targetBookName:"Genesis",targetChapterNumber:5,targetVerse:18,relationshipDescription:"Genesis places Enoch in Jared's family line, the genealogy through which Jude identifies him as seventh from Adam."),
+Entry(bookName:"Jude",chapterNumber:1,sourceVerse:14,targetBookName:"1 Chronicles",targetChapterNumber:1,targetVerse:1,relationshipDescription:"Chronicles preserves the genealogy from Adam through Seth and Enosh, locating the Enoch whom Jude identifies as seventh from Adam.")
+]
+
+    private nonisolated static let entriesPart135: [Entry] = [
+Entry(bookName:"Revelation",chapterNumber:1,sourceVerse:8,targetBookName:"Revelation",targetChapterNumber:22,targetVerse:13,relationshipDescription:"The Alpha and Omega title frames Revelation: the eternal Lord who announces the book's beginning identifies himself again at its close as its first and last."),
+Entry(bookName:"Revelation",chapterNumber:1,sourceVerse:8,targetBookName:"Revelation",targetChapterNumber:21,targetVerse:6,relationshipDescription:"The Alpha and Omega who declares the book's opening is the one who announces the completion of God's renewal and gives living water to the thirsty."),
+Entry(bookName:"Revelation",chapterNumber:1,sourceVerse:11,targetBookName:"Revelation",targetChapterNumber:3,targetVerse:1,relationshipDescription:"Sardis is named among the seven churches receiving John's vision and later receives the risen Christ's particular warning to wake from spiritual death."),
+Entry(bookName:"Revelation",chapterNumber:1,sourceVerse:11,targetBookName:"Colossians",targetChapterNumber:4,targetVerse:15,relationshipDescription:"Laodicea, one of Revelation's seven churches, is the church connected with the Colossian correspondence and its exchange of letters."),
+Entry(bookName:"Revelation",chapterNumber:1,sourceVerse:11,targetBookName:"Revelation",targetChapterNumber:2,targetVerse:12,relationshipDescription:"Pergamum is named among the seven churches receiving John's vision and later receives Christ's message addressing its pressure to compromise."),
+Entry(bookName:"Revelation",chapterNumber:4,sourceVerse:8,targetBookName:"Isaiah",targetChapterNumber:6,targetVerse:2,relationshipDescription:"John's living creatures repeat Isaiah's heavenly cry of 'Holy, holy, holy,' joining the throne-room worship of Revelation to Isaiah's temple vision."),
+Entry(bookName:"Revelation",chapterNumber:5,sourceVerse:5,targetBookName:"Hebrews",targetChapterNumber:7,targetVerse:14,relationshipDescription:"Revelation's Lion from Judah and Davidic Root is identified with Jesus, whose descent from Judah Hebrews names while explaining his royal-priestly identity.")
+]
+
+    private nonisolated static let entriesPart136: [Entry] = [
+Entry(bookName:"Revelation",chapterNumber:7,sourceVerse:7,targetBookName:"Genesis",targetChapterNumber:35,targetVerse:23,relationshipDescription:"The sealed tribe of Benjamin belongs to the family line Genesis records when Rachel names Benjamin among Jacob's sons."),
+Entry(bookName:"Revelation",chapterNumber:7,sourceVerse:10,targetBookName:"Revelation",targetChapterNumber:5,targetVerse:13,relationshipDescription:"The innumerable redeemed multitude continues the universal throne-room praise of every creature, declaring salvation to God and the Lamb."),
+Entry(bookName:"Revelation",chapterNumber:7,sourceVerse:17,targetBookName:"Revelation",targetChapterNumber:21,targetVerse:4,relationshipDescription:"The Lamb's shepherding promise that God will wipe away every tear is completed in the new creation, where mourning and death are no more."),
+Entry(bookName:"Revelation",chapterNumber:9,sourceVerse:14,targetBookName:"Revelation",targetChapterNumber:16,targetVerse:12,relationshipDescription:"The great Euphrates marks both stages of Revelation's judgment: angels are released there before its waters are later dried to prepare eastern kings."),
+Entry(bookName:"Revelation",chapterNumber:10,sourceVerse:10,targetBookName:"Ezekiel",targetChapterNumber:3,targetVerse:1,relationshipDescription:"John's scroll, sweet in his mouth but bitter in his stomach, echoes Ezekiel eating God's scroll before delivering its difficult prophetic message.")
+]
+
+    private nonisolated static let entriesPart137: [Entry] = [
+Entry(bookName:"Revelation",chapterNumber:11,sourceVerse:15,targetBookName:"Exodus",targetChapterNumber:15,targetVerse:18,relationshipDescription:"The seventh trumpet's proclamation that the Lord and his Messiah reign forever echoes Moses' exodus hymn celebrating the Lord's eternal kingship."),
+Entry(bookName:"Revelation",chapterNumber:12,sourceVerse:5,targetBookName:"Psalms",targetChapterNumber:2,targetVerse:9,relationshipDescription:"Revelation applies Psalm 2's iron-rod rule to the Messiah's destined authority over the nations after his exaltation to God and his throne."),
+Entry(bookName:"Revelation",chapterNumber:12,sourceVerse:9,targetBookName:"Luke",targetChapterNumber:10,targetVerse:18,relationshipDescription:"The dragon's expulsion from heaven develops Jesus' vision of Satan falling from heaven, portraying the defeat of the accuser through Christ's victory."),
+Entry(bookName:"Revelation",chapterNumber:12,sourceVerse:9,targetBookName:"Revelation",targetChapterNumber:20,targetVerse:2,relationshipDescription:"The dragon identified as the ancient serpent, devil, and Satan is the same enemy later seized, bound, and imprisoned for a thousand years."),
+Entry(bookName:"Revelation",chapterNumber:12,sourceVerse:9,targetBookName:"Job",targetChapterNumber:2,targetVerse:1,relationshipDescription:"Revelation identifies the dragon as Satan, the heavenly adversary who appears before God and tests Job in the prologue."),
+Entry(bookName:"Revelation",chapterNumber:13,sourceVerse:5,targetBookName:"Daniel",targetChapterNumber:7,targetVerse:8,relationshipDescription:"The beast's blasphemous mouth develops Daniel's little horn, whose arrogant speech marks its opposition to God's rule."),
+Entry(bookName:"Revelation",chapterNumber:13,sourceVerse:7,targetBookName:"Daniel",targetChapterNumber:7,targetVerse:21,relationshipDescription:"The beast's war against the saints develops Daniel's vision of the little horn making war on the holy ones and prevailing for a time."),
+Entry(bookName:"Revelation",chapterNumber:14,sourceVerse:1,targetBookName:"Hebrews",targetChapterNumber:12,targetVerse:22,relationshipDescription:"The Lamb standing with the sealed on Mount Zion anticipates the heavenly Mount Zion to which Hebrews says believers have already come in worship.")
+]
+
+    private nonisolated static let entriesPart138: [Entry] = [
+Entry(bookName:"Revelation",chapterNumber:17,sourceVerse:1,targetBookName:"Revelation",targetChapterNumber:21,targetVerse:9,relationshipDescription:"The same angel introduces the harlot Babylon's judgment and later shows John the bride, contrasting the corrupt city with the Lamb's holy city."),
+Entry(bookName:"Revelation",chapterNumber:17,sourceVerse:2,targetBookName:"Revelation",targetChapterNumber:18,targetVerse:3,relationshipDescription:"Babylon's intoxication of kings and nations is developed in the angel's judgment announcement, where her wine and luxury corrupt the world."),
+Entry(bookName:"Revelation",chapterNumber:17,sourceVerse:4,targetBookName:"Revelation",targetChapterNumber:18,targetVerse:16,relationshipDescription:"The woman's purple, scarlet, gold, jewels, and pearls are repeated in the lament over Babylon's sudden devastation."),
+Entry(bookName:"Revelation",chapterNumber:18,sourceVerse:3,targetBookName:"Revelation",targetChapterNumber:14,targetVerse:8,relationshipDescription:"The angel's announcement that Babylon has fallen develops the earlier warning that her corrupting wine has made the nations drink."),
+Entry(bookName:"Revelation",chapterNumber:19,sourceVerse:2,targetBookName:"Deuteronomy",targetChapterNumber:32,targetVerse:43,relationshipDescription:"Heaven's call to rejoice over Babylon's judgment echoes Moses' summons for the nations to rejoice when the Lord vindicates his people and repays his enemies."),
+Entry(bookName:"Revelation",chapterNumber:19,sourceVerse:6,targetBookName:"Revelation",targetChapterNumber:14,targetVerse:2,relationshipDescription:"The great multitude's roar like rushing waters and mighty thunder resumes the heavenly sound John heard before the Lamb and the 144,000."),
+Entry(bookName:"Revelation",chapterNumber:19,sourceVerse:15,targetBookName:"Revelation",targetChapterNumber:2,targetVerse:27,relationshipDescription:"The Messiah rules the nations with an iron rod, the authority he promises to share with believers who conquer and hold fast."),
+Entry(bookName:"Revelation",chapterNumber:19,sourceVerse:15,targetBookName:"Psalms",targetChapterNumber:2,targetVerse:9,relationshipDescription:"The rider's iron-rod rule directly fulfills Psalm 2's royal promise that God's anointed will rule the nations."),
+Entry(bookName:"Revelation",chapterNumber:20,sourceVerse:2,targetBookName:"Romans",targetChapterNumber:16,targetVerse:20,relationshipDescription:"Revelation's binding of the dragon advances Paul's promise that God will crush Satan under believers' feet, portraying the enemy's decisive defeat."),
+Entry(bookName:"Revelation",chapterNumber:20,sourceVerse:2,targetBookName:"Job",targetChapterNumber:2,targetVerse:1,relationshipDescription:"The dragon who is bound as Satan is the same heavenly adversary who appears before God and afflicts Job, now facing final restraint."),
+Entry(bookName:"Revelation",chapterNumber:20,sourceVerse:12,targetBookName:"Daniel",targetChapterNumber:7,targetVerse:10,relationshipDescription:"The opening of books before the great white throne develops Daniel's court vision, where books are opened as the heavenly tribunal sits in judgment.")
+]
+
+    private nonisolated static let entriesPart139: [Entry] = [
+Entry(bookName:"Revelation",chapterNumber:21,sourceVerse:6,targetBookName:"Revelation",targetChapterNumber:22,targetVerse:13,relationshipDescription:"The Alpha and Omega announces the completion of God's new creation and then identifies himself at the book's close as the beginning and the end, framing the final renewal with his eternal lordship."),
+Entry(bookName:"Revelation",chapterNumber:22,sourceVerse:9,targetBookName:"Revelation",targetChapterNumber:19,targetVerse:10,relationshipDescription:"Both angelic encounters reject John's worship and direct him instead to worship God, safeguarding the distinction between God's messengers and God alone.")
 ]
 
     private nonisolated static let entriesPart42: [Entry] = [
