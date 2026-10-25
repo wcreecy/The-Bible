@@ -322,7 +322,10 @@ struct HomeView: View {
                 openBibleReference(book: target.bookName, chapter: target.chapterNumber, verse: target.verseNumber)
             }
         case .search:
-            SearchHomeCard(onNeedsVisibility: { searchScrollRequest += 1 }) { result in
+            SearchHomeCard(
+                onNeedsVisibility: { searchScrollRequest += 1 },
+                onOpenSearch: { coordinator.push(.search) }
+            ) { result in
                 openBibleReference(book: result.bookName, chapter: result.chapterNumber, verse: result.verseNumber)
             }
             .id(HomeCardID.search)
@@ -397,6 +400,7 @@ struct HomeView: View {
         if quickSearchVisible {
             SearchHomeCard(
                 presentation: .inline,
+                onOpenSearch: { coordinator.push(.search) },
                 onSelectResult: { result in
                     openBibleReference(
                         book: result.bookName,
@@ -432,6 +436,7 @@ struct HomeView: View {
                 if quickSearchVisible {
             SearchHomeCard(
                 presentation: .inline,
+                onOpenSearch: { coordinator.push(.search) },
                 onSelectResult: { result in
                     openBibleReference(
                         book: result.bookName,

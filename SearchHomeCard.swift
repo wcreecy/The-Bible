@@ -10,15 +10,19 @@ struct SearchHomeCard: View {
     /// Called when typing starts and when results arrive, so Home can scroll the card
     /// above the keyboard and tab bar.
     let onNeedsVisibility: () -> Void
+    /// Opens the full Search page from the magnifying-glass button.
+    let onOpenSearch: () -> Void
     let onSelectResult: (SearchResult) -> Void
 
     init(
         presentation: Presentation = .card,
         onNeedsVisibility: @escaping () -> Void = {},
+        onOpenSearch: @escaping () -> Void = {},
         onSelectResult: @escaping (SearchResult) -> Void
     ) {
         self.presentation = presentation
         self.onNeedsVisibility = onNeedsVisibility
+        self.onOpenSearch = onOpenSearch
         self.onSelectResult = onSelectResult
     }
 
@@ -95,8 +99,13 @@ struct SearchHomeCard: View {
 
     private var searchField: some View {
         HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
+            Button(action: onOpenSearch) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Open Search")
+            .accessibilityHint("Opens the full Bible search page")
 
             TextField("Search words or a reference", text: $query)
                 .textFieldStyle(.plain)

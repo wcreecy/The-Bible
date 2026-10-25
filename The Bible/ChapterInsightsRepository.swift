@@ -63,6 +63,59 @@ struct CrossReferenceExplorerEntry: Identifiable, Equatable, Sendable {
             targetVerse: targetReference.startVerse ?? 0
         ) ?? connectionExplanation ?? "These passages are presented together as a curated Scripture connection."
     }
+
+    /// A browseable category inferred from the editorial explanation for this curated pair.
+    var connectionType: CrossReferenceConnectionType {
+        CrossReferenceConnectionType.classify(relationshipDescription)
+    }
+}
+
+enum CrossReferenceConnectionType: String, CaseIterable, Identifiable, Sendable {
+    case quotation
+    case prophecy
+    case parallelAccount
+    case wordOrPhrase
+    case theme
+
+    var id: Self { self }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .quotation: "Quotation"
+        case .prophecy: "Prophecy"
+        case .parallelAccount: "Parallel Account"
+        case .wordOrPhrase: "Word or Phrase"
+        case .theme: "Theme"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .quotation: "text.quote"
+        case .prophecy: "sparkles"
+        case .parallelAccount: "rectangle.on.rectangle"
+        case .wordOrPhrase: "textformat"
+        case .theme: "circle.hexagongrid"
+        }
+    }
+
+    static func classify(_ description: String) -> Self {
+        let text = description.localizedLowercase
+
+        if text.contains("fulfill") || text.contains("prophecy") || text.contains("prophetic") {
+            return .prophecy
+        }
+        if text.contains("quotes") || text.contains("quote") || text.contains("cites") || text.contains("citation") {
+            return .quotation
+        }
+        if text.contains("parallel account") || text.contains("same event") || text.contains("both accounts") {
+            return .parallelAccount
+        }
+        if text.contains("word") || text.contains("phrase") || text.contains("term") || text.contains("wording") {
+            return .wordOrPhrase
+        }
+        return .theme
+    }
 }
 
 actor ChapterInsightsRepository {

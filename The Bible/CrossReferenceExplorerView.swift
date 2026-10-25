@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 /// An entry point from the Study screen into the global connection index.
 struct CrossReferenceExplorerEntryCard: View {
@@ -39,12 +40,16 @@ struct CrossReferenceExplorerEntryCard: View {
 
 /// A searchable index of editorially curated connections across Scripture.
 struct CrossReferenceExplorerView: View {
+    @Query(sort: \SavedCrossReference.savedAt, order: .reverse) private var savedConnections: [SavedCrossReference]
+
     @State private var entries: [CrossReferenceExplorerEntry] = []
     @State private var sections: [CrossReferenceExplorerSection] = []
     @State private var isLoading = true
     @State private var searchText = ""
     @State private var searchScope: CrossReferenceSearchScope = .both
     @State private var selectedSourceBook: String?
+    @State private var selectedConnectionType: CrossReferenceConnectionType?
+    @State private var isShowingSavedOnly = false
     @State private var selectedEntry: CrossReferenceExplorerEntry?
 
     private var resultCount: Int {
@@ -54,6 +59,14 @@ struct CrossReferenceExplorerView: View {
     private var sourceBookNames: [String] {
         let availableBooks = Set(entries.map(\.bookName))
         return BibleCanon.canonicalOrder().filter(availableBooks.contains)
+    }
+
+    private var savedEntryIDs: Set<Int> {
+        Set(savedConnections.map(\.entryID))
+    }
+
+    private var hasActiveFilters: Bool {
+        selectedSourceBook != nil || selectedConnectionType != nil || isShowingSavedOnly || searchScope != .both
     }
 
     var body: some View {
@@ -77,7 +90,10 @@ struct CrossReferenceExplorerView: View {
                         Button {
                             selectedEntry = entry
                         } label: {
-                            CrossReferenceExplorerRow(entry: entry)
+                            CrossReferenceExplorerRow(
+                                entry: entry,
+                                isSaved: savedEntryIDs.contains(entry.id)
+                            )
                         }
                         .buttonStyle(.plain)
                         .accessibilityHint("Opens the side-by-side Scripture preview")
@@ -106,8 +122,26 @@ struct CrossReferenceExplorerView: View {
                             Text(bookName).tag(Optional(bookName))
                         }
                     }
+
+                    Picker("Connection Type", selection: $selectedConnectionType) {
+                        Text("All Types").tag(CrossReferenceConnectionType?.none)
+                        ForEach(CrossReferenceConnectionType.allCases) { type in
+                            Label(type.title, systemImage: type.systemImage)
+                                .tag(Optional(type))
+                        }
+                    }
+
+                    Toggle("Saved Only", isOn: $isShowingSavedOnly)
                 } label: {
-                    Label("Filter by source book", systemImage: "line.3.horizontal.decrease.circle")
+                    Label("Filter connections", systemImage: "line.3.horizontal.decrease.circle")
+                }
+            }
+
+            if hasActiveFilters {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: clearFilters) {
+                        Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle.fill")
+                    }
                 }
             }
         }
@@ -120,6 +154,9 @@ struct CrossReferenceExplorerView: View {
         .onChange(of: searchText) { _, _ in recomputeSections() }
         .onChange(of: searchScope) { _, _ in recomputeSections() }
         .onChange(of: selectedSourceBook) { _, _ in recomputeSections() }
+        .onChange(of: selectedConnectionType) { _, _ in recomputeSections() }
+        .onChange(of: isShowingSavedOnly) { _, _ in recomputeSections() }
+        .onChange(of: savedConnections.map(\.entryID)) { _, _ in recomputeSections() }
         .sheet(item: $selectedEntry) { entry in
             CrossReferencePreviewSheet(entry: entry)
                 .presentationDetents([.medium, .large])
@@ -131,6 +168,12 @@ struct CrossReferenceExplorerView: View {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         let filteredEntries = entries.filter { entry in
             guard selectedSourceBook == nil || entry.bookName == selectedSourceBook else {
+                return false
+            }
+            guard selectedConnectionType == nil || entry.connectionType == selectedConnectionType else {
+                return false
+            }
+            guard !isShowingSavedOnly || savedEntryIDs.contains(entry.id) else {
                 return false
             }
             guard !query.isEmpty else { return true }
@@ -165,6 +208,13 @@ struct CrossReferenceExplorerView: View {
                 (bookOrder[$0.bookName] ?? .max, $0.bookName) < (bookOrder[$1.bookName] ?? .max, $1.bookName)
             }
     }
+
+    private func clearFilters() {
+        selectedSourceBook = nil
+        selectedConnectionType = nil
+        isShowingSavedOnly = false
+        searchScope = .both
+    }
 }
 
 private enum CrossReferenceSearchScope: String, CaseIterable, Identifiable {
@@ -194,8 +244,14 @@ private struct CrossReferencePreviewSheet: View {
     let entry: CrossReferenceExplorerEntry
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query private var savedConnections: [SavedCrossReference]
     @State private var preview: CrossReferencePreview?
     @State private var notePrefill: UserNotePrefill?
+
+    private var savedConnection: SavedCrossReference? {
+        savedConnections.first { $0.entryID == entry.id }
+    }
 
     var body: some View {
         NavigationStack {
@@ -209,6 +265,10 @@ private struct CrossReferencePreviewSheet: View {
 
                         if let explanation = preview.explanation {
                             CrossReferenceExplanationPreview(text: explanation)
+                        }
+
+                        if let savedConnection {
+                            SavedCrossReferenceTakeaway(savedConnection: savedConnection)
                         }
                     } else {
                         ProgressView("Loading passages…")
@@ -232,6 +292,22 @@ private struct CrossReferencePreviewSheet: View {
                             notePrefill = makeNotePrefill(preview: preview)
                         } label: {
                             Label("Create Note", systemImage: "square.and.pencil")
+                        }
+                    }
+                }
+
+                ToolbarItem(placement: .primaryAction) {
+                    if let savedConnection {
+                        Button {
+                            modelContext.delete(savedConnection)
+                        } label: {
+                            Label("Remove from Saved", systemImage: "bookmark.slash")
+                        }
+                    } else {
+                        Button {
+                            modelContext.insert(SavedCrossReference(entryID: entry.id))
+                        } label: {
+                            Label("Save Connection", systemImage: "bookmark")
                         }
                     }
                 }
@@ -403,7 +479,7 @@ private struct CrossReferenceExplorerIntroduction: View {
             Label("Curated Scripture Connections", systemImage: "arrow.triangle.branch")
                 .font(.headline)
 
-            Text("Explore editorially selected passages that illuminate one another. Select a connection to see its chapter context and explanation.")
+            Text("Explore editorially selected passages that illuminate one another. Filter by connection type, save connections to revisit, and select one to see its context and explanation.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -414,6 +490,7 @@ private struct CrossReferenceExplorerIntroduction: View {
 
 private struct CrossReferenceExplorerRow: View {
     let entry: CrossReferenceExplorerEntry
+    let isSaved: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
@@ -433,7 +510,36 @@ private struct CrossReferenceExplorerRow: View {
             Text(entry.relationshipDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+            HStack(spacing: 8) {
+                Label(entry.connectionType.title, systemImage: entry.connectionType.systemImage)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(.tint)
+
+                if isSaved {
+                    Image(systemName: "bookmark.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.tint)
+                        .accessibilityLabel("Saved connection")
+                }
+            }
         }
         .padding(.vertical, 3)
+    }
+}
+
+private struct SavedCrossReferenceTakeaway: View {
+    @Bindable var savedConnection: SavedCrossReference
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("My Takeaway", systemImage: "bookmark.fill")
+                .font(.subheadline.weight(.semibold))
+
+            TextField("Add a personal takeaway", text: $savedConnection.takeaway, axis: .vertical)
+                .lineLimit(2...5)
+                .textFieldStyle(.roundedBorder)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

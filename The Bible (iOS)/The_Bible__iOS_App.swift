@@ -161,6 +161,7 @@ struct The_Bible__iOS_App: App {
                     ReadingProgress.self,
                     Favorite.self,
                     Bookmark.self,
+                    SavedCrossReference.self,
                     VerseNote.self,
                     UserNote.self,
                 configurations: cloudKitConfig
@@ -185,6 +186,7 @@ struct The_Bible__iOS_App: App {
                     ReadingProgress.self,
                     Favorite.self,
                     Bookmark.self,
+                    SavedCrossReference.self,
                     VerseNote.self,
                     UserNote.self
             )
@@ -211,6 +213,7 @@ struct The_Bible__iOS_App: App {
                     ReadingProgress.self,
                     Favorite.self,
                     Bookmark.self,
+                    SavedCrossReference.self,
                     VerseNote.self,
                     UserNote.self,
                 configurations: memoryConfig
