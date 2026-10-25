@@ -101,9 +101,6 @@ struct HomeView: View {
 
     // MARK: - Split cards to reduce type-checking complexity
 
-    // Daily goal values for flame progress
-    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
-
     @ViewBuilder
     private var streaksCard: some View {
         StreaksCard(
@@ -376,13 +373,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private func homeHeader() -> some View {
-        TitleCardView(
-            isPad: isPad,
-            goalMinutes: dailyGoalMinutes,
-            todayReadingSeconds: bibleVM.todaySeconds,
-            streak: StreakTracker.currentStreak,
-            onOpenGoal: openReadingStats
-        )
+        TitleCardView(isPad: isPad)
     }
 
     @ViewBuilder

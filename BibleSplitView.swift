@@ -198,7 +198,7 @@ struct BibleSplitView: View {
             TextField("Books or a reference", text: $sidebarSearch)
                 .textFieldStyle(.plain)
                 .autocorrectionDisabled(true)
-                .textInputAutocapitalization(.words)
+                .textInputAutocapitalization(.sentences)
                 .submitLabel(.go)
                 .onSubmit(openSidebarReference)
 

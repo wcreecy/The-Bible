@@ -70,7 +70,7 @@ struct SearchView: View {
                     TextField("Search books", text: $bookQuery)
                         .textFieldStyle(.plain)
                         .autocorrectionDisabled(true)
-                        .textInputAutocapitalization(.words)
+                        .textInputAutocapitalization(.sentences)
                     if !bookQuery.isEmpty {
                         Button {
                             bookQuery = ""
@@ -114,7 +114,7 @@ struct SearchView: View {
 
             TextField("Search words or a reference", text: $model.query)
                 .focused($isSearchFieldFocused)
-                .textInputAutocapitalization(.words)
+                .textInputAutocapitalization(.sentences)
                 .autocorrectionDisabled(true)
                 .submitLabel(.search)
                 .onSubmit(submitSearch)
