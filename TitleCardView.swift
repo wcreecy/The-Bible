@@ -158,7 +158,7 @@ struct TitleCardView: View {
             .font(
                 isPad
                     ? .system(size: iPadGreetingFontSize, weight: .black)
-                    : .largeTitle.weight(.black)
+                    : .title.weight(.black)
             )
             .lineLimit(1)
             .minimumScaleFactor(0.8)
@@ -183,6 +183,11 @@ struct TitleCardView: View {
                 ProgressView(value: progress)
                     .tint(isGoalMet ? .green : .accentColor)
                     .accessibilityHidden(true)
+
+                if streak > 0 {
+                    streakText
+                        .font(.subheadline.weight(.semibold))
+                }
             }
             .contentShape(Rectangle())
         }
@@ -197,20 +202,12 @@ struct TitleCardView: View {
     private var goalText: some View {
         if isGoalMet {
             Label {
-                Text("Goal met · \(readingMinutes) min today\(streakSuffix)")
+                Text("Goal met · \(readingMinutes) min today")
             } icon: {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
             }
-        } else if streak > 0 {
-            Label {
-                Text("\(streak)-day streak · \(readingProgressValue) of \(goalMinutes) min today")
-            } icon: {
-                Image(systemName: "flame.fill")
-                    .foregroundStyle(.orange)
-            }
         } else {
-            // A zero streak is left out rather than shown as discouraging feedback.
             Label {
                 Text("\(readingProgressValue) of \(goalMinutes) min today")
             } icon: {
@@ -220,8 +217,13 @@ struct TitleCardView: View {
         }
     }
 
-    private var streakSuffix: String {
-        streak > 0 ? " · \(streak)-day streak" : ""
+    private var streakText: some View {
+        Label {
+            Text("\(streak)-day streak")
+        } icon: {
+            Image(systemName: "flame.fill")
+                .foregroundStyle(.orange)
+        }
     }
 
     private var goalAccessibilityLabel: String {
