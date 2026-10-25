@@ -168,7 +168,13 @@ struct ChapterInsightsView: View {
         }
         // Ignore a result for a chapter the reader has already moved past.
         guard requested == location else { return }
-        insights = loaded
+        insights = loaded.map {
+            ChapterCrossReferenceDeduplicator.deduplicated(
+                $0,
+                bookName: requested.bookName,
+                chapterNumber: requested.chapterNumber
+            )
+        }
         neighborSummaries = summaries
         loadedLocation = requested
         isLoading = false

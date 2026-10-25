@@ -112,7 +112,8 @@ struct CrossReferenceExplorerView: View {
             }
         }
         .task {
-            entries = await ChapterInsightsRepository.shared.allCrossReferences()
+            let loadedEntries = await ChapterInsightsRepository.shared.allCrossReferences()
+            entries = ChapterCrossReferenceDeduplicator.deduplicated(loadedEntries)
             recomputeSections()
             isLoading = false
         }
