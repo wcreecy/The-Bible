@@ -21,7 +21,7 @@ struct BookOverviewView: View {
                 )
             }
         }
-        .navigationTitle("Explore \(bookName)")
+        .navigationTitle("\(bookName) Overview")
         .navigationBarTitleDisplayMode(.inline)
         .task(id: bookName, loadOverview)
         .onAppear {

@@ -620,7 +620,7 @@ private struct StudyBookHeader: View {
             }
 
             Button(action: onOpenOverview) {
-                Label("Explore \(bookName)", systemImage: "book.closed.fill")
+                Label("View \(bookName) Overview", systemImage: "book.closed.fill")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
@@ -662,12 +662,12 @@ struct CompactStudyBookHeader: View {
 
             Spacer(minLength: 8)
 
-            Button("Explore \(bookName)", systemImage: "book.closed.fill", action: onOpenOverview)
+            Button("View \(bookName) Overview", systemImage: "book.closed.fill", action: onOpenOverview)
                 .font(.subheadline.weight(.semibold))
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.capsule)
                 .controlSize(.small)
-                .accessibilityLabel("Explore \(bookName)")
+                .accessibilityLabel("View \(bookName) Overview")
                 .accessibilityHint("Opens the book overview")
         }
         .padding(.horizontal, 14)

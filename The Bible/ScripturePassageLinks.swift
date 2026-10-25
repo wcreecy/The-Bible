@@ -384,18 +384,20 @@ extension EnvironmentValues {
 
 extension View {
     /// Adds a Done button that closes the enclosing study sheet, when there is one.
-    func studySheetDoneButton() -> some View {
-        modifier(StudySheetDoneButtonModifier())
+    func studySheetDoneButton(placement: ToolbarItemPlacement = .cancellationAction) -> some View {
+        modifier(StudySheetDoneButtonModifier(placement: placement))
     }
 }
 
 private struct StudySheetDoneButtonModifier: ViewModifier {
+    let placement: ToolbarItemPlacement
+
     @Environment(\.closeStudySheet) private var closeStudySheet
 
     func body(content: Content) -> some View {
         content.toolbar {
             if let closeStudySheet {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: placement) {
                     Button("Done", action: closeStudySheet)
                 }
             }

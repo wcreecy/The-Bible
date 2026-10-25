@@ -530,7 +530,7 @@ private struct AboutBookLink: View {
     var body: some View {
         NavigationLink {
             BookOverviewView(bookName: bookName)
-                .studySheetDoneButton()
+                .studySheetDoneButton(placement: .topBarTrailing)
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "book.closed")
