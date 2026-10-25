@@ -276,9 +276,13 @@ private struct CrossReferencePassagesPreview: View {
             VStack(alignment: .leading, spacing: 16) {
                 CrossReferencePassagePreview(passage: source)
 
-                Image(systemName: "arrow.down")
-                    .foregroundStyle(.tint)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.down")
+                    Image(systemName: "arrow.up")
+                }
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.tint)
+                .frame(maxWidth: .infinity)
 
                 CrossReferencePassagePreview(passage: target)
             }
@@ -301,7 +305,7 @@ private struct CrossReferencePassagePreview: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+        .heroCardSurface()
     }
 }
 
