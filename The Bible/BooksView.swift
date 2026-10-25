@@ -180,6 +180,8 @@ struct StudyBibleView: View {
                         ContinueStudyingCard(book: book, chapterNumber: chapterNumber)
                     }
 
+                    CrossReferenceExplorerEntryCard()
+
                     LazyVGrid(
                         columns: bookColumns(for: geometry.size.width - 32),
                         alignment: .leading,

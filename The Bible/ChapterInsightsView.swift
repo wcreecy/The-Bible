@@ -712,25 +712,31 @@ private struct ScriptureCrossReferenceCard: View {
     var showsSource = true
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            if showsSource {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top, spacing: 10) {
+                if showsSource {
+                    ScriptureConnectionLink(
+                        reference: pair.source.reference,
+                        excerpt: pair.source.excerpt,
+                        pair: pair
+                    )
+                }
+
+                Image(systemName: "arrow.left.and.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tint)
+                    .padding(.top, 4)
+
                 ScriptureConnectionLink(
-                    reference: pair.source.reference,
-                    excerpt: pair.source.excerpt,
+                    reference: pair.target.reference,
+                    excerpt: pair.target.excerpt,
                     pair: pair
                 )
             }
 
-            Image(systemName: "arrow.left.and.right")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.tint)
-                .padding(.top, 4)
-
-            ScriptureConnectionLink(
-                reference: pair.target.reference,
-                excerpt: pair.target.excerpt,
-                pair: pair
-            )
+            Text(pair.relationshipDescription)
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)

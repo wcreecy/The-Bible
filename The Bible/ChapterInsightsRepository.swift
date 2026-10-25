@@ -30,6 +30,41 @@ struct ChapterRelatedVerse: Identifiable, Equatable, Sendable {
     let connectionExplanation: String?
 }
 
+/// A curated Scripture connection with the passage that introduces it.
+struct CrossReferenceExplorerEntry: Identifiable, Equatable, Sendable {
+    let id: Int
+    let bookName: String
+    let chapterNumber: Int
+    let sourceVerse: Int
+    let relatedReference: String
+    let connectionExplanation: String?
+
+    var sourceReference: String {
+        "\(bookName) \(chapterNumber):\(sourceVerse)"
+    }
+
+    /// Uses pair-specific editorial copy when available, with a careful fallback so every
+    /// connection in the global explorer explains why the passages are shown together.
+    var relationshipDescription: String {
+        guard let targetReference = PassageReferenceParser.parseList(
+            relatedReference,
+            book: bookName,
+            chapter: chapterNumber
+        ).first else {
+            return connectionExplanation ?? "These passages are presented together as a curated Scripture connection."
+        }
+
+        return ChapterCrossReferenceEditorialCatalog.relationshipDescription(
+            bookName: bookName,
+            chapterNumber: chapterNumber,
+            sourceVerse: sourceVerse,
+            targetBookName: targetReference.bookName,
+            targetChapterNumber: targetReference.startChapter,
+            targetVerse: targetReference.startVerse ?? 0
+        ) ?? connectionExplanation ?? "These passages are presented together as a curated Scripture connection."
+    }
+}
+
 actor ChapterInsightsRepository {
     static let shared = ChapterInsightsRepository()
 
@@ -80,6 +115,57 @@ actor ChapterInsightsRepository {
                 )
             )
         }
+    }
+
+    /// Loads the complete, reviewed collection used by the Cross-Reference Explorer.
+    func allCrossReferences() -> [CrossReferenceExplorerEntry] {
+        withDatabase { database in
+            let query = """
+            SELECT related.id, related.book_name, related.chapter_number,
+                   related.source_verse, related.related_reference, connection.explanation
+            FROM chapter_related_verses AS related
+            LEFT JOIN chapter_scripture_connections AS connection
+                ON connection.book_name = related.book_name
+                AND connection.chapter_number = related.chapter_number
+                AND connection.source_verse = related.source_verse
+                AND connection.related_reference = related.related_reference
+            ORDER BY related.id;
+            """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+                  let statement else {
+                return [CrossReferenceExplorerEntry]()
+            }
+            defer { sqlite3_finalize(statement) }
+
+            var entries: [CrossReferenceExplorerEntry] = []
+            while sqlite3_step(statement) == SQLITE_ROW {
+                let bookName = Self.columnText(statement, at: 1)
+                let chapterNumber = Int(sqlite3_column_int(statement, 2))
+                let sourceVerse = Int(sqlite3_column_int(statement, 3))
+                let relatedReference = Self.columnText(statement, at: 4)
+                guard !ChapterCrossReferenceReview.excludes(
+                    bookName: bookName,
+                    chapterNumber: chapterNumber,
+                    sourceVerse: sourceVerse,
+                    relatedReference: relatedReference
+                ) else {
+                    continue
+                }
+
+                entries.append(
+                    CrossReferenceExplorerEntry(
+                        id: Int(sqlite3_column_int(statement, 0)),
+                        bookName: bookName,
+                        chapterNumber: chapterNumber,
+                        sourceVerse: sourceVerse,
+                        relatedReference: relatedReference,
+                        connectionExplanation: Self.optionalColumnText(statement, at: 5)
+                    )
+                )
+            }
+            return entries
+        } ?? []
     }
 
     /// Just the chapter's summary, for previewing neighboring chapters.
