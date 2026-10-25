@@ -1,6 +1,14 @@
 import SwiftData
 import SwiftUI
 
+/// Initial content for a new note created from a study feature.
+struct UserNotePrefill: Identifiable {
+    let id: String
+    let title: String
+    let body: String
+    let passageReference: String
+}
+
 /// Adds or edits a personal, sermon, or Chapter Insights note that isn't attached to a verse.
 @MainActor
 struct UserNoteEditorView: View {
@@ -34,20 +42,25 @@ struct UserNoteEditorView: View {
     private let initialSermonDate: Date
     private let draftKey: String
 
-    init(existingNote: UserNote?, defaultCategory: NoteCategory = .personal) {
+    init(
+        existingNote: UserNote?,
+        defaultCategory: NoteCategory = .personal,
+        prefill: UserNotePrefill? = nil
+    ) {
         self.existingNote = existingNote
         let category = existingNote.flatMap { NoteCategory(rawValue: $0.categoryRawValue) } ?? defaultCategory
+        let prefilledBody = prefill?.body ?? ""
         let saved = NoteDraft(
-            title: existingNote?.title ?? "",
-            body: existingNote?.formattedContent ?? (try? JSONEncoder().encode(AttributedString(existingNote?.content ?? ""))) ?? Data(),
+            title: existingNote?.title ?? prefill?.title ?? "",
+            body: existingNote?.formattedContent ?? (try? JSONEncoder().encode(AttributedString(existingNote?.content ?? prefilledBody))) ?? Data(),
             category: category.rawValue,
-            passageReference: existingNote?.passageReference ?? "",
+            passageReference: existingNote?.passageReference ?? prefill?.passageReference ?? "",
             sermonSpeaker: existingNote?.sermonSpeaker ?? "",
             sermonLocation: existingNote?.sermonLocation ?? "",
             sermonDate: existingNote?.sermonDate
         )
         self.saved = saved
-        draftKey = NoteDraftStore.key(forUserNote: existingNote)
+        draftKey = existingNote == nil ? prefill?.id ?? NoteDraftStore.key(forUserNote: nil) : NoteDraftStore.key(forUserNote: existingNote)
 
         // Pick up where the last session left off if it closed with unsaved changes.
         let draft = NoteDraftStore.load(draftKey)

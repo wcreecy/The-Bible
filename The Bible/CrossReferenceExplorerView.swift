@@ -195,6 +195,7 @@ private struct CrossReferencePreviewSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var preview: CrossReferencePreview?
+    @State private var notePrefill: UserNotePrefill?
 
     var body: some View {
         NavigationStack {
@@ -224,11 +225,40 @@ private struct CrossReferencePreviewSheet: View {
                         dismiss()
                     }
                 }
+
+                ToolbarItem(placement: .primaryAction) {
+                    if let preview {
+                        Button {
+                            notePrefill = makeNotePrefill(preview: preview)
+                        } label: {
+                            Label("Create Note", systemImage: "square.and.pencil")
+                        }
+                    }
+                }
             }
             .task {
                 preview = await CrossReferencePreviewLoader.load(entry: entry)
             }
         }
+        .sheet(item: $notePrefill) { prefill in
+            NavigationStack {
+                UserNoteEditorView(existingNote: nil, prefill: prefill)
+            }
+        }
+    }
+
+    private func makeNotePrefill(preview: CrossReferencePreview) -> UserNotePrefill {
+        let source = preview.source.reference.displayTitle
+        let target = preview.target.reference.displayTitle
+        let connection = "\(source) → \(target)"
+        let relationship = preview.explanation ?? "These passages are presented together as a curated Scripture connection."
+
+        return UserNotePrefill(
+            id: "cross-reference-note-\(entry.id)",
+            title: "Scripture Connection",
+            body: "\(connection)\n\nRelationship\n\(relationship)\n\nMy thoughts:\n",
+            passageReference: source
+        )
     }
 }
 
