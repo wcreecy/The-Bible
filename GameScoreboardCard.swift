@@ -32,22 +32,18 @@ struct GameScoreboardCard: View {
     }
 
     var body: some View {
-        let allTime = stats.scorecardStats(for: game, wordMode: wordMode)
-
         switch style {
         case .compact:
             GameScoreboardCompactContent(
                 currentCorrect: currentCorrect,
                 currentAnswered: currentAnswered,
                 currentStreak: currentStreak,
-                currentAccuracy: percentString(correct: currentCorrect, answered: currentAnswered),
-                allTimeCorrect: allTime.correct,
-                allTimeAnswered: allTime.attempts,
-                allTimeBestStreak: allTime.bestStreak,
-                allTimeAccuracy: percentString(correct: allTime.correct, answered: allTime.attempts)
+                currentAccuracy: percentString(correct: currentCorrect, answered: currentAnswered)
             )
         case .dashboard:
-            dashboardScoreboard(allTime: allTime)
+            dashboardScoreboard(
+                allTime: stats.scorecardStats(for: game, wordMode: wordMode)
+            )
         }
     }
 
@@ -116,108 +112,42 @@ private struct GameScoreboardCompactContent: View {
     let currentAnswered: Int
     let currentStreak: Int
     let currentAccuracy: String
-    let allTimeCorrect: Int
-    let allTimeAnswered: Int
-    let allTimeBestStreak: Int
-    let allTimeAccuracy: String
 
     var body: some View {
-        VStack(spacing: 12) {
-            GameScoreboardRoundSummary(
-                correct: currentCorrect,
-                answered: currentAnswered,
-                streak: currentStreak,
-                accuracy: currentAccuracy
-            )
-
-            Divider()
-
-            GameScoreboardAllTimeSummary(
-                correct: allTimeCorrect,
-                answered: allTimeAnswered,
-                bestStreak: allTimeBestStreak,
-                accuracy: allTimeAccuracy
-            )
-        }
-        .padding(12)
-        .heroCardSurface()
-    }
-}
-
-private struct GameScoreboardRoundSummary: View {
-    let correct: Int
-    let answered: Int
-    let streak: Int
-    let accuracy: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Label("This Round", systemImage: "play.fill")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-            if answered == 0 {
-                Text("No answers yet")
-                    .font(.subheadline)
+        HStack(spacing: 14) {
+            if currentAnswered == 0 {
+                Label("No answers yet", systemImage: "play.fill")
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
             } else {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("\(correct) / \(answered) correct")
-                        .font(.title3.weight(.bold))
+                Label {
+                    Text("\(currentCorrect) / \(currentAnswered)")
                         .monospacedDigit()
-
-                    Spacer()
-
-                    Text("\(accuracy) accuracy")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
+                } icon: {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
                 }
+                .font(.headline.weight(.bold))
+
+                Spacer(minLength: 0)
+
+                Label(currentAccuracy, systemImage: "percent")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
             }
 
-            if streak > 0 {
-                Label("\(streak) in a row", systemImage: "flame.fill")
-                    .font(.footnote.weight(.medium))
+            if currentStreak > 0 {
+                Label("\(currentStreak)", systemImage: "flame.fill")
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.orange)
                     .monospacedDigit()
             }
         }
-        .accessibilityElement(children: .combine)
-    }
-}
-
-private struct GameScoreboardAllTimeSummary: View {
-    let correct: Int
-    let answered: Int
-    let bestStreak: Int
-    let accuracy: String
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Label("All Time", systemImage: "trophy.fill")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-            Spacer()
-
-            if answered == 0 {
-                Text("No answers yet")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } else {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(accuracy) accuracy · \(correct) correct")
-                        .font(.footnote.weight(.medium))
-                        .monospacedDigit()
-
-                    if bestStreak > 0 {
-                        Text("Best streak \(bestStreak)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
-                    }
-                }
-            }
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .heroCardSurface()
         .accessibilityElement(children: .combine)
     }
 }

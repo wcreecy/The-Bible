@@ -52,6 +52,64 @@ struct BibleLocationChallenge: Decodable, Identifiable, Hashable {
     }
 }
 
+/// The editable source of truth for Who? and Hangman answers.
+private struct GameAnswerCatalog: Decodable {
+    private enum EntryType: String, Decodable {
+        case person = "Person"
+        case place = "Place"
+    }
+
+    private struct Entry: Decodable {
+        let type: EntryType
+        let id: Int
+        let name: String
+        let books: [String]?
+        let scriptureMentioned: String?
+        let shortDescription: String
+        let difficulty: String
+
+        enum CodingKeys: String, CodingKey {
+            case type
+            case id
+            case name
+            case books
+            case scriptureMentioned = "scripture_mentioned"
+            case shortDescription = "short_description"
+            case difficulty
+        }
+    }
+
+    private let entries: [Entry]
+
+    var characters: [BibleCharacter] {
+        entries.compactMap { entry in
+            guard entry.type == .person, let books = entry.books else { return nil }
+            return BibleCharacter(
+                id: entry.id,
+                name: entry.name,
+                books: books,
+                shortDescription: entry.shortDescription,
+                difficulty: entry.difficulty
+            )
+        }
+    }
+
+    var locations: [BibleLocationChallenge] {
+        entries.compactMap { entry in
+            guard entry.type == .place, let scriptureMentioned = entry.scriptureMentioned else {
+                return nil
+            }
+            return BibleLocationChallenge(
+                id: entry.id,
+                locationName: entry.name,
+                scriptureMentioned: scriptureMentioned,
+                shortDescription: entry.shortDescription,
+                difficulty: entry.difficulty
+            )
+        }
+    }
+}
+
 actor GameDataCache {
     static let shared = GameDataCache()
     private var characters: [BibleCharacter]? = nil
@@ -66,25 +124,23 @@ actor GameDataCache {
 
 enum GameDataLoaders {
     static func loadCharacters() -> [BibleCharacter] {
-        if let characters: [BibleCharacter] = tryLoadArray(
-            [BibleCharacter].self,
-            resource: "Bible_Characters_Game_Clues_With_Difficulty"
-        ) {
-            return characters
+        guard let catalog = loadCatalog() else {
+            gameDataLogger.error("The Who? and Hangman catalog could not be loaded or decoded.")
+            return []
         }
-        gameDataLogger.error("The character game catalog could not be loaded or decoded.")
-        return []
+        return catalog.characters
     }
 
     static func loadLocationChallenges() -> [BibleLocationChallenge] {
-        if let locations: [BibleLocationChallenge] = tryLoadArray(
-            [BibleLocationChallenge].self,
-            resource: "bible_locations"
-        ) {
-            return locations
+        guard let catalog = loadCatalog() else {
+            gameDataLogger.error("The Who? and Hangman catalog could not be loaded or decoded.")
+            return []
         }
-        gameDataLogger.error("The location game catalog could not be loaded or decoded.")
-        return []
+        return catalog.locations
+    }
+
+    private static func loadCatalog() -> GameAnswerCatalog? {
+        tryLoadArray(GameAnswerCatalog.self, resource: "WhoAndHangmanCatalog")
     }
 
     static func loadCharactersAsync() async -> [BibleCharacter] {

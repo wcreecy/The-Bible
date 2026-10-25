@@ -1,0 +1,6027 @@
+{
+  "catalog_version": 1,
+  "notes": [
+    "This is the editable source of truth for Who? and Hangman character and place answers.",
+    "Character entries are used by both Who? and Hangman. Location entries are used by Hangman.",
+    "Hangman book answers are generated from the app’s canonical Bible book list and are not listed here.",
+    "Audit policy: Character book lists may include references to a person by alternate biblical spellings, family/tribal descendants, or a book heading; ambiguous instances require source-level review. Location references are illustrative citations, not exhaustive book lists.",
+    "Character scripture_references give selected identifying or key-event passages, not every occurrence. Location scripture_mentioned fields are preserved. Some biblical names are shared by multiple people, and disputed identifications are not assumed.",
+    "Combined entries array: type distinguishes Person from Place. IDs are unique within each type, not across the combined catalog."
+  ],
+  "entries": [
+    {
+      "type": "Person",
+      "id": 1,
+      "name": "Aaron",
+      "books": [
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Samuel",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Psalms",
+        "Micah",
+        "Luke",
+        "Acts",
+        "Hebrews"
+      ],
+      "short_description": "Brother of Moses and first high priest",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 4:14–16; 28:1"
+    },
+    {
+      "type": "Person",
+      "id": 2,
+      "name": "Abednego",
+      "books": [
+        "Daniel"
+      ],
+      "short_description": "Friend of Daniel who survived the fiery furnace",
+      "difficulty": "Medium",
+      "scripture_references": "Daniel 3:12–27"
+    },
+    {
+      "type": "Person",
+      "id": 3,
+      "name": "Abel",
+      "books": [
+        "Genesis",
+        "Matthew",
+        "Luke",
+        "Hebrews"
+      ],
+      "short_description": "Son of Adam and Eve murdered by Cain",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 4:2–10"
+    },
+    {
+      "type": "Person",
+      "id": 4,
+      "name": "Abigail",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Wise woman who became David's wife",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 25:3–42"
+    },
+    {
+      "type": "Person",
+      "id": 5,
+      "name": "Abimelech (king of Gerar)",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "King of Gerar who took Sarah into his household but released her after a divine warning",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 20:2–18"
+    },
+    {
+      "type": "Person",
+      "id": 6,
+      "name": "Abner",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles"
+      ],
+      "short_description": "Commander of Saul's army",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 14:50; 2 Samuel 3:6–39"
+    },
+    {
+      "type": "Person",
+      "id": 7,
+      "name": "Abraham",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Nehemiah",
+        "Psalms",
+        "Isaiah",
+        "Jeremiah",
+        "Ezekiel",
+        "Micah",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "2 Corinthians",
+        "Galatians",
+        "Hebrews",
+        "James",
+        "1 Peter"
+      ],
+      "short_description": "Patriarch and father of Isaac",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 12:1–9; 15:1–6; 17:1–8"
+    },
+    {
+      "type": "Person",
+      "id": 8,
+      "name": "Absalom",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Psalms"
+      ],
+      "short_description": "Son of David who rebelled against him",
+      "difficulty": "Medium",
+      "scripture_references": "2 Samuel 15:1–12; 18:9–15"
+    },
+    {
+      "type": "Person",
+      "id": 9,
+      "name": "Adam",
+      "books": [
+        "Genesis",
+        "Deuteronomy",
+        "1 Chronicles",
+        "Job",
+        "Luke",
+        "Romans",
+        "1 Corinthians",
+        "1 Timothy",
+        "Jude"
+      ],
+      "short_description": "First man",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 2:7–25; 3:1–24"
+    },
+    {
+      "type": "Person",
+      "id": 10,
+      "name": "Adonijah",
+      "books": [
+        "2 Samuel",
+        "1 Kings"
+      ],
+      "short_description": "Son of David who attempted to claim the throne",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 1:5–53"
+    },
+    {
+      "type": "Person",
+      "id": 11,
+      "name": "Agabus",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Prophet who warned Paul",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 11:27–28; 21:10–11"
+    },
+    {
+      "type": "Person",
+      "id": 12,
+      "name": "Ahab",
+      "books": [
+        "1 Kings",
+        "2 Kings",
+        "2 Chronicles",
+        "Micah"
+      ],
+      "short_description": "King of Israel and husband of Jezebel",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 16:29–33; 21:1–29"
+    },
+    {
+      "type": "Person",
+      "id": 13,
+      "name": "Ahasuerus",
+      "books": [
+        "Ezra",
+        "Esther"
+      ],
+      "short_description": "Persian king in the book of Esther",
+      "difficulty": "Medium",
+      "scripture_references": "Esther 1:1–3; 2:16–17"
+    },
+    {
+      "type": "Person",
+      "id": 14,
+      "name": "Ahaz",
+      "books": [
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Isaiah",
+        "Hosea",
+        "Micah",
+        "Matthew"
+      ],
+      "short_description": "King of Judah in the days of Isaiah",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 16:1–4; Isaiah 7:1–14"
+    },
+    {
+      "type": "Person",
+      "id": 15,
+      "name": "Ahijah",
+      "books": [
+        "1 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Prophet who foretold the division of Solomon's kingdom",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 11:29–39"
+    },
+    {
+      "type": "Person",
+      "id": 16,
+      "name": "Ahimaaz",
+      "books": [
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Priest's son who carried news to David",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 18:19–30"
+    },
+    {
+      "type": "Person",
+      "id": 17,
+      "name": "Ahimelech",
+      "books": [
+        "1 Samuel",
+        "Psalms"
+      ],
+      "short_description": "Priest who aided David at Nob",
+      "difficulty": "Hard",
+      "scripture_references": "1 Samuel 21:1–9; 22:9–19"
+    },
+    {
+      "type": "Person",
+      "id": 18,
+      "name": "Ahithophel",
+      "books": [
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "David's counselor who supported Absalom",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 15:12; 17:1–23"
+    },
+    {
+      "type": "Person",
+      "id": 19,
+      "name": "Amasa",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles"
+      ],
+      "short_description": "Commander who joined Absalom's rebellion",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 17:25; 20:8–13"
+    },
+    {
+      "type": "Person",
+      "id": 20,
+      "name": "Amnon",
+      "books": [
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "David's son who assaulted his sister Tamar",
+      "difficulty": "Medium",
+      "scripture_references": "2 Samuel 13:1–29"
+    },
+    {
+      "type": "Person",
+      "id": 21,
+      "name": "Amos",
+      "books": [
+        "Amos"
+      ],
+      "short_description": "Prophet who called Israel to justice",
+      "difficulty": "Medium",
+      "scripture_references": "Amos 1:1; 7:14–15"
+    },
+    {
+      "type": "Person",
+      "id": 22,
+      "name": "Anak",
+      "books": [
+        "Numbers",
+        "Joshua"
+      ],
+      "short_description": "Ancestor of the Anakim encountered in Canaan",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 13:22; Joshua 15:13–14"
+    },
+    {
+      "type": "Person",
+      "id": 23,
+      "name": "Ananias (disciple of Damascus)",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Disciple who restored Saul's sight",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 9:10–18"
+    },
+    {
+      "type": "Person",
+      "id": 24,
+      "name": "Ananias (husband of Sapphira)",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Man who lied about an offering to the church",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 5:1–11"
+    },
+    {
+      "type": "Person",
+      "id": 25,
+      "name": "Andrew",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "Apostle and brother of Simon Peter",
+      "difficulty": "Easy",
+      "scripture_references": "John 1:40–42; Matthew 4:18–20"
+    },
+    {
+      "type": "Person",
+      "id": 26,
+      "name": "Anna",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Prophetess who recognized the infant Jesus",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 2:36–38"
+    },
+    {
+      "type": "Person",
+      "id": 27,
+      "name": "Antipas",
+      "books": [
+        "Revelation"
+      ],
+      "short_description": "Faithful witness killed in Pergamos, mentioned in Christ’s message to its church",
+      "difficulty": "Medium",
+      "scripture_references": "Revelation 2:13"
+    },
+    {
+      "type": "Person",
+      "id": 28,
+      "name": "Apollos",
+      "books": [
+        "Acts",
+        "1 Corinthians",
+        "Titus"
+      ],
+      "short_description": "Eloquent Christian teacher",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 18:24–28"
+    },
+    {
+      "type": "Person",
+      "id": 29,
+      "name": "Aquila",
+      "books": [
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Timothy"
+      ],
+      "short_description": "Early Christian missionary and tentmaker",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 18:1–3; 18:24–26"
+    },
+    {
+      "type": "Person",
+      "id": 30,
+      "name": "Aristarchus",
+      "books": [
+        "Acts",
+        "Colossians",
+        "Philemon"
+      ],
+      "short_description": "Companion of Paul during missionary journeys",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 19:29; 27:2; Colossians 4:10"
+    },
+    {
+      "type": "Person",
+      "id": 31,
+      "name": "Artemas",
+      "books": [
+        "Titus"
+      ],
+      "short_description": "Coworker Paul considered sending to Titus",
+      "difficulty": "Hard",
+      "scripture_references": "Titus 3:12"
+    },
+    {
+      "type": "Person",
+      "id": 32,
+      "name": "Asa",
+      "books": [
+        "1 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Jeremiah",
+        "Matthew"
+      ],
+      "short_description": "King of Judah who instituted reforms",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 15:9–15; 2 Chronicles 14:1–5"
+    },
+    {
+      "type": "Person",
+      "id": 33,
+      "name": "Asaph",
+      "books": [
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Psalms"
+      ],
+      "short_description": "Levite and worship leader",
+      "difficulty": "Hard",
+      "scripture_references": "1 Chronicles 16:4–7; Psalm 73:1"
+    },
+    {
+      "type": "Person",
+      "id": 34,
+      "name": "Azariah",
+      "books": [
+        "2 Chronicles"
+      ],
+      "short_description": "Priest who resisted King Uzziah's unlawful offering",
+      "difficulty": "Hard",
+      "scripture_references": "2 Chronicles 26:16–20"
+    },
+    {
+      "type": "Person",
+      "id": 35,
+      "name": "Balaam",
+      "books": [
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Nehemiah",
+        "Micah",
+        "2 Peter",
+        "Jude",
+        "Revelation"
+      ],
+      "short_description": "Diviner who was hired to curse Israel",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 22:5–35; 24:1–9"
+    },
+    {
+      "type": "Person",
+      "id": 36,
+      "name": "Balak",
+      "books": [
+        "Numbers",
+        "Joshua",
+        "Judges",
+        "Micah",
+        "Revelation"
+      ],
+      "short_description": "King of Moab who summoned Balaam",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 22:2–6"
+    },
+    {
+      "type": "Person",
+      "id": 37,
+      "name": "Barabbas",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ],
+      "short_description": "Prisoner released instead of Jesus",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 27:15–26"
+    },
+    {
+      "type": "Person",
+      "id": 38,
+      "name": "Barak",
+      "books": [
+        "Judges",
+        "Hebrews"
+      ],
+      "short_description": "Military leader who worked with Deborah",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 4:4–16"
+    },
+    {
+      "type": "Person",
+      "id": 39,
+      "name": "Barnabas",
+      "books": [
+        "Acts",
+        "1 Corinthians",
+        "Galatians",
+        "Colossians"
+      ],
+      "short_description": "Early Christian missionary who traveled with Paul and encouraged believers",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 4:36–37; 11:22–26"
+    },
+    {
+      "type": "Person",
+      "id": 40,
+      "name": "Bartholomew",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "Acts"
+      ],
+      "short_description": "One of the twelve apostles",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 10:2–4"
+    },
+    {
+      "type": "Person",
+      "id": 41,
+      "name": "Bartimaeus",
+      "books": [
+        "Mark"
+      ],
+      "short_description": "Blind man healed by Jesus",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 10:46–52"
+    },
+    {
+      "type": "Person",
+      "id": 42,
+      "name": "Baruch",
+      "books": [
+        "Jeremiah"
+      ],
+      "short_description": "Scribe who recorded Jeremiah's prophecies",
+      "difficulty": "Hard",
+      "scripture_references": "Jeremiah 36:4–10"
+    },
+    {
+      "type": "Person",
+      "id": 43,
+      "name": "Bathsheba",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "Psalms"
+      ],
+      "short_description": "Wife of Uriah who later married David",
+      "difficulty": "Easy",
+      "scripture_references": "2 Samuel 11:2–27; 1 Kings 1:11–31"
+    },
+    {
+      "type": "Person",
+      "id": 44,
+      "name": "Belshazzar",
+      "books": [
+        "Daniel"
+      ],
+      "short_description": "Babylonian ruler who saw writing on the wall",
+      "difficulty": "Medium",
+      "scripture_references": "Daniel 5:1–31"
+    },
+    {
+      "type": "Person",
+      "id": 45,
+      "name": "Benaiah",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles"
+      ],
+      "short_description": "Warrior who served David and Solomon",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 23:20–23; 1 Kings 2:34–35"
+    },
+    {
+      "type": "Person",
+      "id": 46,
+      "name": "Benjamin",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Psalms",
+        "Jeremiah",
+        "Ezekiel",
+        "Hosea",
+        "Obadiah",
+        "Zechariah",
+        "Acts",
+        "Romans",
+        "Philippians",
+        "Revelation"
+      ],
+      "short_description": "Youngest son of Jacob and Rachel",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 35:16–20; 42:36; 43:29"
+    },
+    {
+      "type": "Person",
+      "id": 47,
+      "name": "Berechiah",
+      "books": [
+        "Zechariah"
+      ],
+      "short_description": "Father of the prophet Zechariah",
+      "difficulty": "Medium",
+      "scripture_references": "Zechariah 1:1"
+    },
+    {
+      "type": "Person",
+      "id": 48,
+      "name": "Berenice",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Royal woman present at Paul's hearing",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 25:13–23"
+    },
+    {
+      "type": "Person",
+      "id": 49,
+      "name": "Bezalel",
+      "books": [
+        "Exodus",
+        "1 Chronicles",
+        "2 Chronicles"
+      ],
+      "short_description": "Craftsman chosen to make the tabernacle furnishings",
+      "difficulty": "Medium",
+      "scripture_references": "Exodus 31:1–5; 35:30–35"
+    },
+    {
+      "type": "Person",
+      "id": 50,
+      "name": "Bildad",
+      "books": [
+        "Job"
+      ],
+      "short_description": "One of Job's three friends",
+      "difficulty": "Medium",
+      "scripture_references": "Job 2:11; 8:1–22"
+    },
+    {
+      "type": "Person",
+      "id": 51,
+      "name": "Bilhah",
+      "books": [
+        "Genesis",
+        "1 Chronicles"
+      ],
+      "short_description": "Rachel's handmaid and mother of Dan and Naphtali",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 30:3–8"
+    },
+    {
+      "type": "Person",
+      "id": 52,
+      "name": "Blastus",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Herod's chamberlain approached by Tyre and Sidon",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 12:20"
+    },
+    {
+      "type": "Person",
+      "id": 53,
+      "name": "Boaz",
+      "books": [
+        "Ruth",
+        "1 Chronicles",
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Kinsman-redeemer who married Ruth",
+      "difficulty": "Easy",
+      "scripture_references": "Ruth 2:1–12; 4:9–13"
+    },
+    {
+      "type": "Person",
+      "id": 54,
+      "name": "Caiaphas",
+      "books": [
+        "Matthew",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "High priest involved in Jesus' trial",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 26:57–68; John 11:49–53"
+    },
+    {
+      "type": "Person",
+      "id": 55,
+      "name": "Cain",
+      "books": [
+        "Genesis",
+        "Hebrews",
+        "1 John",
+        "Jude"
+      ],
+      "short_description": "First son of Adam and Eve",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 4:1–16"
+    },
+    {
+      "type": "Person",
+      "id": 56,
+      "name": "Caleb",
+      "books": [
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "One of the twelve spies who trusted God and later inherited land in Canaan",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 13:6; 14:24; Joshua 14:6–14"
+    },
+    {
+      "type": "Person",
+      "id": 57,
+      "name": "Chloe",
+      "books": [
+        "1 Corinthians"
+      ],
+      "short_description": "Woman whose household reported divisions at Corinth",
+      "difficulty": "Hard",
+      "scripture_references": "1 Corinthians 1:11"
+    },
+    {
+      "type": "Person",
+      "id": 58,
+      "name": "Cleopas",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Disciple who met the risen Jesus on the road to Emmaus",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 24:13–35"
+    },
+    {
+      "type": "Person",
+      "id": 59,
+      "name": "Cornelius",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Roman centurion who received Peter's message",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 10:1–48"
+    },
+    {
+      "type": "Person",
+      "id": 60,
+      "name": "Crispus",
+      "books": [
+        "Acts",
+        "1 Corinthians"
+      ],
+      "short_description": "Synagogue ruler who believed in Jesus",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 18:8; 1 Corinthians 1:14"
+    },
+    {
+      "type": "Person",
+      "id": 61,
+      "name": "Cyrus",
+      "books": [
+        "2 Chronicles",
+        "Ezra",
+        "Isaiah",
+        "Daniel"
+      ],
+      "short_description": "Persian king who authorized return from exile",
+      "difficulty": "Medium",
+      "scripture_references": "Ezra 1:1–4; Isaiah 44:28; 45:1"
+    },
+    {
+      "type": "Person",
+      "id": 62,
+      "name": "Damaris",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Athenian woman who believed Paul's teaching",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 17:34"
+    },
+    {
+      "type": "Person",
+      "id": 63,
+      "name": "Daniel",
+      "books": [
+        "Ezekiel",
+        "Daniel",
+        "Matthew",
+        "Mark"
+      ],
+      "short_description": "Prophet and Judean exile in Babylon",
+      "difficulty": "Easy",
+      "scripture_references": "Daniel 1:3–6; 6:1–28"
+    },
+    {
+      "type": "Person",
+      "id": 64,
+      "name": "Dathan",
+      "books": [
+        "Numbers",
+        "Deuteronomy",
+        "Psalms"
+      ],
+      "short_description": "Rebel who opposed Moses in the wilderness",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 16:1–35"
+    },
+    {
+      "type": "Person",
+      "id": 65,
+      "name": "David",
+      "books": [
+        "Ruth",
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Psalms",
+        "Proverbs",
+        "Ecclesiastes",
+        "Song of Solomon",
+        "Isaiah",
+        "Jeremiah",
+        "Ezekiel",
+        "Hosea",
+        "Amos",
+        "Zechariah",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "2 Timothy",
+        "Hebrews",
+        "Revelation"
+      ],
+      "short_description": "Shepherd who became king of Israel",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 16:11–13; 17:32–50; 2 Samuel 5:1–5"
+    },
+    {
+      "type": "Person",
+      "id": 66,
+      "name": "Deborah",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Prophetess and judge of Israel",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 4:4–10; 5:1–31"
+    },
+    {
+      "type": "Person",
+      "id": 67,
+      "name": "Delilah",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Woman who betrayed Samson",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 16:4–21"
+    },
+    {
+      "type": "Person",
+      "id": 68,
+      "name": "Demas",
+      "books": [
+        "Colossians",
+        "2 Timothy",
+        "Philemon"
+      ],
+      "short_description": "Former coworker who deserted Paul",
+      "difficulty": "Medium",
+      "scripture_references": "Colossians 4:14; 2 Timothy 4:10"
+    },
+    {
+      "type": "Person",
+      "id": 69,
+      "name": "Demetrius (commended believer)",
+      "books": [
+        "3 John"
+      ],
+      "short_description": "Believer praised in John's third letter",
+      "difficulty": "Medium",
+      "scripture_references": "3 John 1:12"
+    },
+    {
+      "type": "Person",
+      "id": 70,
+      "name": "Demetrius (silversmith)",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Ephesian artisan who stirred opposition to Paul",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 19:24–29"
+    },
+    {
+      "type": "Person",
+      "id": 71,
+      "name": "Dinah",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Daughter of Jacob and Leah",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 30:21; 34:1–31"
+    },
+    {
+      "type": "Person",
+      "id": 72,
+      "name": "Diotrephes",
+      "books": [
+        "3 John"
+      ],
+      "short_description": "Church leader who resisted John's messengers",
+      "difficulty": "Hard",
+      "scripture_references": "3 John 1:9–10"
+    },
+    {
+      "type": "Person",
+      "id": 73,
+      "name": "Dorcas",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Disciple raised to life through Peter",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 9:36–42"
+    },
+    {
+      "type": "Person",
+      "id": 74,
+      "name": "Ebedmelech",
+      "books": [
+        "Jeremiah"
+      ],
+      "short_description": "Ethiopian official who rescued Jeremiah",
+      "difficulty": "Medium",
+      "scripture_references": "Jeremiah 38:7–13"
+    },
+    {
+      "type": "Person",
+      "id": 75,
+      "name": "Eglon",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Moabite king defeated by Ehud",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 3:12–26"
+    },
+    {
+      "type": "Person",
+      "id": 76,
+      "name": "Ehud",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Left-handed judge who delivered Israel from Moab",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 3:15–30"
+    },
+    {
+      "type": "Person",
+      "id": 77,
+      "name": "Eli",
+      "books": [
+        "1 Samuel",
+        "1 Kings"
+      ],
+      "short_description": "Priest who mentored Samuel",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 1:9–18; 3:1–18"
+    },
+    {
+      "type": "Person",
+      "id": 78,
+      "name": "Elihu",
+      "books": [
+        "Job"
+      ],
+      "short_description": "Younger speaker who responded to Job and his friends",
+      "difficulty": "Medium",
+      "scripture_references": "Job 32:1–6"
+    },
+    {
+      "type": "Person",
+      "id": 79,
+      "name": "Elijah",
+      "books": [
+        "1 Kings",
+        "2 Kings",
+        "2 Chronicles",
+        "Malachi",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Romans",
+        "James"
+      ],
+      "short_description": "Prophet who confronted Ahab and Baal worship",
+      "difficulty": "Easy",
+      "scripture_references": "1 Kings 17:1–24; 18:17–40"
+    },
+    {
+      "type": "Person",
+      "id": 80,
+      "name": "Elimelech",
+      "books": [
+        "Ruth"
+      ],
+      "short_description": "Naomi's husband",
+      "difficulty": "Medium",
+      "scripture_references": "Ruth 1:1–5"
+    },
+    {
+      "type": "Person",
+      "id": 81,
+      "name": "Elisabeth",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Mother of John the Baptist",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 1:5–25; 1:57–60"
+    },
+    {
+      "type": "Person",
+      "id": 82,
+      "name": "Elisha",
+      "books": [
+        "1 Kings",
+        "2 Kings",
+        "Luke"
+      ],
+      "short_description": "Prophet who succeeded Elijah",
+      "difficulty": "Easy",
+      "scripture_references": "1 Kings 19:19–21; 2 Kings 2:9–15"
+    },
+    {
+      "type": "Person",
+      "id": 83,
+      "name": "Elymas",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Sorcerer who opposed Paul in Cyprus",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 13:6–12"
+    },
+    {
+      "type": "Person",
+      "id": 84,
+      "name": "Enoch",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Luke",
+        "Hebrews",
+        "Jude"
+      ],
+      "short_description": "Patriarch who walked with God",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 5:18–24; Hebrews 11:5"
+    },
+    {
+      "type": "Person",
+      "id": 85,
+      "name": "Enos",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Luke"
+      ],
+      "short_description": "Son of Seth and ancestor of Noah",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 4:26; 5:6–11"
+    },
+    {
+      "type": "Person",
+      "id": 86,
+      "name": "Epaphras",
+      "books": [
+        "Colossians",
+        "Philemon"
+      ],
+      "short_description": "Believer who ministered among the Colossians",
+      "difficulty": "Medium",
+      "scripture_references": "Colossians 1:7–8; 4:12–13"
+    },
+    {
+      "type": "Person",
+      "id": 87,
+      "name": "Epaphroditus",
+      "books": [
+        "Philippians"
+      ],
+      "short_description": "Messenger of the Philippian church",
+      "difficulty": "Hard",
+      "scripture_references": "Philippians 2:25–30"
+    },
+    {
+      "type": "Person",
+      "id": 88,
+      "name": "Erastus",
+      "books": [
+        "Acts",
+        "Romans",
+        "2 Timothy"
+      ],
+      "short_description": "Coworker of Paul and city official",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 19:22; Romans 16:23"
+    },
+    {
+      "type": "Person",
+      "id": 89,
+      "name": "Esau",
+      "books": [
+        "Genesis",
+        "Deuteronomy",
+        "Joshua",
+        "1 Chronicles",
+        "Jeremiah",
+        "Obadiah",
+        "Malachi",
+        "Romans",
+        "Hebrews"
+      ],
+      "short_description": "Twin brother of Jacob",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 25:24–34; 27:1–41"
+    },
+    {
+      "type": "Person",
+      "id": 90,
+      "name": "Esther",
+      "books": [
+        "Esther"
+      ],
+      "short_description": "Jewish queen who interceded for her people",
+      "difficulty": "Easy",
+      "scripture_references": "Esther 2:5–17; 4:12–17"
+    },
+    {
+      "type": "Person",
+      "id": 91,
+      "name": "Eunice",
+      "books": [
+        "2 Timothy"
+      ],
+      "short_description": "Mother of Timothy",
+      "difficulty": "Medium",
+      "scripture_references": "2 Timothy 1:5"
+    },
+    {
+      "type": "Person",
+      "id": 92,
+      "name": "Eutychus",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Young man revived after falling from a window",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 20:7–12"
+    },
+    {
+      "type": "Person",
+      "id": 93,
+      "name": "Eve",
+      "books": [
+        "Genesis",
+        "2 Corinthians",
+        "1 Timothy"
+      ],
+      "short_description": "First woman",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 2:21–25; 3:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 94,
+      "name": "Ezekiel",
+      "books": [
+        "Ezekiel"
+      ],
+      "short_description": "Prophet among the Babylonian exiles",
+      "difficulty": "Medium",
+      "scripture_references": "Ezekiel 1:1–3; 2:1–10"
+    },
+    {
+      "type": "Person",
+      "id": 95,
+      "name": "Ezra",
+      "books": [
+        "Ezra",
+        "Nehemiah"
+      ],
+      "short_description": "Scribe and priest who taught the law",
+      "difficulty": "Medium",
+      "scripture_references": "Ezra 7:1–10; Nehemiah 8:1–8"
+    },
+    {
+      "type": "Person",
+      "id": 96,
+      "name": "Felix",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Roman governor who heard Paul's defense",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 24:22–27"
+    },
+    {
+      "type": "Person",
+      "id": 97,
+      "name": "Festus",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Roman governor who heard Paul's case",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 25:1–12"
+    },
+    {
+      "type": "Person",
+      "id": 98,
+      "name": "Gad",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Chronicles",
+        "2 Chronicles"
+      ],
+      "short_description": "Prophet and counselor to King David",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 22:5; 2 Samuel 24:11–19"
+    },
+    {
+      "type": "Person",
+      "id": 99,
+      "name": "Gaius (host of Paul)",
+      "books": [
+        "Romans"
+      ],
+      "short_description": "Believer who hosted Paul and the church",
+      "difficulty": "Medium",
+      "scripture_references": "Romans 16:23"
+    },
+    {
+      "type": "Person",
+      "id": 100,
+      "name": "Gamaliel",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Pharisee and teacher of the law in Acts",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 5:34–40; 22:3"
+    },
+    {
+      "type": "Person",
+      "id": 101,
+      "name": "Gehazi",
+      "books": [
+        "2 Kings"
+      ],
+      "short_description": "Servant of the prophet Elisha",
+      "difficulty": "Hard",
+      "scripture_references": "2 Kings 5:20–27"
+    },
+    {
+      "type": "Person",
+      "id": 102,
+      "name": "Gideon",
+      "books": [
+        "Judges",
+        "1 Samuel",
+        "Hebrews"
+      ],
+      "short_description": "Judge who defeated Midian",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 6:11–24; 7:1–25"
+    },
+    {
+      "type": "Person",
+      "id": 103,
+      "name": "Goliath",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Philistine champion from Gath defeated by David",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 17:4–51"
+    },
+    {
+      "type": "Person",
+      "id": 104,
+      "name": "Habakkuk",
+      "books": [
+        "Habakkuk"
+      ],
+      "short_description": "Prophet who questioned injustice",
+      "difficulty": "Medium",
+      "scripture_references": "Habakkuk 1:1–4; 2:1–4"
+    },
+    {
+      "type": "Person",
+      "id": 105,
+      "name": "Hagar",
+      "books": [
+        "Genesis",
+        "Galatians"
+      ],
+      "short_description": "Egyptian servant of Sarah and mother of Ishmael",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 16:1–16; 21:14–21"
+    },
+    {
+      "type": "Person",
+      "id": 106,
+      "name": "Haman",
+      "books": [
+        "Esther"
+      ],
+      "short_description": "Royal official who plotted against the Jews",
+      "difficulty": "Medium",
+      "scripture_references": "Esther 3:1–15; 7:1–10"
+    },
+    {
+      "type": "Person",
+      "id": 107,
+      "name": "Hannah",
+      "books": [
+        "1 Samuel"
+      ],
+      "short_description": "Mother of Samuel who prayed for a child",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 1:1–28; 2:1–10"
+    },
+    {
+      "type": "Person",
+      "id": 108,
+      "name": "Herod Agrippa I",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Ruler who persecuted the early church",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 12:1–23"
+    },
+    {
+      "type": "Person",
+      "id": 109,
+      "name": "Herod Agrippa II",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "King Agrippa who heard Paul’s defense before Festus",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 25:13–26:32"
+    },
+    {
+      "type": "Person",
+      "id": 110,
+      "name": "Herod Antipas",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "Acts"
+      ],
+      "short_description": "Tetrarch who executed John the Baptist",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 6:14–29; Luke 23:6–12"
+    },
+    {
+      "type": "Person",
+      "id": 111,
+      "name": "Herod the Great",
+      "books": [
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Judean king who ordered the killing of infants in Bethlehem",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 2:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 112,
+      "name": "Hezekiah",
+      "books": [
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Proverbs",
+        "Isaiah",
+        "Jeremiah",
+        "Hosea",
+        "Micah",
+        "Matthew"
+      ],
+      "short_description": "King of Judah who trusted the LORD",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 18:1–8; 19:14–37"
+    },
+    {
+      "type": "Person",
+      "id": 113,
+      "name": "Hiram (king of Tyre)",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "2 Chronicles"
+      ],
+      "short_description": "King who supplied materials for David and Solomon",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 5:1–12"
+    },
+    {
+      "type": "Person",
+      "id": 114,
+      "name": "Hophni",
+      "books": [
+        "1 Samuel"
+      ],
+      "short_description": "Corrupt son of Eli the priest",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 2:12–17; 4:11"
+    },
+    {
+      "type": "Person",
+      "id": 115,
+      "name": "Hosea",
+      "books": [
+        "Hosea",
+        "Romans"
+      ],
+      "short_description": "Prophet whose marriage to Gomer illustrated Israel’s unfaithfulness to God",
+      "difficulty": "Medium",
+      "scripture_references": "Hosea 1:1–11; 3:1–5"
+    },
+    {
+      "type": "Person",
+      "id": 116,
+      "name": "Huldah",
+      "books": [
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Prophetess consulted during Josiah's reign",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 22:14–20"
+    },
+    {
+      "type": "Person",
+      "id": 117,
+      "name": "Hur",
+      "books": [
+        "Exodus",
+        "1 Chronicles"
+      ],
+      "short_description": "Israelite who held up Moses' hands",
+      "difficulty": "Medium",
+      "scripture_references": "Exodus 17:10–13; 24:14"
+    },
+    {
+      "type": "Person",
+      "id": 118,
+      "name": "Ibzan",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Judge of Israel after Jephthah",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 12:8–10"
+    },
+    {
+      "type": "Person",
+      "id": 119,
+      "name": "Ichabod",
+      "books": [
+        "1 Samuel"
+      ],
+      "short_description": "Son born to Phinehas after the ark was captured",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 4:19–22"
+    },
+    {
+      "type": "Person",
+      "id": 120,
+      "name": "Isaac",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Psalms",
+        "Jeremiah",
+        "Amos",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "Acts",
+        "Romans",
+        "Galatians",
+        "Hebrews",
+        "James"
+      ],
+      "short_description": "Son of Abraham and Sarah",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 21:1–7; 22:1–19; 26:1–25"
+    },
+    {
+      "type": "Person",
+      "id": 121,
+      "name": "Isaiah",
+      "books": [
+        "2 Kings",
+        "2 Chronicles",
+        "Isaiah",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans"
+      ],
+      "short_description": "Prophet in Judah",
+      "difficulty": "Easy",
+      "scripture_references": "Isaiah 1:1; 6:1–13"
+    },
+    {
+      "type": "Person",
+      "id": 122,
+      "name": "Ishmael",
+      "books": [
+        "Genesis",
+        "1 Chronicles"
+      ],
+      "short_description": "Son of Abraham and Hagar",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 16:11–16; 21:8–21"
+    },
+    {
+      "type": "Person",
+      "id": 123,
+      "name": "Ittai",
+      "books": [
+        "2 Samuel"
+      ],
+      "short_description": "Gittite commander loyal to David",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 15:19–22; 18:2"
+    },
+    {
+      "type": "Person",
+      "id": 124,
+      "name": "Jabez",
+      "books": [
+        "1 Chronicles"
+      ],
+      "short_description": "Man known for a prayer asking God's blessing",
+      "difficulty": "Medium",
+      "scripture_references": "1 Chronicles 4:9–10"
+    },
+    {
+      "type": "Person",
+      "id": 125,
+      "name": "Jacob (son of Isaac)",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "Psalms",
+        "Isaiah",
+        "Jeremiah",
+        "Lamentations",
+        "Ezekiel",
+        "Hosea",
+        "Amos",
+        "Obadiah",
+        "Micah",
+        "Nahum",
+        "Malachi",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "Hebrews"
+      ],
+      "short_description": "Patriarch who wrestled with God and was given a new name",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 25:24–34; 28:10–22; 32:24–30"
+    },
+    {
+      "type": "Person",
+      "id": 285,
+      "name": "Jacob (son of Matthan)",
+      "books": [
+        "Matthew"
+      ],
+      "short_description": "Named in Jesus' genealogy as the father of Mary's husband",
+      "difficulty": "Hard",
+      "scripture_references": "Matthew 1:15–16"
+    },
+    {
+      "type": "Person",
+      "id": 126,
+      "name": "Jael",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Woman who defeated Sisera",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 4:17–22; 5:24–27"
+    },
+    {
+      "type": "Person",
+      "id": 127,
+      "name": "Jair",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Judge who led Israel twenty-two years",
+      "difficulty": "Hard",
+      "scripture_references": "Judges 10:3–5"
+    },
+    {
+      "type": "Person",
+      "id": 128,
+      "name": "Jairus",
+      "books": [
+        "Mark",
+        "Luke"
+      ],
+      "short_description": "Synagogue leader whose daughter Jesus raised",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 5:22–43; Luke 8:41–56"
+    },
+    {
+      "type": "Person",
+      "id": 129,
+      "name": "James (brother of Jesus)",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Acts",
+        "1 Corinthians",
+        "Galatians"
+      ],
+      "short_description": "Leader of the Jerusalem church who spoke at its council",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 6:3; Acts 15:13–21; Galatians 1:19"
+    },
+    {
+      "type": "Person",
+      "id": 130,
+      "name": "James (son of Alphaeus)",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "Acts"
+      ],
+      "short_description": "One of the twelve apostles, identified by his father",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 10:3; Acts 1:13"
+    },
+    {
+      "type": "Person",
+      "id": 131,
+      "name": "James (son of Zebedee)",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "Acts"
+      ],
+      "short_description": "Apostle, brother of John, and son of Zebedee, killed by Herod Agrippa I",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 1:19–20; Acts 12:1–2"
+    },
+    {
+      "type": "Person",
+      "id": 132,
+      "name": "Jephthah",
+      "books": [
+        "Judges",
+        "1 Samuel",
+        "Hebrews"
+      ],
+      "short_description": "Judge who fought the Ammonites",
+      "difficulty": "Hard",
+      "scripture_references": "Judges 11:1–40"
+    },
+    {
+      "type": "Person",
+      "id": 133,
+      "name": "Jeremiah",
+      "books": [
+        "2 Chronicles",
+        "Ezra",
+        "Jeremiah",
+        "Daniel",
+        "Matthew"
+      ],
+      "short_description": "Prophet who warned Judah of judgment",
+      "difficulty": "Easy",
+      "scripture_references": "Jeremiah 1:1–10; 36:1–32"
+    },
+    {
+      "type": "Person",
+      "id": 134,
+      "name": "Jesse",
+      "books": [
+        "Ruth",
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Psalms",
+        "Isaiah",
+        "Matthew",
+        "Luke",
+        "Acts",
+        "Romans"
+      ],
+      "short_description": "Father of King David",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 16:1–13"
+    },
+    {
+      "type": "Person",
+      "id": 135,
+      "name": "Jesus Christ",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Corinthians",
+        "Galatians",
+        "Ephesians",
+        "Philippians",
+        "Colossians",
+        "1 Thessalonians",
+        "2 Thessalonians",
+        "1 Timothy",
+        "2 Timothy",
+        "Titus",
+        "Philemon",
+        "Hebrews",
+        "James",
+        "1 Peter",
+        "2 Peter",
+        "1 John",
+        "2 John",
+        "Jude",
+        "Revelation"
+      ],
+      "short_description": "Born in Bethlehem, performed miracles, was crucified, and rose from the dead",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 1:18–25; Mark 15:21–39; Luke 24:1–12; John 20:1–31"
+    },
+    {
+      "type": "Person",
+      "id": 136,
+      "name": "Jethro",
+      "books": [
+        "Exodus",
+        "Numbers"
+      ],
+      "short_description": "Father-in-law of Moses and priest of Midian",
+      "difficulty": "Medium",
+      "scripture_references": "Exodus 3:1; 18:1–27"
+    },
+    {
+      "type": "Person",
+      "id": 137,
+      "name": "Jezebel",
+      "books": [
+        "1 Kings",
+        "2 Kings"
+      ],
+      "short_description": "Queen of Israel and wife of Ahab",
+      "difficulty": "Easy",
+      "scripture_references": "1 Kings 16:31; 21:5–25; 2 Kings 9:30–37"
+    },
+    {
+      "type": "Person",
+      "id": 138,
+      "name": "Joab",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "Psalms"
+      ],
+      "short_description": "Commander of King David's army",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 2:13–32; 20:8–13"
+    },
+    {
+      "type": "Person",
+      "id": 139,
+      "name": "Joanna",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Woman who supported Jesus' ministry",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 8:1–3; 24:10"
+    },
+    {
+      "type": "Person",
+      "id": 140,
+      "name": "Joash (father of Gideon)",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Defended his son against Baal's worshipers",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 6:11–32"
+    },
+    {
+      "type": "Person",
+      "id": 141,
+      "name": "Joash (king of Israel)",
+      "books": [
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "King of Israel during Elisha's final illness",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 13:10–25"
+    },
+    {
+      "type": "Person",
+      "id": 142,
+      "name": "Joash (king of Judah)",
+      "books": [
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Boy king of Judah who repaired the temple",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 11:21–12:16"
+    },
+    {
+      "type": "Person",
+      "id": 143,
+      "name": "Job",
+      "books": [
+        "Job",
+        "Ezekiel",
+        "James"
+      ],
+      "short_description": "Righteous man tested through suffering",
+      "difficulty": "Easy",
+      "scripture_references": "Job 1:1–22; 2:1–13; 42:10–17"
+    },
+    {
+      "type": "Person",
+      "id": 144,
+      "name": "Jochebed",
+      "books": [
+        "Exodus",
+        "Numbers"
+      ],
+      "short_description": "Mother of Moses, Aaron, and Miriam",
+      "difficulty": "Hard",
+      "scripture_references": "Exodus 6:20; Numbers 26:59"
+    },
+    {
+      "type": "Person",
+      "id": 145,
+      "name": "Joel",
+      "books": [
+        "Joel",
+        "Acts"
+      ],
+      "short_description": "Prophet who proclaimed the day of the LORD",
+      "difficulty": "Medium",
+      "scripture_references": "Joel 1:1–3; Acts 2:16–21"
+    },
+    {
+      "type": "Person",
+      "id": 146,
+      "name": "John (son of Zebedee)",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "Acts",
+        "Galatians"
+      ],
+      "short_description": "Apostle, son of Zebedee and brother of James",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 1:19–20; Acts 3:1–11; Galatians 2:9"
+    },
+    {
+      "type": "Person",
+      "id": 147,
+      "name": "John Mark",
+      "books": [
+        "Acts",
+        "Colossians",
+        "2 Timothy",
+        "Philemon",
+        "1 Peter"
+      ],
+      "short_description": "Missionary coworker who accompanied Barnabas and Paul",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 12:12; 13:5–13; 15:36–39"
+    },
+    {
+      "type": "Person",
+      "id": 148,
+      "name": "John the Baptist",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "Wilderness preacher who baptized in the Jordan River and prepared the way for the Messiah",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 3:1–17; Mark 1:2–11"
+    },
+    {
+      "type": "Person",
+      "id": 149,
+      "name": "Jonadab (son of Rechab)",
+      "books": [
+        "2 Kings",
+        "Jeremiah"
+      ],
+      "short_description": "Ancestor of the Rechabites who commanded abstinence",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 10:15–17; Jeremiah 35:6–10"
+    },
+    {
+      "type": "Person",
+      "id": 150,
+      "name": "Jonah",
+      "books": [
+        "2 Kings",
+        "Jonah",
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Prophet sent to Nineveh",
+      "difficulty": "Easy",
+      "scripture_references": "Jonah 1:1–17; 3:1–10; 2 Kings 14:25"
+    },
+    {
+      "type": "Person",
+      "id": 151,
+      "name": "Jonathan",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Son of Saul and friend of David",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 18:1–4; 20:1–42"
+    },
+    {
+      "type": "Person",
+      "id": 152,
+      "name": "Joseph (husband of Mary)",
+      "books": [
+        "Matthew",
+        "Luke",
+        "John"
+      ],
+      "short_description": "Carpenter entrusted with raising the child born in Bethlehem",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 1:18–25; 2:13–23"
+    },
+    {
+      "type": "Person",
+      "id": 153,
+      "name": "Joseph (of Arimathaea)",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ],
+      "short_description": "Council member who provided a new tomb for the crucified Messiah",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 27:57–60; John 19:38–42"
+    },
+    {
+      "type": "Person",
+      "id": 154,
+      "name": "Joseph (son of Jacob)",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "1 Chronicles",
+        "Psalms",
+        "John",
+        "Acts",
+        "Hebrews",
+        "Revelation"
+      ],
+      "short_description": "Dream interpreter sold into slavery by his brothers who later governed in Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 37:1–36; 41:37–45; 45:1–15"
+    },
+    {
+      "type": "Person",
+      "id": 155,
+      "name": "Joses (brother of Jesus)",
+      "books": [
+        "Matthew",
+        "Mark"
+      ],
+      "short_description": "Named among Jesus' brothers",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 6:3; Matthew 13:55"
+    },
+    {
+      "type": "Person",
+      "id": 156,
+      "name": "Joshua",
+      "books": [
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Kings",
+        "1 Chronicles",
+        "Nehemiah",
+        "Acts",
+        "Hebrews"
+      ],
+      "short_description": "Successor of Moses who led Israel",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 17:8–14; Joshua 1:1–9; 24:29–31"
+    },
+    {
+      "type": "Person",
+      "id": 157,
+      "name": "Josiah",
+      "books": [
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Jeremiah",
+        "Zephaniah",
+        "Matthew"
+      ],
+      "short_description": "King of Judah who renewed covenant worship",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 22:1–20; 23:1–25"
+    },
+    {
+      "type": "Person",
+      "id": 158,
+      "name": "Jotham (king of Judah)",
+      "books": [
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Isaiah",
+        "Hosea",
+        "Micah",
+        "Matthew"
+      ],
+      "short_description": "King of Judah and father of Ahaz",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 15:32–38"
+    },
+    {
+      "type": "Person",
+      "id": 159,
+      "name": "Jotham (son of Gideon)",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Survivor of Abimelech's killing of Gideon's sons",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 9:5–21"
+    },
+    {
+      "type": "Person",
+      "id": 160,
+      "name": "Judah",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "Ruth",
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "Jeremiah",
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Son of Jacob and Leah",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 29:35; 37:26–27; 44:18–34"
+    },
+    {
+      "type": "Person",
+      "id": 161,
+      "name": "Judas Iscariot",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "One of the twelve apostles who betrayed his teacher for thirty pieces of silver",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 26:14–16; 26:47–50; 27:3–5"
+    },
+    {
+      "type": "Person",
+      "id": 162,
+      "name": "Korah",
+      "books": [
+        "Exodus",
+        "Numbers",
+        "1 Chronicles",
+        "Psalms",
+        "Jude"
+      ],
+      "short_description": "Levite who led a rebellion against Moses",
+      "difficulty": "Hard",
+      "scripture_references": "Numbers 16:1–35"
+    },
+    {
+      "type": "Person",
+      "id": 163,
+      "name": "Laban",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Brother of Rebekah and father-in-law of Jacob",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 24:29–31; 29:13–30; 31:1–55"
+    },
+    {
+      "type": "Person",
+      "id": 164,
+      "name": "Lamech (father of Noah)",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Luke"
+      ],
+      "short_description": "Father of Noah in the genealogy of Seth",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 5:28–31"
+    },
+    {
+      "type": "Person",
+      "id": 165,
+      "name": "Lazarus (in Jesus’ parable)",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Poor man in Jesus' parable",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 16:19–31"
+    },
+    {
+      "type": "Person",
+      "id": 166,
+      "name": "Lazarus (of Bethany)",
+      "books": [
+        "John"
+      ],
+      "short_description": "Brother of Mary and Martha raised by Jesus",
+      "difficulty": "Medium",
+      "scripture_references": "John 11:1–44; 12:1–2"
+    },
+    {
+      "type": "Person",
+      "id": 167,
+      "name": "Leah",
+      "books": [
+        "Genesis",
+        "Ruth"
+      ],
+      "short_description": "Wife of Jacob and mother of six sons",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 29:16–35; 30:9–21"
+    },
+    {
+      "type": "Person",
+      "id": 168,
+      "name": "Lemuel",
+      "books": [
+        "Proverbs"
+      ],
+      "short_description": "King addressed in a mother's teachings in Proverbs",
+      "difficulty": "Hard",
+      "scripture_references": "Proverbs 31:1–9"
+    },
+    {
+      "type": "Person",
+      "id": 169,
+      "name": "Levi",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "1 Kings",
+        "1 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Psalms",
+        "Ezekiel",
+        "Zechariah",
+        "Malachi",
+        "Hebrews",
+        "Revelation"
+      ],
+      "short_description": "Son of Jacob and Leah",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 29:34; 34:25–31; 49:5–7"
+    },
+    {
+      "type": "Person",
+      "id": 170,
+      "name": "Lois",
+      "books": [
+        "2 Timothy"
+      ],
+      "short_description": "Grandmother of Timothy",
+      "difficulty": "Hard",
+      "scripture_references": "2 Timothy 1:5"
+    },
+    {
+      "type": "Person",
+      "id": 171,
+      "name": "Lot",
+      "books": [
+        "Genesis",
+        "Deuteronomy",
+        "Psalms",
+        "Luke",
+        "2 Peter"
+      ],
+      "short_description": "Nephew of Abraham",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 13:5–13; 19:1–29"
+    },
+    {
+      "type": "Person",
+      "id": 172,
+      "name": "Lucius",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Teacher and prophet in the church at Antioch",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 13:1; Romans 16:21"
+    },
+    {
+      "type": "Person",
+      "id": 173,
+      "name": "Luke",
+      "books": [
+        "Colossians",
+        "2 Timothy",
+        "Philemon"
+      ],
+      "short_description": "Companion of Paul and Gospel author",
+      "difficulty": "Easy",
+      "scripture_references": "Colossians 4:14; 2 Timothy 4:11"
+    },
+    {
+      "type": "Person",
+      "id": 174,
+      "name": "Lydia",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Seller of purple who became a believer",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 16:13–15; 16:40"
+    },
+    {
+      "type": "Person",
+      "id": 175,
+      "name": "Mahlon",
+      "books": [
+        "Ruth"
+      ],
+      "short_description": "Husband of Ruth who died in Moab",
+      "difficulty": "Hard",
+      "scripture_references": "Ruth 1:2–5; 4:9–10"
+    },
+    {
+      "type": "Person",
+      "id": 176,
+      "name": "Malachi",
+      "books": [
+        "Malachi"
+      ],
+      "short_description": "Prophet who addressed postexilic worship",
+      "difficulty": "Medium",
+      "scripture_references": "Malachi 1:1"
+    },
+    {
+      "type": "Person",
+      "id": 177,
+      "name": "Manasseh",
+      "books": [
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Jeremiah",
+        "Matthew"
+      ],
+      "short_description": "King of Judah who repented after captivity",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 21:1–18; 2 Chronicles 33:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 178,
+      "name": "Manoah",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Father of Samson",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 13:2–24"
+    },
+    {
+      "type": "Person",
+      "id": 179,
+      "name": "Martha",
+      "books": [
+        "Luke",
+        "John"
+      ],
+      "short_description": "Sister of Mary and Lazarus",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 10:38–42; John 11:17–27"
+    },
+    {
+      "type": "Person",
+      "id": 180,
+      "name": "Mary (mother of Jesus)",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "Young woman visited by Gabriel who gave birth in Bethlehem",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 1:26–38; 2:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 181,
+      "name": "Mary (mother of John Mark)",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Woman whose Jerusalem home hosted believers praying for an imprisoned apostle",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 12:12"
+    },
+    {
+      "type": "Person",
+      "id": 182,
+      "name": "Mary (of Bethany)",
+      "books": [
+        "Luke",
+        "John"
+      ],
+      "short_description": "Sister of Martha and Lazarus who sat listening at the Lord’s feet",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 10:38–42; John 12:1–8"
+    },
+    {
+      "type": "Person",
+      "id": 183,
+      "name": "Mary Magdalene",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ],
+      "short_description": "Follower delivered from seven demons who witnessed the empty tomb",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 8:1–3; John 20:1–18"
+    },
+    {
+      "type": "Person",
+      "id": 184,
+      "name": "Matthew",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "Acts"
+      ],
+      "short_description": "Tax collector and apostle",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 9:9–13; 10:3"
+    },
+    {
+      "type": "Person",
+      "id": 185,
+      "name": "Matthias",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Apostle selected to replace Judas",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 1:21–26"
+    },
+    {
+      "type": "Person",
+      "id": 186,
+      "name": "Melchisedec",
+      "books": [
+        "Genesis",
+        "Psalms",
+        "Hebrews"
+      ],
+      "short_description": "King of Salem and priest of God",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 14:18–20; Hebrews 7:1–10"
+    },
+    {
+      "type": "Person",
+      "id": 187,
+      "name": "Mephibosheth",
+      "books": [
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Son of Jonathan befriended by David",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 4:4; 9:1–13"
+    },
+    {
+      "type": "Person",
+      "id": 188,
+      "name": "Micah",
+      "books": [
+        "Jeremiah",
+        "Micah"
+      ],
+      "short_description": "Prophet who denounced injustice",
+      "difficulty": "Medium",
+      "scripture_references": "Micah 1:1; Jeremiah 26:18"
+    },
+    {
+      "type": "Person",
+      "id": 189,
+      "name": "Micaiah",
+      "books": [
+        "1 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Prophet who foretold Ahab's defeat",
+      "difficulty": "Hard",
+      "scripture_references": "1 Kings 22:8–28"
+    },
+    {
+      "type": "Person",
+      "id": 190,
+      "name": "Michal",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Daughter of Saul and wife of David",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 18:20–29; 2 Samuel 6:16–23"
+    },
+    {
+      "type": "Person",
+      "id": 191,
+      "name": "Miriam",
+      "books": [
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Micah"
+      ],
+      "short_description": "Sister of Moses and Aaron",
+      "difficulty": "Medium",
+      "scripture_references": "Exodus 15:20–21; Numbers 12:1–15"
+    },
+    {
+      "type": "Person",
+      "id": 192,
+      "name": "Mishael",
+      "books": [
+        "Daniel"
+      ],
+      "short_description": "Hebrew exile in Babylon also called Meshach",
+      "difficulty": "Medium",
+      "scripture_references": "Daniel 1:6–7; 3:12–27"
+    },
+    {
+      "type": "Person",
+      "id": 193,
+      "name": "Mordecai",
+      "books": [
+        "Esther"
+      ],
+      "short_description": "Jewish leader and cousin of Esther",
+      "difficulty": "Medium",
+      "scripture_references": "Esther 2:5–7; 6:1–11; 10:1–3"
+    },
+    {
+      "type": "Person",
+      "id": 194,
+      "name": "Moses",
+      "books": [
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Samuel",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Psalms",
+        "Isaiah",
+        "Jeremiah",
+        "Daniel",
+        "Micah",
+        "Malachi",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Corinthians",
+        "2 Timothy",
+        "Hebrews",
+        "Jude",
+        "Revelation"
+      ],
+      "short_description": "Prophet who led the Israelites from Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 2:1–10; 3:1–22; Deuteronomy 34:1–12"
+    },
+    {
+      "type": "Person",
+      "id": 195,
+      "name": "Naaman",
+      "books": [
+        "2 Kings",
+        "Luke"
+      ],
+      "short_description": "Syrian commander healed of leprosy",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 5:1–19"
+    },
+    {
+      "type": "Person",
+      "id": 196,
+      "name": "Nabal",
+      "books": [
+        "1 Samuel",
+        "2 Samuel"
+      ],
+      "short_description": "Wealthy man who refused to aid David",
+      "difficulty": "Hard",
+      "scripture_references": "1 Samuel 25:2–38"
+    },
+    {
+      "type": "Person",
+      "id": 197,
+      "name": "Nadab (son of Aaron)",
+      "books": [
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "1 Chronicles"
+      ],
+      "short_description": "Priest who died after offering unauthorized fire",
+      "difficulty": "Medium",
+      "scripture_references": "Leviticus 10:1–2"
+    },
+    {
+      "type": "Person",
+      "id": 198,
+      "name": "Naomi",
+      "books": [
+        "Ruth"
+      ],
+      "short_description": "Mother-in-law of Ruth",
+      "difficulty": "Easy",
+      "scripture_references": "Ruth 1:1–22; 4:13–17"
+    },
+    {
+      "type": "Person",
+      "id": 199,
+      "name": "Nathan",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Psalms"
+      ],
+      "short_description": "Prophet who confronted King David",
+      "difficulty": "Medium",
+      "scripture_references": "2 Samuel 7:1–17; 12:1–15"
+    },
+    {
+      "type": "Person",
+      "id": 200,
+      "name": "Nathanael",
+      "books": [
+        "John"
+      ],
+      "short_description": "Israelite whom Philip brought to Jesus",
+      "difficulty": "Hard",
+      "scripture_references": "John 1:45–51; 21:2"
+    },
+    {
+      "type": "Person",
+      "id": 201,
+      "name": "Nebuchadnezzar",
+      "books": [
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Esther",
+        "Jeremiah",
+        "Ezekiel",
+        "Daniel"
+      ],
+      "short_description": "King of Babylon at the time of Daniel",
+      "difficulty": "Easy",
+      "scripture_references": "2 Kings 24:10–17; Daniel 2:1–49; 4:1–37"
+    },
+    {
+      "type": "Person",
+      "id": 202,
+      "name": "Nehemiah",
+      "books": [
+        "Ezra",
+        "Nehemiah"
+      ],
+      "short_description": "Governor who rebuilt Jerusalem's walls",
+      "difficulty": "Medium",
+      "scripture_references": "Nehemiah 1:1–11; 2:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 203,
+      "name": "Nicanor",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "One of seven men chosen to serve the Jerusalem church",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 6:5"
+    },
+    {
+      "type": "Person",
+      "id": 204,
+      "name": "Nicodemus",
+      "books": [
+        "John"
+      ],
+      "short_description": "Pharisee who visited Jesus by night",
+      "difficulty": "Easy",
+      "scripture_references": "John 3:1–21; 19:39–42"
+    },
+    {
+      "type": "Person",
+      "id": 205,
+      "name": "Nimrod",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Micah"
+      ],
+      "short_description": "Early mighty hunter and kingdom founder",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 10:8–12"
+    },
+    {
+      "type": "Person",
+      "id": 206,
+      "name": "Noah",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Isaiah",
+        "Ezekiel",
+        "Matthew",
+        "Luke",
+        "Hebrews",
+        "1 Peter",
+        "2 Peter"
+      ],
+      "short_description": "Righteous man who built the ark at God’s command and survived the flood",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 6:8–22; 7:1–24; 9:1–17"
+    },
+    {
+      "type": "Person",
+      "id": 207,
+      "name": "Obadiah",
+      "books": [
+        "Obadiah"
+      ],
+      "short_description": "Prophet whose brief book announces judgment on Edom",
+      "difficulty": "Medium",
+      "scripture_references": "Obadiah 1:1"
+    },
+    {
+      "type": "Person",
+      "id": 208,
+      "name": "Obed",
+      "books": [
+        "Ruth",
+        "1 Chronicles",
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Son of Ruth and Boaz, grandfather of David",
+      "difficulty": "Hard",
+      "scripture_references": "Ruth 4:13–22"
+    },
+    {
+      "type": "Person",
+      "id": 209,
+      "name": "Onan",
+      "books": [
+        "Genesis",
+        "Numbers",
+        "1 Chronicles"
+      ],
+      "short_description": "Son of Judah who died after refusing his duty to Tamar",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 38:4–10"
+    },
+    {
+      "type": "Person",
+      "id": 210,
+      "name": "Onesimus",
+      "books": [
+        "Colossians",
+        "Philemon"
+      ],
+      "short_description": "Enslaved man on whose behalf Paul wrote",
+      "difficulty": "Hard",
+      "scripture_references": "Philemon 1:10–16; Colossians 4:9"
+    },
+    {
+      "type": "Person",
+      "id": 211,
+      "name": "Oreb",
+      "books": [
+        "Judges",
+        "Psalms",
+        "Isaiah"
+      ],
+      "short_description": "Midianite leader defeated during Gideon's campaign",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 7:25; 8:3"
+    },
+    {
+      "type": "Person",
+      "id": 212,
+      "name": "Orpah",
+      "books": [
+        "Ruth"
+      ],
+      "short_description": "Ruth's sister-in-law who returned to Moab",
+      "difficulty": "Hard",
+      "scripture_references": "Ruth 1:4–15"
+    },
+    {
+      "type": "Person",
+      "id": 213,
+      "name": "Othniel",
+      "books": [
+        "Joshua",
+        "Judges",
+        "1 Chronicles"
+      ],
+      "short_description": "Judge who delivered Israel from oppression",
+      "difficulty": "Hard",
+      "scripture_references": "Judges 3:7–11"
+    },
+    {
+      "type": "Person",
+      "id": 214,
+      "name": "Pashur",
+      "books": [
+        "Jeremiah"
+      ],
+      "short_description": "Priest who opposed and imprisoned Jeremiah",
+      "difficulty": "Medium",
+      "scripture_references": "Jeremiah 20:1–6"
+    },
+    {
+      "type": "Person",
+      "id": 215,
+      "name": "Paul",
+      "books": [
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Corinthians",
+        "Galatians",
+        "Ephesians",
+        "Philippians",
+        "Colossians",
+        "1 Thessalonians",
+        "2 Thessalonians",
+        "1 Timothy",
+        "2 Timothy",
+        "Titus",
+        "Philemon",
+        "2 Peter"
+      ],
+      "short_description": "Apostle to the Gentiles",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 9:1–22; 13:9; 22:1–21"
+    },
+    {
+      "type": "Person",
+      "id": 216,
+      "name": "Perez",
+      "books": [
+        "Genesis",
+        "Numbers",
+        "Ruth",
+        "1 Chronicles",
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Son of Judah and Tamar, ancestor of David",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 38:27–30; Ruth 4:18–22"
+    },
+    {
+      "type": "Person",
+      "id": 217,
+      "name": "Philemon",
+      "books": [
+        "Philemon"
+      ],
+      "short_description": "Believer addressed by Paul concerning Onesimus",
+      "difficulty": "Hard",
+      "scripture_references": "Philemon 1:1–21"
+    },
+    {
+      "type": "Person",
+      "id": 218,
+      "name": "Philip (apostle)",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "One of the Twelve who brought Nathanael to meet the Messiah",
+      "difficulty": "Medium",
+      "scripture_references": "John 1:43–46; 14:8–9"
+    },
+    {
+      "type": "Person",
+      "id": 219,
+      "name": "Philip (evangelist)",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Preacher who explained Isaiah to an Ethiopian official and baptized him",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 6:5; 8:4–40; 21:8–9"
+    },
+    {
+      "type": "Person",
+      "id": 220,
+      "name": "Phinehas",
+      "books": [
+        "Exodus",
+        "Numbers",
+        "Joshua",
+        "Judges",
+        "1 Chronicles",
+        "Ezra",
+        "Psalms"
+      ],
+      "short_description": "Priest and grandson of Aaron",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 25:6–13; Joshua 22:13–33"
+    },
+    {
+      "type": "Person",
+      "id": 221,
+      "name": "Phinehas (son of Eli)",
+      "books": [
+        "1 Samuel"
+      ],
+      "short_description": "Corrupt priest who died when the ark was captured",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 2:12–17; 4:4–11"
+    },
+    {
+      "type": "Person",
+      "id": 222,
+      "name": "Phoebe",
+      "books": [
+        "Romans"
+      ],
+      "short_description": "Church servant commended by Paul",
+      "difficulty": "Hard",
+      "scripture_references": "Romans 16:1–2"
+    },
+    {
+      "type": "Person",
+      "id": 223,
+      "name": "Pontius Pilate",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "1 Timothy"
+      ],
+      "short_description": "Roman governor who authorized the crucifixion despite questioning the charge",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 27:11–26; John 19:1–22"
+    },
+    {
+      "type": "Person",
+      "id": 224,
+      "name": "Potiphar",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Egyptian officer who purchased Joseph",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 39:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 225,
+      "name": "Priscilla",
+      "books": [
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Timothy"
+      ],
+      "short_description": "Missionary and wife of Aquila",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 18:2–3; 18:24–26"
+    },
+    {
+      "type": "Person",
+      "id": 226,
+      "name": "Prochorus",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "One of seven men appointed to serve the church",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 6:5"
+    },
+    {
+      "type": "Person",
+      "id": 227,
+      "name": "Publius",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Chief official of Malta who welcomed Paul",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 28:7–10"
+    },
+    {
+      "type": "Person",
+      "id": 228,
+      "name": "Rachel",
+      "books": [
+        "Genesis",
+        "Ruth",
+        "1 Samuel",
+        "Jeremiah",
+        "Matthew"
+      ],
+      "short_description": "Wife of Jacob and mother of Joseph",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 29:6–30; 35:16–20"
+    },
+    {
+      "type": "Person",
+      "id": 229,
+      "name": "Rahab",
+      "books": [
+        "Joshua",
+        "Matthew",
+        "Hebrews",
+        "James"
+      ],
+      "short_description": "Woman of Jericho who protected the spies",
+      "difficulty": "Easy",
+      "scripture_references": "Joshua 2:1–24; 6:22–25"
+    },
+    {
+      "type": "Person",
+      "id": 230,
+      "name": "Rebekah",
+      "books": [
+        "Genesis",
+        "Romans"
+      ],
+      "short_description": "Wife of Isaac and mother of Jacob",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 24:15–67; 27:5–17"
+    },
+    {
+      "type": "Person",
+      "id": 231,
+      "name": "Rehoboam",
+      "books": [
+        "1 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Matthew"
+      ],
+      "short_description": "Son of Solomon and king of Judah",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 12:1–24"
+    },
+    {
+      "type": "Person",
+      "id": 232,
+      "name": "Reuben",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Chronicles",
+        "Ezekiel",
+        "Revelation"
+      ],
+      "short_description": "Firstborn son of Jacob",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 29:32; 37:21–30"
+    },
+    {
+      "type": "Person",
+      "id": 233,
+      "name": "Rhoda",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Servant girl who recognized Peter's voice",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 12:12–16"
+    },
+    {
+      "type": "Person",
+      "id": 234,
+      "name": "Ruth",
+      "books": [
+        "Ruth",
+        "Matthew"
+      ],
+      "short_description": "Moabite woman and ancestor of David",
+      "difficulty": "Easy",
+      "scripture_references": "Ruth 1:16–22; 2:1–23; 4:13–17"
+    },
+    {
+      "type": "Person",
+      "id": 235,
+      "name": "Salome",
+      "books": [
+        "Mark"
+      ],
+      "short_description": "Woman who witnessed Jesus’ crucifixion and brought spices to his tomb",
+      "difficulty": "Medium",
+      "scripture_references": "Mark 15:40; 16:1"
+    },
+    {
+      "type": "Person",
+      "id": 236,
+      "name": "Samson",
+      "books": [
+        "Judges",
+        "Hebrews"
+      ],
+      "short_description": "Judge known for extraordinary strength",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 13:24–25; 16:4–31"
+    },
+    {
+      "type": "Person",
+      "id": 237,
+      "name": "Samuel",
+      "books": [
+        "1 Samuel",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Psalms",
+        "Jeremiah",
+        "Acts",
+        "Hebrews"
+      ],
+      "short_description": "Prophet and judge who anointed kings",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 3:1–21; 8:1–22"
+    },
+    {
+      "type": "Person",
+      "id": 238,
+      "name": "Sapphira",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Woman who deceived the early church with Ananias",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 5:1–11"
+    },
+    {
+      "type": "Person",
+      "id": 239,
+      "name": "Sarah",
+      "books": [
+        "Genesis",
+        "Isaiah",
+        "Romans",
+        "Hebrews",
+        "1 Peter"
+      ],
+      "short_description": "Wife of Abraham and mother of Isaac",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 17:15–21; 18:9–15; 21:1–7"
+    },
+    {
+      "type": "Person",
+      "id": 240,
+      "name": "Saul (king of Israel)",
+      "books": [
+        "1 Samuel",
+        "2 Samuel",
+        "1 Chronicles",
+        "Psalms",
+        "Acts"
+      ],
+      "short_description": "First king of Israel",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 9:1–27; 10:1–24; 31:1–13"
+    },
+    {
+      "type": "Person",
+      "id": 241,
+      "name": "Seraiah",
+      "books": [
+        "Jeremiah"
+      ],
+      "short_description": "Officer sent by Jeremiah with a prophetic scroll",
+      "difficulty": "Medium",
+      "scripture_references": "Jeremiah 51:59–64"
+    },
+    {
+      "type": "Person",
+      "id": 242,
+      "name": "Seth",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Luke"
+      ],
+      "short_description": "Son of Adam and Eve",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 4:25–26; 5:3–8"
+    },
+    {
+      "type": "Person",
+      "id": 243,
+      "name": "Shadrach",
+      "books": [
+        "Daniel"
+      ],
+      "short_description": "Daniel's companion in Babylon",
+      "difficulty": "Medium",
+      "scripture_references": "Daniel 3:12–27"
+    },
+    {
+      "type": "Person",
+      "id": 244,
+      "name": "Shallum (king of Israel)",
+      "books": [
+        "2 Kings"
+      ],
+      "short_description": "King who ruled Israel for one month",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 15:13–15"
+    },
+    {
+      "type": "Person",
+      "id": 245,
+      "name": "Shamgar",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Judge who delivered Israel with an ox goad",
+      "difficulty": "Hard",
+      "scripture_references": "Judges 3:31; 5:6"
+    },
+    {
+      "type": "Person",
+      "id": 246,
+      "name": "Sheba (son of Bichri)",
+      "books": [
+        "2 Samuel"
+      ],
+      "short_description": "Benjamite who led a rebellion against David",
+      "difficulty": "Medium",
+      "scripture_references": "2 Samuel 20:1–22"
+    },
+    {
+      "type": "Person",
+      "id": 247,
+      "name": "Shem",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Luke"
+      ],
+      "short_description": "Son of Noah",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 5:32; 9:18–27; 11:10–26"
+    },
+    {
+      "type": "Person",
+      "id": 248,
+      "name": "Shimei (son of Gera)",
+      "books": [
+        "2 Samuel",
+        "1 Kings"
+      ],
+      "short_description": "Man who cursed David during Absalom's revolt",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 16:5–13; 1 Kings 2:36–46"
+    },
+    {
+      "type": "Person",
+      "id": 249,
+      "name": "Silas",
+      "books": [
+        "Acts",
+        "2 Corinthians",
+        "1 Thessalonians",
+        "2 Thessalonians",
+        "1 Peter"
+      ],
+      "short_description": "Missionary companion of Paul",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 15:22–40; 16:19–40"
+    },
+    {
+      "type": "Person",
+      "id": 250,
+      "name": "Simeon",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Righteous man who met the infant Jesus",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 2:25–35"
+    },
+    {
+      "type": "Person",
+      "id": 251,
+      "name": "Simon (sorcerer)",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Samaritan magician rebuked for trying to buy spiritual authority",
+      "difficulty": "Medium",
+      "scripture_references": "Acts 8:9–24"
+    },
+    {
+      "type": "Person",
+      "id": 252,
+      "name": "Simon Peter",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "1 Corinthians",
+        "Galatians",
+        "1 Peter",
+        "2 Peter"
+      ],
+      "short_description": "Fisherman who denied his teacher three times and later preached at Pentecost",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 4:18–20; 16:13–19; John 21:15–19"
+    },
+    {
+      "type": "Person",
+      "id": 253,
+      "name": "Sisera",
+      "books": [
+        "Judges",
+        "1 Samuel",
+        "Psalms"
+      ],
+      "short_description": "Canaanite commander defeated in Deborah's day",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 4:2–22"
+    },
+    {
+      "type": "Person",
+      "id": 254,
+      "name": "Solomon",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Psalms",
+        "Proverbs",
+        "Song of Solomon",
+        "Jeremiah",
+        "Matthew",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "Son of David and king of Israel",
+      "difficulty": "Easy",
+      "scripture_references": "1 Kings 1:28–40; 3:5–15; 6:1–38"
+    },
+    {
+      "type": "Person",
+      "id": 255,
+      "name": "Sosthenes",
+      "books": [
+        "Acts",
+        "1 Corinthians"
+      ],
+      "short_description": "Brother named alongside Paul in the Corinthian letter",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 18:17; 1 Corinthians 1:1"
+    },
+    {
+      "type": "Person",
+      "id": 256,
+      "name": "Stephen",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "First recorded Christian martyr",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 6:5–15; 7:1–60"
+    },
+    {
+      "type": "Person",
+      "id": 257,
+      "name": "Susanna",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Woman who supported Jesus' ministry",
+      "difficulty": "Hard",
+      "scripture_references": "Luke 8:1–3"
+    },
+    {
+      "type": "Person",
+      "id": 258,
+      "name": "Tamar (daughter of David)",
+      "books": [
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Daughter of David and sister of Absalom",
+      "difficulty": "Medium",
+      "scripture_references": "2 Samuel 13:1–22"
+    },
+    {
+      "type": "Person",
+      "id": 259,
+      "name": "Tamar (daughter-in-law of Judah)",
+      "books": [
+        "Genesis",
+        "Ruth",
+        "1 Chronicles",
+        "Matthew"
+      ],
+      "short_description": "Daughter-in-law of Judah",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 38:6–30"
+    },
+    {
+      "type": "Person",
+      "id": 260,
+      "name": "Tertius",
+      "books": [
+        "Romans"
+      ],
+      "short_description": "Scribe who wrote down Paul's letter to the Romans",
+      "difficulty": "Hard",
+      "scripture_references": "Romans 16:22"
+    },
+    {
+      "type": "Person",
+      "id": 261,
+      "name": "Tertullus",
+      "books": [
+        "Acts"
+      ],
+      "short_description": "Orator who prosecuted Paul before Felix",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 24:1–9"
+    },
+    {
+      "type": "Person",
+      "id": 262,
+      "name": "Theophilus",
+      "books": [
+        "Luke",
+        "Acts"
+      ],
+      "short_description": "Recipient addressed in Luke and Acts",
+      "difficulty": "Hard",
+      "scripture_references": "Luke 1:1–4; Acts 1:1–2"
+    },
+    {
+      "type": "Person",
+      "id": 263,
+      "name": "Thomas",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts"
+      ],
+      "short_description": "One of the twelve apostles",
+      "difficulty": "Easy",
+      "scripture_references": "John 20:24–29"
+    },
+    {
+      "type": "Person",
+      "id": 264,
+      "name": "Timotheus",
+      "books": [
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Corinthians",
+        "Philippians",
+        "Colossians",
+        "1 Thessalonians",
+        "2 Thessalonians",
+        "1 Timothy",
+        "2 Timothy",
+        "Philemon",
+        "Hebrews"
+      ],
+      "short_description": "Companion of Paul also called Timothy",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 16:1–5; 2 Timothy 1:1–5"
+    },
+    {
+      "type": "Person",
+      "id": 265,
+      "name": "Titus",
+      "books": [
+        "2 Corinthians",
+        "Galatians",
+        "2 Timothy",
+        "Titus"
+      ],
+      "short_description": "Companion and delegate of Paul",
+      "difficulty": "Medium",
+      "scripture_references": "2 Corinthians 8:16–24; Galatians 2:1–3"
+    },
+    {
+      "type": "Person",
+      "id": 266,
+      "name": "Tola",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Judge of Israel from the tribe of Issachar",
+      "difficulty": "Hard",
+      "scripture_references": "Judges 10:1–2"
+    },
+    {
+      "type": "Person",
+      "id": 267,
+      "name": "Tryphena",
+      "books": [
+        "Romans"
+      ],
+      "short_description": "Christian worker greeted by Paul",
+      "difficulty": "Hard",
+      "scripture_references": "Romans 16:12"
+    },
+    {
+      "type": "Person",
+      "id": 268,
+      "name": "Tryphosa",
+      "books": [
+        "Romans"
+      ],
+      "short_description": "Christian worker greeted by Paul",
+      "difficulty": "Hard",
+      "scripture_references": "Romans 16:12"
+    },
+    {
+      "type": "Person",
+      "id": 269,
+      "name": "Tychicus",
+      "books": [
+        "Acts",
+        "Ephesians",
+        "Colossians",
+        "2 Timothy",
+        "Titus"
+      ],
+      "short_description": "Messenger and companion of Paul",
+      "difficulty": "Hard",
+      "scripture_references": "Ephesians 6:21–22; Colossians 4:7–9"
+    },
+    {
+      "type": "Person",
+      "id": 270,
+      "name": "Uriah",
+      "books": [
+        "2 Samuel",
+        "1 Kings",
+        "1 Chronicles",
+        "Matthew"
+      ],
+      "short_description": "Hittite soldier whose wife was taken by Israel’s king",
+      "difficulty": "Medium",
+      "scripture_references": "2 Samuel 11:3–27"
+    },
+    {
+      "type": "Person",
+      "id": 271,
+      "name": "Uzzah",
+      "books": [
+        "2 Samuel",
+        "1 Chronicles"
+      ],
+      "short_description": "Man who touched the ark and died as it was transported",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 6:3–8; 1 Chronicles 13:9–11"
+    },
+    {
+      "type": "Person",
+      "id": 272,
+      "name": "Uzziah",
+      "books": [
+        "2 Kings",
+        "2 Chronicles",
+        "Isaiah",
+        "Hosea",
+        "Amos",
+        "Zechariah",
+        "Matthew"
+      ],
+      "short_description": "King of Judah who was struck with leprosy",
+      "difficulty": "Medium",
+      "scripture_references": "2 Chronicles 26:1–23; Isaiah 6:1"
+    },
+    {
+      "type": "Person",
+      "id": 273,
+      "name": "Vashti",
+      "books": [
+        "Esther"
+      ],
+      "short_description": "Queen deposed by Ahasuerus",
+      "difficulty": "Medium",
+      "scripture_references": "Esther 1:9–22"
+    },
+    {
+      "type": "Person",
+      "id": 274,
+      "name": "Zacchaeus",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Tax collector who welcomed Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 19:1–10"
+    },
+    {
+      "type": "Person",
+      "id": 275,
+      "name": "Zacharias",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Father of John the Baptist",
+      "difficulty": "Medium",
+      "scripture_references": "Luke 1:5–25; 1:57–79"
+    },
+    {
+      "type": "Person",
+      "id": 276,
+      "name": "Zebedee",
+      "books": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ],
+      "short_description": "Father of the apostles James and John",
+      "difficulty": "Medium",
+      "scripture_references": "Matthew 4:21–22"
+    },
+    {
+      "type": "Person",
+      "id": 277,
+      "name": "Zebulun",
+      "books": [
+        "Genesis",
+        "Exodus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Chronicles",
+        "Ezekiel",
+        "Revelation"
+      ],
+      "short_description": "Son of Jacob and Leah",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 30:19–20; 49:13"
+    },
+    {
+      "type": "Person",
+      "id": 278,
+      "name": "Zechariah",
+      "books": [
+        "Ezra",
+        "Zechariah"
+      ],
+      "short_description": "Prophet associated with restoration after exile",
+      "difficulty": "Medium",
+      "scripture_references": "Zechariah 1:1–6; Ezra 5:1"
+    },
+    {
+      "type": "Person",
+      "id": 279,
+      "name": "Zedekiah (king of Judah)",
+      "books": [
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Jeremiah"
+      ],
+      "short_description": "Last king of Judah before Jerusalem's fall",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 24:17–20; 25:1–7"
+    },
+    {
+      "type": "Person",
+      "id": 280,
+      "name": "Zelophehad",
+      "books": [
+        "Numbers",
+        "Joshua",
+        "1 Chronicles"
+      ],
+      "short_description": "Man whose daughters appealed for inheritance rights",
+      "difficulty": "Hard",
+      "scripture_references": "Numbers 27:1–11"
+    },
+    {
+      "type": "Person",
+      "id": 281,
+      "name": "Zephaniah",
+      "books": [
+        "Zephaniah"
+      ],
+      "short_description": "Prophet who warned of the day of the LORD",
+      "difficulty": "Medium",
+      "scripture_references": "Zephaniah 1:1"
+    },
+    {
+      "type": "Person",
+      "id": 282,
+      "name": "Zerubbabel",
+      "books": [
+        "1 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Haggai",
+        "Zechariah",
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Judean governor who led the return from exile",
+      "difficulty": "Medium",
+      "scripture_references": "Ezra 3:2–13; Haggai 1:1–15"
+    },
+    {
+      "type": "Person",
+      "id": 283,
+      "name": "Zipporah",
+      "books": [
+        "Exodus"
+      ],
+      "short_description": "Wife of Moses who accompanied him from Midian",
+      "difficulty": "Hard",
+      "scripture_references": "Exodus 2:21–22; 4:24–26"
+    },
+    {
+      "type": "Person",
+      "id": 284,
+      "name": "Zophar",
+      "books": [
+        "Job"
+      ],
+      "short_description": "One of Job's three friends",
+      "difficulty": "Hard",
+      "scripture_references": "Job 2:11; 11:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 286,
+      "name": "Achan",
+      "books": [
+        "Joshua"
+      ],
+      "short_description": "Israelite whose theft of devoted goods brought defeat at Ai",
+      "difficulty": "Medium",
+      "scripture_references": "Joshua 7:1–26"
+    },
+    {
+      "type": "Person",
+      "id": 287,
+      "name": "Abimelech (son of Gideon)",
+      "books": [
+        "Judges"
+      ],
+      "short_description": "Son of Gideon who killed his brothers and ruled in Shechem",
+      "difficulty": "Medium",
+      "scripture_references": "Judges 9:1–57"
+    },
+    {
+      "type": "Person",
+      "id": 288,
+      "name": "Achsah",
+      "books": [
+        "Joshua",
+        "Judges",
+        "1 Chronicles"
+      ],
+      "short_description": "Daughter of Caleb who asked her father for springs of water",
+      "difficulty": "Hard",
+      "scripture_references": "Joshua 15:16–19; Judges 1:12–15"
+    },
+    {
+      "type": "Person",
+      "id": 289,
+      "name": "Adah (wife of Lamech)",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Wife of Lamech and mother of Jabal and Jubal",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 4:19–23"
+    },
+    {
+      "type": "Person",
+      "id": 290,
+      "name": "Aholiab",
+      "books": [
+        "Exodus"
+      ],
+      "short_description": "Craftsman appointed to help construct the tabernacle",
+      "difficulty": "Hard",
+      "scripture_references": "Exodus 31:6; 35:34–35"
+    },
+    {
+      "type": "Person",
+      "id": 291,
+      "name": "Amalek",
+      "books": [
+        "Genesis",
+        "1 Chronicles"
+      ],
+      "short_description": "Son of Eliphaz and ancestor of the Amalekites",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 36:12; 1 Chronicles 1:36"
+    },
+    {
+      "type": "Person",
+      "id": 292,
+      "name": "Amaziah (king of Judah)",
+      "books": [
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "King of Judah who defeated Edom but later worshiped its gods",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 14:1–20; 2 Chronicles 25:1–28"
+    },
+    {
+      "type": "Person",
+      "id": 293,
+      "name": "Asenath",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Egyptian wife of Joseph and mother of Ephraim and Manasseh",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 41:45; 41:50–52"
+    },
+    {
+      "type": "Person",
+      "id": 294,
+      "name": "Athaliah",
+      "books": [
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Queen who seized Judah’s throne before being overthrown",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 11:1–16; 2 Chronicles 23:1–21"
+    },
+    {
+      "type": "Person",
+      "id": 295,
+      "name": "Bithiah",
+      "books": [
+        "1 Chronicles"
+      ],
+      "short_description": "Daughter of Pharaoh mentioned among the family of Mered",
+      "difficulty": "Hard",
+      "scripture_references": "1 Chronicles 4:17–18"
+    },
+    {
+      "type": "Person",
+      "id": 296,
+      "name": "Chedorlaomer",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "King of Elam defeated by Abram after capturing Lot",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 14:1–17"
+    },
+    {
+      "type": "Person",
+      "id": 297,
+      "name": "Darius the Mede",
+      "books": [
+        "Daniel"
+      ],
+      "short_description": "Ruler who appointed Daniel and ordered him put into the lions’ den",
+      "difficulty": "Medium",
+      "scripture_references": "Daniel 5:31; 6:1–28"
+    },
+    {
+      "type": "Person",
+      "id": 298,
+      "name": "Darius I (king of Persia)",
+      "books": [
+        "Ezra",
+        "Haggai",
+        "Zechariah"
+      ],
+      "short_description": "Persian king during whose reign the Jerusalem temple was completed",
+      "difficulty": "Medium",
+      "scripture_references": "Ezra 4:24; 6:1–15; Haggai 1:1"
+    },
+    {
+      "type": "Person",
+      "id": 299,
+      "name": "Eliezer (servant of Abraham)",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Trusted servant of Abraham associated with Damascus",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 15:2–3; 24:1–67"
+    },
+    {
+      "type": "Person",
+      "id": 300,
+      "name": "Eliezer (son of Moses)",
+      "books": [
+        "Exodus",
+        "1 Chronicles"
+      ],
+      "short_description": "Son of Moses named in remembrance of God’s help",
+      "difficulty": "Hard",
+      "scripture_references": "Exodus 18:3–4; 1 Chronicles 23:15"
+    },
+    {
+      "type": "Person",
+      "id": 301,
+      "name": "Ephraim (son of Joseph)",
+      "books": [
+        "Genesis",
+        "Numbers",
+        "1 Chronicles"
+      ],
+      "short_description": "Younger son of Joseph who received Jacob’s greater blessing",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 41:50–52; 48:1–20"
+    },
+    {
+      "type": "Person",
+      "id": 302,
+      "name": "Gomer (wife of Hosea)",
+      "books": [
+        "Hosea"
+      ],
+      "short_description": "Woman whom Hosea married as part of a prophetic sign",
+      "difficulty": "Medium",
+      "scripture_references": "Hosea 1:2–9"
+    },
+    {
+      "type": "Person",
+      "id": 303,
+      "name": "Haggai",
+      "books": [
+        "Ezra",
+        "Haggai"
+      ],
+      "short_description": "Prophet who urged the returned exiles to rebuild the temple",
+      "difficulty": "Medium",
+      "scripture_references": "Haggai 1:1–15; Ezra 5:1"
+    },
+    {
+      "type": "Person",
+      "id": 304,
+      "name": "Ham",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Psalms"
+      ],
+      "short_description": "Son of Noah and brother of Shem and Japheth",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 5:32; 9:18–27"
+    },
+    {
+      "type": "Person",
+      "id": 305,
+      "name": "Japheth",
+      "books": [
+        "Genesis",
+        "1 Chronicles"
+      ],
+      "short_description": "Son of Noah whose family is listed after the flood",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 5:32; 9:18–27"
+    },
+    {
+      "type": "Person",
+      "id": 306,
+      "name": "Jehoiachin",
+      "books": [
+        "2 Kings",
+        "2 Chronicles",
+        "Jeremiah",
+        "Ezekiel",
+        "Matthew"
+      ],
+      "short_description": "King of Judah taken into Babylonian captivity",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 24:8–17; 25:27–30"
+    },
+    {
+      "type": "Person",
+      "id": 307,
+      "name": "Jehu (king of Israel)",
+      "books": [
+        "1 Kings",
+        "2 Kings",
+        "2 Chronicles",
+        "Hosea"
+      ],
+      "short_description": "King of Israel who overthrew the house of Ahab",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 9:1–37; 10:1–36"
+    },
+    {
+      "type": "Person",
+      "id": 308,
+      "name": "Jehoiada (high priest)",
+      "books": [
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Priest who protected Joash and helped restore him to the throne",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 11:4–21; 2 Chronicles 24:15–16"
+    },
+    {
+      "type": "Person",
+      "id": 309,
+      "name": "Jehoshaphat (king of Judah)",
+      "books": [
+        "1 Kings",
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "King of Judah who sought the LORD and faced an invading army",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 22:41–50; 2 Chronicles 20:1–30"
+    },
+    {
+      "type": "Person",
+      "id": 310,
+      "name": "Jeroboam I",
+      "books": [
+        "1 Kings",
+        "2 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "First king of the northern kingdom who set up golden calves",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 11:26–40; 12:20–33"
+    },
+    {
+      "type": "Person",
+      "id": 311,
+      "name": "Keturah",
+      "books": [
+        "Genesis",
+        "1 Chronicles"
+      ],
+      "short_description": "Woman Abraham married after Sarah’s death",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 25:1–4; 1 Chronicles 1:32–33"
+    },
+    {
+      "type": "Person",
+      "id": 312,
+      "name": "Lamech (descendant of Cain)",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Man who took two wives and boasted of killing a man",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 4:18–24"
+    },
+    {
+      "type": "Person",
+      "id": 313,
+      "name": "Lot’s wife",
+      "books": [
+        "Genesis",
+        "Luke"
+      ],
+      "short_description": "Woman who looked back toward Sodom and became a pillar of salt",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 19:15–26; Luke 17:32"
+    },
+    {
+      "type": "Person",
+      "id": 314,
+      "name": "Maacah (mother of Abijah)",
+      "books": [
+        "1 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Royal woman associated with idolatry who was removed from high position by Asa",
+      "difficulty": "Hard",
+      "scripture_references": "1 Kings 15:1–2; 2 Chronicles 11:20–22"
+    },
+    {
+      "type": "Person",
+      "id": 315,
+      "name": "Mahlah (daughter of Zelophehad)",
+      "books": [
+        "Numbers",
+        "Joshua"
+      ],
+      "short_description": "One of five sisters who requested an inheritance in Israel",
+      "difficulty": "Hard",
+      "scripture_references": "Numbers 27:1–11; Joshua 17:3–6"
+    },
+    {
+      "type": "Person",
+      "id": 316,
+      "name": "Methuselah",
+      "books": [
+        "Genesis",
+        "1 Chronicles",
+        "Luke"
+      ],
+      "short_description": "Patriarch whose lifespan is recorded as 969 years",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 5:21–27"
+    },
+    {
+      "type": "Person",
+      "id": 317,
+      "name": "Naamah (wife of Solomon)",
+      "books": [
+        "1 Kings",
+        "2 Chronicles"
+      ],
+      "short_description": "Ammonite mother of King Rehoboam",
+      "difficulty": "Hard",
+      "scripture_references": "1 Kings 14:21; 14:31"
+    },
+    {
+      "type": "Person",
+      "id": 318,
+      "name": "Nadab (king of Israel)",
+      "books": [
+        "1 Kings"
+      ],
+      "short_description": "Son of Jeroboam I who ruled Israel and was assassinated",
+      "difficulty": "Hard",
+      "scripture_references": "1 Kings 15:25–31"
+    },
+    {
+      "type": "Person",
+      "id": 319,
+      "name": "Neri",
+      "books": [
+        "Luke"
+      ],
+      "short_description": "Ancestor of Jesus named in Luke’s genealogy",
+      "difficulty": "Hard",
+      "scripture_references": "Luke 3:27"
+    },
+    {
+      "type": "Person",
+      "id": 320,
+      "name": "Noadiah",
+      "books": [
+        "Nehemiah"
+      ],
+      "short_description": "Prophetess whom Nehemiah names among those trying to intimidate him",
+      "difficulty": "Hard",
+      "scripture_references": "Nehemiah 6:14"
+    },
+    {
+      "type": "Person",
+      "id": 321,
+      "name": "Og (king of Bashan)",
+      "books": [
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "1 Kings",
+        "Nehemiah",
+        "Psalms"
+      ],
+      "short_description": "King of Bashan defeated by Israel east of the Jordan",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 21:33–35; Deuteronomy 3:1–13"
+    },
+    {
+      "type": "Person",
+      "id": 322,
+      "name": "Onesiphorus",
+      "books": [
+        "2 Timothy"
+      ],
+      "short_description": "Believer who refreshed Paul and was not ashamed of his imprisonment",
+      "difficulty": "Medium",
+      "scripture_references": "2 Timothy 1:16–18"
+    },
+    {
+      "type": "Person",
+      "id": 323,
+      "name": "Peninnah",
+      "books": [
+        "1 Samuel"
+      ],
+      "short_description": "Other wife of Elkanah who provoked Hannah",
+      "difficulty": "Medium",
+      "scripture_references": "1 Samuel 1:1–8"
+    },
+    {
+      "type": "Person",
+      "id": 324,
+      "name": "Pharaoh’s daughter (rescuer of Moses)",
+      "books": [
+        "Exodus",
+        "Acts",
+        "Hebrews"
+      ],
+      "short_description": "Egyptian princess who adopted the infant Moses",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 2:5–10; Acts 7:21"
+    },
+    {
+      "type": "Person",
+      "id": 325,
+      "name": "Queen of Sheba",
+      "books": [
+        "1 Kings",
+        "2 Chronicles",
+        "Matthew",
+        "Luke"
+      ],
+      "short_description": "Queen who traveled to test Solomon’s wisdom",
+      "difficulty": "Medium",
+      "scripture_references": "1 Kings 10:1–13; 2 Chronicles 9:1–12"
+    },
+    {
+      "type": "Person",
+      "id": 326,
+      "name": "Rizpah",
+      "books": [
+        "2 Samuel"
+      ],
+      "short_description": "Mother who guarded the bodies of her executed sons",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 3:7; 21:8–11"
+    },
+    {
+      "type": "Person",
+      "id": 327,
+      "name": "Sanballat",
+      "books": [
+        "Nehemiah"
+      ],
+      "short_description": "Samaritan official who opposed rebuilding Jerusalem’s wall",
+      "difficulty": "Medium",
+      "scripture_references": "Nehemiah 2:10; 4:1–9; 6:1–14"
+    },
+    {
+      "type": "Person",
+      "id": 328,
+      "name": "Sennacherib",
+      "books": [
+        "2 Kings",
+        "2 Chronicles",
+        "Isaiah"
+      ],
+      "short_description": "Assyrian king who threatened Jerusalem in Hezekiah’s reign",
+      "difficulty": "Medium",
+      "scripture_references": "2 Kings 18:13–37; 19:1–37"
+    },
+    {
+      "type": "Person",
+      "id": 329,
+      "name": "Serah (daughter of Asher)",
+      "books": [
+        "Genesis",
+        "Numbers",
+        "1 Chronicles"
+      ],
+      "short_description": "Daughter of Asher named among Jacob’s descendants",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 46:17; Numbers 26:46"
+    },
+    {
+      "type": "Person",
+      "id": 330,
+      "name": "Shiphrah",
+      "books": [
+        "Exodus"
+      ],
+      "short_description": "Hebrew midwife who refused Pharaoh’s order to kill baby boys",
+      "difficulty": "Medium",
+      "scripture_references": "Exodus 1:15–21"
+    },
+    {
+      "type": "Person",
+      "id": 331,
+      "name": "Puah",
+      "books": [
+        "Exodus"
+      ],
+      "short_description": "Hebrew midwife who feared God and protected Hebrew sons",
+      "difficulty": "Medium",
+      "scripture_references": "Exodus 1:15–21"
+    },
+    {
+      "type": "Person",
+      "id": 332,
+      "name": "Sihon",
+      "books": [
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "1 Kings",
+        "Nehemiah",
+        "Psalms",
+        "Jeremiah"
+      ],
+      "short_description": "Amorite king defeated by Israel before entering Canaan",
+      "difficulty": "Medium",
+      "scripture_references": "Numbers 21:21–31; Deuteronomy 2:24–37"
+    },
+    {
+      "type": "Person",
+      "id": 333,
+      "name": "Tobiah (Ammonite official)",
+      "books": [
+        "Nehemiah"
+      ],
+      "short_description": "Opponent of Nehemiah’s effort to rebuild Jerusalem’s wall",
+      "difficulty": "Medium",
+      "scripture_references": "Nehemiah 2:10; 4:3; 6:17–19"
+    },
+    {
+      "type": "Person",
+      "id": 334,
+      "name": "Uzziel (son of Kohath)",
+      "books": [
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "1 Chronicles"
+      ],
+      "short_description": "Levite and uncle of Moses and Aaron",
+      "difficulty": "Hard",
+      "scripture_references": "Exodus 6:18–22; Leviticus 10:4"
+    },
+    {
+      "type": "Person",
+      "id": 335,
+      "name": "Zilpah",
+      "books": [
+        "Genesis"
+      ],
+      "short_description": "Leah’s servant who bore Gad and Asher to Jacob",
+      "difficulty": "Medium",
+      "scripture_references": "Genesis 29:24; 30:9–13"
+    },
+    {
+      "type": "Place",
+      "id": 1,
+      "name": "Abel-meholah",
+      "scripture_mentioned": "1 Kings 19:16",
+      "short_description": "Hometown of the prophet who succeeded Elijah",
+      "difficulty": "Hard",
+      "scripture_references": "1 Kings 19:16; Judges 7:22"
+    },
+    {
+      "type": "Place",
+      "id": 2,
+      "name": "Ai",
+      "scripture_mentioned": "Joshua 7:2",
+      "short_description": "Canaanite city where Israel suffered defeat before winning after confronting hidden sin",
+      "difficulty": "Normal",
+      "scripture_references": "Joshua 7:2; Joshua 7:3–5; 8:1–29"
+    },
+    {
+      "type": "Place",
+      "id": 3,
+      "name": "Alexandria",
+      "scripture_mentioned": "Acts 18:24",
+      "short_description": "Egyptian city from which an eloquent teacher of Scripture came",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 18:24; Acts 6:9; 27:6"
+    },
+    {
+      "type": "Place",
+      "id": 4,
+      "name": "Antioch (Pisidia)",
+      "scripture_mentioned": "Acts 13:14",
+      "short_description": "City where Paul preached in a synagogue during his first missionary journey",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 13:14; Acts 13:42–52"
+    },
+    {
+      "type": "Place",
+      "id": 5,
+      "name": "Antioch (Syria)",
+      "scripture_mentioned": "Acts 11:26",
+      "short_description": "City where the disciples were first called Christians",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 11:26; Acts 11:19–30; 13:1–3"
+    },
+    {
+      "type": "Place",
+      "id": 6,
+      "name": "Arabia",
+      "scripture_mentioned": "Galatians 1:17",
+      "short_description": "Region to which Paul traveled after his conversion",
+      "difficulty": "Hard",
+      "scripture_references": "Galatians 1:17; Galatians 4:25"
+    },
+    {
+      "type": "Place",
+      "id": 7,
+      "name": "Ararat",
+      "scripture_mentioned": "Genesis 8:4",
+      "short_description": "Mountains where the ark rested after the flood",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 8:4; 2 Kings 19:37; Jeremiah 51:27"
+    },
+    {
+      "type": "Place",
+      "id": 8,
+      "name": "Arimathaea",
+      "scripture_mentioned": "Matthew 27:57",
+      "short_description": "Home town of the council member who provided a tomb for Jesus",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 27:57; Mark 15:43; John 19:38"
+    },
+    {
+      "type": "Place",
+      "id": 9,
+      "name": "Ashdod",
+      "scripture_mentioned": "1 Samuel 5:1",
+      "short_description": "Philistine city where the captured ark was placed beside an idol",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 5:1; 1 Samuel 5:2–7"
+    },
+    {
+      "type": "Place",
+      "id": 10,
+      "name": "Ashkelon",
+      "scripture_mentioned": "Judges 14:19",
+      "short_description": "Philistine city whose inhabitants were struck by Samson",
+      "difficulty": "Hard",
+      "scripture_references": "Judges 14:19; 1 Samuel 6:17; 2 Samuel 1:20"
+    },
+    {
+      "type": "Place",
+      "id": 11,
+      "name": "Assyria",
+      "scripture_mentioned": "2 Kings 17:6",
+      "short_description": "Empire that carried the northern kingdom into exile",
+      "difficulty": "Normal",
+      "scripture_references": "2 Kings 17:6; 2 Kings 18:13; Isaiah 10:5–12"
+    },
+    {
+      "type": "Place",
+      "id": 12,
+      "name": "Athens",
+      "scripture_mentioned": "Acts 17:16",
+      "short_description": "Greek city where Paul spoke about the unknown God",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 17:16; Acts 17:22–34"
+    },
+    {
+      "type": "Place",
+      "id": 13,
+      "name": "Babel",
+      "scripture_mentioned": "Genesis 11:9",
+      "short_description": "Site of the tower where human language was confused",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 11:9; Genesis 11:1–9"
+    },
+    {
+      "type": "Place",
+      "id": 14,
+      "name": "Babylon",
+      "scripture_mentioned": "Daniel 1:1",
+      "short_description": "Imperial city associated with the captivity of Judah and Daniel's service",
+      "difficulty": "Easy",
+      "scripture_references": "Daniel 1:1; 2 Kings 25:8–12; Psalm 137:1"
+    },
+    {
+      "type": "Place",
+      "id": 15,
+      "name": "Beersheba",
+      "scripture_mentioned": "Genesis 21:31",
+      "short_description": "Place associated with a well and an oath between Abraham and Abimelech",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 21:31; Genesis 26:23–33"
+    },
+    {
+      "type": "Place",
+      "id": 16,
+      "name": "Bethabara",
+      "scripture_mentioned": "John 1:28",
+      "short_description": "Place beyond the Jordan connected with the baptizing ministry of John",
+      "difficulty": "Hard",
+      "scripture_references": "John 1:28"
+    },
+    {
+      "type": "Place",
+      "id": 17,
+      "name": "Bethany (near Jerusalem)",
+      "scripture_mentioned": "John 11:1",
+      "short_description": "Village home to Martha, Mary and Lazarus",
+      "difficulty": "Easy",
+      "scripture_references": "John 11:1; John 11:17–44; 12:1–8"
+    },
+    {
+      "type": "Place",
+      "id": 18,
+      "name": "Bethel",
+      "scripture_mentioned": "Genesis 28:19",
+      "short_description": "Town where Jacob dreamed of a ladder reaching heaven",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 28:19; Genesis 35:1–7; 1 Kings 12:28–33"
+    },
+    {
+      "type": "Place",
+      "id": 19,
+      "name": "Bethesda (pool)",
+      "scripture_mentioned": "John 5:2",
+      "short_description": "Pool with five porches where Jesus healed a man long disabled",
+      "difficulty": "Normal",
+      "scripture_references": "John 5:2; John 5:2–9"
+    },
+    {
+      "type": "Place",
+      "id": 20,
+      "name": "Bethlehem (Judah)",
+      "scripture_mentioned": "Luke 2:4",
+      "short_description": "Town of David where Jesus was born",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 2:4; Micah 5:2; Matthew 2:1–6"
+    },
+    {
+      "type": "Place",
+      "id": 21,
+      "name": "Bethlehem (Zebulun)",
+      "scripture_mentioned": "Joshua 19:15",
+      "short_description": "Northern town sharing its name with the birthplace of Jesus",
+      "difficulty": "Hard",
+      "scripture_references": "Joshua 19:15"
+    },
+    {
+      "type": "Place",
+      "id": 22,
+      "name": "Bethphage",
+      "scripture_mentioned": "Matthew 21:1",
+      "short_description": "Village near the Mount of Olives approached before Jesus entered Jerusalem",
+      "difficulty": "Hard",
+      "scripture_references": "Matthew 21:1; Mark 11:1; Luke 19:29"
+    },
+    {
+      "type": "Place",
+      "id": 23,
+      "name": "Bethsaida",
+      "scripture_mentioned": "John 1:44",
+      "short_description": "Hometown of Andrew and Peter, also connected with a miraculous feeding",
+      "difficulty": "Normal",
+      "scripture_references": "John 1:44; Mark 8:22–26; Luke 9:10–17"
+    },
+    {
+      "type": "Place",
+      "id": 24,
+      "name": "Caesarea (Maritima)",
+      "scripture_mentioned": "Acts 10:1",
+      "short_description": "Coastal city where a Roman centurion received Peter's message",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 10:1; Acts 10:24–48; 21:8–16"
+    },
+    {
+      "type": "Place",
+      "id": 25,
+      "name": "Caesarea Philippi",
+      "scripture_mentioned": "Matthew 16:13",
+      "short_description": "District where Peter confessed Jesus as the Christ",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 16:13; Mark 8:27–30"
+    },
+    {
+      "type": "Place",
+      "id": 26,
+      "name": "Calvary",
+      "scripture_mentioned": "Luke 23:33",
+      "short_description": "Place called the skull where Jesus was crucified",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 23:33; Luke 23:33–43"
+    },
+    {
+      "type": "Place",
+      "id": 27,
+      "name": "Cana of Galilee",
+      "scripture_mentioned": "John 2:1",
+      "short_description": "Village where Jesus turned water into wine at a wedding",
+      "difficulty": "Easy",
+      "scripture_references": "John 2:1; John 2:1–11; 4:46–54"
+    },
+    {
+      "type": "Place",
+      "id": 28,
+      "name": "Canaan",
+      "scripture_mentioned": "Genesis 12:5",
+      "short_description": "Land promised to Abraham and his descendants",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 12:5; Genesis 12:6–7; Numbers 13:2"
+    },
+    {
+      "type": "Place",
+      "id": 29,
+      "name": "Capernaum",
+      "scripture_mentioned": "Matthew 4:13",
+      "short_description": "Galilean town that became a base for Jesus' ministry",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 4:13; Mark 1:21–28; Matthew 8:5–13"
+    },
+    {
+      "type": "Place",
+      "id": 30,
+      "name": "Carmel (mountain)",
+      "scripture_mentioned": "1 Kings 18:19",
+      "short_description": "Mountain where Elijah challenged the prophets of Baal",
+      "difficulty": "Easy",
+      "scripture_references": "1 Kings 18:19; 1 Kings 18:20–39"
+    },
+    {
+      "type": "Place",
+      "id": 31,
+      "name": "Carmel (town in Judah)",
+      "scripture_mentioned": "1 Samuel 25:2",
+      "short_description": "Place connected with the wealthy husband of Abigail",
+      "difficulty": "Hard",
+      "scripture_references": "1 Samuel 25:2; 1 Samuel 25:5–7"
+    },
+    {
+      "type": "Place",
+      "id": 32,
+      "name": "Chorazin",
+      "scripture_mentioned": "Matthew 11:21",
+      "short_description": "Town rebuked despite witnessing mighty works",
+      "difficulty": "Hard",
+      "scripture_references": "Matthew 11:21; Luke 10:13"
+    },
+    {
+      "type": "Place",
+      "id": 33,
+      "name": "Colosse",
+      "scripture_mentioned": "Colossians 1:2",
+      "short_description": "City of believers addressed in Paul’s letter to the Colossians",
+      "difficulty": "Normal",
+      "scripture_references": "Colossians 1:2; Colossians 1:1–8; 4:9"
+    },
+    {
+      "type": "Place",
+      "id": 34,
+      "name": "Corinth",
+      "scripture_mentioned": "Acts 18:1",
+      "short_description": "Greek city where Paul worked with tentmakers and established a church",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 18:1; Acts 18:1–18; 1 Corinthians 1:2"
+    },
+    {
+      "type": "Place",
+      "id": 35,
+      "name": "Crete",
+      "scripture_mentioned": "Titus 1:5",
+      "short_description": "Island where Titus was left to appoint elders",
+      "difficulty": "Normal",
+      "scripture_references": "Titus 1:5; Acts 27:7–13"
+    },
+    {
+      "type": "Place",
+      "id": 36,
+      "name": "Cyprus",
+      "scripture_mentioned": "Acts 13:4",
+      "short_description": "Mediterranean island visited by Paul and Barnabas early in their mission",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 13:4; Acts 13:4–12; 4:36"
+    },
+    {
+      "type": "Place",
+      "id": 37,
+      "name": "Damascus",
+      "scripture_mentioned": "Acts 9:2",
+      "short_description": "City approached by Saul when he encountered the risen Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 9:2; Acts 9:10–22; 2 Corinthians 11:32–33"
+    },
+    {
+      "type": "Place",
+      "id": 38,
+      "name": "Decapolis",
+      "scripture_mentioned": "Mark 5:20",
+      "short_description": "Region of ten cities where a restored man proclaimed what Jesus had done",
+      "difficulty": "Normal",
+      "scripture_references": "Mark 5:20; Mark 7:31"
+    },
+    {
+      "type": "Place",
+      "id": 39,
+      "name": "Derbe",
+      "scripture_mentioned": "Acts 14:20",
+      "short_description": "City reached by Paul and Barnabas after leaving Lystra",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 14:20; Acts 14:20–21; 16:1"
+    },
+    {
+      "type": "Place",
+      "id": 40,
+      "name": "Dothan",
+      "scripture_mentioned": "Genesis 37:17",
+      "short_description": "Place where Joseph's brothers were tending flocks before selling him",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 37:17; 2 Kings 6:13–17"
+    },
+    {
+      "type": "Place",
+      "id": 41,
+      "name": "Eden (garden)",
+      "scripture_mentioned": "Genesis 2:8",
+      "short_description": "Garden where the first human couple lived before the fall",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 2:8; Genesis 2:8–17; 3:23–24"
+    },
+    {
+      "type": "Place",
+      "id": 42,
+      "name": "Edom",
+      "scripture_mentioned": "Genesis 36:1",
+      "short_description": "Territory associated with Esau and his descendants",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 36:1; Numbers 20:14–21; Obadiah 1:1–4"
+    },
+    {
+      "type": "Place",
+      "id": 43,
+      "name": "Egypt",
+      "scripture_mentioned": "Exodus 1:8",
+      "short_description": "Land of Israelite bondage from which Moses led the exodus",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 1:8; Genesis 41:41–46; Exodus 12:31–42"
+    },
+    {
+      "type": "Place",
+      "id": 44,
+      "name": "Elim",
+      "scripture_mentioned": "Exodus 15:27",
+      "short_description": "Wilderness oasis with twelve wells and seventy palm trees",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 15:27; Numbers 33:9"
+    },
+    {
+      "type": "Place",
+      "id": 45,
+      "name": "Emmaus",
+      "scripture_mentioned": "Luke 24:13",
+      "short_description": "Village toward which two disciples walked when the risen Jesus joined them",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 24:13; Luke 24:13–35"
+    },
+    {
+      "type": "Place",
+      "id": 46,
+      "name": "En-gedi",
+      "scripture_mentioned": "1 Samuel 24:1",
+      "short_description": "Wilderness area where David spared Saul in a cave",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 24:1; 1 Samuel 24:1–7"
+    },
+    {
+      "type": "Place",
+      "id": 47,
+      "name": "Endor",
+      "scripture_mentioned": "1 Samuel 28:7",
+      "short_description": "Town where Saul consulted a woman who practiced divination",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 28:7; 1 Samuel 28:7–20"
+    },
+    {
+      "type": "Place",
+      "id": 48,
+      "name": "Ephesus",
+      "scripture_mentioned": "Acts 19:1",
+      "short_description": "City where Paul taught and a riot arose over the worship of Artemis",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 19:1; Acts 19:8–20; Ephesians 1:1"
+    },
+    {
+      "type": "Place",
+      "id": 49,
+      "name": "Euphrates (river)",
+      "scripture_mentioned": "Genesis 2:14",
+      "short_description": "Great river named among the waterways in the garden account",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 2:14; Genesis 15:18; Revelation 9:14"
+    },
+    {
+      "type": "Place",
+      "id": 50,
+      "name": "Fair Havens",
+      "scripture_mentioned": "Acts 27:8",
+      "short_description": "Harbor on Crete reached during Paul's perilous voyage to Rome",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 27:8; Acts 27:8–12"
+    },
+    {
+      "type": "Place",
+      "id": 51,
+      "name": "Galatia",
+      "scripture_mentioned": "Galatians 1:2",
+      "short_description": "Region whose churches received a letter defending salvation by faith",
+      "difficulty": "Normal",
+      "scripture_references": "Galatians 1:2; Acts 16:6; Galatians 1:1–2"
+    },
+    {
+      "type": "Place",
+      "id": 52,
+      "name": "Galilee",
+      "scripture_mentioned": "Matthew 4:12",
+      "short_description": "Northern region in which Jesus spent much of his public ministry",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 4:12; Luke 4:14–15; Matthew 4:23–25"
+    },
+    {
+      "type": "Place",
+      "id": 53,
+      "name": "Gath",
+      "scripture_mentioned": "1 Samuel 17:4",
+      "short_description": "Philistine city associated with the giant defeated by David",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 17:4; 1 Samuel 21:10–15; 17:4"
+    },
+    {
+      "type": "Place",
+      "id": 54,
+      "name": "Gaza",
+      "scripture_mentioned": "Judges 16:1",
+      "short_description": "Philistine city whose gates Samson carried away",
+      "difficulty": "Normal",
+      "scripture_references": "Judges 16:1; Judges 16:1–3; Acts 8:26"
+    },
+    {
+      "type": "Place",
+      "id": 55,
+      "name": "Gethsemane",
+      "scripture_mentioned": "Matthew 26:36",
+      "short_description": "Garden where Jesus prayed before his arrest",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 26:36; Mark 14:32–42"
+    },
+    {
+      "type": "Place",
+      "id": 56,
+      "name": "Gibeah",
+      "scripture_mentioned": "1 Samuel 10:26",
+      "short_description": "Home town and royal base associated with Israel's first king",
+      "difficulty": "Hard",
+      "scripture_references": "1 Samuel 10:26; 1 Samuel 11:4; Judges 19:14–15"
+    },
+    {
+      "type": "Place",
+      "id": 57,
+      "name": "Gibeon",
+      "scripture_mentioned": "Joshua 9:3",
+      "short_description": "City whose inhabitants secured a treaty with Joshua by deception",
+      "difficulty": "Normal",
+      "scripture_references": "Joshua 9:3; Joshua 9:15–27; 10:12–14"
+    },
+    {
+      "type": "Place",
+      "id": 58,
+      "name": "Gilead",
+      "scripture_mentioned": "Genesis 31:21",
+      "short_description": "Region east of the Jordan, known for its balm and associated with Jacob and Laban",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 31:21; Numbers 32:1–5; Judges 11:1"
+    },
+    {
+      "type": "Place",
+      "id": 59,
+      "name": "Gilgal",
+      "scripture_mentioned": "Joshua 4:19",
+      "short_description": "Israelite camp established after crossing the Jordan",
+      "difficulty": "Normal",
+      "scripture_references": "Joshua 4:19; Joshua 5:9–10; 1 Samuel 11:14–15"
+    },
+    {
+      "type": "Place",
+      "id": 60,
+      "name": "Golgotha",
+      "scripture_mentioned": "Mark 15:22",
+      "short_description": "Aramaic name for the place of the skull where Jesus was crucified",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 15:22; John 19:17–18; Matthew 27:33"
+    },
+    {
+      "type": "Place",
+      "id": 61,
+      "name": "Gomorrah",
+      "scripture_mentioned": "Genesis 19:24",
+      "short_description": "City destroyed by fire and brimstone along with its neighbor",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 19:24; Genesis 18:20; 19:24–29"
+    },
+    {
+      "type": "Place",
+      "id": 62,
+      "name": "Goshen",
+      "scripture_mentioned": "Genesis 47:27",
+      "short_description": "District where Jacob's family lived in Egypt",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 47:27; Genesis 45:10; Exodus 8:22"
+    },
+    {
+      "type": "Place",
+      "id": 63,
+      "name": "Haran",
+      "scripture_mentioned": "Genesis 11:31",
+      "short_description": "Place where Abraham's family settled before his journey to the promised land",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 11:31; Genesis 12:4–5; 27:43"
+    },
+    {
+      "type": "Place",
+      "id": 64,
+      "name": "Hebron",
+      "scripture_mentioned": "Genesis 23:2",
+      "short_description": "City where Abraham bought a burial cave for Sarah",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 23:2; Genesis 13:18; 2 Samuel 2:1–4"
+    },
+    {
+      "type": "Place",
+      "id": 65,
+      "name": "Hermon (mountain)",
+      "scripture_mentioned": "Deuteronomy 3:8",
+      "short_description": "Mountain marking part of the northern limit of conquered lands",
+      "difficulty": "Hard",
+      "scripture_references": "Deuteronomy 3:8; Psalm 133:3; Deuteronomy 4:48"
+    },
+    {
+      "type": "Place",
+      "id": 66,
+      "name": "Hiddekel (Tigris river)",
+      "scripture_mentioned": "Genesis 2:14",
+      "short_description": "River also known as the Tigris, listed among the rivers associated with Eden",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 2:14; Daniel 10:4"
+    },
+    {
+      "type": "Place",
+      "id": 67,
+      "name": "Horeb (mountain)",
+      "scripture_mentioned": "Exodus 3:1",
+      "short_description": "Mountain of God where Moses encountered the burning bush",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 3:1; Exodus 17:6; 1 Kings 19:8–13"
+    },
+    {
+      "type": "Place",
+      "id": 68,
+      "name": "Iconium",
+      "scripture_mentioned": "Acts 14:1",
+      "short_description": "City where Paul and Barnabas preached before facing persecution",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 14:1; Acts 14:1–7; 2 Timothy 3:11"
+    },
+    {
+      "type": "Place",
+      "id": 69,
+      "name": "Jericho",
+      "scripture_mentioned": "Joshua 6:1",
+      "short_description": "Walled city that fell after Israel marched around it",
+      "difficulty": "Easy",
+      "scripture_references": "Joshua 6:1; Joshua 6:2–21; Luke 19:1–10"
+    },
+    {
+      "type": "Place",
+      "id": 70,
+      "name": "Jerusalem",
+      "scripture_mentioned": "2 Samuel 5:6",
+      "short_description": "City of David, site of the temple and Jesus' crucifixion and resurrection",
+      "difficulty": "Easy",
+      "scripture_references": "2 Samuel 5:6; 1 Kings 8:1–11; Luke 19:41–44"
+    },
+    {
+      "type": "Place",
+      "id": 71,
+      "name": "Jezreel (city)",
+      "scripture_mentioned": "1 Kings 21:1",
+      "short_description": "City beside the vineyard coveted by King Ahab",
+      "difficulty": "Normal",
+      "scripture_references": "1 Kings 21:1; 1 Kings 21:17–23; 2 Kings 9:30–37"
+    },
+    {
+      "type": "Place",
+      "id": 72,
+      "name": "Joppa",
+      "scripture_mentioned": "Jonah 1:3",
+      "short_description": "Port where a prophet boarded a ship fleeing his calling",
+      "difficulty": "Easy",
+      "scripture_references": "Jonah 1:3; Acts 9:36–43; 10:5–8"
+    },
+    {
+      "type": "Place",
+      "id": 73,
+      "name": "Jordan (river)",
+      "scripture_mentioned": "Joshua 3:17",
+      "short_description": "River crossed by Israel entering the promised land and where Jesus was baptized",
+      "difficulty": "Easy",
+      "scripture_references": "Joshua 3:17; Joshua 3:14–17; Matthew 3:13–17"
+    },
+    {
+      "type": "Place",
+      "id": 74,
+      "name": "Judea",
+      "scripture_mentioned": "Matthew 2:1",
+      "short_description": "Southern region where Jesus was born and Jerusalem is located",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 2:1; Luke 1:5; Acts 1:8"
+    },
+    {
+      "type": "Place",
+      "id": 75,
+      "name": "Kadesh-barnea",
+      "scripture_mentioned": "Numbers 13:26",
+      "short_description": "Wilderness camp to which the twelve spies returned",
+      "difficulty": "Normal",
+      "scripture_references": "Numbers 13:26; Deuteronomy 1:19–26"
+    },
+    {
+      "type": "Place",
+      "id": 76,
+      "name": "Kidron (brook)",
+      "scripture_mentioned": "John 18:1",
+      "short_description": "Valley stream crossed by Jesus before his arrest",
+      "difficulty": "Normal",
+      "scripture_references": "John 18:1; 2 Samuel 15:23; 1 Kings 15:13"
+    },
+    {
+      "type": "Place",
+      "id": 77,
+      "name": "Laodicea",
+      "scripture_mentioned": "Revelation 3:14",
+      "short_description": "City of the church warned against being lukewarm",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 3:14; Colossians 4:13–16; Revelation 3:14–22"
+    },
+    {
+      "type": "Place",
+      "id": 78,
+      "name": "Lebanon",
+      "scripture_mentioned": "1 Kings 5:6",
+      "short_description": "Mountainous land famed for cedars used in Solomon's construction",
+      "difficulty": "Normal",
+      "scripture_references": "1 Kings 5:6; 1 Kings 5:6–10; Psalm 92:12"
+    },
+    {
+      "type": "Place",
+      "id": 79,
+      "name": "Lystra",
+      "scripture_mentioned": "Acts 14:8",
+      "short_description": "City where Paul healed a man lame from birth and was later stoned",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 14:8; Acts 14:8–20; 16:1–2"
+    },
+    {
+      "type": "Place",
+      "id": 80,
+      "name": "Macedonia",
+      "scripture_mentioned": "Acts 16:9",
+      "short_description": "Region Paul was called to enter after a vision of a man asking for help",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 16:9; Acts 16:9–12; 2 Corinthians 8:1–5"
+    },
+    {
+      "type": "Place",
+      "id": 81,
+      "name": "Magdala",
+      "scripture_mentioned": "Matthew 15:39",
+      "short_description": "Place named as the destination after Jesus fed the four thousand; traditionally associated with Mary Magdalene",
+      "difficulty": "Hard",
+      "scripture_references": "Matthew 15:39"
+    },
+    {
+      "type": "Place",
+      "id": 82,
+      "name": "Mamre",
+      "scripture_mentioned": "Genesis 18:1",
+      "short_description": "Place where Abraham welcomed three visitors beside the oaks",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 18:1; Genesis 13:18; 23:17–19"
+    },
+    {
+      "type": "Place",
+      "id": 83,
+      "name": "Melita (Malta)",
+      "scripture_mentioned": "Acts 28:1",
+      "short_description": "Island where Paul survived a shipwreck and a viper bite",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 28:1; Acts 28:1–10"
+    },
+    {
+      "type": "Place",
+      "id": 84,
+      "name": "Mesha (place)",
+      "scripture_mentioned": "Genesis 10:30",
+      "short_description": "Place named as a boundary of the territory of Joktan’s descendants",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 10:30"
+    },
+    {
+      "type": "Place",
+      "id": 85,
+      "name": "Midian",
+      "scripture_mentioned": "Exodus 2:15",
+      "short_description": "Region where Moses fled Egypt and tended flocks",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 2:15; Exodus 3:1; Numbers 25:16–18"
+    },
+    {
+      "type": "Place",
+      "id": 86,
+      "name": "Mizpah (Benjamin)",
+      "scripture_mentioned": "1 Samuel 7:5",
+      "short_description": "Gathering place where Samuel prayed and judged Israel",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 7:5; 1 Samuel 7:5–12; 10:17–24"
+    },
+    {
+      "type": "Place",
+      "id": 87,
+      "name": "Moab",
+      "scripture_mentioned": "Ruth 1:1",
+      "short_description": "Territory east of the Dead Sea from which Ruth came",
+      "difficulty": "Easy",
+      "scripture_references": "Ruth 1:1; Numbers 22:1–6; Ruth 1:1–4"
+    },
+    {
+      "type": "Place",
+      "id": 88,
+      "name": "Moriah (mount)",
+      "scripture_mentioned": "Genesis 22:2",
+      "short_description": "Land of Moriah where Abraham was commanded to offer Isaac; Mount Moriah is later named as the temple site",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 22:2; 2 Chronicles 3:1"
+    },
+    {
+      "type": "Place",
+      "id": 89,
+      "name": "Mount of Olives",
+      "scripture_mentioned": "Matthew 21:1",
+      "short_description": "Hill east of Jerusalem where Jesus taught and prayed before his arrest",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 21:1; Zechariah 14:4; Luke 22:39–46"
+    },
+    {
+      "type": "Place",
+      "id": 90,
+      "name": "Mount Sinai",
+      "scripture_mentioned": "Exodus 19:11",
+      "short_description": "Mountain where Israel received the covenant law",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 19:11; Exodus 19:16–20; 20:1–21"
+    },
+    {
+      "type": "Place",
+      "id": 91,
+      "name": "Myra",
+      "scripture_mentioned": "Acts 27:5",
+      "short_description": "Port where Paul changed ships while being taken to Rome",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 27:5"
+    },
+    {
+      "type": "Place",
+      "id": 92,
+      "name": "Nazareth",
+      "scripture_mentioned": "Matthew 2:23",
+      "short_description": "Town where Jesus grew up",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 2:23; Luke 4:16–30; John 1:45–46"
+    },
+    {
+      "type": "Place",
+      "id": 93,
+      "name": "Nineveh",
+      "scripture_mentioned": "Jonah 3:3",
+      "short_description": "Great city called to repent through a reluctant prophet",
+      "difficulty": "Easy",
+      "scripture_references": "Jonah 3:3; Jonah 3:1–10; Nahum 1:1"
+    },
+    {
+      "type": "Place",
+      "id": 94,
+      "name": "Ophir",
+      "scripture_mentioned": "1 Kings 9:28",
+      "short_description": "Place known for gold brought to Solomon by ship",
+      "difficulty": "Hard",
+      "scripture_references": "1 Kings 9:28; 2 Chronicles 8:18; 1 Kings 10:11"
+    },
+    {
+      "type": "Place",
+      "id": 95,
+      "name": "Patmos",
+      "scripture_mentioned": "Revelation 1:9",
+      "short_description": "Island where John received apocalyptic visions",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 1:9; Revelation 1:9–11"
+    },
+    {
+      "type": "Place",
+      "id": 96,
+      "name": "Pergamos",
+      "scripture_mentioned": "Revelation 2:12",
+      "short_description": "City whose church was warned about compromise amid persecution",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 2:12; Revelation 2:12–17"
+    },
+    {
+      "type": "Place",
+      "id": 97,
+      "name": "Philadelphia (Asia Minor)",
+      "scripture_mentioned": "Revelation 3:7",
+      "short_description": "City of a church promised an open door that no one could shut",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 3:7; Revelation 3:7–13"
+    },
+    {
+      "type": "Place",
+      "id": 98,
+      "name": "Philippi",
+      "scripture_mentioned": "Acts 16:12",
+      "short_description": "Roman colony where a seller of purple cloth believed and a jailer was baptized",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 16:12; Acts 16:12–40; Philippians 1:1"
+    },
+    {
+      "type": "Place",
+      "id": 99,
+      "name": "Pisgah (mount)",
+      "scripture_mentioned": "Deuteronomy 34:1",
+      "short_description": "Mountain summit from which Moses viewed the promised land",
+      "difficulty": "Normal",
+      "scripture_references": "Deuteronomy 34:1; Numbers 21:20; Deuteronomy 3:27"
+    },
+    {
+      "type": "Place",
+      "id": 100,
+      "name": "Puteoli",
+      "scripture_mentioned": "Acts 28:13",
+      "short_description": "Italian port where Paul found fellow believers before reaching Rome",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 28:13; Acts 28:13–14"
+    },
+    {
+      "type": "Place",
+      "id": 101,
+      "name": "Ramah (Benjamin)",
+      "scripture_mentioned": "1 Samuel 7:17",
+      "short_description": "Town where Samuel had his home and judged Israel",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 7:17; 1 Samuel 8:4; 19:18–24"
+    },
+    {
+      "type": "Place",
+      "id": 102,
+      "name": "Red Sea",
+      "scripture_mentioned": "Exodus 14:21",
+      "short_description": "Body of water divided when Israelites escaped Pharaoh's army",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 14:21; Exodus 14:21–31; 15:1–21"
+    },
+    {
+      "type": "Place",
+      "id": 103,
+      "name": "Rephidim",
+      "scripture_mentioned": "Exodus 17:1",
+      "short_description": "Desert camp where water came from a rock and Israel battled Amalek",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 17:1; Exodus 17:1–16"
+    },
+    {
+      "type": "Place",
+      "id": 104,
+      "name": "Rhodes",
+      "scripture_mentioned": "Acts 21:1",
+      "short_description": "Island stop on Paul's voyage toward Jerusalem",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 21:1"
+    },
+    {
+      "type": "Place",
+      "id": 105,
+      "name": "Rome",
+      "scripture_mentioned": "Romans 1:7",
+      "short_description": "Capital of the empire and destination of Paul's imprisonment",
+      "difficulty": "Easy",
+      "scripture_references": "Romans 1:7; Acts 28:14–31"
+    },
+    {
+      "type": "Place",
+      "id": 106,
+      "name": "Salamis",
+      "scripture_mentioned": "Acts 13:5",
+      "short_description": "Cypriot city where Paul and Barnabas preached in synagogues",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 13:5; Acts 13:4–5"
+    },
+    {
+      "type": "Place",
+      "id": 107,
+      "name": "Salt Sea (Dead Sea)",
+      "scripture_mentioned": "Joshua 3:16",
+      "short_description": "Salt lake at the southern end of the Jordan Valley",
+      "difficulty": "Normal",
+      "scripture_references": "Joshua 3:16; Numbers 34:12; Deuteronomy 3:17"
+    },
+    {
+      "type": "Place",
+      "id": 108,
+      "name": "Samaria (city)",
+      "scripture_mentioned": "1 Kings 16:24",
+      "short_description": "Capital founded by Omri in the northern kingdom",
+      "difficulty": "Normal",
+      "scripture_references": "1 Kings 16:24; 1 Kings 20:1–3; 2 Kings 17:5–6"
+    },
+    {
+      "type": "Place",
+      "id": 109,
+      "name": "Samaria (region)",
+      "scripture_mentioned": "John 4:4",
+      "short_description": "Region Jesus traveled through when he spoke with a woman at a well",
+      "difficulty": "Easy",
+      "scripture_references": "John 4:4; Luke 17:11; Acts 8:5–8"
+    },
+    {
+      "type": "Place",
+      "id": 110,
+      "name": "Sardis",
+      "scripture_mentioned": "Revelation 3:1",
+      "short_description": "City whose church was told it had a reputation for life but was dead",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 3:1; Revelation 3:1–6"
+    },
+    {
+      "type": "Place",
+      "id": 111,
+      "name": "Sea of Galilee",
+      "scripture_mentioned": "Matthew 4:18",
+      "short_description": "Lake where Jesus called fishermen to follow him and calmed a storm",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 4:18; Mark 4:35–41; John 6:1–21"
+    },
+    {
+      "type": "Place",
+      "id": 112,
+      "name": "Sheba (kingdom)",
+      "scripture_mentioned": "1 Kings 10:1",
+      "short_description": "Land ruled by a queen who came to test Solomon with hard questions",
+      "difficulty": "Normal",
+      "scripture_references": "1 Kings 10:1; 1 Kings 10:1–13; 2 Chronicles 9:1–12"
+    },
+    {
+      "type": "Place",
+      "id": 113,
+      "name": "Shechem",
+      "scripture_mentioned": "Genesis 33:18",
+      "short_description": "City where Jacob settled and Joshua later renewed the covenant",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 33:18; Joshua 24:1–27; Genesis 34:1–2"
+    },
+    {
+      "type": "Place",
+      "id": 114,
+      "name": "Shiloh",
+      "scripture_mentioned": "1 Samuel 1:3",
+      "short_description": "Location of the tabernacle where Hannah prayed for a son",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 1:3; Joshua 18:1; 1 Samuel 1:9–11"
+    },
+    {
+      "type": "Place",
+      "id": 115,
+      "name": "Shinar",
+      "scripture_mentioned": "Genesis 11:2",
+      "short_description": "Plain where people settled and built a tower reaching skyward",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 11:2; Daniel 1:2; Genesis 11:1–9"
+    },
+    {
+      "type": "Place",
+      "id": 116,
+      "name": "Shunem",
+      "scripture_mentioned": "2 Kings 4:8",
+      "short_description": "Town of the hospitable woman whose son Elisha restored to life",
+      "difficulty": "Normal",
+      "scripture_references": "2 Kings 4:8; 2 Kings 4:8–37"
+    },
+    {
+      "type": "Place",
+      "id": 117,
+      "name": "Sidon",
+      "scripture_mentioned": "Mark 7:24",
+      "short_description": "Phoenician coastal city near the area Jesus visited",
+      "difficulty": "Normal",
+      "scripture_references": "Mark 7:24; 1 Kings 17:8–10; Matthew 15:21"
+    },
+    {
+      "type": "Place",
+      "id": 118,
+      "name": "Siloam (pool)",
+      "scripture_mentioned": "John 9:7",
+      "short_description": "Pool where a man born blind washed and received sight",
+      "difficulty": "Normal",
+      "scripture_references": "John 9:7; John 9:1–11"
+    },
+    {
+      "type": "Place",
+      "id": 119,
+      "name": "Smyrna",
+      "scripture_mentioned": "Revelation 2:8",
+      "short_description": "City whose church was urged to be faithful despite suffering",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 2:8; Revelation 2:8–11"
+    },
+    {
+      "type": "Place",
+      "id": 120,
+      "name": "Sodom",
+      "scripture_mentioned": "Genesis 19:24",
+      "short_description": "City destroyed after judgment for grave wickedness",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 19:24; Genesis 19:1–29; Luke 17:28–30"
+    },
+    {
+      "type": "Place",
+      "id": 121,
+      "name": "Succoth (east of Jordan)",
+      "scripture_mentioned": "Genesis 33:17",
+      "short_description": "Place where Jacob built shelters after meeting Esau",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 33:17"
+    },
+    {
+      "type": "Place",
+      "id": 122,
+      "name": "Sychar",
+      "scripture_mentioned": "John 4:5",
+      "short_description": "Samaritan town near Jacob's well where Jesus spoke to a woman",
+      "difficulty": "Normal",
+      "scripture_references": "John 4:5; John 4:5–30"
+    },
+    {
+      "type": "Place",
+      "id": 123,
+      "name": "Syria",
+      "scripture_mentioned": "1 Kings 20:1",
+      "short_description": "Kingdom north of Israel frequently involved in conflicts with its kings",
+      "difficulty": "Normal",
+      "scripture_references": "1 Kings 20:1; 1 Kings 20:1–21; Acts 15:23"
+    },
+    {
+      "type": "Place",
+      "id": 124,
+      "name": "Tarsus",
+      "scripture_mentioned": "Acts 9:11",
+      "short_description": "City in Cilicia where Paul was born",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 9:11; Acts 9:30; 22:3"
+    },
+    {
+      "type": "Place",
+      "id": 125,
+      "name": "Tekoa",
+      "scripture_mentioned": "Amos 1:1",
+      "short_description": "Town associated with a shepherd called to prophesy",
+      "difficulty": "Normal",
+      "scripture_references": "Amos 1:1; 2 Samuel 14:2"
+    },
+    {
+      "type": "Place",
+      "id": 126,
+      "name": "Thessalonica",
+      "scripture_mentioned": "Acts 17:1",
+      "short_description": "City where Paul reasoned from Scripture about the Messiah",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 17:1; Acts 17:1–9; 1 Thessalonians 1:1"
+    },
+    {
+      "type": "Place",
+      "id": 127,
+      "name": "Thyatira",
+      "scripture_mentioned": "Revelation 2:18",
+      "short_description": "City of a church warned about a false prophetess; also home of a purple seller",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 2:18; Acts 16:14; Revelation 2:18–29"
+    },
+    {
+      "type": "Place",
+      "id": 128,
+      "name": "Tiberias",
+      "scripture_mentioned": "John 6:23",
+      "short_description": "Galilean town whose name appears in connection with the lake and nearby boats",
+      "difficulty": "Hard",
+      "scripture_references": "John 6:23; 21:1"
+    },
+    {
+      "type": "Place",
+      "id": 129,
+      "name": "Troas",
+      "scripture_mentioned": "Acts 16:8",
+      "short_description": "Port city where Paul saw a vision calling him to Macedonia",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 16:8; Acts 20:5–12; 2 Corinthians 2:12"
+    },
+    {
+      "type": "Place",
+      "id": 130,
+      "name": "Tyre",
+      "scripture_mentioned": "Ezekiel 26:2",
+      "short_description": "Trading city by the sea whose pride was condemned by a prophet",
+      "difficulty": "Normal",
+      "scripture_references": "Ezekiel 26:2; Ezekiel 27:1–36; Acts 21:3–6"
+    },
+    {
+      "type": "Place",
+      "id": 131,
+      "name": "Ur of the Chaldees",
+      "scripture_mentioned": "Genesis 11:28",
+      "short_description": "Ancient city from which Abraham's family departed",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 11:28; Genesis 11:28–31; Nehemiah 9:7"
+    },
+    {
+      "type": "Place",
+      "id": 132,
+      "name": "Uz (land)",
+      "scripture_mentioned": "Job 1:1",
+      "short_description": "Land where a righteous sufferer lived before severe trials",
+      "difficulty": "Normal",
+      "scripture_references": "Job 1:1; Lamentations 4:21"
+    },
+    {
+      "type": "Place",
+      "id": 133,
+      "name": "Valley of Elah",
+      "scripture_mentioned": "1 Samuel 17:2",
+      "short_description": "Valley where an Israelite shepherd fought a Philistine champion",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 17:2; 1 Samuel 17:2–3; 17:19"
+    },
+    {
+      "type": "Place",
+      "id": 134,
+      "name": "Zarephath",
+      "scripture_mentioned": "1 Kings 17:9",
+      "short_description": "Phoenician town where a widow's flour and oil did not run out",
+      "difficulty": "Normal",
+      "scripture_references": "1 Kings 17:9; 1 Kings 17:8–24; Luke 4:26"
+    },
+    {
+      "type": "Place",
+      "id": 135,
+      "name": "Zion (hill)",
+      "scripture_mentioned": "2 Samuel 5:7",
+      "short_description": "Stronghold captured by David and closely associated with the holy city",
+      "difficulty": "Normal",
+      "scripture_references": "2 Samuel 5:7; Psalm 48:1–2"
+    },
+    {
+      "type": "Place",
+      "id": 136,
+      "name": "Zoar",
+      "scripture_mentioned": "Genesis 19:22",
+      "short_description": "Small city to which Lot fled as judgment fell nearby",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 19:22; Genesis 19:20–23"
+    },
+    {
+      "type": "Place",
+      "id": 137,
+      "name": "Berea",
+      "scripture_mentioned": "Acts 17:10–12",
+      "short_description": "Macedonian city where listeners examined the Scriptures daily",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 17:10–12"
+    },
+    {
+      "type": "Place",
+      "id": 138,
+      "name": "Paphos",
+      "scripture_mentioned": "Acts 13:6–12",
+      "short_description": "City on Cyprus where Paul confronted Elymas",
+      "difficulty": "Hard",
+      "scripture_references": "Acts 13:6–12"
+    },
+    {
+      "type": "Place",
+      "id": 139,
+      "name": "Megiddo",
+      "scripture_mentioned": "Judges 5:19; 2 Kings 23:29",
+      "short_description": "Ancient city near the site where King Josiah died in battle",
+      "difficulty": "Normal",
+      "scripture_references": "Judges 5:19; 2 Kings 23:29"
+    },
+    {
+      "type": "Place",
+      "id": 140,
+      "name": "Valley of Hinnom",
+      "scripture_mentioned": "Joshua 15:8; Jeremiah 7:31–32",
+      "short_description": "Valley near Jerusalem associated with condemned child-sacrifice rituals",
+      "difficulty": "Hard",
+      "scripture_references": "Joshua 15:8; Jeremiah 7:31–32"
+    },
+    {
+      "type": "Place",
+      "id": 141,
+      "name": "Beth-horon",
+      "scripture_mentioned": "Joshua 10:10–11",
+      "short_description": "Site of a route where Israel pursued fleeing Amorite kings",
+      "difficulty": "Hard",
+      "scripture_references": "Joshua 10:10–11"
+    },
+    {
+      "type": "Place",
+      "id": 142,
+      "name": "Beth-shean",
+      "scripture_mentioned": "1 Samuel 31:10–12",
+      "short_description": "City where the Philistines displayed the body of Saul",
+      "difficulty": "Hard",
+      "scripture_references": "1 Samuel 31:10–12"
+    },
+    {
+      "type": "Place",
+      "id": 143,
+      "name": "Bozrah",
+      "scripture_mentioned": "Isaiah 34:6; Jeremiah 49:13",
+      "short_description": "City of Edom associated with prophetic judgment",
+      "difficulty": "Hard",
+      "scripture_references": "Isaiah 34:6; Jeremiah 49:13"
+    },
+    {
+      "type": "Place",
+      "id": 144,
+      "name": "Cilicia",
+      "scripture_mentioned": "Acts 6:9; 15:23",
+      "short_description": "Roman region that included Tarsus, Paul’s hometown",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 6:9; 15:23"
+    },
+    {
+      "type": "Place",
+      "id": 145,
+      "name": "Cyrene",
+      "scripture_mentioned": "Mark 15:21; Acts 2:10",
+      "short_description": "North African city linked to Simon, who carried Jesus’ cross",
+      "difficulty": "Normal",
+      "scripture_references": "Mark 15:21; Acts 2:10"
+    },
+    {
+      "type": "Place",
+      "id": 146,
+      "name": "Dalmanutha",
+      "scripture_mentioned": "Mark 8:10",
+      "short_description": "Region Jesus visited by boat after feeding four thousand",
+      "difficulty": "Hard",
+      "scripture_references": "Mark 8:10"
+    },
+    {
+      "type": "Place",
+      "id": 147,
+      "name": "Dan (city)",
+      "scripture_mentioned": "Judges 18:29–30; 1 Kings 12:29",
+      "short_description": "Northern city where Jeroboam established a golden calf",
+      "difficulty": "Normal",
+      "scripture_references": "Judges 18:29–30; 1 Kings 12:29"
+    },
+    {
+      "type": "Place",
+      "id": 148,
+      "name": "Ebal (mountain)",
+      "scripture_mentioned": "Deuteronomy 27:4–13; Joshua 8:30–35",
+      "short_description": "Mountain where Joshua built an altar and read the law",
+      "difficulty": "Hard",
+      "scripture_references": "Deuteronomy 27:4–13; Joshua 8:30–35"
+    },
+    {
+      "type": "Place",
+      "id": 149,
+      "name": "En-rogel",
+      "scripture_mentioned": "Joshua 15:7; 1 Kings 1:9",
+      "short_description": "Spring near Jerusalem where Adonijah held a feast",
+      "difficulty": "Hard",
+      "scripture_references": "Joshua 15:7; 1 Kings 1:9"
+    },
+    {
+      "type": "Place",
+      "id": 150,
+      "name": "Gerar",
+      "scripture_mentioned": "Genesis 20:1–2; 26:1",
+      "short_description": "Place where Abraham and later Isaac encountered Abimelech",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 20:1–2; 26:1"
+    },
+    {
+      "type": "Place",
+      "id": 151,
+      "name": "Gerizim (mountain)",
+      "scripture_mentioned": "Deuteronomy 11:29; Joshua 8:33",
+      "short_description": "Mountain associated with blessings spoken over Israel",
+      "difficulty": "Normal",
+      "scripture_references": "Deuteronomy 11:29; Joshua 8:33"
+    },
+    {
+      "type": "Place",
+      "id": 152,
+      "name": "Hazor",
+      "scripture_mentioned": "Joshua 11:10–13; Judges 4:2",
+      "short_description": "Canaanite royal city conquered by Joshua and linked with Jabin",
+      "difficulty": "Normal",
+      "scripture_references": "Joshua 11:10–13; Judges 4:2"
+    },
+    {
+      "type": "Place",
+      "id": 153,
+      "name": "Heshbon",
+      "scripture_mentioned": "Numbers 21:25–30",
+      "short_description": "Former city of King Sihon conquered by Israel",
+      "difficulty": "Hard",
+      "scripture_references": "Numbers 21:25–30"
+    },
+    {
+      "type": "Place",
+      "id": 154,
+      "name": "Jabesh-gilead",
+      "scripture_mentioned": "1 Samuel 11:1–11; 31:11–13",
+      "short_description": "Town rescued by Saul whose men later recovered his body",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 11:1–11; 31:11–13"
+    },
+    {
+      "type": "Place",
+      "id": 155,
+      "name": "Jezreel (valley)",
+      "scripture_mentioned": "Hosea 1:5; Judges 6:33",
+      "short_description": "Broad northern valley associated with armies and battles",
+      "difficulty": "Normal",
+      "scripture_references": "Hosea 1:5; Judges 6:33"
+    },
+    {
+      "type": "Place",
+      "id": 156,
+      "name": "Kirjath-jearim",
+      "scripture_mentioned": "1 Samuel 7:1–2; 2 Samuel 6:2",
+      "short_description": "Town where the ark remained before David brought it toward Jerusalem",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 7:1–2; 2 Samuel 6:2"
+    },
+    {
+      "type": "Place",
+      "id": 157,
+      "name": "Lachish",
+      "scripture_mentioned": "2 Kings 18:14–17; Joshua 10:31–32",
+      "short_description": "Fortified Judean city besieged by the Assyrians",
+      "difficulty": "Normal",
+      "scripture_references": "2 Kings 18:14–17; Joshua 10:31–32"
+    },
+    {
+      "type": "Place",
+      "id": 158,
+      "name": "Mahanaim",
+      "scripture_mentioned": "Genesis 32:2; 2 Samuel 17:24",
+      "short_description": "Place east of the Jordan where David stayed during Absalom’s revolt",
+      "difficulty": "Hard",
+      "scripture_references": "Genesis 32:2; 2 Samuel 17:24"
+    },
+    {
+      "type": "Place",
+      "id": 159,
+      "name": "Makkedah",
+      "scripture_mentioned": "Joshua 10:16–27",
+      "short_description": "Canaanite town with a cave where five kings hid",
+      "difficulty": "Hard",
+      "scripture_references": "Joshua 10:16–27"
+    },
+    {
+      "type": "Place",
+      "id": 160,
+      "name": "Miletus",
+      "scripture_mentioned": "Acts 20:15–38",
+      "short_description": "Port where Paul addressed elders from Ephesus",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 20:15–38"
+    },
+    {
+      "type": "Place",
+      "id": 161,
+      "name": "Nain",
+      "scripture_mentioned": "Luke 7:11–17",
+      "short_description": "Town where Jesus raised a widow’s son",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 7:11–17"
+    },
+    {
+      "type": "Place",
+      "id": 162,
+      "name": "Nebo (mountain)",
+      "scripture_mentioned": "Deuteronomy 32:49; 34:1",
+      "short_description": "Mountain Moses climbed to view the promised land",
+      "difficulty": "Normal",
+      "scripture_references": "Deuteronomy 32:49; 34:1"
+    },
+    {
+      "type": "Place",
+      "id": 163,
+      "name": "Ophrah (Gideon’s town)",
+      "scripture_mentioned": "Judges 6:11–24",
+      "short_description": "Town where the angel of the LORD called Gideon",
+      "difficulty": "Normal",
+      "scripture_references": "Judges 6:11–24"
+    },
+    {
+      "type": "Place",
+      "id": 164,
+      "name": "Rabbah (Ammon)",
+      "scripture_mentioned": "2 Samuel 11:1; 12:26–29",
+      "short_description": "Capital of the Ammonites besieged by David’s army",
+      "difficulty": "Hard",
+      "scripture_references": "2 Samuel 11:1; 12:26–29"
+    },
+    {
+      "type": "Place",
+      "id": 165,
+      "name": "Shittim",
+      "scripture_mentioned": "Numbers 25:1; Joshua 2:1",
+      "short_description": "Israelite campsite east of the Jordan before the crossing",
+      "difficulty": "Normal",
+      "scripture_references": "Numbers 25:1; Joshua 2:1"
+    },
+    {
+      "type": "Place",
+      "id": 166,
+      "name": "Susa (Shushan)",
+      "scripture_mentioned": "Esther 1:2; Nehemiah 1:1",
+      "short_description": "Persian royal city associated with Esther and Nehemiah",
+      "difficulty": "Normal",
+      "scripture_references": "Esther 1:2; Nehemiah 1:1"
+    },
+    {
+      "type": "Place",
+      "id": 167,
+      "name": "Tarshish (destination)",
+      "scripture_mentioned": "Jonah 1:3",
+      "short_description": "Distant destination Jonah sought while fleeing God’s command",
+      "difficulty": "Normal",
+      "scripture_references": "Jonah 1:3"
+    },
+    {
+      "type": "Place",
+      "id": 168,
+      "name": "Timnah",
+      "scripture_mentioned": "Judges 14:1–5",
+      "short_description": "Philistine town where Samson sought a wife",
+      "difficulty": "Normal",
+      "scripture_references": "Judges 14:1–5"
+    },
+    {
+      "type": "Place",
+      "id": 169,
+      "name": "Tophet",
+      "scripture_mentioned": "2 Kings 23:10; Jeremiah 7:31–32",
+      "short_description": "Place in the Valley of Hinnom defiled by Josiah to stop child sacrifice",
+      "difficulty": "Hard",
+      "scripture_references": "2 Kings 23:10; Jeremiah 7:31–32"
+    },
+    {
+      "type": "Place",
+      "id": 170,
+      "name": "Ziklag",
+      "scripture_mentioned": "1 Samuel 27:6; 30:1–6",
+      "short_description": "Town given to David where Amalekites later raided his camp",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 27:6; 30:1–6"
+    }
+  ]
+}

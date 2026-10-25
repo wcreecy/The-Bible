@@ -361,6 +361,7 @@ struct HangmanGameView: View {
             usesWideLayout: usesWideLayout,
             availableHeight: availableHeight,
             showsKeyboardCard: showsOnScreenKeyboard,
+            allowsKeyboardVisibilityToggle: !roundOver,
             showsHangmanCardFirst: showsHangmanCardFirst,
             toggleKeyboardCard: { showsOnScreenKeyboard.toggle() },
             swapCards: { showsHangmanCardFirst.toggle() }
@@ -394,16 +395,25 @@ struct HangmanGameView: View {
             }
         } drawing: {
             VStack(spacing: 18) {
+                if !usesWideLayout && !showsOnScreenKeyboard {
+                    alphabetStatusTray
+                }
+
                 HangmanDrawing(
                     progress: Double(wrongGuesses) / Double(max(1, maxWrong)),
-                    maximumCharacterHeight: usesWideLayout && !showsOnScreenKeyboard ? 520 : 310
+                    maximumCharacterHeight: drawingMaximumCharacterHeight(
+                        usesWideLayout: usesWideLayout
+                    )
                 )
                 .frame(
                     height: usesWideLayout
                         ? (showsOnScreenKeyboard
                             ? 280
                             : min(440, max(340, availableHeight * 0.48)))
-                        : drawingHeight
+                        : compactDrawingHeight(
+                            availableHeight: availableHeight,
+                            keyboardIsVisible: showsOnScreenKeyboard
+                        )
                 )
                 .padding(.horizontal, 12)
 
@@ -527,9 +537,73 @@ struct HangmanGameView: View {
         }
     }
 
-    private var drawingHeight: CGFloat {
-        // Smaller to emphasize tighter proportions
-        UIDevice.current.userInterfaceIdiom == .pad ? 130 : 100
+    private var alphabetStatusTray: some View {
+        let letters = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+        return LazyVGrid(
+            columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 9),
+            spacing: 4
+        ) {
+            ForEach(letters, id: \.self) { letter in
+                let isCorrect = correctLetters.contains(letter)
+                let isIncorrect = wrongLetters.contains(letter)
+
+                Text(String(letter))
+                    .font(.caption2.weight(.bold).monospaced())
+                    .foregroundStyle(
+                        isCorrect || isIncorrect ? .white : Color.secondary
+                    )
+                    .frame(maxWidth: .infinity, minHeight: 28)
+                    .background(letterStatusColor(
+                        isCorrect: isCorrect,
+                        isIncorrect: isIncorrect
+                    ), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .accessibilityLabel(letterStatusAccessibilityLabel(
+                        letter,
+                        isCorrect: isCorrect,
+                        isIncorrect: isIncorrect
+                    ))
+            }
+        }
+        .padding(8)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .contain)
+    }
+
+    private func letterStatusColor(isCorrect: Bool, isIncorrect: Bool) -> Color {
+        if isCorrect { return .green }
+        if isIncorrect { return .red }
+        return .secondary.opacity(0.12)
+    }
+
+    private func letterStatusAccessibilityLabel(
+        _ letter: Character,
+        isCorrect: Bool,
+        isIncorrect: Bool
+    ) -> String {
+        if isCorrect { return "\(letter), correct" }
+        if isIncorrect { return "\(letter), incorrect" }
+        return "\(letter), not guessed"
+    }
+
+    private func drawingMaximumCharacterHeight(usesWideLayout: Bool) -> CGFloat {
+        if usesWideLayout && !showsOnScreenKeyboard { return 520 }
+        if !usesWideLayout && !showsOnScreenKeyboard { return 400 }
+        return 310
+    }
+
+    private func compactDrawingHeight(
+        availableHeight: CGFloat,
+        keyboardIsVisible: Bool
+    ) -> CGFloat {
+        guard UIDevice.current.userInterfaceIdiom != .pad else { return 130 }
+
+        if keyboardIsVisible {
+            // Leave room for the word, clue, and keyboard on shorter iPhones.
+            return min(150, max(128, availableHeight * 0.20))
+        }
+
+        return min(360, max(260, availableHeight * 0.44))
     }
 
     // MARK: - Words
@@ -1045,6 +1119,7 @@ private struct HangmanResponsiveLayout<
     let usesWideLayout: Bool
     let availableHeight: CGFloat
     let showsKeyboardCard: Bool
+    let allowsKeyboardVisibilityToggle: Bool
     let showsHangmanCardFirst: Bool
     let toggleKeyboardCard: () -> Void
     let swapCards: () -> Void
@@ -1058,6 +1133,7 @@ private struct HangmanResponsiveLayout<
         usesWideLayout: Bool,
         availableHeight: CGFloat,
         showsKeyboardCard: Bool,
+        allowsKeyboardVisibilityToggle: Bool,
         showsHangmanCardFirst: Bool,
         toggleKeyboardCard: @escaping () -> Void,
         swapCards: @escaping () -> Void,
@@ -1070,6 +1146,7 @@ private struct HangmanResponsiveLayout<
         self.usesWideLayout = usesWideLayout
         self.availableHeight = availableHeight
         self.showsKeyboardCard = showsKeyboardCard
+        self.allowsKeyboardVisibilityToggle = allowsKeyboardVisibilityToggle
         self.showsHangmanCardFirst = showsHangmanCardFirst
         self.toggleKeyboardCard = toggleKeyboardCard
         self.swapCards = swapCards
@@ -1119,11 +1196,36 @@ private struct HangmanResponsiveLayout<
                 scoreboard
                 drawing
                 word
-                keyboard
+
+                if allowsKeyboardVisibilityToggle {
+                    compactKeyboardToggle
+                }
+
+                if !allowsKeyboardVisibilityToggle || showsKeyboardCard {
+                    keyboard
+                }
             }
             .frame(maxWidth: 680)
             .frame(maxWidth: .infinity)
         }
+    }
+
+    private var compactKeyboardToggle: some View {
+        Button(action: toggleKeyboardCard) {
+            Label(
+                showsKeyboardCard ? "Hide Keyboard" : "Show Keyboard",
+                systemImage: showsKeyboardCard
+                    ? "keyboard.chevron.compact.down"
+                    : "keyboard"
+            )
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+        .accessibilityHint(
+            showsKeyboardCard
+                ? "Hides the on-screen keyboard and enlarges the hangman figure"
+                : "Shows the on-screen keyboard"
+        )
     }
 
     private func gameCard(height: CGFloat) -> some View {
