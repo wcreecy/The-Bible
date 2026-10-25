@@ -210,12 +210,12 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                     .frame(minHeight: 360)
                 }
             } else {
-                GameSplashConfigurationCard {
-                    if let experienceLevel {
-                        GameExperienceStandardsCard(
-                            tint: tint,
-                            selection: experienceLevel,
-                            details: experienceDetails,
+                    GameSplashConfigurationCard {
+                        if let experienceLevel {
+                            GameExperienceCompactPicker(
+                                tint: tint,
+                                selection: experienceLevel,
+                                details: experienceDetails,
                             title: experienceTitle
                         )
                     }
@@ -283,6 +283,46 @@ struct GameExperienceStandardsCard: View {
         .overlay {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(selection == level ? tint : .clear, lineWidth: 2)
+        }
+    }
+}
+
+/// A compact difficulty chooser for narrow layouts. It keeps the selected
+/// mode's explanation readable instead of squeezing all three explanations
+/// into side-by-side cards.
+struct GameExperienceCompactPicker: View {
+    let tint: Color
+    @Binding var selection: GameExperienceLevel
+    let details: GameExperienceDetails?
+    let title: LocalizedStringKey
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(title, systemImage: "gamecontroller.fill")
+                .font(.headline)
+                .foregroundStyle(tint)
+
+            Picker(title, selection: $selection) {
+                ForEach(GameExperienceLevel.allCases) { level in
+                    Text(level.title).tag(level)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .accessibilityLabel(title)
+
+            Label {
+                Text(details?.detail(for: selection) ?? selection.detail)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } icon: {
+                Image(systemName: selection.icon)
+                    .foregroundStyle(tint)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 }

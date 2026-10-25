@@ -292,9 +292,9 @@ struct VerseMatchGameView: View {
             tint: .orange,
             experienceLevel: experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Wrong choices come from other Bible sections.",
-                standard: "Wrong choices come from your categories.",
-                challenge: "Every choice comes from the same book."
+                learn: "A gentle way to practice matching verses.",
+                standard: "A balanced verse-matching challenge.",
+                challenge: "A more demanding verse-matching challenge."
             ),
             experienceTitle: reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: reviewQuestionIDs.isEmpty,

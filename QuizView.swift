@@ -383,9 +383,9 @@ struct QuizView: View {
             tint: .blue,
             experienceLevel: experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Untimed; wrong choices come from other Bible sections.",
-                standard: "15 seconds; wrong choices come from your categories.",
-                challenge: "12 seconds; wrong choices stay in the same Bible section."
+                learn: "Untimed practice at your own pace.",
+                standard: "15 seconds for each verse.",
+                challenge: "12 seconds for each verse."
             ),
             experienceTitle: reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: reviewQuestionIDs.isEmpty,

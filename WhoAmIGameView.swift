@@ -98,9 +98,9 @@ struct WhoAmIGameView: View {
             tint: .brown,
             experienceLevel: experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Well-known people, no timer, and choices from anywhere.",
-                standard: "More people, 30 seconds; choices stay in the same testament.",
-                challenge: "Everyone, 15 seconds; choices stay in the same books."
+                learn: "Well-known people with no timer.",
+                standard: "More people with 30 seconds per clue.",
+                challenge: "Everyone with 15 seconds per clue."
             ),
             experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
             isConfigurationEnabled: !isReviewRound,
