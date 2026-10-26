@@ -347,7 +347,7 @@ private struct ChapterSummaryCard: View {
 }
 
 /// One step in a chapter's outline, ending at a sentence that cites its verses.
-private struct ChapterEvent: Identifiable {
+struct ChapterEvent: Identifiable {
     let id: Int
     var text: String
     let reference: String?
@@ -375,6 +375,24 @@ private struct ChapterEvent: Identifiable {
             events[events.count - 1].text += " " + pending.joined(separator: " ")
         }
         return events
+    }
+
+    /// Whether this outline item cites the supplied verse, including chapter-wide and
+    /// multi-chapter citations such as "Numbers 2" or "Numbers 2:3–3:1".
+    func contains(bookName: String, chapterNumber: Int, verseNumber: Int) -> Bool {
+        guard let reference else { return false }
+
+        return PassageReferenceParser.parseList(reference, book: bookName, chapter: chapterNumber).contains { passage in
+            guard passage.bookName == bookName,
+                  passage.startChapter <= chapterNumber,
+                  chapterNumber <= passage.endChapter else {
+                return false
+            }
+
+            let firstVerse = passage.startChapter == chapterNumber ? passage.startVerse ?? 1 : 1
+            let lastVerse = passage.endChapter == chapterNumber ? passage.endVerse ?? .max : .max
+            return (firstVerse...lastVerse).contains(verseNumber)
+        }
     }
 }
 

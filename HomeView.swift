@@ -305,7 +305,13 @@ struct HomeView: View {
             )
         case .study:
             let target = studyTarget
-            StudyHomeCard(bookName: target.bookName, chapterNumber: target.chapterNumber, source: target.source) {
+            StudyHomeCard(
+                bookName: target.bookName,
+                chapterNumber: target.chapterNumber,
+                startVerseNumber: target.verseNumber,
+                verseText: target.verseText,
+                source: target.source
+            ) {
                 openBibleReference(book: target.bookName, chapter: target.chapterNumber, verse: target.verseNumber)
             }
         case .search:
@@ -345,14 +351,32 @@ struct HomeView: View {
 
     /// The chapter the Study card prepares for: the bookmarked one, so it matches Continue
     /// Reading, else the Verse of the Day's, else Genesis 1. Read opens at the bookmarked verse.
-    private var studyTarget: (bookName: String, chapterNumber: Int, verseNumber: Int, source: StudyHomeCard.Source) {
+    private var studyTarget: (
+        bookName: String,
+        chapterNumber: Int,
+        verseNumber: Int,
+        verseText: String?,
+        source: StudyHomeCard.Source
+    ) {
         if let bookmark {
-            return (bookmark.bookName, bookmark.chapterNumber, bookmark.verseNumber, .bookmark)
+            return (
+                bookmark.bookName,
+                bookmark.chapterNumber,
+                bookmark.verseNumber,
+                bookmark.verseText,
+                .bookmark
+            )
         }
         if let verse = votdVM.verse {
-            return (verse.bookName, verse.chapterNumber, 1, .verseOfDay(title: verseCardTitle))
+            return (
+                verse.bookName,
+                verse.chapterNumber,
+                verse.verseNumber,
+                verse.verseText,
+                .verseOfDay(title: verseCardTitle)
+            )
         }
-        return ("Genesis", 1, 1, .startingPoint)
+        return ("Genesis", 1, 1, nil, .startingPoint)
     }
 
     private var showsMinimalHome: Bool {

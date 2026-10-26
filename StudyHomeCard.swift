@@ -1,12 +1,11 @@
 import Foundation
 import SwiftUI
 
-/// Home card that prepares the reader for the chapter they're about to read.
+/// Home card that prepares the reader for the bookmarked or featured verse.
 ///
-/// Shows the chapter's summary, key themes (linked to their verses) and key figures,
-/// with Read and Insights actions. At chapter 1 it introduces the book instead,
-/// using the book overview. Only the insight fields that are written for every chapter
-/// are shown here; the full detail stays in `ChapterInsightsView`.
+/// It places that verse first, followed by its chapter's brief summary. With no bookmark
+/// or featured verse, Genesis 1 remains a book-level starting point. The full detail,
+/// including key figures and themes, stays in `ChapterInsightsView`.
 struct StudyHomeCard: View {
     /// Why the card is showing this chapter; named in the subtitle so the choice isn't a mystery.
     enum Source: Equatable {
@@ -26,11 +25,10 @@ struct StudyHomeCard: View {
 
     let bookName: String
     let chapterNumber: Int
+    let startVerseNumber: Int
+    let verseText: String?
     let source: Source
     let onRead: () -> Void
-
-    /// The card shows at most this many themes; the rest are in Chapter Insights.
-    private static let maximumThemes = 3
 
     @State private var insights: ChapterInsights?
     @State private var overview: BibleBookOverview?
@@ -45,30 +43,36 @@ struct StudyHomeCard: View {
         fullSummaryHeight > collapsedSummaryHeight + 1
     }
 
-    private var reference: String { "\(bookName) \(chapterNumber)" }
+    private var chapterReference: String { "\(bookName) \(chapterNumber)" }
+    private var verseReference: String { "\(chapterReference):\(startVerseNumber)" }
+    private var isVerseFocused: Bool { source != .startingPoint }
+    private var cardTitle: String { "Study \(isVerseFocused ? verseReference : chapterReference)" }
+
+    private var displayedVerseText: String? {
+        guard let verseText = verseText?.trimmingCharacters(in: .whitespacesAndNewlines), !verseText.isEmpty else {
+            return nil
+        }
+        return Self.removingSuppliedWordMarkers(verseText)
+    }
 
     var body: some View {
         HeroCard(
-            title: "Study \(reference)",
+            title: cardTitle,
             subtitle: source.label,
             icon: "text.book.closed",
             tint: .teal,
             trailingAccessory: {
-                Button {
+                StudyBrowseButton {
                     Haptics.selection()
                     AppRouter.shared.open(.bibleStudy)
-                } label: {
-                    Image(systemName: "rectangle.grid.2x2")
-                        .font(.body.weight(.semibold))
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(.teal)
-                .frame(width: 44, height: 44)
-                .accessibilityIdentifier("browseStudyButton")
-                .accessibilityLabel("Browse Study")
             }
         ) {
             VStack(alignment: .leading, spacing: 14) {
+                if isVerseFocused, let displayedVerseText {
+                    StudyVersePreview(reference: verseReference, text: displayedVerseText)
+                }
+
                 if isLoading {
                     loadingPlaceholder
                 } else if let overview {
@@ -76,7 +80,7 @@ struct StudyHomeCard: View {
                 } else if let insights {
                     chapterStudy(insights)
                 } else {
-                    Text("Study notes for \(reference) aren't available yet.")
+                    Text("Study notes for \(chapterReference) aren't available yet.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     actionButtons(secondaryTitle: nil, secondaryAction: nil)
@@ -84,9 +88,9 @@ struct StudyHomeCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        // Theme and key-verse links open a passage preview with Open in Bible.
+        // The book-introduction key verse opens a passage preview with Open in Bible.
         .scripturePassagePreviews()
-        .task(id: reference, load)
+        .task(id: chapterReference, load)
     }
 
     // MARK: - Chapter
@@ -94,46 +98,16 @@ struct StudyHomeCard: View {
     @ViewBuilder
     private func chapterStudy(_ insights: ChapterInsights) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("IN BRIEF")
-            ChapterStudySummary(summary: insights.overallSummary)
-        }
-
-        if let figure = insights.keyFigures.first {
-            KeyFigurePreview(figure: figure)
-        }
-
-        let themes = insights.keyThemes.prefix(Self.maximumThemes)
-        if !themes.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("THEMES")
-                ForEach(themes) { theme in
-                    themeChip(theme)
-                }
-            }
+            sectionLabel("IN THIS CHAPTER")
+            ChapterStudySummary(
+                summary: insights.overallSummary,
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                verseNumber: isVerseFocused ? startVerseNumber : nil
+            )
         }
 
         actionButtons(secondaryTitle: "Insights", secondaryAction: openChapterInsights)
-    }
-
-    /// A full-width theme row that opens a preview of its first linked passage.
-    private func themeChip(_ theme: ChapterKeyTheme) -> some View {
-        let passage = theme.scriptureReferences
-            .lazy
-            .flatMap { PassageReferenceParser.parseList($0, book: bookName, chapter: chapterNumber) }
-            .first
-
-        return StudyThemeRow(
-            title: theme.theme,
-            passage: passage,
-            passageTitle: passage.map(shortTitle(for:))
-        )
-    }
-
-    /// Drops the book name the card already shows, so "John 3:3–8" reads "3:3–8".
-    private func shortTitle(for passage: PassageReference) -> String {
-        let title = passage.displayTitle
-        let prefix = "\(passage.bookName) "
-        return title.hasPrefix(prefix) ? String(title.dropFirst(prefix.count)) : title
     }
 
     // MARK: - Book introduction
@@ -262,7 +236,7 @@ struct StudyHomeCard: View {
         _ secondaryAction: (() -> Void)?
     ) -> some View {
         Button(action: onRead) {
-            Label("Read", systemImage: "book.fill")
+            Label("Read verse \(startVerseNumber)", systemImage: "book.fill")
                 .lineLimit(1)
         }
         .buttonStyle(.bordered)
@@ -313,8 +287,9 @@ struct StudyHomeCard: View {
         overview = nil
         insights = nil
 
-        // Chapter 1 introduces the book; fall back to chapter insights if there's no overview.
-        if chapterNumber == 1 {
+        // Only the no-history starting point introduces the book. A bookmark or featured
+        // verse in chapter 1 still receives verse and chapter context.
+        if source == .startingPoint, chapterNumber == 1 {
             overview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
         }
         if overview == nil {
@@ -327,66 +302,48 @@ struct StudyHomeCard: View {
     }
 }
 
-private struct KeyFigurePreview: View {
-    let figure: ChapterKeyFigure
+private struct StudyBrowseButton: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    let action: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            StudyCardSectionLabel(title: "KEY FIGURE")
-            Label(figure.name, systemImage: "person.fill")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
-            Text(figure.roleAndSignificance)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+        Button(action: action) {
+            if horizontalSizeClass == .compact {
+                Image(systemName: "rectangle.grid.2x2")
+                    .font(.body.weight(.semibold))
+                    .frame(width: 44, height: 44)
+            } else {
+                Label("Browse", systemImage: "rectangle.grid.2x2")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(minHeight: 44)
+            }
         }
-        .accessibilityElement(children: .combine)
+        .buttonStyle(.plain)
+        .foregroundStyle(.teal)
+        .accessibilityIdentifier("browseStudyButton")
+        .accessibilityLabel("Browse Study")
     }
 }
 
-private struct StudyThemeRow: View {
-    let title: String
-    let passage: PassageReference?
-    let passageTitle: String?
+private struct StudyVersePreview: View {
+    let reference: String
+    let text: String
 
     var body: some View {
-        if let passage, let passageTitle {
-            Link(destination: passage.url) {
-                rowContent(passageTitle: passageTitle)
-            }
-            .buttonStyle(.plain)
-            .contentShape(Rectangle())
-            .accessibilityLabel("\(title), \(passage.displayTitle)")
-            .accessibilityHint("Shows a preview of the passage")
-        } else {
-            rowContent(passageTitle: nil)
-        }
-    }
-
-    private func rowContent(passageTitle: String?) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text("•")
+        VStack(alignment: .leading, spacing: 6) {
+            StudyCardSectionLabel(title: "VERSE")
+            Text("“\(text)”")
                 .font(.subheadline)
-                .foregroundStyle(.teal)
-
-            Text(title)
-                .font(.subheadline)
+                .italic()
                 .foregroundStyle(.secondary)
-
-            Spacer(minLength: 0)
-
-            if let passageTitle {
-                Text(passageTitle)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.teal)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color.teal.opacity(0.12), in: Capsule())
-            }
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(reference)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.teal)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -403,56 +360,42 @@ private struct StudyCardSectionLabel: View {
 
 private struct ChapterStudySummary: View {
     let summary: String
-
-    @State private var showsFullSummary = false
-    @State private var collapsedSummaryHeight: CGFloat = 0
-    @State private var fullSummaryHeight: CGFloat = 0
+    let bookName: String
+    let chapterNumber: Int
+    let verseNumber: Int?
 
     private var sentences: [String] {
         summary.sentences
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if showsFullSummary, summary.count > 650 {
-                ForEach(Array(sentences.enumerated()), id: \.offset) { _, sentence in
-                    SummaryBullet(text: sentence)
-                }
-            } else {
-                SummaryBullet(text: summary, lineLimit: showsFullSummary ? nil : 3)
-                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
-                        if !showsFullSummary {
-                            collapsedSummaryHeight = height
-                        }
-                    }
-                    .background {
-                        SummaryBullet(text: summary)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .hidden()
-                            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
-                                fullSummaryHeight = height
-                            }
-                    }
-            }
+    /// The Home card is an entry point, so it shows a compact preview; Insights has the full outline.
+    private var preview: String {
+        sentences.prefix(2).joined(separator: " ")
+    }
 
-            if fullSummaryHeight > collapsedSummaryHeight + 1 || showsFullSummary {
-                Button {
-                    withAnimation(.snappy) {
-                        showsFullSummary.toggle()
-                    }
-                } label: {
-                    Label(
-                        showsFullSummary ? "Less" : "More",
-                        systemImage: showsFullSummary ? "chevron.up" : "chevron.down"
-                    )
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.teal)
-                }
-                .buttonStyle(.plain)
-                .accessibilityHint(showsFullSummary ? "Shows a three-line summary preview" : "Shows all summary points")
-            }
+    /// When the card is anchored to a verse, use the matching "What Happens" item
+    /// rather than a generic opening preview of the chapter.
+    private var matchingEvent: ChapterEvent? {
+        guard let verseNumber,
+              let events = ChapterEvent.outline(
+                from: summary,
+                bookName: bookName,
+                chapterNumber: chapterNumber
+              ) else {
+            return nil
         }
+
+        return events.first {
+            $0.contains(
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                verseNumber: verseNumber
+            )
+        }
+    }
+
+    var body: some View {
+        SummaryBullet(text: matchingEvent?.text ?? preview, lineLimit: 3)
     }
 }
 
@@ -499,14 +442,28 @@ private extension String {
 
 #Preview("Chapter") {
     ScrollView {
-        StudyHomeCard(bookName: "John", chapterNumber: 3, source: .bookmark, onRead: {})
+        StudyHomeCard(
+            bookName: "John",
+            chapterNumber: 3,
+            startVerseNumber: 16,
+            verseText: "For God so loved the world, that he gave his only begotten Son.",
+            source: .bookmark,
+            onRead: {}
+        )
             .padding()
     }
 }
 
 #Preview("Starting a book") {
     ScrollView {
-        StudyHomeCard(bookName: "Romans", chapterNumber: 1, source: .verseOfDay(title: "Verse of the Day"), onRead: {})
+        StudyHomeCard(
+            bookName: "Romans",
+            chapterNumber: 1,
+            startVerseNumber: 16,
+            verseText: "For I am not ashamed of the gospel of Christ.",
+            source: .verseOfDay(title: "Verse of the Day"),
+            onRead: {}
+        )
             .padding()
     }
 }
