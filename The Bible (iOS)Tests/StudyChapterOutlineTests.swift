@@ -112,6 +112,6 @@ struct StudyChapterOutlineTests {
     func everyChapterHasThemesToPreview() async throws {
         let themes = await ChapterInsightsRepository.shared.themeNames(forBookNamed: "Psalms")
         #expect(themes.count == 150)
-        #expect(themes[1]?.first == "Meditation on instruction")
+        #expect(themes[1]?.first == "Delight in God's word")
     }
 }

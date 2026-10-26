@@ -182,6 +182,39 @@ struct TwoDeviceSyncScenarioTests {
     }
 
     @Test
+    func repeatedArchiveDeliveryIsIdempotent() {
+        let phone = ReadingHistoryArchive(
+            cutoff: "2025-01-01",
+            books: ["John": ["phone": 300]],
+            years: ["2025": 300],
+            streakRunAtCutoff: 4,
+            bestStreak: 4
+        )
+        let tablet = ReadingHistoryArchive(
+            cutoff: "2025-01-01",
+            books: ["Acts": ["tablet": 120]],
+            years: ["2025": 300],
+            streakRunAtCutoff: 2,
+            bestStreak: 5
+        )
+        var contributions: ReadingHistoryArchive.Contributions = [:]
+
+        let firstDelivery = ReadingHistoryArchive.merged(
+            local: phone,
+            remote: tablet,
+            localContributions: &contributions
+        )
+        let duplicateDelivery = ReadingHistoryArchive.merged(
+            local: firstDelivery,
+            remote: tablet,
+            localContributions: &contributions
+        )
+
+        #expect(duplicateDelivery == firstDelivery)
+        #expect(duplicateDelivery.bookTotals == ["John": 300, "Acts": 120])
+    }
+
+    @Test
     func resetEpochOnlyAppliesOnceAndNeverForOlderCloudData() {
         #expect(KVSSyncLifecyclePolicy.shouldApplyReset(remoteEpoch: 100, lastSeenEpoch: 99))
         #expect(!KVSSyncLifecyclePolicy.shouldApplyReset(remoteEpoch: 100, lastSeenEpoch: 100))

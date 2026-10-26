@@ -687,6 +687,7 @@ private struct GameNavigationRow: View {
             onSelect()
         }
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("gameRoute-\(route.rawValue)")
         .accessibilityAddTraits(.isButton)
         .accessibilityAction {
             onSelect()

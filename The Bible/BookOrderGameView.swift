@@ -66,6 +66,7 @@ struct BookOrderGameView: View {
                     }
                     .padding()
                 }
+                .accessibilityIdentifier("bookOrderSetupScrollView")
             } else if geometry.size.width >= 700 {
                 iPadGameBoard(availableHeight: geometry.size.height)
             } else {

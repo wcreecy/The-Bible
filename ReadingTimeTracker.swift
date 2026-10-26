@@ -222,7 +222,7 @@ final class ReadingTimeTracker {
         to end: Date,
         calendar: Calendar = .autoupdatingCurrent
     ) -> [(date: Date, seconds: Int)] {
-        guard seconds > 0 else { return [] }
+        guard seconds > 0, end > start else { return [] }
         let intervals = splitAtMidnight(from: start, to: end, calendar: calendar)
         guard intervals.count > 1 else { return [(start, seconds)] }
 
