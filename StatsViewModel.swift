@@ -76,6 +76,8 @@ final class StatsViewModel {
     /// Call when Stats disappears. Later changes wait until it's shown again.
     func stop() {
         isVisible = false
+        observationTask?.cancel()
+        observationTask = nil
         if pendingRefresh != nil {
             pendingRefresh?.cancel()
             pendingRefresh = nil

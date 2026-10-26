@@ -275,26 +275,13 @@ struct HomeView: View {
                 }
             )
         case .timer:
-            PrayerTimerCard(
-                isTimerRunning: timerController.isRunning,
-                isPaused: timerController.isPaused,
-                remainingSeconds: timerController.remainingSeconds,
-                totalSeconds: timerController.totalSeconds,
-                formattedTime: { TimeFormatters.compactClock($0) },
+            HomePrayerTimerCard(
+                timerController: timerController,
                 verseOfDay: votdVM.verse,
-                canUndoStop: timerController.undoableStop != nil,
                 onOpenSetup: {
                     Haptics.selection()
                     showPrayerStudySheet = true
-                },
-                onStartPreset: { minutes in
-                    timerController.start(minutes: minutes)
-                },
-                onTogglePause: { timerController.togglePause() },
-                onAddOne: { timerController.addOne() },
-                onAddFive: { timerController.addFive() },
-                onStop: { timerController.stop() },
-                onUndoStop: { timerController.undoStop() }
+                }
             )
         case .resumeReading:
             ResumeReadingCard(
@@ -949,6 +936,32 @@ private struct EditHomeToolbarButton: View {
         }
         .accessibilityLabel("Edit Home")
         .accessibilityIdentifier("homeEditButton")
+    }
+}
+
+/// Keeps the timer's one-second observation scoped to this card instead of Home's full body.
+private struct HomePrayerTimerCard: View {
+    let timerController: PrayerTimerController
+    let verseOfDay: HomeVerseRef?
+    let onOpenSetup: () -> Void
+
+    var body: some View {
+        PrayerTimerCard(
+            isTimerRunning: timerController.isRunning,
+            isPaused: timerController.isPaused,
+            remainingSeconds: timerController.remainingSeconds,
+            totalSeconds: timerController.totalSeconds,
+            formattedTime: { TimeFormatters.compactClock($0) },
+            verseOfDay: verseOfDay,
+            canUndoStop: timerController.undoableStop != nil,
+            onOpenSetup: onOpenSetup,
+            onStartPreset: { timerController.start(minutes: $0) },
+            onTogglePause: { timerController.togglePause() },
+            onAddOne: { timerController.addOne() },
+            onAddFive: { timerController.addFive() },
+            onStop: { timerController.stop() },
+            onUndoStop: { timerController.undoStop() }
+        )
     }
 }
 

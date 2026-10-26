@@ -569,7 +569,7 @@ final class iCloudSyncCoordinator {
         debounceTask = Task { [weak self] in
             // Debounce
             try? await Task.sleep(nanoseconds: delayNanos)
-            guard self != nil else { return }
+            guard !Task.isCancelled, self != nil else { return }
 
             // Perform synchronize off-main to avoid any chance of blocking UI.
             await withTaskCancellationHandler {

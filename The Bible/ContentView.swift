@@ -182,11 +182,6 @@ struct ContentView: View {
         Bookmark.mirrorToWidget(in: modelContext)
         openBibleReaderAtLaunchIfNeeded()
         scheduleInitialDataMaintenance()
-        // Repairing saved verse numbers needs the Bible text, which may still be loading.
-        Task { @MainActor in
-            _ = await BibleRepository.shared.loadAllBooks()
-            SwiftDataDeduplicator.run(in: modelContext)
-        }
 
         Task.detached {
             _ = await BibleReferenceLinker.linkify("")
@@ -215,10 +210,14 @@ struct ContentView: View {
     }
 
     /// SwiftData cleanup can fetch every saved record. It is important for data quality,
-    /// but not for displaying the first screen, so let the initial frame render first.
+    /// but should not compete with first-launch content such as Home's mini reader.
     private func scheduleInitialDataMaintenance() {
         Task { @MainActor in
             await Task.yield()
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { return }
+            _ = await BibleRepository.shared.loadAllBooks()
+            guard !Task.isCancelled else { return }
             AppPerformance.measure("InitialDataMaintenance") {
                 SwiftDataDeduplicator.run(in: modelContext)
             }

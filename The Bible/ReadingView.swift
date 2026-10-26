@@ -40,7 +40,7 @@ struct ReadingView: View {
     // The Focus Reading setting opens Focus Mode once per visit, not every time the
     // reader reappears (for example after Focus Mode is dismissed).
     @State private var didAutoPresentFocusMode = false
-    @State private var isChapterInsightsPresented = false
+    @State private var chapterInsightsDismissal = StudySheetDismissal()
     @State private var chapterRelatedVerses: [ChapterRelatedVerse] = []
     @State private var crossReferenceVerse: Verse?
     @State private var seenVerseNumbers: Set<Int> = []
@@ -86,6 +86,8 @@ struct ReadingView: View {
     private var currentChapter: Chapter { viewModel.currentChapter }
 
     var body: some View {
+        @Bindable var chapterInsightsDismissal = chapterInsightsDismissal
+
         content
             .environment(\.font, nil)
             .navigationTitle("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
@@ -117,7 +119,7 @@ struct ReadingView: View {
 
                     if UIDevice.current.userInterfaceIdiom != .phone {
                         Button {
-                            isChapterInsightsPresented = true
+                            chapterInsightsDismissal.isPresented = true
                         } label: {
                             Image(systemName: "lightbulb")
                         }
@@ -156,7 +158,7 @@ struct ReadingView: View {
                             Divider()
 
                             Button {
-                                isChapterInsightsPresented = true
+                                chapterInsightsDismissal.isPresented = true
                             } label: {
                                 Label("Chapter Insights", systemImage: "lightbulb")
                             }
@@ -316,7 +318,7 @@ struct ReadingView: View {
                     )
                 }
             }
-            .sheet(isPresented: $isChapterInsightsPresented) {
+            .sheet(isPresented: $chapterInsightsDismissal.isPresented) {
                 NavigationStack {
                     ChapterInsightsView(
                         bookName: viewModel.currentBook.name,
@@ -326,12 +328,12 @@ struct ReadingView: View {
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Done") {
-                                isChapterInsightsPresented = false
+                            chapterInsightsDismissal.dismiss()
                             }
                         }
                     }
                 }
-                .environment(\.closeStudySheet) { isChapterInsightsPresented = false }
+                .environment(\.studySheetDismissal, chapterInsightsDismissal)
             }
             .sheet(item: $crossReferenceVerse) { verse in
                 NavigationStack {

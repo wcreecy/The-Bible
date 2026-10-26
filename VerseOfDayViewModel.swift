@@ -157,15 +157,27 @@ final class VerseOfDayViewModel {
             }
         }
 
-        let eligibleVerses = books.flatMap { book in
-            book.chapters.flatMap { chapter in
-                chapter.verses.map { verse in
-                    (book: book, chapter: chapter, verse: verse)
+        // Pick a uniformly random verse without creating a temporary entry for every
+        // verse in the corpus. A random offset across the eligible verse count gives
+        // every verse the same probability of being selected.
+        let eligibleVerseCount = books.reduce(into: 0) { total, book in
+            total += book.chapters.reduce(into: 0) { $0 += $1.verses.count }
+        }
+        guard eligibleVerseCount > 0 else { return }
+
+        var remainingOffset = Int.random(in: 0..<eligibleVerseCount)
+        var selection: (book: Book, chapter: Chapter, verse: Verse)?
+        selectionLoop: for book in books {
+            for chapter in book.chapters {
+                if remainingOffset < chapter.verses.count {
+                    selection = (book, chapter, chapter.verses[remainingOffset])
+                    break selectionLoop
                 }
+                remainingOffset -= chapter.verses.count
             }
         }
 
-        guard let selection = eligibleVerses.randomElement() else { return }
+        guard let selection else { return }
 
         let ref = HomeVerseRef(
             bookName: selection.book.name,

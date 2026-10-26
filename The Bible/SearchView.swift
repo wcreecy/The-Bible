@@ -252,28 +252,36 @@ actor BibleSearchIndex {
         let chapterNumber: Int
         let verseNumber: Int
         let verseText: String
-        let words: Set<String>
     }
 
-    private var entries: [Entry]?
-    private var indexBuildTask: Task<[Entry], Never>?
+    private struct Index: Sendable {
+        let entries: [Entry]
+        /// Each complete word points to its canonically ordered verse positions.
+        let postingsByWord: [String: [Int]]
+        /// Sorted once at build time so prefix queries can visit only matching terms.
+        let sortedWords: [String]
+    }
+
+    private var index: Index?
+    private var indexBuildTask: Task<Index, Never>?
 
     func search(
         tokens: [String],
         allowedBookIndices: Range<Int>?,
         maxResults: Int
     ) async -> [SearchResult] {
-        let entries = await indexedVerses()
+        let index = await indexedVerses()
         let searchTokens = Array(Set(tokens)).sorted { $0.count > $1.count }
+        guard let entryIDs = matchingEntryIDs(for: searchTokens, in: index) else { return [] }
         var results: [SearchResult] = []
         results.reserveCapacity(min(maxResults, 32))
 
-        for entry in entries {
+        for entryID in entryIDs.sorted() {
             if Task.isCancelled { return [] }
+            let entry = index.entries[entryID]
             if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
                 continue
             }
-            guard BibleSearchTokenizer.matches(searchTokens, verseWords: entry.words) else { continue }
 
             results.append(SearchResult(
                 bookIndex: entry.bookIndex,
@@ -288,10 +296,56 @@ actor BibleSearchIndex {
         return results
     }
 
-    private func indexedVerses() async -> [Entry] {
-        if let entries { return entries }
+    private func matchingEntryIDs(for tokens: [String], in index: Index) -> Set<Int>? {
+        var matchingIDs: Set<Int>?
 
-        let task: Task<[Entry], Never>
+        for token in tokens {
+            let tokenIDs = entryIDs(forPrefix: token, in: index)
+            guard !tokenIDs.isEmpty else { return nil }
+
+            if let currentIDs = matchingIDs {
+                let intersection = currentIDs.intersection(tokenIDs)
+                guard !intersection.isEmpty else { return nil }
+                matchingIDs = intersection
+            } else {
+                matchingIDs = tokenIDs
+            }
+        }
+
+        return matchingIDs
+    }
+
+    private func entryIDs(forPrefix prefix: String, in index: Index) -> Set<Int> {
+        var ids: Set<Int> = []
+        var wordIndex = lowerBound(of: prefix, in: index.sortedWords)
+
+        while wordIndex < index.sortedWords.count {
+            let word = index.sortedWords[wordIndex]
+            guard word.hasPrefix(prefix) else { break }
+            ids.formUnion(index.postingsByWord[word, default: []])
+            wordIndex += 1
+        }
+        return ids
+    }
+
+    private func lowerBound(of value: String, in sortedWords: [String]) -> Int {
+        var lower = 0
+        var upper = sortedWords.count
+        while lower < upper {
+            let middle = (lower + upper) / 2
+            if sortedWords[middle] < value {
+                lower = middle + 1
+            } else {
+                upper = middle
+            }
+        }
+        return lower
+    }
+
+    private func indexedVerses() async -> Index {
+        if let index { return index }
+
+        let task: Task<Index, Never>
         if let indexBuildTask {
             task = indexBuildTask
         } else {
@@ -299,27 +353,39 @@ actor BibleSearchIndex {
             // empty during launch and would otherwise be cached as an empty index.
             let books = await BibleRepository.shared.loadAllBooks()
             let newTask = Task.detached(priority: .userInitiated) {
-                books.enumerated().flatMap { bookIndex, book in
-                    book.chapters.flatMap { chapter in
-                        chapter.verses.map { verse in
-                            Entry(
+                var entries: [Entry] = []
+                var postingsByWord: [String: [Int]] = [:]
+
+                for (bookIndex, book) in books.enumerated() {
+                    for chapter in book.chapters {
+                        for verse in chapter.verses {
+                            let entryID = entries.count
+                            entries.append(Entry(
                                 bookIndex: bookIndex,
                                 bookName: book.name,
                                 chapterNumber: chapter.number,
                                 verseNumber: verse.number,
-                                verseText: verse.text,
-                                words: Set(BibleSearchTokenizer.tokens(in: verse.text))
-                            )
+                                verseText: verse.text
+                            ))
+                            for word in Set(BibleSearchTokenizer.tokens(in: verse.text)) {
+                                postingsByWord[word, default: []].append(entryID)
+                            }
                         }
                     }
                 }
+
+                return Index(
+                    entries: entries,
+                    postingsByWord: postingsByWord,
+                    sortedWords: postingsByWord.keys.sorted()
+                )
             }
             indexBuildTask = newTask
             task = newTask
         }
 
         let built = await AppPerformance.measure("BibleSearchIndexBuild") { await task.value }
-        entries = built
+        index = built
         indexBuildTask = nil
         return built
     }

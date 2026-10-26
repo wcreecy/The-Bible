@@ -1,6 +1,7 @@
 import SwiftData
 import SwiftUI
 import UIKit
+import Observation
 
 /// A passage cited in study content: a verse, a verse range, a chapter, or a chapter range.
 struct PassageReference: Identifiable, Hashable {
@@ -373,13 +374,23 @@ struct LinkedScriptureText: View {
     }
 }
 
+@MainActor
+@Observable
+final class StudySheetDismissal {
+    var isPresented = false
+
+    func dismiss() {
+        isPresented = false
+    }
+}
+
 extension EnvironmentValues {
     /// The book that study text is about, so references such as "(3:9)" can link into it.
     @Entry var scriptureContextBook: String?
 
-    /// Closes the study sheet that contains this view, so pages pushed inside it can
-    /// offer the same Done button as the sheet's first page.
-    @Entry var closeStudySheet: (() -> Void)?
+    /// The stable state object that closes a containing study sheet, when there is one.
+    @Entry var studySheetDismissal: StudySheetDismissal?
+
 }
 
 extension View {
@@ -392,13 +403,13 @@ extension View {
 private struct StudySheetDoneButtonModifier: ViewModifier {
     let placement: ToolbarItemPlacement
 
-    @Environment(\.closeStudySheet) private var closeStudySheet
+    @Environment(\.studySheetDismissal) private var studySheetDismissal
 
     func body(content: Content) -> some View {
         content.toolbar {
-            if let closeStudySheet {
+            if let studySheetDismissal {
                 ToolbarItem(placement: placement) {
-                    Button("Done", action: closeStudySheet)
+                    Button("Done", action: studySheetDismissal.dismiss)
                 }
             }
         }

@@ -67,6 +67,11 @@ struct The_Bible__iOS_App: App {
 
     init() {
         UITestSupport.configureIfNeeded()
+        // Start decoding the bundled corpus while SwiftData initializes. The Home mini reader
+        // shares this load, so it can present its first chapter sooner on a cold launch.
+        Task.detached(priority: .userInitiated) {
+            _ = await BibleRepository.shared.loadAllBooks()
+        }
         let store = AppPerformance.measure("AppLaunchInitialization") {
             Self.makeModelContainer()
         }

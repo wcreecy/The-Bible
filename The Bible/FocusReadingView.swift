@@ -17,7 +17,7 @@ struct FocusReadingView: View {
     @State private var controlsAutoHideID = 0
     @State private var isControlsAutoHideSuspended = false
     @State private var isLocationPickerPresented = false
-    @State private var isChapterInsightsPresented = false
+    @State private var chapterInsightsDismissal = StudySheetDismissal()
     @AppStorage(AppStorageKey.hasSeenFocusModeControlsHint) private var hasSeenControlsHint = false
 
     // Maps page numbers to Bible locations; pages themselves are built only when shown.
@@ -74,6 +74,8 @@ struct FocusReadingView: View {
     }
 
     var body: some View {
+        @Bindable var chapterInsightsDismissal = chapterInsightsDismissal
+
         ZStack(alignment: .bottom) {
             ScrollView {
                 FocusPageList(pageMap: pageMap, readerFontSize: readerFontSize)
@@ -107,7 +109,7 @@ struct FocusReadingView: View {
                         isLocationPickerPresented = true
                     },
                     onShowChapterInsights: {
-                        isChapterInsightsPresented = true
+                        chapterInsightsDismissal.isPresented = true
                     },
                     onExit: onExit,
                     onInteraction: resetControlsAutoHideTimer,
@@ -131,7 +133,7 @@ struct FocusReadingView: View {
                 isLocationPickerPresented = false
             }
         }
-        .sheet(isPresented: $isChapterInsightsPresented) {
+        .sheet(isPresented: $chapterInsightsDismissal.isPresented) {
             NavigationStack {
                 ChapterInsightsView(
                     bookName: currentLocation.bookName,
@@ -141,12 +143,12 @@ struct FocusReadingView: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Done") {
-                            isChapterInsightsPresented = false
+                            chapterInsightsDismissal.dismiss()
                         }
                     }
                 }
             }
-            .environment(\.closeStudySheet) { isChapterInsightsPresented = false }
+            .environment(\.studySheetDismissal, chapterInsightsDismissal)
         }
         .task(id: controlsAutoHideID) {
             guard showsControls, !isControlsAutoHideSuspended else { return }
@@ -265,43 +267,56 @@ private struct FocusLocationPicker: View {
         _selectedVerseNumber = State(initialValue: initialLocation.verseNumber)
     }
 
-    private var selectedBook: Book {
-        BibleData.books.first(where: { $0.name == selectedBookName }) ?? BibleData.books[0]
+    private var selectedBook: Book? {
+        BibleData.books.first(where: { $0.name == selectedBookName })
     }
 
-    private var selectedChapter: Chapter {
-        selectedBook.chapters.first(where: { $0.number == selectedChapterNumber }) ?? selectedBook.chapters[0]
+    private var selectedChapter: Chapter? {
+        selectedBook?.chapters.first(where: { $0.number == selectedChapterNumber })
     }
 
     var body: some View {
         NavigationStack {
-            Form {
-                Picker("Book", selection: $selectedBookName) {
-                    ForEach(BibleData.books) { book in
-                        Text(book.name).tag(book.name)
-                    }
-                }
+            Group {
+                if let selectedBook, let selectedChapter {
+                    Form {
+                        Picker("Book", selection: $selectedBookName) {
+                            ForEach(BibleData.books) { book in
+                                Text(book.name).tag(book.name)
+                            }
+                        }
 
-                Picker("Chapter", selection: $selectedChapterNumber) {
-                    ForEach(selectedBook.chapters) { chapter in
-                        Text("\(chapter.number)").tag(chapter.number)
-                    }
-                }
+                        Picker("Chapter", selection: $selectedChapterNumber) {
+                            ForEach(selectedBook.chapters) { chapter in
+                                Text("\(chapter.number)").tag(chapter.number)
+                            }
+                        }
 
-                Picker("Verse", selection: $selectedVerseNumber) {
-                    ForEach(selectedChapter.verses) { verse in
-                        Text("\(verse.number)").tag(verse.number)
+                        Picker("Verse", selection: $selectedVerseNumber) {
+                            ForEach(selectedChapter.verses) { verse in
+                                Text("\(verse.number)").tag(verse.number)
+                            }
+                        }
                     }
+                } else {
+                    ContentUnavailableView(
+                        "Bible Data Unavailable",
+                        systemImage: "book.closed",
+                        description: Text("Choose a location after the Bible text has loaded.")
+                    )
                 }
             }
             .navigationTitle("Go to Verse")
             .navigationBarTitleDisplayMode(.inline)
             .onChange(of: selectedBookName) { _, _ in
-                selectedChapterNumber = selectedBook.chapters[0].number
-                selectedVerseNumber = selectedBook.chapters[0].verses[0].number
+                guard let chapter = selectedBook?.chapters.first,
+                      let verse = chapter.verses.first else { return }
+                selectedChapterNumber = chapter.number
+                selectedVerseNumber = verse.number
             }
             .onChange(of: selectedChapterNumber) { _, _ in
-                selectedVerseNumber = selectedChapter.verses[0].number
+                guard let verse = selectedChapter?.verses.first else { return }
+                selectedVerseNumber = verse.number
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -310,14 +325,17 @@ private struct FocusLocationPicker: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Go") {
-                        onSelect(
-                            FocusVerseLocation(
-                                bookName: selectedBook.name,
-                                chapterNumber: selectedChapter.number,
-                                verseNumber: selectedVerseNumber
+                        if let selectedBook, let selectedChapter {
+                            onSelect(
+                                FocusVerseLocation(
+                                    bookName: selectedBook.name,
+                                    chapterNumber: selectedChapter.number,
+                                    verseNumber: selectedVerseNumber
+                                )
                             )
-                        )
+                        }
                     }
+                    .disabled(selectedBook == nil || selectedChapter == nil)
                 }
             }
         }
