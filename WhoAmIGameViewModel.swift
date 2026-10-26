@@ -55,9 +55,9 @@ final class WhoAmIGameViewModel {
 
         var detail: LocalizedStringResource {
             switch self {
-            case .easy: "Well-known people, no timer, and wrong choices from anywhere."
-            case .normal: "Adds less familiar people. 30 seconds, with wrong choices from the same testament."
-            case .hard: "Everyone in the game. 15 seconds, with wrong choices from the same books."
+            case .easy: "Well-known people, no timer, and curated choices."
+            case .normal: "Adds less familiar people. 30 seconds and curated choices."
+            case .hard: "Everyone in the game. 15 seconds and curated choices."
             }
         }
 
@@ -72,6 +72,7 @@ final class WhoAmIGameViewModel {
 
     struct Entry: Hashable {
         let id: Int
+        let questionMode: WhoGameQuestion.Mode
         /// The name without the description in parentheses, e.g. "Joseph".
         let name: String
         /// The description in parentheses in the data, e.g. "son of Jacob". Shown only in the reveal.
@@ -79,15 +80,7 @@ final class WhoAmIGameViewModel {
         let clue: String
         let books: [String]
         let difficulty: String
-
-        /// True when most of the person's books are in the Old Testament.
-        var isOldTestament: Bool {
-            let canon = BibleCanon.fallbackCanon
-            let oldCount = books.filter { (canon.firstIndex(of: $0) ?? 0) < 39 }.count
-            return oldCount * 2 >= books.count
-        }
-
-        var nameKey: String { name.lowercased() }
+        let incorrectAnswers: [String]
 
         func matchesDifficulty(_ selectedDifficulty: Difficulty) -> Bool {
             switch difficulty.lowercased() {
@@ -126,7 +119,9 @@ final class WhoAmIGameViewModel {
     private var questionQueue: [Entry] = []
 
     private var eligibleEntries: [Entry] {
-        entries.filter { $0.matchesDifficulty(difficulty) }
+        entries.filter {
+            $0.questionMode == questionMode && $0.matchesDifficulty(difficulty)
+        }
     }
 
     var isReady: Bool {
@@ -134,12 +129,15 @@ final class WhoAmIGameViewModel {
     }
 
     private var reviewEntries: [Entry] {
-        entries.filter { reviewQuestionIDs.contains(String(describing: $0.id)) }
+        entries.filter {
+            $0.questionMode == questionMode
+                && reviewQuestionIDs.contains(String(describing: $0.id))
+        }
     }
 
     // Current round
     private(set) var current: Entry?
-    private(set) var choiceEntries: [Entry] = []
+    private(set) var choiceEntries: [String] = []
     var selectedChoice: String? = nil
     private(set) var questionNumber: Int = 0
     private(set) var totalQuestions: Int = 0
@@ -150,7 +148,7 @@ final class WhoAmIGameViewModel {
     }
 
     var choices: [String] {
-        choiceEntries.map { mode == .clueToName ? $0.name : $0.clue }
+        choiceEntries
     }
 
     var correctChoice: String {
@@ -191,22 +189,47 @@ final class WhoAmIGameViewModel {
 
         Task {
             if entries.isEmpty {
-                let characters = await GameDataLoaders.loadCharactersAsync()
-                self.entries = characters.compactMap { character in
-                    let parts = Self.split(character.name)
-                    let clue = character.shortDescription.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !parts.name.isEmpty, !clue.isEmpty else { return nil }
+                async let characters = GameDataLoaders.loadCharactersAsync()
+                async let questions = GameDataLoaders.loadWhoQuestionsAsync()
+                let charactersByID = Dictionary(
+                    uniqueKeysWithValues: await characters.map { ($0.id, $0) }
+                )
+                self.entries = await questions.compactMap { question in
+                    guard let character = charactersByID[question.sourcePersonID] else { return nil }
+
+                    let nameAndClue: (name: String, clue: String)
+                    switch question.mode {
+                    case .factToPerson:
+                        nameAndClue = (question.correctAnswer, question.question)
+                    case .personToFact:
+                        nameAndClue = (question.question, question.correctAnswer)
+                    }
+
+                    let parts = Self.split(nameAndClue.name)
+                    let clue = nameAndClue.clue.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !parts.name.isEmpty, !clue.isEmpty, question.incorrectAnswers.count >= 3 else {
+                        return nil
+                    }
 
                     return Entry(
-                        id: character.id,
+                        id: question.sourcePersonID,
+                        questionMode: question.mode,
                         name: parts.name,
                         qualifier: parts.qualifier,
                         clue: clue,
                         books: character.books,
-                        difficulty: character.difficulty
+                        difficulty: question.difficulty,
+                        incorrectAnswers: question.incorrectAnswers
                     )
                 }
             }
+        }
+    }
+
+    private var questionMode: WhoGameQuestion.Mode {
+        switch mode {
+        case .clueToName: .factToPerson
+        case .nameToClue: .personToFact
         }
     }
 
@@ -248,9 +271,9 @@ final class WhoAmIGameViewModel {
         }
 
         let target = questionQueue.removeFirst()
-        let wrong = wrongChoices(for: target)
         current = target
-        choiceEntries = (wrong + [target]).shuffled()
+        let correct = mode == .clueToName ? target.name : target.clue
+        choiceEntries = (Array(target.incorrectAnswers.shuffled().prefix(3)) + [correct]).shuffled()
         questionNumber += 1
         selectedChoice = nil
         roundOver = false
@@ -341,40 +364,6 @@ final class WhoAmIGameViewModel {
     func endRoundWhenLeavingScreen() {
         guard started, answered > 0 else { return }
         returnToSetup()
-    }
-
-    // MARK: - Choices
-
-    /// Three wrong people. Easy draws from anyone, Normal prefers the same testament, and
-    /// Hard prefers people who appear in the same books. Choices never share a name or a
-    /// clue, so there is only ever one right answer.
-    private func wrongChoices(for target: Entry) -> [Entry] {
-        let pool = eligibleEntries.filter { $0.id != target.id }
-        let targetBooks = Set(target.books)
-        let sameTestament = pool.filter { $0.isOldTestament == target.isOldTestament }
-
-        let tiers: [[Entry]]
-        switch difficulty {
-        case .easy:
-            tiers = [pool]
-        case .normal:
-            tiers = [sameTestament, pool]
-        case .hard:
-            tiers = [pool.filter { !targetBooks.isDisjoint(with: $0.books) }, sameTestament, pool]
-        }
-
-        var picks: [Entry] = []
-        var usedNames: Set<String> = [target.nameKey]
-        var usedClues: Set<String> = [target.clue]
-        for tier in tiers {
-            for entry in tier.shuffled() where picks.count < 3 {
-                guard !usedNames.contains(entry.nameKey), !usedClues.contains(entry.clue) else { continue }
-                usedNames.insert(entry.nameKey)
-                usedClues.insert(entry.clue)
-                picks.append(entry)
-            }
-        }
-        return picks
     }
 
     // MARK: - Timer

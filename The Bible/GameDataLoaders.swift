@@ -52,8 +52,41 @@ struct BibleLocationChallenge: Decodable, Identifiable, Hashable {
     }
 }
 
+/// A curated Who? question with six authored distractors. The game selects
+/// three of those distractors at random for each round.
+struct WhoGameQuestion: Decodable, Identifiable, Hashable {
+    enum Mode: String, Decodable, Hashable {
+        case personToFact = "person_to_fact"
+        case factToPerson = "fact_to_person"
+    }
+
+    let id: String
+    let mode: Mode
+    let difficulty: String
+    let question: String
+    let correctAnswer: String
+    let incorrectAnswers: [String]
+    let reference: String
+    let sourcePersonID: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case mode
+        case difficulty
+        case question
+        case correctAnswer = "correct_answer"
+        case incorrectAnswers = "incorrect_answers"
+        case reference
+        case sourcePersonID = "source_person_id"
+    }
+}
+
 /// The editable source of truth for Who? and Hangman answers.
 private struct GameAnswerCatalog: Decodable {
+    private struct WhoGameCatalog: Decodable {
+        let questions: [WhoGameQuestion]
+    }
+
     private enum EntryType: String, Decodable {
         case person = "Person"
         case place = "Place"
@@ -80,6 +113,12 @@ private struct GameAnswerCatalog: Decodable {
     }
 
     private let entries: [Entry]
+    private let whoGame: WhoGameCatalog?
+
+    enum CodingKeys: String, CodingKey {
+        case entries
+        case whoGame = "who_game"
+    }
 
     var characters: [BibleCharacter] {
         entries.compactMap { entry in
@@ -108,18 +147,26 @@ private struct GameAnswerCatalog: Decodable {
             )
         }
     }
+
+    var whoQuestions: [WhoGameQuestion] {
+        whoGame?.questions ?? []
+    }
 }
 
 actor GameDataCache {
     static let shared = GameDataCache()
     private var characters: [BibleCharacter]? = nil
     private var locationChallenges: [BibleLocationChallenge]? = nil
+    private var whoQuestions: [WhoGameQuestion]? = nil
 
     func getCharacters() -> [BibleCharacter]? { characters }
     func setCharacters(_ v: [BibleCharacter]) { characters = v }
 
     func getLocationChallenges() -> [BibleLocationChallenge]? { locationChallenges }
     func setLocationChallenges(_ v: [BibleLocationChallenge]) { locationChallenges = v }
+
+    func getWhoQuestions() -> [WhoGameQuestion]? { whoQuestions }
+    func setWhoQuestions(_ v: [WhoGameQuestion]) { whoQuestions = v }
 }
 
 enum GameDataLoaders {
@@ -137,6 +184,14 @@ enum GameDataLoaders {
             return []
         }
         return catalog.locations
+    }
+
+    static func loadWhoQuestions() -> [WhoGameQuestion] {
+        guard let catalog = loadCatalog() else {
+            gameDataLogger.error("The Who? question catalog could not be loaded or decoded.")
+            return []
+        }
+        return catalog.whoQuestions
     }
 
     private static func loadCatalog() -> GameAnswerCatalog? {
@@ -166,6 +221,19 @@ enum GameDataLoaders {
             }
         }
         await cache.setLocationChallenges(loaded)
+        return loaded
+    }
+
+    static func loadWhoQuestionsAsync() async -> [WhoGameQuestion] {
+        let cache = GameDataCache.shared
+        if let cached = await cache.getWhoQuestions() { return cached }
+
+        let loaded: [WhoGameQuestion] = await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                continuation.resume(returning: loadWhoQuestions())
+            }
+        }
+        await cache.setWhoQuestions(loaded)
         return loaded
     }
 
