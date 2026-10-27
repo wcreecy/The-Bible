@@ -275,8 +275,10 @@ private struct BookStoryOverviewButton: View {
             BookStoryView(bookName: bookName, story: story)
                 .studySheetDoneButton()
         } label: {
-            Label("Read \(bookRetellingTitle(for: bookName))", systemImage: "book.pages")
-                .font(.headline)
+            Label("Story of \(bookName)", systemImage: "book.pages")
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
         }
