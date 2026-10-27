@@ -69,6 +69,10 @@ func bookRetellingTitle(for bookName: String) -> String {
         "Acts: The Gospel Goes Out"
     case "Romans":
         "Romans: The Good News of God’s Grace"
+    case "1 Corinthians":
+        "1 Corinthians: Love Builds the Church"
+    case "2 Corinthians":
+        "2 Corinthians: Strength in Weakness"
     default:
         "The Story of \(bookName)"
     }
