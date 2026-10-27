@@ -337,7 +337,7 @@ private struct StudyBookStoryPrompt: View {
 
     private var bookStoryPrompt: String {
         switch bookName {
-        case "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job":
+        case "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms":
             "New to \(bookName)? Explore its guide."
         default:
             "New to \(bookName)? Read its story."
