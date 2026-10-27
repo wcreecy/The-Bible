@@ -73,6 +73,44 @@ func bookRetellingTitle(for bookName: String) -> String {
         "1 Corinthians: Love Builds the Church"
     case "2 Corinthians":
         "2 Corinthians: Strength in Weakness"
+    case "Galatians":
+        "Galatians: Freedom Through Faith"
+    case "Ephesians":
+        "Ephesians: One New Family in Christ"
+    case "Philippians":
+        "Philippians: Joy in Christ"
+    case "Colossians":
+        "Colossians: Christ Is Enough"
+    case "1 Thessalonians":
+        "1 Thessalonians: Hope While We Wait"
+    case "2 Thessalonians":
+        "2 Thessalonians: Steady Hope in Troubled Times"
+    case "1 Timothy":
+        "1 Timothy: Leading With Truth and Care"
+    case "2 Timothy":
+        "2 Timothy: Finish the Race Faithfully"
+    case "Titus":
+        "Titus: Grace That Builds a Healthy Church"
+    case "Philemon":
+        "Philemon: A Call to Reconciliation"
+    case "Hebrews":
+        "Hebrews: Jesus Is Greater"
+    case "James":
+        "James: Faith That Works"
+    case "1 Peter":
+        "1 Peter: Living Hope in Hard Times"
+    case "2 Peter":
+        "2 Peter: Grow in Grace and Truth"
+    case "1 John":
+        "1 John: Walk in the Light and Love"
+    case "2 John":
+        "2 John: Truth and Love Together"
+    case "3 John":
+        "3 John: Faithful Hospitality and Humble Leadership"
+    case "Jude":
+        "Jude: Contend With Truth and Mercy"
+    case "Revelation":
+        "Revelation: Jesus Wins and Makes All Things New"
     default:
         "The Story of \(bookName)"
     }
