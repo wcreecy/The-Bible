@@ -381,49 +381,60 @@ struct NotesListRow: View {
     }
 }
 
-/// Sorting, filtering, tag management, and export in one toolbar menu.
-struct NotesViewOptionsMenu: View {
-    @Binding var sortField: NotesTabSort
-    @Binding var sortAscending: Bool
-
+/// Filters compact Notes screens without taking vertical space from the list.
+struct NotesFilterMenu: View {
     @Binding var filters: NotesFilters
 
     let tags: [NotesLibrary.TagCount]
-    let showsFilters: Bool
-    let hasTags: Bool
     let manageTagsAction: () -> Void
     let clearFiltersAction: () -> Void
-    let exportAction: () -> Void
 
     var body: some View {
         Menu {
-            if showsFilters {
-                Section("Filter Notes") {
-                    Picker("Note Type", selection: $filters.category) {
-                        ForEach(NotesFilter.allCases) { filter in
-                            Label(filter.title, systemImage: filter.systemImage)
-                                .tag(filter)
+            Section("Filter Notes") {
+                Picker("Note Type", selection: $filters.category) {
+                    ForEach(NotesFilter.allCases) { filter in
+                        Label(filter.title, systemImage: filter.systemImage)
+                            .tag(filter)
+                    }
+                }
+                .pickerStyle(.inline)
+
+                if !tags.isEmpty || filters.tag != nil {
+                    Picker("Tag", selection: $filters.tag) {
+                        Text("All Tags").tag(String?.none)
+
+                        ForEach(tags) { tag in
+                            Text(verbatim: "#\(tag.tag)")
+                                .tag(Optional(tag.tag))
                         }
                     }
                     .pickerStyle(.inline)
 
-                    if !tags.isEmpty || filters.tag != nil {
-                        Picker("Tag", selection: $filters.tag) {
-                            Text("All Tags").tag(String?.none)
+                    Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
+                }
 
-                            ForEach(tags) { tag in
-                                Text(verbatim: "#\(tag.tag)")
-                                    .tag(Optional(tag.tag))
-                            }
-                        }
-                        .pickerStyle(.inline)
-                    }
-
-                    if filters.isActive {
-                        Button("Clear Filters", systemImage: "arrow.counterclockwise", action: clearFiltersAction)
-                    }
+                if filters.isActive {
+                    Button("Clear Filters", systemImage: "arrow.counterclockwise", action: clearFiltersAction)
                 }
             }
+        } label: {
+            Image(systemName: filters.isActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
+        }
+        .accessibilityLabel("Filter notes")
+        .accessibilityValue(filters.isActive ? Text("Filters active") : Text("No active filters"))
+    }
+}
+
+/// Sorting and export in one toolbar menu.
+struct NotesViewOptionsMenu: View {
+    @Binding var sortField: NotesTabSort
+    @Binding var sortAscending: Bool
+
+    let exportAction: () -> Void
+
+    var body: some View {
+        Menu {
 
             Section("Sort By") {
                 Picker("Sort By", selection: $sortField) {
@@ -444,16 +455,13 @@ struct NotesViewOptionsMenu: View {
             }
 
             Section {
-                if hasTags {
-                    Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
-                }
                 Button("Export All Notes…", systemImage: "square.and.arrow.up", action: exportAction)
             }
         } label: {
-            Image(systemName: showsFilters && filters.isActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
+            Image(systemName: "arrow.up.arrow.down")
         }
-        .accessibilityLabel(showsFilters ? "Filter, sort, and export notes" : "Sort and export notes")
-        .accessibilityValue(showsFilters && filters.isActive ? Text("Filters active") : Text(sortField.title))
+        .accessibilityLabel("Sort and export notes")
+        .accessibilityValue(Text(sortField.title))
     }
 }
 

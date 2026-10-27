@@ -56,15 +56,18 @@ struct NotesAndHighlightsView: View {
         )
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
+                if horizontalSizeClass == .compact {
+                    NotesFilterMenu(
+                        filters: $filters,
+                        tags: library.tags,
+                        manageTagsAction: { isManagingTags = true },
+                        clearFiltersAction: { clearFilters() }
+                    )
+                }
+
                 NotesViewOptionsMenu(
                     sortField: sortFieldBinding,
                     sortAscending: $sortAscending,
-                    filters: $filters,
-                    tags: library.tags,
-                    showsFilters: horizontalSizeClass == .compact,
-                    hasTags: !library.tags.isEmpty,
-                    manageTagsAction: { isManagingTags = true },
-                    clearFiltersAction: { clearFilters() },
                     exportAction: {
                         exportDocument = NotesMarkdownDocument(text: NotesMarkdownExporter.markdown(for: library.allItems))
                     }
