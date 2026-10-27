@@ -88,7 +88,9 @@ struct UserNoteEditorView: View {
                 NoteEditorShowFieldsButton { areFieldsCollapsed = false }
             } else {
                 Group {
-                    optionsBar
+                    NoteEditorTitleField(title: $title, placeholder: "Note title")
+                    passageField
+                    sermonControls
 
                     if selectedCategory == .sermon {
                         sermonDetails
@@ -98,8 +100,6 @@ struct UserNoteEditorView: View {
                         ScriptureReferenceLinkTip()
                         CustomNoteTagsTip()
                     }
-
-                    NoteEditorTitleField(title: $title, placeholder: "Note title")
 
                     if let passageExcerpt {
                         NotePassageAnchor(excerpt: passageExcerpt)
@@ -142,36 +142,8 @@ struct UserNoteEditorView: View {
 
     // MARK: Sections
 
-    private var optionsBar: some View {
+    private var passageField: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                if isSermon {
-                    Label("Sermon Note", systemImage: "person.wave.2")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.tint)
-                    Spacer()
-                    Button("Remove Sermon Details") {
-                        selectedCategory = .personal
-                    }
-                    .font(.caption.weight(.semibold))
-                } else {
-                    Button {
-                        selectedCategory = .sermon
-                        isShowingSermonDetails = true
-                    } label: {
-                        Label("Add Sermon Details", systemImage: "person.wave.2")
-                    }
-                    .font(.caption.weight(.semibold))
-                    Spacer()
-                    Text(existingNote == nil ? "New note" : "Editing")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(minHeight: 32)
-
-            Divider()
-
             HStack(spacing: 8) {
                 Image(systemName: "book.closed")
                     .foregroundStyle(.secondary)
@@ -198,6 +170,34 @@ struct UserNoteEditorView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var sermonControls: some View {
+        HStack {
+            if isSermon {
+                Label("Sermon Note", systemImage: "person.wave.2")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tint)
+                Spacer()
+                Button("Remove Sermon Details") {
+                    selectedCategory = .personal
+                }
+                .font(.caption.weight(.semibold))
+            } else {
+                Button {
+                    selectedCategory = .sermon
+                    isShowingSermonDetails = true
+                } label: {
+                    Label("Add Sermon Details", systemImage: "person.wave.2")
+                }
+                .font(.caption.weight(.semibold))
+                Spacer()
+                Text(existingNote == nil ? "New note" : "Editing")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(minHeight: 32)
     }
 
     private var sermonDetails: some View {

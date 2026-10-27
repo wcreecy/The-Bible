@@ -114,21 +114,21 @@ private struct NoteDetailPassageQuotation: View {
     @State private var text: String?
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading, spacing: 0) {
             if let title, let text {
-            VStack(alignment: .leading, spacing: 10) {
-                Text(BibleReferenceLinker.linkify(title))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.tint)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(BibleReferenceLinker.linkify(title))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.tint)
 
-                Text("“\(text)”")
-                    .font(.title3)
-                    .italic()
-                    .lineSpacing(4)
-                    .foregroundStyle(.primary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 4)
+                    Text("“\(text)”")
+                        .font(.title3)
+                        .italic()
+                        .lineSpacing(4)
+                        .foregroundStyle(.primary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 4)
                 .accessibilityElement(children: .combine)
             }
         }
