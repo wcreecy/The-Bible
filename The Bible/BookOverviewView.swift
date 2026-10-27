@@ -40,6 +40,10 @@ struct BookOverviewView: View {
             VStack(alignment: .leading, spacing: 20) {
                 AtAGlanceSection(overview: overview)
 
+                if !overview.story.isEmpty {
+                    BookStoryOverviewButton(bookName: bookName, story: overview.story)
+                }
+
                 LabeledRowsSection(title: "Background", icon: "person.2.fill", rows: [
                     .init(title: "Author", icon: "pencil.line", content: overview.traditionalAuthorOrAttribution),
                     .init(title: "Original Audience", icon: "person.3.fill", content: overview.originalAudience),
@@ -258,6 +262,26 @@ private struct BookStructureSection: View {
             title = String(passage[..<open.lowerBound])
             reference = String(passage[open.upperBound..<passage.index(before: passage.endIndex)])
         }
+    }
+}
+
+/// A prominent path from a book's introduction to its full narrative retelling.
+private struct BookStoryOverviewButton: View {
+    let bookName: String
+    let story: [BibleBookStorySection]
+
+    var body: some View {
+        NavigationLink {
+            BookStoryView(bookName: bookName, story: story)
+                .studySheetDoneButton()
+        } label: {
+            Label("Read the Story of \(bookName)", systemImage: "book.pages")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+        }
+        .buttonStyle(.borderedProminent)
+        .accessibilityHint("Opens a narrative retelling of \(bookName)")
     }
 }
 

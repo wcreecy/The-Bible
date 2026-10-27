@@ -32,6 +32,7 @@ struct StudyHomeCard: View {
 
     @State private var insights: ChapterInsights?
     @State private var overview: BibleBookOverview?
+    @State private var bookStory: [BibleBookStorySection] = []
     @State private var isLoading = true
     @State private var isSummaryExpanded = false
     /// Heights of the summary at three lines and in full, to know whether it's cut off.
@@ -84,6 +85,10 @@ struct StudyHomeCard: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     actionButtons(secondaryTitle: nil, secondaryAction: nil)
+                }
+
+                if chapterNumber == 1, !bookStory.isEmpty {
+                    StudyBookStoryPrompt(bookName: bookName, story: bookStory)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -286,11 +291,21 @@ struct StudyHomeCard: View {
         fullSummaryHeight = 0
         overview = nil
         insights = nil
+        bookStory = []
 
         // Only the no-history starting point introduces the book. A bookmark or featured
         // verse in chapter 1 still receives verse and chapter context.
         if source == .startingPoint, chapterNumber == 1 {
             overview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
+        }
+        if chapterNumber == 1 {
+            let storyOverview: BibleBookOverview?
+            if let overview {
+                storyOverview = overview
+            } else {
+                storyOverview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
+            }
+            bookStory = storyOverview?.story ?? []
         }
         if overview == nil {
             insights = await ChapterInsightsRepository.shared.insights(
@@ -299,6 +314,25 @@ struct StudyHomeCard: View {
             )
         }
         isLoading = false
+    }
+}
+
+/// Invites someone studying a book's opening chapter to read its full narrative retelling.
+private struct StudyBookStoryPrompt: View {
+    let bookName: String
+    let story: [BibleBookStorySection]
+
+    var body: some View {
+        NavigationLink {
+            BookStoryView(bookName: bookName, story: story)
+        } label: {
+            Label("New to \(bookName)? Read its story.", systemImage: "book.pages")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.bordered)
+        .tint(.teal)
+        .accessibilityHint("Opens a narrative retelling of \(bookName)")
     }
 }
 
