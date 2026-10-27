@@ -177,6 +177,28 @@ private enum GameProgress: Equatable {
     case dailyWord(word: String, won: Bool)
 }
 
+private enum ReviewRoundDestination: Hashable {
+    case game(String)
+}
+
+private struct ReviewRoundProgress: Identifiable {
+    let game: MissedGameQuestionStore.Entry.Game
+    let count: Int
+
+    var id: String { game.rawValue }
+    var isReady: Bool { count >= 10 }
+
+    var title: LocalizedStringResource {
+        switch game {
+        case .beatTheClock: "Beat the Clock"
+        case .bibleQuiz: "Quiz"
+        case .bibleTrivia: "Trivia"
+        case .verseMatch: "Verse Match"
+        case .whoAmI: "Who?"
+        }
+    }
+}
+
 struct GamesView: View {
     @Binding var path: NavigationPath
 
@@ -187,6 +209,7 @@ struct GamesView: View {
     /// Row progress text, rebuilt only when stats change. Building it reads about a hundred
     /// stored values, so it must not run on every redraw.
     @State private var progressByRoute: [GameRoute: GameProgress] = [:]
+    @State private var reviewProgress: [ReviewRoundProgress] = []
     /// Recommendation inputs include decoded UserDefaults data, so cache the finished value
     /// instead of rebuilding it whenever SwiftUI reevaluates this screen.
     @State private var cachedRecommendation = GameRecommendation(
@@ -371,6 +394,12 @@ struct GamesView: View {
         .navigationDestination(for: GameRoute.self) { route in
             destination(for: route)
         }
+        .navigationDestination(for: ReviewRoundDestination.self) { destination in
+            switch destination {
+            case .game(let rawValue):
+                ReviewRoundView(reviewGameRawValue: rawValue)
+            }
+        }
         .onAppear {
             todayChallengeStore.refresh()
             refreshPromptCycleIfNeeded()
@@ -415,11 +444,12 @@ struct GamesView: View {
     private var gameCollectionCard: some View {
         GameCollectionCard(
             groups: GameLearningGroup.allCases,
-            reviewIsAvailable: !MissedGameQuestionStore.shared.reviewableGames().isEmpty,
+            reviewProgress: reviewProgress,
             usesExpandedLayout: horizontalSizeClass == .regular,
             progress: { progressByRoute[$0] ?? .standard("Not played") },
             recommendation: cachedRecommendation,
             onSelect: present,
+            onSelectReviewGame: { destination in path.append(destination) },
             onSelectRecommendation: selectRecommendation
         )
         .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -471,6 +501,12 @@ struct GamesView: View {
             progressByRoute = Dictionary(uniqueKeysWithValues: GameRoute.allCases.map { route in
                 (route, progressText(for: route, entry: statsByName[route.displayName], todayWordResult: todayWordResult))
             })
+            reviewProgress = MissedGameQuestionStore.Entry.Game.allCases.map { game in
+                ReviewRoundProgress(
+                    game: game,
+                    count: MissedGameQuestionStore.shared.reviewCount(for: game)
+                )
+            }
             cachedRecommendation = makeRecommendation()
         }
     }
@@ -564,11 +600,12 @@ struct GamesView: View {
 
 private struct GameCollectionCard: View {
     let groups: [GameLearningGroup]
-    let reviewIsAvailable: Bool
+    let reviewProgress: [ReviewRoundProgress]
     let usesExpandedLayout: Bool
     let progress: (GameRoute) -> GameProgress
     let recommendation: GameRecommendation
     let onSelect: (GameRoute) -> Void
+    let onSelectReviewGame: (ReviewRoundDestination) -> Void
     let onSelectRecommendation: (GameRecommendationDestination) -> Void
 
     var body: some View {
@@ -622,16 +659,11 @@ private struct GameCollectionCard: View {
                     }
                     .padding(.bottom, 6)
 
-                    if reviewIsAvailable {
-                        GameNavigationRow(
-                            route: .reviewRound,
-                            progress: .standard("Ready"),
-                            usesExpandedLayout: usesExpandedLayout,
-                            onSelect: { onSelect(.reviewRound) }
-                        )
-                    } else {
-                        ReviewRoundUnavailableRow(usesExpandedLayout: usesExpandedLayout)
-                    }
+                    ReviewRoundStatusRow(
+                        progress: reviewProgress,
+                        usesExpandedLayout: usesExpandedLayout,
+                        onSelectGame: onSelectReviewGame
+                    )
                 }
                 .gameCatalogSectionCard()
             }
@@ -650,11 +682,7 @@ private struct GameCatalogSectionCardStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(12)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-            }
+            .heroCardSurface()
     }
 }
 
@@ -728,38 +756,57 @@ private struct GameRecommendationRow: View {
     }
 }
 
-private struct ReviewRoundUnavailableRow: View {
+private struct ReviewRoundStatusRow: View {
+    let progress: [ReviewRoundProgress]
     let usesExpandedLayout: Bool
+    let onSelectGame: (ReviewRoundDestination) -> Void
+
+    private var hasEligibleGame: Bool { progress.contains { $0.isReady } }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "lock.fill")
-                .font(usesExpandedLayout ? .title2 : .title3)
-                .foregroundStyle(.secondary)
-                .frame(minWidth: usesExpandedLayout ? 36 : 28)
-                .accessibilityHidden(true)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "arrow.clockwise.heart.fill")
+                    .font(usesExpandedLayout ? .title2 : .title3)
+                    .foregroundStyle(.purple)
+                    .frame(minWidth: usesExpandedLayout ? 36 : 28)
+                    .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Review Round")
-                    .font(usesExpandedLayout ? .title3.weight(.semibold) : .headline)
-                Text("Unlocks after you miss a question")
-                    .font(usesExpandedLayout ? .subheadline : .caption)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Review Round")
+                        .font(usesExpandedLayout ? .title3.weight(.semibold) : .headline)
+                    Text("Choose a game with 10 replayable missed questions.")
+                        .font(usesExpandedLayout ? .subheadline : .caption)
+                        .foregroundStyle(.secondary)
+                }
             }
-            .fixedSize(horizontal: false, vertical: true)
 
-            Spacer(minLength: 8)
+            ForEach(progress) { item in
+                HStack {
+                    Text(item.title)
+                        .font(.caption)
+                    Spacer()
+                    Text("\(item.count) / 10")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(item.isReady ? .purple : .secondary)
 
-            Text("Locked")
-                .font((usesExpandedLayout ? Font.footnote : Font.caption).weight(.medium))
-                .foregroundStyle(.secondary)
+                    if item.isReady {
+                        Button("Play") {
+                            onSelectGame(.game(item.game.rawValue))
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.purple)
+                        .controlSize(.small)
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, usesExpandedLayout ? 9 : 4)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Review Round, locked")
-        .accessibilityHint("Unlocks after you miss a question")
-        .accessibilityIdentifier("reviewRoundLocked")
+        .accessibilityLabel(hasEligibleGame ? "Review Round, ready" : "Review Round, locked")
+        .accessibilityHint("Requires 10 replayable missed questions in one game.")
+        .accessibilityIdentifier(hasEligibleGame ? "reviewRoundReady" : "reviewRoundLocked")
     }
 }
 

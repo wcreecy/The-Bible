@@ -416,10 +416,11 @@ final class WordSearchViewModel {
     private func nextVerse() -> VerseChoice? {
         switch verseSource {
         case .favorites:
-            if let fav = favoritesFetch().randomElement(), let (book, chapter, verse) = resolveFavorite(fav) {
+            return favoritesFetch().compactMap { favorite in
+                guard let (book, chapter, verse) = resolveFavorite(favorite) else { return nil }
                 return VerseChoice(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
             }
-            return randomVerse()
+            .randomElement()
         case .popular:
             return Self.popularVerses.randomElement().map(resolvePopular) ?? randomVerse()
         case .random:
@@ -531,6 +532,11 @@ final class WordSearchViewModel {
         return favoritesFetch().contains { fav in
             fav.bookName == favBookName && fav.chapterNumber == favChapterNumber && fav.verseNumber == favVerseNumber
         }
+    }
+
+    /// Saved verses whose book, chapter, and verse still resolve in the bundled Bible.
+    func eligibleFavoriteCount() -> Int {
+        favoritesFetch().count { resolveFavorite($0) != nil }
     }
 
     func toggleFavoriteCurrent() {

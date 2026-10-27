@@ -64,7 +64,7 @@ struct WordSearchGameView: View {
                             isTimedMode: $vm.isTimedMode,
                             wordCountRange: vm.wordCountRange,
                             timePerWord: vm.timePerWordString(),
-                            hasFavorites: !favorites.isEmpty,
+                            eligibleFavoriteCount: vm.eligibleFavoriteCount(),
                             onStart: { vm.start() }
                         )
                     } else {

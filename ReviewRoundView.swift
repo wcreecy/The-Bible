@@ -2,37 +2,53 @@ import SwiftUI
 
 struct ReviewRoundView: View {
     private let availableGames: [MissedGameQuestionStore.Entry.Game]
+    private let selectedGame: MissedGameQuestionStore.Entry.Game?
 
-    init() {
-        availableGames = MissedGameQuestionStore.shared.reviewableGames()
+    init(reviewGameRawValue: String? = nil) {
+        let availableGames = MissedGameQuestionStore.shared.reviewableGames()
+        self.availableGames = availableGames
+
+        if let reviewGameRawValue,
+           let game = MissedGameQuestionStore.Entry.Game(rawValue: reviewGameRawValue),
+           availableGames.contains(game) {
+            selectedGame = game
+        } else {
+            selectedGame = nil
+        }
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                ReviewRoundHeader()
+        Group {
+            if let selectedGame {
+                destination(for: selectedGame)
+            } else {
+                ScrollView {
+                    VStack(spacing: 20) {
+                        ReviewRoundHeader()
 
-                LazyVStack(spacing: 12) {
-                    ForEach(availableGames, id: \.rawValue) { game in
-                        NavigationLink {
-                            destination(for: game)
-                        } label: {
-                            ReviewRoundGameCard(
-                                title: game.title,
-                                detail: "\(MissedGameQuestionStore.shared.reviewCount(for: game)) missed questions available",
-                                systemImage: game.systemImage,
-                                tint: game.tint
-                            )
+                        LazyVStack(spacing: 12) {
+                            ForEach(availableGames, id: \.rawValue) { game in
+                                NavigationLink {
+                                    destination(for: game)
+                                } label: {
+                                    ReviewRoundGameCard(
+                                        title: game.title,
+                                        detail: "\(MissedGameQuestionStore.shared.reviewCount(for: game)) missed questions available",
+                                        systemImage: game.systemImage,
+                                        tint: game.tint
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
-                        .buttonStyle(.plain)
                     }
+                    .padding()
                 }
+                .background(AppBackgroundView(tab: .games))
+                .navigationTitle("Review Round")
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .padding()
         }
-        .background(AppBackgroundView(tab: .games))
-        .navigationTitle("Review Round")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder

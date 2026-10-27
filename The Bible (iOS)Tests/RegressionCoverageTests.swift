@@ -312,9 +312,15 @@ struct NotesTabTests {
 
     private func library(
         _ verseNotes: [VerseNote], _ userNotes: [UserNote],
-        filters: NotesFilters = NotesFilters(), sort: NotesTabSort = .modified, ascending: Bool = false
+        filters: NotesFilters? = nil, sort: NotesTabSort = .modified, ascending: Bool = false
     ) -> NotesLibrary {
-        NotesLibrary(scriptureNotes: verseNotes, userNotes: userNotes, filters: filters, sort: sort, ascending: ascending)
+        NotesLibrary(
+            scriptureNotes: verseNotes,
+            userNotes: userNotes,
+            filters: filters ?? NotesFilters(),
+            sort: sort,
+            ascending: ascending
+        )
     }
 
     @Test
@@ -482,20 +488,18 @@ struct NotesTabTests {
     }
 
     @Test
-    func exportIncludesEveryNoteNewestFirst() {
+    func exportIncludesEveryNoteNewestFirst() throws {
         let older = userNote(title: "Older", content: "First", passage: "Romans 8:28", updated: 0)
         let newer = verseNote("John", 3, 16, title: "Newer", content: "Second", updated: 100)
         newer.verseText = "For God so loved the world"
         let items = [NotesListItem.user(older), .scripture(newer)]
 
         let markdown = NotesMarkdownExporter.markdown(for: items)
-        let newerIndex = try? #require(markdown.range(of: "## Newer"))
-        let olderIndex = try? #require(markdown.range(of: "## Older"))
+        let newerIndex = try #require(markdown.range(of: "## Newer"))
+        let olderIndex = try #require(markdown.range(of: "## Older"))
         #expect(markdown.hasPrefix("# Bible Notes"))
         #expect(markdown.contains("> For God so loved the world"))
         #expect(markdown.contains("Romans 8:28"))
-        if let newerIndex, let olderIndex {
-            #expect(newerIndex.lowerBound < olderIndex.lowerBound)
-        }
+        #expect(newerIndex.lowerBound < olderIndex.lowerBound)
     }
 }

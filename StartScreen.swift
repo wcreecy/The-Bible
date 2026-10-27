@@ -7,10 +7,10 @@ struct WordSearchStartScreen: View {
     @Binding var isTimedMode: Bool
     let wordCountRange: ClosedRange<Int>
     let timePerWord: String
-    let hasFavorites: Bool
+    let eligibleFavoriteCount: Int
     let onStart: () -> Void
 
-    private var needsFavorites: Bool { verseSource == .favorites && !hasFavorites }
+    private var needsFavorites: Bool { verseSource == .favorites && eligibleFavoriteCount == 0 }
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -60,7 +60,7 @@ struct WordSearchStartScreen: View {
             } configuration: {
                 WordSearchSetupControls(
                     verseSource: $verseSource,
-                    hasFavorites: hasFavorites
+                    eligibleFavoriteCount: eligibleFavoriteCount
                 )
 
                 WordSearchPuzzleOptionsCard(
@@ -163,7 +163,7 @@ private struct WordSearchOptionCard: View {
 
 private struct WordSearchSetupControls: View {
     @Binding var verseSource: WordSearchViewModel.VerseSource
-    let hasFavorites: Bool
+    let eligibleFavoriteCount: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -174,7 +174,7 @@ private struct WordSearchSetupControls: View {
             HStack(alignment: .top, spacing: 8) {
                 ForEach(WordSearchViewModel.VerseSource.allCases) { option in
                     let isSelected = verseSource == option
-                    let isEnabled = option != .favorites || hasFavorites
+                    let isEnabled = option != .favorites || eligibleFavoriteCount > 0
 
                     Button {
                         verseSource = option
@@ -194,7 +194,13 @@ private struct WordSearchSetupControls: View {
                 }
             }
 
-            if verseSource == .favorites && !hasFavorites {
+            if verseSource == .favorites {
+                Text("Eligible saved verses: (eligibleFavoriteCount)")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            if verseSource == .favorites && eligibleFavoriteCount == 0 {
                 Label("Save a verse as a favorite to use it here.", systemImage: "heart")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
