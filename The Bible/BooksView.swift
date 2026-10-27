@@ -108,6 +108,7 @@ struct StudyBibleEntryCard: View {
             .heroCardSurface()
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("studyBibleEntryCard")
         .accessibilityHint("Opens book overviews and chapter insights")
     }
 }
@@ -411,6 +412,7 @@ private struct StudyBibleHeader: View {
 private struct StudyBookTile: View {
     let book: Book
     let onSelect: ((Book) -> Void)?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private var verseCount: Int {
         book.chapters.reduce(into: 0) { count, chapter in
@@ -435,6 +437,7 @@ private struct StudyBookTile: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("studyBookTile-\(book.name)")
         .accessibilityLabel("\(book.name), \(chapterCountLabel), \(verseCount) verses")
     }
 
@@ -447,8 +450,6 @@ private struct StudyBookTile: View {
             Text(book.name)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.primary)
-                .lineLimit(2, reservesSpace: true)
-                .minimumScaleFactor(0.75)
                 .multilineTextAlignment(.leading)
 
             Spacer(minLength: 0)
@@ -462,8 +463,7 @@ private struct StudyBookTile: View {
         }
         .frame(
             maxWidth: .infinity,
-            minHeight: 154,
-            maxHeight: 154,
+            minHeight: dynamicTypeSize.isAccessibilitySize ? nil : 154,
             alignment: .topLeading
         )
         .padding(12)
@@ -507,6 +507,7 @@ struct StudyBookView: View {
             }
             .padding()
         }
+        .accessibilityIdentifier("studyBookScrollView")
         // Once most of the full header has scrolled out of view, a compact bar takes
         // its place. It floats over the content rather than insetting it, so showing
         // or hiding it never shifts the scroll position.
@@ -647,8 +648,31 @@ private struct StudyBookHeader: View {
 struct CompactStudyBookHeader: View {
     let bookName: String
     let onOpenOverview: () -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 10) {
+                    title
+                    overviewButton
+                }
+            } else {
+                HStack(spacing: 10) {
+                    title
+                    Spacer(minLength: 8)
+                    overviewButton
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .heroCardSurface()
+        .accessibilityIdentifier("compactStudyBookHeader")
+    }
+
+    private var title: some View {
         HStack(spacing: 10) {
             if let theme = BookChapterTheme.themes[bookName] {
                 BookChapterEmblem(theme: theme, size: 28)
@@ -656,24 +680,19 @@ struct CompactStudyBookHeader: View {
 
             Text(bookName)
                 .font(.system(.title3, design: .serif, weight: .bold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
                 .accessibilityAddTraits(.isHeader)
-
-            Spacer(minLength: 8)
-
-            Button("View \(bookName) Overview", systemImage: "book.closed.fill", action: onOpenOverview)
-                .font(.subheadline.weight(.semibold))
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .controlSize(.small)
-                .accessibilityLabel("View \(bookName) Overview")
-                .accessibilityHint("Opens the book overview")
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .heroCardSurface()
+    }
+
+    private var overviewButton: some View {
+        Button("View \(bookName) Overview", systemImage: "book.closed.fill", action: onOpenOverview)
+            .font(.subheadline.weight(.semibold))
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .controlSize(.small)
+            .accessibilityIdentifier("compactStudyBookOverviewButton")
+            .accessibilityLabel("View \(bookName) Overview")
+            .accessibilityHint("Opens the book overview")
     }
 }
 

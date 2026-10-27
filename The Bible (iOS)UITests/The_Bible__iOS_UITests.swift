@@ -112,6 +112,95 @@ final class The_Bible__iOS_UITests: XCTestCase {
     }
 
     @MainActor
+    func testAccessibilityTextSizeUsesSingleColumnHomeOnIPad() throws {
+        try XCTSkipUnless(
+            UIDevice.current.userInterfaceIdiom == .pad,
+            "This regression test exercises the iPad dashboard fallback."
+        )
+        launchAtAccessibilityTextSize()
+
+        let compactContent = app.descendants(matching: .any)["homeCompactContent"]
+        XCTAssertTrue(compactContent.waitForExistence(timeout: 8))
+        XCTAssertFalse(
+            app.descendants(matching: .any)["homeDashboardContent"].exists,
+            "Home must use its single-column layout at accessibility text sizes."
+        )
+    }
+
+    @MainActor
+    func testAccessibilityTextSizeKeepsBookStudyContentReachable() throws {
+        launchAtAccessibilityTextSize()
+
+        tapFloatingTab(named: "Bible")
+        let entryCard = app.descendants(matching: .any)["studyBibleEntryCard"]
+        XCTAssertTrue(entryCard.waitForExistence(timeout: 8))
+        entryCard.tap()
+
+        let studyView = app.otherElements["studyBibleView"]
+        XCTAssertTrue(studyView.waitForExistence(timeout: 8))
+
+        let searchField = app.searchFields["Find a book"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("Song of Solomon")
+
+        let tile = app.descendants(matching: .any)["studyBookTile-Song of Solomon"]
+        XCTAssertTrue(tile.waitForExistence(timeout: 5))
+        XCTAssertTrue(tile.isHittable, "The full book title must remain tappable at accessibility text sizes.")
+        tile.tap()
+
+        let studyScrollView = app.scrollViews["studyBookScrollView"]
+        XCTAssertTrue(studyScrollView.waitForExistence(timeout: 8))
+        for _ in 0..<3 where !app.buttons["compactStudyBookOverviewButton"].exists {
+            studyScrollView.swipeUp()
+        }
+
+        let overviewButton = app.buttons["compactStudyBookOverviewButton"]
+        XCTAssertTrue(overviewButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(overviewButton.isHittable, "The compact overview action must remain tappable at accessibility text sizes.")
+        assertFullyContained(overviewButton)
+    }
+
+    @MainActor
+    func testAccessibilityTextSizeKeepsGameScoreboardReachableOnIPad() throws {
+        try XCTSkipUnless(
+            UIDevice.current.userInterfaceIdiom == .pad,
+            "This regression test exercises the iPad game scoreboard."
+        )
+        launchAtAccessibilityTextSize()
+
+        tapFloatingTab(named: "Games")
+        let bookOrder = app.descendants(matching: .any)["gameRoute-bookOrder"]
+        XCTAssertTrue(bookOrder.waitForExistence(timeout: 8))
+        bookOrder.tap()
+
+        let setup = app.scrollViews["bookOrderSetupScrollView"]
+        XCTAssertTrue(setup.waitForExistence(timeout: 8))
+
+        let startGame = app.buttons["Start Game"].firstMatch
+        for _ in 0..<3 where !startGame.isHittable {
+            setup.swipeUp()
+        }
+        XCTAssertTrue(startGame.isHittable, "The vertically reflowed Start Game action must remain reachable.")
+        startGame.tap()
+
+        for title in ["Correct", "Attempts", "Accuracy", "Streak"] {
+            let metric = app.descendants(matching: .any)[title].firstMatch
+            XCTAssertTrue(metric.waitForExistence(timeout: 8), "Expected the \(title) metric to be visible.")
+            assertFullyContained(metric)
+        }
+    }
+
+    @MainActor
+    private func launchAtAccessibilityTextSize() {
+        app.launchArguments.append(contentsOf: [
+            "-UIPreferredContentSizeCategoryName",
+            "UICTContentSizeCategoryAccessibilityXXXL"
+        ])
+        app.launch()
+    }
+
+    @MainActor
     private func tapFloatingTab(named name: String) {
         let tab = app.buttons[name].firstMatch
         XCTAssertTrue(tab.waitForExistence(timeout: 5), "Expected the \(name) tab to exist")

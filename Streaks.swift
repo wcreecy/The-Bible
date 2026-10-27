@@ -113,7 +113,7 @@ private struct StreakHeadline: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(current, format: .number)
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
+                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
                         .monospacedDigit()
                         .contentTransition(.numericText(value: Double(current)))
                         .foregroundStyle(current > 0 ? Color.orange : Color.secondary)

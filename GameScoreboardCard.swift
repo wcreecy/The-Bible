@@ -6,6 +6,7 @@ struct GameScoreboardCard: View {
         case dashboard
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private var stats = GameStats.shared
 
     let currentCorrect: Int
@@ -49,26 +50,48 @@ struct GameScoreboardCard: View {
 
     private func dashboardScoreboard(allTime: GameStats.ScorecardStats) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label("This Game", systemImage: "chart.bar.fill")
-                    .font(.headline.weight(.bold))
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    dashboardTitle
+                    Spacer()
+                    allTimeSummary(allTime)
+                }
 
-                Spacer()
-
-                Text("All time: \(allTime.correct)/\(allTime.attempts)  •  Best streak \(allTime.bestStreak)")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    dashboardTitle
+                    allTimeSummary(allTime)
+                }
             }
 
-            HStack(spacing: 10) {
-                dashboardMetric(title: "Correct", value: "\(currentCorrect)", systemImage: "checkmark.circle.fill", tint: .green)
-                dashboardMetric(title: "Attempts", value: "\(currentAnswered)", systemImage: "scope", tint: .blue)
-                dashboardMetric(title: "Accuracy", value: percentString(correct: currentCorrect, answered: currentAnswered), systemImage: "percent", tint: .purple)
-                dashboardMetric(title: "Streak", value: "\(currentStreak)", systemImage: "flame.fill", tint: .orange)
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 10) {
+                    dashboardMetric(title: "Correct", value: "\(currentCorrect)", systemImage: "checkmark.circle.fill", tint: .green)
+                    dashboardMetric(title: "Attempts", value: "\(currentAnswered)", systemImage: "scope", tint: .blue)
+                    dashboardMetric(title: "Accuracy", value: percentString(correct: currentCorrect, answered: currentAnswered), systemImage: "percent", tint: .purple)
+                    dashboardMetric(title: "Streak", value: "\(currentStreak)", systemImage: "flame.fill", tint: .orange)
+                }
+            } else {
+                HStack(spacing: 10) {
+                    dashboardMetric(title: "Correct", value: "\(currentCorrect)", systemImage: "checkmark.circle.fill", tint: .green)
+                    dashboardMetric(title: "Attempts", value: "\(currentAnswered)", systemImage: "scope", tint: .blue)
+                    dashboardMetric(title: "Accuracy", value: percentString(correct: currentCorrect, answered: currentAnswered), systemImage: "percent", tint: .purple)
+                    dashboardMetric(title: "Streak", value: "\(currentStreak)", systemImage: "flame.fill", tint: .orange)
+                }
             }
         }
         .padding(16)
         .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+    }
+
+    private var dashboardTitle: some View {
+        Label("This Game", systemImage: "chart.bar.fill")
+            .font(.headline.weight(.bold))
+    }
+
+    private func allTimeSummary(_ allTime: GameStats.ScorecardStats) -> some View {
+        Text("All time: \(allTime.correct)/\(allTime.attempts)  •  Best streak \(allTime.bestStreak)")
+            .font(.caption.weight(.medium))
+            .foregroundStyle(.secondary)
     }
 
     private func dashboardMetric(

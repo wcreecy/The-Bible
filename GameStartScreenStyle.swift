@@ -144,6 +144,7 @@ struct GameExperienceDetails {
 
 struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let tint: Color
     let experienceLevel: Binding<GameExperienceLevel>?
@@ -184,7 +185,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         VStack(spacing: 16) {
             preview
 
-            if horizontalSizeClass == .regular {
+            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                 HStack(alignment: .top, spacing: 16) {
                     GameSplashConfigurationCard(minimumHeight: 360) {
                         if let experienceLevel {

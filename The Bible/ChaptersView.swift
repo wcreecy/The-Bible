@@ -163,9 +163,6 @@ private struct ChapterNumberButton: View {
                     Text("\(number)")
                         .font(.body.weight(.semibold))
                         .monospacedDigit()
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.5)
-                        .allowsTightening(true)
                         .foregroundStyle(isCompleted ? Color.green : Color.primary)
                         .padding(.horizontal, 2)
                 }

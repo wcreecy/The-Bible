@@ -45,6 +45,7 @@ struct HomeView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private var isEvening: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
@@ -661,7 +662,9 @@ struct HomeView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let usesDashboard = isPad && proxy.size.width >= 700
+            // Three narrow dashboard columns cannot preserve readable card content at
+            // accessibility text sizes, so use the already-supported single-column flow.
+            let usesDashboard = isPad && proxy.size.width >= 700 && !dynamicTypeSize.isAccessibilitySize
             let horizontalPadding: CGFloat = usesDashboard ? 24 : 16
             let contentWidth = max(0, proxy.size.width - (horizontalPadding * 2))
 
@@ -682,14 +685,16 @@ struct HomeView: View {
                 },
                 dashboard: {
                     dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
+                        .accessibilityIdentifier("homeDashboardContent")
                 },
                 compact: {
                     compactHomeContent
+                        .accessibilityIdentifier("homeCompactContent")
                 }
             )
         }
         .onGeometryChange(for: Bool.self) { proxy in
-            isPad && proxy.size.width >= 700
+            isPad && proxy.size.width >= 700 && !dynamicTypeSize.isAccessibilitySize
         } action: { showsDashboard in
             isShowingDashboard = showsDashboard
             // Edit Home arranges the dashboard; leave it if the dashboard goes away.

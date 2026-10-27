@@ -92,15 +92,16 @@ struct PrayerTimerLiveActivity: Widget {
             let tint = timerTintColor(context)
             VStack(spacing: 10) {
                 if context.state.status != "Focus" {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(context.attributes.sessionName)
-                            .font(.headline)
-                            .foregroundStyle(tint)
-                        Spacer()
-                        if context.state.total > 0 {
-                            ProgressView(value: progress(context))
-                                .tint(tint)
-                                .frame(width: 90)
+                    ViewThatFits(in: .horizontal) {
+                        HStack(alignment: .firstTextBaseline) {
+                            sessionName(context, tint: tint)
+                            Spacer()
+                            progressView(context, tint: tint)
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            sessionName(context, tint: tint)
+                            progressView(context, tint: tint)
                         }
                     }
                 }
@@ -223,6 +224,27 @@ struct PrayerTimerLiveActivity: Widget {
                     Image(systemName: "timer")
                 }
             }
+        }
+    }
+
+    private func sessionName(
+        _ context: ActivityViewContext<PrayerTimerAttributes>,
+        tint: Color
+    ) -> some View {
+        Text(context.attributes.sessionName)
+            .font(.headline)
+            .foregroundStyle(tint)
+    }
+
+    @ViewBuilder
+    private func progressView(
+        _ context: ActivityViewContext<PrayerTimerAttributes>,
+        tint: Color
+    ) -> some View {
+        if context.state.total > 0 {
+            ProgressView(value: progress(context))
+                .tint(tint)
+                .frame(width: 90)
         }
     }
 
