@@ -23,6 +23,40 @@ func bookRetellingTitle(for bookName: String) -> String {
         "Ecclesiastes: Searching for Meaning"
     case "Song of Solomon":
         "Song of Solomon: A Celebration of Love"
+    case "Isaiah":
+        "Isaiah: Judgment, Hope, and the Coming King"
+    case "Jeremiah":
+        "Jeremiah: A Prophet Through Judah’s Fall"
+    case "Lamentations":
+        "Lamentations: Grief After Jerusalem’s Fall"
+    case "Ezekiel":
+        "Ezekiel: God’s Glory, Judgment, and Restoration"
+    case "Daniel":
+        "Daniel: Faithful in Exile"
+    case "Hosea":
+        "Hosea: Love That Calls Us Home"
+    case "Joel":
+        "Joel: Return, Restore, and Renew"
+    case "Amos":
+        "Amos: Let Justice Roll Down"
+    case "Obadiah":
+        "Obadiah: Pride Falls, Justice Comes"
+    case "Jonah":
+        "Jonah: Mercy for an Enemy"
+    case "Micah":
+        "Micah: Justice, Mercy, and Humility"
+    case "Nahum":
+        "Nahum: Justice for the Oppressed"
+    case "Habakkuk":
+        "Habakkuk: Trusting God in the Questions"
+    case "Zephaniah":
+        "Zephaniah: Judgment and Joyful Restoration"
+    case "Haggai":
+        "Haggai: Rebuild With God"
+    case "Zechariah":
+        "Zechariah: Return, Rebuild, and Hope"
+    case "Malachi":
+        "Malachi: Return to Faithful Love"
     default:
         "The Story of \(bookName)"
     }

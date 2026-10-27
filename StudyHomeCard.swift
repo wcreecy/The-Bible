@@ -337,7 +337,7 @@ private struct StudyBookStoryPrompt: View {
 
     private var bookStoryPrompt: String {
         switch bookName {
-        case "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon":
+        case "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi":
             "New to \(bookName)? Explore its guide."
         default:
             "New to \(bookName)? Read its story."
