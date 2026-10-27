@@ -17,6 +17,8 @@ func bookRetellingTitle(for bookName: String) -> String {
         "Job: Wrestling with Suffering"
     case "Psalms":
         "Psalms: Prayers for Every Season"
+    case "Proverbs":
+        "Proverbs: Wisdom for Daily Life"
     default:
         "The Story of \(bookName)"
     }
