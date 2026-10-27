@@ -15,6 +15,13 @@ struct HighlightsLibrary {
     let totalCount: Int
     let sections: [Section]
 
+    static let empty = HighlightsLibrary(totalCount: 0, sections: [])
+
+    private init(totalCount: Int, sections: [Section]) {
+        self.totalCount = totalCount
+        self.sections = sections
+    }
+
     init(
         notes: [VerseNote],
         color: VerseHighlightColor?,
@@ -83,20 +90,13 @@ struct SavedHighlightsView: View {
     @State private var editingNote: VerseNote?
     @State private var removedHighlight: RemovedHighlight?
     @State private var isShowingRemovalToast = false
+    @State private var library = HighlightsLibrary.empty
 
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
-        let library = HighlightsLibrary(
-            notes: notes,
-            color: colorFilter,
-            searchText: searchText,
-            sort: sortOrder,
-            bookNames: bookNames
-        )
-
         Group {
             if library.totalCount == 0 {
                 ContentUnavailableView(
@@ -159,6 +159,22 @@ struct SavedHighlightsView: View {
             tint: .secondary,
             actionTitle: String(localized: "Undo"),
             action: undoRemoval
+        )
+        .onAppear { refreshLibrary() }
+        .onChange(of: notes.count) { refreshLibrary() }
+        .onChange(of: colorFilter?.rawValue) { refreshLibrary() }
+        .onChange(of: searchText) { refreshLibrary() }
+        .onChange(of: sortOrder.rawValue) { refreshLibrary() }
+        .onChange(of: bookNames) { refreshLibrary() }
+    }
+
+    private func refreshLibrary() {
+        library = HighlightsLibrary(
+            notes: notes,
+            color: colorFilter,
+            searchText: searchText,
+            sort: sortOrder,
+            bookNames: bookNames
         )
     }
 
@@ -280,6 +296,7 @@ struct SavedHighlightsView: View {
         note.highlightColor = color.rawValue
         note.updatedAt = Date()
         modelContext.saveLoggingErrors()
+        refreshLibrary()
         Haptics.selection()
     }
 
@@ -293,6 +310,7 @@ struct SavedHighlightsView: View {
             modelContext.delete(note)
         }
         modelContext.saveLoggingErrors()
+        refreshLibrary()
         Haptics.selection()
         isShowingRemovalToast = true
     }
@@ -307,6 +325,7 @@ struct SavedHighlightsView: View {
             return
         }
         modelContext.saveLoggingErrors()
+        refreshLibrary()
         removedHighlight = nil
         Haptics.success()
     }

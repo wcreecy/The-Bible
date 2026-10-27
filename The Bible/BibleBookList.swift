@@ -7,13 +7,22 @@ enum BibleNavigationReference {
         _ text: String,
         in books: [Book]
     ) -> (reference: ScriptureRef, book: Book, chapter: Chapter)? {
-        guard let reference = BibleReferenceLinker.parse(text),
-              let book = books.first(where: { $0.name == reference.bookName }),
-              let chapter = book.chapters.first(where: { $0.number == reference.chapter }),
-              chapter.verses.contains(where: { $0.number == reference.startVerse }) else {
+        // `BibleReferenceParser` understands both chapter-only input ("Psalms 1") and
+        // verse input with common abbreviations ("Ps 1:7").
+        guard let parsed = BibleReferenceParser.reference(for: text, in: books) else {
             return nil
         }
-        return (reference, book, chapter)
+        let startVerse = parsed.verse?.number ?? parsed.chapter.verses.first?.number ?? 1
+        return (
+            reference: ScriptureRef(
+                bookName: parsed.book.name,
+                chapter: parsed.chapter.number,
+                startVerse: startVerse,
+                endVerse: nil
+            ),
+            book: parsed.book,
+            chapter: parsed.chapter
+        )
     }
 }
 

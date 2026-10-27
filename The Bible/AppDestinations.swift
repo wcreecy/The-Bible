@@ -28,6 +28,9 @@ extension View {
                         },
                         onBookSelected: { selectedBook in
                             coordinator.showChapters(for: selectedBook)
+                        },
+                        onReferenceSelected: { book, chapter, verse in
+                            coordinator.push(.reader(book: book, chapter: chapter, startVerse: verse))
                         }
                     )
                         .id("\(book.name)-\(chapter.number)-\(startVerse)")
@@ -44,4 +47,3 @@ extension View {
             }
     }
 }
-

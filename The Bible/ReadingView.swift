@@ -18,6 +18,8 @@ struct ReadingView: View {
     /// Called with the book currently shown, which can differ from `book` after swiping chapters.
     let onNavigateBack: ((Book) -> Void)?
     let onBookSelected: ((Book) -> Void)?
+    /// Opens a typed chapter or verse from the book picker.
+    let onReferenceSelected: ((Book, Chapter, Int) -> Void)?
 
     // View model and stores
     @State private var pinnedStore: PinnedVerseStore
@@ -55,6 +57,7 @@ struct ReadingView: View {
     @State private var favoriteToastTint: Color = .pink
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isBookPickerPresented = false
+    @State private var bookPickerSearchText = ""
 
     init(
         book: Book,
@@ -62,7 +65,8 @@ struct ReadingView: View {
         startVerse: Int,
         onSearch: (() -> Void)? = nil,
         onNavigateBack: ((Book) -> Void)? = nil,
-        onBookSelected: ((Book) -> Void)? = nil
+        onBookSelected: ((Book) -> Void)? = nil,
+        onReferenceSelected: ((Book, Chapter, Int) -> Void)? = nil
     ) {
         self.book = book
         self.chapter = chapter
@@ -70,6 +74,7 @@ struct ReadingView: View {
         self.onSearch = onSearch
         self.onNavigateBack = onNavigateBack
         self.onBookSelected = onBookSelected
+        self.onReferenceSelected = onReferenceSelected
 
         // Create a single pinned store instance and share it with the view model
         let pinned = PinnedVerseStore()
@@ -187,26 +192,7 @@ struct ReadingView: View {
                     .accessibilityHint("Shows the list of Bible books")
                 }
             }
-            .sheet(isPresented: $isBookPickerPresented) {
-                NavigationStack {
-                    List(BibleData.books) { book in
-                        Button(book.name) {
-                            isBookPickerPresented = false
-                            onBookSelected?(book)
-                        }
-                        .foregroundStyle(.primary)
-                    }
-                    .navigationTitle("Choose a Book")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") {
-                                isBookPickerPresented = false
-                            }
-                        }
-                    }
-                }
-            }
+            .sheet(isPresented: $isBookPickerPresented) { bookPickerSheet }
             .onAppear {
                 viewModel.onAppear()
                 if focusReadingEnabled && !didAutoPresentFocusMode {
@@ -374,6 +360,17 @@ struct ReadingView: View {
 
     @ViewBuilder
     private var content: some View {
+        // Build this once per reader update instead of scanning every saved-data collection
+        // separately for every rendered verse.
+        let chapterStatus = ReadingChapterStatusIndex(
+            favorites: favorites,
+            notes: verseNotes,
+            bookmarks: bookmarks,
+            crossReferences: chapterRelatedVerses,
+            bookName: viewModel.currentBook.name,
+            chapterNumber: viewModel.currentChapter.number
+        )
+
         ZStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
@@ -413,10 +410,10 @@ struct ReadingView: View {
                             chapterNumber: chapterNumber,
                             isHighlighted: viewModel.highlightedVerse == verse.number,
                             isSelected: viewModel.selectedVerse == verse.number,
-                            isFavorite: isFavorited(verse),
-                            hasNote: hasNote(for: verse.number),
-                            isPinned: isBookmarked(verse),
-                            hasCrossReferences: chapterRelatedVerses.contains { $0.sourceVerse == verse.number },
+                            isFavorite: chapterStatus.favoriteVerseNumbers.contains(verse.number),
+                            hasNote: chapterStatus.hasNote(verse.number),
+                            isPinned: chapterStatus.bookmarkedVerseNumbers.contains(verse.number),
+                            hasCrossReferences: chapterStatus.crossReferenceVerseNumbers.contains(verse.number),
                             isRead: showsReadProgress &&
                                 seenVerseLocation == verseLocationKey &&
                                 seenVerseNumbers.contains(verse.number),
@@ -426,7 +423,7 @@ struct ReadingView: View {
                             showsNoteMarker: showsNoteMarkers,
                             showsCrossReferenceMarker: showsCrossReferenceMarkers,
                             showsReadProgress: showsReadProgress,
-                            savedHighlightColor: highlightColor(for: verse.number),
+                            savedHighlightColor: chapterStatus.highlightColor(for: verse.number),
                             readerFontSize: readerFontSize,
                             onVisibilityChange: { isVisible in
                                 viewModel.verseVisibilityChanged(readUpdate, isVisible: isVisible)
@@ -516,6 +513,71 @@ struct ReadingView: View {
         )
     }
 
+    private var bookPickerSheet: some View {
+        NavigationStack {
+            List {
+                if let reference = bookPickerReference {
+                    Section {
+                        Button {
+                            open(reference: reference)
+                        } label: {
+                            Label("Go to \(reference.reference.formattedReference)", systemImage: "arrow.right.circle.fill")
+                        }
+                    }
+                }
+
+                Section {
+                    ForEach(filteredBooksForPicker) { book in
+                        Button(book.name) {
+                            open(book: book)
+                        }
+                        .foregroundStyle(.primary)
+                    }
+                }
+            }
+            .searchable(text: $bookPickerSearchText, prompt: "Book or reference")
+            .onSubmit(of: .search) {
+                if let reference = bookPickerReference {
+                    open(reference: reference)
+                }
+            }
+            .navigationTitle("Choose a Book")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        isBookPickerPresented = false
+                    }
+                }
+            }
+        }
+    }
+
+    private var bookPickerReference: (reference: ScriptureRef, book: Book, chapter: Chapter)? {
+        BibleNavigationReference.resolve(bookPickerSearchText, in: BibleData.books)
+    }
+
+    private var filteredBooksForPicker: [Book] {
+        let query = bookPickerSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return BibleData.books }
+        if let reference = bookPickerReference { return [reference.book] }
+
+        let names = BibleBookNameMatcher.suggestions(for: query, in: BibleData.books.map(\.name))
+        return names.compactMap { name in BibleData.books.first(where: { $0.name == name }) }
+    }
+
+    private func open(book: Book) {
+        isBookPickerPresented = false
+        bookPickerSearchText = ""
+        onBookSelected?(book)
+    }
+
+    private func open(reference: (reference: ScriptureRef, book: Book, chapter: Chapter)) {
+        isBookPickerPresented = false
+        bookPickerSearchText = ""
+        onReferenceSelected?(reference.book, reference.chapter, reference.reference.startVerse)
+    }
+
     /// Hands read tracking to Focus Mode before its cover hides the reader's rows.
     private func presentFocusMode() {
         viewModel.setFocusModeActive(true)
@@ -557,20 +619,9 @@ struct ReadingView: View {
         seenVerseLocation = "\(bookName):\(chapterNumber)"
     }
 
-    /// A highlight on a single verse wins over one spanning several verses.
-    private func highlightColor(for verseNumber: Int) -> Color? {
-        notes(covering: verseNumber)
-            .first { !$0.highlightColor.isEmpty }
-            .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
-    }
-
-    /// The note to edit from this verse: one starting here, else one spanning it.
+    /// The editor needs the existing note for the selected verse only; row rendering uses
+    /// `ReadingChapterStatusIndex` instead of performing this lookup repeatedly.
     private func note(for verseNumber: Int) -> VerseNote? {
-        notes(covering: verseNumber).first
-    }
-
-    /// Notes covering the verse, those starting at it first, then the shortest span.
-    private func notes(covering verseNumber: Int) -> [VerseNote] {
         verseNotes
             .filter {
                 $0.covers(
@@ -583,23 +634,7 @@ struct ReadingView: View {
                 ($0.verseNumber == verseNumber ? 0 : 1, $0.lastVerseNumber - $0.verseNumber) <
                     ($1.verseNumber == verseNumber ? 0 : 1, $1.lastVerseNumber - $1.verseNumber)
             }
-    }
-
-    private func hasNote(for verseNumber: Int) -> Bool {
-        notes(covering: verseNumber).contains {
-            let title = $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
-            let content = $0.content.trimmingCharacters(in: .whitespacesAndNewlines)
-            let seededReference = $0.reference
-            return !title.isEmpty || (!content.isEmpty && content != seededReference)
-        }
-    }
-
-    private func isBookmarked(_ verse: Verse) -> Bool {
-        bookmarks.contains {
-            $0.bookName == viewModel.currentBook.name &&
-            $0.chapterNumber == viewModel.currentChapter.number &&
-            $0.verseNumber == verse.number
-        }
+            .first
     }
 
     // MARK: - Overlay Arrows
@@ -677,13 +712,58 @@ struct ReadingView: View {
         viewModel.markActivity()
     }
 
-    // MARK: - Favorites
+}
 
-    private func isFavorited(_ verse: Verse) -> Bool {
-        favorites.contains { fav in
-            fav.bookName == viewModel.currentBook.name &&
-            fav.chapterNumber == viewModel.currentChapter.number &&
-            fav.verseNumber == verse.number
+/// Chapter-local saved-data index for the reader. It replaces repeated whole-collection
+/// searches while keeping the existing marker and note precedence rules intact.
+private struct ReadingChapterStatusIndex {
+    let favoriteVerseNumbers: Set<Int>
+    let bookmarkedVerseNumbers: Set<Int>
+    let crossReferenceVerseNumbers: Set<Int>
+    private let notesByVerse: [Int: [VerseNote]]
+
+    init(
+        favorites: [Favorite],
+        notes: [VerseNote],
+        bookmarks: [Bookmark],
+        crossReferences: [ChapterRelatedVerse],
+        bookName: String,
+        chapterNumber: Int
+    ) {
+        favoriteVerseNumbers = Set(favorites.compactMap {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber ? $0.verseNumber : nil
+        })
+        bookmarkedVerseNumbers = Set(bookmarks.compactMap {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber ? $0.verseNumber : nil
+        })
+        crossReferenceVerseNumbers = Set(crossReferences.map(\.sourceVerse))
+
+        var indexedNotes: [Int: [VerseNote]] = [:]
+        for note in notes where note.bookName == bookName && note.chapterNumber == chapterNumber {
+            for verseNumber in note.verseNumber...note.lastVerseNumber {
+                indexedNotes[verseNumber, default: []].append(note)
+            }
         }
+        for (verseNumber, coveringNotes) in indexedNotes {
+            indexedNotes[verseNumber] = coveringNotes.sorted {
+                ($0.verseNumber == verseNumber ? 0 : 1, $0.lastVerseNumber - $0.verseNumber) <
+                    ($1.verseNumber == verseNumber ? 0 : 1, $1.lastVerseNumber - $1.verseNumber)
+            }
+        }
+        notesByVerse = indexedNotes
+    }
+
+    func hasNote(_ verseNumber: Int) -> Bool {
+        notesByVerse[verseNumber, default: []].contains {
+            let title = $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            let content = $0.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            return !title.isEmpty || (!content.isEmpty && content != $0.reference)
+        }
+    }
+
+    func highlightColor(for verseNumber: Int) -> Color? {
+        notesByVerse[verseNumber, default: []]
+            .first { !$0.highlightColor.isEmpty }
+            .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
     }
 }

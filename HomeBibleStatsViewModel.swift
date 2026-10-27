@@ -4,7 +4,12 @@ import Observation
 @MainActor
 @Observable
 final class HomeBibleStatsViewModel {
-    struct Snapshot {
+    struct Snapshot: Equatable {
+        struct TopBook: Equatable {
+            let book: String
+            let seconds: Int
+        }
+
         let todaySeconds: Int
         let yesterdaySeconds: Int
         let thisWeekSeconds: Int
@@ -17,7 +22,7 @@ final class HomeBibleStatsViewModel {
         let visitedCount: Int
         let totalChapters: Int
         let completionPercent: Int
-        let topBooks: [(book: String, seconds: Int)]
+        let topBooks: [TopBook]
         let maxTopSeconds: Int
         let topBooksScopeLabel: String
         let lastSessionSeconds: Int
@@ -55,7 +60,7 @@ final class HomeBibleStatsViewModel {
     var visitedCount: Int { snapshot.visitedCount }
     var totalChapters: Int { snapshot.totalChapters }
     var completionPercent: Int { snapshot.completionPercent }
-    var topBooks: [(book: String, seconds: Int)] { snapshot.topBooks }
+    var topBooks: [Snapshot.TopBook] { snapshot.topBooks }
     var maxTopSeconds: Int { snapshot.maxTopSeconds }
     var topBooksScopeLabel: String { snapshot.topBooksScopeLabel }
     var lastSessionSeconds: Int { snapshot.lastSessionSeconds }
@@ -113,7 +118,7 @@ final class HomeBibleStatsViewModel {
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
         }
-        let topBooks = Array(sortedTop.prefix(5)).map { (book: $0.key, seconds: $0.value) }
+        let topBooks = Array(sortedTop.prefix(5)).map { Snapshot.TopBook(book: $0.key, seconds: $0.value) }
 
         // Visited and completion (progress still from BibleStatsStore)
         let visited = snapshot.visitedChapters

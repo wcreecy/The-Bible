@@ -367,6 +367,14 @@ struct BibleSplitView: View {
                 onBookSelected: { newBook in
                     selectedBook = newBook
                     detailPath = bookPath(for: newBook.name)
+                },
+                onReferenceSelected: { book, chapter, verse in
+                    selectedBook = book
+                    detailPath.append(ReadingRoute(
+                        bookName: book.name,
+                        chapterNumber: chapter.number,
+                        verseNumber: verse
+                    ))
                 }
             )
             .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")

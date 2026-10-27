@@ -59,6 +59,10 @@ struct FavoritesView: View {
     @State private var removedFavorites: [RemovedFavorite] = []
     @State private var toastMessage: ToastMessage?
     @State private var persistenceFailure: PersistenceFailure?
+    /// Prepared only when saved content, search text, or sort order changes—not for every
+    /// unrelated SwiftUI body update (toolbar, toast, sheet presentation, and so on).
+    @State private var visibleFavoriteSections: [FavoriteSection] = []
+    @State private var visibleBookNames: [String] = []
 
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -87,7 +91,7 @@ struct FavoritesView: View {
                     notes: highlights,
                     searchText: searchText,
                     sortOrder: sortOrder,
-                    bookNames: bookNames
+                    bookNames: visibleBookNames
                 )
             }
         }
@@ -121,13 +125,15 @@ struct FavoritesView: View {
             action: toastAction
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
+        .onAppear { refreshVisibleContent() }
+        .onChange(of: favorites.count) { refreshVisibleContent() }
+        .onChange(of: highlights.count) { refreshVisibleContent() }
+        .onChange(of: searchText) { refreshVisibleContent() }
+        .onChange(of: sortOrder.rawValue) { refreshVisibleContent() }
     }
 
     @ViewBuilder
     private var favoritesContent: some View {
-        // Computed once per update and shared by the list and its delete handlers.
-        let sections = makeSections(from: filteredFavorites())
-
         Group {
             if favorites.isEmpty {
                 ContentUnavailableView(
@@ -135,14 +141,14 @@ struct FavoritesView: View {
                     systemImage: "heart",
                     description: Text("Long-press a verse and tap the heart to save it here.")
                 )
-            } else if sections.isEmpty && isSearching {
+            } else if visibleFavoriteSections.isEmpty && isSearching {
                 ContentUnavailableView(
                     "No Matches",
                     systemImage: "magnifyingglass",
                     description: Text("Try a reference like “John 3” or words from the verse.")
                 )
             } else {
-                favoritesList(sections: sections)
+                favoritesList(sections: visibleFavoriteSections)
             }
         }
     }
@@ -272,12 +278,12 @@ struct FavoritesView: View {
 
     // MARK: - Filtering and grouping
 
-    private func filteredFavorites() -> [Favorite] {
+    private func filteredFavorites(bookNames: [String]) -> [Favorite] {
         guard let query = SavedVerseSearchQuery(searchText, bookNames: bookNames) else { return favorites }
         return favorites.filter { query.matches($0) }
     }
 
-    private func makeSections(from list: [Favorite]) -> [FavoriteSection] {
+    private func makeSections(from list: [Favorite], bookNames: [String]) -> [FavoriteSection] {
         guard !list.isEmpty else { return [] }
         switch sortOrder {
         case .recent:
@@ -302,9 +308,18 @@ struct FavoritesView: View {
     }
 
     /// Book names in Bible order, or the saved verses' own books while the Bible is loading.
-    private var bookNames: [String] {
+    private func makeBookNames() -> [String] {
         let names = BibleData.books.map(\.name)
         return names.isEmpty ? Array(Set(favorites.map(\.bookName) + highlights.map(\.bookName))).sorted() : names
+    }
+
+    private func refreshVisibleContent() {
+        let bookNames = makeBookNames()
+        visibleBookNames = bookNames
+        visibleFavoriteSections = makeSections(
+            from: filteredFavorites(bookNames: bookNames),
+            bookNames: bookNames
+        )
     }
 
     // MARK: - Actions

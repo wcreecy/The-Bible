@@ -368,17 +368,27 @@ struct The_Bible__iOS_Tests {
             Book(
                 name: "1 Corinthians",
                 chapters: [Chapter(number: 13, verses: [Verse(number: 1, text: "Though I speak")])]
+            ),
+            Book(
+                name: "Psalms",
+                chapters: [Chapter(number: 1, verses: [Verse(number: 7, text: "The way of the righteous")])]
             )
         ]
 
         let verseReference = BibleReferenceParser.reference(for: " Jn. 3:16 ", in: books)
         let chapterResults = BibleReferenceParser.results(for: "John 3", in: books)
         let numberedReference = BibleReferenceParser.reference(for: "1 Cor 13:1", in: books)
+        let chapterReference = BibleNavigationReference.resolve("Psalms 1", in: books)
+        let psalmReference = BibleNavigationReference.resolve("Ps 1:7", in: books)
 
         #expect(verseReference?.title == "John 3:16")
         #expect(verseReference?.verse?.text == "For God so loved")
         #expect(chapterResults?.map(\.verseNumber) == [16, 17])
         #expect(numberedReference?.title == "1 Corinthians 13:1")
+        #expect(chapterReference?.reference.startVerse == 7)
+        #expect(psalmReference?.book.name == "Psalms")
+        #expect(psalmReference?.chapter.number == 1)
+        #expect(psalmReference?.reference.startVerse == 7)
     }
 
     @Test
