@@ -39,7 +39,7 @@ struct NotesAndHighlightsView: View {
             }
         }
         .background(AppBackgroundView(tab: .notes))
-        .navigationTitle("Notes")
+        .navigationTitle("Notes (\(library.visibleItems.count))")
         .navigationDestination(isPresented: $isShowingCompactDetail) {
             // The editor opens over the detail page, so closing it returns here without a pop.
             NoteDetailCard(item: selectedItem, editAction: { isEditingSelection = true })
@@ -59,8 +59,12 @@ struct NotesAndHighlightsView: View {
                 NotesViewOptionsMenu(
                     sortField: sortFieldBinding,
                     sortAscending: $sortAscending,
+                    filters: $filters,
+                    tags: library.tags,
+                    showsFilters: horizontalSizeClass == .compact,
                     hasTags: !library.tags.isEmpty,
                     manageTagsAction: { isManagingTags = true },
+                    clearFiltersAction: { clearFilters() },
                     exportAction: {
                         exportDocument = NotesMarkdownDocument(text: NotesMarkdownExporter.markdown(for: library.allItems))
                     }
@@ -183,12 +187,10 @@ struct NotesAndHighlightsView: View {
 
     private func compactContent(_ library: NotesLibrary) -> some View {
         VStack(spacing: 12) {
-            filterBar(library)
             contextualTip
 
             notesList(
                 library,
-                newNoteAction: nil,
                 selectAction: { item in
                     selectedID = item.id
                     isShowingCompactDetail = true
@@ -207,7 +209,6 @@ struct NotesAndHighlightsView: View {
             ResizableNotesColumns(listColumnFraction: $listColumnFraction) {
                 notesList(
                     library,
-                    newNoteAction: { createNote(category: .personal) },
                     selectAction: { selectedID = $0.id }
                 )
                 .padding(.horizontal, 2)
@@ -254,17 +255,14 @@ struct NotesAndHighlightsView: View {
 
     private func notesList(
         _ library: NotesLibrary,
-        newNoteAction: (() -> Void)?,
         selectAction: @escaping (NotesListItem) -> Void
     ) -> some View {
         NotesListCard(
             sections: library.sections,
             selectedID: selectedID,
-            summaryTitle: library.summaryTitle,
             hasAnyNotes: !library.allItems.isEmpty,
             showsClearFiltersAction: filters.isActive,
             clearFiltersAction: clearFilters,
-            newNoteAction: newNoteAction,
             createFirstNoteAction: { createNote(category: .personal) },
             selectAction: selectAction,
             editAction: { item in

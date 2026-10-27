@@ -178,13 +178,9 @@ struct FilterChipLabel<Content: View>: View {
 struct NotesListCard: View {
     let sections: [NotesListSection]
     let selectedID: NotesListItem.ID?
-    /// Names the active filters and the count, so the list always says what it's showing.
-    let summaryTitle: String
     let hasAnyNotes: Bool
     let showsClearFiltersAction: Bool
     let clearFiltersAction: () -> Void
-    /// When provided, an inline "New Note" button appears in the list header.
-    let newNoteAction: (() -> Void)?
     let createFirstNoteAction: () -> Void
     let selectAction: (NotesListItem) -> Void
     let editAction: (NotesListItem) -> Void
@@ -193,18 +189,14 @@ struct NotesListCard: View {
     /// Each heading sits above its own card, which is sized to its notes.
     var body: some View {
         List {
-            Section {
-                summaryHeader
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
-
-                if sections.isEmpty {
+            if sections.isEmpty {
+                Section {
                     emptyState
                         .padding(.vertical, 40)
                         .listRowBackground(Color.clear)
                 }
+                .listRowSeparator(.hidden)
             }
-            .listRowSeparator(.hidden)
 
             ForEach(sections) { section in
                 Section {
@@ -240,25 +232,6 @@ struct NotesListCard: View {
         return shape
             .fill(.regularMaterial)
             .overlay(isSelected ? Color.accentColor.opacity(0.15) : Color.clear, in: shape)
-    }
-
-    private var summaryHeader: some View {
-        HStack(spacing: 8) {
-            Text(summaryTitle)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-
-            Spacer(minLength: 8)
-
-            if let newNoteAction {
-                Button("New Note", systemImage: "plus", action: newNoteAction)
-                    .font(.caption.weight(.semibold))
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func groupHeader(_ section: NotesListSection, title: String) -> some View {
@@ -408,16 +381,50 @@ struct NotesListRow: View {
     }
 }
 
-/// Sorting, tag management, and export in one toolbar menu.
+/// Sorting, filtering, tag management, and export in one toolbar menu.
 struct NotesViewOptionsMenu: View {
     @Binding var sortField: NotesTabSort
     @Binding var sortAscending: Bool
+
+    @Binding var filters: NotesFilters
+
+    let tags: [NotesLibrary.TagCount]
+    let showsFilters: Bool
     let hasTags: Bool
     let manageTagsAction: () -> Void
+    let clearFiltersAction: () -> Void
     let exportAction: () -> Void
 
     var body: some View {
         Menu {
+            if showsFilters {
+                Section("Filter Notes") {
+                    Picker("Note Type", selection: $filters.category) {
+                        ForEach(NotesFilter.allCases) { filter in
+                            Label(filter.title, systemImage: filter.systemImage)
+                                .tag(filter)
+                        }
+                    }
+                    .pickerStyle(.inline)
+
+                    if !tags.isEmpty || filters.tag != nil {
+                        Picker("Tag", selection: $filters.tag) {
+                            Text("All Tags").tag(String?.none)
+
+                            ForEach(tags) { tag in
+                                Text(verbatim: "#\(tag.tag)")
+                                    .tag(Optional(tag.tag))
+                            }
+                        }
+                        .pickerStyle(.inline)
+                    }
+
+                    if filters.isActive {
+                        Button("Clear Filters", systemImage: "arrow.counterclockwise", action: clearFiltersAction)
+                    }
+                }
+            }
+
             Section("Sort By") {
                 Picker("Sort By", selection: $sortField) {
                     ForEach(NotesTabSort.allCases) { option in
@@ -443,10 +450,10 @@ struct NotesViewOptionsMenu: View {
                 Button("Export All Notes…", systemImage: "square.and.arrow.up", action: exportAction)
             }
         } label: {
-            Image(systemName: "line.3.horizontal.decrease")
+            Image(systemName: showsFilters && filters.isActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
         }
-        .accessibilityLabel("Sort and export notes")
-        .accessibilityValue(Text(sortField.title))
+        .accessibilityLabel(showsFilters ? "Filter, sort, and export notes" : "Sort and export notes")
+        .accessibilityValue(showsFilters && filters.isActive ? Text("Filters active") : Text(sortField.title))
     }
 }
 
