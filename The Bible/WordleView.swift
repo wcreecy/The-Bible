@@ -21,8 +21,8 @@ struct WordleView: View {
 
         var detail: LocalizedStringResource {
             switch self {
-            case .daily: "One puzzle each day"
-            case .practice: "Unlimited games"
+            case .daily: "One puzzle on this device each day. Completion locks it until tomorrow and affects your Daily streak."
+            case .practice: "Unlimited new puzzles with a separate Practice streak."
             }
         }
 
@@ -1566,6 +1566,10 @@ private struct WordSetupModeCards: View {
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
             }
+
+            Label("Both modes include a shareable, spoiler-free result.", systemImage: "square.and.arrow.up")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 }
