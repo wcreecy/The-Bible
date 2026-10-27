@@ -5,6 +5,8 @@ struct BookStoryView: View {
     let bookName: String
     let story: [BibleBookStorySection]
 
+    @State private var canonicalBookNames: [String] = []
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
@@ -34,6 +36,11 @@ struct BookStoryView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(.top, 8)
+
+                BookStoryNavigation(
+                    bookName: bookName,
+                    canonicalBookNames: canonicalBookNames
+                )
             }
             // Keeps lines a comfortable reading length on iPad.
             .frame(maxWidth: 680, alignment: .leading)
@@ -45,6 +52,89 @@ struct BookStoryView: View {
         .navigationTitle(bookName)
         .navigationBarTitleDisplayMode(.inline)
         .scripturePassagePreviews()
+        .task {
+            guard canonicalBookNames.isEmpty else { return }
+            canonicalBookNames = await BibleRepository.shared.loadAllBooks().map(\.name)
+        }
+    }
+}
+
+/// Buttons that continue through book stories in the Bible's canonical order.
+private struct BookStoryNavigation: View {
+    let bookName: String
+    let canonicalBookNames: [String]
+
+    private var bookIndex: Int? {
+        canonicalBookNames.firstIndex(of: bookName)
+    }
+
+    private var previousBookName: String? {
+        guard let bookIndex, bookIndex > canonicalBookNames.startIndex else { return nil }
+        return canonicalBookNames[canonicalBookNames.index(before: bookIndex)]
+    }
+
+    private var nextBookName: String? {
+        guard let bookIndex, bookIndex < canonicalBookNames.index(before: canonicalBookNames.endIndex) else {
+            return nil
+        }
+        return canonicalBookNames[canonicalBookNames.index(after: bookIndex)]
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            if let previousBookName {
+                NavigationLink {
+                    BookStoryDestinationView(bookName: previousBookName)
+                } label: {
+                    Label("Previous: \(previousBookName)", systemImage: "chevron.left")
+                }
+                .accessibilityHint("Opens the story of \(previousBookName)")
+            }
+
+            Spacer(minLength: 0)
+
+            if let nextBookName {
+                NavigationLink {
+                    BookStoryDestinationView(bookName: nextBookName)
+                } label: {
+                    Label("Next: \(nextBookName)", systemImage: "chevron.right")
+                        .labelStyle(.titleAndIcon)
+                }
+                .accessibilityHint("Opens the story of \(nextBookName)")
+            }
+        }
+        .font(.subheadline.weight(.semibold))
+        .buttonStyle(.bordered)
+        .padding(.top, 12)
+    }
+}
+
+/// Loads an adjacent book's story before displaying it.
+private struct BookStoryDestinationView: View {
+    let bookName: String
+
+    @State private var story: [BibleBookStorySection]?
+    @State private var isLoading = true
+
+    var body: some View {
+        Group {
+            if isLoading {
+                ProgressView("Loading story…")
+            } else if let story {
+                BookStoryView(bookName: bookName, story: story)
+            } else {
+                ContentUnavailableView(
+                    "Story Unavailable",
+                    systemImage: "book.closed",
+                    description: Text("The story of \(bookName) could not be found.")
+                )
+            }
+        }
+        .task(id: bookName) {
+            isLoading = true
+            story = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)?.story
+            isLoading = false
+        }
     }
 }
 
