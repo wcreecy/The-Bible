@@ -133,14 +133,19 @@ struct CrossReferenceExplorerView: View {
 
                     Toggle("Saved Only", isOn: $isShowingSavedOnly)
                 } label: {
-                    Label("Filter connections", systemImage: "line.3.horizontal.decrease.circle")
+                    Label(
+                        "Filter connections",
+                        systemImage: hasActiveFilters
+                            ? "line.3.horizontal.decrease.circle.fill"
+                            : "line.3.horizontal.decrease.circle"
+                    )
                 }
             }
 
             if hasActiveFilters {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: clearFilters) {
-                        Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle.fill")
+                        Label("Clear Filters", systemImage: "arrow.counterclockwise")
                     }
                 }
             }
