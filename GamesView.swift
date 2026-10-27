@@ -532,57 +532,60 @@ private struct GameCollectionCard: View {
             }
             .padding(.bottom, 10)
 
-            ForEach(groups) { group in
-                VStack(alignment: .leading, spacing: 0) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(group.title)
-                            .font(.subheadline.weight(.bold))
-                        Text(group.detail)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.top, 10)
-                    .padding(.bottom, 6)
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(groups) { group in
+                    VStack(alignment: .leading, spacing: 0) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(group.title)
+                                .font(.subheadline.weight(.bold))
+                            Text(group.detail)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.bottom, 6)
 
-                    ForEach(group.routes) { route in
-                        VStack(spacing: 0) {
-                            GameNavigationRow(
-                                route: route,
-                                progress: progress(route),
-                                usesExpandedLayout: usesExpandedLayout,
-                                onSelect: { onSelect(route) }
-                            )
+                        ForEach(group.routes) { route in
+                            VStack(spacing: 0) {
+                                GameNavigationRow(
+                                    route: route,
+                                    progress: progress(route),
+                                    usesExpandedLayout: usesExpandedLayout,
+                                    onSelect: { onSelect(route) }
+                                )
 
-                            if route.id != group.routes.last?.id {
-                                Divider()
+                                if route.id != group.routes.last?.id {
+                                    Divider()
+                                }
                             }
                         }
                     }
+                    .gameCatalogSectionCard()
                 }
-            }
 
-            VStack(alignment: .leading, spacing: 0) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Review")
-                        .font(.subheadline.weight(.bold))
-                    Text("Practice questions you missed")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Review")
+                            .font(.subheadline.weight(.bold))
+                        Text("Practice questions you missed")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.bottom, 6)
 
-                if reviewIsAvailable {
-                    GameNavigationRow(
-                        route: .reviewRound,
-                        progress: .standard("Ready"),
-                        usesExpandedLayout: usesExpandedLayout,
-                        onSelect: { onSelect(.reviewRound) }
-                    )
-                } else {
-                    ReviewRoundUnavailableRow(usesExpandedLayout: usesExpandedLayout)
+                    if reviewIsAvailable {
+                        GameNavigationRow(
+                            route: .reviewRound,
+                            progress: .standard("Ready"),
+                            usesExpandedLayout: usesExpandedLayout,
+                            onSelect: { onSelect(.reviewRound) }
+                        )
+                    } else {
+                        ReviewRoundUnavailableRow(usesExpandedLayout: usesExpandedLayout)
+                    }
                 }
+                .gameCatalogSectionCard()
             }
+            .padding(.top, 10)
         }
         .frame(
             maxWidth: .infinity,
@@ -590,6 +593,24 @@ private struct GameCollectionCard: View {
         )
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
+    }
+}
+
+private struct GameCatalogSectionCardStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding(12)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+            }
+    }
+}
+
+private extension View {
+    func gameCatalogSectionCard() -> some View {
+        modifier(GameCatalogSectionCardStyle())
     }
 }
 
@@ -707,7 +728,7 @@ private struct GameNavigationRow: View {
     let onSelect: () -> Void
 
     var body: some View {
-        Group {
+        Button(action: onSelect) {
             if dynamicTypeSize.isAccessibilitySize {
                 GameAccessibilityRow(route: route, progress: progress)
             } else {
@@ -722,15 +743,9 @@ private struct GameNavigationRow: View {
         .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : (usesExpandedLayout ? 9 : 4))
         .contentShape(Rectangle())
         .foregroundStyle(.primary)
-        .onTapGesture {
-            onSelect()
-        }
+        .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("gameRoute-\(route.rawValue)")
-        .accessibilityAddTraits(.isButton)
-        .accessibilityAction {
-            onSelect()
-        }
     }
 }
 
