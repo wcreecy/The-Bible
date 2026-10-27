@@ -71,7 +71,7 @@ struct VerseActionMenu: View {
     @Query private var notes: [VerseNote]
     @Query private var userNotes: [UserNote]
     @Query private var bookmarks: [Bookmark]
-    @State private var pinnedStore = PinnedVerseStore()
+    @State private var pinnedStore = PinnedVerseStore.shared
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isShowingNoteEditor = false
     @State private var isShowingMentions = false
@@ -175,7 +175,7 @@ struct VerseActionMenu: View {
 
                 Button(action: togglePin) {
                     Image(systemName: isPinned ? "pin.fill" : "pin")
-                        .foregroundStyle(isPinned ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
+                        .foregroundStyle(isPinned ? AnyShapeStyle(.orange) : AnyShapeStyle(.primary))
                 }
                 .accessibilityLabel(isPinned ? "Unpin from Widget" : "Pin to Widget")
 
@@ -190,6 +190,7 @@ struct VerseActionMenu: View {
                 }
                 .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Share")
+
             }
             .font(.title3)
             .buttonStyle(.plain)

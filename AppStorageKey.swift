@@ -16,6 +16,7 @@ enum AppStorageKey {
     static let hasSeenFocusModeControlsHint = "hasSeenFocusModeControlsHint"
     static let showsVerseMarkers = "showVerseMarkers"
     static let showsBookmarkMarkers = "showBookmarkMarkers"
+    static let showsPinnedVerseMarker = "showPinnedVerseMarker"
     static let showsFavoriteMarkers = "showFavoriteMarkers"
     static let showsNoteMarkers = "showNoteMarkers"
     static let showsCrossReferenceMarkers = "showCrossReferenceMarkers"

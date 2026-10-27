@@ -192,8 +192,14 @@ struct BibleSplitView: View {
 
     private var sidebarSearchField: some View {
         HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
+            Button {
+                detailPath.append(SearchRoute())
+            } label: {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Search Bible text")
 
             TextField("Books or a reference", text: $sidebarSearch)
                 .textFieldStyle(.plain)

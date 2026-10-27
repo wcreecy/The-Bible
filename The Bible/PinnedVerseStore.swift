@@ -5,6 +5,9 @@ import Observation
 @MainActor
 @Observable
 final class PinnedVerseStore {
+    /// One shared observed state keeps the reader marker in sync with the verse action menu.
+    static let shared = PinnedVerseStore()
+
     var pinnedBookName: String = ""
     var pinnedChapterNumber: Int = 0
     var pinnedVerseNumber: Int = 0

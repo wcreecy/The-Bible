@@ -29,6 +29,7 @@ struct ReadingView: View {
     @AppStorage(AppStorageKey.readerFontSize) private var readerFontSize: Double = 17
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker: Bool = true
     @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers: Bool = true
@@ -77,7 +78,7 @@ struct ReadingView: View {
         self.onReferenceSelected = onReferenceSelected
 
         // Create a single pinned store instance and share it with the view model
-        let pinned = PinnedVerseStore()
+        let pinned = PinnedVerseStore.shared
         _pinnedStore = State(initialValue: pinned)
         _viewModel = State(initialValue: ReadingViewModel(
             book: book,
@@ -413,12 +414,18 @@ struct ReadingView: View {
                             isFavorite: chapterStatus.favoriteVerseNumbers.contains(verse.number),
                             hasNote: chapterStatus.hasNote(verse.number),
                             isPinned: chapterStatus.bookmarkedVerseNumbers.contains(verse.number),
+                            isCurrentlyPinned: pinnedStore.isPinned(
+                                bookName: bookName,
+                                chapter: chapterNumber,
+                                verse: verse.number
+                            ),
                             hasCrossReferences: chapterStatus.crossReferenceVerseNumbers.contains(verse.number),
                             isRead: showsReadProgress &&
                                 seenVerseLocation == verseLocationKey &&
                                 seenVerseNumbers.contains(verse.number),
                             showsMarkers: showsVerseMarkers,
                             showsBookmarkMarker: showsBookmarkMarkers,
+                            showsPinnedVerseMarker: showsPinnedVerseMarker,
                             showsFavoriteMarker: showsFavoriteMarkers,
                             showsNoteMarker: showsNoteMarkers,
                             showsCrossReferenceMarker: showsCrossReferenceMarkers,

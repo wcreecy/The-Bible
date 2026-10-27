@@ -6,6 +6,7 @@ enum ReaderDisplaySettings {
     static let showsVerseMarkersKey = AppStorageKey.showsVerseMarkers
     /// Individual marker visibility preferences. All are on by default.
     static let showsBookmarkMarkersKey = AppStorageKey.showsBookmarkMarkers
+    static let showsPinnedVerseMarkerKey = AppStorageKey.showsPinnedVerseMarker
     static let showsFavoriteMarkersKey = AppStorageKey.showsFavoriteMarkers
     static let showsNoteMarkersKey = AppStorageKey.showsNoteMarkers
     static let showsCrossReferenceMarkersKey = AppStorageKey.showsCrossReferenceMarkers
@@ -22,11 +23,13 @@ struct ReadingVerseRow: View {
     let isFavorite: Bool
     let hasNote: Bool
     let isPinned: Bool
+    let isCurrentlyPinned: Bool
     let hasCrossReferences: Bool
     let isRead: Bool
     /// Master switch for markers beside the reference.
     let showsMarkers: Bool
     let showsBookmarkMarker: Bool
+    let showsPinnedVerseMarker: Bool
     let showsFavoriteMarker: Bool
     let showsNoteMarker: Bool
     let showsCrossReferenceMarker: Bool
@@ -104,15 +107,14 @@ struct ReadingVerseRow: View {
 
     @ViewBuilder
     private var markers: some View {
-        if showsBookmarkMarker && isPinned {
-            Image(systemName: "bookmark.fill")
-                .foregroundStyle(Color.accentColor)
-                .accessibilityHidden(true)
-        }
-        if showsFavoriteMarker && isFavorite {
-            Image(systemName: "heart.fill")
-                .foregroundStyle(.red)
-                .accessibilityHidden(true)
+        if showsCrossReferenceMarker && hasCrossReferences {
+            Button(action: onOpenCrossReferences) {
+                Image(systemName: "arrow.triangle.branch")
+                    .foregroundStyle(.tint)
+            }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle().inset(by: -10))
+            .accessibilityHidden(true)
         }
         if showsNoteMarker && hasNote {
             Button(action: onOpenNote) {
@@ -124,14 +126,20 @@ struct ReadingVerseRow: View {
             .contentShape(Rectangle().inset(by: -10))
                 .accessibilityHidden(true)
         }
-        if showsCrossReferenceMarker && hasCrossReferences {
-            Button(action: onOpenCrossReferences) {
-                Image(systemName: "arrow.triangle.branch")
-                    .foregroundStyle(.tint)
-            }
-            .buttonStyle(.plain)
-            .contentShape(Rectangle().inset(by: -10))
-            .accessibilityHidden(true)
+        if showsFavoriteMarker && isFavorite {
+            Image(systemName: "heart.fill")
+                .foregroundStyle(.red)
+                .accessibilityHidden(true)
+        }
+        if showsBookmarkMarker && isPinned {
+            Image(systemName: "bookmark.fill")
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+        }
+        if showsPinnedVerseMarker && isCurrentlyPinned {
+            Image(systemName: "pin.fill")
+                .foregroundStyle(.orange)
+                .accessibilityHidden(true)
         }
     }
 
@@ -146,6 +154,7 @@ struct ReadingVerseRow: View {
         var statuses: [String] = []
         // Saved markers are always announced, even when hidden on screen.
         if isPinned { statuses.append("Bookmarked") }
+        if isCurrentlyPinned { statuses.append("Pinned") }
         if isFavorite { statuses.append("Favorite") }
         if hasNote { statuses.append("Has note") }
         if hasCrossReferences { statuses.append("Has cross references") }

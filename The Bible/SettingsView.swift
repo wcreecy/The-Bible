@@ -222,6 +222,7 @@ private struct SettingsReadingProgressSection: View {
     }
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
     @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker = true
     @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers = true
     @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers = true
     @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers = true
@@ -254,6 +255,7 @@ private struct SettingsReadingProgressSection: View {
             SettingsVerseMarkersCard(
                 showsVerseMarkers: $showsVerseMarkers,
                 showsBookmarkMarkers: $showsBookmarkMarkers,
+                showsPinnedVerseMarker: $showsPinnedVerseMarker,
                 showsFavoriteMarkers: $showsFavoriteMarkers,
                 showsNoteMarkers: $showsNoteMarkers,
                 showsCrossReferenceMarkers: $showsCrossReferenceMarkers
@@ -292,7 +294,7 @@ private struct SettingsReadingProgressSection: View {
             Text("Bible Reader")
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Choose which bookmark, favorite, note, and cross-reference icons appear beside each verse reference. Tap a note or cross-reference icon to open it.")
+                Text("Choose which bookmark, pinned verse, favorite, note, and cross-reference icons appear beside each verse reference. Tap a note or cross-reference icon to open it.")
                 Text("Read progress reflects your reading statistics and disappears when they are reset.")
                 Text("Printed King James Bibles set supplied words in italics, such as “ye *are* the branches.”")
             }
@@ -303,6 +305,7 @@ private struct SettingsReadingProgressSection: View {
 private struct SettingsVerseMarkersCard: View {
     @Binding private var showsVerseMarkers: Bool
     @Binding private var showsBookmarkMarkers: Bool
+    @Binding private var showsPinnedVerseMarker: Bool
     @Binding private var showsFavoriteMarkers: Bool
     @Binding private var showsNoteMarkers: Bool
     @Binding private var showsCrossReferenceMarkers: Bool
@@ -310,12 +313,14 @@ private struct SettingsVerseMarkersCard: View {
     init(
         showsVerseMarkers: Binding<Bool>,
         showsBookmarkMarkers: Binding<Bool>,
+        showsPinnedVerseMarker: Binding<Bool>,
         showsFavoriteMarkers: Binding<Bool>,
         showsNoteMarkers: Binding<Bool>,
         showsCrossReferenceMarkers: Binding<Bool>
     ) {
         _showsVerseMarkers = showsVerseMarkers
         _showsBookmarkMarkers = showsBookmarkMarkers
+        _showsPinnedVerseMarker = showsPinnedVerseMarker
         _showsFavoriteMarkers = showsFavoriteMarkers
         _showsNoteMarkers = showsNoteMarkers
         _showsCrossReferenceMarkers = showsCrossReferenceMarkers
@@ -327,7 +332,7 @@ private struct SettingsVerseMarkersCard: View {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Verse Markers")
-                        Text("Show your bookmark, favorites, notes, and cross-references beside each reference")
+                        Text("Show your bookmark, pinned verse, favorites, notes, and cross-references beside each reference")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -344,6 +349,9 @@ private struct SettingsVerseMarkersCard: View {
             VStack(spacing: 10) {
                 Toggle("Bookmark", isOn: $showsBookmarkMarkers)
                     .accessibilityIdentifier("bookmarkMarkerToggle")
+
+                Toggle("Pinned Verse", isOn: $showsPinnedVerseMarker)
+                    .accessibilityIdentifier("pinnedVerseMarkerToggle")
 
                 Toggle("Favorites", isOn: $showsFavoriteMarkers)
                     .accessibilityIdentifier("favoriteMarkerToggle")
@@ -660,6 +668,7 @@ private enum DeveloperSettingsReset {
             "readerFontSize": 17.0,
             ReaderDisplaySettings.showsReadProgressKey: false,
             ReaderDisplaySettings.showsVerseMarkersKey: true,
+            ReaderDisplaySettings.showsPinnedVerseMarkerKey: true,
             "focusReadingEnabled": false,
             "homeCustomizeButtonVisible": true,
             "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,
