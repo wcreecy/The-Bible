@@ -276,24 +276,42 @@ actor BibleSearchIndex {
         var results: [SearchResult] = []
         results.reserveCapacity(min(maxResults, 32))
 
-        for entryID in entryIDs.sorted() {
-            if Task.isCancelled { return [] }
-            let entry = index.entries[entryID]
-            if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
-                continue
+        // Prefix searches such as "the" can match thousands of verses. Sorting every
+        // matching ID just to display the first page is wasteful; entries are already in
+        // canonical order, so scan until the requested page is full for broad result sets.
+        if entryIDs.count > maxResults * 4 {
+            for (entryID, entry) in index.entries.enumerated() {
+                if Task.isCancelled { return [] }
+                guard entryIDs.contains(entryID) else { continue }
+                if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
+                    continue
+                }
+                append(entry, to: &results)
+                if results.count == maxResults { break }
             }
-
-            results.append(SearchResult(
-                bookIndex: entry.bookIndex,
-                bookName: entry.bookName,
-                chapterNumber: entry.chapterNumber,
-                verseNumber: entry.verseNumber,
-                verseText: entry.verseText,
-                isReferenceMatch: false
-            ))
-            if results.count == maxResults { break }
+        } else {
+            for entryID in entryIDs.sorted() {
+                if Task.isCancelled { return [] }
+                let entry = index.entries[entryID]
+                if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
+                    continue
+                }
+                append(entry, to: &results)
+                if results.count == maxResults { break }
+            }
         }
         return results
+    }
+
+    private func append(_ entry: Entry, to results: inout [SearchResult]) {
+        results.append(SearchResult(
+            bookIndex: entry.bookIndex,
+            bookName: entry.bookName,
+            chapterNumber: entry.chapterNumber,
+            verseNumber: entry.verseNumber,
+            verseText: entry.verseText,
+            isReferenceMatch: false
+        ))
     }
 
     private func matchingEntryIDs(for tokens: [String], in index: Index) -> Set<Int>? {

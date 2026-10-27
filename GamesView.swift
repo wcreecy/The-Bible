@@ -187,6 +187,14 @@ struct GamesView: View {
     /// Row progress text, rebuilt only when stats change. Building it reads about a hundred
     /// stored values, so it must not run on every redraw.
     @State private var progressByRoute: [GameRoute: GameProgress] = [:]
+    /// Recommendation inputs include decoded UserDefaults data, so cache the finished value
+    /// instead of rebuilding it whenever SwiftUI reevaluates this screen.
+    @State private var cachedRecommendation = GameRecommendation(
+        title: "Start with Quiz",
+        detail: "Build a baseline and get a personalized recommendation as you play.",
+        systemImage: "questionmark.circle.fill",
+        destination: .game(.quiz)
+    )
     @State private var verseToRememberOffset = 0
 
     private var todayChallengeStore: TodayChallengeStore { .shared }
@@ -239,7 +247,7 @@ struct GamesView: View {
         return hash
     }
 
-    private var recommendation: GameRecommendation {
+    private func makeRecommendation() -> GameRecommendation {
         if let challenge = todayChallengeStore.challenges.first(where: {
             $0.kind == .playGame && !$0.isCompleted && $0.gameName != nil
         }), let route = GameRoute.allCases.first(where: { $0.displayName == challenge.gameName }) {
@@ -353,9 +361,12 @@ struct GamesView: View {
             destination(for: route)
         }
         .onAppear {
-            refreshProgress()
             todayChallengeStore.refresh()
+            refreshProgress()
             openPendingGameIfNeeded()
+        }
+        .onChange(of: favorites.count) {
+            cachedRecommendation = makeRecommendation()
         }
         .onChange(of: AppRouter.shared.latest) { _, request in
             if request?.destination == .gameStart {
@@ -376,7 +387,7 @@ struct GamesView: View {
             reviewIsAvailable: !MissedGameQuestionStore.shared.reviewableGames().isEmpty,
             usesExpandedLayout: horizontalSizeClass == .regular,
             progress: { progressByRoute[$0] ?? .standard("Not played") },
-            recommendation: recommendation,
+            recommendation: cachedRecommendation,
             onSelect: present,
             onSelectRecommendation: selectRecommendation
         )
@@ -429,6 +440,7 @@ struct GamesView: View {
             progressByRoute = Dictionary(uniqueKeysWithValues: GameRoute.allCases.map { route in
                 (route, progressText(for: route, entry: statsByName[route.displayName], todayWordResult: todayWordResult))
             })
+            cachedRecommendation = makeRecommendation()
         }
     }
 

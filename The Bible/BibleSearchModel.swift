@@ -70,6 +70,9 @@ final class BibleSearchModel {
     }
 
     private(set) var results: [SearchResult] = []
+    /// Highlighting every visible row during `body` is expensive for broad searches. Store
+    /// the completed display text with the search outcome and let row rendering be a lookup.
+    private var highlightedResults: [SearchResult.ID: AttributedString] = [:]
     private(set) var isSearching = false
     /// Whether matches beyond `maxResults` were left out.
     private(set) var hasMoreResults = false
@@ -121,6 +124,10 @@ final class BibleSearchModel {
     }
 
     func highlightedText(for item: SearchResult) -> AttributedString {
+        highlightedResults[item.id] ?? AttributedString(item.verseText)
+    }
+
+    private static func highlightedText(for item: SearchResult, tokens: [String]) -> AttributedString {
         var highlighted = AttributedString(item.verseText)
         guard !item.isReferenceMatch else { return highlighted }
 
@@ -148,6 +155,7 @@ final class BibleSearchModel {
 
         guard !BibleSearchTokenizer.tokens(in: query).isEmpty else {
             results = []
+            highlightedResults = [:]
             hasMoreResults = false
             isSearching = false
             return
@@ -166,7 +174,13 @@ final class BibleSearchModel {
                 await Self.search(query: query, scope: scope, scopeBookName: scopeBookName)
             }
             guard !Task.isCancelled, let self else { return }
+            let queryTokens = BibleSearchTokenizer.tokens(in: query)
             results = outcome.results
+            highlightedResults = Dictionary(
+                uniqueKeysWithValues: outcome.results.map { item in
+                    (item.id, Self.highlightedText(for: item, tokens: queryTokens))
+                }
+            )
             hasMoreResults = outcome.hasMore
             isSearching = false
         }
