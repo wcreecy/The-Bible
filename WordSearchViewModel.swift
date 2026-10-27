@@ -60,6 +60,8 @@ final class WordSearchViewModel {
     var pulseOn: Bool = false
     var roundOver: Bool = false
     var roundResult: RoundResult?
+    /// Shown when no eligible word-search puzzle could be generated.
+    var puzzleGenerationError: String?
     /// Seconds spent playing this round; pauses while the game is off screen.
     var elapsedSeconds: Int = 0
 
@@ -148,13 +150,17 @@ final class WordSearchViewModel {
     // MARK: - Intents
 
     func start() {
-        started = true
         newPuzzle()
+        started = puzzleGenerationError == nil
     }
 
     func newPuzzle() {
         hasRecordedCurrentRound = false
         generatePuzzle()
+        guard puzzleGenerationError == nil else {
+            stopTimer()
+            return
+        }
         startClock()
     }
 
@@ -163,6 +169,7 @@ final class WordSearchViewModel {
         stopTimer()
         roundOver = false
         showBlindWordList = false
+        puzzleGenerationError = nil
     }
 
     func reveal() {
@@ -364,6 +371,7 @@ final class WordSearchViewModel {
         didWin = false
         roundOver = false
         roundResult = nil
+        puzzleGenerationError = nil
     }
 
     private struct VerseChoice {
@@ -377,7 +385,7 @@ final class WordSearchViewModel {
         resetState()
 
         // Short verses can yield only a word or two, so try a few verses and keep the
-        // first that gives a full puzzle (or the best one found).
+        // first that gives a full puzzle (or the best non-empty one found).
         var best: (choice: VerseChoice, puzzle: (grid: [[Character]], placed: [WordSearchEngine.PlacedWord], target: [String]))?
         for _ in 0..<12 {
             guard let choice = nextVerse() else { break }
@@ -387,7 +395,10 @@ final class WordSearchViewModel {
             }
             if puzzle.target.count >= wordCountRange.lowerBound { break }
         }
-        guard let best else { return }
+        guard let best, !best.puzzle.target.isEmpty else {
+            puzzleGenerationError = "We couldn't make a word-search puzzle from the available verses. Please try again."
+            return
+        }
 
         verseRef = "\(best.choice.book) \(best.choice.chapter):\(best.choice.verse)"
         verseText = best.choice.text

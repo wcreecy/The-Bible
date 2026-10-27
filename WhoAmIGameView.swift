@@ -23,7 +23,7 @@ struct WhoAmIGameView: View {
         }
     }
 
-    private var promptIsName: Bool { vm.mode == .nameToClue }
+    private var promptIsName: Bool { vm.currentPromptIsName }
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(

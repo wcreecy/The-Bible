@@ -778,7 +778,12 @@ struct BeatTheClockGameView: View {
         if correct, !reviewQuestionIDs.isEmpty {
             MissedGameQuestionStore.shared.resolveReviewQuestion(game: .beatTheClock, questionID: currentQuestion.id)
         } else if !correct {
-            let scriptureReference = currentQuestion.scriptureReference.flatMap(BibleReferenceLinker.parse)
+            let scriptureReference: ScriptureRef?
+            if let referenceText = currentQuestion.scriptureReference {
+                scriptureReference = BibleReferenceLinker.parse(referenceText)
+            } else {
+                scriptureReference = nil
+            }
             MissedGameQuestionStore.shared.record(
                 game: .beatTheClock,
                 bookNames: scriptureReference.map { [$0.bookName] } ?? Array(currentQuestion.acceptableBooks),

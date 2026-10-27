@@ -129,10 +129,7 @@ final class WhoAmIGameViewModel {
     }
 
     private var reviewEntries: [Entry] {
-        entries.filter {
-            $0.questionMode == questionMode
-                && reviewQuestionIDs.contains(String(describing: $0.id))
-        }
+        entries.filter { reviewQuestionIDs.contains(String(describing: $0.id)) }
     }
 
     // Current round
@@ -144,7 +141,7 @@ final class WhoAmIGameViewModel {
 
     var promptTitle: String {
         guard let current else { return "" }
-        return mode == .clueToName ? current.clue : current.name
+        return mode(for: current) == .clueToName ? current.clue : current.name
     }
 
     var choices: [String] {
@@ -153,7 +150,13 @@ final class WhoAmIGameViewModel {
 
     var correctChoice: String {
         guard let current else { return "" }
-        return mode == .clueToName ? current.name : current.clue
+        return mode(for: current) == .clueToName ? current.name : current.clue
+    }
+
+    /// A review can contain misses from both directions, so it uses each entry's source mode.
+    var currentPromptIsName: Bool {
+        guard let current else { return mode == .nameToClue }
+        return mode(for: current) == .nameToClue
     }
 
     var isLastQuestion: Bool { questionQueue.isEmpty }
@@ -233,6 +236,14 @@ final class WhoAmIGameViewModel {
         }
     }
 
+    private func mode(for entry: Entry) -> Mode {
+        guard !reviewQuestionIDs.isEmpty else { return mode }
+        switch entry.questionMode {
+        case .factToPerson: return .clueToName
+        case .personToFact: return .nameToClue
+        }
+    }
+
     /// Removes a trailing description in parentheses: "Joseph (son of Jacob)" → ("Joseph", "son of Jacob").
     private static func split(_ name: String) -> (name: String, qualifier: String?) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -272,7 +283,7 @@ final class WhoAmIGameViewModel {
 
         let target = questionQueue.removeFirst()
         current = target
-        let correct = mode == .clueToName ? target.name : target.clue
+        let correct = mode(for: target) == .clueToName ? target.name : target.clue
         choiceEntries = (Array(target.incorrectAnswers.shuffled().prefix(3)) + [correct]).shuffled()
         questionNumber += 1
         selectedChoice = nil

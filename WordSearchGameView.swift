@@ -37,7 +37,26 @@ struct WordSearchGameView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(spacing: 16) {
-                    if !vm.started {
+                    if let puzzleGenerationError = vm.puzzleGenerationError {
+                        ContentUnavailableView(
+                            "Puzzle Unavailable",
+                            systemImage: "exclamationmark.triangle",
+                            description: Text(puzzleGenerationError)
+                        )
+
+                        Button("Try Again", systemImage: "arrow.clockwise") {
+                            vm.newPuzzle()
+                            if vm.puzzleGenerationError == nil {
+                                vm.started = true
+                            }
+                        }
+                        .buttonStyle(GameProminentButtonStyle(tint: .green))
+
+                        Button("Change Settings") {
+                            vm.changeSettings()
+                        }
+                        .buttonStyle(.bordered)
+                    } else if !vm.started {
                         WordSearchStartScreen(
                             difficulty: $vm.difficulty,
                             verseSource: $vm.verseSource,
