@@ -520,11 +520,6 @@ private struct GameCollectionCard: View {
             }
             .padding(.bottom, 10)
 
-            if reviewIsAvailable {
-                GameCollectionReviewRow(onSelect: { onSelect(.reviewRound) })
-                    .padding(.bottom, 2)
-            }
-
             ForEach(groups) { group in
                 VStack(alignment: .leading, spacing: 0) {
                     VStack(alignment: .leading, spacing: 2) {
@@ -553,6 +548,27 @@ private struct GameCollectionCard: View {
                     }
                 }
             }
+
+            if reviewIsAvailable {
+                VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Review")
+                            .font(.subheadline.weight(.bold))
+                        Text("Practice questions you missed")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 6)
+
+                    GameNavigationRow(
+                        route: .reviewRound,
+                        progress: .standard("Ready"),
+                        usesExpandedLayout: usesExpandedLayout,
+                        onSelect: { onSelect(.reviewRound) }
+                    )
+                }
+            }
         }
         .frame(
             maxWidth: .infinity,
@@ -563,37 +579,6 @@ private struct GameCollectionCard: View {
     }
 }
 
-private struct GameCollectionReviewRow: View {
-    let onSelect: () -> Void
-
-    var body: some View {
-        Button(action: onSelect) {
-            HStack(spacing: 10) {
-                Image(systemName: "arrow.clockwise.circle")
-                    .foregroundStyle(.secondary)
-
-                Text("Review missed questions")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                Spacer(minLength: 0)
-
-                Text("Ready")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-                    .accessibilityHidden(true)
-            }
-            .padding(.vertical, 9)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .buttonStyle(.plain)
-        .accessibilityHint("Opens Review Round")
-    }
-}
 
 private enum GameRecommendationDestination {
     case game(GameRoute)
@@ -768,11 +753,16 @@ private struct GameProgressLabel: View {
                 .font(font)
                 .foregroundStyle(.secondary)
         case .dailyWord(let word, let won):
-            Text(word)
-                .font(font)
-                .foregroundStyle(won ? .green : .red)
-                .strikethrough(!won)
-                .accessibilityLabel(won ? "Today's WORD: \(word), solved" : "Today's WORD: \(word), not solved")
+            HStack(spacing: 4) {
+                Text(word)
+                    .strikethrough(!won)
+
+                Image(systemName: won ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .accessibilityHidden(true)
+            }
+            .font(font)
+            .foregroundStyle(won ? .green : .red)
+            .accessibilityLabel(won ? "Today's WORD: \(word), solved" : "Today's WORD: \(word), not solved")
         }
     }
 }
