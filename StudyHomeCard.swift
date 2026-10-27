@@ -33,6 +33,7 @@ struct StudyHomeCard: View {
     @State private var insights: ChapterInsights?
     @State private var overview: BibleBookOverview?
     @State private var bookStory: [BibleBookStorySection] = []
+    @State private var bookTheme: String?
     @State private var isLoading = true
     @State private var isSummaryExpanded = false
     /// Heights of the summary at three lines and in full, to know whether it's cut off.
@@ -88,7 +89,11 @@ struct StudyHomeCard: View {
                 }
 
                 if chapterNumber == 1, !bookStory.isEmpty {
-                    StudyBookStoryPrompt(bookName: bookName, story: bookStory)
+                    StudyBookStoryPrompt(
+                        bookName: bookName,
+                        theme: bookTheme,
+                        story: bookStory
+                    )
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -292,6 +297,7 @@ struct StudyHomeCard: View {
         overview = nil
         insights = nil
         bookStory = []
+        bookTheme = nil
 
         // Only the no-history starting point introduces the book. A bookmark or featured
         // verse in chapter 1 still receives verse and chapter context.
@@ -306,6 +312,7 @@ struct StudyHomeCard: View {
                 storyOverview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
             }
             bookStory = storyOverview?.story ?? []
+            bookTheme = storyOverview?.overallTheme
         }
         if overview == nil {
             insights = await ChapterInsightsRepository.shared.insights(
@@ -317,30 +324,30 @@ struct StudyHomeCard: View {
     }
 }
 
-/// Invites someone studying a book's opening chapter to read its full narrative retelling.
+/// Pairs the book's overview theme with a concise link to its narrative retelling.
 private struct StudyBookStoryPrompt: View {
     let bookName: String
+    let theme: String?
     let story: [BibleBookStorySection]
 
     var body: some View {
-        NavigationLink {
-            BookStoryView(bookName: bookName, story: story)
-        } label: {
-            Label(bookStoryPrompt, systemImage: "book.pages")
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .buttonStyle(.bordered)
-        .tint(.teal)
-        .accessibilityHint("Opens a narrative retelling of \(bookName)")
-    }
+        VStack(alignment: .leading, spacing: 8) {
+            if let theme, !theme.isEmpty {
+                Text(theme)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-    private var bookStoryPrompt: String {
-        switch bookName {
-        case "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi":
-            "New to \(bookName)? Explore its guide."
-        default:
-            "New to \(bookName)? Read its story."
+            NavigationLink {
+                BookStoryView(bookName: bookName, story: story)
+            } label: {
+                Label("Explore \(bookName)", systemImage: "book.pages")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.bordered)
+            .tint(.teal)
+            .accessibilityHint("Opens a narrative retelling of \(bookName)")
         }
     }
 }
