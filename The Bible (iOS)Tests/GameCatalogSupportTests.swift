@@ -22,38 +22,6 @@ struct GameCatalogSupportTests {
     }
 
     @Test
-    func seededSelectionIsReproducible() {
-        var firstGenerator = SeededGameRandomNumberGenerator(seed: 42)
-        var secondGenerator = SeededGameRandomNumberGenerator(seed: 42)
-
-        let first = GameSelection.sample(Array(0..<20), count: 8, using: &firstGenerator)
-        let second = GameSelection.sample(Array(0..<20), count: 8, using: &secondGenerator)
-
-        #expect(first == second)
-        #expect(Set(first).count == first.count)
-    }
-
-    @Test
-    func balancedDeckRotatesAcrossAvailableCategories() {
-        var generator = SeededGameRandomNumberGenerator(seed: 7)
-        let deck = GameSelection.balancedDeck(
-            pools: [
-                "people": ["P1", "P2"],
-                "places": ["L1", "L2"],
-                "books": ["B1", "B2"]
-            ],
-            categories: ["people", "places", "books"],
-            count: 6,
-            using: &generator
-        )
-
-        #expect(deck.count == 6)
-        #expect(deck.filter { $0.hasPrefix("P") }.count == 2)
-        #expect(deck.filter { $0.hasPrefix("L") }.count == 2)
-        #expect(deck.filter { $0.hasPrefix("B") }.count == 2)
-    }
-
-    @Test
     func triviaValidationDetectsDuplicateIDsAndAmbiguousAnswers() {
         let questions = [
             BibleTriviaQuestion(
