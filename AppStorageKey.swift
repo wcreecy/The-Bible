@@ -86,6 +86,8 @@ enum AppStorageKey {
     static let wordleRecentDailyWords = "wordleRecentDailyWords"
     static let bookOrderDifficulty = "bookOrderDifficulty"
     static let bookOrderSource = "bookOrderSource"
+    static let gameRecommendationPromptDayV1 = "gameRecommendationPromptDayV1"
+    static let gameRecommendationPromptedRoutesV1 = "gameRecommendationPromptedRoutesV1"
 
     // One-time migrations and maintenance
     static let didMigrateReadingPositionV1 = "didMigrateReadingPositionV1"

@@ -190,12 +190,14 @@ struct GamesView: View {
     /// Recommendation inputs include decoded UserDefaults data, so cache the finished value
     /// instead of rebuilding it whenever SwiftUI reevaluates this screen.
     @State private var cachedRecommendation = GameRecommendation(
-        title: "Start with Quiz",
+        title: "Start with Trivia",
         detail: "Build a baseline and get a personalized recommendation as you play.",
-        systemImage: "questionmark.circle.fill",
-        destination: .game(.quiz)
+        systemImage: "questionmark.text.page.fill",
+        destination: .game(.trivia)
     )
     @State private var verseToRememberOffset = 0
+    @State private var recommendationPromptDayKey = ""
+    @State private var promptedGameRoutes: Set<String> = []
 
     private var todayChallengeStore: TodayChallengeStore { .shared }
 
@@ -250,7 +252,8 @@ struct GamesView: View {
     private func makeRecommendation() -> GameRecommendation {
         if let challenge = todayChallengeStore.challenges.first(where: {
             $0.kind == .playGame && !$0.isCompleted && $0.gameName != nil
-        }), let route = GameRoute.allCases.first(where: { $0.displayName == challenge.gameName }) {
+        }), let route = GameRoute.allCases.first(where: { $0.displayName == challenge.gameName }),
+           !isPrompted(route) {
             return GameRecommendation(
                 title: "Continue today’s challenge",
                 detail: challenge.title,
@@ -259,76 +262,84 @@ struct GamesView: View {
             )
         }
 
-        if let chapterStudyRecommendation {
+        let breakdown = GameStats.shared.breakdownSnapshot()
+        let hasPlayedAGame = breakdown.totalAnswered > 0
+
+        if hasPlayedAGame, loadTodayWordResult() == nil, !isPrompted(.wordle) {
             return GameRecommendation(
-                title: "Study \(chapterStudyRecommendation.bookName) \(chapterStudyRecommendation.chapterNumber)",
-                detail: "You missed \(chapterStudyRecommendation.missedCount) questions about this chapter. Explore its insights.",
-                systemImage: "text.book.closed",
-                destination: .chapterInsights(
-                    bookName: chapterStudyRecommendation.bookName,
-                    chapterNumber: chapterStudyRecommendation.chapterNumber
-                )
+                title: "Play today’s WORD",
+                detail: "Solve today’s five-letter Bible word.",
+                systemImage: "square.grid.3x3.fill",
+                destination: .game(.wordle)
             )
         }
 
-        if let studyRecommendation {
+        if !isPrompted(.reviewRound), !MissedGameQuestionStore.shared.reviewableGames().isEmpty {
             return GameRecommendation(
-                title: "Study \(studyRecommendation.bookName)",
-                detail: "You missed \(studyRecommendation.missedCount) questions about this book. Explore its overview.",
-                systemImage: "text.book.closed",
-                destination: .bookOverview(studyRecommendation.bookName)
+                title: "Review missed questions",
+                detail: "Practice questions you previously missed.",
+                systemImage: "arrow.clockwise.heart.fill",
+                destination: .game(.reviewRound)
             )
         }
 
-        if !favorites.isEmpty {
+        if hasPlayedAGame,
+           let route = leastPlayedRoute(in: breakdown.entries) {
             return GameRecommendation(
-                title: "Review saved verses",
-                detail: "Practice matching verses you’ve saved with their references.",
-                systemImage: "bookmark.fill",
-                destination: .game(.verseMatch)
+                title: "Try something new",
+                detail: "You haven’t played \(route.displayName) yet.",
+                systemImage: "sparkles",
+                destination: .game(route)
             )
         }
 
+        if hasPlayedAGame,
+           let name = GameStats.shared.lastPlayedGameName,
+           let route = GameRoute.allCases.first(where: { $0.displayName == name }),
+           !isPrompted(route) {
+            return GameRecommendation(
+                title: "Play \(route.displayName) again",
+                detail: "Continue with the game you played most recently.",
+                systemImage: "arrow.clockwise",
+                destination: .game(route)
+            )
+        }
+
+        if !isPrompted(.trivia) {
+            return GameRecommendation(
+                title: "Start with Trivia",
+                detail: "Build a baseline and get a personalized recommendation as you play.",
+                systemImage: "questionmark.text.page.fill",
+                destination: .game(.trivia)
+            )
+        }
+
+        let fallbackRoute = GameRoute.allCases.first(where: { route in
+            route != .reviewRound && !isPrompted(route)
+        }) ?? .trivia
         return GameRecommendation(
-            title: "Start with Quiz",
-            detail: "Build a baseline and get a personalized recommendation as you play.",
-            systemImage: "questionmark.circle.fill",
-            destination: .game(.quiz)
+            title: "Keep playing",
+            detail: "Try \(fallbackRoute.displayName) next.",
+            systemImage: fallbackRoute.systemImage,
+            destination: .game(fallbackRoute)
         )
     }
 
-    private var chapterStudyRecommendation: MissedGameQuestionStore.ChapterRecommendation? {
-        MissedGameQuestionStore.shared.mostMissedChapter()
-    }
-
-    private var studyRecommendation: (bookName: String, missedCount: Int)? {
-        let defaults = UserDefaults.standard
-        let answeredKeys = ["quizPerBookAnsweredMap", "versematchPerBookAnsweredMap"]
-        let correctKeys = ["quizPerBookCorrectMap", "versematchPerBookCorrectMap"]
-        var totals: [String: (answered: Int, correct: Int)] = [:]
-
-        for (answeredKey, correctKey) in zip(answeredKeys, correctKeys) {
-            let answered = (try? JSONDecoder().decode([String: Int].self, from: defaults.data(forKey: answeredKey) ?? Data())) ?? [:]
-            let correct = (try? JSONDecoder().decode([String: Int].self, from: defaults.data(forKey: correctKey) ?? Data())) ?? [:]
-            for (book, count) in answered {
-                totals[book, default: (0, 0)].answered += count
-                totals[book, default: (0, 0)].correct += correct[book] ?? 0
+    private func leastPlayedRoute(in entries: [GameStats.GameBreakdown.Entry]) -> GameRoute? {
+        guard let unplayedGame = entries.first(where: { entry in
+            guard entry.answered == 0,
+                  let route = GameRoute.allCases.first(where: { $0.displayName == entry.name }) else {
+                return false
             }
-        }
-
-        guard let weakestBook = totals
-            .map({ (bookName: $0.key, answered: $0.value.answered, missedCount: max(0, $0.value.answered - $0.value.correct)) })
-            .filter({ $0.answered >= 3 && $0.missedCount >= 3 })
-            .max(by: { lhs, rhs in
-                if lhs.missedCount != rhs.missedCount {
-                    return lhs.missedCount < rhs.missedCount
-                }
-                return lhs.bookName.localizedStandardCompare(rhs.bookName) == .orderedAscending
-            }) else {
+            return !isPrompted(route)
+        }) else {
             return nil
         }
+        return GameRoute.allCases.first(where: { $0.displayName == unplayedGame.name })
+    }
 
-        return (weakestBook.bookName, weakestBook.missedCount)
+    private func isPrompted(_ route: GameRoute) -> Bool {
+        promptedGameRoutes.contains(route.rawValue)
     }
 
     var body: some View {
@@ -362,6 +373,7 @@ struct GamesView: View {
         }
         .onAppear {
             todayChallengeStore.refresh()
+            refreshPromptCycleIfNeeded()
             refreshProgress()
             openPendingGameIfNeeded()
         }
@@ -374,10 +386,29 @@ struct GamesView: View {
             }
         }
         .onNotification(.gameStatsExternallyUpdated) {
+            todayChallengeStore.refresh()
+            refreshPromptCycleIfNeeded()
             refreshProgress()
         }
         .onNotification(UIApplication.willEnterForegroundNotification) {
+            todayChallengeStore.refresh()
+            refreshPromptCycleIfNeeded()
             refreshProgress()
+        }
+        .task {
+            while !Task.isCancelled {
+                let calendar = Calendar.autoupdatingCurrent
+                let now = Date()
+                let nextDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now
+                let wait = max(1, nextDay.timeIntervalSince(now))
+
+                try? await Task.sleep(for: .seconds(wait))
+                guard !Task.isCancelled else { return }
+
+                todayChallengeStore.refresh()
+                refreshPromptCycleIfNeeded()
+                refreshProgress()
+            }
         }
     }
 
@@ -472,18 +503,37 @@ struct GamesView: View {
     private func selectRecommendation(_ destination: GameRecommendationDestination) {
         switch destination {
         case .game(let route):
+            recordPromptedRoute(route)
             present(route)
-        case .bookOverview(let bookName):
-            AppRouter.shared.open(
-                .bibleStudyDestination(.bookOverview(bookName: bookName))
-            )
-        case .chapterInsights(let bookName, let chapterNumber):
-            AppRouter.shared.open(
-                .bibleStudyDestination(
-                    .chapterInsights(bookName: bookName, chapterNumber: chapterNumber)
-                )
-            )
         }
+    }
+
+    private func refreshPromptCycleIfNeeded(now: Date = Date()) {
+        let todayKey = GameStats.localDayKey(for: now)
+        guard recommendationPromptDayKey != todayKey else { return }
+
+        let defaults = UserDefaults.standard
+        recommendationPromptDayKey = todayKey
+        if defaults.string(forKey: AppStorageKey.gameRecommendationPromptDayV1) == todayKey {
+            promptedGameRoutes = Set(
+                defaults.stringArray(forKey: AppStorageKey.gameRecommendationPromptedRoutesV1) ?? []
+            )
+        } else {
+            promptedGameRoutes = []
+            defaults.set(todayKey, forKey: AppStorageKey.gameRecommendationPromptDayV1)
+            defaults.removeObject(forKey: AppStorageKey.gameRecommendationPromptedRoutesV1)
+        }
+    }
+
+    private func recordPromptedRoute(_ route: GameRoute) {
+        refreshPromptCycleIfNeeded()
+        promptedGameRoutes.insert(route.rawValue)
+        UserDefaults.standard.set(recommendationPromptDayKey, forKey: AppStorageKey.gameRecommendationPromptDayV1)
+        UserDefaults.standard.set(
+            promptedGameRoutes.sorted(),
+            forKey: AppStorageKey.gameRecommendationPromptedRoutesV1
+        )
+        cachedRecommendation = makeRecommendation()
     }
 
     /// Opens a game requested from outside the Games tab, replacing any open game.
@@ -617,17 +667,11 @@ private extension View {
 
 private enum GameRecommendationDestination {
     case game(GameRoute)
-    case bookOverview(String)
-    case chapterInsights(bookName: String, chapterNumber: Int)
 
     var accessibilityHint: String {
         switch self {
         case .game(let route):
             "Opens \(route.displayName)"
-        case .bookOverview(let bookName):
-            "Opens the \(bookName) book overview"
-        case .chapterInsights(let bookName, let chapterNumber):
-            "Opens insights for \(bookName) \(chapterNumber)"
         }
     }
 }
