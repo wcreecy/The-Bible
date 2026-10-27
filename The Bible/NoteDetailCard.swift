@@ -87,19 +87,15 @@ struct NoteDetailCard: View {
                 highlight: VerseHighlightColor(rawValue: note.highlightColor)
             )
         case .user(let note):
+            if !note.passageReference.isEmpty {
+                NoteDetailPassageQuotation(passageReference: note.passageReference)
+            }
+
             let sermonLines = item.sermonDetailLines(for: note)
-            if !sermonLines.isEmpty || !note.passageReference.isEmpty {
+            if !sermonLines.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(sermonLines, id: \.self) { line in
                         Label(line, systemImage: line == sermonLines.first ? "person.wave.2" : "calendar")
-                    }
-                    if !note.passageReference.isEmpty {
-                        // Linked so a tap previews the passage, like references in the note body.
-                        Label {
-                            Text(BibleReferenceLinker.linkify(note.passageReference))
-                        } icon: {
-                            Image(systemName: "book.closed")
-                        }
                     }
                 }
                 .font(.subheadline)
@@ -107,6 +103,55 @@ struct NoteDetailCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+    }
+}
+
+/// Displays the beginning of a personal note's attached Scripture before the note's text.
+private struct NoteDetailPassageQuotation: View {
+    let passageReference: String
+
+    @State private var title: String?
+    @State private var text: String?
+
+    var body: some View {
+        Group {
+            if let title, let text {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(BibleReferenceLinker.linkify(title))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tint)
+
+                Text("“\(text)”")
+                    .font(.title3)
+                    .italic()
+                    .lineSpacing(4)
+                    .foregroundStyle(.primary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .task(id: passageReference, loadPassage)
+    }
+
+    private func loadPassage() async {
+        guard let reference = BibleReferenceLinker.parse(passageReference),
+              let passage = await BibleReferenceLinker.loadVersesEnsuringLoaded(for: reference) else {
+            title = nil
+            text = nil
+            return
+        }
+
+        let verses = passage.verses.prefix(3)
+        guard !verses.isEmpty else {
+            title = nil
+            text = nil
+            return
+        }
+
+        title = passage.title
+        text = verses.map(\.text).joined(separator: " ") + (passage.verses.count > verses.count ? "…" : "")
     }
 }
 

@@ -23,6 +23,7 @@ struct UserNoteEditorView: View {
     @State private var noteSelection = AttributedTextSelection()
     @State private var selectedCategory: NoteCategory
     @State private var passage: String
+    @State private var passageExcerpt: NotePassageExcerpt?
     @State private var speaker: String
     @State private var location: String
     @State private var sermonDate: Date
@@ -69,7 +70,7 @@ struct UserNoteEditorView: View {
         _title = State(initialValue: start.title)
         _noteText = State(initialValue: draft?.bodyText ?? NoteFormattedContent.decode(
             existingNote?.formattedContent,
-            fallback: existingNote?.content ?? ""
+            fallback: existingNote?.content ?? prefilledBody
         ))
         _selectedCategory = State(initialValue: NoteCategory(rawValue: start.category) ?? category)
         _passage = State(initialValue: start.passageReference)
@@ -99,6 +100,10 @@ struct UserNoteEditorView: View {
                     }
 
                     NoteEditorTitleField(title: $title, placeholder: "Note title")
+
+                    if let passageExcerpt {
+                        NotePassageAnchor(excerpt: passageExcerpt)
+                    }
                 }
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
@@ -108,6 +113,9 @@ struct UserNoteEditorView: View {
         .padding()
         .animation(.snappy, value: areFieldsCollapsed)
         .onScreenKeyboardVisibility($isOnScreenKeyboardShown)
+        .task(id: recognizedPassageReference) {
+            await loadPassageExcerpt()
+        }
         .onChange(of: isEditingBody && isOnScreenKeyboardShown) { _, collapse in
             // Typing collapses everything above the body; leaving the body or putting the
             // keyboard away brings it back.
@@ -232,6 +240,10 @@ struct UserNoteEditorView: View {
         recognizedPassageReference ?? trimmedPassage
     }
 
+    private var parsedPassageReference: ScriptureRef? {
+        BibleReferenceLinker.parse(trimmedPassage)
+    }
+
     private var isSermon: Bool { selectedCategory == .sermon }
 
     private var hasChanges: Bool {
@@ -251,6 +263,24 @@ struct UserNoteEditorView: View {
         guard let recognizedPassageReference else { return }
         passage = recognizedPassageReference
     }
+
+    private func loadPassageExcerpt() async {
+        guard let reference = parsedPassageReference else {
+            passageExcerpt = nil
+            return
+        }
+        passageExcerpt = nil
+
+        guard let passage = await BibleReferenceLinker.loadVersesEnsuringLoaded(for: reference),
+              parsedPassageReference == reference else {
+            return
+        }
+
+        let excerpt = passage.verses.prefix(3).map(\.text).joined(separator: " ")
+        guard !excerpt.isEmpty else { return }
+        passageExcerpt = NotePassageExcerpt(reference: reference, title: passage.title, text: excerpt)
+    }
+
 
     private func currentDraft() -> NoteDraft {
         NoteDraft(
@@ -319,5 +349,42 @@ struct UserNoteEditorView: View {
             },
             onFailure: { persistenceFailure = $0 }
         )
+    }
+}
+
+private struct NotePassageExcerpt: Equatable {
+    let reference: ScriptureRef
+    let title: String
+    let text: String
+}
+
+/// A lightweight Scripture attachment for a note; tapping it opens the passage in the Bible.
+private struct NotePassageAnchor: View {
+    let excerpt: NotePassageExcerpt
+
+    var body: some View {
+        Button {
+            Haptics.selection()
+            AppRouter.shared.openBibleReference(
+                book: excerpt.reference.bookName,
+                chapter: excerpt.reference.chapter,
+                verse: excerpt.reference.startVerse
+            )
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Label(excerpt.title, systemImage: "book.closed")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tint)
+
+                Text("“\(excerpt.text)”")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens \(excerpt.title) in the Bible")
     }
 }

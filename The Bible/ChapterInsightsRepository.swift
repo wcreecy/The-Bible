@@ -81,11 +81,11 @@ enum CrossReferenceConnectionType: String, CaseIterable, Identifiable, Sendable 
 
     var title: LocalizedStringResource {
         switch self {
-        case .quotation: "Quotation"
-        case .prophecy: "Prophecy"
-        case .parallelAccount: "Parallel Account"
-        case .wordOrPhrase: "Word or Phrase"
-        case .theme: "Theme"
+        case .quotation: "Direct Quotation"
+        case .prophecy: "Prophecy Fulfilled"
+        case .parallelAccount: "Same Event"
+        case .wordOrPhrase: "Shared Word or Phrase"
+        case .theme: "Shared Theme"
         }
     }
 

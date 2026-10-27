@@ -123,8 +123,8 @@ struct CrossReferenceExplorerView: View {
                         }
                     }
 
-                    Picker("Connection Type", selection: $selectedConnectionType) {
-                        Text("All Types").tag(CrossReferenceConnectionType?.none)
+                    Picker("How the passages connect", selection: $selectedConnectionType) {
+                        Text("Any connection").tag(CrossReferenceConnectionType?.none)
                         ForEach(CrossReferenceConnectionType.allCases) { type in
                             Label(type.title, systemImage: type.systemImage)
                                 .tag(Optional(type))
@@ -331,14 +331,13 @@ private struct CrossReferencePreviewSheet: View {
     private func makeNotePrefill(preview: CrossReferencePreview) -> UserNotePrefill {
         let source = preview.source.reference.displayTitle
         let target = preview.target.reference.displayTitle
-        let connection = "\(source) → \(target)"
         let relationship = preview.explanation ?? "These passages are presented together as a curated Scripture connection."
 
         return UserNotePrefill(
             id: "cross-reference-note-\(entry.id)",
-            title: "Scripture Connection",
-            body: "\(connection)\n\nRelationship\n\(relationship)\n\nMy thoughts:\n",
-            passageReference: source
+            title: "",
+            body: "Related Scriptures\n\(source)\n\(target)\n\nRelationship\n\(relationship)\n\nMy thoughts:\n",
+            passageReference: ""
         )
     }
 }
@@ -484,7 +483,7 @@ private struct CrossReferenceExplorerIntroduction: View {
             Label("Curated Scripture Connections", systemImage: "arrow.triangle.branch")
                 .font(.headline)
 
-            Text("Explore editorially selected passages that illuminate one another. Filter by connection type, save connections to revisit, and select one to see its context and explanation.")
+            Text("Explore selected passages linked by direct quotation, fulfilled prophecy, shared words or themes, or the same event. Select one for context and explanation.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
