@@ -1,5 +1,25 @@
 import SwiftUI
 
+/// Uses genre-appropriate titles for books that are reflective retellings rather than continuous narratives.
+func bookRetellingTitle(for bookName: String) -> String {
+    switch bookName {
+    case "1 Chronicles":
+        "1 Chronicles: Identity and Worship"
+    case "2 Chronicles":
+        "2 Chronicles: Temple, Kings, and Hope"
+    case "Ezra":
+        "Ezra: Return and Rebuild"
+    case "Nehemiah":
+        "Nehemiah: Rebuild and Renew"
+    case "Esther":
+        "Esther: Courage in Exile"
+    case "Job":
+        "Job: Wrestling with Suffering"
+    default:
+        "The Story of \(bookName)"
+    }
+}
+
 /// A full-page, story-style retelling of a book, with each part labeled by the passage it covers.
 struct BookStoryView: View {
     let bookName: String
@@ -10,7 +30,7 @@ struct BookStoryView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                Text("The Story of \(bookName)")
+                Text(bookRetellingTitle(for: bookName))
                     .font(.largeTitle.bold())
                     .padding(.bottom, 4)
 

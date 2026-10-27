@@ -275,7 +275,7 @@ private struct BookStoryOverviewButton: View {
             BookStoryView(bookName: bookName, story: story)
                 .studySheetDoneButton()
         } label: {
-            Label("Read the Story of \(bookName)", systemImage: "book.pages")
+            Label("Read \(bookRetellingTitle(for: bookName))", systemImage: "book.pages")
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
@@ -309,7 +309,7 @@ private struct StoryPreviewSection: View {
     let story: [BibleBookStorySection]
 
     var body: some View {
-        HeroCard(title: "Go Deeper: The Story of \(bookName)", icon: "book.pages") {
+        HeroCard(title: "Go Deeper: \(bookRetellingTitle(for: bookName))", icon: "book.pages") {
             VStack(alignment: .leading, spacing: 12) {
                 if let opening = story.first {
                     Text(opening.previewText)
@@ -323,7 +323,7 @@ private struct StoryPreviewSection: View {
                     BookStoryView(bookName: bookName, story: story)
                         .studySheetDoneButton()
                 } label: {
-                    Label("Read the Story", systemImage: "arrow.right.circle.fill")
+                    Label("Read More", systemImage: "arrow.right.circle.fill")
                         .font(.subheadline.weight(.semibold))
                 }
             }

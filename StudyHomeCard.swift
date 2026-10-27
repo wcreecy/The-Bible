@@ -326,13 +326,22 @@ private struct StudyBookStoryPrompt: View {
         NavigationLink {
             BookStoryView(bookName: bookName, story: story)
         } label: {
-            Label("New to \(bookName)? Read its story.", systemImage: "book.pages")
+            Label(bookStoryPrompt, systemImage: "book.pages")
                 .font(.subheadline.weight(.semibold))
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(.bordered)
         .tint(.teal)
         .accessibilityHint("Opens a narrative retelling of \(bookName)")
+    }
+
+    private var bookStoryPrompt: String {
+        switch bookName {
+        case "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job":
+            "New to \(bookName)? Explore its guide."
+        default:
+            "New to \(bookName)? Read its story."
+        }
     }
 }
 
