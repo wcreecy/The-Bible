@@ -57,6 +57,18 @@ func bookRetellingTitle(for bookName: String) -> String {
         "Zechariah: Return, Rebuild, and Hope"
     case "Malachi":
         "Malachi: Return to Faithful Love"
+    case "Matthew":
+        "Matthew: Jesus the Promised King"
+    case "Mark":
+        "Mark: Jesus the Servant King"
+    case "Luke":
+        "Luke: Jesus, Friend of the Lost"
+    case "John":
+        "John: Jesus, the Word Made Flesh"
+    case "Acts":
+        "Acts: The Gospel Goes Out"
+    case "Romans":
+        "Romans: The Good News of God’s Grace"
     default:
         "The Story of \(bookName)"
     }
