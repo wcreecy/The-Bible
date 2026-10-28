@@ -193,7 +193,7 @@ private struct ReviewRoundProgress: Identifiable {
         case .beatTheClock: "Beat the Clock"
         case .bibleQuiz: "Quiz"
         case .bibleTrivia: "Trivia"
-        case .verseMatch: "Verse Match"
+        case .verseMatch: "Verses"
         case .whoAmI: "Who?"
         }
     }
