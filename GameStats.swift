@@ -1291,204 +1291,112 @@ final class GameStats {
                return nil
     }
 
+    typealias DailyPoint = (date: Date, answered: Int, correct: Int)
+
     func dailySeriesLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-        let startOfToday = cal.startOfDay(for: now)
-
-        let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
-        let correctMap: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
-
-        var series: [(Date, Int, Int)] = []
-        for i in stride(from: days - 1, through: 0, by: -1) {
-            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                let key = Self.localDayKey(for: d, calendar: cal)
-                let a = max(0, answeredMap[key] ?? 0)
-                let c = max(0, correctMap[key] ?? 0)
-                series.append((d, a, c))
-            }
-        }
-        return series
+        dailySeries(days: days, answeredKey: "gamesDailyAnswered", correctKey: "gamesDailyCorrect", now: now, calendar: calendar)
     }
 
     func dailySeriesLast(days: Int, forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
-        if name == "All Games" { return dailySeriesLast(days: days, now: now, calendar: calendar) }
-        guard let gameKey = Self.storageKey(forDisplayName: name) else {
+        // "All Games" and names that match no game read the overall series.
+        guard name != "All Games", let gameKey = Self.storageKey(forDisplayName: name) else {
             return dailySeriesLast(days: days, now: now, calendar: calendar)
         }
-
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-        let startOfToday = cal.startOfDay(for: now)
-
-        let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered_\(gameKey)")
-        let correctMap: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect_\(gameKey)")
-
-        var series: [(Date, Int, Int)] = []
-        for i in stride(from: days - 1, through: 0, by: -1) {
-            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                let key = Self.localDayKey(for: d, calendar: cal)
-                let a = max(0, answeredMap[key] ?? 0)
-                let c = max(0, correctMap[key] ?? 0)
-                series.append((d, a, c))
-            }
-        }
-        return series
+        return dailySeries(days: days, gameKey: gameKey, now: now, calendar: calendar)
     }
 
     func dailySeriesLast(days: Int, forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
-        let gameKey = Self.storageKeyForWord(mode: mode)
+        dailySeries(days: days, gameKey: Self.storageKeyForWord(mode: mode), now: now, calendar: calendar)
+    }
 
+    private func dailySeries(days: Int, gameKey: String, now: Date, calendar: Calendar) -> [DailyPoint] {
+        dailySeries(
+            days: days,
+            answeredKey: "gamesDailyAnswered_\(gameKey)",
+            correctKey: "gamesDailyCorrect_\(gameKey)",
+            now: now,
+            calendar: calendar
+        )
+    }
+
+    /// One point per day, oldest first, ending today.
+    private func dailySeries(days: Int, answeredKey: String, correctKey: String, now: Date, calendar: Calendar) -> [DailyPoint] {
         var cal = calendar
         cal.timeZone = .autoupdatingCurrent
         let startOfToday = cal.startOfDay(for: now)
 
-        let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered_\(gameKey)")
-        let correctMap: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect_\(gameKey)")
+        let answeredMap = loadJSONMap(forKey: answeredKey)
+        let correctMap = loadJSONMap(forKey: correctKey)
 
-        var series: [(Date, Int, Int)] = []
+        var series: [DailyPoint] = []
         for i in stride(from: days - 1, through: 0, by: -1) {
             if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
                 let key = Self.localDayKey(for: d, calendar: cal)
-                let a = max(0, answeredMap[key] ?? 0)
-                let c = max(0, correctMap[key] ?? 0)
-                series.append((d, a, c))
+                series.append((d, max(0, answeredMap[key] ?? 0), max(0, correctMap[key] ?? 0)))
             }
         }
         return series
     }
 
-    func activityStreaks(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-
-        let series = dailySeriesLast(days: 1825, now: now, calendar: cal)
+    /// The longest run of days with answers, and the run ending today. A today with no
+    /// answers yet doesn't end the current run.
+    private static func streaks(in series: [DailyPoint]) -> (current: Int, longest: Int) {
         var longest = 0
-        var currentRun = 0
-        for (_, a, _) in series {
-            if a > 0 {
-                currentRun += 1
-                longest = max(longest, currentRun)
+        var run = 0
+        for point in series {
+            if point.answered > 0 {
+                run += 1
+                longest = max(longest, run)
             } else {
-                currentRun = 0
+                run = 0
             }
         }
 
         var current = 0
-        var currentSeries = Array(series)
-        if currentSeries.last?.answered == 0 { currentSeries.removeLast() }
-        for (_, a, _) in currentSeries.reversed() {
-            if a > 0 { current += 1 } else { break }
+        var recent = series
+        if recent.last?.answered == 0 { recent.removeLast() }
+        for point in recent.reversed() {
+            if point.answered > 0 { current += 1 } else { break }
         }
-
         return (current, longest)
     }
 
-    func activityStreaks(forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
-        if name == "All Games" { return activityStreaks(now: now, calendar: calendar) }
-
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-        let series = dailySeriesLast(days: 1825, forDisplayName: name, now: now, calendar: cal)
-
-        var longest = 0
-        var currentRun = 0
-        for (_, a, _) in series {
-            if a > 0 {
-                currentRun += 1
-                longest = max(longest, currentRun)
-            } else {
-                currentRun = 0
-            }
-        }
-
-        var current = 0
-        var currentSeries = Array(series)
-        if currentSeries.last?.answered == 0 { currentSeries.removeLast() }
-        for (_, a, _) in currentSeries.reversed() {
-            if a > 0 { current += 1 } else { break }
-        }
-
-        return (current, longest)
-    }
-
-    func activityStreaks(forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-        let series = dailySeriesLast(days: 1825, forWordMode: mode, now: now, calendar: cal)
-
-        var longest = 0
-        var currentRun = 0
-        for (_, a, _) in series {
-            if a > 0 {
-                currentRun += 1
-                longest = max(longest, currentRun)
-            } else {
-                currentRun = 0
-            }
-        }
-
-        var current = 0
-        var currentSeries = Array(series)
-        if currentSeries.last?.answered == 0 { currentSeries.removeLast() }
-        for (_, a, _) in currentSeries.reversed() {
-            if a > 0 { current += 1 } else { break }
-        }
-
-        return (current, longest)
-    }
-
-    func accuracy7DayTrend(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
-        let s14 = dailySeriesLast(days: 14, now: now, calendar: calendar)
-        let last7 = s14.suffix(7)
-        let prev7 = s14.prefix(max(0, s14.count - 7))
-
-        func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
+    /// Accuracy over the last 7 days, and how far it moved from the 7 days before.
+    private static func accuracyTrend(in last14Days: [DailyPoint]) -> (currentPct: Double, deltaVsPrev: Double) {
+        func pct(for slice: ArraySlice<DailyPoint>) -> Double {
             let a = slice.reduce(0) { $0 + max(0, $1.answered) }
             let c = slice.reduce(0) { $0 + max(0, $1.correct) }
             guard a > 0 else { return 0 }
             return min(100, max(0, (Double(c) / Double(a)) * 100.0))
         }
 
-        let cur = pct(for: last7)
-        let prev = pct(for: prev7)
+        let cur = pct(for: last14Days.suffix(7))
+        let prev = pct(for: last14Days.prefix(max(0, last14Days.count - 7)))
         return (cur, cur - prev)
+    }
+
+    func activityStreaks(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
+        Self.streaks(in: dailySeriesLast(days: 1825, now: now, calendar: calendar))
+    }
+
+    func activityStreaks(forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
+        Self.streaks(in: dailySeriesLast(days: 1825, forDisplayName: name, now: now, calendar: calendar))
+    }
+
+    func activityStreaks(forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
+        Self.streaks(in: dailySeriesLast(days: 1825, forWordMode: mode, now: now, calendar: calendar))
+    }
+
+    func accuracy7DayTrend(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
+        Self.accuracyTrend(in: dailySeriesLast(days: 14, now: now, calendar: calendar))
     }
 
     func accuracy7DayTrend(forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
-        if name == "All Games" { return accuracy7DayTrend(now: now, calendar: calendar) }
-
-        let s14 = dailySeriesLast(days: 14, forDisplayName: name, now: now, calendar: calendar)
-        let last7 = s14.suffix(7)
-        let prev7 = s14.prefix(max(0, s14.count - 7))
-
-        func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
-            let a = slice.reduce(0) { $0 + max(0, $1.answered) }
-            let c = slice.reduce(0, { $0 + max(0, $1.correct) })
-            guard a > 0 else { return 0 }
-            return min(100, max(0, (Double(c) / Double(a)) * 100.0))
-        }
-
-        let cur = pct(for: last7)
-        let prev = pct(for: prev7)
-        return (cur, cur - prev)
+        Self.accuracyTrend(in: dailySeriesLast(days: 14, forDisplayName: name, now: now, calendar: calendar))
     }
 
     func accuracy7DayTrend(forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
-        let s14 = dailySeriesLast(days: 14, forWordMode: mode, now: now, calendar: calendar)
-        let last7 = s14.suffix(7)
-        let prev7 = s14.prefix(max(0, s14.count - 7))
-
-        func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
-            let a = slice.reduce(0) { $0 + max(0, $1.answered) }
-            let c = slice.reduce(0, { $0 + max(0, $1.correct) })
-            guard a > 0 else { return 0 }
-            return min(100, max(0, (Double(c) / Double(a)) * 100.0))
-        }
-
-        let cur = pct(for: last7)
-        let prev = pct(for: prev7)
-        return (cur, cur - prev)
+        Self.accuracyTrend(in: dailySeriesLast(days: 14, forWordMode: mode, now: now, calendar: calendar))
     }
 
     func lastPlayedSummary(now: Date = Date()) -> (name: String?, relative: String?) {
@@ -1502,79 +1410,89 @@ final class GameStats {
         return (name, f.localizedString(for: date, relativeTo: now))
     }
 
-    private func loadQuizPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
-        let a: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
-        let c: [String: Int] = loadJSONMap(forKey: "quizPerBookCorrectMap")
-        return (a, c)
+    // MARK: - Per-book analytics (Quiz, Trivia, Verse Match)
+    //
+    // The three games record the same four maps per book (see `PerBookKeys`), so one set of
+    // helpers serves all of them.
+
+    private func perBookMaps(_ keys: PerBookKeys) -> (answered: [String: Int], correct: [String: Int]) {
+        (loadJSONMap(forKey: keys.answered), loadJSONMap(forKey: keys.correct))
     }
 
-    private func loadQuizPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
-        let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyAnswered")
-        let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyCorrect")
-        return (a, c)
+    private func perBookDailyMaps(_ keys: PerBookKeys) -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
+        (loadNestedJSONMap(forKey: keys.dailyAnswered), loadNestedJSONMap(forKey: keys.dailyCorrect))
     }
 
-    private func loadTriviaPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
-        let a: [String: Int] = loadJSONMap(forKey: "triviaPerBookAnsweredMap")
-        let c: [String: Int] = loadJSONMap(forKey: "triviaPerBookCorrectMap")
-        return (a, c)
+    private static func percentage(correct: Int, answered: Int) -> Double {
+        guard answered > 0 else { return 0 }
+        return min(100, max(0, (Double(correct) / Double(answered)) * 100))
     }
 
-    private func loadTriviaPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
-        let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyAnswered")
-        let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyCorrect")
-        return (a, c)
-    }
-
-    private func isOT(bookName: String) -> Bool? {
+    /// Whether each Bible book is in the Old Testament (true) or New (false).
+    private func testamentByBook() -> [String: Bool] {
         let books = BibleData.books
-        let indexMap = Dictionary(uniqueKeysWithValues: books.enumerated().map { ($1.name, $0) })
-        guard let mattIdx = indexMap["Matthew"], let idx = indexMap[bookName] else {
-            return nil
-        }
-        return idx < mattIdx
+        guard let matthew = books.firstIndex(where: { $0.name == "Matthew" }) else { return [:] }
+        return Dictionary(uniqueKeysWithValues: books.enumerated().map { ($1.name, $0 < matthew) })
     }
 
     private func perBookTestamentSummary(
         answeredMap: [String: Int],
         correctMap: [String: Int]
     ) -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
+        let isOldTestament = testamentByBook()
         var otA = 0, otC = 0, ntA = 0, ntC = 0
         for book in Set(answeredMap.keys).union(correctMap.keys) {
             let answered = max(0, answeredMap[book] ?? 0)
             let correct = max(0, correctMap[book] ?? 0)
-            if isOT(bookName: book) == true {
-                otA += answered; otC += correct
-            } else if isOT(bookName: book) == false {
-                ntA += answered; ntC += correct
+            switch isOldTestament[book] {
+            case true?: otA += answered; otC += correct
+            case false?: ntA += answered; ntC += correct
+            case nil: break
             }
         }
-        let otPct = otA > 0 ? (Double(otC) / Double(otA)) * 100 : 0
-        let ntPct = ntA > 0 ? (Double(ntC) / Double(ntA)) * 100 : 0
-        return (otA, otC, ntA, ntC, otPct, ntPct)
+        return (otA, otC, ntA, ntC, Self.percentage(correct: otC, answered: otA), Self.percentage(correct: ntC, answered: ntA))
     }
 
+    /// Accuracy for each genre, in canonical genre order. Verse Match counts every book it
+    /// has recorded; the other games count only names found in the Bible.
     private func perBookGenreAccuracy(
         answeredMap: [String: Int],
-        correctMap: [String: Int]
+        correctMap: [String: Int],
+        requiresKnownBook: Bool
     ) -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
+        let knownBooks = Set(BibleData.books.map(\.name))
         var buckets: [StatsSeriesBuilder.Genre: (answered: Int, correct: Int)] = [:]
         for book in Set(answeredMap.keys).union(correctMap.keys) {
             let answered = max(0, answeredMap[book] ?? 0)
-            guard answered > 0, BibleData.books.contains(where: { $0.name == book }) else { continue }
-            var bucket = buckets[StatsSeriesBuilder.genreForBook(book)] ?? (0, 0)
+            guard answered > 0, !requiresKnownBook || knownBooks.contains(book) else { continue }
+            let genre = StatsSeriesBuilder.genreForBook(book)
+            var bucket = buckets[genre] ?? (0, 0)
             bucket.answered += answered
             bucket.correct += max(0, correctMap[book] ?? 0)
-            buckets[StatsSeriesBuilder.genreForBook(book)] = bucket
+            buckets[genre] = bucket
         }
         let order: [StatsSeriesBuilder.Genre] = [.Law, .History, .Poetry, .MajorProphets, .MinorProphets, .Gospels, .Acts, .Epistles, .Apocalypse]
         return order.map { genre in
             let values = buckets[genre] ?? (0, 0)
-            let pct = values.answered > 0 ? (Double(values.correct) / Double(values.answered)) * 100 : 0
-            return (genre.rawValue, values.answered, values.correct, pct)
+            return (genre.rawValue, values.answered, values.correct, Self.percentage(correct: values.correct, answered: values.answered))
         }
     }
 
+    /// Every book in a genre, in canonical order, with its all-time accuracy.
+    private func perBookAccuracy(
+        inGenre genreName: String,
+        answeredMap: [String: Int],
+        correctMap: [String: Int]
+    ) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        BibleData.books.compactMap { book in
+            guard StatsSeriesBuilder.genreForBook(book.name).rawValue == genreName else { return nil }
+            let answered = max(0, answeredMap[book.name] ?? 0)
+            let correct = max(0, correctMap[book.name] ?? 0)
+            return (book.name, answered, correct, Self.percentage(correct: correct, answered: answered))
+        }
+    }
+
+    /// Books ranked by accuracy over the last N days, ignoring books with too few attempts.
     private func rankedPerBookRows(
         dailyAnswered: [String: [String: Int]],
         dailyCorrect: [String: [String: Int]],
@@ -1597,7 +1515,7 @@ final class GameStats {
             let count = max(0, answered[book] ?? 0)
             guard count >= minAttempts else { return nil }
             let correctCount = max(0, correct[book] ?? 0)
-            return (book, count, correctCount, (Double(correctCount) / Double(count)) * 100)
+            return (book, count, correctCount, Self.percentage(correct: correctCount, answered: count))
         }
         .sorted {
             if $0.pct == $1.pct { return $0.book < $1.book }
@@ -1605,171 +1523,58 @@ final class GameStats {
         }
     }
 
+    // MARK: Trivia
+
     func triviaOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
-        let maps = loadTriviaPerBookMaps()
+        let maps = perBookMaps(.trivia)
         return perBookTestamentSummary(answeredMap: maps.answered, correctMap: maps.correct)
     }
 
     func triviaAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = loadTriviaPerBookMaps()
-        return perBookGenreAccuracy(answeredMap: maps.answered, correctMap: maps.correct)
+        let maps = perBookMaps(.trivia)
+        return perBookGenreAccuracy(answeredMap: maps.answered, correctMap: maps.correct, requiresKnownBook: true)
+    }
+
+    func triviaAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let maps = perBookMaps(.trivia)
+        return perBookAccuracy(inGenre: genreName, answeredMap: maps.answered, correctMap: maps.correct)
     }
 
     func triviaWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = loadTriviaPerBookDailyMaps()
+        let maps = perBookDailyMaps(.trivia)
         return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: false)
     }
 
     func triviaStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = loadTriviaPerBookDailyMaps()
+        let maps = perBookDailyMaps(.trivia)
         return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: true)
     }
 
-    func triviaAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = loadTriviaPerBookMaps()
-        return BibleData.books.compactMap { book in
-            guard StatsSeriesBuilder.genreForBook(book.name).rawValue == genreName else { return nil }
-            let answered = max(0, maps.answered[book.name] ?? 0)
-            let correct = max(0, maps.correct[book.name] ?? 0)
-            let pct = answered > 0 ? (Double(correct) / Double(answered)) * 100 : 0
-            return (book.name, answered, correct, pct)
-        }
-    }
+    // MARK: Quiz
 
     func quizOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
-        let (answeredMap, correctMap) = loadQuizPerBookMaps()
-        var otA = 0, otC = 0, ntA = 0, ntC = 0
-
-        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
-        for b in allBooks {
-            let a = max(0, answeredMap[b] ?? 0)
-            let c = max(0, correctMap[b] ?? 0)
-            if let ot = isOT(bookName: b) {
-                if ot {
-                    otA += a; otC += c
-                } else {
-                    ntA += a; ntC += c
-                }
-            }
-        }
-
-        let otPct = otA > 0 ? min(100, max(0, (Double(otC) / Double(otA)) * 100.0)) : 0
-        let ntPct = ntA > 0 ? min(100, max(0, (Double(ntC) / Double(ntA)) * 100.0)) : 0
-        return (otA, otC, ntA, ntC, otPct, ntPct)
+        let maps = perBookMaps(.quiz)
+        return perBookTestamentSummary(answeredMap: maps.answered, correctMap: maps.correct)
     }
 
     func quizAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
-        let (answeredMap, correctMap) = loadQuizPerBookMaps()
-        var buckets: [StatsSeriesBuilder.Genre: (a: Int, c: Int)] = [:]
+        let maps = perBookMaps(.quiz)
+        return perBookGenreAccuracy(answeredMap: maps.answered, correctMap: maps.correct, requiresKnownBook: true)
+    }
 
-        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
-        for b in allBooks {
-            let a = max(0, answeredMap[b] ?? 0)
-            let c = max(0, correctMap[b] ?? 0)
-            guard a > 0, BibleData.books.contains(where: { $0.name == b }) else { continue }
-            let g = StatsSeriesBuilder.genreForBook(b)
-            var cur = buckets[g] ?? (0, 0)
-            cur.a += a
-            cur.c += c
-            buckets[g] = cur
-        }
-
-        let order: [StatsSeriesBuilder.Genre] = [.Law, .History, .Poetry, .MajorProphets, .MinorProphets, .Gospels, .Acts, .Epistles, .Apocalypse]
-        return order.map { g in
-            let vals = buckets[g] ?? (0, 0)
-            let pct = vals.a > 0 ? min(100, max(0, (Double(vals.c) / Double(vals.a)) * 100.0)) : 0
-            return (g.rawValue, vals.a, vals.c, pct)
-        }
+    func quizAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let maps = perBookMaps(.quiz)
+        return perBookAccuracy(inGenre: genreName, answeredMap: maps.answered, correctMap: maps.correct)
     }
 
     func quizWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let (dailyA, dailyC) = loadQuizPerBookDailyMaps()
-
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = .autoupdatingCurrent
-        let startOfToday = cal.startOfDay(for: Date())
-        var keys: [String] = []
-        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
-            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                keys.append(Self.localDayKey(for: d, calendar: cal))
-            }
-        }
-
-        var bookA: [String: Int] = [:]
-        var bookC: [String: Int] = [:]
-        for k in keys {
-            if let perBookA = dailyA[k] {
-                for (book, val) in perBookA {
-                    bookA[book, default: 0] += max(0, val)
-                }
-            }
-            if let perBookC = dailyC[k] {
-                for (book, val) in perBookC {
-                    bookC[book, default: 0] += max(0, val)
-                }
-            }
-        }
-
-        var rows: [(String, Int, Int, Double)] = []
-        let allBooks = Set(bookA.keys).union(bookC.keys)
-        for b in allBooks {
-            let a = max(0, bookA[b] ?? 0)
-            let c = max(0, bookC[b] ?? 0)
-            guard a >= minAttempts else { continue }
-            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
-            rows.append((b, a, c, pct))
-        }
-
-        rows.sort { lhs, rhs in
-            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
-            return lhs.3 < rhs.3
-        }
-        return rows
+        let maps = perBookDailyMaps(.quiz)
+        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: false)
     }
 
     func quizStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let (dailyA, dailyC) = loadQuizPerBookDailyMaps()
-
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = .autoupdatingCurrent
-        let startOfToday = cal.startOfDay(for: Date())
-        var keys: [String] = []
-        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
-            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                keys.append(Self.localDayKey(for: d, calendar: cal))
-            }
-        }
-
-        var bookA: [String: Int] = [:]
-        var bookC: [String: Int] = [:]
-        for k in keys {
-            if let perBookA = dailyA[k] {
-                for (book, val) in perBookA {
-                    bookA[book, default: 0] += max(0, val)
-                }
-            }
-            if let perBookC = dailyC[k] {
-                for (book, val) in perBookC {
-                    bookC[book, default: 0] += max(0, val)
-                }
-            }
-        }
-
-        var rows: [(String, Int, Int, Double)] = []
-        let allBooks = Set(bookA.keys).union(bookC.keys)
-        for b in allBooks {
-            let a = max(0, bookA[b] ?? 0)
-            let c = max(0, bookC[b] ?? 0)
-            guard a >= minAttempts else { continue }
-            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
-            rows.append((b, a, c, pct))
-        }
-
-        rows.sort { lhs, rhs in
-            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
-            return lhs.3 > rhs.3
-        }
-        return rows
+        let maps = perBookDailyMaps(.quiz)
+        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: true)
     }
 
     func wordleDailySolvedDayKeysLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Set<String> {
@@ -1833,35 +1638,16 @@ final class GameStats {
         return !result.won
     }
 
-    private func loadHangmanPerCategoryMaps() -> (answered: [String: Int], correct: [String: Int]) {
-        let a: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
-        let c: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryCorrectMap")
-        return (a, c)
-    }
-
     func recordHangmanCategory(category: String, answered addAnswered: Int, correct addCorrect: Int) {
-        let trimmed = category.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
-
-        var answeredMap: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
-        if addAnswered != 0 {
-            answeredMap[trimmed, default: 0] = max(0, (answeredMap[trimmed] ?? 0) + max(0, addAnswered))
-            saveJSONMap(answeredMap, forKey: "hangmanPerCategoryAnsweredMap")
-            iCloudSyncCoordinator.shared.pushKey("hangmanPerCategoryAnsweredMap")
-        }
-
-        var correctMap: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryCorrectMap")
-        if addCorrect != 0 {
-            correctMap[trimmed, default: 0] = max(0, (correctMap[trimmed] ?? 0) + max(0, addCorrect))
-            saveJSONMap(correctMap, forKey: "hangmanPerCategoryCorrectMap")
-            iCloudSyncCoordinator.shared.pushKey("hangmanPerCategoryCorrectMap")
-        }
-
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        recordCategoryResult(
+            answeredKey: "hangmanPerCategoryAnsweredMap", correctKey: "hangmanPerCategoryCorrectMap",
+            category: category, answered: addAnswered, correct: addCorrect
+        )
     }
 
     func hangmanAccuracyByCategory() -> [(category: String, answered: Int, correct: Int, pct: Double)] {
-        let (aMap, cMap) = loadHangmanPerCategoryMaps()
+        let aMap = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
+        let cMap = loadJSONMap(forKey: "hangmanPerCategoryCorrectMap")
         let order = ["People", "Places", "Books"]
         return order.map { cat in
             let a = max(0, aMap[cat] ?? 0)
@@ -1871,54 +1657,25 @@ final class GameStats {
         }
     }
 
-    func quizAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let (answeredMap, correctMap) = loadQuizPerBookMaps()
-        let allCanonicalBooks = BibleData.books.map { $0.name }
-        var rows: [(String, Int, Int, Double)] = []
-        for b in allCanonicalBooks {
-            let genre = StatsSeriesBuilder.genreForBook(b).rawValue
-            guard genre == genreName else { continue }
-            let a = max(0, answeredMap[b] ?? 0)
-            let c = max(0, correctMap[b] ?? 0)
-            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
-            rows.append((b, a, c, pct))
-        }
-        let canonicalPos = Dictionary(uniqueKeysWithValues: allCanonicalBooks.enumerated().map { ($1, $0) })
-        rows.sort { lhs, rhs in
-            (canonicalPos[lhs.0] ?? .max) < (canonicalPos[rhs.0] ?? .max)
-        }
-        return rows
-    }
-
-    private func loadBeatClockPerTypeMaps() -> (answered: [String: Int], correct: [String: Int]) {
-        let a: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeAnsweredMap")
-        let c: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeCorrectMap")
-        return (a, c)
-    }
-
     func recordBeatClockType(type: String, answered addAnswered: Int, correct addCorrect: Int) {
-        let trimmed = type.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+        recordCategoryResult(
+            answeredKey: "beatclockPerTypeAnsweredMap", correctKey: "beatclockPerTypeCorrectMap",
+            category: type, answered: addAnswered, correct: addCorrect
+        )
+    }
 
-        var aMap: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeAnsweredMap")
-        if addAnswered != 0 {
-            aMap[trimmed, default: 0] = max(0, (aMap[trimmed] ?? 0) + max(0, addAnswered))
-            saveJSONMap(aMap, forKey: "beatclockPerTypeAnsweredMap")
-            iCloudSyncCoordinator.shared.pushKey("beatclockPerTypeAnsweredMap")
-        }
-
-        var cMap: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeCorrectMap")
-        if addCorrect != 0 {
-            cMap[trimmed, default: 0] = max(0, (cMap[trimmed] ?? 0) + max(0, addCorrect))
-            saveJSONMap(cMap, forKey: "beatclockPerTypeCorrectMap")
-            iCloudSyncCoordinator.shared.pushKey("beatclockPerTypeCorrectMap")
-        }
-
+    /// Adds one round's result to a game's all-time answered and correct maps for a category.
+    private func recordCategoryResult(answeredKey: String, correctKey: String, category: String, answered addAnswered: Int, correct addCorrect: Int) {
+        let name = category.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty, addAnswered != 0 || addCorrect != 0 else { return }
+        addToBookMap(answeredKey, book: name, delta: addAnswered)
+        addToBookMap(correctKey, book: name, delta: addCorrect)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
     func beatclockAccuracyByType() -> [(type: String, answered: Int, correct: Int, pct: Double)] {
-        let (aMap, cMap) = loadBeatClockPerTypeMaps()
+        let aMap = loadJSONMap(forKey: "beatclockPerTypeAnsweredMap")
+        let cMap = loadJSONMap(forKey: "beatclockPerTypeCorrectMap")
         let order = ["People", "Places"]
         return order.map { t in
             let a = max(0, aMap[t] ?? 0)
@@ -1928,179 +1685,37 @@ final class GameStats {
         }
     }
 
-    private func loadVerseMatchPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
-        let a: [String: Int] = loadJSONMap(forKey: "versematchPerBookAnsweredMap")
-        let c: [String: Int] = loadJSONMap(forKey: "versematchPerBookCorrectMap")
-        return (a, c)
-    }
-
-    // Verses daily nested per-book maps loader
-    private func loadVerseMatchPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
-        let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyAnswered")
-        let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyCorrect")
-        return (a, c)
-    }
+    // MARK: Verse Match
 
     func verseMatchOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
-        let (answeredMap, correctMap) = loadVerseMatchPerBookMaps()
-        var otA = 0, otC = 0, ntA = 0, ntC = 0
-
-        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
-        for b in allBooks {
-            let a = max(0, answeredMap[b] ?? 0)
-            let c = max(0, correctMap[b] ?? 0)
-            if let ot = isOT(bookName: b) {
-                if ot {
-                    otA += a; otC += c
-                } else {
-                    ntA += a; ntC += c
-                }
-            }
-        }
-
-        let otPct = otA > 0 ? min(100, max(0, (Double(otC) / Double(otA)) * 100.0)) : 0
-        let ntPct = ntA > 0 ? min(100, max(0, (Double(ntC) / Double(ntA)) * 100.0)) : 0
-        return (otA, otC, ntA, ntC, otPct, ntPct)
+        let maps = perBookMaps(.verseMatch)
+        return perBookTestamentSummary(answeredMap: maps.answered, correctMap: maps.correct)
     }
 
     func verseMatchAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
-        let (answeredMap, correctMap) = loadVerseMatchPerBookMaps()
-        var buckets: [StatsSeriesBuilder.Genre: (a: Int, c: Int)] = [:]
-
-        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
-        for b in allBooks {
-            let a = max(0, answeredMap[b] ?? 0)
-            let c = max(0, correctMap[b] ?? 0)
-            guard a > 0 else { continue }
-            let g = StatsSeriesBuilder.genreForBook(b)
-            var cur = buckets[g] ?? (0, 0)
-            cur.a += a
-            cur.c += c
-            buckets[g] = cur
-        }
-
-        let order: [StatsSeriesBuilder.Genre] = [.Law, .History, .Poetry, .MajorProphets, .MinorProphets, .Gospels, .Acts, .Epistles, .Apocalypse]
-        return order.map { g in
-            let vals = buckets[g] ?? (0, 0)
-            let pct = vals.a > 0 ? min(100, max(0, (Double(vals.c) / Double(vals.a)) * 100.0)) : 0
-            return (g.rawValue, vals.a, vals.c, pct)
-        }
+        let maps = perBookMaps(.verseMatch)
+        return perBookGenreAccuracy(answeredMap: maps.answered, correctMap: maps.correct, requiresKnownBook: false)
     }
 
     func verseMatchAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let (answeredMap, correctMap) = loadVerseMatchPerBookMaps()
-        let allCanonicalBooks = BibleData.books.map { $0.name }
-        var rows: [(String, Int, Int, Double)] = []
-        for b in allCanonicalBooks {
-            let genre = StatsSeriesBuilder.genreForBook(b).rawValue
-            guard genre == genreName else { continue }
-            let a = max(0, answeredMap[b] ?? 0)
-            let c = max(0, correctMap[b] ?? 0)
-            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
-            rows.append((b, a, c, pct))
-        }
-        let canonicalPos = Dictionary(uniqueKeysWithValues: allCanonicalBooks.enumerated().map { ($1, $0) })
-        rows.sort { lhs, rhs in
-            (canonicalPos[lhs.0] ?? .max) < (canonicalPos[rhs.0] ?? .max)
-        }
-        return rows
+        let maps = perBookMaps(.verseMatch)
+        return perBookAccuracy(inGenre: genreName, answeredMap: maps.answered, correctMap: maps.correct)
     }
 
-    // Verses weak/strong books over last N days (mirrors Quiz)
     func verseMatchWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let (dailyA, dailyC) = loadVerseMatchPerBookDailyMaps()
-
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = .autoupdatingCurrent
-        let startOfToday = cal.startOfDay(for: Date())
-        var keys: [String] = []
-        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
-            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                keys.append(Self.localDayKey(for: d, calendar: cal))
-            }
-        }
-
-        var bookA: [String: Int] = [:]
-        var bookC: [String: Int] = [:]
-        for k in keys {
-            if let perBookA = dailyA[k] {
-                for (book, val) in perBookA {
-                    bookA[book, default: 0] += max(0, val)
-                }
-            }
-            if let perBookC = dailyC[k] {
-                for (book, val) in perBookC {
-                    bookC[book, default: 0] += max(0, val)
-                }
-            }
-        }
-
-        var rows: [(String, Int, Int, Double)] = []
-        let allBooks = Set(bookA.keys).union(bookC.keys)
-        for b in allBooks {
-            let a = max(0, bookA[b] ?? 0)
-            let c = max(0, bookC[b] ?? 0)
-            guard a >= minAttempts else { continue }
-            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
-            rows.append((b, a, c, pct))
-        }
-
-        rows.sort { lhs, rhs in
-            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
-            return lhs.3 < rhs.3
-        }
-        return rows
+        let maps = perBookDailyMaps(.verseMatch)
+        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: false)
     }
 
     func verseMatchStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let (dailyA, dailyC) = loadVerseMatchPerBookDailyMaps()
-
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = .autoupdatingCurrent
-        let startOfToday = cal.startOfDay(for: Date())
-        var keys: [String] = []
-        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
-            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                keys.append(Self.localDayKey(for: d, calendar: cal))
-            }
-        }
-
-        var bookA: [String: Int] = [:]
-        var bookC: [String: Int] = [:]
-        for k in keys {
-            if let perBookA = dailyA[k] {
-                for (book, val) in perBookA {
-                    bookA[book, default: 0] += max(0, val)
-                }
-            }
-            if let perBookC = dailyC[k] {
-                for (book, val) in perBookC {
-                    bookC[book, default: 0] += max(0, val)
-                }
-            }
-        }
-
-        var rows: [(String, Int, Int, Double)] = []
-        let allBooks = Set(bookA.keys).union(bookC.keys)
-        for b in allBooks {
-            let a = max(0, bookA[b] ?? 0)
-            let c = max(0, bookC[b] ?? 0)
-            guard a >= minAttempts else { continue }
-            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
-            rows.append((b, a, c, pct))
-        }
-
-        rows.sort { lhs, rhs in
-            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
-            return lhs.3 > rhs.3
-        }
-        return rows
+        let maps = perBookDailyMaps(.verseMatch)
+        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: true)
     }
 
     /// Combined book mastery from the two games that record canonical Bible-book results.
     func bookMastery(minAttempts: Int = 5) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let quizMaps = loadQuizPerBookMaps()
-        let verseMaps = loadVerseMatchPerBookMaps()
+        let quizMaps = perBookMaps(.quiz)
+        let verseMaps = perBookMaps(.verseMatch)
         return BibleData.books.compactMap { book in
             let name = book.name
             let answered = max(0, quizMaps.answered[name] ?? 0) + max(0, verseMaps.answered[name] ?? 0)

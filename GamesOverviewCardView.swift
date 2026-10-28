@@ -230,6 +230,59 @@ private struct GamesOverviewCardContent: View {
     }
 
     var body: some View {
+        statisticsContent()
+    }
+
+    private func statisticsHeader(pickerOptions: [String]) -> some View {
+        let headerLayout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: hSizeClass == .compact ? 10 : 12))
+
+        return headerLayout {
+            Text("Game Statistics")
+                .font(.headline)
+                .lineLimit(1)
+
+            if !dynamicTypeSize.isAccessibilitySize {
+                Spacer(minLength: 8)
+            }
+
+            Menu {
+                ForEach(pickerOptions, id: \.self) { name in
+                    Button {
+                        selectedGame = name
+                    } label: {
+                        Label(name, systemImage: gameIcon(for: name))
+                    }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: gameIcon(for: selectedGame))
+                    Text(
+                        dynamicTypeSize.isAccessibilitySize && selectedGame == "All Games"
+                            ? "All"
+                            : selectedGame
+                    )
+                        .lineLimit(1)
+                    Image(systemName: "chevron.down")
+                        .foregroundStyle(.secondary)
+                }
+                .font(.caption2.weight(.semibold))
+                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 10 : (hSizeClass == .compact ? 1 : 2))
+                .padding(.horizontal, dynamicTypeSize.isAccessibilitySize ? 12 : 6)
+                .glassEffect(.regular.tint(Color.accentColor.opacity(0.14)), in: .capsule)
+                .contentShape(Capsule())
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Select Game")
+                .accessibilityValue(selectedGame)
+            }
+            .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, alignment: .leading)
+            .animation(.easeInOut(duration: 0.2), value: selectedGame)
+        }
+        .padding(.bottom, dynamicTypeSize.isAccessibilitySize ? 16 : (hSizeClass == .compact ? 8 : 0))
+    }
+
+    private func statisticsContent() -> some View {
         let _ = version
 
         let breakdown = GameStats.shared.breakdownSnapshot()
@@ -302,53 +355,8 @@ private struct GamesOverviewCardContent: View {
             }
         }()
 
-        VStack(alignment: .leading, spacing: 10) {
-            let headerLayout = dynamicTypeSize.isAccessibilitySize
-                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
-                : AnyLayout(HStackLayout(spacing: hSizeClass == .compact ? 10 : 12))
-
-            headerLayout {
-                Text("Game Statistics")
-                    .font(.headline)
-                    .lineLimit(1)
-
-                if !dynamicTypeSize.isAccessibilitySize {
-                    Spacer(minLength: 8)
-                }
-
-                Menu {
-                    ForEach(pickerOptions, id: \.self) { name in
-                        Button {
-                            selectedGame = name
-                        } label: {
-                            Label(name, systemImage: gameIcon(for: name))
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: gameIcon(for: selectedGame))
-                        Text(
-                            dynamicTypeSize.isAccessibilitySize && selectedGame == "All Games"
-                                ? "All"
-                                : selectedGame
-                        )
-                            .lineLimit(1)
-                        Image(systemName: "chevron.down")
-                            .foregroundStyle(.secondary)
-                    }
-                    .font(.caption2.weight(.semibold))
-                    .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 10 : (hSizeClass == .compact ? 1 : 2))
-                    .padding(.horizontal, dynamicTypeSize.isAccessibilitySize ? 12 : 6)
-                    .glassEffect(.regular.tint(Color.accentColor.opacity(0.14)), in: .capsule)
-                    .contentShape(Capsule())
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("Select Game")
-                    .accessibilityValue(selectedGame)
-                }
-                .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, alignment: .leading)
-                .animation(.easeInOut(duration: 0.2), value: selectedGame)
-            }
-            .padding(.bottom, dynamicTypeSize.isAccessibilitySize ? 16 : (hSizeClass == .compact ? 8 : 0))
+        return VStack(alignment: .leading, spacing: 10) {
+            statisticsHeader(pickerOptions: pickerOptions)
 
             Divider()
 
