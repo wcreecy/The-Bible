@@ -42,10 +42,6 @@ struct ReadingHistoryCalendarCard: View {
         return weeks
     }
 
-    private var dayCellHeight: CGFloat {
-        usesCompactLayout ? 28 : 38
-    }
-
     private var calendarRowSpacing: CGFloat {
         usesCompactLayout ? 4 : 6
     }
@@ -101,12 +97,12 @@ struct ReadingHistoryCalendarCard: View {
                                 if let date = daysGrid[row][column] {
                                     ReadingHistoryDay(
                                         date: date,
-                                        status: StreaksViewModel.status(for: date, summary: summary, calendar: calendar),
-                                        minimumHeight: dayCellHeight
+                                        status: StreaksViewModel.status(for: date, summary: summary, calendar: calendar)
                                     )
                                 } else {
                                     Color.clear
-                                        .frame(maxWidth: .infinity, minHeight: dayCellHeight)
+                                        .frame(maxWidth: .infinity)
+                                        .aspectRatio(1, contentMode: .fit)
                                 }
                             }
                         }
@@ -124,7 +120,6 @@ struct ReadingHistoryCalendarCard: View {
 private struct ReadingHistoryDay: View {
     let date: Date
     let status: ReadingWeekStatus
-    let minimumHeight: CGFloat
 
     var body: some View {
         ZStack {
@@ -147,7 +142,8 @@ private struct ReadingHistoryDay: View {
                     .offset(x: 8, y: -8)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: minimumHeight)
+        .frame(maxWidth: .infinity)
+        .aspectRatio(1, contentMode: .fit)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
     }
