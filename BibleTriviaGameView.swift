@@ -627,6 +627,7 @@ private struct BibleTriviaPlayScreen: View {
 
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
+    @State private var verseToast = VerseActionToastState()
 
     private var timerTint: Color {
         let fraction = Double(remainingSeconds) / Double(max(1, timerSeconds))
@@ -734,6 +735,7 @@ private struct BibleTriviaPlayScreen: View {
             }
         }
         .background(AppBackgroundView(tab: .games))
+        .verseActionToast($verseToast)
     }
 }
 

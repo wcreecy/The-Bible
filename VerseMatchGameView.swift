@@ -223,6 +223,8 @@ struct VerseMatchGameView: View {
 
     private var bestGameScoreKey: String { "versematchBestGameScore_\(difficulty.rawValue)" }
 
+    @State private var verseToast = VerseActionToastState()
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -248,6 +250,7 @@ struct VerseMatchGameView: View {
             .padding()
         }
         .tabBarContentClearance()
+        .verseActionToast($verseToast)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

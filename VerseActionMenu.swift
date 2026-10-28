@@ -64,23 +64,103 @@ enum VerseActionFeedback {
     }
 }
 
+extension EnvironmentValues {
+    /// Receives feedback from any verse menu below that wasn't given its own `onFeedback`.
+    @Entry var verseActionFeedback: ((VerseActionFeedback) -> Void)? = nil
+}
+
+/// Drives the toast a screen shows after a verse action. Keep one as `@State` and attach
+/// `.verseActionToast($state)` to the screen.
+struct VerseActionToastState {
+    fileprivate(set) var feedback: VerseActionFeedback = .copied
+    fileprivate(set) var isPresented = false
+
+    fileprivate mutating func show(_ feedback: VerseActionFeedback) {
+        self.feedback = feedback
+        withAnimation(.spring()) { isPresented = true }
+    }
+}
+
+extension View {
+    /// Shows a toast for the actions of every verse menu in this view that doesn't pass its
+    /// own `onFeedback`.
+    func verseActionToast(_ state: Binding<VerseActionToastState>, bottomPadding: CGFloat = 20) -> some View {
+        environment(\.verseActionFeedback) { state.wrappedValue.show($0) }
+            .appToast(
+                isPresented: state.isPresented,
+                symbol: state.wrappedValue.feedback.toastSymbol,
+                text: state.wrappedValue.feedback.toastText,
+                tint: state.wrappedValue.feedback.toastTint,
+                bottomPadding: bottomPadding
+            )
+    }
+}
+
+/// The saved items a verse menu reads to show its state (favorited, bookmarked, noted).
+struct SavedVerseCollections {
+    let favorites: [Favorite]
+    let notes: [VerseNote]
+    let userNotes: [UserNote]
+    let bookmarks: [Bookmark]
+}
+
+/// A verse menu that queries the saved items itself. Screens that show many menus at once
+/// (such as search results) should run the queries once and use `VerseActionMenuContent`.
 @MainActor
 struct VerseActionMenu: View {
-    @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @Query private var notes: [VerseNote]
     @Query private var userNotes: [UserNote]
     @Query private var bookmarks: [Bookmark]
+
+    let verse: VerseActionReference
+    var presentation: VerseActionPresentation = .menu
+    var onFeedback: ((VerseActionFeedback) -> Void)?
+    var onNoteEditorPresented: () -> Void = {}
+    var onNoteEditorDismissed: () -> Void = {}
+
+    var body: some View {
+        VerseActionMenuContent(
+            verse: verse,
+            saved: SavedVerseCollections(
+                favorites: favorites,
+                notes: notes,
+                userNotes: userNotes,
+                bookmarks: bookmarks
+            ),
+            presentation: presentation,
+            onFeedback: onFeedback,
+            onNoteEditorPresented: onNoteEditorPresented,
+            onNoteEditorDismissed: onNoteEditorDismissed
+        )
+    }
+}
+
+@MainActor
+struct VerseActionMenuContent: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.verseActionFeedback) private var environmentFeedback
     @State private var pinnedStore = PinnedVerseStore.shared
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isShowingNoteEditor = false
     @State private var isShowingMentions = false
 
     let verse: VerseActionReference
+    let saved: SavedVerseCollections
     var presentation: VerseActionPresentation = .menu
-    var onFeedback: (VerseActionFeedback) -> Void = { _ in }
+    var onFeedback: ((VerseActionFeedback) -> Void)?
     var onNoteEditorPresented: () -> Void = {}
     var onNoteEditorDismissed: () -> Void = {}
+
+    /// Reports to this menu's own handler, or else to the screen's `verseActionToast`.
+    private func sendFeedback(_ feedback: VerseActionFeedback) {
+        (onFeedback ?? environmentFeedback)?(feedback)
+    }
+
+    private var favorites: [Favorite] { saved.favorites }
+    private var notes: [VerseNote] { saved.notes }
+    private var userNotes: [UserNote] { saved.userNotes }
+    private var bookmarks: [Bookmark] { saved.bookmarks }
 
     private var isFavorite: Bool {
         favorites.contains {
@@ -318,10 +398,10 @@ struct VerseActionMenu: View {
             onSuccess: {
                 if added {
                     Haptics.success()
-                    onFeedback(.addedFavorite)
+                    sendFeedback(.addedFavorite)
                 } else {
                     Haptics.selection()
-                    onFeedback(.removedFavorite)
+                    sendFeedback(.removedFavorite)
                 }
             },
             onFailure: { persistenceFailure = $0 }
@@ -357,11 +437,11 @@ struct VerseActionMenu: View {
                     )
                     ReadingPositionStore.shared.flush()
                     Haptics.success()
-                    onFeedback(.bookmarked)
+                    sendFeedback(.bookmarked)
                 } else {
                     Bookmark.clearWidget()
                     Haptics.selection()
-                    onFeedback(.removedBookmark)
+                    sendFeedback(.removedBookmark)
                 }
             },
             onFailure: { persistenceFailure = $0 }
@@ -372,7 +452,7 @@ struct VerseActionMenu: View {
         Task { @MainActor in
             if isPinned {
                 await pinnedStore.clear()
-                onFeedback(.unpinned)
+                sendFeedback(.unpinned)
             } else {
                 await pinnedStore.set(
                     bookName: verse.bookName,
@@ -380,7 +460,7 @@ struct VerseActionMenu: View {
                     verse: verse.verseNumber,
                     text: verse.verseText
                 )
-                onFeedback(.pinned)
+                sendFeedback(.pinned)
             }
             Haptics.success()
         }
@@ -389,6 +469,6 @@ struct VerseActionMenu: View {
     private func copy() {
         UIPasteboard.general.string = verse.shareText
         Haptics.selection()
-        onFeedback(.copied)
+        sendFeedback(.copied)
     }
 }

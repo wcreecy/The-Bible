@@ -18,6 +18,7 @@ struct FocusReadingView: View {
     @State private var isControlsAutoHideSuspended = false
     @State private var isLocationPickerPresented = false
     @State private var chapterInsightsDismissal = StudySheetDismissal()
+    @State private var verseToast = VerseActionToastState()
     @AppStorage(AppStorageKey.hasSeenFocusModeControlsHint) private var hasSeenControlsHint = false
 
     // Maps page numbers to Bible locations; pages themselves are built only when shown.
@@ -126,6 +127,8 @@ struct FocusReadingView: View {
             }
         }
         .background(Color(uiColor: .systemBackground))
+        // Sits above the controls bar, which is where the verse menu lives.
+        .verseActionToast($verseToast, bottomPadding: 84)
         .sheet(isPresented: $isLocationPickerPresented) {
             FocusLocationPicker(initialLocation: currentLocation) { location in
                 // Moving the scroll position reports the new location through onChange.

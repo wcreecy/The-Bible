@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 /// Normalizes search text into complete words for both indexing and querying.
@@ -229,6 +230,13 @@ final class BibleSearchModel {
 /// Suggestions, progress, empty states, and results for a `BibleSearchModel`.
 /// The search field and scope controls are supplied by the hosting screen.
 struct BibleSearchResultsView: View {
+    // Queried once here and shared by every row; each row's menu would otherwise run its own.
+    @Query private var favorites: [Favorite]
+    @Query private var notes: [VerseNote]
+    @Query private var userNotes: [UserNote]
+    @Query private var bookmarks: [Bookmark]
+    @State private var verseToast = VerseActionToastState()
+
     let model: BibleSearchModel
     var bookSelectionMessage: LocalizedStringKey = "Choose a book to search."
     let onOpen: (SearchResult) -> Void
@@ -254,10 +262,17 @@ struct BibleSearchResultsView: View {
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
+            let saved = SavedVerseCollections(
+                favorites: favorites,
+                notes: notes,
+                userNotes: userNotes,
+                bookmarks: bookmarks
+            )
             List {
                 ForEach(model.results) { item in
                     BibleSearchResultRow(
                         item: item,
+                        saved: saved,
                         highlightedText: model.highlightedText(for: item),
                         onOpen: { open(item) }
                     )
@@ -272,6 +287,7 @@ struct BibleSearchResultsView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.clear)
+            .verseActionToast($verseToast)
         }
     }
 
@@ -328,6 +344,7 @@ struct BibleSearchResultsView: View {
 
 struct BibleSearchResultRow: View {
     let item: SearchResult
+    let saved: SavedVerseCollections
     let highlightedText: AttributedString
     let onOpen: () -> Void
 
@@ -357,13 +374,14 @@ struct BibleSearchResultRow: View {
             }
             .buttonStyle(.plain)
 
-            VerseActionMenu(
+            VerseActionMenuContent(
                 verse: VerseActionReference(
                     bookName: item.bookName,
                     chapterNumber: item.chapterNumber,
                     verseNumber: item.verseNumber,
                     verseText: item.verseText
-                )
+                ),
+                saved: saved
             )
         }
         .listRowBackground(

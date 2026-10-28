@@ -42,6 +42,7 @@ public struct ToastPresenter: ViewModifier {
     let tint: Color
     let actionTitle: String?
     let action: (() -> Void)?
+    var bottomPadding: CGFloat = 20
 
     // Auto-dismiss task so we can cancel/reschedule when the toast is re-shown
     @State private var dismissTask: Task<Void, Never>? = nil
@@ -67,7 +68,7 @@ public struct ToastPresenter: ViewModifier {
                                 .padding(.trailing, 14)
                             }
                         }
-                        .padding(.bottom, 20)
+                        .padding(.bottom, bottomPadding)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
@@ -111,7 +112,8 @@ public extension View {
         text: String,
         tint: Color = .accentColor,
         actionTitle: String? = nil,
-        action: (() -> Void)? = nil
+        action: (() -> Void)? = nil,
+        bottomPadding: CGFloat = 20
     ) -> some View {
         self.modifier(
             ToastPresenter(
@@ -120,7 +122,8 @@ public extension View {
                 text: text,
                 tint: tint,
                 actionTitle: actionTitle,
-                action: action
+                action: action,
+                bottomPadding: bottomPadding
             )
         )
     }

@@ -258,6 +258,8 @@ struct QuizView: View {
         String(localized: "Question \(currentIndex + 1) of \(totalQuestions)")
     }
 
+    @State private var verseToast = VerseActionToastState()
+
     var body: some View {
         GeometryReader { geometry in
             let usesSplitLayout = phase == .playing && geometry.size.width >= 700
@@ -324,6 +326,7 @@ struct QuizView: View {
             }
         }
         .background(AppBackgroundView(tab: .games))
+        .verseActionToast($verseToast)
         // Restarts with each question so the first second is a full second.
         .task(id: timerID) {
             while !Task.isCancelled, isTimerRunning, remainingSeconds > 0 {
