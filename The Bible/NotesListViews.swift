@@ -435,23 +435,24 @@ struct NotesViewOptionsMenu: View {
 
     var body: some View {
         Menu {
+            Section("Sort Notes") {
+                ForEach(NotesTabSort.allCases) { option in
+                    Menu {
+                        Button {
+                            applySort(option, ascending: false)
+                        } label: {
+                            sortOrderLabel(for: option, ascending: false)
+                        }
 
-            Section("Sort By") {
-                Picker("Sort By", selection: $sortField) {
-                    ForEach(NotesTabSort.allCases) { option in
+                        Button {
+                            applySort(option, ascending: true)
+                        } label: {
+                            sortOrderLabel(for: option, ascending: true)
+                        }
+                    } label: {
                         Label(option.title, systemImage: option.systemImage)
-                            .tag(option)
                     }
                 }
-                .pickerStyle(.inline)
-            }
-
-            Section {
-                Picker("Order", selection: $sortAscending) {
-                    Text(sortField.orderTitle(ascending: false)).tag(false)
-                    Text(sortField.orderTitle(ascending: true)).tag(true)
-                }
-                .pickerStyle(.inline)
             }
 
             Section {
@@ -462,6 +463,20 @@ struct NotesViewOptionsMenu: View {
         }
         .accessibilityLabel("Sort and export notes")
         .accessibilityValue(Text(sortField.title))
+    }
+
+    private func applySort(_ field: NotesTabSort, ascending: Bool) {
+        sortField = field
+        sortAscending = ascending
+    }
+
+    @ViewBuilder
+    private func sortOrderLabel(for field: NotesTabSort, ascending: Bool) -> some View {
+        if sortField == field && sortAscending == ascending {
+            Label(field.orderTitle(ascending: ascending), systemImage: "checkmark")
+        } else {
+            Text(field.orderTitle(ascending: ascending))
+        }
     }
 }
 
