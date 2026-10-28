@@ -52,7 +52,8 @@ struct NotesAndHighlightsView: View {
         .searchable(
             text: $filters.search,
             isPresented: $isSearchPresented,
-            prompt: "Search notes, verses, or #tags"
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Search all note text, verses, or #tags"
         )
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
