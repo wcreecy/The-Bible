@@ -81,6 +81,20 @@ struct WhoGameQuestion: Decodable, Identifiable, Hashable {
     }
 }
 
+/// One word in `ScrambleWords.json`. A word without a reference simply has no hint.
+struct ScrambleWordEntry: Decodable, Hashable, Sendable {
+    let word: String
+    let category: String
+    let difficulty: String
+    let reference: String?
+
+    /// The letters the player unscrambles. Spaces and hyphens (as in "Ben-hadad" or
+    /// "Red Sea") are dropped because the answer box only accepts letters.
+    var answer: String {
+        word.filter(\.isLetter).uppercased()
+    }
+}
+
 /// The editable source of truth for Who? and Hangman answers.
 private struct GameAnswerCatalog: Decodable {
     private struct WhoGameCatalog: Decodable {
@@ -208,6 +222,14 @@ enum GameDataLoaders {
         return catalog.whoQuestions
     }
 
+    static func loadScrambleWords() -> [ScrambleWordEntry] {
+        guard let words = tryLoadArray([ScrambleWordEntry].self, resource: "ScrambleWords") else {
+            gameDataLogger.error("The Scramble word list could not be loaded or decoded.")
+            return []
+        }
+        return words
+    }
+
     /// Characters, places, and Who? questions all come from one file, so it is decoded once
     /// and shared rather than once per loader.
     private nonisolated static let catalogCache = DecodedCatalogCache()
@@ -233,6 +255,12 @@ enum GameDataLoaders {
     static func loadWhoQuestionsAsync() async -> [WhoGameQuestion] {
         await GameDataCache.shared.load("whoQuestions") {
             await loadOffMainThread { loadWhoQuestions() }
+        }.value
+    }
+
+    static func loadScrambleWordsAsync() async -> [ScrambleWordEntry] {
+        await GameDataCache.shared.load("scrambleWords") {
+            await loadOffMainThread { loadScrambleWords() }
         }.value
     }
 

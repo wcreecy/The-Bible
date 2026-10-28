@@ -1,0 +1,6014 @@
+[
+  {
+    "word": "Aaron",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Exodus 4:14"
+  },
+  {
+    "word": "Abel",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 4:2"
+  },
+  {
+    "word": "Abraham",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 17:5"
+  },
+  {
+    "word": "Adam",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 2:19"
+  },
+  {
+    "word": "Andrew",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Matthew 4:18"
+  },
+  {
+    "word": "Ararat",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 8:4"
+  },
+  {
+    "word": "Athens",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Acts 17:15"
+  },
+  {
+    "word": "Babel",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Genesis 10:10"
+  },
+  {
+    "word": "Babylon",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "2 Kings 17:24"
+  },
+  {
+    "word": "Bethel",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Genesis 12:8"
+  },
+  {
+    "word": "Boaz",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ruth 2:1"
+  },
+  {
+    "word": "Cain",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 4:1"
+  },
+  {
+    "word": "Calvary",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Luke 23:33"
+  },
+  {
+    "word": "Canaan",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Genesis 9:18"
+  },
+  {
+    "word": "Corinth",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Acts 18:1"
+  },
+  {
+    "word": "Damascus",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 14:15"
+  },
+  {
+    "word": "Daniel",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "1 Chronicles 3:1"
+  },
+  {
+    "word": "David",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Ruth 4:17"
+  },
+  {
+    "word": "Deborah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 35:8"
+  },
+  {
+    "word": "Egypt",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Genesis 12:10"
+  },
+  {
+    "word": "Elijah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Kings 17:1"
+  },
+  {
+    "word": "Elisha",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Kings 19:16"
+  },
+  {
+    "word": "Ephesus",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 18:19"
+  },
+  {
+    "word": "Esau",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 25:25"
+  },
+  {
+    "word": "Esther",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Esther 2:7"
+  },
+  {
+    "word": "Eve",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 3:20"
+  },
+  {
+    "word": "Galilee",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Joshua 20:7"
+  },
+  {
+    "word": "Gath",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 11:22"
+  },
+  {
+    "word": "Gideon",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Judges 6:11"
+  },
+  {
+    "word": "Golgotha",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 27:33"
+  },
+  {
+    "word": "Goliath",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Samuel 17:4"
+  },
+  {
+    "word": "Gomorrah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:19"
+  },
+  {
+    "word": "Hannah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "1 Samuel 1:2"
+  },
+  {
+    "word": "Hebron",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Genesis 13:18"
+  },
+  {
+    "word": "Isaac",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 17:19"
+  },
+  {
+    "word": "Isaiah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "2 Kings 19:2"
+  },
+  {
+    "word": "Jeremiah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "2 Kings 23:31"
+  },
+  {
+    "word": "Jericho",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Numbers 22:1"
+  },
+  {
+    "word": "Jezebel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:31"
+  },
+  {
+    "word": "Job",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 46:13"
+  },
+  {
+    "word": "Jonah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "2 Kings 14:25"
+  },
+  {
+    "word": "Joppa",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 2:16"
+  },
+  {
+    "word": "Joshua",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Exodus 17:9"
+  },
+  {
+    "word": "Judea",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Ezra 5:8"
+  },
+  {
+    "word": "Leah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 29:16"
+  },
+  {
+    "word": "Lot",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 11:27"
+  },
+  {
+    "word": "Luke",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Colossians 4:14"
+  },
+  {
+    "word": "Martha",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Luke 10:38"
+  },
+  {
+    "word": "Matthew",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Matthew 9:9"
+  },
+  {
+    "word": "Moab",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Genesis 19:37"
+  },
+  {
+    "word": "Moses",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Exodus 2:10"
+  },
+  {
+    "word": "Naomi",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Ruth 1:2"
+  },
+  {
+    "word": "Nazareth",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Matthew 2:23"
+  },
+  {
+    "word": "Nineveh",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:11"
+  },
+  {
+    "word": "Noah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 5:29"
+  },
+  {
+    "word": "Paul",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Acts 13:9"
+  },
+  {
+    "word": "Philippi",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 16:13"
+  },
+  {
+    "word": "Rachel",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 29:6"
+  },
+  {
+    "word": "Rahab",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Joshua 2:1"
+  },
+  {
+    "word": "Rebekah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 22:23"
+  },
+  {
+    "word": "Red Sea",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Exodus 10:19"
+  },
+  {
+    "word": "Rome",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Acts 2:10"
+  },
+  {
+    "word": "Ruth",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Ruth 1:4"
+  },
+  {
+    "word": "Samson",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Judges 13:24"
+  },
+  {
+    "word": "Samuel",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "1 Samuel 1:20"
+  },
+  {
+    "word": "Sarah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 17:15"
+  },
+  {
+    "word": "Shiloh",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Genesis 49:10"
+  },
+  {
+    "word": "Sodom",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Genesis 10:19"
+  },
+  {
+    "word": "Solomon",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "2 Samuel 5:14"
+  },
+  {
+    "word": "Stephen",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Acts 6:5"
+  },
+  {
+    "word": "Thomas",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Matthew 10:3"
+  },
+  {
+    "word": "Abaddon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Revelation 9:11"
+  },
+  {
+    "word": "Abdon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 21:30"
+  },
+  {
+    "word": "Abednego",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Daniel 1:7"
+  },
+  {
+    "word": "Abiathar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 22:20"
+  },
+  {
+    "word": "Abigail",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Samuel 25:3"
+  },
+  {
+    "word": "Abijah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 14:1"
+  },
+  {
+    "word": "Abiram",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 16:1"
+  },
+  {
+    "word": "Abishag",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 1:3"
+  },
+  {
+    "word": "Abishai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 26:6"
+  },
+  {
+    "word": "Abner",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Samuel 14:50"
+  },
+  {
+    "word": "Abram",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 11:26"
+  },
+  {
+    "word": "Absalom",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:3"
+  },
+  {
+    "word": "Achan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 7:1"
+  },
+  {
+    "word": "Adonijah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:4"
+  },
+  {
+    "word": "Aeneas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 9:33"
+  },
+  {
+    "word": "Agag",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 24:7"
+  },
+  {
+    "word": "Agrippa",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 25:13"
+  },
+  {
+    "word": "Ahab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:28"
+  },
+  {
+    "word": "Ahaz",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:38"
+  },
+  {
+    "word": "Ahaziah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 22:40"
+  },
+  {
+    "word": "Ahijah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 11:29"
+  },
+  {
+    "word": "Ahinoam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 14:50"
+  },
+  {
+    "word": "Ahio",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 6:3"
+  },
+  {
+    "word": "Ai",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 7:2"
+  },
+  {
+    "word": "Amariah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:7"
+  },
+  {
+    "word": "Amaziah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 12:21"
+  },
+  {
+    "word": "Amnon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:2"
+  },
+  {
+    "word": "Amon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 22:26"
+  },
+  {
+    "word": "Amos",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Amos 1:1"
+  },
+  {
+    "word": "Anak",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:22"
+  },
+  {
+    "word": "Ananias",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 5:1"
+  },
+  {
+    "word": "Anna",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 2:36"
+  },
+  {
+    "word": "Annas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 3:2"
+  },
+  {
+    "word": "Antipas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Revelation 2:13"
+  },
+  {
+    "word": "Apollos",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 18:24"
+  },
+  {
+    "word": "Aquila",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 18:2"
+  },
+  {
+    "word": "Aretas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Corinthians 11:32"
+  },
+  {
+    "word": "Asa",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 15:8"
+  },
+  {
+    "word": "Asahel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 2:18"
+  },
+  {
+    "word": "Asenath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 41:45"
+  },
+  {
+    "word": "Ashdod",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 11:22"
+  },
+  {
+    "word": "Assyria",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 2:14"
+  },
+  {
+    "word": "Athaliah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 8:26"
+  },
+  {
+    "word": "Baasha",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 15:16"
+  },
+  {
+    "word": "Balaam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 22:5"
+  },
+  {
+    "word": "Balak",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 22:2"
+  },
+  {
+    "word": "Barabbas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 27:16"
+  },
+  {
+    "word": "Barak",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 4:6"
+  },
+  {
+    "word": "Barnabas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 4:36"
+  },
+  {
+    "word": "Ben-hadad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 15:18"
+  },
+  {
+    "word": "Benjamin",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 35:18"
+  },
+  {
+    "word": "Berea",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Acts 17:10"
+  },
+  {
+    "word": "Berenice",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Acts 25:13"
+  },
+  {
+    "word": "Beth Aram",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Joshua 13:27"
+  },
+  {
+    "word": "Beth Eden",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Beth Ezel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Beth Peor",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Deuteronomy 3:29"
+  },
+  {
+    "word": "Beth Shan",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Samuel 31:10"
+  },
+  {
+    "word": "Beth Zur",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:58"
+  },
+  {
+    "word": "Bethuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 22:22"
+  },
+  {
+    "word": "Bezalel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 31:2"
+  },
+  {
+    "word": "Bigthan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 2:21"
+  },
+  {
+    "word": "Bildad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Job 2:11"
+  },
+  {
+    "word": "Bilhah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 29:29"
+  },
+  {
+    "word": "Bishlam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 4:7"
+  },
+  {
+    "word": "Blastus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 12:20"
+  },
+  {
+    "word": "Caiaphas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 26:3"
+  },
+  {
+    "word": "Caleb",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:6"
+  },
+  {
+    "word": "Candace",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 8:27"
+  },
+  {
+    "word": "Chileab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:3"
+  },
+  {
+    "word": "Chilion",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ruth 1:2"
+  },
+  {
+    "word": "Cilicia",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 6:9"
+  },
+  {
+    "word": "Claudius",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 11:28"
+  },
+  {
+    "word": "Cleopas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 24:18"
+  },
+  {
+    "word": "Colosse",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Colossians 1:2"
+  },
+  {
+    "word": "Crete",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Acts 27:7"
+  },
+  {
+    "word": "Crispus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 18:8"
+  },
+  {
+    "word": "Cushi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 18:21"
+  },
+  {
+    "word": "Cyprus",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Acts 4:36"
+  },
+  {
+    "word": "Cyrene",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 27:32"
+  },
+  {
+    "word": "Cyrus",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "2 Chronicles 36:22"
+  },
+  {
+    "word": "Darius",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ezra 4:5"
+  },
+  {
+    "word": "Dathan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 16:1"
+  },
+  {
+    "word": "Dead Sea",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Genesis 14:3"
+  },
+  {
+    "word": "Delilah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Judges 16:4"
+  },
+  {
+    "word": "Demas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Colossians 4:14"
+  },
+  {
+    "word": "Dibon Gad",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Dinah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 30:21"
+  },
+  {
+    "word": "Doeg",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 21:7"
+  },
+  {
+    "word": "Dorcas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 9:36"
+  },
+  {
+    "word": "Dothan",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 37:17"
+  },
+  {
+    "word": "Drusilla",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 24:24"
+  },
+  {
+    "word": "Edom",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 25:30"
+  },
+  {
+    "word": "Eglon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 10:3"
+  },
+  {
+    "word": "Ehud",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 3:15"
+  },
+  {
+    "word": "Elah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:41"
+  },
+  {
+    "word": "Eldad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 11:26"
+  },
+  {
+    "word": "Eleazar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:23"
+  },
+  {
+    "word": "Eli",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "1 Samuel 1:3"
+  },
+  {
+    "word": "Elias",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 11:14"
+  },
+  {
+    "word": "Eliashib",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 3:24"
+  },
+  {
+    "word": "Eliezer",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 15:2"
+  },
+  {
+    "word": "Elihu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 1:1"
+  },
+  {
+    "word": "Elim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Exodus 15:27"
+  },
+  {
+    "word": "Eliphaz",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:4"
+  },
+  {
+    "word": "Elon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 26:34"
+  },
+  {
+    "word": "Emmaus",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Luke 24:13"
+  },
+  {
+    "word": "En Gannim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:34"
+  },
+  {
+    "word": "En Harod",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "En Rimmon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Nehemiah 11:29"
+  },
+  {
+    "word": "Endor",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 17:11"
+  },
+  {
+    "word": "Enoch",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 4:17"
+  },
+  {
+    "word": "Enos",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 4:26"
+  },
+  {
+    "word": "Epaphras",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Colossians 1:7"
+  },
+  {
+    "word": "Ethan",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Kings 4:31"
+  },
+  {
+    "word": "Eunice",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "2 Timothy 1:5"
+  },
+  {
+    "word": "Ezekiel",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ezekiel 1:3"
+  },
+  {
+    "word": "Ezra",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Chronicles 4:17"
+  },
+  {
+    "word": "Felix",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Acts 23:24"
+  },
+  {
+    "word": "Festus",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Acts 24:27"
+  },
+  {
+    "word": "Gabriel",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Daniel 8:16"
+  },
+  {
+    "word": "Gad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 30:11"
+  },
+  {
+    "word": "Gaius",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 19:29"
+  },
+  {
+    "word": "Galatia",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 16:6"
+  },
+  {
+    "word": "Gallio",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 18:12"
+  },
+  {
+    "word": "Gaza",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Genesis 10:19"
+  },
+  {
+    "word": "Gedaliah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 25:22"
+  },
+  {
+    "word": "Gerar",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:19"
+  },
+  {
+    "word": "Geshem",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 2:19"
+  },
+  {
+    "word": "Gibeon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 9:3"
+  },
+  {
+    "word": "Gilead",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 31:21"
+  },
+  {
+    "word": "Gilgal",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Deuteronomy 11:30"
+  },
+  {
+    "word": "Goshen",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 45:10"
+  },
+  {
+    "word": "Habakkuk",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Habakkuk 1:1"
+  },
+  {
+    "word": "Hadad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:35"
+  },
+  {
+    "word": "Hagar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 16:1"
+  },
+  {
+    "word": "Haggai",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ezra 5:1"
+  },
+  {
+    "word": "Ham",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 5:32"
+  },
+  {
+    "word": "Haman",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 3:1"
+  },
+  {
+    "word": "Hananiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 3:19"
+  },
+  {
+    "word": "Haran",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 11:26"
+  },
+  {
+    "word": "Harbona",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 1:10"
+  },
+  {
+    "word": "Harbonah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 7:9"
+  },
+  {
+    "word": "Hathach",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 4:5"
+  },
+  {
+    "word": "Hazael",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 19:15"
+  },
+  {
+    "word": "Hazor",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 11:1"
+  },
+  {
+    "word": "Hegai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 2:8"
+  },
+  {
+    "word": "Heman",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:31"
+  },
+  {
+    "word": "Herod",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Matthew 2:1"
+  },
+  {
+    "word": "Herodias",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 14:3"
+  },
+  {
+    "word": "Hezekiah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "2 Kings 16:20"
+  },
+  {
+    "word": "Hiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:34"
+  },
+  {
+    "word": "Hilkiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 18:18"
+  },
+  {
+    "word": "Hiram",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 5:11"
+  },
+  {
+    "word": "Hophni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 1:3"
+  },
+  {
+    "word": "Hosea",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Hosea 1:1"
+  },
+  {
+    "word": "Hoshea",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Deuteronomy 32:44"
+  },
+  {
+    "word": "Huldah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 22:14"
+  },
+  {
+    "word": "Hur",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 17:10"
+  },
+  {
+    "word": "Hushai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 15:32"
+  },
+  {
+    "word": "Ibzan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 12:8"
+  },
+  {
+    "word": "Ichabod",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 4:21"
+  },
+  {
+    "word": "Irad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 4:18"
+  },
+  {
+    "word": "Ishmael",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 16:11"
+  },
+  {
+    "word": "Ithamar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:23"
+  },
+  {
+    "word": "Jabal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 4:20"
+  },
+  {
+    "word": "Jabez",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:55"
+  },
+  {
+    "word": "Jacob",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 25:26"
+  },
+  {
+    "word": "Jael",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 4:17"
+  },
+  {
+    "word": "Jairus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Mark 5:22"
+  },
+  {
+    "word": "James",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 4:21"
+  },
+  {
+    "word": "Japheth",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 5:32"
+  },
+  {
+    "word": "Jared",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 5:15"
+  },
+  {
+    "word": "Jason",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Acts 17:5"
+  },
+  {
+    "word": "Jehoahaz",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 10:35"
+  },
+  {
+    "word": "Jehoiada",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 8:18"
+  },
+  {
+    "word": "Jehu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:1"
+  },
+  {
+    "word": "Jeremias",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 16:14"
+  },
+  {
+    "word": "Jeroboam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 11:26"
+  },
+  {
+    "word": "Jeshua",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Chronicles 24:11"
+  },
+  {
+    "word": "Jesse",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ruth 4:17"
+  },
+  {
+    "word": "Jether",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 8:20"
+  },
+  {
+    "word": "Jethro",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 3:1"
+  },
+  {
+    "word": "Joanna",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Luke 3:27"
+  },
+  {
+    "word": "Joash",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 6:11"
+  },
+  {
+    "word": "Joel",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Samuel 8:2"
+  },
+  {
+    "word": "John",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Matthew 3:1"
+  },
+  {
+    "word": "John Mark",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": null
+  },
+  {
+    "word": "Jonathan",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Judges 18:30"
+  },
+  {
+    "word": "Joram",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 8:10"
+  },
+  {
+    "word": "Joseph",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 30:24"
+  },
+  {
+    "word": "Josiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 13:2"
+  },
+  {
+    "word": "Jotham",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 9:5"
+  },
+  {
+    "word": "Judah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 29:35"
+  },
+  {
+    "word": "Jude",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Jude 1:1"
+  },
+  {
+    "word": "Junia",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:7"
+  },
+  {
+    "word": "Keturah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:1"
+  },
+  {
+    "word": "Laban",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 24:29"
+  },
+  {
+    "word": "Lachish",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 10:3"
+  },
+  {
+    "word": "Lamech",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 4:18"
+  },
+  {
+    "word": "Laodicea",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Colossians 2:1"
+  },
+  {
+    "word": "Lazarus",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Luke 16:20"
+  },
+  {
+    "word": "Lebanon",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Deuteronomy 1:7"
+  },
+  {
+    "word": "Levi",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 29:34"
+  },
+  {
+    "word": "Lysias",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 23:26"
+  },
+  {
+    "word": "Lystra",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 14:6"
+  },
+  {
+    "word": "Maacah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:3"
+  },
+  {
+    "word": "Maachah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 22:24"
+  },
+  {
+    "word": "Malachi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Malachi 1:1"
+  },
+  {
+    "word": "Mamre",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 13:18"
+  },
+  {
+    "word": "Manasseh",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 41:51"
+  },
+  {
+    "word": "Manoah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 13:2"
+  },
+  {
+    "word": "Mark",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 4:15"
+  },
+  {
+    "word": "Mary",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Matthew 1:16"
+  },
+  {
+    "word": "Matthias",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Acts 1:23"
+  },
+  {
+    "word": "Megiddo",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 12:21"
+  },
+  {
+    "word": "Memucan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 1:14"
+  },
+  {
+    "word": "Menahem",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:14"
+  },
+  {
+    "word": "Merab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 14:49"
+  },
+  {
+    "word": "Mesha",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:30"
+  },
+  {
+    "word": "Micah",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Judges 17:1"
+  },
+  {
+    "word": "Michael",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Numbers 13:13"
+  },
+  {
+    "word": "Michal",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Samuel 14:49"
+  },
+  {
+    "word": "Midian",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 25:2"
+  },
+  {
+    "word": "Milcah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 11:29"
+  },
+  {
+    "word": "Miletus",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 20:15"
+  },
+  {
+    "word": "Miriam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 15:20"
+  },
+  {
+    "word": "Mishael",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:22"
+  },
+  {
+    "word": "Mordecai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:2"
+  },
+  {
+    "word": "Naaman",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:21"
+  },
+  {
+    "word": "Nadab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:23"
+  },
+  {
+    "word": "Nahor",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 11:22"
+  },
+  {
+    "word": "Nahum",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Nahum 1:1"
+  },
+  {
+    "word": "Nain",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Luke 7:11"
+  },
+  {
+    "word": "Nathan",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "2 Samuel 5:14"
+  },
+  {
+    "word": "Nehemiah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ezra 2:2"
+  },
+  {
+    "word": "Nero",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Timothy 4:22"
+  },
+  {
+    "word": "Nicanor",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 6:5"
+  },
+  {
+    "word": "Nimrod",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:8"
+  },
+  {
+    "word": "Obadiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 18:3"
+  },
+  {
+    "word": "Obededom",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 6:10"
+  },
+  {
+    "word": "Og",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 21:33"
+  },
+  {
+    "word": "Omri",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:16"
+  },
+  {
+    "word": "Onan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 38:4"
+  },
+  {
+    "word": "Oreb",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 7:25"
+  },
+  {
+    "word": "Pashur",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 9:12"
+  },
+  {
+    "word": "Patmos",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Revelation 1:9"
+  },
+  {
+    "word": "Pekah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:25"
+  },
+  {
+    "word": "Pekahiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:22"
+  },
+  {
+    "word": "Peninnah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 1:2"
+  },
+  {
+    "word": "Perez",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 27:3"
+  },
+  {
+    "word": "Pergamos",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Revelation 1:11"
+  },
+  {
+    "word": "Persis",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:12"
+  },
+  {
+    "word": "Peter",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Matthew 4:18"
+  },
+  {
+    "word": "Pharaoh",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 12:15"
+  },
+  {
+    "word": "Phebe",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:1"
+  },
+  {
+    "word": "Philip",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Matthew 10:3"
+  },
+  {
+    "word": "Phinehas",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Exodus 6:25"
+  },
+  {
+    "word": "Pilate",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Matthew 27:2"
+  },
+  {
+    "word": "Potiphar",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 37:36"
+  },
+  {
+    "word": "Puah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 1:15"
+  },
+  {
+    "word": "Rehoboam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 11:43"
+  },
+  {
+    "word": "Rehum",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ezra 2:2"
+  },
+  {
+    "word": "Rephidim",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Exodus 17:1"
+  },
+  {
+    "word": "Reuben",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Genesis 29:32"
+  },
+  {
+    "word": "Salmon",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "Ruth 4:20"
+  },
+  {
+    "word": "Salome",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Mark 15:40"
+  },
+  {
+    "word": "Salt Sea",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 14:3"
+  },
+  {
+    "word": "Sapphira",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 5:1"
+  },
+  {
+    "word": "Sardis",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Revelation 1:11"
+  },
+  {
+    "word": "Satan",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "1 Chronicles 21:1"
+  },
+  {
+    "word": "Saul",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 36:37"
+  },
+  {
+    "word": "Sceva",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 19:14"
+  },
+  {
+    "word": "Seraiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 8:17"
+  },
+  {
+    "word": "Seth",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 4:25"
+  },
+  {
+    "word": "Shadrach",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Daniel 1:7"
+  },
+  {
+    "word": "Shallum",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:10"
+  },
+  {
+    "word": "Shaphan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 22:3"
+  },
+  {
+    "word": "Shechem",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 33:18"
+  },
+  {
+    "word": "Shem",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 5:32"
+  },
+  {
+    "word": "Shimei",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 3:18"
+  },
+  {
+    "word": "Shinar",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:10"
+  },
+  {
+    "word": "Shiphrah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 1:15"
+  },
+  {
+    "word": "Shishak",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 11:40"
+  },
+  {
+    "word": "Shittim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Exodus 25:5"
+  },
+  {
+    "word": "Shunem",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:18"
+  },
+  {
+    "word": "Sidon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:15"
+  },
+  {
+    "word": "Sihon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 21:21"
+  },
+  {
+    "word": "Silas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 15:22"
+  },
+  {
+    "word": "Simeon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 29:33"
+  },
+  {
+    "word": "Sisera",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 4:2"
+  },
+  {
+    "word": "Smyrna",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Revelation 1:11"
+  },
+  {
+    "word": "So",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 1:7"
+  },
+  {
+    "word": "Sychar",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "John 4:5"
+  },
+  {
+    "word": "Syria",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Judges 10:6"
+  },
+  {
+    "word": "Tabitha",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 9:36"
+  },
+  {
+    "word": "Tamar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 38:6"
+  },
+  {
+    "word": "Tarsus",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 9:11"
+  },
+  {
+    "word": "Tekoa",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:24"
+  },
+  {
+    "word": "Teresh",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 2:21"
+  },
+  {
+    "word": "Thyatira",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 16:14"
+  },
+  {
+    "word": "Tibni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:21"
+  },
+  {
+    "word": "Timnah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 36:40"
+  },
+  {
+    "word": "Timothy",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "2 Corinthians 1:1"
+  },
+  {
+    "word": "Tirhakah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 19:9"
+  },
+  {
+    "word": "Titus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Corinthians 2:13"
+  },
+  {
+    "word": "Tobiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:60"
+  },
+  {
+    "word": "Troas",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 16:8"
+  },
+  {
+    "word": "Tyre",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:29"
+  },
+  {
+    "word": "Uriah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 11:3"
+  },
+  {
+    "word": "Urijah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 16:10"
+  },
+  {
+    "word": "Uzziah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:13"
+  },
+  {
+    "word": "Vashti",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 1:9"
+  },
+  {
+    "word": "Zadok",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 8:17"
+  },
+  {
+    "word": "Zebedee",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 4:21"
+  },
+  {
+    "word": "Zebulun",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 30:20"
+  },
+  {
+    "word": "Zedekiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 22:11"
+  },
+  {
+    "word": "Zerah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:13"
+  },
+  {
+    "word": "Zeresh",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 5:10"
+  },
+  {
+    "word": "Ziba",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 9:2"
+  },
+  {
+    "word": "Ziklag",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:31"
+  },
+  {
+    "word": "Zilpah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 29:24"
+  },
+  {
+    "word": "Zimri",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 25:14"
+  },
+  {
+    "word": "Abana",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Kings 5:12"
+  },
+  {
+    "word": "Abanah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Kings 5:12"
+  },
+  {
+    "word": "Abarim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 27:12"
+  },
+  {
+    "word": "Abdi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:44"
+  },
+  {
+    "word": "Abelmaim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 16:4"
+  },
+  {
+    "word": "Abiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 8:2"
+  },
+  {
+    "word": "Abida",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:4"
+  },
+  {
+    "word": "Abidan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 1:11"
+  },
+  {
+    "word": "Abiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 9:1"
+  },
+  {
+    "word": "Abiezer",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 17:2"
+  },
+  {
+    "word": "Abihail",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 3:35"
+  },
+  {
+    "word": "Abihu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:23"
+  },
+  {
+    "word": "Abikam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Abilene",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Luke 3:1"
+  },
+  {
+    "word": "Abimelek",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 20:2"
+  },
+  {
+    "word": "Abinadab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 7:1"
+  },
+  {
+    "word": "Abishua",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:4"
+  },
+  {
+    "word": "Abital",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:4"
+  },
+  {
+    "word": "Accad",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:10"
+  },
+  {
+    "word": "Achaia",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 18:12"
+  },
+  {
+    "word": "Achbor",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:38"
+  },
+  {
+    "word": "Achim",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 1:14"
+  },
+  {
+    "word": "Achish",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 21:10"
+  },
+  {
+    "word": "Achsah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 15:16"
+  },
+  {
+    "word": "Achzib",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:44"
+  },
+  {
+    "word": "Adaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 22:1"
+  },
+  {
+    "word": "Adalia",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 9:8"
+  },
+  {
+    "word": "Adbeel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:13"
+  },
+  {
+    "word": "Adiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:36"
+  },
+  {
+    "word": "Adin",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:15"
+  },
+  {
+    "word": "Adlai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 27:29"
+  },
+  {
+    "word": "Admah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:19"
+  },
+  {
+    "word": "Adora",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Adullam",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 12:15"
+  },
+  {
+    "word": "Agabus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 11:28"
+  },
+  {
+    "word": "Ahimaaz",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 14:50"
+  },
+  {
+    "word": "Aholiab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 31:6"
+  },
+  {
+    "word": "Amalek",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:12"
+  },
+  {
+    "word": "Amasa",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 17:25"
+  },
+  {
+    "word": "Antioch",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 6:5"
+  },
+  {
+    "word": "Arabia",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Kings 10:15"
+  },
+  {
+    "word": "Artemas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Titus 3:12"
+  },
+  {
+    "word": "Asaph",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 18:18"
+  },
+  {
+    "word": "Ashkelon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Judges 14:19"
+  },
+  {
+    "word": "Asia",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 2:9"
+  },
+  {
+    "word": "Azariah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:2"
+  },
+  {
+    "word": "Azotus",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 8:40"
+  },
+  {
+    "word": "Baal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 22:41"
+  },
+  {
+    "word": "Baalah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 15:9"
+  },
+  {
+    "word": "Baalath",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:44"
+  },
+  {
+    "word": "Baalhan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Baana",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:12"
+  },
+  {
+    "word": "Baanah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 4:2"
+  },
+  {
+    "word": "Baara",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 8:8"
+  },
+  {
+    "word": "Baaseiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:40"
+  },
+  {
+    "word": "Bahurim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:16"
+  },
+  {
+    "word": "Bamoth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 21:19"
+  },
+  {
+    "word": "Bani",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 23:36"
+  },
+  {
+    "word": "Bariah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 3:22"
+  },
+  {
+    "word": "Barjesus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 13:6"
+  },
+  {
+    "word": "Barjona",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 16:17"
+  },
+  {
+    "word": "Barsabas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 1:23"
+  },
+  {
+    "word": "Baruch",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 3:20"
+  },
+  {
+    "word": "Basemath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 26:34"
+  },
+  {
+    "word": "Bashan",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 21:33"
+  },
+  {
+    "word": "Bavai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 3:18"
+  },
+  {
+    "word": "Bazlith",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 7:54"
+  },
+  {
+    "word": "Bealiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 12:5"
+  },
+  {
+    "word": "Bealoth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:24"
+  },
+  {
+    "word": "Bebai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:11"
+  },
+  {
+    "word": "Becher",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:21"
+  },
+  {
+    "word": "Bedad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:35"
+  },
+  {
+    "word": "Bedan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 12:11"
+  },
+  {
+    "word": "Beeliada",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 14:7"
+  },
+  {
+    "word": "Beer",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 21:16"
+  },
+  {
+    "word": "Beera",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:37"
+  },
+  {
+    "word": "Beeri",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 26:34"
+  },
+  {
+    "word": "Benaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 8:18"
+  },
+  {
+    "word": "Beroth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Bethany",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 21:17"
+  },
+  {
+    "word": "Bethesda",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "John 5:2"
+  },
+  {
+    "word": "Bithiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:18"
+  },
+  {
+    "word": "Bozrah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 36:33"
+  },
+  {
+    "word": "Cabul",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:27"
+  },
+  {
+    "word": "Caesarea",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 16:13"
+  },
+  {
+    "word": "Cainan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 5:9"
+  },
+  {
+    "word": "Calah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:11"
+  },
+  {
+    "word": "Calneh",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:10"
+  },
+  {
+    "word": "Cana",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "John 2:1"
+  },
+  {
+    "word": "Carcas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Esther 1:10"
+  },
+  {
+    "word": "Carmel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 12:22"
+  },
+  {
+    "word": "Carmi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:9"
+  },
+  {
+    "word": "Carpus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Timothy 4:13"
+  },
+  {
+    "word": "Cenchrea",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 18:18"
+  },
+  {
+    "word": "Cephas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "John 1:42"
+  },
+  {
+    "word": "Chebar",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Ezekiel 1:1"
+  },
+  {
+    "word": "Chephar",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Cherith",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Kings 17:3"
+  },
+  {
+    "word": "Chloe",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Corinthians 1:11"
+  },
+  {
+    "word": "Chorazin",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 11:21"
+  },
+  {
+    "word": "Chushan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Chuza",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 8:3"
+  },
+  {
+    "word": "Claudia",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Timothy 4:21"
+  },
+  {
+    "word": "Clopas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "John 19:25"
+  },
+  {
+    "word": "Cozbi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 25:15"
+  },
+  {
+    "word": "Crescens",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Timothy 4:10"
+  },
+  {
+    "word": "Cush",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:6"
+  },
+  {
+    "word": "Dalaiah",
+    "category": "Person",
+    "difficulty": "normal",
+    "reference": "1 Chronicles 3:24"
+  },
+  {
+    "word": "Damaris",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 17:34"
+  },
+  {
+    "word": "Dan",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Genesis 14:14"
+  },
+  {
+    "word": "Daphna",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Darda",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:31"
+  },
+  {
+    "word": "Debir",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 10:3"
+  },
+  {
+    "word": "Dedan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:7"
+  },
+  {
+    "word": "Derbe",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 14:6"
+  },
+  {
+    "word": "Dibon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 21:30"
+  },
+  {
+    "word": "Dimon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Isaiah 15:9"
+  },
+  {
+    "word": "Dodo",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 10:1"
+  },
+  {
+    "word": "Dophkah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 33:12"
+  },
+  {
+    "word": "Dor",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 11:2"
+  },
+  {
+    "word": "Dumah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:14"
+  },
+  {
+    "word": "Ebal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:23"
+  },
+  {
+    "word": "Ebed",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 9:26"
+  },
+  {
+    "word": "Eber",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:21"
+  },
+  {
+    "word": "Edrei",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 21:33"
+  },
+  {
+    "word": "Eglah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:5"
+  },
+  {
+    "word": "Eker",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:27"
+  },
+  {
+    "word": "Ekron",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 13:3"
+  },
+  {
+    "word": "Ela",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Eladah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:20"
+  },
+  {
+    "word": "Elam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:22"
+  },
+  {
+    "word": "Elasah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:22"
+  },
+  {
+    "word": "Elath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Deuteronomy 2:8"
+  },
+  {
+    "word": "Elead",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:21"
+  },
+  {
+    "word": "Elealeh",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 32:3"
+  },
+  {
+    "word": "Eleasah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:39"
+  },
+  {
+    "word": "Eliab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 1:9"
+  },
+  {
+    "word": "Eliada",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 5:16"
+  },
+  {
+    "word": "Eliah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 8:27"
+  },
+  {
+    "word": "Eliahba",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 23:32"
+  },
+  {
+    "word": "Eliakim",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 18:18"
+  },
+  {
+    "word": "Eliam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 11:3"
+  },
+  {
+    "word": "Elidad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 34:21"
+  },
+  {
+    "word": "Eliel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 5:24"
+  },
+  {
+    "word": "Elika",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 23:25"
+  },
+  {
+    "word": "Elioenai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 3:23"
+  },
+  {
+    "word": "Eliphal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 11:35"
+  },
+  {
+    "word": "Eloth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Kings 9:26"
+  },
+  {
+    "word": "Elymas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 13:8"
+  },
+  {
+    "word": "Engedi",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:62"
+  },
+  {
+    "word": "Enon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "John 3:23"
+  },
+  {
+    "word": "Enrogel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:7"
+  },
+  {
+    "word": "Ephraim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 41:52"
+  },
+  {
+    "word": "Erastus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 19:22"
+  },
+  {
+    "word": "Erech",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:10"
+  },
+  {
+    "word": "Eutychus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 20:9"
+  },
+  {
+    "word": "Gaal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 9:26"
+  },
+  {
+    "word": "Gabbai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 11:8"
+  },
+  {
+    "word": "Gaddi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:11"
+  },
+  {
+    "word": "Gaddiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:10"
+  },
+  {
+    "word": "Gaham",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 22:24"
+  },
+  {
+    "word": "Gahar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:47"
+  },
+  {
+    "word": "Galal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 9:15"
+  },
+  {
+    "word": "Gamaliel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 1:10"
+  },
+  {
+    "word": "Gammad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Gashmu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 6:6"
+  },
+  {
+    "word": "Gatam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:11"
+  },
+  {
+    "word": "Gazara",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Gazath",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Gazez",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:46"
+  },
+  {
+    "word": "Geba",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 21:17"
+  },
+  {
+    "word": "Gebal",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Psalms 83:7"
+  },
+  {
+    "word": "Geber",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:13"
+  },
+  {
+    "word": "Geder",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 12:13"
+  },
+  {
+    "word": "Gederah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:36"
+  },
+  {
+    "word": "Gedor",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:58"
+  },
+  {
+    "word": "Gehazi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 4:12"
+  },
+  {
+    "word": "Gehenna",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Gehu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Geidai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Gemalli",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:12"
+  },
+  {
+    "word": "Genubath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 11:20"
+  },
+  {
+    "word": "Gershon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:11"
+  },
+  {
+    "word": "Geshur",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:3"
+  },
+  {
+    "word": "Geuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:15"
+  },
+  {
+    "word": "Gezer",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 10:33"
+  },
+  {
+    "word": "Gibeah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:57"
+  },
+  {
+    "word": "Giddalti",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 25:4"
+  },
+  {
+    "word": "Gishpa",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Gomer",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:2"
+  },
+  {
+    "word": "Habaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:61"
+  },
+  {
+    "word": "Hachmon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Haddad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Hadlai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 28:12"
+  },
+  {
+    "word": "Hadram",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Haggiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:30"
+  },
+  {
+    "word": "Haggith",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:4"
+  },
+  {
+    "word": "Hakkatan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 8:12"
+  },
+  {
+    "word": "Hakkub",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Halloh",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Hamath",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 13:21"
+  },
+  {
+    "word": "Hammed",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Hamon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Hamor",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 33:19"
+  },
+  {
+    "word": "Hamul",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:12"
+  },
+  {
+    "word": "Hanan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 8:23"
+  },
+  {
+    "word": "Hanani",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:1"
+  },
+  {
+    "word": "Hanniel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 34:23"
+  },
+  {
+    "word": "Hanoch",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:4"
+  },
+  {
+    "word": "Hanun",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 10:1"
+  },
+  {
+    "word": "Hareth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Samuel 22:5"
+  },
+  {
+    "word": "Harim",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 24:8"
+  },
+  {
+    "word": "Harod",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Judges 7:1"
+  },
+  {
+    "word": "Haroeh",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:52"
+  },
+  {
+    "word": "Harsha",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:52"
+  },
+  {
+    "word": "Hashab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Helbah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Judges 1:31"
+  },
+  {
+    "word": "Helbon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Ezekiel 27:18"
+  },
+  {
+    "word": "Heshbon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 21:25"
+  },
+  {
+    "word": "Hinnom",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:8"
+  },
+  {
+    "word": "Hobah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 14:15"
+  },
+  {
+    "word": "Holon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:51"
+  },
+  {
+    "word": "Ibhar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 5:15"
+  },
+  {
+    "word": "Ibleam",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 17:11"
+  },
+  {
+    "word": "Ibneiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 9:8"
+  },
+  {
+    "word": "Ibni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Ibsam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Iconium",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 13:51"
+  },
+  {
+    "word": "Iddo",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:14"
+  },
+  {
+    "word": "Idumea",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Isaiah 34:5"
+  },
+  {
+    "word": "Igal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:7"
+  },
+  {
+    "word": "Igdaliah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Jeremiah 35:4"
+  },
+  {
+    "word": "Ilai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 11:29"
+  },
+  {
+    "word": "Imla",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 18:7"
+  },
+  {
+    "word": "Imna",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:35"
+  },
+  {
+    "word": "Imnah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:30"
+  },
+  {
+    "word": "Imri",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 9:4"
+  },
+  {
+    "word": "India",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Esther 1:1"
+  },
+  {
+    "word": "Iphdeiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Ira",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 20:26"
+  },
+  {
+    "word": "Iram",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:43"
+  },
+  {
+    "word": "Iri",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:7"
+  },
+  {
+    "word": "Irijah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Jeremiah 37:13"
+  },
+  {
+    "word": "Irpeel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 18:27"
+  },
+  {
+    "word": "Ishbah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:17"
+  },
+  {
+    "word": "Ishbak",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:2"
+  },
+  {
+    "word": "Ishbi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Ishiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:3"
+  },
+  {
+    "word": "Ishijah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:31"
+  },
+  {
+    "word": "Ishma",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:3"
+  },
+  {
+    "word": "Italy",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 18:2"
+  },
+  {
+    "word": "Ithnan",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:23"
+  },
+  {
+    "word": "Ittai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 15:19"
+  },
+  {
+    "word": "Jaalah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:56"
+  },
+  {
+    "word": "Jaalam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:5"
+  },
+  {
+    "word": "Jaanai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 5:12"
+  },
+  {
+    "word": "Jaare",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Jaasau",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:37"
+  },
+  {
+    "word": "Jaaziah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 24:26"
+  },
+  {
+    "word": "Jabbok",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 32:22"
+  },
+  {
+    "word": "Jabesh",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Samuel 11:1"
+  },
+  {
+    "word": "Jabin",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 11:1"
+  },
+  {
+    "word": "Jabneel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:11"
+  },
+  {
+    "word": "Jachin",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:10"
+  },
+  {
+    "word": "Jada",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "1 Chronicles 2:28"
+  },
+  {
+    "word": "Jadaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Jaddua",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 10:21"
+  },
+  {
+    "word": "Jaffa",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 2:16"
+  },
+  {
+    "word": "Jahath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:2"
+  },
+  {
+    "word": "Jahaziah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:15"
+  },
+  {
+    "word": "Jahdai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:47"
+  },
+  {
+    "word": "Jahdiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 5:24"
+  },
+  {
+    "word": "Jahdo",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 5:14"
+  },
+  {
+    "word": "Jahleel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:14"
+  },
+  {
+    "word": "Jahmai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:2"
+  },
+  {
+    "word": "Jahzeel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:24"
+  },
+  {
+    "word": "Jair",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 32:41"
+  },
+  {
+    "word": "Jakan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 1:42"
+  },
+  {
+    "word": "Jakim",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 8:19"
+  },
+  {
+    "word": "Jalon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:17"
+  },
+  {
+    "word": "Janoah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:29"
+  },
+  {
+    "word": "Jarmuth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 10:3"
+  },
+  {
+    "word": "Jazer",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 32:1"
+  },
+  {
+    "word": "Jephthah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 11:1"
+  },
+  {
+    "word": "Jeruel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 20:16"
+  },
+  {
+    "word": "Joab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 26:6"
+  },
+  {
+    "word": "Jochebed",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:20"
+  },
+  {
+    "word": "Judaea",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 2:1"
+  },
+  {
+    "word": "Kadesh",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 14:7"
+  },
+  {
+    "word": "Kallai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 12:20"
+  },
+  {
+    "word": "Kareah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Jeremiah 40:8"
+  },
+  {
+    "word": "Karkaa",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:3"
+  },
+  {
+    "word": "Kedar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:13"
+  },
+  {
+    "word": "Kedemah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:15"
+  },
+  {
+    "word": "Kedemoth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Deuteronomy 2:26"
+  },
+  {
+    "word": "Kedesh",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 12:22"
+  },
+  {
+    "word": "Keilah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:44"
+  },
+  {
+    "word": "Kelaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:23"
+  },
+  {
+    "word": "Kelita",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:23"
+  },
+  {
+    "word": "Kemuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 22:21"
+  },
+  {
+    "word": "Kenan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 1:2"
+  },
+  {
+    "word": "Kenaz",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:11"
+  },
+  {
+    "word": "Kerioth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:25"
+  },
+  {
+    "word": "Keziah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Job 42:14"
+  },
+  {
+    "word": "Kibroth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Kidron",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Samuel 15:23"
+  },
+  {
+    "word": "Kileab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:3"
+  },
+  {
+    "word": "Kinah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:22"
+  },
+  {
+    "word": "Kish",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 9:1"
+  },
+  {
+    "word": "Kishi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:44"
+  },
+  {
+    "word": "Kohath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:11"
+  },
+  {
+    "word": "Korah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:5"
+  },
+  {
+    "word": "Koz",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:61"
+  },
+  {
+    "word": "Laadah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:21"
+  },
+  {
+    "word": "Labad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Laish",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Judges 18:7"
+  },
+  {
+    "word": "Lasea",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 27:8"
+  },
+  {
+    "word": "Lasha",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:19"
+  },
+  {
+    "word": "Lebo",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Lebonah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Judges 21:19"
+  },
+  {
+    "word": "Lemuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Proverbs 31:1"
+  },
+  {
+    "word": "Libni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:17"
+  },
+  {
+    "word": "Linus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Timothy 4:21"
+  },
+  {
+    "word": "Lois",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "2 Timothy 1:5"
+  },
+  {
+    "word": "Lucius",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 13:1"
+  },
+  {
+    "word": "Lud",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:22"
+  },
+  {
+    "word": "Lydda",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 9:32"
+  },
+  {
+    "word": "Lydia",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezekiel 30:5"
+  },
+  {
+    "word": "Maadai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:34"
+  },
+  {
+    "word": "Maadiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 12:5"
+  },
+  {
+    "word": "Maarath",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:59"
+  },
+  {
+    "word": "Maaseiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 15:18"
+  },
+  {
+    "word": "Madai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:2"
+  },
+  {
+    "word": "Madon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 11:1"
+  },
+  {
+    "word": "Magdala",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Matthew 15:39"
+  },
+  {
+    "word": "Magdiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:43"
+  },
+  {
+    "word": "Magog",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:2"
+  },
+  {
+    "word": "Mahali",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:19"
+  },
+  {
+    "word": "Mahanaim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 32:2"
+  },
+  {
+    "word": "Maher",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Mahli",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 3:20"
+  },
+  {
+    "word": "Mahlon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ruth 1:2"
+  },
+  {
+    "word": "Makaz",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:9"
+  },
+  {
+    "word": "Makir",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 50:23"
+  },
+  {
+    "word": "Makkedah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 10:10"
+  },
+  {
+    "word": "Malchiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:40"
+  },
+  {
+    "word": "Malchus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "John 18:10"
+  },
+  {
+    "word": "Malluch",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:44"
+  },
+  {
+    "word": "Malta",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 28:1"
+  },
+  {
+    "word": "Manahath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:23"
+  },
+  {
+    "word": "Manahem",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:14"
+  },
+  {
+    "word": "Mara",
+    "category": "Person",
+    "difficulty": "easy",
+    "reference": "Ruth 1:20"
+  },
+  {
+    "word": "Marah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Exodus 15:23"
+  },
+  {
+    "word": "Mareshah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 15:44"
+  },
+  {
+    "word": "Mashal",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:74"
+  },
+  {
+    "word": "Mattan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 11:18"
+  },
+  {
+    "word": "Matthan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 1:15"
+  },
+  {
+    "word": "Media",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Esther 1:3"
+  },
+  {
+    "word": "Mehida",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:52"
+  },
+  {
+    "word": "Mehir",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:11"
+  },
+  {
+    "word": "Mehujael",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 4:18"
+  },
+  {
+    "word": "Melatiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 3:7"
+  },
+  {
+    "word": "Micaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 22:8"
+  },
+  {
+    "word": "Mizpeh",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 11:3"
+  },
+  {
+    "word": "Mount Hor",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 20:22"
+  },
+  {
+    "word": "Myra",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 27:5"
+  },
+  {
+    "word": "Naam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:15"
+  },
+  {
+    "word": "Naamah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 4:22"
+  },
+  {
+    "word": "Naarah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:5"
+  },
+  {
+    "word": "Nabal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 25:3"
+  },
+  {
+    "word": "Naboth",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 21:1"
+  },
+  {
+    "word": "Nachon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 6:6"
+  },
+  {
+    "word": "Nahash",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 11:1"
+  },
+  {
+    "word": "Nahath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:13"
+  },
+  {
+    "word": "Naioth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Samuel 19:18"
+  },
+  {
+    "word": "Naphish",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 25:15"
+  },
+  {
+    "word": "Naphtali",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 30:8"
+  },
+  {
+    "word": "Neah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:13"
+  },
+  {
+    "word": "Nebai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 10:19"
+  },
+  {
+    "word": "Neballat",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Nehemiah 11:34"
+  },
+  {
+    "word": "Nebat",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 11:26"
+  },
+  {
+    "word": "Nebo",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 32:3"
+  },
+  {
+    "word": "Nedabiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 3:18"
+  },
+  {
+    "word": "Negev",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Nehelam",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Neiel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:27"
+  },
+  {
+    "word": "Nekoda",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:48"
+  },
+  {
+    "word": "Nemuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 26:9"
+  },
+  {
+    "word": "Nepheg",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:21"
+  },
+  {
+    "word": "Ner",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Samuel 14:50"
+  },
+  {
+    "word": "Nereus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:15"
+  },
+  {
+    "word": "Neri",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 3:27"
+  },
+  {
+    "word": "Neriah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Jeremiah 32:12"
+  },
+  {
+    "word": "Nethan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Nethanel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 1:8"
+  },
+  {
+    "word": "Niger",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 13:1"
+  },
+  {
+    "word": "Noadiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 8:33"
+  },
+  {
+    "word": "Nob",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Samuel 21:1"
+  },
+  {
+    "word": "Obal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:28"
+  },
+  {
+    "word": "Obed",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ruth 4:17"
+  },
+  {
+    "word": "Obil",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 27:30"
+  },
+  {
+    "word": "Oboth",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 21:10"
+  },
+  {
+    "word": "Ocran",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 1:13"
+  },
+  {
+    "word": "Ohad",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:10"
+  },
+  {
+    "word": "Ohel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 3:20"
+  },
+  {
+    "word": "Oholiab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 31:6"
+  },
+  {
+    "word": "Omer",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 16:16"
+  },
+  {
+    "word": "Onam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:23"
+  },
+  {
+    "word": "Onesimus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Colossians 4:9"
+  },
+  {
+    "word": "Ophir",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:29"
+  },
+  {
+    "word": "Ophrah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 18:23"
+  },
+  {
+    "word": "Ornan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 21:15"
+  },
+  {
+    "word": "Orpah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ruth 1:4"
+  },
+  {
+    "word": "Othni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 26:7"
+  },
+  {
+    "word": "Othniel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 15:17"
+  },
+  {
+    "word": "Ozem",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:15"
+  },
+  {
+    "word": "Ozias",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Matthew 1:8"
+  },
+  {
+    "word": "Ozni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 26:16"
+  },
+  {
+    "word": "Paarai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 23:35"
+  },
+  {
+    "word": "Paddan",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 25:20"
+  },
+  {
+    "word": "Padon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:44"
+  },
+  {
+    "word": "Pagiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 1:13"
+  },
+  {
+    "word": "Pahath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Palal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Nehemiah 3:25"
+  },
+  {
+    "word": "Pallu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:14"
+  },
+  {
+    "word": "Paphos",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 13:6"
+  },
+  {
+    "word": "Paran",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 21:21"
+  },
+  {
+    "word": "Parnach",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 34:25"
+  },
+  {
+    "word": "Parosh",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:3"
+  },
+  {
+    "word": "Pasach",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:33"
+  },
+  {
+    "word": "Pashhur",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 9:12"
+  },
+  {
+    "word": "Patara",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 21:1"
+  },
+  {
+    "word": "Pathros",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Isaiah 11:11"
+  },
+  {
+    "word": "Patrobas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:14"
+  },
+  {
+    "word": "Pedahel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 34:28"
+  },
+  {
+    "word": "Pedahzur",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 1:10"
+  },
+  {
+    "word": "Pelaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 3:24"
+  },
+  {
+    "word": "Peleg",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:25"
+  },
+  {
+    "word": "Pelet",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:47"
+  },
+  {
+    "word": "Peniel",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 32:30"
+  },
+  {
+    "word": "Penuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 32:31"
+  },
+  {
+    "word": "Perga",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 13:13"
+  },
+  {
+    "word": "Persia",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 36:20"
+  },
+  {
+    "word": "Phanuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 2:36"
+  },
+  {
+    "word": "Philemon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Philemon 1:1"
+  },
+  {
+    "word": "Philetus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Timothy 2:17"
+  },
+  {
+    "word": "Phlegon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:14"
+  },
+  {
+    "word": "Phoebe",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:1"
+  },
+  {
+    "word": "Piram",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 10:3"
+  },
+  {
+    "word": "Publius",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 28:7"
+  },
+  {
+    "word": "Puteoli",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 28:13"
+  },
+  {
+    "word": "Quartus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:23"
+  },
+  {
+    "word": "Ram",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 15:9"
+  },
+  {
+    "word": "Ramah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 18:25"
+  },
+  {
+    "word": "Ramath",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:8"
+  },
+  {
+    "word": "Ramiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:25"
+  },
+  {
+    "word": "Ramoth",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Deuteronomy 4:43"
+  },
+  {
+    "word": "Reaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:2"
+  },
+  {
+    "word": "Reba",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 31:8"
+  },
+  {
+    "word": "Rechab",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 4:2"
+  },
+  {
+    "word": "Reelaiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:2"
+  },
+  {
+    "word": "Regem",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:47"
+  },
+  {
+    "word": "Rehob",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 13:21"
+  },
+  {
+    "word": "Rehoboth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:11"
+  },
+  {
+    "word": "Rei",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 1:8"
+  },
+  {
+    "word": "Rekem",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 31:8"
+  },
+  {
+    "word": "Remaliah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:25"
+  },
+  {
+    "word": "Rephael",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 26:7"
+  },
+  {
+    "word": "Rephah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:25"
+  },
+  {
+    "word": "Reu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 11:18"
+  },
+  {
+    "word": "Reuel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:4"
+  },
+  {
+    "word": "Rezin",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 15:37"
+  },
+  {
+    "word": "Rhoda",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 12:13"
+  },
+  {
+    "word": "Rhodes",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 21:1"
+  },
+  {
+    "word": "Ribai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 23:29"
+  },
+  {
+    "word": "Rimmon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 15:32"
+  },
+  {
+    "word": "Rinnah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:20"
+  },
+  {
+    "word": "Rissah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 33:21"
+  },
+  {
+    "word": "Rizpah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 3:7"
+  },
+  {
+    "word": "Rosh",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:21"
+  },
+  {
+    "word": "Rufus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Mark 15:21"
+  },
+  {
+    "word": "Sabtah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:7"
+  },
+  {
+    "word": "Salamis",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 13:5"
+  },
+  {
+    "word": "Salem",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 14:18"
+  },
+  {
+    "word": "Salim",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "John 3:23"
+  },
+  {
+    "word": "Sallu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 9:7"
+  },
+  {
+    "word": "Salma",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:11"
+  },
+  {
+    "word": "Samaria",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Kings 13:32"
+  },
+  {
+    "word": "Samgar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 3:31"
+  },
+  {
+    "word": "Samlah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:36"
+  },
+  {
+    "word": "Samos",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 20:15"
+  },
+  {
+    "word": "Saph",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 21:18"
+  },
+  {
+    "word": "Saphat",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:5"
+  },
+  {
+    "word": "Sarai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 11:29"
+  },
+  {
+    "word": "Saraph",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:22"
+  },
+  {
+    "word": "Sarept",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Luke 4:26"
+  },
+  {
+    "word": "Sarepta",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Luke 4:26"
+  },
+  {
+    "word": "Sargon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Isaiah 20:1"
+  },
+  {
+    "word": "Saron",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Acts 9:35"
+  },
+  {
+    "word": "Seba",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:7"
+  },
+  {
+    "word": "Secundus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 20:4"
+  },
+  {
+    "word": "Segub",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 16:34"
+  },
+  {
+    "word": "Seir",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 14:6"
+  },
+  {
+    "word": "Sela",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Isaiah 16:1"
+  },
+  {
+    "word": "Seled",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:30"
+  },
+  {
+    "word": "Semei",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 3:26"
+  },
+  {
+    "word": "Senaah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:35"
+  },
+  {
+    "word": "Serah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:17"
+  },
+  {
+    "word": "Sered",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:14"
+  },
+  {
+    "word": "Serug",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 11:20"
+  },
+  {
+    "word": "Shalmai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:46"
+  },
+  {
+    "word": "Shamgar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 3:31"
+  },
+  {
+    "word": "Sharon",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 5:16"
+  },
+  {
+    "word": "Siloam",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Luke 13:4"
+  },
+  {
+    "word": "Susanna",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 8:3"
+  },
+  {
+    "word": "Taanach",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 12:21"
+  },
+  {
+    "word": "Tabor",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 19:22"
+  },
+  {
+    "word": "Tadmor",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Kings 9:18"
+  },
+  {
+    "word": "Tahan",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 26:35"
+  },
+  {
+    "word": "Tahath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 33:26"
+  },
+  {
+    "word": "Talmai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:22"
+  },
+  {
+    "word": "Tanhum",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Taphath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:11"
+  },
+  {
+    "word": "Tappuah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 12:17"
+  },
+  {
+    "word": "Tarah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 33:27"
+  },
+  {
+    "word": "Tarea",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 8:35"
+  },
+  {
+    "word": "Tarshish",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:4"
+  },
+  {
+    "word": "Tattenai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 5:3"
+  },
+  {
+    "word": "Tebah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 22:24"
+  },
+  {
+    "word": "Tebaliah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 26:11"
+  },
+  {
+    "word": "Tema",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 25:15"
+  },
+  {
+    "word": "Teman",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:11"
+  },
+  {
+    "word": "Temeni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:6"
+  },
+  {
+    "word": "Terah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 11:24"
+  },
+  {
+    "word": "Tertius",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:22"
+  },
+  {
+    "word": "Theudas",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 5:36"
+  },
+  {
+    "word": "Tiberias",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "John 6:1"
+  },
+  {
+    "word": "Tidal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 14:1"
+  },
+  {
+    "word": "Tiglath",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Tigris",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": "Genesis 2:14"
+  },
+  {
+    "word": "Tikvah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 22:14"
+  },
+  {
+    "word": "Timaeus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Mark 10:46"
+  },
+  {
+    "word": "Timna",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 36:12"
+  },
+  {
+    "word": "Tola",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 46:13"
+  },
+  {
+    "word": "Tophet",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Isaiah 30:33"
+  },
+  {
+    "word": "Topheth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "2 Kings 23:10"
+  },
+  {
+    "word": "Tryphena",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:12"
+  },
+  {
+    "word": "Tryphosa",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:12"
+  },
+  {
+    "word": "Tychicus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Acts 20:4"
+  },
+  {
+    "word": "Ucal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Proverbs 30:1"
+  },
+  {
+    "word": "Uel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:34"
+  },
+  {
+    "word": "Ulai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Daniel 8:2"
+  },
+  {
+    "word": "Ulam",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:16"
+  },
+  {
+    "word": "Ulla",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 7:39"
+  },
+  {
+    "word": "Unni",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 15:18"
+  },
+  {
+    "word": "Uphaz",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Jeremiah 10:9"
+  },
+  {
+    "word": "Ur",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 11:28"
+  },
+  {
+    "word": "Urbanus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Romans 16:9"
+  },
+  {
+    "word": "Uri",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 31:2"
+  },
+  {
+    "word": "Uriel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:24"
+  },
+  {
+    "word": "Uruk",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 10:10"
+  },
+  {
+    "word": "Uz",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:23"
+  },
+  {
+    "word": "Uzal",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Genesis 10:27"
+  },
+  {
+    "word": "Uziel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 6:18"
+  },
+  {
+    "word": "Uzza",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 21:18"
+  },
+  {
+    "word": "Uzzah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 6:3"
+  },
+  {
+    "word": "Uzzi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 6:5"
+  },
+  {
+    "word": "Valley",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 14:17"
+  },
+  {
+    "word": "Vophsi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:14"
+  },
+  {
+    "word": "Zaanan",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Micah 1:11"
+  },
+  {
+    "word": "Zabdi",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 7:1"
+  },
+  {
+    "word": "Zabdiel",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 27:2"
+  },
+  {
+    "word": "Zabud",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Kings 4:5"
+  },
+  {
+    "word": "Zaccai",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:9"
+  },
+  {
+    "word": "Zaccheus",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Luke 19:2"
+  },
+  {
+    "word": "Zacher",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 8:31"
+  },
+  {
+    "word": "Zaham",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Chronicles 11:19"
+  },
+  {
+    "word": "Zaia",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Zair",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Kings 8:21"
+  },
+  {
+    "word": "Zakkur",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Numbers 13:4"
+  },
+  {
+    "word": "Zalmon",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 9:48"
+  },
+  {
+    "word": "Zalmunna",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 8:5"
+  },
+  {
+    "word": "Zanoah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Joshua 15:34"
+  },
+  {
+    "word": "Zared",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Numbers 21:12"
+  },
+  {
+    "word": "Zarethan",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 3:16"
+  },
+  {
+    "word": "Zattu",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 2:8"
+  },
+  {
+    "word": "Zaza",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 2:33"
+  },
+  {
+    "word": "Zebadiah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 8:15"
+  },
+  {
+    "word": "Zebah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 8:5"
+  },
+  {
+    "word": "Zebina",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Ezra 10:43"
+  },
+  {
+    "word": "Zeeb",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Judges 7:25"
+  },
+  {
+    "word": "Zelah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Joshua 18:28"
+  },
+  {
+    "word": "Zelek",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "2 Samuel 23:37"
+  },
+  {
+    "word": "Zered",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Deuteronomy 2:13"
+  },
+  {
+    "word": "Zeredah",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Kings 11:26"
+  },
+  {
+    "word": "Zereth",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "1 Chronicles 4:7"
+  },
+  {
+    "word": "Zipporah",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Exodus 2:21"
+  },
+  {
+    "word": "Zoar",
+    "category": "Place",
+    "difficulty": "hard",
+    "reference": "Genesis 13:10"
+  },
+  {
+    "word": "Zophar",
+    "category": "Person",
+    "difficulty": "hard",
+    "reference": "Job 2:11"
+  },
+  {
+    "word": "Eden",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Genesis 2:8"
+  },
+  {
+    "word": "Zion",
+    "category": "Place",
+    "difficulty": "easy",
+    "reference": "Psalm 48:2"
+  },
+  {
+    "word": "Acts",
+    "category": "Book",
+    "difficulty": "easy",
+    "reference": "Acts 1:1"
+  },
+  {
+    "word": "Psalm",
+    "category": "Book",
+    "difficulty": "easy",
+    "reference": "Psalm 23:1"
+  },
+  {
+    "word": "Jordan",
+    "category": "Place",
+    "difficulty": "normal",
+    "reference": null
+  },
+  {
+    "word": "Exodus",
+    "category": "Book",
+    "difficulty": "normal",
+    "reference": null
+  },
+  {
+    "word": "Romans",
+    "category": "Book",
+    "difficulty": "normal",
+    "reference": null
+  },
+  {
+    "word": "Tabernacle",
+    "category": "Bible term",
+    "difficulty": "hard",
+    "reference": null
+  },
+  {
+    "word": "Pentecost",
+    "category": "Bible term",
+    "difficulty": "hard",
+    "reference": null
+  }
+]

@@ -68,6 +68,15 @@ struct ScrambleGameView: View {
             case easy
             case normal
             case hard
+
+            init?(difficulty: String) {
+                switch difficulty.lowercased() {
+                case "easy": self = .easy
+                case "normal", "medium": self = .normal
+                case "hard": self = .hard
+                default: return nil
+                }
+            }
         }
 
         let answer: String
@@ -76,44 +85,23 @@ struct ScrambleGameView: View {
         let level: Level
 
         var id: String { answer }
+
+        init?(_ entry: ScrambleWordEntry) {
+            guard let level = Level(difficulty: entry.difficulty), !entry.answer.isEmpty else { return nil }
+            let reference = entry.reference?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            self.answer = entry.answer
+            self.category = LocalizedStringKey(entry.category)
+            self.reference = reference.isEmpty ? nil : LocalizedStringKey(reference)
+            self.level = level
+        }
     }
 
     private static let wordsPerSession = 10
 
-    private static let wordBank: [ScrambleWord] = [
-        .init(answer: "NOAH", category: "Person", reference: "Genesis 6:8", level: .easy),
-        .init(answer: "RUTH", category: "Person", reference: "Ruth 1:4", level: .easy),
-        .init(answer: "MARY", category: "Person", reference: "Luke 1:27", level: .easy),
-        .init(answer: "DAVID", category: "Person", reference: "1 Samuel 16:13", level: .easy),
-        .init(answer: "MOSES", category: "Person", reference: "Exodus 3:10", level: .easy),
-        .init(answer: "JONAH", category: "Person", reference: "Jonah 1:1", level: .easy),
-        .init(answer: "EDEN", category: "Place", reference: "Genesis 2:8", level: .easy),
-        .init(answer: "ZION", category: "Place", reference: "Psalm 48:2", level: .easy),
-        .init(answer: "MARK", category: "Book", reference: "Mark 1:1", level: .easy),
-        .init(answer: "LUKE", category: "Book", reference: "Luke 1:1", level: .easy),
-        .init(answer: "ACTS", category: "Book", reference: "Acts 1:1", level: .easy),
-        .init(answer: "PSALM", category: "Book", reference: "Psalm 23:1", level: .easy),
-        .init(answer: "JOSEPH", category: "Person", reference: nil, level: .normal),
-        .init(answer: "DANIEL", category: "Person", reference: nil, level: .normal),
-        .init(answer: "ESTHER", category: "Person", reference: nil, level: .normal),
-        .init(answer: "SAMUEL", category: "Person", reference: nil, level: .normal),
-        .init(answer: "JORDAN", category: "Place", reference: nil, level: .normal),
-        .init(answer: "GALILEE", category: "Place", reference: nil, level: .normal),
-        .init(answer: "EXODUS", category: "Book", reference: nil, level: .normal),
-        .init(answer: "ROMANS", category: "Book", reference: nil, level: .normal),
-        .init(answer: "GIDEON", category: "Person", reference: nil, level: .hard),
-        .init(answer: "ISAIAH", category: "Person", reference: nil, level: .hard),
-        .init(answer: "ELIJAH", category: "Person", reference: nil, level: .hard),
-        .init(answer: "JERICHO", category: "Place", reference: nil, level: .hard),
-        .init(answer: "NAZARETH", category: "Place", reference: nil, level: .hard),
-        .init(answer: "BETHANY", category: "Place", reference: nil, level: .hard),
-        .init(answer: "TABERNACLE", category: "Bible term", reference: nil, level: .hard),
-        .init(answer: "PENTECOST", category: "Bible term", reference: nil, level: .hard)
-    ]
-
     @AppStorage("scrambleDifficulty") private var difficulty: Difficulty = .normal
 
     @State private var phase: Phase = .setup
+    @State private var wordBank: [ScrambleWord] = []
     @State private var deck: [ScrambleWord] = []
     @State private var currentWord: ScrambleWord?
     @State private var shuffledLetters: [Character] = []
@@ -205,6 +193,9 @@ struct ScrambleGameView: View {
                     )
                 }
             }
+        }
+        .task {
+            await loadWordBank()
         }
         .task(id: timerID) {
             await runTimer()
@@ -363,14 +354,26 @@ struct ScrambleGameView: View {
         .padding(.top, 72)
     }
 
+    private func loadWordBank() async {
+        guard wordBank.isEmpty else { return }
+        wordBank = await GameDataLoaders.loadScrambleWordsAsync().compactMap(ScrambleWord.init)
+    }
+
     private func startSession() {
-        let eligible = Self.wordBank.filter { word in
+        // Loading normally finishes while the start screen is showing; this covers an early tap.
+        if wordBank.isEmpty {
+            wordBank = GameDataLoaders.loadScrambleWords().compactMap(ScrambleWord.init)
+        }
+
+        let eligible = wordBank.filter { word in
             switch difficulty {
             case .easy: word.level == .easy
             case .normal: word.level == .easy || word.level == .normal
             case .hard: true
             }
         }
+
+        guard !eligible.isEmpty else { return }
 
         deck = Array(eligible.shuffled().prefix(Self.wordsPerSession))
         currentNumber = 0

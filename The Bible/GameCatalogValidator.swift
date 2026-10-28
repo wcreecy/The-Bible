@@ -204,6 +204,49 @@ enum GameCatalogValidator {
         return issues
     }
 
+    /// Checks the Scramble word list: playable answers with no repeats, known difficulties,
+    /// and references (when given) that exist. A missing reference is allowed; it means no hint.
+    static func validateScrambleWords(
+        _ entries: [ScrambleWordEntry],
+        books: [Book],
+        minimumWordsPerDifficulty: Int = 1
+    ) -> [GameCatalogValidationIssue] {
+        var issues: [GameCatalogValidationIssue] = []
+
+        for entry in entries {
+            let identifier = "scramble.\(entry.answer)"
+
+            if entry.answer.count < 2 || !entry.word.allSatisfy({ $0.isLetter || $0 == " " || $0 == "-" }) {
+                issues.append(
+                    .init(identifier: identifier, message: "Word '\(entry.word)' must be letters, spaces, or hyphens.")
+                )
+            }
+            if normalize(entry.category).isEmpty {
+                issues.append(.init(identifier: identifier, message: "Category must not be empty."))
+            }
+            if !whoDifficulties.contains(normalizedDifficulty(entry.difficulty)) {
+                issues.append(.init(identifier: identifier, message: "Unknown difficulty '\(entry.difficulty)'."))
+            }
+            if let reference = entry.reference, !normalize(reference).isEmpty,
+               !books.isEmpty, !referenceExists(reference, in: books) {
+                issues.append(.init(identifier: identifier, message: "Reference '\(reference)' does not exist."))
+            }
+        }
+
+        // "Beth El" and "Bethel" would both be answered as BETHEL.
+        appendDuplicateIssues(for: entries.map(\.answer), identifier: { "scramble.\($0)" }, issues: &issues)
+
+        appendMinimumPoolIssues(
+            for: entries.map { normalizedDifficulty($0.difficulty) },
+            categories: whoDifficulties,
+            minimumCount: minimumWordsPerDifficulty,
+            identifier: { "scramble.\($0)" },
+            issues: &issues
+        )
+
+        return issues
+    }
+
     /// Checks the well-known verse list shared by Verse Match and the lock-screen widget.
     static func validateWellKnownVerses(
         _ verses: [GameCatalogVerseEntry],

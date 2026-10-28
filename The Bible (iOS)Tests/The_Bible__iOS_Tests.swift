@@ -24,19 +24,33 @@ struct The_Bible__iOS_Tests {
         ))
     }
 
+    /// Waits for `condition` to become true, up to `timeout`. The tracker works on timers, so
+    /// a fixed sleep fails whenever the machine is busy (for example while UI tests run).
+    private func waitUntil(
+        timeout: Duration = .seconds(5),
+        _ condition: () -> Bool
+    ) async throws {
+        let deadline = ContinuousClock.now + timeout
+        while !condition(), ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+    }
+
     @Test
     func verseRequiresContinuousVisibilityForTheFullDwell() async throws {
         var commits: [Set<SeenVerseUpdate>] = []
+        // A long dwell leaves plenty of room for the short wait before the verse hides.
         let tracker = VerseReadingTracker(
-            dwellDuration: 0.02,
+            dwellDuration: 0.5,
             batchDuration: 0.01
         ) { commits.append($0) }
 
         tracker.setActive(true)
         tracker.visibilityChanged(firstVerse, isVisible: true)
-        try await Task.sleep(nanoseconds: 10_000_000)
+        try await Task.sleep(for: .milliseconds(50))
         tracker.visibilityChanged(firstVerse, isVisible: false)
-        try await Task.sleep(nanoseconds: 30_000_000)
+        // Wait past the full dwell: a verse hidden early must never be committed.
+        try await Task.sleep(for: .milliseconds(700))
 
         #expect(commits.isEmpty)
     }
@@ -51,8 +65,9 @@ struct The_Bible__iOS_Tests {
 
         tracker.setActive(true)
         tracker.visibilityChanged(firstVerse, isVisible: true)
-        // Allow the dwell task and its subsequent batching task to run independently.
-        try await Task.sleep(nanoseconds: 300_000_000)
+        try await waitUntil { !commits.isEmpty }
+        // Give a stray second commit time to show up before checking there was only one.
+        try await Task.sleep(for: .milliseconds(100))
 
         #expect(commits == [[firstVerse]])
     }
@@ -73,7 +88,8 @@ struct The_Bible__iOS_Tests {
 
         tracker.recordDirectEngagement(firstVerse)
         tracker.recordDirectEngagement(secondVerse)
-        try await Task.sleep(nanoseconds: 200_000_000)
+        try await waitUntil { !commits.isEmpty }
+        try await Task.sleep(for: .milliseconds(100))
 
         #expect(commits.count == 1)
         #expect(commits.first == [firstVerse, secondVerse])
@@ -83,19 +99,20 @@ struct The_Bible__iOS_Tests {
     func inactiveReaderCancelsDwellAndRestartsWhenActive() async throws {
         var commits: [Set<SeenVerseUpdate>] = []
         let tracker = VerseReadingTracker(
-            dwellDuration: 0.02,
+            dwellDuration: 0.3,
             batchDuration: 0.01
         ) { commits.append($0) }
 
         tracker.setActive(true)
         tracker.visibilityChanged(firstVerse, isVisible: true)
-        try await Task.sleep(nanoseconds: 10_000_000)
+        try await Task.sleep(for: .milliseconds(50))
         tracker.setActive(false)
-        try await Task.sleep(nanoseconds: 25_000_000)
+        // Wait past the original dwell: going inactive must have cancelled it.
+        try await Task.sleep(for: .milliseconds(450))
         #expect(commits.isEmpty)
 
         tracker.setActive(true)
-        try await Task.sleep(nanoseconds: 300_000_000)
+        try await waitUntil { !commits.isEmpty }
         #expect(commits == [[firstVerse]])
     }
 

@@ -54,6 +54,56 @@ struct GameCatalogSupportTests {
     }
 
     @Test
+    func bundledScrambleWordsPassValidation() {
+        let words = GameDataLoaders.loadScrambleWords()
+
+        // One session draws 10 words, so each difficulty needs at least that many.
+        let issues = GameCatalogValidator.validateScrambleWords(
+            words,
+            books: BibleData.books,
+            minimumWordsPerDifficulty: 10
+        )
+        #expect(issues.isEmpty, "\(issues)")
+        #expect(words.count > 900)
+    }
+
+    @Test
+    func scrambleAnswersKeepOnlyLetters() {
+        func answer(_ word: String) -> String {
+            ScrambleWordEntry(word: word, category: "Place", difficulty: "hard", reference: nil).answer
+        }
+
+        #expect(answer("Ben-hadad") == "BENHADAD")
+        #expect(answer("Red Sea") == "REDSEA")
+        #expect(answer("Aaron") == "AARON")
+    }
+
+    @Test
+    func scrambleValidationDetectsBadEntries() {
+        let entries = [
+            ScrambleWordEntry(word: "Bethel", category: "Place", difficulty: "easy", reference: "Genesis 12:8"),
+            ScrambleWordEntry(word: "Beth El", category: "Place", difficulty: "easy", reference: nil),
+            ScrambleWordEntry(word: "Noah2", category: "", difficulty: "legendary", reference: "Genesis 99:1"),
+            ScrambleWordEntry(word: "Eden", category: "Place", difficulty: "easy", reference: "")
+        ]
+
+        let issues = GameCatalogValidator.validateScrambleWords(
+            entries,
+            books: BibleData.books,
+            minimumWordsPerDifficulty: 2
+        )
+
+        #expect(issues.contains { $0.identifier == "scramble.BETHEL" && $0.message == "Duplicate ID." })
+        #expect(issues.contains { $0.message.contains("letters, spaces, or hyphens") })
+        #expect(issues.contains { $0.message == "Category must not be empty." })
+        #expect(issues.contains { $0.message.contains("Unknown difficulty") })
+        #expect(issues.contains { $0.message.contains("does not exist") })
+        #expect(issues.contains { $0.identifier == "scramble.hard" })
+        // A missing or blank reference only means no hint.
+        #expect(!issues.contains { $0.identifier == "scramble.EDEN" })
+    }
+
+    @Test
     func bundledCuratedWordsPassValidation() throws {
         struct Entry: Decodable { let word: String; let reference: String; let verse: String }
 

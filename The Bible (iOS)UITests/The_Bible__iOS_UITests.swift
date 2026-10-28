@@ -17,7 +17,19 @@ final class The_Bible__iOS_UITests: XCTestCase {
         XCTAssertTrue(app.otherElements["homeView"].waitForExistence(timeout: 8))
 
         tapFloatingTab(named: "Bible")
-        XCTAssertTrue(app.staticTexts["Select a Book"].waitForExistence(timeout: 8))
+
+        // The Bible tab is a split view at regular width (empty pane: "Select a Book") and
+        // the book list with the Bible Study card at compact width, as on iPhone.
+        let selectBookPrompt = app.staticTexts["Select a Book"]
+        let studyEntryCard = app.descendants(matching: .any)["studyBibleEntryCard"]
+        let deadline = Date().addingTimeInterval(8)
+        while !(selectBookPrompt.exists || studyEntryCard.exists), Date() < deadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+        XCTAssertTrue(
+            selectBookPrompt.exists || studyEntryCard.exists,
+            "Expected the Bible tab to show either the split view prompt or the book list."
+        )
     }
 
     @MainActor
@@ -102,7 +114,11 @@ final class The_Bible__iOS_UITests: XCTestCase {
         tapFloatingTab(named: "Games")
         let bookOrder = app.descendants(matching: .any)["gameRoute-bookOrder"]
         XCTAssertTrue(bookOrder.waitForExistence(timeout: 8))
-        XCTAssertTrue(bookOrder.isHittable)
+        // At this text size the games list is long, so reaching Book Order means scrolling.
+        for _ in 0..<12 where !bookOrder.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(bookOrder.isHittable, "Book Order must be reachable by scrolling the Games hub.")
         bookOrder.tap()
 
         let setup = app.scrollViews["bookOrderSetupScrollView"]
@@ -144,8 +160,13 @@ final class The_Bible__iOS_UITests: XCTestCase {
         searchField.tap()
         searchField.typeText("Song of Solomon")
 
+        // At this text size the cards above the book grid fill several screens, and the grid
+        // only builds tiles that are on screen, so the tile appears once scrolled into view.
         let tile = app.descendants(matching: .any)["studyBookTile-Song of Solomon"]
-        XCTAssertTrue(tile.waitForExistence(timeout: 5))
+        for _ in 0..<12 where !(tile.exists && tile.isHittable) {
+            app.swipeUp()
+        }
+        XCTAssertTrue(tile.exists, "Expected the Song of Solomon tile after searching and scrolling.")
         XCTAssertTrue(tile.isHittable, "The full book title must remain tappable at accessibility text sizes.")
         tile.tap()
 

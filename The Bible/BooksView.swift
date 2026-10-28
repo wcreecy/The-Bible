@@ -200,7 +200,11 @@ struct StudyBibleView: View {
             .accessibilityIdentifier("studyBibleView")
             .navigationTitle("Study")
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $searchText, prompt: "Find a book")
+            .searchable(
+                text: $searchText,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Find a book"
+            )
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
                     Button {
@@ -669,6 +673,8 @@ struct CompactStudyBookHeader: View {
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .heroCardSurface()
+        // A container, so the header's identifier doesn't replace the button's own.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("compactStudyBookHeader")
     }
 
