@@ -397,13 +397,13 @@ final class GameStats {
             .init(name: "Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Trivia", correct: t.correct, answered: t.answered, bestStreak: t.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
-            .init(name: "Verses", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
+            .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Countdown", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
-            .init(name: "Who?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
+            .init(name: "Who Am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
             .init(name: "Word Search", correct: ws.correct, answered: ws.answered, bestStreak: ws.bestStreak),
             .init(name: "Scramble", correct: s.correct, answered: s.answered, bestStreak: s.bestStreak),
-            .init(name: "WORD", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
+            .init(name: "Word", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
         ]
         return GameBreakdown(entries: entries)
     }
@@ -437,7 +437,7 @@ final class GameStats {
                     bestStreak: max(0, readInt("wordleAllTimeBestStreak_\(suffix)"))
                 )
             }
-            let entry = breakdownSnapshot().entries.first { $0.name == "WORD" }
+            let entry = breakdownSnapshot().entries.first { $0.name == "Word" }
             return ScorecardStats(
                 correct: entry?.correct ?? 0,
                 attempts: entry?.answered ?? 0,
@@ -462,18 +462,30 @@ final class GameStats {
         }
     }
 
-    private static func storageKey(forDisplayName name: String) -> String? {
+    /// Games were once shown as "Verses", "Who?" and "WORD". Those names are still found in
+    /// stored values (last played, saved Today Challenges, other devices), so every lookup
+    /// by display name goes through this first.
+    static func canonicalDisplayName(_ name: String) -> String {
         switch name {
+        case "Verses": return "Verse Match"
+        case "Who?": return "Who Am I?"
+        case "WORD", "Wordle (Bible)": return "Word"
+        default: return name
+        }
+    }
+
+    private static func storageKey(forDisplayName rawName: String) -> String? {
+        switch canonicalDisplayName(rawName) {
         case "Quiz": return "quiz"
         case "Trivia": return "trivia"
         case "Hangman": return "hangman"
-        case "Verses": return "versematch"
+        case "Verse Match": return "versematch"
         case "Countdown": return "beatclock"
         case "Book Order": return "bookorder"
-        case "Who?": return "whoami"
+        case "Who Am I?": return "whoami"
         case "Word Search": return "wordsearch"
         case "Scramble": return "scramble"
-        case "WORD": return "word"
+        case "Word": return "word"
         default: return nil
         }
     }
@@ -507,147 +519,107 @@ final class GameStats {
         saveJSONMap(perCorrect, forKey: "gamesDailyCorrect_\(key)")
     }
 
+    /// The four stored maps behind a game's per-book accuracy: all-time and per-day, answered and correct.
+    private struct PerBookKeys {
+        let answered: String
+        let correct: String
+        let dailyAnswered: String
+        let dailyCorrect: String
+
+        static let quiz = PerBookKeys(
+            answered: "quizPerBookAnsweredMap", correct: "quizPerBookCorrectMap",
+            dailyAnswered: "quizPerBookDailyAnswered", dailyCorrect: "quizPerBookDailyCorrect"
+        )
+        static let trivia = PerBookKeys(
+            answered: "triviaPerBookAnsweredMap", correct: "triviaPerBookCorrectMap",
+            dailyAnswered: "triviaPerBookDailyAnswered", dailyCorrect: "triviaPerBookDailyCorrect"
+        )
+        static let verseMatch = PerBookKeys(
+            answered: "versematchPerBookAnsweredMap", correct: "versematchPerBookCorrectMap",
+            dailyAnswered: "versematchPerBookDailyAnswered", dailyCorrect: "versematchPerBookDailyCorrect"
+        )
+    }
+
     func recordQuizPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
-        guard !bookName.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
-        let _ = UserDefaults.standard
-
-        var answeredMap: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
-        if addAnswered != 0 {
-            answeredMap[bookName, default: 0] = max(0, (answeredMap[bookName] ?? 0) + max(0, addAnswered))
-            saveJSONMap(answeredMap, forKey: "quizPerBookAnsweredMap")
-            iCloudSyncCoordinator.shared.pushKey("quizPerBookAnsweredMap")
-        }
-
-        var correctMap: [String: Int] = loadJSONMap(forKey: "quizPerBookCorrectMap")
-        if addCorrect != 0 {
-            correctMap[bookName, default: 0] = max(0, (correctMap[bookName] ?? 0) + max(0, addCorrect))
-            saveJSONMap(correctMap, forKey: "quizPerBookCorrectMap")
-            iCloudSyncCoordinator.shared.pushKey("quizPerBookCorrectMap")
-        }
-
-        let dayKey = Self.localDayKey(for: Date())
-
-        var dailyAnsweredNested: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyAnswered")
-        var dayAnswered = dailyAnsweredNested[dayKey] ?? [:]
-        if addAnswered != 0 {
-            dayAnswered[bookName, default: 0] = max(0, (dayAnswered[bookName] ?? 0) + max(0, addAnswered))
-            dailyAnsweredNested[dayKey] = dayAnswered
-            saveNestedJSONMap(dailyAnsweredNested, forKey: "quizPerBookDailyAnswered")
-            iCloudSyncCoordinator.shared.pushKey("quizPerBookDailyAnswered")
-        }
-
-        var dailyCorrectNested: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyCorrect")
-        var dayCorrect = dailyCorrectNested[dayKey] ?? [:]
-        if addCorrect != 0 {
-            dayCorrect[bookName, default: 0] = max(0, (dayCorrect[bookName] ?? 0) + max(0, addCorrect))
-            dailyCorrectNested[dayKey] = dayCorrect
-            saveNestedJSONMap(dailyCorrectNested, forKey: "quizPerBookDailyCorrect")
-            iCloudSyncCoordinator.shared.pushKey("quizPerBookDailyCorrect")
-        }
-
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        recordPerBook(.quiz, bookName: bookName, answered: addAnswered, correct: addCorrect)
     }
 
     func recordTriviaPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
-        let trimmed = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+        recordPerBook(.trivia, bookName: bookName, answered: addAnswered, correct: addCorrect)
+    }
 
-        var answeredMap: [String: Int] = loadJSONMap(forKey: "triviaPerBookAnsweredMap")
-        if addAnswered != 0 {
-            answeredMap[trimmed, default: 0] = max(0, (answeredMap[trimmed] ?? 0) + max(0, addAnswered))
-            saveJSONMap(answeredMap, forKey: "triviaPerBookAnsweredMap")
-            iCloudSyncCoordinator.shared.pushKey("triviaPerBookAnsweredMap")
-        }
+    func recordVerseMatchPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
+        recordPerBook(.verseMatch, bookName: bookName, answered: addAnswered, correct: addCorrect)
+    }
 
-        var correctMap: [String: Int] = loadJSONMap(forKey: "triviaPerBookCorrectMap")
-        if addCorrect != 0 {
-            correctMap[trimmed, default: 0] = max(0, (correctMap[trimmed] ?? 0) + max(0, addCorrect))
-            saveJSONMap(correctMap, forKey: "triviaPerBookCorrectMap")
-            iCloudSyncCoordinator.shared.pushKey("triviaPerBookCorrectMap")
-        }
-
+    /// Adds one round's result for a book to the all-time and today's maps.
+    private func recordPerBook(_ keys: PerBookKeys, bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
+        let book = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !book.isEmpty, addAnswered != 0 || addCorrect != 0 else { return }
         let dayKey = Self.localDayKey(for: Date())
-        var dailyAnswered: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyAnswered")
-        var answersToday = dailyAnswered[dayKey] ?? [:]
-        if addAnswered != 0 {
-            answersToday[trimmed, default: 0] = max(0, (answersToday[trimmed] ?? 0) + max(0, addAnswered))
-            dailyAnswered[dayKey] = answersToday
-            saveNestedJSONMap(dailyAnswered, forKey: "triviaPerBookDailyAnswered")
-        }
 
-        var dailyCorrect: [String: [String: Int]] = loadNestedJSONMap(forKey: "triviaPerBookDailyCorrect")
-        var correctToday = dailyCorrect[dayKey] ?? [:]
-        if addCorrect != 0 {
-            correctToday[trimmed, default: 0] = max(0, (correctToday[trimmed] ?? 0) + max(0, addCorrect))
-            dailyCorrect[dayKey] = correctToday
-            saveNestedJSONMap(dailyCorrect, forKey: "triviaPerBookDailyCorrect")
-        }
+        addToBookMap(keys.answered, book: book, delta: addAnswered)
+        addToBookMap(keys.correct, book: book, delta: addCorrect)
+        addToDailyBookMap(keys.dailyAnswered, dayKey: dayKey, book: book, delta: addAnswered)
+        addToDailyBookMap(keys.dailyCorrect, dayKey: dayKey, book: book, delta: addCorrect)
 
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // UPDATED: Verses per-book maps writer — now writes all-time + daily nested maps
-    func recordVerseMatchPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
-        let trimmed = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+    private func addToBookMap(_ key: String, book: String, delta: Int) {
+        guard delta != 0 else { return }
+        var map = loadJSONMap(forKey: key)
+        map[book] = max(0, (map[book] ?? 0) + max(0, delta))
+        saveJSONMap(map, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
 
-        var answeredMap: [String: Int] = loadJSONMap(forKey: "versematchPerBookAnsweredMap")
-        if addAnswered != 0 {
-            answeredMap[trimmed, default: 0] = max(0, (answeredMap[trimmed] ?? 0) + max(0, addAnswered))
-            saveJSONMap(answeredMap, forKey: "versematchPerBookAnsweredMap")
-            iCloudSyncCoordinator.shared.pushKey("versematchPerBookAnsweredMap")
+    private func addToDailyBookMap(_ key: String, dayKey: String, book: String, delta: Int) {
+        guard delta != 0 else { return }
+        var days = loadNestedJSONMap(forKey: key)
+        var books = days[dayKey] ?? [:]
+        books[book] = max(0, (books[book] ?? 0) + max(0, delta))
+        days[dayKey] = books
+        saveNestedJSONMap(days, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+
+    /// Writes game counters: increments, raises to a new best, or sets, never below zero.
+    /// `didWrite` runs after each write so a caller can push the key to iCloud right away
+    /// or collect the keys and push them together.
+    private struct StatCounterWriter {
+        let didWrite: (String) -> Void
+        private let defaults = UserDefaults.standard
+
+        init(didWrite: @escaping (String) -> Void) {
+            self.didWrite = didWrite
         }
 
-        var correctMap: [String: Int] = loadJSONMap(forKey: "versematchPerBookCorrectMap")
-        if addCorrect != 0 {
-            correctMap[trimmed, default: 0] = max(0, (correctMap[trimmed] ?? 0) + max(0, addCorrect))
-            saveJSONMap(correctMap, forKey: "versematchPerBookCorrectMap")
-            iCloudSyncCoordinator.shared.pushKey("versematchPerBookCorrectMap")
+        func set(_ key: String, _ value: Int) {
+            defaults.set(max(0, value), forKey: key)
+            didWrite(key)
         }
 
-        // Daily nested maps (local-only; not mirrored to KVS, same as Quiz)
-        let dayKey = Self.localDayKey(for: Date())
-
-        var vmDailyA: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyAnswered")
-        var vmDayA = vmDailyA[dayKey] ?? [:]
-        if addAnswered != 0 {
-            vmDayA[trimmed, default: 0] = max(0, (vmDayA[trimmed] ?? 0) + max(0, addAnswered))
-            vmDailyA[dayKey] = vmDayA
-            saveNestedJSONMap(vmDailyA, forKey: "versematchPerBookDailyAnswered")
+        func increment(_ key: String, by delta: Int) {
+            set(key, defaults.integer(forKey: key) + delta)
         }
 
-        var vmDailyC: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyCorrect")
-        var vmDayC = vmDailyC[dayKey] ?? [:]
-        if addCorrect != 0 {
-            vmDayC[trimmed, default: 0] = max(0, (vmDayC[trimmed] ?? 0) + max(0, addCorrect))
-            vmDailyC[dayKey] = vmDayC
-            saveNestedJSONMap(vmDailyC, forKey: "versematchPerBookDailyCorrect")
+        func raise(_ key: String, candidate: Int) {
+            if candidate > defaults.integer(forKey: key) { set(key, candidate) }
         }
 
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        /// A writer that pushes each key to iCloud as it is written.
+        static var pushingEachKey: StatCounterWriter {
+            StatCounterWriter { iCloudSyncCoordinator.shared.pushKey($0) }
+        }
     }
 
     func recordRound(game: GameID, difficulty: Difficulty, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
-        let defaults = UserDefaults.standard
         var changedKeys: [String] = []
 
-        func setInt(_ key: String, _ value: Int) {
-            let v = max(0, value)
-            defaults.set(v, forKey: key)
-            changedKeys.append(key)
-        }
+        let counters = StatCounterWriter { changedKeys.append($0) }
 
-        func incInt(_ key: String, by delta: Int) {
-            let old = defaults.integer(forKey: key)
-            setInt(key, old + delta)
-        }
 
-        func maxInt(_ key: String, candidate: Int) {
-            let old = defaults.integer(forKey: key)
-            if candidate > old {
-                setInt(key, candidate)
-            }
-        }
 
         func suffix(for game: GameID, difficulty: Difficulty) -> String? {
             switch game {
@@ -694,103 +666,103 @@ final class GameStats {
         switch game {
         case .trivia:
             guard let s = suf else { return }
-            incInt("triviaAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("triviaAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("triviaAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            incInt("triviaAllTimeCorrect_all", by: addCorrect)
-            incInt("triviaAllTimeAnswered_all", by: addAnswered)
-            maxInt("triviaAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("triviaAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("triviaAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("triviaAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("triviaAllTimeCorrect_all", by: addCorrect)
+            counters.increment("triviaAllTimeAnswered_all", by: addAnswered)
+            counters.raise("triviaAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .quiz:
             guard let s = suf else { return }
             // Keep per-difficulty keys for back-compat/analytics
-            incInt("quizAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("quizAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("quizAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("quizAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("quizAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("quizAllTimeBestStreak_\(s)", candidate: currentBestStreak)
             // Mirror to combined keys so all difficulties share the same all-time stats
-            incInt("quizAllTimeCorrect_all", by: addCorrect)
-            incInt("quizAllTimeAnswered_all", by: addAnswered)
-            maxInt("quizAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("quizAllTimeCorrect_all", by: addCorrect)
+            counters.increment("quizAllTimeAnswered_all", by: addAnswered)
+            counters.raise("quizAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .hangman:
             guard let s = suf else { return }
-            incInt("hangmanAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("hangmanAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("hangmanAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("hangmanAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("hangmanAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("hangmanAllTimeBestStreak_\(s)", candidate: currentBestStreak)
             // Mirror to combined keys so all difficulties share the same all-time stats
-            incInt("hangmanAllTimeCorrect_all", by: addCorrect)
-            incInt("hangmanAllTimeAnswered_all", by: addAnswered)
-            maxInt("hangmanAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("hangmanAllTimeCorrect_all", by: addCorrect)
+            counters.increment("hangmanAllTimeAnswered_all", by: addAnswered)
+            counters.raise("hangmanAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .beatclock:
             guard let s = suf else { return }
             // Keep per-difficulty keys for back-compat/analytics
-            incInt("beatclockAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("beatclockAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("beatclockAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("beatclockAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("beatclockAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("beatclockAllTimeBestStreak_\(s)", candidate: currentBestStreak)
             // Always mirror to combined keys so all difficulties share the same all-time stats
-            incInt("beatclockAllTimeCorrect_all", by: addCorrect)
-            incInt("beatclockAllTimeAnswered_all", by: addAnswered)
-            maxInt("beatclockAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("beatclockAllTimeCorrect_all", by: addCorrect)
+            counters.increment("beatclockAllTimeAnswered_all", by: addAnswered)
+            counters.raise("beatclockAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .versematch:
             guard let s = suf else { return }
             // Keep per-difficulty keys for back-compat/analytics
-            incInt("versematchAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("versematchAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("versematchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("versematchAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("versematchAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("versematchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
             // Mirror to combined keys so all difficulties share the same all-time stats
-            incInt("versematchAllTimeCorrect_all", by: addCorrect)
-            incInt("versematchAllTimeAnswered_all", by: addAnswered)
-            maxInt("versematchAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("versematchAllTimeCorrect_all", by: addCorrect)
+            counters.increment("versematchAllTimeAnswered_all", by: addAnswered)
+            counters.raise("versematchAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .bookorder:
             guard let s = suf else { return }
             // Write per-difficulty ("expert" when difficulty == .none)
-            incInt("bookorderAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("bookorderAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("bookorderAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("bookorderAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("bookorderAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("bookorderAllTimeBestStreak_\(s)", candidate: currentBestStreak)
             // Mirror to combined keys when not already writing to "_all"
             if s != "all" {
-                incInt("bookorderAllTimeCorrect_all", by: addCorrect)
-                incInt("bookorderAllTimeAnswered_all", by: addAnswered)
-                maxInt("bookorderAllTimeBestStreak_all", candidate: currentBestStreak)
+                counters.increment("bookorderAllTimeCorrect_all", by: addCorrect)
+                counters.increment("bookorderAllTimeAnswered_all", by: addAnswered)
+                counters.raise("bookorderAllTimeBestStreak_all", candidate: currentBestStreak)
             }
 
         case .whoami:
             guard let s = suf else { return }
             // Keep per-difficulty keys for back-compat/analytics
-            incInt("whoamiAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("whoamiAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("whoamiAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("whoamiAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
             // Mirror to combined keys so all difficulties share the same all-time stats
-            incInt("whoamiAllTimeCorrect_all", by: addCorrect)
-            incInt("whoamiAllTimeAnswered_all", by: addAnswered)
-            maxInt("whoamiAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("whoamiAllTimeCorrect_all", by: addCorrect)
+            counters.increment("whoamiAllTimeAnswered_all", by: addAnswered)
+            counters.raise("whoamiAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .wordsearch:
             guard let s = suf else { return }
-            incInt("wordsearchAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("wordsearchAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("wordsearchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            incInt("wordsearchAllTimeCorrect_all", by: addCorrect)
-            incInt("wordsearchAllTimeAnswered_all", by: addAnswered)
-            maxInt("wordsearchAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("wordsearchAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("wordsearchAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("wordsearchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("wordsearchAllTimeCorrect_all", by: addCorrect)
+            counters.increment("wordsearchAllTimeAnswered_all", by: addAnswered)
+            counters.raise("wordsearchAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .scramble:
             guard let s = suf else { return }
-            incInt("scrambleAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("scrambleAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("scrambleAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            incInt("scrambleAllTimeCorrect_all", by: addCorrect)
-            incInt("scrambleAllTimeAnswered_all", by: addAnswered)
-            maxInt("scrambleAllTimeBestStreak_all", candidate: currentBestStreak)
+            counters.increment("scrambleAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("scrambleAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("scrambleAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("scrambleAllTimeCorrect_all", by: addCorrect)
+            counters.increment("scrambleAllTimeAnswered_all", by: addAnswered)
+            counters.raise("scrambleAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .wordle:
             guard let s = suf else { return }
-            incInt("wordleAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("wordleAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("wordleAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("wordleAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("wordleAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("wordleAllTimeBestStreak_\(s)", candidate: currentBestStreak)
         }
 
         do {
@@ -812,24 +784,12 @@ final class GameStats {
     }
 
     func recordWordleRound(type: WordleType, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
-        let defaults = UserDefaults.standard
         let suf = (type == .daily) ? "daily" : "free"
-        func setInt(_ key: String, _ value: Int) {
-            defaults.set(max(0, value), forKey: key)
-            iCloudSyncCoordinator.shared.pushKey(key)
-        }
-        func incInt(_ key: String, by delta: Int) {
-            let old = defaults.integer(forKey: key)
-            setInt(key, old + delta)
-        }
-        func maxInt(_ key: String, candidate: Int) {
-            let old = defaults.integer(forKey: key)
-            if candidate > old { setInt(key, candidate) }
-        }
+        let counters = StatCounterWriter.pushingEachKey
 
-        incInt("wordleAllTimeCorrect_\(suf)", by: addCorrect)
-        incInt("wordleAllTimeAnswered_\(suf)", by: addAnswered)
-        maxInt("wordleAllTimeBestStreak_\(suf)", candidate: currentBestStreak)
+        counters.increment("wordleAllTimeCorrect_\(suf)", by: addCorrect)
+        counters.increment("wordleAllTimeAnswered_\(suf)", by: addAnswered)
+        counters.raise("wordleAllTimeBestStreak_\(suf)", candidate: currentBestStreak)
 
         do {
             updateDailyMaps(addAnswered: addAnswered, addCorrect: addCorrect, forGameKey: "word")
@@ -854,33 +814,21 @@ final class GameStats {
         let perModeKey = Self.storageKeyForWord(mode: mode)
         updateDailyMaps(addAnswered: 1, addCorrect: won ? 1 : 0, forGameKey: perModeKey, includeOverall: false)
 
-        let defaults = UserDefaults.standard
         let typeSuf = (type == .daily) ? "daily" : "free"
         let modeSuf = (mode == .normal) ? "normal" : "hard"
         let clamped = max(1, min(6, guesses))
 
-        func setInt(_ key: String, _ value: Int) {
-            defaults.set(max(0, value), forKey: key)
-            iCloudSyncCoordinator.shared.pushKey(key)
-        }
-        func incInt(_ key: String, by delta: Int) {
-            let old = defaults.integer(forKey: key)
-            setInt(key, old + delta)
-        }
-        func maxInt(_ key: String, candidate: Int) {
-            let old = defaults.integer(forKey: key)
-            if candidate > old { setInt(key, candidate) }
-        }
+        let counters = StatCounterWriter.pushingEachKey
 
-        incInt("wordleAllTimeCorrect_\(modeSuf)", by: won ? 1 : 0)
-        incInt("wordleAllTimeAnswered_\(modeSuf)", by: 1)
-        maxInt("wordleAllTimeBestStreak_\(modeSuf)", candidate: currentBestStreak)
+        counters.increment("wordleAllTimeCorrect_\(modeSuf)", by: won ? 1 : 0)
+        counters.increment("wordleAllTimeAnswered_\(modeSuf)", by: 1)
+        counters.raise("wordleAllTimeBestStreak_\(modeSuf)", candidate: currentBestStreak)
 
         if won {
-            incInt("wordleWinsGuessSum_\(typeSuf)", by: clamped)
-            incInt("wordleWinsOnGuess\(clamped)_\(typeSuf)", by: 1)
-            incInt("wordleWinsGuessSum_\(modeSuf)", by: clamped)
-            incInt("wordleWinsOnGuess\(clamped)_\(modeSuf)", by: 1)
+            counters.increment("wordleWinsGuessSum_\(typeSuf)", by: clamped)
+            counters.increment("wordleWinsOnGuess\(clamped)_\(typeSuf)", by: 1)
+            counters.increment("wordleWinsGuessSum_\(modeSuf)", by: clamped)
+            counters.increment("wordleWinsOnGuess\(clamped)_\(modeSuf)", by: 1)
         }
 
         if type == .daily && won {
@@ -901,31 +849,23 @@ final class GameStats {
     }
 
     func recordWordleTime(type: WordleType, mode: WordMode, won: Bool, elapsedSeconds: Int) {
-        let defaults = UserDefaults.standard
         let typeSuf = (type == .daily) ? "daily" : "free"
         let modeSuf = (mode == .normal) ? "normal" : "hard"
 
-        func setInt(_ key: String, _ value: Int) {
-            defaults.set(max(0, value), forKey: key)
-            iCloudSyncCoordinator.shared.pushKey(key)
-        }
-        func incInt(_ key: String, by delta: Int) {
-            let old = defaults.integer(forKey: key)
-            setInt(key, old + max(0, delta))
+        let counters = StatCounterWriter.pushingEachKey
+
+        counters.increment("wordleTimeTotal_seconds_\(typeSuf)", by: max(0, elapsedSeconds))
+        if won {
+            counters.increment("wordleTimeWins_seconds_\(typeSuf)", by: max(0, elapsedSeconds))
+        } else {
+            counters.increment("wordleTimeLosses_seconds_\(typeSuf)", by: max(0, elapsedSeconds))
         }
 
-        incInt("wordleTimeTotal_seconds_\(typeSuf)", by: elapsedSeconds)
+        counters.increment("wordleTimeTotal_seconds_\(modeSuf)", by: max(0, elapsedSeconds))
         if won {
-            incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsedSeconds)
+            counters.increment("wordleTimeWins_seconds_\(modeSuf)", by: max(0, elapsedSeconds))
         } else {
-            incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsedSeconds)
-        }
-
-        incInt("wordleTimeTotal_seconds_\(modeSuf)", by: elapsedSeconds)
-        if won {
-            incInt("wordleTimeWins_seconds_\(modeSuf)", by: elapsedSeconds)
-        } else {
-            incInt("wordleTimeLosses_seconds_\(modeSuf)", by: elapsedSeconds)
+            counters.increment("wordleTimeLosses_seconds_\(modeSuf)", by: max(0, elapsedSeconds))
         }
 
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
@@ -1296,12 +1236,12 @@ final class GameStats {
         case .trivia: return "Trivia"
         case .hangman: return "Hangman"
         case .beatclock: return "Countdown"
-        case .versematch: return "Verses"
+        case .versematch: return "Verse Match"
         case .bookorder: return "Book Order"
-        case .whoami: return "Who?"
+        case .whoami: return "Who Am I?"
         case .wordsearch: return "Word Search"
         case .scramble: return "Scramble"
-        case .wordle: return "WORD"
+        case .wordle: return "Word"
         }
     }
 
@@ -1346,8 +1286,7 @@ final class GameStats {
 
     var lastPlayedGameName: String? {
         if let raw = UserDefaults.standard.string(forKey: "gamesLastPlayedGameName") {
-            if raw == "Wordle (Bible)" { return "WORD" }
-            return raw
+            return Self.canonicalDisplayName(raw)
         }
                return nil
     }

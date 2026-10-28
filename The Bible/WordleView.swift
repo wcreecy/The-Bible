@@ -351,7 +351,7 @@ struct WordleView: View {
     .toolbar {
       ToolbarItem(placement: .principal) {
         if started {
-          GameNavigationTitle(title: "WORD", systemImage: "square.grid.3x3.fill", tint: .mint)
+          GameNavigationTitle(title: "Word", systemImage: "square.grid.3x3.fill", tint: .mint)
         }
       }
       ToolbarItem(placement: .topBarTrailing) {
@@ -462,7 +462,7 @@ struct WordleView: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
-                .gameStartDescriptionStyle(title: "WORD", systemImage: "square.grid.3x3.fill", tint: .mint)
+                .gameStartDescriptionStyle(title: "Word", systemImage: "square.grid.3x3.fill", tint: .mint)
 
             GameSplashLaunchLayout(
                 tint: .mint,
@@ -1442,7 +1442,7 @@ struct WordleView: View {
 
     /// Spoiler-free result summary with an emoji grid of the guesses.
     private var shareText: String {
-        let title = mode == .daily ? "WORD Daily \(todayKey)" : "WORD Practice"
+        let title = mode == .daily ? "Word Daily \(todayKey)" : "Word Practice"
         let score = didWin ? "\(rowIndex)/6" : "X/6"
         let difficulty = roundHardMode ? " (Hard)" : ""
         let grid = evaluations.prefix(rowIndex).map { row in

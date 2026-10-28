@@ -135,8 +135,8 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .beatTheClock: "Countdown"
         case .bibleQuiz: "Quiz"
         case .bibleTrivia: "Trivia"
-        case .verseMatch: "Verses"
-        case .whoAmI: "Who?"
+        case .verseMatch: "Verse Match"
+        case .whoAmI: "Who Am I?"
         }
     }
 

@@ -16,17 +16,17 @@ struct GamesOverviewCardView: View {
         case "All Games":    return "sparkles"
         case "Quiz":   return "questionmark.circle"
         case "Hangman":      return "figure"
-        case "Verses":  return "text.quote"
+        case "Verse Match":  return "text.quote"
         case "Countdown": return "timer"
         case "Book Order":   return "books.vertical"
-        case "Who?":    return "person.crop.circle.badge.questionmark"
-        case "WORD":         return "square.grid.3x3"
+        case "Who Am I?":    return "person.crop.circle.badge.questionmark"
+        case "Word":         return "square.grid.3x3"
         default:             return "gamecontroller"
         }
     }
 
     private func sortKey(for name: String) -> String {
-        let key = (name == "WORD") ? "Who?" : name
+        let key = (name == "Word") ? "Who Am I?" : name
         return key.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .autoupdatingCurrent)
     }
 
@@ -34,7 +34,7 @@ struct GamesOverviewCardView: View {
         let l = sortKey(for: lhs)
         let r = sortKey(for: rhs)
         if l == r {
-            let priority: [String: Int] = ["Who?": 0, "WORD": 1]
+            let priority: [String: Int] = ["Who Am I?": 0, "Word": 1]
             let pl = priority[lhs] ?? 2
             let pr = priority[rhs] ?? 2
             if pl != pr { return pl < pr }
@@ -85,7 +85,7 @@ struct GamesOverviewCardView: View {
             NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
                     if let g = selectedGenre {
-                        if selectedGame == "Verses" {
+                        if selectedGame == "Verse Match" {
                             let rows = GameStats.shared.verseMatchAccuracyByBook(inGenre: g)
                             if rows.isEmpty {
                                 ContentUnavailableView("No data for \(g)", systemImage: "book")
@@ -202,17 +202,17 @@ private struct GamesOverviewCardContent: View {
         case "All Games":    return "sparkles"
         case "Quiz":   return "questionmark.circle"
         case "Hangman":      return "figure"
-        case "Verses":  return "text.quote"
+        case "Verse Match":  return "text.quote"
         case "Countdown": return "timer"
         case "Book Order":   return "books.vertical"
-        case "Who?":    return "person.crop.circle.badge.questionmark"
-        case "WORD":         return "square.grid.3x3"
+        case "Who Am I?":    return "person.crop.circle.badge.questionmark"
+        case "Word":         return "square.grid.3x3"
         default:             return "gamecontroller"
         }
     }
 
     private func sortKey(for name: String) -> String {
-        let key = (name == "WORD") ? "Who?" : name
+        let key = (name == "Word") ? "Who Am I?" : name
         return key.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .autoupdatingCurrent)
     }
 
@@ -220,7 +220,7 @@ private struct GamesOverviewCardContent: View {
         let l = sortKey(for: lhs)
         let r = sortKey(for: rhs)
         if l == r {
-            let priority: [String: Int] = ["Who?": 0, "WORD": 1]
+            let priority: [String: Int] = ["Who Am I?": 0, "Word": 1]
             let pl = priority[lhs] ?? 2
             let pr = priority[rhs] ?? 2
             if pl != pr { return pl < pr }
@@ -245,7 +245,7 @@ private struct GamesOverviewCardContent: View {
         let selectedEntry = entries.first(where: { $0.name == selectedGame })
 
         let wordScoped: (accPct: Double, played: Int, correct: Int, bestStreak: Int)? = {
-            guard selectedGame == "WORD" else { return nil }
+            guard selectedGame == "Word" else { return nil }
 
             let n = GameStats.shared.wordleCounts(mode: .normal)
             let h = GameStats.shared.wordleCounts(mode: .hard)
@@ -275,7 +275,7 @@ private struct GamesOverviewCardContent: View {
         }()
 
         let kpiAccuracyPct: Double = {
-            if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
+            if selectedGame == "Word", let scoped = wordScoped { return scoped.accPct }
             if selectedGame == "All Games" { return overallPct }
             let ans = selectedEntry?.answered ?? 0
             guard ans > 0 else { return 0 }
@@ -284,17 +284,17 @@ private struct GamesOverviewCardContent: View {
         let kpiAccuracyTint = Color.gamerScoreColor(for: kpiAccuracyPct)
 
         let kpiPlayed: Int = {
-            if selectedGame == "WORD", let scoped = wordScoped { return scoped.played }
+            if selectedGame == "Word", let scoped = wordScoped { return scoped.played }
             return (selectedGame == "All Games") ? totalAnswered : (selectedEntry?.answered ?? 0)
         }()
 
         let kpiCorrect: Int = {
-            if selectedGame == "WORD", let scoped = wordScoped { return scoped.correct }
+            if selectedGame == "Word", let scoped = wordScoped { return scoped.correct }
             return (selectedGame == "All Games") ? totalCorrect : (selectedEntry?.correct ?? 0)
         }()
 
         let kpiBestStreak: Int = {
-            if selectedGame == "WORD", let scoped = wordScoped { return scoped.bestStreak }
+            if selectedGame == "Word", let scoped = wordScoped { return scoped.bestStreak }
             if selectedGame == "All Games" {
                 return entries.map { $0.bestStreak ?? 0 }.max() ?? 0
             } else {
@@ -356,7 +356,7 @@ private struct GamesOverviewCardContent: View {
                 let series30: [(date: Date, answered: Int, correct: Int)] = {
                     if selectedGame == "All Games" {
                         return GameStats.shared.dailySeriesLast(days: 30)
-                    } else if selectedGame == "WORD" {
+                    } else if selectedGame == "Word" {
                         switch wordScope {
                         case 0: return GameStats.shared.dailySeriesLast(days: 30, forWordMode: .normal)
                         case 1: return GameStats.shared.dailySeriesLast(days: 30, forWordMode: .hard)
@@ -372,7 +372,7 @@ private struct GamesOverviewCardContent: View {
                 let streaksInfo: (current: Int, longest: Int) = {
                     if selectedGame == "All Games" {
                         return GameStats.shared.activityStreaks()
-                    } else if selectedGame == "WORD" {
+                    } else if selectedGame == "Word" {
                         switch wordScope {
                         case 0: return GameStats.shared.activityStreaks(forWordMode: .normal)
                         case 1: return GameStats.shared.activityStreaks(forWordMode: .hard)
@@ -385,7 +385,7 @@ private struct GamesOverviewCardContent: View {
                 let trend7: (currentPct: Double, deltaVsPrev: Double) = {
                     if selectedGame == "All Games" {
                         return GameStats.shared.accuracy7DayTrend()
-                    } else if selectedGame == "WORD" {
+                    } else if selectedGame == "Word" {
                         switch wordScope {
                         case 0: return GameStats.shared.accuracy7DayTrend(forWordMode: .normal)
                         case 1: return GameStats.shared.accuracy7DayTrend(forWordMode: .hard)
@@ -488,7 +488,7 @@ private struct GamesOverviewCardContent: View {
                         .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.18 : 0.08))
                     }
 
-                    if selectedGame == "WORD" {
+                    if selectedGame == "Word" {
                         let solvedKeys: Set<String> = GameStats.shared.wordleDailySolvedDayKeysLast(days: 30)
                         ForEach(series30, id: \.date) { point in
                             let key = {
@@ -666,7 +666,7 @@ private struct GamesOverviewCardContent: View {
                     }
                 }
 
-                if selectedGame == "Verses" {
+                if selectedGame == "Verse Match" {
                     let summary = GameStats.shared.verseMatchOTNTSummary()
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Accuracy by Testament (OT vs NT)")
@@ -687,7 +687,7 @@ private struct GamesOverviewCardContent: View {
                     }
                 }
 
-                if selectedGame == "Verses" {
+                if selectedGame == "Verse Match" {
                     let rows = GameStats.shared.verseMatchAccuracyByGenre()
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Accuracy by Genre")
@@ -870,7 +870,7 @@ private struct GamesOverviewCardContent: View {
                 }
 
                 // Verses weak/strong sections (mirroring Bible Quiz)
-                if selectedGame == "Verses" {
+                if selectedGame == "Verse Match" {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Top Weak Books")
@@ -1004,7 +1004,7 @@ private struct GamesOverviewCardContent: View {
                     .padding(.top, 2)
                 }
 
-                if selectedGame == "WORD" {
+                if selectedGame == "Word" {
                     Picker("Scope", selection: $wordScope) {
                         Text("Combined").tag(2)
                         Text("Normal").tag(0)

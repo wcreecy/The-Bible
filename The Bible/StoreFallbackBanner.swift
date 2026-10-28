@@ -8,13 +8,16 @@ struct StoreFallbackBanner: View {
     @State private var isDismissed = false
 
     private var message: LocalizedStringResource? {
+        // UI tests run without the iCloud library; like tips and permission prompts, the
+        // banner stays out of their way.
+        if UITestSupport.isActive { return nil }
         switch mode {
         case .cloudKit:
-            nil
+            return nil
         case .localOnly:
-            "Not syncing: notes, favorites, and bookmarks are saved on this device only. Quit and reopen the app to try again."
+            return "Not syncing: notes, favorites, and bookmarks are saved on this device only. Quit and reopen the app to try again."
         case .inMemory:
-            "Changes won't be saved: your library couldn't be opened. Quit and reopen the app."
+            return "Changes won't be saved: your library couldn't be opened. Quit and reopen the app."
         }
     }
 

@@ -33,7 +33,7 @@ enum GameLaunchRequest {
 
     /// Switches to the Games tab and opens the game with the given display name.
     static func open(gameName: String) {
-        pendingGameName = gameName
+        pendingGameName = GameStats.canonicalDisplayName(gameName)
         AppRouter.shared.open(.gameStart)
     }
 
@@ -63,12 +63,12 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: "Quiz"
         case .hangman: "Hangman"
         case .beatTheClock: "Countdown"
-        case .verseMatch: "Verses"
+        case .verseMatch: "Verse Match"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .scramble: "Scramble"
-        case .whoAmI: "Who?"
-        case .wordle: "WORD"
+        case .whoAmI: "Who Am I?"
+        case .wordle: "Word"
         case .trivia: "Trivia"
         case .reviewRound: "Review Round"
         }
@@ -79,12 +79,12 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: "Quiz"
         case .hangman: "Hangman"
         case .beatTheClock: "Countdown"
-        case .verseMatch: "Verses"
+        case .verseMatch: "Verse Match"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .scramble: "Scramble"
-        case .whoAmI: "Who?"
-        case .wordle: "WORD"
+        case .whoAmI: "Who Am I?"
+        case .wordle: "Word"
         case .trivia: "Trivia"
         case .reviewRound: "Review Round"
         }
@@ -199,8 +199,8 @@ private struct ReviewRoundProgress: Identifiable {
         case .beatTheClock: "Beat the Clock"
         case .bibleQuiz: "Quiz"
         case .bibleTrivia: "Trivia"
-        case .verseMatch: "Verses"
-        case .whoAmI: "Who?"
+        case .verseMatch: "Verse Match"
+        case .whoAmI: "Who Am I?"
         }
     }
 }

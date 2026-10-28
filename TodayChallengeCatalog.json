@@ -3,13 +3,13 @@
     "Quiz",
     "Trivia",
     "Hangman",
-    "Verses",
+    "Verse Match",
     "Countdown",
     "Book Order",
-    "Who?",
+    "Who Am I?",
     "Word Search",
     "Scramble",
-    "WORD"
+    "Word"
   ],
   "prayerMinutes": {
     "minimum": 2,

@@ -13,9 +13,9 @@ struct GameStatsAccountingTests {
             (.trivia, "trivia", "Trivia"),
             (.hangman, "hangman", "Hangman"),
             (.beatclock, "beatclock", "Countdown"),
-            (.versematch, "versematch", "Verses"),
+            (.versematch, "versematch", "Verse Match"),
             (.bookorder, "bookorder", "Book Order"),
-            (.whoami, "whoami", "Who?"),
+            (.whoami, "whoami", "Who Am I?"),
             (.wordsearch, "wordsearch", "Word Search"),
             (.scramble, "scramble", "Scramble")
         ]
@@ -221,6 +221,24 @@ struct GameStatsAccountingTests {
         #expect(GameStats.shared.todayStats().answered == 0)
         defaults.set(Data([0xFF, 0x00]), forKey: "gamesDailyAnswered")
         #expect(GameStats.shared.todayStats().answered == 0)
+    }
+
+    @Test
+    func previousGameNamesStillResolveToTheRenamedGames() {
+        #expect(GameStats.canonicalDisplayName("Verses") == "Verse Match")
+        #expect(GameStats.canonicalDisplayName("Who?") == "Who Am I?")
+        #expect(GameStats.canonicalDisplayName("WORD") == "Word")
+        #expect(GameStats.canonicalDisplayName("Wordle (Bible)") == "Word")
+        #expect(GameStats.canonicalDisplayName("Quiz") == "Quiz")
+
+        // A saved Today Challenge or a not-yet-updated device may still say "Who?".
+        let key = "gamesLastPlayedGameName"
+        let saved = defaults.object(forKey: key)
+        defer { saved == nil ? defaults.removeObject(forKey: key) : defaults.set(saved, forKey: key) }
+        defaults.set("Who?", forKey: key)
+        #expect(GameStats.shared.lastPlayedGameName == "Who Am I?")
+        #expect(GameStats.shared.dailySeriesLast(days: 3, forDisplayName: "Who?").count == 3)
+        #expect(GameStats.shared.dailySeriesLast(days: 3, forDisplayName: "Who Am I?").count == 3)
     }
 
     private func map(named key: String) -> [String: Int] {

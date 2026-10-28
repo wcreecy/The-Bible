@@ -75,7 +75,7 @@ struct WhoAmIGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.started {
-                    GameNavigationTitle(title: "Who?", systemImage: "person.text.rectangle", tint: .brown)
+                    GameNavigationTitle(title: "Who Am I?", systemImage: "person.text.rectangle", tint: .brown)
                 }
             }
         }
@@ -92,7 +92,7 @@ struct WhoAmIGameView: View {
     private var setupContent: some View {
         Spacer(minLength: 24)
         Text("Name the Bible person from a clue, or the clue from a name.")
-            .gameStartDescriptionStyle(title: "Who?", systemImage: "person.text.rectangle", tint: .brown)
+            .gameStartDescriptionStyle(title: "Who Am I?", systemImage: "person.text.rectangle", tint: .brown)
 
         GameSplashLaunchLayout(
             tint: .brown,
