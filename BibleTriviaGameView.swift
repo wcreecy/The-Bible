@@ -271,16 +271,23 @@ final class BibleTriviaGameModel {
         PersistentGameStreak(game: "trivia", variant: difficulty.rawValue)
     }
 
-    func load() {
+    func load() async {
         guard questions.isEmpty else {
             phase = .setup
             return
         }
 
-        guard let url = Bundle.main.url(forResource: "BibleTriviaQuestions", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let loadedQuestions = try? JSONDecoder().decode([BibleTriviaQuestion].self, from: data),
-              !loadedQuestions.isEmpty else {
+        // The catalog is large; decode it off the main actor so the screen stays responsive.
+        let loadedQuestions = await Task.detached(priority: .userInitiated) { () -> [BibleTriviaQuestion] in
+            guard let url = Bundle.main.url(forResource: "BibleTriviaQuestions", withExtension: "json"),
+                  let data = try? Data(contentsOf: url, options: .mappedIfSafe),
+                  let decoded = try? JSONDecoder().decode([BibleTriviaQuestion].self, from: data) else {
+                return []
+            }
+            return decoded
+        }.value
+
+        guard !loadedQuestions.isEmpty else {
             phase = .unavailable
             return
         }
@@ -530,7 +537,7 @@ struct BibleTriviaGameView: View {
             }
         }
         .task {
-            model.load()
+            await model.load()
         }
     }
 }

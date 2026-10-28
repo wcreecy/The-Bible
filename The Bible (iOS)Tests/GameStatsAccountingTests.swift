@@ -159,6 +159,41 @@ struct GameStatsAccountingTests {
         #expect(iCloudSyncCoordinator.perGameDailyMapKeys.contains("gamesDailyCorrect_scramble"))
     }
 
+    @Test
+    func overallSnapshotCountsTriviaAndMatchesTheBreakdown() {
+        let keys = [
+            "triviaAllTimeCorrect_normal",
+            "triviaAllTimeAnswered_normal",
+            "triviaAllTimeBestStreak_normal",
+            "triviaAllTimeCorrect_all",
+            "triviaAllTimeAnswered_all",
+            "triviaAllTimeBestStreak_all",
+            "gamesDailyAnswered",
+            "gamesDailyCorrect",
+            "gamesDailyAnswered_trivia",
+            "gamesDailyCorrect_trivia",
+            "gamesLastPlayedAt",
+            "gamesLastPlayedGameName"
+        ]
+        let savedValues = savedValues(for: keys)
+        clear(keys)
+        defer { restore(savedValues, for: keys) }
+
+        GameStats.shared.recordRound(
+            game: .trivia,
+            difficulty: .normal,
+            correct: 2,
+            answered: 3,
+            currentBestStreak: 2
+        )
+
+        let snapshot = GameStats.shared.snapshot()
+        let breakdown = GameStats.shared.breakdownSnapshot()
+        #expect(snapshot.totalAnswered >= 3)
+        #expect(snapshot.totalAnswered == breakdown.totalAnswered)
+        #expect(snapshot.totalCorrect == breakdown.totalCorrect)
+    }
+
     private func map(named key: String) -> [String: Int] {
         guard let data = defaults.data(forKey: key) else { return [:] }
         return (try? JSONDecoder().decode([String: Int].self, from: data)) ?? [:]

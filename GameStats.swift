@@ -1206,7 +1206,7 @@ final class GameStats {
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, hangman, versematch, beatclock, bookorder, whoami, wordsearch, scramble]
+        let stats = [quiz, trivia, hangman, versematch, beatclock, bookorder, whoami, wordsearch, scramble]
         let typedCorrect = wordle(type: .daily).correct + wordle(type: .free).correct
         let typedAnswered = wordle(type: .daily).answered + wordle(type: .free).answered
         let wordleCombined = GameStat(

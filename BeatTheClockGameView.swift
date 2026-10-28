@@ -951,67 +951,6 @@ nonisolated enum BeatTheClockAnswerIndex {
 
 // MARK: - Setup views
 
-private struct BeatTheClockConfigurationCard: View {
-    @Binding var difficulty: BeatTheClockGameView.Difficulty
-    @Binding var category: BeatTheClockGameView.Category
-    let minimumHeight: CGFloat?
-
-    init(
-        difficulty: Binding<BeatTheClockGameView.Difficulty>,
-        category: Binding<BeatTheClockGameView.Category>,
-        minimumHeight: CGFloat? = nil
-    ) {
-        _difficulty = difficulty
-        _category = category
-        self.minimumHeight = minimumHeight
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            BeatTheClockSetupControls(category: $category)
-
-            Spacer(minLength: 0)
-
-            Divider()
-
-            HStack(spacing: 8) {
-                BeatTheClockGameFact(
-                    icon: "number",
-                    value: Text("\(BeatTheClockGameView.questionsPerGame)"),
-                    label: "Questions"
-                )
-
-                BeatTheClockGameFact(
-                    icon: "timer",
-                    value: Text("\(difficulty.roundTime) sec"),
-                    label: "Per question"
-                )
-
-                BeatTheClockGameFact(
-                    icon: "lightbulb",
-                    value: difficulty.showsClueAutomatically
-                        ? Text("Shown")
-                        : Text("−\(BeatTheClockGameView.hintCost) sec"),
-                    label: "Clues"
-                )
-            }
-        }
-        .padding(16)
-        .frame(
-            maxWidth: .infinity,
-            minHeight: minimumHeight,
-            alignment: .topLeading
-        )
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .padding(.horizontal)
-        .accessibilityElement(children: .contain)
-    }
-}
-
 private struct BeatTheClockGameFact: View {
     let icon: String
     let value: Text
@@ -1076,44 +1015,6 @@ private struct BeatTheClockSetupControls: View {
                 }
             )
         }
-    }
-}
-
-private struct BeatTheClockStartButton: View {
-    let isLoading: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 12) {
-                if isLoading {
-                    ProgressView()
-                        .controlSize(.large)
-                        .tint(.white)
-                } else {
-                    Image(systemName: "play.fill")
-                        .font(.largeTitle)
-                }
-                Text("Start Game")
-                    .font(.title2.weight(.semibold))
-                Text(isLoading ? "Loading questions…" : "Begin your timed challenge.")
-                    .font(.subheadline)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.white.opacity(0.82))
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(24)
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.white)
-        .background(
-            Color.indigo.gradient,
-            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
-        )
-        .opacity(isLoading ? 0.7 : 1)
-        .disabled(isLoading)
-        .accessibilityLabel("Start Game")
-        .accessibilityHint("Begins a Countdown game")
     }
 }
 

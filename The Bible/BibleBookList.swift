@@ -141,30 +141,3 @@ struct BibleReferenceJumpRow: View {
         .heroCardSurface()
     }
 }
-
-/// Canonical / A–Z ordering menu for the book list.
-struct BibleBookSortMenu: View {
-    @Binding var alphabetical: Bool
-
-    var body: some View {
-        Menu {
-            Button {
-                alphabetical = false
-            } label: {
-                Label("Canonical", systemImage: "list.number")
-            }
-            .disabled(!alphabetical)
-
-            Button {
-                alphabetical = true
-            } label: {
-                Label("A–Z", systemImage: "textformat.abc")
-            }
-            .disabled(alphabetical)
-        } label: {
-            Image(systemName: "arrow.up.arrow.down")
-        }
-        .accessibilityLabel("Sort")
-        .accessibilityHint("Choose canonical or alphabetical order")
-    }
-}

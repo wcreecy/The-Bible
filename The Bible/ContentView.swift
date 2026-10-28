@@ -14,6 +14,7 @@ import ObjectiveC
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.persistenceStoreMode) private var persistenceStoreMode
     // Separate coordinators per tab to avoid path leakage/corruption
     @State private var homeCoordinator = NavigationCoordinator()
     @State private var bibleCoordinator = NavigationCoordinator()
@@ -119,6 +120,9 @@ struct ContentView: View {
 
     var body: some View {
         tabs
+        .safeAreaInset(edge: .top, spacing: 0) {
+            StoreFallbackBanner(mode: persistenceStoreMode)
+        }
         .background(AppBackgroundView(tab: selectedTab))
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
