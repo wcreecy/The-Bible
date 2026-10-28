@@ -133,6 +133,41 @@ struct SearchAndBackgroundPerformanceTests {
     }
 
     @Test
+    func removeUnusedPhotosKeepsPhotosAnyPageStillUses() throws {
+        // Uses the app's real settings, so put back whatever was there.
+        let defaults = UserDefaults.standard
+        let keys = AppTab.allCases.map(AppBackgroundStorage.photoKey(for:))
+        let original = keys.map { defaults.string(forKey: $0) }
+        defer {
+            for (key, value) in zip(keys, original) { defaults.set(value, forKey: key) }
+        }
+
+        let shared = try writeTestPhoto(width: 100, height: 100)
+        let replaced = try writeTestPhoto(width: 100, height: 100)
+        let orphan = try writeTestPhoto(width: 100, height: 100)
+        defer {
+            for name in [shared, replaced, orphan] { try? removeTestPhoto(named: name) }
+        }
+
+        // Every page uses `shared`, except the first, which now uses `replaced`.
+        for key in keys { defaults.set(shared, forKey: key) }
+        defaults.set(replaced, forKey: keys[0])
+
+        AppBackgroundStorage.removeUnusedPhotos()
+
+        #expect(AppBackgroundStorage.image(named: shared) != nil)
+        #expect(AppBackgroundStorage.image(named: replaced) != nil)
+        #expect(AppBackgroundStorage.image(named: orphan) == nil)
+
+        // Once the last page stops using a photo, it goes too.
+        defaults.set(shared, forKey: keys[0])
+        AppBackgroundStorage.removeUnusedPhotos()
+
+        #expect(AppBackgroundStorage.image(named: shared) != nil)
+        #expect(AppBackgroundStorage.image(named: replaced) == nil)
+    }
+
+    @Test
     func importedPhotoIsScaledDownBeforeSaving() throws {
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1

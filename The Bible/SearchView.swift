@@ -243,6 +243,40 @@ struct SearchResult: Identifiable, Hashable, Sendable {
     }
 }
 
+/// A fixed-size set of verse positions. Combining sets is a bitwise AND and walking one
+/// yields positions in ascending order, so no hashing or sorting is needed.
+nonisolated struct EntryBitSet: Sendable {
+    private var blocks: [UInt64]
+
+    init(capacity: Int) {
+        blocks = Array(repeating: 0, count: (capacity + 63) / 64)
+    }
+
+    var isEmpty: Bool { !blocks.contains { $0 != 0 } }
+
+    mutating func insert(_ position: Int) {
+        blocks[position >> 6] |= 1 << UInt64(position & 63)
+    }
+
+    mutating func formIntersection(_ other: EntryBitSet) {
+        for index in blocks.indices {
+            blocks[index] &= other.blocks[index]
+        }
+    }
+
+    /// Calls `body` with each position in ascending order until it returns false.
+    func forEachEntryID(_ body: (Int) -> Bool) {
+        for (blockIndex, block) in blocks.enumerated() {
+            var remaining = block
+            while remaining != 0 {
+                let position = (blockIndex << 6) + remaining.trailingZeroBitCount
+                if !body(position) { return }
+                remaining &= remaining - 1
+            }
+        }
+    }
+}
+
 actor BibleSearchIndex {
     static let shared = BibleSearchIndex()
 
@@ -272,35 +306,22 @@ actor BibleSearchIndex {
     ) async -> [SearchResult] {
         let index = await indexedVerses()
         let searchTokens = Array(Set(tokens)).sorted { $0.count > $1.count }
-        guard let entryIDs = matchingEntryIDs(for: searchTokens, in: index) else { return [] }
+        guard let matches = matchingEntries(for: searchTokens, in: index) else { return [] }
         var results: [SearchResult] = []
         results.reserveCapacity(min(maxResults, 32))
 
-        // Prefix searches such as "the" can match thousands of verses. Sorting every
-        // matching ID just to display the first page is wasteful; entries are already in
-        // canonical order, so scan until the requested page is full for broad result sets.
-        if entryIDs.count > maxResults * 4 {
-            for (entryID, entry) in index.entries.enumerated() {
-                if Task.isCancelled { return [] }
-                guard entryIDs.contains(entryID) else { continue }
-                if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
-                    continue
-                }
-                append(entry, to: &results)
-                if results.count == maxResults { break }
+        // Bits are visited in ascending entry order, which is canonical Bible order, so the
+        // first page comes out already sorted and the scan stops as soon as it is full.
+        matches.forEachEntryID { entryID in
+            if Task.isCancelled { return false }
+            let entry = index.entries[entryID]
+            if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
+                return true
             }
-        } else {
-            for entryID in entryIDs.sorted() {
-                if Task.isCancelled { return [] }
-                let entry = index.entries[entryID]
-                if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
-                    continue
-                }
-                append(entry, to: &results)
-                if results.count == maxResults { break }
-            }
+            append(entry, to: &results)
+            return results.count < maxResults
         }
-        return results
+        return Task.isCancelled ? [] : results
     }
 
     private func append(_ entry: Entry, to results: inout [SearchResult]) {
@@ -314,36 +335,41 @@ actor BibleSearchIndex {
         ))
     }
 
-    private func matchingEntryIDs(for tokens: [String], in index: Index) -> Set<Int>? {
-        var matchingIDs: Set<Int>?
+    /// The verses containing a word that starts with every token, or nil when there are none.
+    private func matchingEntries(for tokens: [String], in index: Index) -> EntryBitSet? {
+        var matches: EntryBitSet?
 
         for token in tokens {
-            let tokenIDs = entryIDs(forPrefix: token, in: index)
-            guard !tokenIDs.isEmpty else { return nil }
+            guard let tokenMatches = entries(forPrefix: token, in: index) else { return nil }
 
-            if let currentIDs = matchingIDs {
-                let intersection = currentIDs.intersection(tokenIDs)
-                guard !intersection.isEmpty else { return nil }
-                matchingIDs = intersection
+            if var current = matches {
+                current.formIntersection(tokenMatches)
+                guard !current.isEmpty else { return nil }
+                matches = current
             } else {
-                matchingIDs = tokenIDs
+                matches = tokenMatches
             }
         }
 
-        return matchingIDs
+        return matches
     }
 
-    private func entryIDs(forPrefix prefix: String, in index: Index) -> Set<Int> {
-        var ids: Set<Int> = []
+    /// The verses containing a word that starts with `prefix`, or nil when there are none.
+    private func entries(forPrefix prefix: String, in index: Index) -> EntryBitSet? {
+        var matches = EntryBitSet(capacity: index.entries.count)
+        var foundWord = false
         var wordIndex = lowerBound(of: prefix, in: index.sortedWords)
 
         while wordIndex < index.sortedWords.count {
             let word = index.sortedWords[wordIndex]
             guard word.hasPrefix(prefix) else { break }
-            ids.formUnion(index.postingsByWord[word, default: []])
+            foundWord = true
+            for entryID in index.postingsByWord[word, default: []] {
+                matches.insert(entryID)
+            }
             wordIndex += 1
         }
-        return ids
+        return foundWord ? matches : nil
     }
 
     private func lowerBound(of value: String, in sortedWords: [String]) -> Int {

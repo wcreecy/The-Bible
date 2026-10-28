@@ -737,6 +737,7 @@ private enum DeveloperSettingsReset {
             defaults.set("#F2F2F7", forKey: AppBackgroundStorage.colorKey(for: tab))
             defaults.set("", forKey: AppBackgroundStorage.photoKey(for: tab))
         }
+        AppBackgroundStorage.removeUnusedPhotos(defaults: defaults)
 
         NotificationCenter.default.post(name: .resetPrayerTimer, object: nil)
         NotificationCenter.default.post(name: .homeLayoutChanged, object: nil)

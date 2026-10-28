@@ -64,9 +64,15 @@ enum VerseActionFeedback {
     }
 }
 
+/// Passes menu feedback up to the screen's toast. It is a class so the environment value
+/// stays the same object, and the menus below aren't redrawn each time the toast changes.
+final class VerseActionFeedbackRelay {
+    var send: (VerseActionFeedback) -> Void = { _ in }
+}
+
 extension EnvironmentValues {
     /// Receives feedback from any verse menu below that wasn't given its own `onFeedback`.
-    @Entry var verseActionFeedback: ((VerseActionFeedback) -> Void)? = nil
+    @Entry var verseActionFeedback: VerseActionFeedbackRelay? = nil
 }
 
 /// Drives the toast a screen shows after a verse action. Keep one as `@State` and attach
@@ -81,18 +87,30 @@ struct VerseActionToastState {
     }
 }
 
+private struct VerseActionToastModifier: ViewModifier {
+    @Binding var state: VerseActionToastState
+    let bottomPadding: CGFloat
+    @State private var relay = VerseActionFeedbackRelay()
+
+    func body(content: Content) -> some View {
+        content
+            .environment(\.verseActionFeedback, relay)
+            .onAppear { relay.send = { state.show($0) } }
+            .appToast(
+                isPresented: $state.isPresented,
+                symbol: state.feedback.toastSymbol,
+                text: state.feedback.toastText,
+                tint: state.feedback.toastTint,
+                bottomPadding: bottomPadding
+            )
+    }
+}
+
 extension View {
     /// Shows a toast for the actions of every verse menu in this view that doesn't pass its
     /// own `onFeedback`.
     func verseActionToast(_ state: Binding<VerseActionToastState>, bottomPadding: CGFloat = 20) -> some View {
-        environment(\.verseActionFeedback) { state.wrappedValue.show($0) }
-            .appToast(
-                isPresented: state.isPresented,
-                symbol: state.wrappedValue.feedback.toastSymbol,
-                text: state.wrappedValue.feedback.toastText,
-                tint: state.wrappedValue.feedback.toastTint,
-                bottomPadding: bottomPadding
-            )
+        modifier(VerseActionToastModifier(state: state, bottomPadding: bottomPadding))
     }
 }
 
@@ -139,7 +157,7 @@ struct VerseActionMenu: View {
 @MainActor
 struct VerseActionMenuContent: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.verseActionFeedback) private var environmentFeedback
+    @Environment(\.verseActionFeedback) private var feedbackRelay
     @State private var pinnedStore = PinnedVerseStore.shared
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isShowingNoteEditor = false
@@ -154,7 +172,11 @@ struct VerseActionMenuContent: View {
 
     /// Reports to this menu's own handler, or else to the screen's `verseActionToast`.
     private func sendFeedback(_ feedback: VerseActionFeedback) {
-        (onFeedback ?? environmentFeedback)?(feedback)
+        if let onFeedback {
+            onFeedback(feedback)
+        } else {
+            feedbackRelay?.send(feedback)
+        }
     }
 
     private var favorites: [Favorite] { saved.favorites }

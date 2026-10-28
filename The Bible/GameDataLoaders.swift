@@ -153,20 +153,34 @@ private struct GameAnswerCatalog: Decodable {
     }
 }
 
+/// Holds the decoded catalog. The lock stays held while decoding, so callers that arrive
+/// during a decode wait for it instead of starting their own. A failed load isn't kept,
+/// so the next call tries again.
+private nonisolated final class DecodedCatalogCache: @unchecked Sendable {
+    private let lock = NSLock()
+    private var decoded: GameAnswerCatalog?
+
+    func catalog(load: () -> GameAnswerCatalog?) -> GameAnswerCatalog? {
+        lock.lock()
+        defer { lock.unlock() }
+        if let decoded { return decoded }
+        decoded = load()
+        return decoded
+    }
+}
+
+/// Keeps one load per catalog. Callers that ask while a load is running wait on that same
+/// task, so the catalog is never decoded twice at once.
 actor GameDataCache {
     static let shared = GameDataCache()
-    private var characters: [BibleCharacter]? = nil
-    private var locationChallenges: [BibleLocationChallenge]? = nil
-    private var whoQuestions: [WhoGameQuestion]? = nil
+    private var loads: [String: Any] = [:]
 
-    func getCharacters() -> [BibleCharacter]? { characters }
-    func setCharacters(_ v: [BibleCharacter]) { characters = v }
-
-    func getLocationChallenges() -> [BibleLocationChallenge]? { locationChallenges }
-    func setLocationChallenges(_ v: [BibleLocationChallenge]) { locationChallenges = v }
-
-    func getWhoQuestions() -> [WhoGameQuestion]? { whoQuestions }
-    func setWhoQuestions(_ v: [WhoGameQuestion]) { whoQuestions = v }
+    func load<T: Sendable>(_ key: String, _ work: @escaping @Sendable () async -> T) -> Task<T, Never> {
+        if let existing = loads[key] as? Task<T, Never> { return existing }
+        let task = Task { await work() }
+        loads[key] = task
+        return task
+    }
 }
 
 enum GameDataLoaders {
@@ -194,47 +208,40 @@ enum GameDataLoaders {
         return catalog.whoQuestions
     }
 
+    /// Characters, places, and Who? questions all come from one file, so it is decoded once
+    /// and shared rather than once per loader.
+    private nonisolated static let catalogCache = DecodedCatalogCache()
+
     private static func loadCatalog() -> GameAnswerCatalog? {
-        tryLoadArray(GameAnswerCatalog.self, resource: "WhoAndHangmanCatalog")
+        catalogCache.catalog {
+            tryLoadArray(GameAnswerCatalog.self, resource: "WhoAndHangmanCatalog")
+        }
     }
 
     static func loadCharactersAsync() async -> [BibleCharacter] {
-        let cache = GameDataCache.shared
-        if let cached = await cache.getCharacters() { return cached }
-
-        let loaded: [BibleCharacter] = await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                continuation.resume(returning: loadCharacters())
-            }
-        }
-        await cache.setCharacters(loaded)
-        return loaded
+        await GameDataCache.shared.load("characters") {
+            await loadOffMainThread { loadCharacters() }
+        }.value
     }
 
     static func loadLocationChallengesAsync() async -> [BibleLocationChallenge] {
-        let cache = GameDataCache.shared
-        if let cached = await cache.getLocationChallenges() { return cached }
-
-        let loaded: [BibleLocationChallenge] = await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                continuation.resume(returning: loadLocationChallenges())
-            }
-        }
-        await cache.setLocationChallenges(loaded)
-        return loaded
+        await GameDataCache.shared.load("locationChallenges") {
+            await loadOffMainThread { loadLocationChallenges() }
+        }.value
     }
 
     static func loadWhoQuestionsAsync() async -> [WhoGameQuestion] {
-        let cache = GameDataCache.shared
-        if let cached = await cache.getWhoQuestions() { return cached }
+        await GameDataCache.shared.load("whoQuestions") {
+            await loadOffMainThread { loadWhoQuestions() }
+        }.value
+    }
 
-        let loaded: [WhoGameQuestion] = await withCheckedContinuation { continuation in
+    private static func loadOffMainThread<T: Sendable>(_ work: @escaping () -> T) async -> T {
+        await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
-                continuation.resume(returning: loadWhoQuestions())
+                continuation.resume(returning: work())
             }
         }
-        await cache.setWhoQuestions(loaded)
-        return loaded
     }
 
     // MARK: - JSON helper

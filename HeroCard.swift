@@ -1,6 +1,7 @@
 import SwiftUI
 
-// Generic HeroCard with a trailing accessory closure (no AnyView)
+// Generic HeroCard with generic trailing and title accessories. Only the custom-icon
+// initializers erase their icon view to AnyView, so the icon is the one non-generic part.
 struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: View {
     let title: String
     let subtitle: String?

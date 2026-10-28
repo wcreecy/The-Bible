@@ -45,6 +45,15 @@ enum AppBackgroundStorage {
         "background.photo.\(tab.name)"
     }
 
+    /// Longest edge, in pixels, kept for a background photo. It covers the largest iPad
+    /// screen, so a bigger photo only costs memory and decode time.
+    private static let maxPhotoPixelSize: CGFloat = 3000
+
+    // Each import is saved under a new file name, so a name always means the same pixels
+    // and cached entries never go stale. The cache empties itself under memory pressure.
+    private static let imageCache = NSCache<NSString, UIImage>()
+    private static let luminanceCache = NSCache<NSString, NSNumber>()
+
     static func savePhotoData(_ data: Data) throws -> String {
         let directory = try backgroundsDirectory()
         let fileName = "\(UUID().uuidString).jpg"
@@ -53,12 +62,79 @@ enum AppBackgroundStorage {
         return fileName
     }
 
+    /// Deletes saved photos that no page uses any more. "Apply to All Pages" shares one file
+    /// between every page, so a photo is kept while any page still points at it.
+    static func removeUnusedPhotos(defaults: UserDefaults = .standard) {
+        let inUse = Set(AppTab.allCases.compactMap { defaults.string(forKey: photoKey(for: $0)) })
+        guard let directory = try? backgroundsDirectory(),
+              let files = try? FileManager.default.contentsOfDirectory(atPath: directory.path) else {
+            return
+        }
+
+        for fileName in files where !inUse.contains(fileName) {
+            try? FileManager.default.removeItem(at: directory.appendingPathComponent(fileName))
+            imageCache.removeObject(forKey: fileName as NSString)
+            luminanceCache.removeObject(forKey: fileName as NSString)
+        }
+    }
+
+    /// JPEG data for a chosen photo, scaled down when it is larger than a screen can show.
+    static func importedPhotoJPEGData(from data: Data) -> Data? {
+        let image: UIImage?
+        if let source = CGImageSourceCreateWithData(data as CFData, nil),
+           let cgImage = downsampledImage(from: source) {
+            image = UIImage(cgImage: cgImage)
+        } else {
+            image = UIImage(data: data)
+        }
+        return image?.jpegData(compressionQuality: 0.88)
+    }
+
+    /// The decoded photo, read from disk only the first time it is asked for.
     static func image(named fileName: String) -> UIImage? {
-        guard !fileName.isEmpty,
-              let directory = try? backgroundsDirectory() else {
+        guard !fileName.isEmpty else { return nil }
+        let key = fileName as NSString
+        if let cached = imageCache.object(forKey: key) { return cached }
+
+        guard let directory = try? backgroundsDirectory() else { return nil }
+        let url = directory.appendingPathComponent(fileName)
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let cgImage = downsampledImage(from: source) else {
             return nil
         }
-        return UIImage(contentsOfFile: directory.appendingPathComponent(fileName).path)
+
+        let image = UIImage(cgImage: cgImage)
+        imageCache.setObject(image, forKey: key, cost: cgImage.bytesPerRow * cgImage.height)
+        return image
+    }
+
+    /// The photo's average brightness, worked out once per photo.
+    static func averageLuminance(ofImageNamed fileName: String) -> CGFloat? {
+        let key = fileName as NSString
+        if let cached = luminanceCache.object(forKey: key) { return CGFloat(cached.doubleValue) }
+
+        guard let luminance = image(named: fileName)?.averageRelativeLuminance else { return nil }
+        luminanceCache.setObject(NSNumber(value: Double(luminance)), forKey: key)
+        return luminance
+    }
+
+    /// Decodes the image at no more than `maxPhotoPixelSize` on its longest edge, applying
+    /// its orientation, without first decoding it at full size.
+    private static func downsampledImage(from source: CGImageSource) -> CGImage? {
+        // A photo already under the limit keeps its own size instead of being scaled up.
+        let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any]
+        let width = (properties?[kCGImagePropertyPixelWidth] as? NSNumber)?.doubleValue ?? 0
+        let height = (properties?[kCGImagePropertyPixelHeight] as? NSNumber)?.doubleValue ?? 0
+        let longestEdge = max(width, height)
+        let maxPixelSize = longestEdge > 0 ? min(CGFloat(longestEdge), maxPhotoPixelSize) : maxPhotoPixelSize
+
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
+        ]
+        return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
     }
 
     private static func backgroundsDirectory() throws -> URL {
@@ -202,7 +278,7 @@ private struct AdaptiveBackgroundForegroundModifier: ViewModifier {
         case .color:
             luminance = Self.relativeLuminance(hex: colorHex)
         case .photo:
-            luminance = AppBackgroundStorage.image(named: photoFileName)?.averageRelativeLuminance
+            luminance = AppBackgroundStorage.averageLuminance(ofImageNamed: photoFileName)
                 ?? defaultImageName.flatMap { UIImage(named: $0)?.averageRelativeLuminance }
         case .defaultStyle:
             luminance = defaultImageName.flatMap { UIImage(named: $0)?.averageRelativeLuminance }
@@ -411,12 +487,12 @@ struct BackgroundEditor: View {
 
         do {
             guard let data = try await item.loadTransferable(type: Data.self),
-                  let image = UIImage(data: data),
-                  let jpegData = image.jpegData(compressionQuality: 0.88) else {
+                  let jpegData = AppBackgroundStorage.importedPhotoJPEGData(from: data) else {
                 throw BackgroundImportError.invalidImage
             }
             photoFileName = try AppBackgroundStorage.savePhotoData(jpegData)
             modeRaw = AppBackgroundMode.photo.rawValue
+            AppBackgroundStorage.removeUnusedPhotos()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -428,6 +504,7 @@ struct BackgroundEditor: View {
             UserDefaults.standard.set(colorHex, forKey: AppBackgroundStorage.colorKey(for: destinationTab))
             UserDefaults.standard.set(photoFileName, forKey: AppBackgroundStorage.photoKey(for: destinationTab))
         }
+        AppBackgroundStorage.removeUnusedPhotos()
     }
 
     private func defaultImageName(for tab: AppTab) -> String? {
