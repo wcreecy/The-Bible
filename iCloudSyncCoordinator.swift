@@ -37,6 +37,25 @@ enum KVSSyncLifecyclePolicy {
         )
     }
 
+    /// KVS has no "download finished" signal, so the coordinator waits for a quiet period.
+    /// A first sync or an account switch bootstraps local values into the cloud, so it waits
+    /// longer for slow downloads. An established install only defers writes, and data that
+    /// arrives late is still merged when it lands.
+    static func initialDownloadFallbackDelay(
+        bootstrapComplete: Bool,
+        isAccountChange: Bool
+    ) -> Duration {
+        (!bootstrapComplete || isAccountChange) ? .seconds(12) : .seconds(3)
+    }
+
+    /// When the app goes to the background before the fallback fires, sync settles once it
+    /// has waited at least this long, so short sessions on a first sync still publish.
+    static let minimumWaitBeforeBackgroundSettle: TimeInterval = 3
+
+    static func shouldSettleOnBackground(waited: TimeInterval) -> Bool {
+        waited >= minimumWaitBeforeBackgroundSettle
+    }
+
     static func shouldApplyReset(remoteEpoch: Double, lastSeenEpoch: Double) -> Bool {
         remoteEpoch > 0 && remoteEpoch > lastSeenEpoch
     }
@@ -65,6 +84,8 @@ final class iCloudSyncCoordinator {
     private var initialSyncTask: Task<Void, Never>?
     private var metricsTask: Task<Void, Never>?
     private var hasCompletedInitialDownload = false
+    /// When this launch (or the latest account change) began waiting for the cloud download.
+    private var downloadWaitStart: Date?
 
     // One-time bootstrap flag so we push existing local values to KVS on first run after adding sync.
     let bootstrapFlagKey = "kvsBootstrapComplete_v1"
@@ -145,8 +166,18 @@ final class iCloudSyncCoordinator {
         // Apple recommends delaying writes while the initial KVS download is in
         // progress. A notification normally completes this early; the fallback
         // handles accounts whose cloud store is empty and produce no changed keys.
+        scheduleInitialDownloadFallback(isAccountChange: false)
+    }
+
+    private func scheduleInitialDownloadFallback(isAccountChange: Bool) {
+        let delay = KVSSyncLifecyclePolicy.initialDownloadFallbackDelay(
+            bootstrapComplete: defaults.bool(forKey: bootstrapFlagKey),
+            isAccountChange: isAccountChange
+        )
+        downloadWaitStart = Date()
+        initialSyncTask?.cancel()
         initialSyncTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(3))
+            try? await Task.sleep(for: delay)
             guard !Task.isCancelled else { return }
             self?.completeInitialDownload()
         }
@@ -172,6 +203,7 @@ final class iCloudSyncCoordinator {
         initialSyncTask?.cancel()
         initialSyncTask = nil
         hasCompletedInitialDownload = true
+        downloadWaitStart = nil
         syncState = .ready
 
         // Cloud values are merged before any local value can be published.
@@ -319,6 +351,7 @@ final class iCloudSyncCoordinator {
             bibleStatsKeys
             + sessionKeys
             + prayerStatsKeys
+            + missedQuestionKeys
             + settingsKeys
             + gamePlayTimeCounterKeys
             + gamePlayTimeMapKeys
@@ -487,6 +520,14 @@ final class iCloudSyncCoordinator {
     #if canImport(UIKit)
     @objc
     func handleAppDidEnterBackground() {
+        // A long first-sync wait must not strand a short session: once the download has had
+        // the minimum time, settle so this launch's changes are published before suspension.
+        if !hasCompletedInitialDownload,
+           let waitStart = downloadWaitStart,
+           KVSSyncLifecyclePolicy.shouldSettleOnBackground(waited: Date().timeIntervalSince(waitStart)) {
+            completeInitialDownload()
+        }
+
         // Begin a background task so the immediate synchronize has time to complete.
         let app = UIApplication.shared
         var bgTask: UIBackgroundTaskIdentifier = .invalid
@@ -527,6 +568,10 @@ final class iCloudSyncCoordinator {
         }
         if Self.prayerStatsKeys.contains(key) {
             mirrorPrayerStatsKeyToKVS(key)
+            return
+        }
+        if Self.missedQuestionKeys.contains(key) {
+            mirrorMissedQuestionsKeyToKVS(key)
             return
         }
         // Unknown keys are ignored
@@ -608,6 +653,10 @@ final class iCloudSyncCoordinator {
             mergePrayerStatsIncoming(forKey: key)
             return
         }
+        if Self.missedQuestionKeys.contains(key) {
+            mergeMissedQuestionsIncoming(forKey: key)
+            return
+        }
     }
 
     // MARK: - One-shot reconcile pass at startup/identity change
@@ -667,6 +716,9 @@ final class iCloudSyncCoordinator {
                     kvs.removeObject(forKey: key)
                     kvs.removeObject(forKey: tsKey(for: key))
                 }
+                for key in Self.missedQuestionKeys {
+                    kvs.removeObject(forKey: key)
+                }
                 appliedGameReset = true
                 touchedAny = true
                 mergedGameKey = true
@@ -684,7 +736,8 @@ final class iCloudSyncCoordinator {
                 || Self.prayerStatsKeys.contains(key)) {
                 continue
             }
-            if appliedGameReset && allKnownGameDataKeys.contains(key) {
+            if appliedGameReset
+                && (allKnownGameDataKeys.contains(key) || Self.missedQuestionKeys.contains(key)) {
                 continue
             }
             let hasRemote = (kvs.object(forKey: key) != nil) || (remoteDict.keys.contains(key))
@@ -740,11 +793,7 @@ final class iCloudSyncCoordinator {
         // account. A genuinely fresh install already has a false bootstrap flag.
         pendingKeys = plan.pendingKeys
         recordSynchronizeResult(kvs.synchronize())
-        initialSyncTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(3))
-            guard !Task.isCancelled else { return }
-            self?.completeInitialDownload()
-        }
+        scheduleInitialDownloadFallback(isAccountChange: true)
     }
 
     private func recordSynchronizeResult(_ succeeded: Bool, isPush: Bool = false) {

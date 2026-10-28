@@ -835,6 +835,9 @@ extension iCloudSyncCoordinator {
             defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
         }
 
+        // 3b) Clear the Review Round history
+        MissedGameQuestionStore.shared.clearAll()
+
         // 4) Notify UI to recompute derived metrics to zero
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
@@ -932,6 +935,12 @@ extension iCloudSyncCoordinator {
             defaults.removeObject(forKey: cKey)
             kvs.removeObject(forKey: aKey)
             kvs.removeObject(forKey: cKey)
+        }
+
+        // 3b) Clear the Review Round history here and in iCloud so no device can restore it
+        MissedGameQuestionStore.shared.clearAll()
+        for key in Self.missedQuestionKeys {
+            kvs.removeObject(forKey: key)
         }
 
         // 4) Set/reset the Game Stats reset epoch in both KVS and local so older devices won’t re-populate

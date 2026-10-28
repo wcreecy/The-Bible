@@ -194,6 +194,35 @@ struct GameStatsAccountingTests {
         #expect(snapshot.totalCorrect == breakdown.totalCorrect)
     }
 
+    @Test
+    func cachedDailyMapsFollowWritesMadeOutsideGameStats() throws {
+        let dayKey = GameStats.localDayKey(for: Date())
+        let keys = ["gamesDailyAnswered", "gamesDailyCorrect"]
+        let savedValues = savedValues(for: keys)
+        clear(keys)
+        defer { restore(savedValues, for: keys) }
+
+        func write(answered: Int, correct: Int) throws {
+            defaults.set(try JSONEncoder().encode([dayKey: answered]), forKey: "gamesDailyAnswered")
+            defaults.set(try JSONEncoder().encode([dayKey: correct]), forKey: "gamesDailyCorrect")
+        }
+
+        try write(answered: 5, correct: 3)
+        #expect(GameStats.shared.todayStats().answered == 5)
+        #expect(GameStats.shared.todayStats().answered == 5) // Served from the cache.
+
+        // An iCloud merge or ledger reconcile rewrites the key directly.
+        try write(answered: 9, correct: 4)
+        #expect(GameStats.shared.todayStats().answered == 9)
+        #expect(GameStats.shared.todayStats().correct == 4)
+
+        // A reset removes the key, and corrupt data reads as empty.
+        clear(keys)
+        #expect(GameStats.shared.todayStats().answered == 0)
+        defaults.set(Data([0xFF, 0x00]), forKey: "gamesDailyAnswered")
+        #expect(GameStats.shared.todayStats().answered == 0)
+    }
+
     private func map(named key: String) -> [String: Int] {
         guard let data = defaults.data(forKey: key) else { return [:] }
         return (try? JSONDecoder().decode([String: Int].self, from: data)) ?? [:]

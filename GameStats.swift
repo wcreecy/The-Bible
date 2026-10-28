@@ -1236,36 +1236,58 @@ final class GameStats {
         return String(format: "%04d-%02d-%02d", y, m, d)
     }
 
+    // MARK: - Decoded map cache
+    //
+    // Stats screens read the same JSON maps dozens of times per render. Each cache entry keeps
+    // the exact bytes it was decoded from and is reused only while UserDefaults still holds
+    // identical bytes. Writes from anywhere (ledger reconcile, iCloud merge, reset) therefore
+    // can't leave a stale map behind, and no explicit invalidation is needed.
+    private struct CachedMap<Value> {
+        let data: Data
+        let map: Value
+    }
+
+    @ObservationIgnored private var flatMapCache: [String: CachedMap<[String: Int]>] = [:]
+    @ObservationIgnored private var nestedMapCache: [String: CachedMap<[String: [String: Int]]>] = [:]
+
     private func loadJSONMap(forKey key: String) -> [String: Int] {
-        let defaults = UserDefaults.standard
-        guard let data = defaults.data(forKey: key),
-              let map = try? JSONDecoder().decode([String: Int].self, from: data) else {
+        guard let data = UserDefaults.standard.data(forKey: key) else {
+            flatMapCache[key] = nil
             return [:]
         }
+        if let cached = flatMapCache[key], cached.data == data { return cached.map }
+        guard let map = try? JSONDecoder().decode([String: Int].self, from: data) else {
+            flatMapCache[key] = nil
+            return [:]
+        }
+        flatMapCache[key] = CachedMap(data: data, map: map)
         return map
     }
 
     private func saveJSONMap(_ map: [String: Int], forKey key: String) {
-        let defaults = UserDefaults.standard
-        if let data = try? JSONEncoder().encode(map) {
-            defaults.set(data, forKey: key)
-        }
+        guard let data = try? JSONEncoder().encode(map) else { return }
+        UserDefaults.standard.set(data, forKey: key)
+        flatMapCache[key] = CachedMap(data: data, map: map)
     }
 
     private func loadNestedJSONMap(forKey key: String) -> [String: [String: Int]] {
-        let defaults = UserDefaults.standard
-        guard let data = defaults.data(forKey: key),
-              let map = try? JSONDecoder().decode([String: [String: Int]].self, from: data) else {
+        guard let data = UserDefaults.standard.data(forKey: key) else {
+            nestedMapCache[key] = nil
             return [:]
         }
+        if let cached = nestedMapCache[key], cached.data == data { return cached.map }
+        guard let map = try? JSONDecoder().decode([String: [String: Int]].self, from: data) else {
+            nestedMapCache[key] = nil
+            return [:]
+        }
+        nestedMapCache[key] = CachedMap(data: data, map: map)
         return map
     }
 
     private func saveNestedJSONMap(_ map: [String: [String: Int]], forKey key: String) {
-        let defaults = UserDefaults.standard
-        if let data = try? JSONEncoder().encode(map) {
-            defaults.set(data, forKey: key)
-        }
+        guard let data = try? JSONEncoder().encode(map) else { return }
+        UserDefaults.standard.set(data, forKey: key)
+        nestedMapCache[key] = CachedMap(data: data, map: map)
     }
 
     private static func gameDisplayName(for id: GameID) -> String {

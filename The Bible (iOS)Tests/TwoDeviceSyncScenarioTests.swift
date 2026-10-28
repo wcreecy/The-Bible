@@ -173,6 +173,30 @@ struct TwoDeviceSyncScenarioTests {
     }
 
     @Test
+    func firstSyncAndAccountSwitchWaitLongerForTheCloudDownload() {
+        let firstSync = KVSSyncLifecyclePolicy.initialDownloadFallbackDelay(
+            bootstrapComplete: false, isAccountChange: false
+        )
+        let accountSwitch = KVSSyncLifecyclePolicy.initialDownloadFallbackDelay(
+            bootstrapComplete: true, isAccountChange: true
+        )
+        let establishedInstall = KVSSyncLifecyclePolicy.initialDownloadFallbackDelay(
+            bootstrapComplete: true, isAccountChange: false
+        )
+
+        #expect(firstSync == .seconds(12))
+        #expect(accountSwitch == .seconds(12))
+        #expect(establishedInstall == .seconds(3))
+    }
+
+    @Test
+    func shortSessionsSettleOnBackgroundOnlyAfterTheMinimumWait() {
+        #expect(!KVSSyncLifecyclePolicy.shouldSettleOnBackground(waited: 1))
+        #expect(KVSSyncLifecyclePolicy.shouldSettleOnBackground(waited: 3))
+        #expect(KVSSyncLifecyclePolicy.shouldSettleOnBackground(waited: 20))
+    }
+
+    @Test
     func accountChangeForcesRedownloadAndDropsQueuedWrites() {
         let plan = KVSSyncLifecyclePolicy.accountChangePlan()
 
@@ -220,5 +244,100 @@ struct TwoDeviceSyncScenarioTests {
         #expect(!KVSSyncLifecyclePolicy.shouldApplyReset(remoteEpoch: 100, lastSeenEpoch: 100))
         #expect(!KVSSyncLifecyclePolicy.shouldApplyReset(remoteEpoch: 99, lastSeenEpoch: 100))
         #expect(!KVSSyncLifecyclePolicy.shouldApplyReset(remoteEpoch: 0, lastSeenEpoch: -1))
+    }
+
+    // MARK: - Review Round history
+
+    private func miss(
+        _ questionID: String?,
+        game: MissedGameQuestionStore.Entry.Game = .bibleQuiz,
+        daysAgo: Double = 1
+    ) -> MissedGameQuestionStore.Entry {
+        MissedGameQuestionStore.Entry(
+            id: UUID(),
+            game: game,
+            bookNames: ["John"],
+            chapterNumber: 3,
+            topic: "Test",
+            questionID: questionID,
+            date: Date().addingTimeInterval(-daysAgo * 86_400)
+        )
+    }
+
+    @Test
+    func missesFromTwoDevicesAreCombinedWithoutDuplicates() {
+        let shared = miss("q1")
+        let phone = MissedGameQuestionStore(entries: [shared, miss("q2")])
+        let tablet = MissedGameQuestionStore(entries: [shared, miss("q3")])
+
+        let changed = phone.merge(tablet.cloudPayload())
+
+        #expect(changed)
+        #expect(Set(phone.questionIDsForReview(game: .bibleQuiz, count: 10)) == ["q1", "q2", "q3"])
+        // Merging the same payload again changes nothing.
+        #expect(!phone.merge(tablet.cloudPayload()))
+    }
+
+    @Test
+    func aQuestionRetiredOnOneDeviceIsNotBroughtBackByTheOther() {
+        let oldMiss = miss("q1", daysAgo: 3)
+        let phone = MissedGameQuestionStore(entries: [oldMiss])
+        let tablet = MissedGameQuestionStore(entries: [oldMiss])
+
+        phone.resolveReviewQuestion(game: .bibleQuiz, questionID: "q1")
+        tablet.merge(phone.cloudPayload())
+        phone.merge(tablet.cloudPayload())
+
+        #expect(tablet.questionIDsForReview(game: .bibleQuiz).isEmpty)
+        #expect(phone.questionIDsForReview(game: .bibleQuiz).isEmpty)
+    }
+
+    @Test
+    func aQuestionMissedAgainAfterBeingRetiredComesBackForReview() {
+        let phone = MissedGameQuestionStore(entries: [], tombstones: [
+            .init(game: .bibleQuiz, questionID: "q1", date: Date().addingTimeInterval(-2 * 86_400))
+        ])
+        let tablet = MissedGameQuestionStore(entries: [miss("q1", daysAgo: 1)])
+
+        phone.merge(tablet.cloudPayload())
+
+        #expect(phone.questionIDsForReview(game: .bibleQuiz) == ["q1"])
+    }
+
+    @Test
+    func triviaQuestionIDsFromAnOlderQuestionSetAreNotReplayed() {
+        var payload = MissedGameQuestionStore(entries: [miss("12", game: .bibleTrivia)]).cloudPayload()
+        payload.triviaQuestionSetVersion = 1
+        let store = MissedGameQuestionStore(entries: [])
+
+        store.merge(payload)
+
+        #expect(store.reviewCount(for: .bibleTrivia) == 0)
+        // The miss still counts toward study recommendations.
+        #expect(store.mostMissedChapter(minimumMisses: 1)?.bookName == "John")
+    }
+
+    @Test
+    func clearingReviewHistoryRemovesMissesAndRetirements() {
+        let store = MissedGameQuestionStore(entries: [miss("q1"), miss("q2")])
+        store.resolveReviewQuestion(game: .bibleQuiz, questionID: "q1")
+        #expect(!store.isEmpty)
+
+        store.clearAll()
+
+        #expect(store.isEmpty)
+        #expect(store.reviewableGames(minimumQuestions: 1).isEmpty)
+        #expect(store.cloudPayload().entries.isEmpty)
+        #expect(store.cloudPayload().tombstones.isEmpty)
+    }
+
+    @Test
+    func publishedReviewHistoryStaysWellUnderTheICloudQuota() throws {
+        let entries = (0..<500).map { miss("question-\($0)", daysAgo: Double($0) / 10) }
+        let payload = MissedGameQuestionStore(entries: entries).cloudPayload()
+        let size = try JSONEncoder().encode(payload).count
+
+        #expect(payload.entries.count <= 300)
+        #expect(size < 120 * 1_024)
     }
 }
