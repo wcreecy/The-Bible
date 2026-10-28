@@ -13,13 +13,6 @@ struct ProgressCardView: View {
     let orderedBookNames: [String]
     let bookProgress: [String: (read: Int, total: Int, fraction: Double)]
 
-    // Actions
-    let onContinue: () -> Void
-    let onOpenNextUnread: () -> Void
-
-    // Optional state
-    let hasLastRead: Bool
-
     // UI state bindings
     @Binding var isExpanded: Bool
     @Binding var filter: BookFilter
@@ -76,24 +69,6 @@ struct ProgressCardView: View {
                 headerView
                     .contentShape(Rectangle())
                     .onTapGesture { toggleExpanded() }
-
-                // Actions (kept)
-                HStack(spacing: 10) {
-                    Button(action: onContinue) {
-                        Label("Continue Reading", systemImage: "arrowtriangle.right.fill")
-                            .font(.footnote.weight(.semibold))
-                            .labelStyle(.titleAndIcon)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .disabled(!hasLastRead)
-
-                    Button(action: onOpenNextUnread) {
-                        Label("Next Unread", systemImage: "sparkles")
-                            .font(.footnote.weight(.semibold))
-                            .labelStyle(.titleAndIcon)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
-                }
 
                 Button {
                     toggleExpanded()

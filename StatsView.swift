@@ -412,17 +412,6 @@ struct StatsView: View {
             totalVerses: model.totalVerses,
             orderedBookNames: orderedAllBooks,
             bookProgress: model.bookProgress,
-            onContinue: {
-                if let last = model.lastReadEntry {
-                    openReader(bookName: last.bookName, chapter: last.chapterNumber, verse: 1)
-                }
-            },
-            onOpenNextUnread: {
-                if let next = nextUnreadGlobal() {
-                    openReader(bookName: next.book, chapter: next.chapter, verse: 1)
-                }
-            },
-            hasLastRead: model.lastReadEntry != nil,
             isExpanded: $showBookProgressDetails,
             filter: $bookFilter,
             search: $bookSearch,
