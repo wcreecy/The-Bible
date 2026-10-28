@@ -206,7 +206,7 @@ private struct WordSearchSetupControls: View {
             }
 
             if verseSource == .favorites {
-                Text("Eligible saved verses: (eligibleFavoriteCount)")
+                Text("Eligible saved verses: \(eligibleFavoriteCount)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
