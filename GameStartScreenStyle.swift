@@ -12,23 +12,152 @@ struct GameStartScreenStyle: ViewModifier {
     }
 }
 
-private struct GameSplashOptionCardSize: ViewModifier {
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+// MARK: - Settings rows
 
-    func body(content: Content) -> some View {
-        content.frame(
-            maxWidth: .infinity,
-            minHeight: 132,
-            maxHeight: dynamicTypeSize.isAccessibilitySize ? nil : 132,
-            alignment: .topLeading
-        )
+/// A tinted, rounded icon used at the leading edge of every settings row.
+struct GameSettingBadge: View {
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.white)
+            .frame(width: 30, height: 30)
+            .background(tint.gradient, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .accessibilityHidden(true)
     }
 }
 
-extension View {
-    /// Keeps splash-screen option cards visually consistent without constraining accessibility text.
-    func gameSplashOptionCardSize() -> some View {
-        modifier(GameSplashOptionCardSize())
+/// An inset, rounded container that stacks settings rows and separates them with hairlines.
+struct GameSettingsGroup<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Group(subviews: content) { subviews in
+                ForEach(subviews.indices, id: \.self) { index in
+                    if index > 0 {
+                        Divider().padding(.leading, 56)
+                    }
+                    subviews[index]
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.secondary.opacity(0.1), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+}
+
+/// One selectable value in a `GameChoiceSetting`.
+struct GameChoice<Value: Hashable>: Identifiable {
+    let value: Value
+    let title: LocalizedStringResource
+    var detail: LocalizedStringResource?
+    var icon: String
+    var isEnabled = true
+
+    var id: Value { value }
+}
+
+/// A single settings row that shows the current choice and opens a menu to change it.
+struct GameChoiceSetting<Value: Hashable>: View {
+    let title: LocalizedStringResource
+    let systemImage: String
+    let tint: Color
+    @Binding var selection: Value
+    let choices: [GameChoice<Value>]
+    /// Shown as the value when `selection` matches none of the choices, such as a custom category mix.
+    var fallbackValue: LocalizedStringResource?
+
+    private var selected: GameChoice<Value>? {
+        choices.first { $0.value == selection }
+    }
+
+    var body: some View {
+        Menu {
+            Picker(selection: $selection) {
+                ForEach(choices) { choice in
+                    Label {
+                        Text(choice.title)
+                    } icon: {
+                        Image(systemName: choice.icon)
+                    }
+                    .tag(choice.value)
+                    .disabled(!choice.isEnabled)
+                }
+            } label: {
+                Text(title)
+            }
+        } label: {
+            HStack(spacing: 12) {
+                GameSettingBadge(systemImage: selected?.icon ?? systemImage, tint: tint)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.body)
+                        .foregroundStyle(.primary)
+                    if let detail = selected?.detail {
+                        Text(detail)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
+                Spacer(minLength: 8)
+
+                HStack(spacing: 4) {
+                    if let selected {
+                        Text(selected.title)
+                    } else if let fallbackValue {
+                        Text(fallbackValue)
+                    }
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .font(.body)
+                .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+    }
+}
+
+/// A settings row with an on/off switch and an optional one-line explanation.
+struct GameToggleSetting: View {
+    let title: LocalizedStringResource
+    var detail: LocalizedStringResource?
+    let systemImage: String
+    let tint: Color
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Toggle(isOn: $isOn) {
+            HStack(spacing: 12) {
+                GameSettingBadge(systemImage: systemImage, tint: tint)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                    if let detail {
+                        Text(detail)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+        .tint(tint)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
     }
 }
 
@@ -67,15 +196,18 @@ struct GameStartDescriptionStyle: ViewModifier {
 
 struct GameStartActionBar: View {
     let title: LocalizedStringKey
+    let tint: Color?
     let isEnabled: Bool
     let action: () -> Void
 
     init(
         _ title: LocalizedStringKey = "Start Game",
+        tint: Color? = nil,
         isEnabled: Bool = true,
         action: @escaping () -> Void
     ) {
         self.title = title
+        self.tint = tint
         self.isEnabled = isEnabled
         self.action = action
     }
@@ -90,10 +222,8 @@ struct GameStartActionBar: View {
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.roundedRectangle(radius: 16))
         .controlSize(.large)
+        .tint(tint)
         .disabled(!isEnabled)
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-        .background(.bar)
     }
 }
 
@@ -190,7 +320,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                 HStack(alignment: .top, spacing: 16) {
                     GameSplashConfigurationCard(minimumHeight: 360) {
                         if let experienceLevel {
-                            GameExperienceStandardsCard(
+                            GameExperienceCompactPicker(
                                 tint: tint,
                                 selection: experienceLevel,
                                 details: experienceDetails,
@@ -212,7 +342,9 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                     .frame(minHeight: 360)
                 }
             } else {
-                GameSplashConfigurationCard {
+                // Phone layout: everything the player touches sits above the fold, with
+                // Start directly under the settings instead of behind a disclosure.
+                VStack(spacing: 16) {
                     facts
 
                     if let experienceLevel {
@@ -224,83 +356,19 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                         )
                     }
 
-                    GameStartActionBar(isEnabled: isStartEnabled, action: startAction)
-                        .padding(.horizontal, -16)
-                        .padding(.bottom, -16)
+                    configuration
+                        .disabled(!isConfigurationEnabled)
 
-                    DisclosureGroup("Game Options") {
-                        configuration
-                            .disabled(!isConfigurationEnabled)
-                            .padding(.top, 8)
-                    }
-                    .font(.subheadline.weight(.semibold))
-                    .tint(tint)
+                    GameStartActionBar(tint: tint, isEnabled: isStartEnabled, action: startAction)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
 }
 
-/// The one place on each supported game lobby where players choose its difficulty.
-struct GameExperienceStandardsCard: View {
-    let tint: Color
-    @Binding var selection: GameExperienceLevel
-    let details: GameExperienceDetails?
-    let title: LocalizedStringKey
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(title, systemImage: "gamecontroller.fill")
-                .font(.headline)
-                .foregroundStyle(tint)
-
-            HStack(alignment: .top, spacing: 8) {
-                ForEach(GameExperienceLevel.allCases) { level in
-                    Button {
-                        selection = level
-                    } label: {
-                        rule(level)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(level.title)
-                    .accessibilityValue(selection == level ? "Selected" : "Not selected")
-                    .accessibilityAddTraits(selection == level ? .isSelected : [])
-                }
-            }
-
-        }
-    }
-
-    private func rule(_ level: GameExperienceLevel) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Image(systemName: level.icon)
-                .foregroundStyle(selection == level ? .white : tint)
-            Text(level.title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(selection == level ? .white : .primary)
-            Text(details?.detail(for: level) ?? level.detail)
-                .font(.caption2)
-                .foregroundStyle(selection == level ? .white.opacity(0.9) : .secondary)
-                .lineLimit(3)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .gameSplashOptionCardSize()
-        .background(
-            selection == level ? tint : tint.opacity(0.09),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(selection == level ? tint : .clear, lineWidth: 2)
-        }
-    }
-}
-
-/// A compact difficulty chooser for narrow layouts. It keeps the selected
-/// mode's explanation readable instead of squeezing all three explanations
-/// into side-by-side cards.
+/// The one place on each game lobby where players choose its difficulty: a
+/// segmented control with a single line explaining the selected level.
 struct GameExperienceCompactPicker: View {
     let tint: Color
     @Binding var selection: GameExperienceLevel
@@ -308,11 +376,7 @@ struct GameExperienceCompactPicker: View {
     let title: LocalizedStringKey
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: "gamecontroller.fill")
-                .font(.headline)
-                .foregroundStyle(tint)
-
+        VStack(alignment: .leading, spacing: 8) {
             Picker(title, selection: $selection) {
                 ForEach(GameExperienceLevel.allCases) { level in
                     Text(level.title).tag(level)
@@ -324,16 +388,15 @@ struct GameExperienceCompactPicker: View {
 
             Label {
                 Text(details?.detail(for: selection) ?? selection.detail)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             } icon: {
                 Image(systemName: selection.icon)
                     .foregroundStyle(tint)
             }
-            .padding(12)
+            .padding(.horizontal, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 }
@@ -402,22 +465,24 @@ struct GameSplashFacts: View {
     let third: (icon: String, value: String, label: String)
 
     var body: some View {
-        HStack(spacing: 8) {
+        // One flat strip with hairline dividers instead of three separate tiles.
+        HStack(spacing: 0) {
             fact(first)
+            Divider().padding(.vertical, 8)
             fact(second)
+            Divider().padding(.vertical, 8)
             fact(third)
         }
+        .background(Color.secondary.opacity(0.1), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private func fact(_ fact: (icon: String, value: String, label: String)) -> some View {
-        VStack(spacing: 5) {
-            Image(systemName: fact.icon)
-                .font(.subheadline)
-                .foregroundStyle(.tint)
+        VStack(spacing: 3) {
             Text(fact.value)
-                .font(.subheadline.weight(.semibold))
+                .font(.headline)
+                .fontDesign(.rounded)
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .minimumScaleFactor(0.7)
             Text(fact.label)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
@@ -427,7 +492,7 @@ struct GameSplashFacts: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 10)
         .padding(.horizontal, 6)
-        .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -639,65 +704,67 @@ struct GameStartMultiPickerCard<Value: Hashable, OptionLabel: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: "square.grid.2x2.fill")
-                .font(.headline)
-                .foregroundStyle(tint)
-
-            DisclosureGroup(isExpanded: $isExpanded) {
-                VStack(spacing: 8) {
-                    ForEach(options, id: \.self) { option in
-                        let isSelected = selection.contains(option)
-                        Button {
-                            if isSelected {
-                                guard selection.count > 1 else { return }
-                                selection.remove(option)
-                            } else {
-                                selection.insert(option)
-                            }
-                        } label: {
-                            HStack(spacing: 12) {
-                                label(option)
-                                    .font(.body.weight(isSelected ? .semibold : .regular))
-                                    .foregroundStyle(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                                    .foregroundStyle(isSelected ? tint : Color.secondary)
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 11)
-                            .background(
-                                isSelected ? tint.opacity(0.12) : Color.secondary.opacity(0.06),
-                                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            )
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(isSelected ? .isSelected : [])
-                    }
-                }
-                .padding(.top, 10)
+        // A settings row that expands in place into a plain checklist.
+        VStack(spacing: 0) {
+            Button {
+                withAnimation(.snappy) { isExpanded.toggle() }
             } label: {
-                Label {
-                    Text(selection.count == options.count ? "All categories" : "\(selection.count) categories")
-                } icon: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(tint)
+                HStack(spacing: 12) {
+                    GameSettingBadge(systemImage: "square.grid.2x2.fill", tint: tint)
+
+                    Text(title)
+                        .foregroundStyle(.primary)
+
+                    Spacer(minLength: 8)
+
+                    Text(selection.count == options.count ? "All" : "\(selection.count) selected")
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
                 }
-                .font(.body.weight(.semibold))
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 14)
-                .padding(.vertical, 12)
-                .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+
+            if isExpanded {
+                ForEach(options, id: \.self) { option in
+                    let isSelected = selection.contains(option)
+                    Divider().padding(.leading, 56)
+                    Button {
+                        if isSelected {
+                            guard selection.count > 1 else { return }
+                            selection.remove(option)
+                        } else {
+                            selection.insert(option)
+                        }
+                    } label: {
+                        HStack(spacing: 12) {
+                            label(option)
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Image(systemName: "checkmark")
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(tint)
+                                .opacity(isSelected ? 1 : 0)
+                        }
+                        .padding(.leading, 56)
+                        .padding(.trailing, 14)
+                        .padding(.vertical, 10)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                }
             }
         }
-        .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(tint.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(tint.opacity(0.2), lineWidth: 1)
-        }
     }
 }
 

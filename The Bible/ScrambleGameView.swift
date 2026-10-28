@@ -239,7 +239,7 @@ struct ScrambleGameView: View {
                     .foregroundStyle(.secondary)
             } facts: {
                 GameSplashFacts(
-                    first: ("number", "(Self.wordsPerSession) words", "This session"),
+                    first: ("number", "\(Self.wordsPerSession) words", "This session"),
                     second: ("character.textbox", "Bible words", "People, places & books"),
                     third: ("timer", difficulty.timerLabel, "Per word")
                 )
@@ -339,7 +339,7 @@ struct ScrambleGameView: View {
         ContentUnavailableView {
             Label("Session Complete", systemImage: "checkmark.seal.fill")
         } description: {
-            Text("You solved (correctCount) of (Self.wordsPerSession) words.")
+            Text("You solved \(correctCount) of \(Self.wordsPerSession) words.")
         } actions: {
             Button("Play Again", systemImage: "arrow.clockwise") {
                 startSession()

@@ -530,164 +530,77 @@ private struct BookOrderSetupControls: View {
     @Binding var source: BookSourceScope
     @Binding var difficulty: BookOrderDifficulty
 
-    private static let testamentOptions = BookSourceScope.allCases.filter { !$0.isCategory }
-    private static let categoryOptions = BookSourceScope.allCases.filter(\.isCategory)
-
-    private var partPhrase: String {
-        switch source {
-        case .both: String(localized: "the Bible")
-        case .ot: String(localized: "the Old Testament")
-        case .nt: String(localized: "the New Testament")
-        default: String(localized: "the \(String(localized: source.title)) books")
-        }
-    }
+    private static let sectionOptions = BookSourceScope.allCases.filter { !$0.isCategory }
+        + BookSourceScope.allCases.filter(\.isCategory)
 
     private var isFullBibleMode: Bool {
         difficulty == .fullBible
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Round Type", systemImage: "rectangle.3.group.fill")
-                .font(.headline)
-                .foregroundStyle(.purple)
-
-            HStack(alignment: .top, spacing: 8) {
-                modeCard(
-                    title: "Quick Rounds",
-                    detail: "Select section of the Bible.",
-                    systemImage: "arrow.triangle.2.circlepath",
-                    isSelected: !isFullBibleMode
-                ) {
-                    difficulty = .normal
-                }
-
-                modeCard(
-                    title: "Full Bible Order",
-                    detail: "Arrange all 66 books.",
-                    systemImage: "books.vertical.fill",
-                    isSelected: isFullBibleMode
-                ) {
+    /// True for the full 66-book round; false for the shorter section rounds.
+    private var fullBibleSelection: Binding<Bool> {
+        Binding(
+            get: { isFullBibleMode },
+            set: { isFull in
+                if isFull {
                     source = .both
                     difficulty = .fullBible
+                } else {
+                    difficulty = .normal
                 }
             }
+        )
+    }
+
+    private var sectionSelection: Binding<BookSourceScope> {
+        Binding(
+            get: { source },
+            set: { option in
+                difficulty = .normal
+                source = option
+            }
+        )
+    }
+
+    var body: some View {
+        GameSettingsGroup {
+            GameChoiceSetting(
+                title: "Round Type",
+                systemImage: "rectangle.3.group.fill",
+                tint: .purple,
+                selection: fullBibleSelection,
+                choices: [
+                    GameChoice(
+                        value: false,
+                        title: "Quick Rounds",
+                        detail: "Select section of the Bible.",
+                        icon: "arrow.triangle.2.circlepath"
+                    ),
+                    GameChoice(
+                        value: true,
+                        title: "Full Bible Order",
+                        detail: "Arrange all 66 books.",
+                        icon: "books.vertical.fill"
+                    )
+                ]
+            )
 
             if !isFullBibleMode {
-                Label("Part of the Bible", systemImage: "books.vertical.fill")
-                    .font(.headline)
-                    .foregroundStyle(.purple)
-
-                HStack(alignment: .top, spacing: 8) {
-                    ForEach(Self.testamentOptions) { option in
-                        let isSelected = source == option
-
-                        Button {
-                            difficulty = .normal
-                            source = option
-                        } label: {
-                            testamentCard(option, isSelected: isSelected)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(option.title)
-                        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                GameChoiceSetting(
+                    title: "Part of the Bible",
+                    systemImage: "books.vertical.fill",
+                    tint: .purple,
+                    selection: sectionSelection,
+                    choices: Self.sectionOptions.map {
+                        GameChoice(
+                            value: $0,
+                            title: $0.title,
+                            detail: "\($0.bookNames.count) books",
+                            icon: icon(for: $0)
+                        )
                     }
-                }
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Label("Fine-tune Book Group", systemImage: "slider.horizontal.3")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.purple)
-
-                    HStack {
-                        Text("Book Group")
-                            .font(.subheadline.weight(.medium))
-
-                        Spacer()
-
-                        Picker("Book Group", selection: $source) {
-                            ForEach(Self.categoryOptions) { option in
-                                Text(option.title).tag(option)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .onChange(of: source) {
-                            difficulty = .normal
-                        }
-                    }
-                }
-                .padding(12)
-                .background(
-                    Color.purple.opacity(0.09),
-                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                 )
-                .overlay {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
-                }
             }
-        }
-        .frame(maxWidth: 620)
-        .padding(.horizontal)
-    }
-
-    private func modeCard(
-        title: LocalizedStringResource,
-        detail: LocalizedStringResource,
-        systemImage: String,
-        isSelected: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 5) {
-                Image(systemName: systemImage)
-                    .foregroundStyle(isSelected ? .white : .purple)
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : .primary)
-                Text(detail)
-                    .font(.caption2)
-                    .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(10)
-            .background(
-                isSelected ? Color.purple : Color.purple.opacity(0.09),
-                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isSelected ? Color.purple : .clear, lineWidth: 2)
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-
-    private func testamentCard(_ option: BookSourceScope, isSelected: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Image(systemName: icon(for: option))
-                .foregroundStyle(isSelected ? .white : .purple)
-            Text(option.title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? .white : .primary)
-            Text("\(option.bookNames.count) books")
-                .font(.caption2)
-                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(
-            isSelected ? Color.purple : Color.purple.opacity(0.09),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(isSelected ? Color.purple : .clear, lineWidth: 2)
         }
     }
 

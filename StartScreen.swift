@@ -60,12 +60,9 @@ struct WordSearchStartScreen: View {
             } configuration: {
                 WordSearchSetupControls(
                     verseSource: $verseSource,
-                    eligibleFavoriteCount: eligibleFavoriteCount
-                )
-
-                WordSearchPuzzleOptionsCard(
                     isBlindMode: $isBlindMode,
-                    isTimedMode: $isTimedMode
+                    isTimedMode: $isTimedMode,
+                    eligibleFavoriteCount: eligibleFavoriteCount
                 )
             } facts: {
                 VStack(alignment: .leading, spacing: 10) {
@@ -92,160 +89,45 @@ struct WordSearchStartScreen: View {
     }
 }
 
-private struct WordSearchPuzzleOptionsCard: View {
-    @Binding var isBlindMode: Bool
-    @Binding var isTimedMode: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Puzzle Options", systemImage: "slider.horizontal.3")
-                .font(.headline)
-                .foregroundStyle(.green)
-
-            HStack(alignment: .top, spacing: 8) {
-                WordSearchOptionCard(
-                    title: "Blind Mode",
-                    detail: "Hide the verse and word list.",
-                    systemImage: "eye.slash",
-                    isSelected: isBlindMode
-                ) {
-                    isBlindMode.toggle()
-                }
-
-                WordSearchOptionCard(
-                    title: "Timed Mode",
-                    detail: "Race against the clock.",
-                    systemImage: "timer",
-                    isSelected: isTimedMode
-                ) {
-                    isTimedMode.toggle()
-                }
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: 620, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .padding(.horizontal)
-    }
-}
-
-private struct WordSearchOptionCard: View {
-    let title: LocalizedStringResource
-    let detail: LocalizedStringResource
-    let systemImage: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 5) {
-                Image(systemName: systemImage)
-                    .foregroundStyle(isSelected ? .white : .green)
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : .primary)
-                Text(detail)
-                    .font(.caption2)
-                    .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(10)
-            .gameSplashOptionCardSize()
-            .background(
-                isSelected ? Color.green : Color.green.opacity(0.09),
-                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isSelected ? Color.green : .clear, lineWidth: 2)
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(title)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-}
-
 private struct WordSearchSetupControls: View {
     @Binding var verseSource: WordSearchViewModel.VerseSource
+    @Binding var isBlindMode: Bool
+    @Binding var isTimedMode: Bool
     let eligibleFavoriteCount: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Choose verses", systemImage: "text.quote")
-                .font(.headline)
-                .foregroundStyle(.green)
-
-            HStack(alignment: .top, spacing: 8) {
-                ForEach(WordSearchViewModel.VerseSource.allCases) { option in
-                    let isSelected = verseSource == option
-                    let isEnabled = option != .favorites || eligibleFavoriteCount > 0
-
-                    Button {
-                        verseSource = option
-                    } label: {
-                        sourceCard(option, isSelected: isSelected)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(!isEnabled)
-                    .accessibilityLabel(option.title)
-                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
-                    .accessibilityHint(
-                        isEnabled
-                            ? ""
-                            : "Save favorite verses while reading to unlock this option."
+        GameSettingsGroup {
+            GameChoiceSetting(
+                title: "Verses",
+                systemImage: "text.quote",
+                tint: .green,
+                selection: $verseSource,
+                choices: WordSearchViewModel.VerseSource.allCases.map {
+                    GameChoice(
+                        value: $0,
+                        title: $0.title,
+                        detail: $0.detail,
+                        icon: $0.icon,
+                        isEnabled: $0 != .favorites || eligibleFavoriteCount > 0
                     )
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
-            }
+            )
 
-            if verseSource == .favorites {
-                Text("Eligible saved verses: \(eligibleFavoriteCount)")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
+            GameToggleSetting(
+                title: "Blind Mode",
+                detail: "Hide the verse and word list.",
+                systemImage: "eye.slash",
+                tint: .green,
+                isOn: $isBlindMode
+            )
 
-            if verseSource == .favorites && eligibleFavoriteCount == 0 {
-                Label("Save a verse as a favorite to use it here.", systemImage: "heart")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .frame(maxWidth: 620)
-        .padding(.horizontal)
-    }
-
-    private func sourceCard(
-        _ option: WordSearchViewModel.VerseSource,
-        isSelected: Bool
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Image(systemName: option.icon)
-                .foregroundStyle(isSelected ? .white : .green)
-            Text(option.title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? .white : .primary)
-            Text(option.detail)
-                .font(.caption2)
-                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .gameSplashOptionCardSize()
-        .background(
-            isSelected ? Color.green : Color.green.opacity(0.09),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(isSelected ? Color.green : .clear, lineWidth: 2)
+            GameToggleSetting(
+                title: "Timed Mode",
+                detail: "Race against the clock.",
+                systemImage: "timer",
+                tint: .green,
+                isOn: $isTimedMode
+            )
         }
     }
 }

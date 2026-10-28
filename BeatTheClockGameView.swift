@@ -332,14 +332,12 @@ struct BeatTheClockGameView: View {
             GameLobbyPreview(kind: .beatTheClock)
         } configuration: {
             BeatTheClockSetupControls(category: $category)
-                .frame(maxWidth: 620)
-                .padding(.horizontal)
 
             if isLoadingData {
                 Label("Loading questions…", systemImage: "hourglass")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal)
+                    .padding(.horizontal, 4)
             }
         } facts: {
             GameSplashFacts(
@@ -1050,32 +1048,7 @@ private struct BeatTheClockGameFact: View {
 private struct BeatTheClockSetupControls: View {
     @Binding var category: BeatTheClockGameView.Category
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label("Question Subject", systemImage: "person.2.fill")
-                .font(.headline)
-                .foregroundStyle(.indigo)
-
-            HStack(alignment: .top, spacing: 8) {
-                ForEach(BeatTheClockGameView.Category.allCases) { option in
-                    BeatTheClockSubjectOption(
-                        category: option,
-                        isSelected: category == option
-                    ) {
-                        category = option
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct BeatTheClockSubjectOption: View {
-    let category: BeatTheClockGameView.Category
-    let isSelected: Bool
-    let action: () -> Void
-
-    private var systemImage: String {
+    private func icon(for category: BeatTheClockGameView.Category) -> String {
         switch category {
         case .people: "person.fill"
         case .places: "mappin.and.ellipse"
@@ -1083,7 +1056,7 @@ private struct BeatTheClockSubjectOption: View {
         }
     }
 
-    private var detail: LocalizedStringKey {
+    private func detail(for category: BeatTheClockGameView.Category) -> LocalizedStringResource {
         switch category {
         case .people: "Questions about people in the Bible."
         case .places: "Questions about Biblical places."
@@ -1092,34 +1065,17 @@ private struct BeatTheClockSubjectOption: View {
     }
 
     var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 5) {
-                Image(systemName: systemImage)
-                    .foregroundStyle(isSelected ? .white : .indigo)
-                Text(category.title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : .primary)
-                Text(detail)
-                    .font(.caption2)
-                    .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(10)
-            .gameSplashOptionCardSize()
-            .background(
-                isSelected ? Color.indigo : Color.indigo.opacity(0.09),
-                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        GameSettingsGroup {
+            GameChoiceSetting(
+                title: "Question subject",
+                systemImage: "person.2.fill",
+                tint: .indigo,
+                selection: $category,
+                choices: BeatTheClockGameView.Category.allCases.map {
+                    GameChoice(value: $0, title: $0.title, detail: detail(for: $0), icon: icon(for: $0))
+                }
             )
-            .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isSelected ? Color.indigo : .clear, lineWidth: 2)
-            }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(category.title)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

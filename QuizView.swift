@@ -398,29 +398,29 @@ struct QuizView: View {
             GameLobbyPreview(kind: .quiz)
         } configuration: {
             VStack(alignment: .leading, spacing: 8) {
-                QuizCategoryQuickPicks(tint: .blue, selection: sectionSelection)
+                GameSettingsGroup {
+                    QuizCategoryQuickPicks(tint: .blue, selection: sectionSelection)
 
-                GameStartMultiPickerCard(
-                    title: "Fine-tune Categories",
-                    tint: .blue,
-                    selection: sectionSelection,
-                    options: VerseSection.allCases
-                ) { section in
-                    Text(section.title)
+                    GameStartMultiPickerCard(
+                        title: "Fine-tune Categories",
+                        tint: .blue,
+                        selection: sectionSelection,
+                        options: VerseSection.allCases
+                    ) { section in
+                        Text(section.title)
+                    }
                 }
-            }
-            .frame(maxWidth: 620)
-            .padding(.horizontal)
 
-            if !isFilterReady {
-                Label {
-                    Text("Preparing verses…")
-                } icon: {
-                    ProgressView()
+                if !isFilterReady {
+                    Label {
+                        Text("Preparing verses…")
+                    } icon: {
+                        ProgressView()
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 4)
                 }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
             }
         } facts: {
             GameSplashFacts(
@@ -982,47 +982,27 @@ struct QuizCategoryQuickPicks: View {
 
     @Binding var selection: Set<QuizView.VerseSection>
 
-    var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            ForEach(Scope.allCases) { scope in
-                let isSelected = selection == scope.sections
-
-                Button {
-                    selection = scope.sections
-                } label: {
-                    scopeCard(scope, isSelected: isSelected)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(scope.title)
-                .accessibilityValue(isSelected ? "Selected" : "Not selected")
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
+    /// The scope matching the current categories, or nil once they've been fine-tuned.
+    private var scopeSelection: Binding<Scope?> {
+        Binding(
+            get: { Scope.allCases.first { $0.sections == selection } },
+            set: { scope in
+                if let scope { selection = scope.sections }
             }
-        }
+        )
     }
 
-    private func scopeCard(_ scope: Scope, isSelected: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Image(systemName: scope.icon)
-                .foregroundStyle(isSelected ? .white : tint)
-            Text(scope.title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? .white : .primary)
-            Text(scope.detail)
-                .font(.caption2)
-                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .gameSplashOptionCardSize()
-        .background(
-            isSelected ? tint : tint.opacity(0.09),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+    var body: some View {
+        GameChoiceSetting(
+            title: "Scope",
+            systemImage: "books.vertical.fill",
+            tint: tint,
+            selection: scopeSelection,
+            choices: Scope.allCases.map {
+                GameChoice<Scope?>(value: $0, title: $0.title, detail: $0.detail, icon: $0.icon)
+            },
+            fallbackValue: "Custom"
         )
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(isSelected ? tint : .clear, lineWidth: 2)
-        }
     }
 }
 

@@ -306,35 +306,35 @@ struct VerseMatchGameView: View {
         ) {
             GameLobbyPreview(kind: .verseMatch)
         } configuration: {
-            VerseMatchSetupControls(
-                pool: $pool,
-                isFavoritesAvailable: !preferredVerses.isEmpty
-            )
-
             VStack(alignment: .leading, spacing: 8) {
-                QuizCategoryQuickPicks(tint: .orange, selection: sectionSelection)
+                GameSettingsGroup {
+                    VerseMatchSetupControls(
+                        pool: $pool,
+                        isFavoritesAvailable: !preferredVerses.isEmpty
+                    )
 
-                GameStartMultiPickerCard(
-                    title: "Fine-tune Categories",
-                    tint: .orange,
-                    selection: sectionSelection,
-                    options: VerseSection.allCases
-                ) { section in
-                    Text(section.title)
-                }
-            }
-            .frame(maxWidth: 620)
-            .padding(.horizontal)
+                    QuizCategoryQuickPicks(tint: .orange, selection: sectionSelection)
 
-            if !isFilterReady {
-                Label {
-                    Text("Preparing verses…")
-                } icon: {
-                    ProgressView()
+                    GameStartMultiPickerCard(
+                        title: "Fine-tune Categories",
+                        tint: .orange,
+                        selection: sectionSelection,
+                        options: VerseSection.allCases
+                    ) { section in
+                        Text(section.title)
+                    }
                 }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
+
+                if !isFilterReady {
+                    Label {
+                        Text("Preparing verses…")
+                    } icon: {
+                        ProgressView()
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 4)
+                }
             }
         } facts: {
             GameSplashFacts(
@@ -629,76 +629,23 @@ private struct VerseMatchSetupControls: View {
     let isFavoritesAvailable: Bool
 
     var body: some View {
-        VerseMatchVerseSourceCards(
+        GameChoiceSetting(
+            title: "Verses",
+            systemImage: "text.quote",
+            tint: .orange,
             selection: $pool,
-            isFavoritesAvailable: isFavoritesAvailable
-        )
-        .frame(maxWidth: 620)
-        .padding(.horizontal)
-    }
-}
-
-private struct VerseMatchVerseSourceCards: View {
-    @Binding var selection: VerseMatchGameView.VersePool
-    let isFavoritesAvailable: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Choose verses", systemImage: "text.quote")
-                .font(.headline)
-                .foregroundStyle(.orange)
-
-            HStack(alignment: .top, spacing: 8) {
-                ForEach(VerseMatchGameView.VersePool.allCases) { option in
-                    let isSelected = selection == option
-                    let isEnabled = option != .favorites || isFavoritesAvailable
-
-                    Button {
-                        selection = option
-                    } label: {
-                        sourceCard(option, isSelected: isSelected)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(!isEnabled)
-                    .accessibilityLabel(option.title)
-                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
-                    .accessibilityHint(
-                        isEnabled
-                            ? ""
-                            : "Save favorite verses while reading to unlock this option."
-                    )
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                }
+            choices: VerseMatchGameView.VersePool.allCases.map {
+                GameChoice(
+                    value: $0,
+                    title: $0.title,
+                    detail: $0 == .favorites && !isFavoritesAvailable
+                        ? "Save a favorite verse to unlock this."
+                        : $0.detail,
+                    icon: $0.icon,
+                    isEnabled: $0 != .favorites || isFavoritesAvailable
+                )
             }
-        }
-    }
-
-    private func sourceCard(
-        _ option: VerseMatchGameView.VersePool,
-        isSelected: Bool
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Image(systemName: option.icon)
-                .foregroundStyle(isSelected ? .white : .orange)
-            Text(option.title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? .white : .primary)
-            Text(option.detail)
-                .font(.caption2)
-                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .gameSplashOptionCardSize()
-        .background(
-            isSelected ? Color.orange : Color.orange.opacity(0.09),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
         )
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(isSelected ? Color.orange : .clear, lineWidth: 2)
-        }
     }
 }
 

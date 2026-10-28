@@ -486,7 +486,6 @@ struct WordleView: View {
                     .foregroundStyle(.yellow)
                     .padding(12)
                     .background(Color.yellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .padding(.horizontal)
                 }
             } facts: {
                 GameSplashFacts(
@@ -1476,131 +1475,35 @@ private struct WordSetupControls: View {
     @Binding var hardModeEnabled: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            WordSetupDifficultyCards(hardModeEnabled: $hardModeEnabled)
-            WordSetupModeCards(mode: $mode)
-        }
-        .frame(maxWidth: 620)
-        .padding(.horizontal)
-    }
-}
-
-private struct WordSetupDifficultyCards: View {
-    @Binding var hardModeEnabled: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Choose difficulty", systemImage: "gauge.with.dots.needle.33percent")
-                .font(.headline)
-                .foregroundStyle(.mint)
-
-            HStack(alignment: .top, spacing: 8) {
-                difficultyButton(
-                    title: "Normal",
-                    detail: "Use any valid five-letter word.",
-                    icon: "checkmark.circle",
-                    isSelected: !hardModeEnabled
-                ) {
-                    hardModeEnabled = false
-                }
-
-                difficultyButton(
-                    title: "Hard",
-                    detail: "Reuse confirmed letters in every guess.",
-                    icon: "flame.fill",
-                    isSelected: hardModeEnabled
-                ) {
-                    hardModeEnabled = true
-                }
-            }
-        }
-    }
-
-    private func difficultyButton(
-        title: LocalizedStringResource,
-        detail: LocalizedStringResource,
-        icon: String,
-        isSelected: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            WordSetupChoiceCard(
-                title: title,
-                detail: detail,
-                icon: icon,
-                isSelected: isSelected
+        GameSettingsGroup {
+            GameChoiceSetting(
+                title: "Game type",
+                systemImage: "calendar",
+                tint: .mint,
+                selection: $mode,
+                choices: [
+                    GameChoice(
+                        value: WordleView.Mode.daily,
+                        title: WordleView.Mode.daily.title,
+                        detail: "One puzzle a day. Counts toward your Daily streak.",
+                        icon: WordleView.Mode.daily.icon
+                    ),
+                    GameChoice(
+                        value: WordleView.Mode.practice,
+                        title: WordleView.Mode.practice.title,
+                        detail: "Unlimited puzzles with a separate streak.",
+                        icon: WordleView.Mode.practice.icon
+                    )
+                ]
             )
-        }
-        .buttonStyle(.plain)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-}
 
-private struct WordSetupModeCards: View {
-    @Binding var mode: WordleView.Mode
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Choose game type", systemImage: "calendar")
-                .font(.headline)
-                .foregroundStyle(.mint)
-
-            HStack(alignment: .top, spacing: 8) {
-                ForEach(WordleView.Mode.allCases) { option in
-                    let isSelected = mode == option
-
-                    Button {
-                        mode = option
-                    } label: {
-                        WordSetupChoiceCard(
-                            title: option.title,
-                            detail: option.detail,
-                            icon: option.icon,
-                            isSelected: isSelected
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(option.title)
-                    .accessibilityValue(isSelected ? "Selected" : "Not selected")
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                }
-            }
-
-            Label("Both modes include a shareable, spoiler-free result.", systemImage: "square.and.arrow.up")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
-private struct WordSetupChoiceCard: View {
-    let title: LocalizedStringResource
-    let detail: LocalizedStringResource
-    let icon: String
-    let isSelected: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Image(systemName: icon)
-                .foregroundStyle(isSelected ? .white : .mint)
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? .white : .primary)
-            Text(detail)
-                .font(.caption2)
-                .foregroundStyle(isSelected ? .white.opacity(0.9) : .secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(
-            isSelected ? Color.mint : Color.mint.opacity(0.09),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(isSelected ? Color.mint : .clear, lineWidth: 2)
+            GameToggleSetting(
+                title: "Hard Mode",
+                detail: "Reuse confirmed letters in every guess.",
+                systemImage: "flame.fill",
+                tint: .mint,
+                isOn: $hardModeEnabled
+            )
         }
     }
 }
