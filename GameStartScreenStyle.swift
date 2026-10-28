@@ -38,29 +38,30 @@ struct GameStartDescriptionStyle: ViewModifier {
     let tint: Color
 
     func body(content: Content) -> some View {
-        VStack(spacing: 18) {
-            HStack(spacing: 16) {
+        VStack(spacing: 10) {
+            HStack(spacing: 12) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 34, weight: .semibold))
+                    .font(.title2.weight(.semibold))
                     .foregroundStyle(.white)
-                    .frame(width: 72, height: 72)
-                    .background(tint.gradient, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-                    .shadow(color: tint.opacity(0.24), radius: 12, y: 7)
+                    .frame(width: 52, height: 52)
+                    .background(tint.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .shadow(color: tint.opacity(0.2), radius: 8, y: 4)
 
                 Text(title)
-                    .font(.largeTitle.weight(.bold))
+                    .font(.title.weight(.bold))
                     .fontDesign(.rounded)
                     .multilineTextAlignment(.leading)
+                Spacer(minLength: 0)
             }
             .accessibilityElement(children: .combine)
 
             content
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 520)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: 520, alignment: .leading)
         }
-        .padding(.top, 8)
+        .padding(.top, 4)
     }
 }
 
@@ -105,9 +106,9 @@ enum GameExperienceLevel: String, CaseIterable, Identifiable {
 
     var title: LocalizedStringKey {
         switch self {
-        case .learn: "Learn"
-        case .standard: "Standard"
-        case .challenge: "Challenge"
+        case .learn: "Easy"
+        case .standard: "Normal"
+        case .challenge: "Hard"
         }
     }
 
@@ -182,7 +183,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             preview
 
             if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
@@ -211,21 +212,30 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                     .frame(minHeight: 360)
                 }
             } else {
-                    GameSplashConfigurationCard {
-                        if let experienceLevel {
-                            GameExperienceCompactPicker(
-                                tint: tint,
-                                selection: experienceLevel,
-                                details: experienceDetails,
+                GameSplashConfigurationCard {
+                    facts
+
+                    if let experienceLevel {
+                        GameExperienceCompactPicker(
+                            tint: tint,
+                            selection: experienceLevel,
+                            details: experienceDetails,
                             title: experienceTitle
                         )
                     }
-                    configuration
-                        .disabled(!isConfigurationEnabled)
-                    facts
-                }
 
-                GameStartActionBar(isEnabled: isStartEnabled, action: startAction)
+                    GameStartActionBar(isEnabled: isStartEnabled, action: startAction)
+                        .padding(.horizontal, -16)
+                        .padding(.bottom, -16)
+
+                    DisclosureGroup("Game Options") {
+                        configuration
+                            .disabled(!isConfigurationEnabled)
+                            .padding(.top, 8)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .tint(tint)
+                }
             }
         }
     }

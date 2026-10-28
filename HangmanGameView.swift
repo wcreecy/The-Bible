@@ -348,7 +348,7 @@ struct HangmanGameView: View {
             HangmanSetupControls(theme: $theme)
         } facts: {
             GameSplashFacts(
-                first: ("number", "\(Self.wordsPerGame)", String(localized: "Words")),
+                first: ("number", "\(Self.wordsPerGame) words", String(localized: "This session")),
                 second: ("xmark.octagon", "\(difficulty.maxWrong)", String(localized: "Mistakes allowed")),
                 third: ("lightbulb", difficulty.clueSummary, String(localized: "Clue"))
             )

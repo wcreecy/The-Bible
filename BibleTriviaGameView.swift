@@ -590,7 +590,7 @@ private struct BibleTriviaSetupScreen: View {
                     EmptyView()
                 } facts: {
                     GameSplashFacts(
-                        first: ("number", "\(questionsPerRound)", "Questions"),
+                        first: ("number", "\(questionsPerRound) questions", "This session"),
                         second: ("timer", "\(difficulty.timerSeconds) sec", "Per question"),
                         third: ("square.stack.3d.up", "\(eligibleQuestionCount)", "Question pool")
                     )

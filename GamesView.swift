@@ -90,10 +90,10 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     var subtitle: LocalizedStringResource {
         switch self {
         case .quiz: "Bible facts"
-        case .hangman: "People, places and books"
-        case .beatTheClock: "Recall of people, places & books"
-        case .verseMatch: "Match the verse with its text"
-        case .bookOrder: "Order the books correctly"
+        case .hangman: "People, places & books"
+        case .beatTheClock: "Beat the clock"
+        case .verseMatch: "What verse is this?"
+        case .bookOrder: "Put books in order"
         case .wordSearch: "Find the words"
         case .whoAmI: "Name the person"
         case .wordle: "5 letters, 6 tries"
@@ -775,7 +775,7 @@ private struct ReviewRoundStatusRow: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Review Round")
                         .font(usesExpandedLayout ? .title3.weight(.semibold) : .headline)
-                    Text("Choose a game with 10 replayable missed questions.")
+                    Text("Active with 10 missed questions.")
                         .font(usesExpandedLayout ? .subheadline : .caption)
                         .foregroundStyle(.secondary)
                 }

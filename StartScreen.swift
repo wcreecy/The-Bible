@@ -68,11 +68,22 @@ struct WordSearchStartScreen: View {
                     isTimedMode: $isTimedMode
                 )
             } facts: {
-                GameSplashFacts(
-                    first: ("square.grid.3x3", "\(gridSize)×\(gridSize)", "Grid"),
-                    second: ("text.word.spacing", "\(wordCountRange.lowerBound)–\(wordCountRange.upperBound)", "Words"),
-                    third: ("timer", isTimedMode ? timePerWord : "Untimed", "Time limit")
-                )
+                VStack(alignment: .leading, spacing: 10) {
+                    GameSplashFacts(
+                    first: ("puzzlepiece.extension", "1 puzzle", "This session"),
+                    second: ("square.grid.3x3", "\(gridSize)×\(gridSize)", "Grid · \(wordCountRange.lowerBound)–\(wordCountRange.upperBound) target words"),
+                    third: ("eye", isBlindMode ? "Blind" : "Visible", "Verse and word list")
+                    )
+
+                    Label(
+                        eligibleFavoriteCount > 0
+                            ? "Favorites ready: \(eligibleFavoriteCount) eligible verses"
+                            : "Favorites unavailable: save a verse to unlock them",
+                        systemImage: eligibleFavoriteCount > 0 ? "heart.fill" : "heart.slash"
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(eligibleFavoriteCount > 0 ? Color.secondary : Color.orange)
+                }
             }
 
             Spacer(minLength: 24)

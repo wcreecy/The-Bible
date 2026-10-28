@@ -54,7 +54,13 @@ struct BookOrderGameView: View {
                             )
                         } facts: {
                             GameSplashFacts(
-                                first: ("books.vertical", "\(vm.roundBookCount)", String(localized: "Books")),
+                                first: (
+                                    "books.vertical",
+                                    vm.difficulty == .fullBible && vm.source == .both
+                                        ? String(localized: "All 66 books")
+                                        : String(localized: "\(vm.roundBookCount) books"),
+                                    String(localized: "This session")
+                                ),
                                 second: (
                                     "stopwatch",
                                     vm.savedBestTime.map(Self.formatted) ?? "—",

@@ -335,7 +335,7 @@ struct VerseMatchGameView: View {
             }
         } facts: {
             GameSplashFacts(
-                first: ("number", "\(Self.questionsPerGame)", String(localized: "Questions")),
+                first: ("number", "\(Self.questionsPerGame) questions", String(localized: "This session")),
                 second: ("text.quote", String(localized: pool.title), String(localized: "Verses")),
                 third: ("square.stack.3d.up", "4", String(localized: "Choices"))
             )

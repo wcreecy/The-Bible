@@ -58,7 +58,7 @@ struct WordleView: View {
 
     // MARK: - State
     @State private var started: Bool = false
-    @State private var mode: Mode = .practice
+    @AppStorage("wordleMode") private var mode: Mode = .practice
     @State private var isAnswerBankPrepared: Bool = false
 
     @State private var target: String = ""
@@ -490,7 +490,7 @@ struct WordleView: View {
                 }
             } facts: {
                 GameSplashFacts(
-                    first: ("character.cursor.ibeam", "5 letters", "Word length"),
+                    first: ("number", "6 guesses", "This session"),
                     second: ("number", "6 tries", "Guesses"),
                     third: ("calendar", mode == .daily ? "Daily" : "Practice", "Game type")
                 )

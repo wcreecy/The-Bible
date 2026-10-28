@@ -8,7 +8,9 @@ import SwiftData
 final class WordSearchViewModel {
     // Public UI state
     var started: Bool = false
-    var difficulty: WordSearchEngine.Difficulty = .medium
+    var difficulty: WordSearchEngine.Difficulty = .medium {
+        didSet { UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey) }
+    }
 
     /// Where the puzzle's verse comes from.
     enum VerseSource: String, CaseIterable, Identifiable {
@@ -42,10 +44,14 @@ final class WordSearchViewModel {
             }
         }
     }
-    var verseSource: VerseSource = .popular
+    var verseSource: VerseSource = .popular {
+        didSet { UserDefaults.standard.set(verseSource.rawValue, forKey: Self.verseSourceKey) }
+    }
 
     /// Blind hides the word list and the verse text until the round ends.
-    var isBlindMode: Bool = false
+    var isBlindMode: Bool = false {
+        didSet { UserDefaults.standard.set(isBlindMode, forKey: Self.blindModeKey) }
+    }
 
     /// How a finished round ended.
     enum RoundResult {
@@ -53,7 +59,9 @@ final class WordSearchViewModel {
     }
 
     // Timer
-    var isTimedMode: Bool = false
+    var isTimedMode: Bool = false {
+        didSet { UserDefaults.standard.set(isTimedMode, forKey: Self.timedModeKey) }
+    }
     var remainingSeconds: Int = 0
     var timeUp: Bool = false
     var didWin: Bool = false
@@ -107,6 +115,10 @@ final class WordSearchViewModel {
     private var hasRecordedCurrentRound = false
 
     private static let currentStreakKey = "wordsearchCurrentStreak"
+    private static let difficultyKey = "wordsearchDifficulty"
+    private static let verseSourceKey = "wordsearchVerseSource"
+    private static let blindModeKey = "wordsearchBlindMode"
+    private static let timedModeKey = "wordsearchTimedMode"
 
     // Engine
     private var engine: WordSearchEngine {
@@ -116,6 +128,16 @@ final class WordSearchViewModel {
     init(modelContext: ModelContext, favoritesFetch: @escaping () -> [Favorite]) {
         self.modelContext = modelContext
         self.favoritesFetch = favoritesFetch
+
+        let defaults = UserDefaults.standard
+        difficulty = WordSearchEngine.Difficulty(
+            rawValue: defaults.string(forKey: Self.difficultyKey) ?? ""
+        ) ?? .medium
+        verseSource = VerseSource(
+            rawValue: defaults.string(forKey: Self.verseSourceKey) ?? ""
+        ) ?? .popular
+        isBlindMode = defaults.bool(forKey: Self.blindModeKey)
+        isTimedMode = defaults.bool(forKey: Self.timedModeKey)
     }
 
     // Allow rebinding dependencies after construction (e.g., once the environment is available)

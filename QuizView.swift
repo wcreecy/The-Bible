@@ -421,7 +421,7 @@ struct QuizView: View {
             }
         } facts: {
             GameSplashFacts(
-                first: ("number", "\(Self.questionsPerGame)", String(localized: "Questions")),
+                first: ("number", "\(Self.questionsPerGame) questions", String(localized: "This session")),
                 second: (
                     "timer",
                     difficulty.timeLimit.map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),

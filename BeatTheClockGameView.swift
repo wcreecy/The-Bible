@@ -343,7 +343,7 @@ struct BeatTheClockGameView: View {
             }
         } facts: {
             GameSplashFacts(
-                first: ("number", "\(Self.questionsPerGame)", String(localized: "Questions")),
+                first: ("number", "\(Self.questionsPerGame) questions", String(localized: "This session")),
                 second: ("timer", "\(difficulty.roundTime) sec", String(localized: "Per question")),
                 third: (
                     "lightbulb",

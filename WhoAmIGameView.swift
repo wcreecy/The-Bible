@@ -112,7 +112,7 @@ struct WhoAmIGameView: View {
             WhoAmISetupControls(mode: $vm.mode)
         } facts: {
             GameSplashFacts(
-                first: ("number", "\(WhoAmIGameViewModel.questionsPerGame)", String(localized: "Questions")),
+                first: ("number", "\(WhoAmIGameViewModel.questionsPerGame) questions", String(localized: "This session")),
                 second: (
                     "timer",
                     vm.difficulty.timeLimit > 0 ? String(localized: "\(vm.difficulty.timeLimit) sec") : String(localized: "No limit"),
