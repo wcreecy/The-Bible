@@ -685,6 +685,7 @@ private enum DeveloperSettingsReset {
             "beatTheClockDifficulty": "medium",
             "hangmanDifficulty": "medium",
             "hangmanTheme": "people",
+            "scrambleDifficulty": "normal",
             "quizDifficulty": "normal",
             "quizScope": "whole",
             "quizSections": "",

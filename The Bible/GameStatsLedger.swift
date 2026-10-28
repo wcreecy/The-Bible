@@ -69,6 +69,7 @@ final class GameStatsLedger {
                 + iCloudSyncCoordinator.whoAmIKeys
                 + iCloudSyncCoordinator.wordleKeys
                 + iCloudSyncCoordinator.wordSearchKeys
+                + iCloudSyncCoordinator.scrambleKeys
                 + iCloudSyncCoordinator.gamePlayTimeCounterKeys
         )
     }

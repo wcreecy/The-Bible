@@ -50,6 +50,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     case verseMatch
     case bookOrder
     case wordSearch
+    case scramble
     case whoAmI
     case wordle
     case trivia
@@ -65,6 +66,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .verseMatch: "Verses"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
+        case .scramble: "Scramble"
         case .whoAmI: "Who?"
         case .wordle: "WORD"
         case .trivia: "Trivia"
@@ -80,6 +82,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .verseMatch: "Verses"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
+        case .scramble: "Scramble"
         case .whoAmI: "Who?"
         case .wordle: "WORD"
         case .trivia: "Trivia"
@@ -95,6 +98,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .verseMatch: "What verse is this?"
         case .bookOrder: "Put books in order"
         case .wordSearch: "Find the words"
+        case .scramble: "Unscramble Bible words"
         case .whoAmI: "Name the person"
         case .wordle: "5 letters, 6 tries"
         case .trivia: "Bible Trivia"
@@ -110,6 +114,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .verseMatch: "text.quote"
         case .bookOrder: "list.number"
         case .wordSearch: "square.grid.3x3.topleft.filled"
+        case .scramble: "text.line.first.and.arrowtriangle.forward"
         case .whoAmI: "person.text.rectangle"
         case .wordle: "square.grid.3x3.fill"
         case .trivia: "questionmark.text.page.fill"
@@ -125,10 +130,11 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .verseMatch: .orange
         case .bookOrder: .purple
         case .wordSearch: .green
+        case .scramble: .pink
         case .whoAmI: .brown
         case .wordle: .mint
         case .trivia: .cyan
-        case .reviewRound: .purple
+        case .reviewRound: .red
         }
     }
 }
@@ -160,7 +166,7 @@ private enum GameLearningGroup: CaseIterable, Identifiable {
         switch self {
         case .daily: [.wordle]
         case .learn: [.bookOrder, .beatTheClock, .quiz, .trivia, .verseMatch, .whoAmI]
-        case .wordGames: [.hangman, .wordSearch]
+        case .wordGames: [.hangman, .wordSearch, .scramble]
         }
     }
 }
@@ -483,6 +489,7 @@ struct GamesView: View {
             case .verseMatch: VerseMatchGameView()
             case .bookOrder: BookOrderGameView()
             case .wordSearch: WordSearchGameView()
+            case .scramble: ScrambleGameView()
             case .whoAmI: WhoAmIGameView()
             case .wordle: WordleView()
             case .trivia: BibleTriviaGameView()

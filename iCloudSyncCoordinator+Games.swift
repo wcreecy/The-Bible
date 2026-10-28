@@ -181,6 +181,17 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // Game keys: Scramble (easy/normal/hard + combined "all")
+    static let scrambleKeys: [String] = {
+        var keys: [String] = []
+        for difficulty in ["easy", "normal", "hard", "all"] {
+            keys.append("scrambleAllTimeCorrect_\(difficulty)")
+            keys.append("scrambleAllTimeAnswered_\(difficulty)")
+            keys.append("scrambleAllTimeBestStreak_\(difficulty)")
+        }
+        return keys
+    }()
+
     // Game keys: Book Order — per-difficulty (easy/normal/hard/expert), combined "all", + legacy unsuffixed for reset/back-compat
     static let bookOrderKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "expert", "all"]
@@ -232,7 +243,7 @@ extension iCloudSyncCoordinator {
         Set(
             hangmanKeys + beatClockKeys + refMatchKeys
                 + verseMatchKeys + quizKeys + bibleTriviaKeys + bookOrderKeys
-                + whoAmIKeys + wordleKeys + wordSearchKeys
+                + whoAmIKeys + wordleKeys + wordSearchKeys + scrambleKeys
                 + bibleTriviaProgressKeys
                 + gamePlayTimeCounterKeys + gamePlayTimeMapKeys
                 + gameDailyAndLastPlayedKeys + quizPerBookMapKeys + triviaPerBookMapKeys
@@ -334,7 +345,7 @@ extension iCloudSyncCoordinator {
 
     // Per-game (and per-WORD-mode) daily maps (JSON [String:Int]) — now mirrored via KVS
     static let perGameDailyMapKeys: [String] = {
-        let gameKeys = ["quiz","trivia","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
+        let gameKeys = ["quiz","trivia","hangman","beatclock","versematch","bookorder","whoami","wordsearch","scramble","word"]
         var keys: [String] = []
         for g in gameKeys {
             keys.append("gamesDailyAnswered_\(g)")
@@ -384,7 +395,7 @@ extension iCloudSyncCoordinator {
         Set(
             allPersistentStreakKeys + hangmanKeys + beatClockKeys + refMatchKeys
                 + verseMatchKeys + quizKeys + bibleTriviaKeys + bookOrderKeys + whoAmIKeys
-                + wordleKeys + wordSearchKeys
+                + wordleKeys + wordSearchKeys + scrambleKeys
         )
     }()
 

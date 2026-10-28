@@ -16,7 +16,8 @@ struct GameStatsAccountingTests {
             (.versematch, "versematch", "Verses"),
             (.bookorder, "bookorder", "Book Order"),
             (.whoami, "whoami", "Who?"),
-            (.wordsearch, "wordsearch", "Word Search")
+            (.wordsearch, "wordsearch", "Word Search"),
+            (.scramble, "scramble", "Scramble")
         ]
         let dayKey = GameStats.localDayKey(for: Date())
 
@@ -147,6 +148,15 @@ struct GameStatsAccountingTests {
         #expect(map(named: "gamesDailyCorrect")[dayKey] == 1)
         #expect(map(named: "gamesDailyAnswered_quiz")[dayKey] == 1)
         #expect(map(named: "gamesDailyCorrect_quiz")[dayKey] == 1)
+    }
+
+    @Test
+    func scrambleCountersAndDailyMapsUseTheSharedDeviceLedger() {
+        let keys = Set(iCloudSyncCoordinator.scrambleKeys)
+
+        #expect(GameStatsLedger.counterKeys.isSuperset(of: keys))
+        #expect(iCloudSyncCoordinator.perGameDailyMapKeys.contains("gamesDailyAnswered_scramble"))
+        #expect(iCloudSyncCoordinator.perGameDailyMapKeys.contains("gamesDailyCorrect_scramble"))
     }
 
     private func map(named key: String) -> [String: Int] {

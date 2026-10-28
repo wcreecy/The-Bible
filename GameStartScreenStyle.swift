@@ -438,6 +438,7 @@ enum GameLobbyPreviewKind {
     case verseMatch
     case bookOrder
     case wordSearch
+    case scramble
     case whoAmI
     case wordle
     case trivia
@@ -522,6 +523,13 @@ struct GameLobbyPreview: View {
                         .padding(.horizontal, 10)
                         .background(row == "G R A C E" ? Color.green.opacity(0.14) : .clear, in: Capsule())
                 }
+            }
+        case .scramble:
+            HStack(spacing: 24) {
+                previewPrompt(icon: "text.line.first.and.arrowtriangle.forward", title: "H E S O J", subtitle: "Unscramble the Bible word")
+                Text("JOSEPH")
+                    .font(.title2.weight(.bold).monospaced())
+                    .foregroundStyle(.pink)
             }
         case .whoAmI:
             HStack(spacing: 24) {
