@@ -16,14 +16,6 @@ struct NotesFilterBar: View {
         VStack(alignment: .leading, spacing: 8) {
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
-                    ForEach(NotesFilter.allCases) { filter in
-                        FilterChip(isSelected: filters.category == filter) {
-                            update { $0.category = $0.category == filter ? .all : filter }
-                        } label: {
-                            Label { Text(filter.title) } icon: { Image(systemName: filter.systemImage) }
-                        }
-                    }
-
                     if !tags.isEmpty || filters.tag != nil {
                         FilterChip(isSelected: isShowingTags || filters.tag != nil) {
                             withAnimation(.snappy) { isShowingTags.toggle() }
@@ -392,14 +384,6 @@ struct NotesFilterMenu: View {
     var body: some View {
         Menu {
             Section("Filter Notes") {
-                Picker("Note Type", selection: $filters.category) {
-                    ForEach(NotesFilter.allCases) { filter in
-                        Label(filter.title, systemImage: filter.systemImage)
-                            .tag(filter)
-                    }
-                }
-                .pickerStyle(.inline)
-
                 if !tags.isEmpty || filters.tag != nil {
                     Picker("Tag", selection: $filters.tag) {
                         Text("All Tags").tag(String?.none)

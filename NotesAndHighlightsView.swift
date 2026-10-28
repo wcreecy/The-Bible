@@ -57,7 +57,7 @@ struct NotesAndHighlightsView: View {
         )
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                if horizontalSizeClass == .compact {
+                if horizontalSizeClass == .compact, !library.tags.isEmpty || filters.tag != nil {
                     NotesFilterMenu(
                         filters: $filters,
                         tags: library.tags,

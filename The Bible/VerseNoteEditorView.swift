@@ -48,9 +48,10 @@ struct VerseNoteEditorView: View {
             )
         } ?? verse
 
+        let prefilledBody = existingNote == nil ? "\n\n#scripture" : ""
         let saved = NoteDraft(
             title: existingNote?.title ?? "",
-            body: existingNote?.formattedContent ?? (try? JSONEncoder().encode(AttributedString(existingNote?.content ?? ""))) ?? Data(),
+            body: existingNote?.formattedContent ?? (try? JSONEncoder().encode(AttributedString(existingNote?.content ?? prefilledBody))) ?? Data(),
             category: NoteCategory.scripture.rawValue,
             highlightColor: existingNote?.highlightColor ?? "",
             endVerseNumber: existingNote?.lastVerseNumber ?? verse.verseNumber
@@ -64,7 +65,7 @@ struct VerseNoteEditorView: View {
         _title = State(initialValue: initial.title)
         _noteText = State(initialValue: draft?.bodyText ?? NoteFormattedContent.decode(
             existingNote?.formattedContent,
-            fallback: existingNote?.content ?? ""
+            fallback: existingNote?.content ?? prefilledBody
         ))
         _selectedColor = State(initialValue: VerseHighlightColor(rawValue: initial.highlightColor))
         _endVerse = State(initialValue: max(initial.endVerseNumber, start.verseNumber))

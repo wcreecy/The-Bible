@@ -50,7 +50,7 @@ struct UserNoteEditorView: View {
     ) {
         self.existingNote = existingNote
         let category = existingNote.flatMap { NoteCategory(rawValue: $0.categoryRawValue) } ?? defaultCategory
-        let prefilledBody = prefill?.body ?? ""
+        let prefilledBody = prefill?.body ?? (existingNote == nil && category == .sermon ? "\n\n#sermon" : "")
         let saved = NoteDraft(
             title: existingNote?.title ?? prefill?.title ?? "",
             body: existingNote?.formattedContent ?? (try? JSONEncoder().encode(AttributedString(existingNote?.content ?? prefilledBody))) ?? Data(),
@@ -175,9 +175,6 @@ struct UserNoteEditorView: View {
     private var sermonControls: some View {
         HStack {
             if isSermon {
-                Label("Sermon Note", systemImage: "person.wave.2")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tint)
                 Spacer()
                 Button("Remove Sermon Details") {
                     selectedCategory = .personal
