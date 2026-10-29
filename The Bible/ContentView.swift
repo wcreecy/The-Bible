@@ -88,7 +88,7 @@ struct ContentView: View {
             }
 
             NavigationStack(path: $notesPath) {
-                NotesAndHighlightsView()
+                NotesView()
             }
             .tabItem { Label("Notes", systemImage: "highlighter") }
             .tag(AppTab.notes)

@@ -210,34 +210,6 @@ private struct GenesisChapterHeader: View {
     }
 }
 
-private struct GenesisCreationEmblem: View {
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [.orange, .yellow, .green],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-
-            Image(systemName: "sun.max.fill")
-                .font(.system(size: 32, weight: .medium))
-                .foregroundStyle(.white)
-                .offset(x: -8, y: -8)
-
-            Image(systemName: "leaf.fill")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.white.opacity(0.94))
-                .rotationEffect(.degrees(-25))
-                .offset(x: 12, y: 12)
-        }
-        .frame(width: 72, height: 72)
-        .accessibilityHidden(true)
-    }
-}
-
 #Preview {
     // Psalms-sized sample book so the preview shows three-digit chapter numbers.
     NavigationStack {

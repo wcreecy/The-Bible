@@ -1,14 +1,7 @@
 import SwiftUI
 
 struct OTNTCardView: View {
-    enum TimeScope: String, CaseIterable, Identifiable {
-        case allTime = "All Time"
-        case thisMonth = "This Month"
-        case last7 = "Last 7 Days"
-        var id: String { rawValue }
-    }
-
-    @Binding var timeScope: TimeScope
+    @Binding var timeScope: StatsTimeScope
     let otSeconds: Int
     let ntSeconds: Int
     let formatSeconds: (Int) -> String
@@ -28,7 +21,7 @@ struct OTNTCardView: View {
                 }
 
                 Picker("Scope", selection: $timeScope) {
-                    ForEach(TimeScope.allCases) { scope in
+                    ForEach(StatsTimeScope.allCases) { scope in
                         Text(scope.rawValue).tag(scope)
                     }
                 }

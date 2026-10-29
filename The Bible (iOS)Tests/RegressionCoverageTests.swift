@@ -247,7 +247,8 @@ struct RegressionCoverageTests {
         #expect(Set(order) == Set(HomeCardID.allCases))
         #expect(order.count == HomeCardID.allCases.count)
         #expect(order.contains(.savedVerses))
-        #expect(!HomeLayoutStore.baselineHidden.contains(.savedVerses))
+        // Saved Verses stays in the order but starts hidden; Customize Home turns it on.
+        #expect(HomeLayoutStore.baselineHidden.contains(.savedVerses))
         #expect(HomeLayoutStore.baselineHidden.isSubset(of: Set(HomeCardID.allCases)))
     }
 

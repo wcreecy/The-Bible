@@ -2,21 +2,8 @@ import SwiftUI
 import Charts
 
 struct TotalsCardView: View {
-    enum SortMode: String, CaseIterable, Identifiable {
-        case canonical = "Canonical"
-        case mostRead = "Most Read"
-        var id: String { rawValue }
-    }
-
-    enum TimeScope: String, CaseIterable, Identifiable {
-        case allTime = "All Time"
-        case thisMonth = "This Month"
-        case last7 = "Last 7 Days"
-        var id: String { rawValue }
-    }
-
     // Inputs
-    @Binding var timeScope: TimeScope
+    @Binding var timeScope: StatsTimeScope
     let totalSeconds: Int
     let series: [(date: Date, seconds: Int)]
     let chartSubtitle: String
@@ -33,7 +20,7 @@ struct TotalsCardView: View {
 
     // Details
     @Binding var isExpanded: Bool
-    @Binding var sortMode: SortMode
+    @Binding var sortMode: StatsSortMode
     let rows: [(book: String, seconds: Int)]
 
     // Formatting helper (seconds -> H:MM:SS or M:SS)
@@ -66,7 +53,7 @@ struct TotalsCardView: View {
                 }
 
                 Picker("Scope", selection: $timeScope) {
-                    ForEach(TimeScope.allCases) { scope in
+                    ForEach(StatsTimeScope.allCases) { scope in
                         Text(scope.rawValue).tag(scope)
                     }
                 }
@@ -141,7 +128,7 @@ struct TotalsCardView: View {
 
                 if isExpanded {
                     Picker("Sort", selection: $sortMode) {
-                        ForEach(SortMode.allCases) { mode in
+                        ForEach(StatsSortMode.allCases) { mode in
                             Text(mode.rawValue).tag(mode)
                         }
                     }

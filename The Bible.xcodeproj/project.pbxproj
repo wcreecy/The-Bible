@@ -13,7 +13,7 @@
 		2C04929F3082AC5800123668 /* SavedVersesHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */; };
 		2C0AB1EC308A58A400DA8FD9 /* PerformanceSignposts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB1EB308A58A400DA8FD9 /* PerformanceSignposts.swift */; };
 		2C0AB1EE308A629900DA8FD9 /* AppStorageKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB1ED308A629900DA8FD9 /* AppStorageKey.swift */; };
-		2C0DFA21306E9C5A00E114A5 /* NotesAndHighlightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */; };
+		2C0DFA21306E9C5A00E114A5 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DFA20306E9C5A00E114A5 /* NotesView.swift */; };
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
 		2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */; };
 		2C1400FA2EF2BB2900A93CA9 /* StatsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */; };
@@ -47,7 +47,7 @@
 		2C2A44DE2EEE152E00FE8C2F /* StartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44DD2EEE152E00FE8C2F /* StartScreen.swift */; };
 		2C2A44E02EEE153300FE8C2F /* HeaderBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44DF2EEE153300FE8C2F /* HeaderBox.swift */; };
 		2C2A44E22EEE153A00FE8C2F /* StatusBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44E12EEE153A00FE8C2F /* StatusBanner.swift */; };
-		2C2A44E42EEE153F00FE8C2F /* ControlsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44E32EEE153F00FE8C2F /* ControlsBar.swift */; };
+		2C2A44E42EEE153F00FE8C2F /* WordSearchControlsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44E32EEE153F00FE8C2F /* WordSearchControlsBar.swift */; };
 		2C2A44E62EEE154500FE8C2F /* WrapWordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44E52EEE154500FE8C2F /* WrapWordsView.swift */; };
 		2C2A44E82EEE25E500FE8C2F /* iCloudSyncCoordinator+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44E72EEE25E500FE8C2F /* iCloudSyncCoordinator+Settings.swift */; };
 		2C2A44EA2EEE260300FE8C2F /* iCloudSyncCoordinator+Games.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A44E92EEE260300FE8C2F /* iCloudSyncCoordinator+Games.swift */; };
@@ -214,7 +214,7 @@
 		2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedVersesHomeCard.swift; sourceTree = "<group>"; };
 		2C0AB1EB308A58A400DA8FD9 /* PerformanceSignposts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceSignposts.swift; sourceTree = "<group>"; };
 		2C0AB1ED308A629900DA8FD9 /* AppStorageKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageKey.swift; sourceTree = "<group>"; };
-		2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesAndHighlightsView.swift; sourceTree = "<group>"; };
+		2C0DFA20306E9C5A00E114A5 /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesView.swift; sourceTree = "<group>"; };
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
 		2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBooksThisMonthCardView.swift; sourceTree = "<group>"; };
 		2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsTypes.swift; sourceTree = "<group>"; };
@@ -250,7 +250,7 @@
 		2C2A44DD2EEE152E00FE8C2F /* StartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartScreen.swift; sourceTree = "<group>"; };
 		2C2A44DF2EEE153300FE8C2F /* HeaderBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderBox.swift; sourceTree = "<group>"; };
 		2C2A44E12EEE153A00FE8C2F /* StatusBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBanner.swift; sourceTree = "<group>"; };
-		2C2A44E32EEE153F00FE8C2F /* ControlsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsBar.swift; sourceTree = "<group>"; };
+		2C2A44E32EEE153F00FE8C2F /* WordSearchControlsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSearchControlsBar.swift; sourceTree = "<group>"; };
 		2C2A44E52EEE154500FE8C2F /* WrapWordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrapWordsView.swift; sourceTree = "<group>"; };
 		2C2A44E72EEE25E500FE8C2F /* iCloudSyncCoordinator+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iCloudSyncCoordinator+Settings.swift"; sourceTree = "<group>"; };
 		2C2A44E92EEE260300FE8C2F /* iCloudSyncCoordinator+Games.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iCloudSyncCoordinator+Games.swift"; sourceTree = "<group>"; };
@@ -563,7 +563,7 @@
 				2C2A44DD2EEE152E00FE8C2F /* StartScreen.swift */,
 				2C2A44DF2EEE153300FE8C2F /* HeaderBox.swift */,
 				2C2A44E12EEE153A00FE8C2F /* StatusBanner.swift */,
-				2C2A44E32EEE153F00FE8C2F /* ControlsBar.swift */,
+				2C2A44E32EEE153F00FE8C2F /* WordSearchControlsBar.swift */,
 				2C2A44E52EEE154500FE8C2F /* WrapWordsView.swift */,
 				2C2A44E72EEE25E500FE8C2F /* iCloudSyncCoordinator+Settings.swift */,
 				2C2A44E92EEE260300FE8C2F /* iCloudSyncCoordinator+Games.swift */,
@@ -601,7 +601,7 @@
 				2CB929B0306BF01F00B03AB0 /* GameInsightsCardView.swift */,
 				2CB92A96306C884700B03AB0 /* GameTimerCard.swift */,
 				2CB92B7C306D3D8600B03AB0 /* HomeBibleReaderCard.swift */,
-				2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */,
+				2C0DFA20306E9C5A00E114A5 /* NotesView.swift */,
 				2C8F6557307008BE0052754F /* DeveloperSampleData.swift */,
 				2C2BBFA930702B6900BD4A07 /* VerseToRememberCard.swift */,
 				2C98EBDF3071360B00FBAED3 /* FeedbackView.swift */,
@@ -922,12 +922,12 @@
 				2C2A45082EEE351E00FE8C2F /* SettingsResetDataSection.swift in Sources */,
 				2C2A44E62EEE154500FE8C2F /* WrapWordsView.swift in Sources */,
 				2C04929F3082AC5800123668 /* SavedVersesHomeCard.swift in Sources */,
-				2C0DFA21306E9C5A00E114A5 /* NotesAndHighlightsView.swift in Sources */,
+				2C0DFA21306E9C5A00E114A5 /* NotesView.swift in Sources */,
 				2C2A44EC2EEE261400FE8C2F /* iCloudSyncCoordinator+BibleStats.swift in Sources */,
 				2C1400FA2EF2BB2900A93CA9 /* StatsTypes.swift in Sources */,
 				2C2A44EE2EEE261A00FE8C2F /* iCloudSyncCoordinator+Sessions.swift in Sources */,
 				2C2A44F82EEE333E00FE8C2F /* SettingsVOTDSection.swift in Sources */,
-				2C2A44E42EEE153F00FE8C2F /* ControlsBar.swift in Sources */,
+				2C2A44E42EEE153F00FE8C2F /* WordSearchControlsBar.swift in Sources */,
 				2C2A44D42EEE150B00FE8C2F /* Comparable+Clamp.swift in Sources */,
 				2CBD4223306B561D002E33CE /* PersistenceFeedback.swift in Sources */,
 				2C2A44E82EEE25E500FE8C2F /* iCloudSyncCoordinator+Settings.swift in Sources */,

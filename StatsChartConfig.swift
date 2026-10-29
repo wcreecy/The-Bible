@@ -1,11 +1,23 @@
 import SwiftUI
 import Charts
 
+/// The time window a Stats card summarizes. Shared by every card that offers a scope picker.
+enum StatsTimeScope: String, CaseIterable, Identifiable {
+    case allTime = "All Time"
+    case thisMonth = "This Month"
+    case last7 = "Last 7 Days"
+    var id: String { rawValue }
+}
+
+/// How the per-book totals list is ordered.
+enum StatsSortMode: String, CaseIterable, Identifiable {
+    case canonical = "Canonical"
+    case mostRead = "Most Read"
+    var id: String { rawValue }
+}
+
 struct StatsChartConfig {
-    // A lightweight scope the helper can use without depending on StatsView.
-    enum Scope {
-        case allTime, thisMonth, last7
-    }
+    typealias Scope = StatsTimeScope
 
     typealias Aggregation = StatsSeriesBuilder.Aggregation
 

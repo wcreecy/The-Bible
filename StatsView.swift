@@ -105,19 +105,6 @@ private struct GameStatsSections: View {
 }
 
 struct StatsView: View {
-    private enum SortMode: String, CaseIterable, Identifiable {
-        case canonical = "Canonical"
-        case mostRead = "Most Read"
-        var id: String { rawValue }
-    }
-
-    private enum TimeScope: String, CaseIterable, Identifiable {
-        case allTime = "All Time"
-        case thisMonth = "This Month"
-        case last7 = "Last 7 Days"
-        var id: String { rawValue }
-    }
-
     private enum StatsMode: String, CaseIterable, Identifiable {
         case bible = "Reading Stats"
         case games = "Game Stats"
@@ -135,11 +122,11 @@ struct StatsView: View {
     @State private var model = StatsViewModel()
 
     // Independent scopes per card (Totals, OT/NT, Genre) — UI-only
-    @State private var timeScopeTotals: TimeScope = .allTime
-    @State private var timeScopeOTNT: TimeScope = .allTime
-    @State private var timeScopeGenre: TimeScope = .allTime
+    @State private var timeScopeTotals: StatsTimeScope = .allTime
+    @State private var timeScopeOTNT: StatsTimeScope = .allTime
+    @State private var timeScopeGenre: StatsTimeScope = .allTime
 
-    @State private var sortMode: SortMode = .canonical
+    @State private var sortMode: StatsSortMode = .canonical
 
     // Genre distribution (derived by scope) — UI-only
     @State private var perGenreTotals: [(genre: String, seconds: Int)] = []
@@ -422,22 +409,7 @@ struct StatsView: View {
 
     private var totalsCard: some View {
         TotalsCardView(
-            timeScope: Binding(
-                get: {
-                    switch timeScopeTotals {
-                    case .allTime: return .allTime
-                    case .thisMonth: return .thisMonth
-                    case .last7: return .last7
-                    }
-                },
-                set: { new in
-                    switch new {
-                    case .allTime: timeScopeTotals = .allTime
-                    case .thisMonth: timeScopeTotals = .thisMonth
-                    case .last7: timeScopeTotals = .last7
-                    }
-                }
-            ),
+            timeScope: $timeScopeTotals,
             totalSeconds: totalsScopedTotalSeconds,
             series: totalsDaily,
             chartSubtitle: totalsChartSubtitle,
@@ -450,20 +422,7 @@ struct StatsView: View {
             avgSecondsPerActiveBucket: avgSecondsPerActiveBucketInScope,
             topBook: topBookInScope,
             isExpanded: $showTotalsSection,
-            sortMode: Binding(
-                get: {
-                    switch sortMode {
-                    case .canonical: return .canonical
-                    case .mostRead: return .mostRead
-                    }
-                },
-                set: { new in
-                    switch new {
-                    case .canonical: sortMode = .canonical
-                    case .mostRead: sortMode = .mostRead
-                    }
-                }
-            ),
+            sortMode: $sortMode,
             rows: totalsScopedRows,
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )
@@ -480,10 +439,7 @@ struct StatsView: View {
 
     private var otntCard: some View {
         OTNTCardView(
-            timeScope: Binding(
-                get: { mapScopeToOTNT(timeScopeOTNT) },
-                set: { new in timeScopeOTNT = mapScopeFromOTNT(new) }
-            ),
+            timeScope: $timeScopeOTNT,
             otSeconds: otSeconds,
             ntSeconds: ntSeconds,
             formatSeconds: { BibleStatsStore.shared.format($0) }
@@ -493,10 +449,7 @@ struct StatsView: View {
 
     private var genreCard: some View {
         GenreDistributionCardView(
-            timeScope: Binding(
-                get: { mapScopeToGenre(timeScopeGenre) },
-                set: { new in timeScopeGenre = mapScopeFromGenre(new) }
-            ),
+            timeScope: $timeScopeGenre,
             perGenreTotals: perGenreTotals,
             selectedGenre: $selectedGenre,
             onSelectGenre: { g in
@@ -597,17 +550,6 @@ struct StatsView: View {
         AppRouter.shared.openBibleReference(book: bookName, chapter: chapter, verse: verse)
     }
 
-    private func nextUnreadGlobal() -> (book: String, chapter: Int)? {
-        for b in BibleData.books {
-            for c in b.chapters {
-                let totalVerses = c.verses.count
-                let complete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: c.number, totalVerses: totalVerses)
-                if !complete { return (b.name, c.number) }
-            }
-        }
-        return nil
-    }
-
     private func nextUnreadChapter(in bookName: String) -> Int? {
         guard let b = BibleData.books.first(where: { $0.name == bookName }) else { return nil }
         for c in b.chapters {
@@ -641,65 +583,23 @@ struct StatsView: View {
         }
     }
 
-    // MARK: - Scope mapping helpers
-
-    private func mapScopeToOTNT(_ scope: TimeScope) -> OTNTCardView.TimeScope {
-        switch scope {
-        case .allTime: return .allTime
-        case .thisMonth: return .thisMonth
-        case .last7: return .last7
-        }
-    }
-
-    private func mapScopeFromOTNT(_ scope: OTNTCardView.TimeScope) -> TimeScope {
-        switch scope {
-        case .allTime: return .allTime
-        case .thisMonth: return .thisMonth
-        case .last7: return .last7
-        }
-    }
-
-    private func mapScopeToGenre(_ scope: TimeScope) -> GenreDistributionCardView.TimeScope {
-        switch scope {
-        case .allTime: return .allTime
-        case .thisMonth: return .thisMonth
-        case .last7: return .last7
-        }
-    }
-
-    private func mapScopeFromGenre(_ scope: GenreDistributionCardView.TimeScope) -> TimeScope {
-        switch scope {
-        case .allTime: return .allTime
-        case .thisMonth: return .thisMonth
-        case .last7: return .last7
-        }
-    }
-
     // MARK: - Totals chart config via helper
 
-    private var totalsChartScope: StatsChartConfig.Scope {
-        switch timeScopeTotals {
-        case .allTime: return .allTime
-        case .thisMonth: return .thisMonth
-        case .last7: return .last7
-        }
-    }
-
     private var totalsChartSubtitle: String {
-        StatsChartConfig.subtitle(for: totalsChartScope, allTimeAggregation: allTimeAggregation)
+        StatsChartConfig.subtitle(for: timeScopeTotals, allTimeAggregation: allTimeAggregation)
     }
 
     private var totalsCurrentXAxisAggregation: StatsSeriesBuilder.Aggregation {
-        StatsChartConfig.currentXAxisAggregation(for: totalsChartScope, allTimeAggregation: allTimeAggregation)
+        StatsChartConfig.currentXAxisAggregation(for: timeScopeTotals, allTimeAggregation: allTimeAggregation)
     }
 
     private var totalsCurrentBarUnit: Calendar.Component {
-        StatsChartConfig.currentBarUnit(for: totalsChartScope, allTimeAggregation: allTimeAggregation)
+        StatsChartConfig.currentBarUnit(for: timeScopeTotals, allTimeAggregation: allTimeAggregation)
     }
 
     private var totalsShouldShowBarValueLabels: Bool {
         StatsChartConfig.shouldShowBarValueLabels(
-            for: totalsChartScope,
+            for: timeScopeTotals,
             allTimeAggregation: allTimeAggregation,
             count: totalsDaily.count,
             isRegular: (hSizeClass == .regular)

@@ -1,20 +1,13 @@
 import SwiftUI
 
 struct GenreDistributionCardView: View {
-    enum TimeScope: String, CaseIterable, Identifiable {
-        case allTime = "All Time"
-        case thisMonth = "This Month"
-        case last7 = "Last 7 Days"
-        var id: String { rawValue }
-    }
-
     struct Row: Identifiable {
         let id = UUID()
         let genre: String
         let seconds: Int
     }
 
-    @Binding var timeScope: TimeScope
+    @Binding var timeScope: StatsTimeScope
     let perGenreTotals: [(genre: String, seconds: Int)]
     @Binding var selectedGenre: StatsSeriesBuilder.Genre?
     let onSelectGenre: (StatsSeriesBuilder.Genre) -> Void
@@ -38,7 +31,7 @@ struct GenreDistributionCardView: View {
                 }
 
                 Picker("Scope", selection: $timeScope) {
-                    ForEach(TimeScope.allCases) { scope in
+                    ForEach(StatsTimeScope.allCases) { scope in
                         Text(scope.rawValue).tag(scope)
                     }
                 }

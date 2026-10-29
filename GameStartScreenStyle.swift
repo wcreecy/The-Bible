@@ -74,6 +74,36 @@ struct GameChoiceSetting<Value: Hashable>: View {
         choices.first { $0.value == selection }
     }
 
+    private var titleColumn: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.body)
+                .foregroundStyle(.primary)
+            if let detail = selected?.detail {
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var valueLabel: some View {
+        HStack(spacing: 4) {
+            if let selected {
+                Text(selected.title)
+            } else if let fallbackValue {
+                Text(fallbackValue)
+            }
+            Image(systemName: "chevron.up.chevron.down")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .font(.body)
+        .foregroundStyle(.secondary)
+    }
+
     var body: some View {
         Menu {
             Picker(selection: $selection) {
@@ -90,36 +120,24 @@ struct GameChoiceSetting<Value: Hashable>: View {
                 Text(title)
             }
         } label: {
-            HStack(spacing: 12) {
-                GameSettingBadge(systemImage: selected?.icon ?? systemImage, tint: tint)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.body)
-                        .foregroundStyle(.primary)
-                    if let detail = selected?.detail {
-                        Text(detail)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+            // Side by side when it fits. At large text sizes the title and the chosen value
+            // can't share a line, so the value drops underneath instead of widening the row.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    GameSettingBadge(systemImage: selected?.icon ?? systemImage, tint: tint)
+                    titleColumn
+                    Spacer(minLength: 8)
+                    valueLabel
                 }
 
-                Spacer(minLength: 8)
-
-                HStack(spacing: 4) {
-                    if let selected {
-                        Text(selected.title)
-                    } else if let fallbackValue {
-                        Text(fallbackValue)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 12) {
+                        GameSettingBadge(systemImage: selected?.icon ?? systemImage, tint: tint)
+                        titleColumn
                     }
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                    valueLabel
+                        .padding(.leading, 42)
                 }
-                .font(.body)
-                .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)

@@ -251,7 +251,7 @@ struct VerseActionMenuContent: View {
                     Image(systemName: "highlighter")
                         .foregroundStyle(existingNote == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
                 }
-                .accessibilityLabel(existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight")
+                .accessibilityLabel(noteActionTitle)
 
                 let mentions = mentionCount
                 if mentions > 0 {
@@ -267,19 +267,19 @@ struct VerseActionMenuContent: View {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
                 }
-                .accessibilityLabel(isFavorite ? "Remove from Favorites" : "Add to Favorites")
+                .accessibilityLabel(favoriteActionTitle)
 
                 Button(action: bookmark) {
                     Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                         .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
                 }
-                .accessibilityLabel(isBookmarked ? "Remove Bookmark" : "Add Bookmark")
+                .accessibilityLabel(bookmarkActionTitle)
 
                 Button(action: togglePin) {
                     Image(systemName: isPinned ? "pin.fill" : "pin")
                         .foregroundStyle(isPinned ? AnyShapeStyle(.orange) : AnyShapeStyle(.primary))
                 }
-                .accessibilityLabel(isPinned ? "Unpin from Widget" : "Pin to Widget")
+                .accessibilityLabel(pinActionTitle)
 
                 Button(action: copy) {
                     Image(systemName: "doc.on.doc")
@@ -303,43 +303,18 @@ struct VerseActionMenuContent: View {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
                 }
-                .accessibilityLabel(isFavorite ? "Remove from Favorites" : "Add to Favorites")
+                .accessibilityLabel(favoriteActionTitle)
 
                 Menu {
-                    Button(action: {
-                        onNoteEditorPresented()
-                        isShowingNoteEditor = true
-                    }) {
-                        Label(
-                            existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight",
-                            systemImage: "highlighter"
-                        )
-                    }
+                    noteMenuButton(notifiesPresentation: true)
                     mentionsButton
-
-                    Button(action: bookmark) {
-                        Label(
-                            isBookmarked ? "Remove Bookmark" : "Add Bookmark",
-                            systemImage: isBookmarked ? "bookmark.fill" : "bookmark"
-                        )
-                    }
+                    bookmarkMenuButton
 
                     Divider()
 
-                    Button(action: copy) {
-                        Label("Copy", systemImage: "doc.on.doc")
-                    }
-
-                    ShareLink(item: verse.shareText) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-
-                    Button(action: togglePin) {
-                        Label(
-                            isPinned ? "Unpin from Widget" : "Pin to Widget",
-                            systemImage: isPinned ? "pin.fill" : "pin"
-                        )
-                    }
+                    copyMenuButton
+                    shareMenuButton
+                    pinMenuButton
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
@@ -349,47 +324,76 @@ struct VerseActionMenuContent: View {
 
         case .menu:
             Menu {
-                Button(action: { isShowingNoteEditor = true }) {
-                    Label(
-                        existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight",
-                        systemImage: "highlighter"
-                    )
-                }
+                noteMenuButton(notifiesPresentation: false)
                 mentionsButton
-
-                Button(action: toggleFavorite) {
-                    Label(
-                        isFavorite ? "Remove from Favorites" : "Add to Favorites",
-                        systemImage: isFavorite ? "heart.fill" : "heart"
-                    )
-                }
-
-                Button(action: bookmark) {
-                    Label(
-                        isBookmarked ? "Remove Bookmark" : "Add Bookmark",
-                        systemImage: isBookmarked ? "bookmark.fill" : "bookmark"
-                    )
-                }
-
-                Button(action: togglePin) {
-                    Label(
-                        isPinned ? "Unpin from Widget" : "Pin to Widget",
-                        systemImage: isPinned ? "pin.fill" : "pin"
-                    )
-                }
-
-                Button(action: copy) {
-                    Label("Copy", systemImage: "doc.on.doc")
-                }
-
-                ShareLink(item: verse.shareText) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                }
+                favoriteMenuButton
+                bookmarkMenuButton
+                pinMenuButton
+                copyMenuButton
+                shareMenuButton
             } label: {
                 Image(systemName: "ellipsis.circle")
                     .font(.title3)
             }
             .accessibilityLabel("Verse actions")
+        }
+    }
+
+    // MARK: Shared action titles and menu items
+
+    private var noteActionTitle: LocalizedStringKey {
+        existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight"
+    }
+
+    private var favoriteActionTitle: LocalizedStringKey {
+        isFavorite ? "Remove from Favorites" : "Add to Favorites"
+    }
+
+    private var bookmarkActionTitle: LocalizedStringKey {
+        isBookmarked ? "Remove Bookmark" : "Add Bookmark"
+    }
+
+    private var pinActionTitle: LocalizedStringKey {
+        isPinned ? "Unpin from Widget" : "Pin to Widget"
+    }
+
+    /// Only the Focus Mode menu tells its host when the note editor opens.
+    private func noteMenuButton(notifiesPresentation: Bool) -> some View {
+        Button {
+            if notifiesPresentation { onNoteEditorPresented() }
+            isShowingNoteEditor = true
+        } label: {
+            Label(noteActionTitle, systemImage: "highlighter")
+        }
+    }
+
+    private var favoriteMenuButton: some View {
+        Button(action: toggleFavorite) {
+            Label(favoriteActionTitle, systemImage: isFavorite ? "heart.fill" : "heart")
+        }
+    }
+
+    private var bookmarkMenuButton: some View {
+        Button(action: bookmark) {
+            Label(bookmarkActionTitle, systemImage: isBookmarked ? "bookmark.fill" : "bookmark")
+        }
+    }
+
+    private var pinMenuButton: some View {
+        Button(action: togglePin) {
+            Label(pinActionTitle, systemImage: isPinned ? "pin.fill" : "pin")
+        }
+    }
+
+    private var copyMenuButton: some View {
+        Button(action: copy) {
+            Label("Copy", systemImage: "doc.on.doc")
+        }
+    }
+
+    private var shareMenuButton: some View {
+        ShareLink(item: verse.shareText) {
+            Label("Share", systemImage: "square.and.arrow.up")
         }
     }
 

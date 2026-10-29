@@ -10,7 +10,7 @@ private struct GenesisChapterSectionHeader: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            GenesisCreationEmblem()
+            GenesisCreationEmblem(size: 60)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("Genesis")
@@ -37,34 +37,6 @@ private struct GenesisChapterSectionHeader: View {
         .padding(.vertical, 8)
         .textCase(nil)
         .accessibilityElement(children: .combine)
-    }
-}
-
-private struct GenesisCreationEmblem: View {
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [.orange, .yellow, .green],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-
-            Image(systemName: "sun.max.fill")
-                .font(.system(size: 27, weight: .medium))
-                .foregroundStyle(.white)
-                .offset(x: -7, y: -7)
-
-            Image(systemName: "leaf.fill")
-                .font(.system(size: 19, weight: .bold))
-                .foregroundStyle(.white.opacity(0.94))
-                .rotationEffect(.degrees(-25))
-                .offset(x: 10, y: 10)
-        }
-        .frame(width: 60, height: 60)
-        .accessibilityHidden(true)
     }
 }
 

@@ -1,25 +1,7 @@
 import SwiftUI
 import SwiftData
-import UserNotifications
-import AudioToolbox
 import UIKit
-import HealthKit
 import Foundation
-import WidgetKit
-
-// Shared types moved to HomeTypes.swift
-// private enum VerseScope: String { case old, new, whole, book }
-
-// New: identifiers matching SettingsView’s reorderable/hideable cards
-// private enum HomeCardID: String, CaseIterable, Identifiable {
-//     case verseOfDay
-//     case dailyFocus
-//     case timer
-//     case resumeReading
-//     case streaks // Daily Bible Streak (now includes Daily Goal progress)
-//     case bibleStats // Bible Stats (Top 5 by reading time)
-//     var id: String { rawValue }
-// }
 
 struct HomeView: View {
     @State private var showPrayerStudySheet: Bool = false
@@ -27,14 +9,9 @@ struct HomeView: View {
 
     private var timerController = PrayerTimerController.shared
 
-    @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
-    @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
-
-    // Finish alert presented by the controller
-    @State private var finishHapticTimer: Timer? = nil
 
     @Environment(NavigationCoordinator.self) private var coordinator
 
@@ -42,7 +19,6 @@ struct HomeView: View {
     @State private var verseActionToastSymbol: String = "doc.on.doc"
     @State private var verseActionToastText: String = "Copied to Clipboard"
     @State private var verseActionToastTint: Color = .accentColor
-    @State private var lastVerseAutoRefreshToken: String = ""
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -453,18 +429,18 @@ struct HomeView: View {
 
             if !isEditingLayout {
                 if quickSearchVisible {
-            SearchHomeCard(
-                presentation: .inline,
-                onOpenSearch: { coordinator.push(.search) },
-                onSelectResult: { result in
-                    openBibleReference(
-                        book: result.bookName,
-                        chapter: result.chapterNumber,
-                        verse: result.verseNumber
+                    SearchHomeCard(
+                        presentation: .inline,
+                        onOpenSearch: { coordinator.push(.search) },
+                        onSelectResult: { result in
+                            openBibleReference(
+                                book: result.bookName,
+                                chapter: result.chapterNumber,
+                                verse: result.verseNumber
+                            )
+                        }
                     )
                 }
-            )
-        }
             }
 
             if isEditingLayout {
@@ -742,8 +718,8 @@ struct HomeView: View {
                             arrowProgress: editHomeCueArrowProgress,
                             action: beginEditingHomeLayout
                         )
+                    }
                 }
-            }
             }
             if isPad && !isEditingLayout {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -768,25 +744,25 @@ struct HomeView: View {
         .onAppear {
             AppPerformance.measure("HomeCardPreparation") {
                 loadHomeLayout()
-            bibleStore.ensureLoaded()
+                bibleStore.ensureLoaded()
 
-            // Verse-of-the-Day initial handling moved to VM
-            votdVM.handleAppear()
+                // Verse-of-the-Day initial handling moved to VM
+                votdVM.handleAppear()
 
-            // Focus initial load
-            focusVM.loadFromStorage()
+                // Focus initial load
+                focusVM.loadFromStorage()
 
-            handleOpenPendingVerse()
+                handleOpenPendingVerse()
 
-            // Controllers
-            timerController.onAppear()
+                // Controllers
+                timerController.onAppear()
 
-            // The stats card can populate just after the initial frame. Keeping the
-            // aggregation out of this appearance pass makes Home immediately tappable.
-            Task { @MainActor in
-                await Task.yield()
-                bibleVM.refresh()
-            }
+                // The stats card can populate just after the initial frame. Keeping the
+                // aggregation out of this appearance pass makes Home immediately tappable.
+                Task { @MainActor in
+                    await Task.yield()
+                    bibleVM.refresh()
+                }
             }
         }
         .onNotification(.homeLayoutChanged) {

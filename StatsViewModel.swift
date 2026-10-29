@@ -14,13 +14,11 @@ final class StatsViewModel {
     var thisWeekSeconds: Int = 0
     var lastWeekSeconds: Int = 0
     var lastReadBookChapter: String = "—"
-    var lastReadTimeText: String = "—"
     var lastReadEntry: BibleStatsStore.LastRead? = nil
 
     var visitedCount: Int = 0
     var booksCompleted: Int = 0
     var totalBooks: Int = 0
-    var bibleCompletionPercent: Int = 0
     var totalChapters: Int = 0
 
     // Verse-level overall progress
@@ -35,16 +33,10 @@ final class StatsViewModel {
     var dailyAverageSessionsLast7: [(date: Date, seconds: Int)] = []
     private(set) var refreshRevision: Int = 0
     var avgSessionSecondsLast7: Int = 0
-    var last30Daily: [(date: Date, seconds: Int)] = []
 
     // This Month metrics
     var monthTotalSeconds: Int = 0
-    var monthChaptersCompleted: Int = 0
     var monthTop3Books: [(book: String, seconds: Int)] = []
-
-    // Summary glance additions
-    var totalSecondsAllTime: Int = 0
-    var lastMonthSeconds: Int = 0
 
     // Last session length (seconds)
     var lastSessionSeconds: Int = 0
@@ -180,11 +172,9 @@ final class StatsViewModel {
         if let last = snapshot.lastRead {
             lastReadEntry = last
             lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
-            lastReadTimeText = timeOnlyString(last.date)
         } else {
             lastReadEntry = nil
             lastReadBookChapter = "—"
-            lastReadTimeText = "—"
         }
 
     }
@@ -224,23 +214,7 @@ final class StatsViewModel {
         lastSessionSeconds = sessions.max(by: { $0.end < $1.end })
             .map(ReadingSessionsStore.duration(of:)) ?? 0
 
-        // Consistency: last 30 from synced daily totals
-        do {
-            var days: [(Date, Int)] = []
-            for i in stride(from: 29, through: 0, by: -1) {
-                if let d = calendar.date(byAdding: .day, value: -i, to: startOfToday) {
-                    let key = BibleStatsStore.isoDateString(d, calendar: calendar)
-                    days.append((d, max(0, dailyTotals[key, default: 0])))
-                }
-            }
-            last30Daily = days
-        }
-
-        // This Month (totals and chapters from BibleStatsStore)
-        let monthComponents = calendar.dateComponents([.year, .month], from: now)
-        monthChaptersCompleted = snapshot.chapterCompletionDates.values.filter {
-            calendar.dateComponents([.year, .month], from: $0) == monthComponents
-        }.count
+        // This Month total from BibleStatsStore
         let monthKeys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: calendar)
         monthTotalSeconds = monthKeys.reduce(0) { total, key in
             total + max(0, dailyTotals[key, default: 0])
@@ -280,7 +254,6 @@ final class StatsViewModel {
                 }
             }
             perBookAllTimeSessionTotals = allTimeMap
-            totalSecondsAllTime = allTimeMap.values.reduce(0) { $0 + max(0, $1) }
         }
 
         // Last 7 days (including today)
@@ -351,10 +324,6 @@ final class StatsViewModel {
         visitedCount = completedChapters
         booksCompleted = completedBooks
 
-        let denom = max(1, totalChapters)
-        let pct = Int(round((Double(completedChapters) / Double(denom)) * 100.0))
-        bibleCompletionPercent = pct
-
         // Ensure placeholder entries for any missing books
         let orderedAllBooks: [String] = {
             if !BibleData.books.isEmpty { return BibleData.books.map { $0.name } }
@@ -368,12 +337,5 @@ final class StatsViewModel {
         bookProgress = progress
         totalVerses = verseCount
         completedVerses = completedVerseCount
-    }
-
-    private func timeOnlyString(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        formatter.dateStyle = .none
-        return formatter.string(from: date)
     }
 }
