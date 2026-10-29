@@ -10,47 +10,6 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
-// MARK: - Local App Intents for Live Activity Controls (iOS 17+)
-// Keeping intents defined in case you use them elsewhere, but they won’t be shown as buttons now.
-@available(iOS 17.0, *)
-struct PrayerTimerTogglePauseIntent: AppIntent {
-    static var title: LocalizedStringResource = "Pause/Resume Prayer Timer"
-    static var openAppWhenRun = false
-    func perform() async throws -> some IntentResult {
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set("togglePause", forKey: "prayerTimerPendingAction")
-            shared.set(UUID().uuidString, forKey: "prayerTimerActionToken")
-        }
-        return .result()
-    }
-}
-
-@available(iOS 17.0, *)
-struct PrayerTimerAddFiveMinutesIntent: AppIntent {
-    static var title: LocalizedStringResource = "+5 Minutes"
-    static var openAppWhenRun = false
-    func perform() async throws -> some IntentResult {
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set("add5", forKey: "prayerTimerPendingAction")
-            shared.set(UUID().uuidString, forKey: "prayerTimerActionToken")
-        }
-        return .result()
-    }
-}
-
-@available(iOS 17.0, *)
-struct PrayerTimerStopIntent: AppIntent {
-    static var title: LocalizedStringResource = "Stop Prayer Timer"
-    static var openAppWhenRun = false
-    func perform() async throws -> some IntentResult {
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set("stop", forKey: "prayerTimerPendingAction")
-            shared.set(UUID().uuidString, forKey: "prayerTimerActionToken")
-        }
-        return .result()
-    }
-}
-
 private func sharedFocusTitle() -> String? {
     let shared = UserDefaults(suiteName: "group.bible.app")
     let title = shared?.string(forKey: "focusTitle")?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -121,7 +80,7 @@ struct PrayerTimerLiveActivity: Widget {
                     }
                 } else {
                     // Big live countdown
-                    Text(endDate(context.state.remaining), style: .timer)
+                    countdownText(context)
                         .monospacedDigit()
                         .font(.largeTitle.weight(.bold))
                         .fontDesign(.rounded)
@@ -170,7 +129,7 @@ struct PrayerTimerLiveActivity: Widget {
                                 .font(.headline)
                                 .multilineTextAlignment(.center)
 
-                            Text(endDate(context.state.remaining), style: .timer)
+                            countdownText(context)
                                 .monospacedDigit()
                                 .font(.title.weight(.bold))
                                 .fontDesign(.rounded)
@@ -185,8 +144,25 @@ struct PrayerTimerLiveActivity: Widget {
                     EmptyView()
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    // No controls here anymore. Also avoid duplicating Focus body/title shown in center.
-                    EmptyView()
+                    if context.state.status != "Focus" {
+                        HStack(spacing: 12) {
+                            Button(intent: PrayerTimerTogglePauseIntent()) {
+                                Label(
+                                    context.state.status == "Paused" ? "Resume" : "Pause",
+                                    systemImage: context.state.status == "Paused" ? "play.fill" : "pause.fill"
+                                )
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.indigo)
+
+                            Button(intent: PrayerTimerStopIntent()) {
+                                Label("Stop", systemImage: "stop.fill")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
                 }
             } compactLeading: {
                 if context.state.status == "Focus" {
@@ -210,7 +186,7 @@ struct PrayerTimerLiveActivity: Widget {
                     }
                 } else {
                     // Constrain the timer to 48pt width
-                    Text(endDate(context.state.remaining), style: .timer)
+                    countdownText(context)
                         .font(.caption2)
                         .monospacedDigit()
                         .lineLimit(1)
@@ -225,6 +201,22 @@ struct PrayerTimerLiveActivity: Widget {
                 }
             }
         }
+    }
+
+    /// A `.timer` text counts down on its own, so while paused show the frozen time instead.
+    private func countdownText(_ context: ActivityViewContext<PrayerTimerAttributes>) -> Text {
+        if context.state.status == "Paused" {
+            return Text(clock(context.state.remaining))
+        }
+        return Text(endDate(context.state.remaining), style: .timer)
+    }
+
+    private func clock(_ seconds: Int) -> String {
+        let total = max(0, seconds)
+        if total >= 3600 {
+            return String(format: "%d:%02d:%02d", total / 3600, (total % 3600) / 60, total % 60)
+        }
+        return String(format: "%d:%02d", total / 60, total % 60)
     }
 
     private func sessionName(

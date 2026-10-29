@@ -1,5 +1,6 @@
 import Foundation
 import ActivityKit
+import SwiftUI
 
 @MainActor
 final class PrayerTimerActivityController {
@@ -7,11 +8,14 @@ final class PrayerTimerActivityController {
     private init() {}
 
     private var activity: Activity<PrayerTimerAttributes>?
+    @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
     // MARK: - Public API
 
     func start(sessionName: String, totalSeconds: Int, remainingSeconds: Int, isPaused: Bool) {
-        guard #available(iOS 16.1, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        guard liveActivitiesEnabled,
+              #available(iOS 16.1, *),
+              ActivityAuthorizationInfo().areActivitiesEnabled else { return }
 
         Self.endAllPrayerActivities()
 
@@ -53,6 +57,7 @@ final class PrayerTimerActivityController {
     /// Shows a newly saved focus. A running prayer timer shares this Live Activity, so it
     /// keeps going and just picks up the new text instead of being replaced.
     func showFocus(title: String?, body: String?) {
+        guard liveActivitiesEnabled else { return }
         if let timerActivity = Self.runningTimerActivity() {
             Self.setFocus(on: timerActivity, title: title, body: body)
         } else {
@@ -70,7 +75,7 @@ final class PrayerTimerActivityController {
     }
 
     func ensureActivityForFocus(title: String?, body: String?) {
-        guard #available(iOS 16.1, *) else { return }
+        guard liveActivitiesEnabled, #available(iOS 16.1, *) else { return }
         Self.endAllPrayerActivities()
 
         let attributes = PrayerTimerAttributes(sessionName: "Prayer Timer")
@@ -102,7 +107,7 @@ final class PrayerTimerActivityController {
     }
     
     func ensureFocusIfNone(title: String?, body: String?) {
-        guard #available(iOS 16.1, *) else { return }
+        guard liveActivitiesEnabled, #available(iOS 16.1, *) else { return }
         // If a prayer activity exists, do nothing.
         if !Activity<PrayerTimerAttributes>.activities.isEmpty { return }
         // Otherwise, start a Focus activity with provided title/body

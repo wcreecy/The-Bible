@@ -191,6 +191,7 @@ final class PrayerTimerController {
 
     func togglePause() {
         guard isRunning else { return }
+        print("[PrayerDebug] togglePause: wasPaused=\(isPaused) remaining=\(remainingSeconds)")
         isPaused.toggle()
         storedPaused = isPaused
 
@@ -449,6 +450,7 @@ final class PrayerTimerController {
         guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return false }
 
         let token = shared.string(forKey: "prayerTimerActionToken") ?? ""
+        print("[PrayerDebug] pending action=\(action) token=\(token)")
         if !token.isEmpty && token == lastActionToken {
             shared.removeObject(forKey: "prayerTimerPendingAction")
             shared.removeObject(forKey: "prayerTimerActionToken")

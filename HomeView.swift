@@ -23,6 +23,7 @@ import WidgetKit
 
 struct HomeView: View {
     @State private var showPrayerStudySheet: Bool = false
+    @State private var showPrayerTimerSheet: Bool = false
 
     private var timerController = PrayerTimerController.shared
 
@@ -122,6 +123,12 @@ struct HomeView: View {
 
     // Bind Live Activities setting directly so Home tracks Settings in real time.
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
+
+    /// Standard Live Activities move to the Dynamic Island after the app leaves the
+    /// foreground. Keep the same timer visible in Home while the app is active.
+    private var shouldShowPrayerTimerBanner: Bool {
+        timerController.isRunning && (isPad || !liveActivitiesEnabled || scenePhase == .active)
+    }
 
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
@@ -704,6 +711,19 @@ struct HomeView: View {
             }
         }
         .background(AppBackgroundView(tab: .home))
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if shouldShowPrayerTimerBanner {
+                ActivePrayerTimerBanner(
+                    isPaused: timerController.isPaused,
+                    remainingSeconds: timerController.remainingSeconds
+                ) {
+                    Haptics.selection()
+                    showPrayerTimerSheet = true
+                }
+                .padding(.horizontal, isPad ? 24 : 16)
+                .padding(.vertical, 8)
+            }
+        }
         .accessibilityIdentifier("homeView")
         .navigationTitle("")
         .toolbar {
@@ -804,6 +824,12 @@ struct HomeView: View {
             })
             .presentationDetents([.medium, .large])
         }
+        .sheet(isPresented: $showPrayerTimerSheet) {
+            PrayerTimerDetailSheet(
+                timerController: timerController,
+                verseOfDay: votdVM.verse
+            )
+        }
         .modifier(PrayerTimerFinishedAlert(timerController: timerController))
     }
 
@@ -835,6 +861,103 @@ struct HomeView: View {
         }
     }
 
+}
+
+/// A persistent reminder for an active timer when a Dynamic Island presentation is unavailable.
+private struct ActivePrayerTimerBanner: View {
+    let isPaused: Bool
+    let remainingSeconds: Int
+    let onOpen: () -> Void
+
+    var body: some View {
+        Button(action: onOpen) {
+            HStack(spacing: 12) {
+                Image(systemName: isPaused ? "pause.circle.fill" : "timer")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.indigo)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Prayer Timer")
+                        .font(.subheadline.weight(.semibold))
+                    Text(isPaused ? "Paused" : "In progress")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 8)
+
+                Text(TimeFormatters.compactClock(remainingSeconds))
+                    .font(.headline.monospacedDigit())
+                    .foregroundStyle(.primary)
+                    .contentTransition(.numericText(countsDown: true))
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(Color.indigo.opacity(0.2))
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Prayer timer")
+        .accessibilityValue("\(TimeFormatters.compactClock(remainingSeconds)) remaining\(isPaused ? ", paused" : "")")
+        .accessibilityHint("Opens prayer timer controls")
+        .accessibilityAddTraits(.updatesFrequently)
+    }
+}
+
+/// Gives the persistent banner a complete timer surface without changing the person's Home layout.
+private struct PrayerTimerDetailSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let timerController: PrayerTimerController
+    let verseOfDay: HomeVerseRef?
+    @State private var showSetup = false
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                PrayerTimerCard(
+                    isTimerRunning: timerController.isRunning,
+                    isPaused: timerController.isPaused,
+                    remainingSeconds: timerController.remainingSeconds,
+                    totalSeconds: timerController.totalSeconds,
+                    formattedTime: { TimeFormatters.compactClock($0) },
+                    verseOfDay: verseOfDay,
+                    canUndoStop: timerController.undoableStop != nil,
+                    onOpenSetup: { showSetup = true },
+                    onStartPreset: { timerController.start(minutes: $0) },
+                    onTogglePause: { timerController.togglePause() },
+                    onAddOne: { timerController.addOne() },
+                    onAddFive: { timerController.addFive() },
+                    onStop: { timerController.stop() },
+                    onUndoStop: { timerController.undoStop() }
+                )
+                .padding()
+            }
+            .navigationTitle("Prayer Timer")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .sheet(isPresented: $showSetup) {
+            PrayerStudyTimerSetupView(onStart: { minutes in
+                timerController.start(minutes: minutes)
+                showSetup = false
+            })
+            .presentationDetents([.medium, .large])
+        }
+    }
 }
 
 /// Keeps saved-verse queries and preview construction out of the large Home view's

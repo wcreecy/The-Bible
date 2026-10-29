@@ -94,7 +94,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         switch self {
         case .quiz: "Bible facts"
         case .hangman: "People, places & books"
-        case .beatTheClock: "Countdown"
+        case .beatTheClock: "Beat the clock"
         case .verseMatch: "What verse is this?"
         case .bookOrder: "Put books in order"
         case .wordSearch: "Find the words"
