@@ -483,9 +483,9 @@ struct WordleView: View {
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(.red)
                     .padding(12)
-                    .background(Color.yellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .background(Color.red.opacity(0.15), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 }
             } facts: {
                 GameSplashFacts(

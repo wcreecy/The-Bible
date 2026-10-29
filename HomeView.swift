@@ -875,7 +875,7 @@ private struct ActivePrayerTimerBanner: View {
             HStack(spacing: 12) {
                 Image(systemName: isPaused ? "pause.circle.fill" : kind.systemImage)
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(.indigo)
+                    .foregroundStyle(.primary)
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(kind.sessionName)

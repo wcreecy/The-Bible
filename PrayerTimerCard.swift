@@ -49,8 +49,8 @@ struct PrayerTimerCard: View {
     let onStop: () -> Void
     let onUndoStop: () -> Void
 
-    /// One calm color for every state, instead of shifting to red as time runs out.
-    private let tint = Color.indigo
+    /// Uses the standard foreground color so timer controls stay neutral and legible.
+    private let tint = Color.primary
     private static let presets = [5, 10, 15, 20]
 
     @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
@@ -94,8 +94,9 @@ struct PrayerTimerCard: View {
             HStack(spacing: 14) {
                 Button(action: onTogglePause) {
                     Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                        .foregroundStyle(isPaused ? Color.white : Color.black)
                 }
-                .buttonStyle(.glass(.regular.tint(tint)))
+                .buttonStyle(.glass(.regular.tint(isPaused ? .green : .yellow)))
                 .buttonBorderShape(.circle)
                 .controlSize(.large)
                 .accessibilityLabel(isPaused ? "Resume" : "Pause")
@@ -256,11 +257,11 @@ struct PrayerTimerCard: View {
             }
 
             if showsLastDuration {
-                // Filled so your usual length stands out from the presets.
+                // Keeps your usual length alongside the standard presets.
                 Button { onStartPreset(lastMinutes) } label: {
                     durationLabel(lastMinutes, diameter: diameter)
                 }
-                .buttonStyle(ModernCircleButtonStyle(tint: tint, isProminent: true, diameter: diameter))
+                .buttonStyle(ModernCircleButtonStyle(tint: tint, diameter: diameter))
                 .accessibilityLabel("Start \(lastMinutes) minutes, your last duration")
             }
 
