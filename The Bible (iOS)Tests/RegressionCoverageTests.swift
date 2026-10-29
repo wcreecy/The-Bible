@@ -137,6 +137,14 @@ struct RegressionCoverageTests {
     }
 
     @Test
+    func verseOfDayNotificationsUseApprovedTimeOfDayTitles() {
+        #expect(VOTDNotificationScheduler.notificationTitles(forHour: 8).contains("☀ Start your day in the Word"))
+        #expect(VOTDNotificationScheduler.notificationTitles(forHour: 13).contains("☀ Pause for a verse"))
+        #expect(VOTDNotificationScheduler.notificationTitles(forHour: 20).contains("🌙 End your day with Scripture"))
+        #expect(VOTDNotificationScheduler.notificationTitles(forHour: 2).contains("Before you rest, a word of encouragement"))
+    }
+
+    @Test
     func verseOfDayScheduleIsMirroredToTheWidgetAppGroup() throws {
         let keys = [
             "votdRefreshFrequency",

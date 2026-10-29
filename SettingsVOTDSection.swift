@@ -283,11 +283,37 @@ struct SettingsVOTDSection: View {
 }
 
 enum VOTDNotificationScheduler {
-    private static let identifiers = [
-        "verse-of-day-refresh-hourly",
+    private static let hourlyIdentifiers = (0..<24).map { "verse-of-day-refresh-hourly-\($0)" }
+    private static let identifiers = hourlyIdentifiers + [
         "verse-of-day-refresh-first",
         "verse-of-day-refresh-second"
     ]
+
+    static func notificationTitles(forHour hour: Int) -> [String] {
+        switch hour {
+        case 5..<12:
+            [
+                String(localized: "☀ Start your day in the Word"),
+                String(localized: "Good morning—today’s verse is ready"),
+                String(localized: "A verse for the start of your day"),
+                String(localized: "Begin with a moment of Scripture")
+            ]
+        case 12..<17:
+            [
+                String(localized: "☀ Pause for a verse"),
+                String(localized: "A moment of Scripture for your day"),
+                String(localized: "Take a breath—today’s verse is here"),
+                String(localized: "A little encouragement for your afternoon")
+            ]
+        default:
+            [
+                String(localized: "🌙 End your day with Scripture"),
+                String(localized: "A verse for a quiet moment tonight"),
+                String(localized: "Wind down with today’s verse"),
+                String(localized: "Before you rest, a word of encouragement")
+            ]
+        }
+    }
 
     static func requestAuthorizationIfNeeded() async -> Bool {
         let center = UNUserNotificationCenter.current()
@@ -313,23 +339,27 @@ enum VOTDNotificationScheduler {
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: identifiers)
 
-        let times: [(identifier: String, hour: Int?, minute: Int)]
+        let times: [(identifier: String, hour: Int, minute: Int)]
         switch frequency {
         case .hourly:
-            times = [(identifiers[0], nil, 0)]
+            // Repeating notifications have fixed content. Scheduling one for each hour
+            // lets the wording reflect the time it is actually delivered.
+            times = (0..<24).map { hour in
+                (hourlyIdentifiers[hour], hour, 0)
+            }
         case .daily:
-            times = [(identifiers[1], first.hour, first.minute)]
+            times = [("verse-of-day-refresh-first", first.hour, first.minute)]
         case .custom:
             times = [
-                (identifiers[1], first.hour, first.minute),
-                (identifiers[2], second.hour, second.minute)
+                ("verse-of-day-refresh-first", first.hour, first.minute),
+                ("verse-of-day-refresh-second", second.hour, second.minute)
             ]
         }
 
         for time in times {
             let content = UNMutableNotificationContent()
-            content.title = String(localized: "Verse of the Day")
-            content.body = String(localized: "A fresh verse is ready for you.")
+            content.title = notificationTitles(forHour: time.hour).randomElement() ?? "Verse of the Day"
+            content.body = String(localized: "Verse of the Day")
             content.sound = .default
             content.userInfo = ["destination": "verseOfDay"]
 
