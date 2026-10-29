@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7F1A0B0C2F0000000000A002 /* PrayerTimerIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1A0B0C2F0000000000A001 /* PrayerTimerIntents.swift */; };
-		7F1A0B0C2F0000000000A003 /* PrayerTimerIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1A0B0C2F0000000000A001 /* PrayerTimerIntents.swift */; };
 		2C02723630863DB000EDFEE5 /* BibleTriviaGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */; };
 		2C02723A3086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */; };
 		2C02723C3086B2B800EDFEE5 /* HomeLayoutPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C02723B3086B2B800EDFEE5 /* HomeLayoutPreset.swift */; };
@@ -210,7 +208,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7F1A0B0C2F0000000000A001 /* PrayerTimerIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerIntents.swift; sourceTree = "<group>"; };
 		2C02723530863DB000EDFEE5 /* BibleTriviaGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleTriviaGameView.swift; sourceTree = "<group>"; };
 		2C0272393086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingAndGamesComparisonCard.swift; sourceTree = "<group>"; };
 		2C02723B3086B2B800EDFEE5 /* HomeLayoutPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLayoutPreset.swift; sourceTree = "<group>"; };
@@ -499,7 +496,6 @@
 				2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */,
 				2C279CFF2EBCC62A0023C46B /* Route.swift */,
 				2C49CF7E2EBE27AE0006FF79 /* PrayerTimerAttributes.swift */,
-				7F1A0B0C2F0000000000A001 /* PrayerTimerIntents.swift */,
 				2C49CF812EBE27D40006FF79 /* PrayerTimerActivityController.swift */,
 				2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */,
 				2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */,
@@ -838,7 +834,6 @@
 				2C2A44FC2EEE33C300FE8C2F /* SettingsTimerSection.swift in Sources */,
 				2CD9C5DF306AE0D80077D777 /* GameStartScreenStyle.swift in Sources */,
 				2C49CF7F2EBE27AE0006FF79 /* PrayerTimerAttributes.swift in Sources */,
-				7F1A0B0C2F0000000000A002 /* PrayerTimerIntents.swift in Sources */,
 				2C8F6558307008BE0052754F /* DeveloperSampleData.swift in Sources */,
 				2C49CF4C2EBE10260006FF79 /* QuizView.swift in Sources */,
 				2C49CF4D2EBE10310006FF79 /* BibleSplitView.swift in Sources */,
@@ -1006,7 +1001,6 @@
 				2C49CF832EBE28250006FF79 /* PrayerTimerActivityController.swift in Sources */,
 				2CD7D8272ECA004A00849235 /* LastReadWidget.swift in Sources */,
 				2C49CF802EBE27C40006FF79 /* PrayerTimerAttributes.swift in Sources */,
-				7F1A0B0C2F0000000000A003 /* PrayerTimerIntents.swift in Sources */,
 				2CD7D8262ECA004300849235 /* LastReadProvider.swift in Sources */,
 				2CD7D8312ECA163A00849235 /* PinnedVerseWidget.swift in Sources */,
 				2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */,

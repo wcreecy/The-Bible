@@ -47,8 +47,9 @@ private func focusLogoView() -> some View {
 struct PrayerTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: PrayerTimerAttributes.self) { context in
-            // Lock Screen (and banner) UI — Larger, color-tinted, no controls
-            let tint = timerTintColor(context)
+            // Lock Screen (and banner) UI — Larger, no controls. Black text keeps the
+            // countdown readable on the Lock Screen's light, translucent background.
+            let tint = Color.black
             VStack(spacing: 10) {
                 if context.state.status != "Focus" {
                     ViewThatFits(in: .horizontal) {
@@ -133,7 +134,7 @@ struct PrayerTimerLiveActivity: Widget {
                                 .monospacedDigit()
                                 .font(.title.weight(.bold))
                                 .fontDesign(.rounded)
-                                .foregroundStyle(timerTintColor(context))
+                                .foregroundStyle(.white)
                                 .multilineTextAlignment(.center)
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -143,32 +144,11 @@ struct PrayerTimerLiveActivity: Widget {
                     // Keep empty so nothing shows on the far right
                     EmptyView()
                 }
-                DynamicIslandExpandedRegion(.bottom) {
-                    if context.state.status != "Focus" {
-                        HStack(spacing: 12) {
-                            Button(intent: PrayerTimerTogglePauseIntent()) {
-                                Label(
-                                    context.state.status == "Paused" ? "Resume" : "Pause",
-                                    systemImage: context.state.status == "Paused" ? "play.fill" : "pause.fill"
-                                )
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.indigo)
-
-                            Button(intent: PrayerTimerStopIntent()) {
-                                Label("Stop", systemImage: "stop.fill")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.red)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                }
             } compactLeading: {
                 if context.state.status == "Focus" {
                     focusLogoView()
                 } else {
-                    ProgressRing(progress: progress(context), tint: timerTintColor(context))
+                    ProgressRing(progress: progress(context), tint: .white)
                 }
             } compactTrailing: {
                 if context.state.status == "Focus" {
@@ -264,11 +244,6 @@ struct PrayerTimerLiveActivity: Widget {
 
     private func endDate(_ remaining: Int) -> Date {
         Date().addingTimeInterval(TimeInterval(max(0, remaining)))
-    }
-
-    /// Matches the calm, single-tone treatment used by the in-app prayer timer.
-    private func timerTintColor(_: ActivityViewContext<PrayerTimerAttributes>) -> Color {
-        .indigo
     }
 
     private struct ProgressRing: View {

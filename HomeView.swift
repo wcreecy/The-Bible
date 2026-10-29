@@ -779,7 +779,6 @@ struct HomeView: View {
 
             // Controllers
             timerController.onAppear()
-            _ = timerController.handlePendingActionIfAny()
 
             // The stats card can populate just after the initial frame. Keeping the
             // aggregation out of this appearance pass makes Home immediately tappable.
@@ -799,7 +798,6 @@ struct HomeView: View {
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:
-                _ = timerController.handlePendingActionIfAny()
                 handleOpenPendingVerse()
                 bibleVM.refresh()
                 votdVM.handleScenePhaseChange(newPhase)

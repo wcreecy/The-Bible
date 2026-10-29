@@ -56,9 +56,6 @@ final class PrayerTimerController {
 
     @ObservationIgnored private var undoExpiryTask: Task<Void, Never>?
 
-    // One-shot token to ignore stale pending actions
-    @ObservationIgnored @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
-
     // MARK: - External collaborators
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
@@ -131,8 +128,7 @@ final class PrayerTimerController {
     }
 
     func onSceneBecameActive() {
-        // Re-evaluate remaining and pending actions
-        _ = handlePendingActionIfAny()
+        // Re-evaluate remaining time
         if isRunning && !isPaused && storedEndDate > 0 {
             let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
             remainingSeconds = remaining
@@ -191,7 +187,6 @@ final class PrayerTimerController {
 
     func togglePause() {
         guard isRunning else { return }
-        print("[PrayerDebug] togglePause: wasPaused=\(isPaused) remaining=\(remainingSeconds)")
         isPaused.toggle()
         storedPaused = isPaused
 
@@ -366,9 +361,6 @@ final class PrayerTimerController {
     }
 
     private func tick() {
-        if handlePendingActionIfAny() {
-            return
-        }
         guard isRunning, !isPaused else { return }
 
         let now = Date().timeIntervalSince1970
@@ -439,42 +431,6 @@ final class PrayerTimerController {
         }
         AudioServicesPlaySystemSound(soundID)
         AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-    }
-
-    // MARK: - Pending action (Live Activity button taps from widgets/Dynamic Island)
-
-    // Returns true if consumed an action
-    @discardableResult
-    func handlePendingActionIfAny() -> Bool {
-        guard let shared = sharedDefaults else { return false }
-        guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return false }
-
-        let token = shared.string(forKey: "prayerTimerActionToken") ?? ""
-        print("[PrayerDebug] pending action=\(action) token=\(token)")
-        if !token.isEmpty && token == lastActionToken {
-            shared.removeObject(forKey: "prayerTimerPendingAction")
-            shared.removeObject(forKey: "prayerTimerActionToken")
-            return false
-        }
-
-        shared.removeObject(forKey: "prayerTimerPendingAction")
-        shared.removeObject(forKey: "prayerTimerActionToken")
-
-        switch action {
-        case "togglePause":
-            if isRunning { togglePause() }
-        case "add5":
-            if isRunning { addMinutes(5) }
-        case "stop":
-            if isRunning { stop() }
-        default:
-            break
-        }
-        if !token.isEmpty {
-            lastActionToken = token
-        }
-        suppressTimerActivityUpdatesUntil = .distantPast
-        return true
     }
 
     // MARK: - Prayer stats

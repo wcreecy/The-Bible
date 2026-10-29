@@ -67,11 +67,6 @@ struct The_Bible__iOS_App: App {
 
     init() {
         UITestSupport.configureIfNeeded()
-        // Live Activity buttons (Dynamic Island, Lock Screen) run their intents in this
-        // process, even when the app was closed, and apply the command through here.
-        PrayerTimerIntentBridge.handlePendingAction = {
-            _ = PrayerTimerController.shared.handlePendingActionIfAny()
-        }
         // Start decoding the bundled corpus while SwiftData initializes. The Home mini reader
         // shares this load, so it can present its first chapter sooner on a cold launch.
         Task.detached(priority: .userInitiated) {
@@ -256,9 +251,6 @@ struct The_Bible__iOS_App: App {
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:
-                        // Live Activity controls can relaunch the app from any tab. Consume
-                        // their one-shot command here rather than relying on Home being loaded.
-                        _ = PrayerTimerController.shared.handlePendingActionIfAny()
                         UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                         Task { await cloudKitManager.refresh() }
@@ -272,7 +264,6 @@ struct The_Bible__iOS_App: App {
                     }
                 }
                 .onAppear {
-                    _ = PrayerTimerController.shared.handlePendingActionIfAny()
                     CloudKitManager.logEntitlementHints(containerIdentifier: "iCloud.creecy.bible")
                 }
                 // Handle widget deep links here too, and broadcast a tab switch.
