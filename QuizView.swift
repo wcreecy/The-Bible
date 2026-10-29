@@ -181,7 +181,7 @@ struct QuizView: View {
     }
 
     // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+    private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
     @State private var phase: Phase = .setup
     @State private var isFilterReady = QuizVerseFilter.isReady
@@ -204,6 +204,7 @@ struct QuizView: View {
     @State private var timerID: Int = 0
     @State private var wasInRedZone: Bool = false
     @State private var pulseOn: Bool = false
+    @State private var pulseTask: Task<Void, Never>?
     @State private var timerOnLeft: Bool = false
     @State private var usesMutedTimerStyle: Bool = false
     @State private var isTimerDisabled = false
@@ -780,7 +781,7 @@ struct QuizView: View {
         currentIndex = history.count - 1
         remainingSeconds = difficulty.timeLimit ?? 0
         wasInRedZone = false
-        pulseOn = false
+        stopTimerPulse()
         timerID += 1
     }
 
@@ -831,7 +832,7 @@ struct QuizView: View {
     private func toggleTimer() {
         guard difficulty.timeLimit != nil else { return }
         isTimerDisabled.toggle()
-        pulseOn = false
+        stopTimerPulse()
         timerID += 1
     }
 
@@ -845,7 +846,7 @@ struct QuizView: View {
         guard phase == .playing, !isViewingPrevious, let current, current.outcome == nil else { return }
         history[currentIndex].outcome = outcome
         history[currentIndex].selected = selected
-        pulseOn = false
+        stopTimerPulse()
         answered += 1
 
         let correct = outcome == .correct
@@ -910,18 +911,27 @@ struct QuizView: View {
         return .green
     }
 
+    /// Flashes the timer when it enters the red zone. The task is cancelled when the question
+    /// ends or the timer is reset, so a late toggle can't leave the timer lit.
     private func startTimerPulse() {
-        let pulses = 3
-        for i in 0..<(pulses * 2) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.25) {
+        pulseTask?.cancel()
+        pulseTask = Task { @MainActor in
+            for _ in 0..<6 {
+                guard !Task.isCancelled else { return }
                 withAnimation(.easeInOut(duration: 0.25)) {
-                    self.pulseOn.toggle()
+                    pulseOn.toggle()
                 }
+                try? await Task.sleep(for: .milliseconds(250))
             }
+            guard !Task.isCancelled else { return }
+            pulseOn = false
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + Double(pulses * 2) * 0.25 + 0.01) {
-            self.pulseOn = false
-        }
+    }
+
+    private func stopTimerPulse() {
+        pulseTask?.cancel()
+        pulseTask = nil
+        pulseOn = false
     }
 }
 

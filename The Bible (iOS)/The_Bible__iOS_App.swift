@@ -243,6 +243,10 @@ struct The_Bible__iOS_App: App {
                 .environment(cloudKitManager)
                 .environment(\.persistenceStoreMode, persistenceStoreMode)
                 .task {
+                    // Drafts used to live in UserDefaults; move them to files and drop stale ones.
+                    NoteDraftStore.migrateLegacyDrafts()
+                    NoteDraftStore.pruneOldDrafts()
+
                     await cloudKitManager.prepare()
                     // iCloud key-value sync is started by ContentView.
 

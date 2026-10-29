@@ -302,7 +302,7 @@ struct ScriptureReferencePreview: View {
 /// Decodes a note's saved rich text, falling back to its plain text.
 enum NoteFormattedContent {
     static func decode(_ data: Data?, fallback: String) -> AttributedString {
-        if let data, let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
+        if let data, let formatted = PersistedDecoding.decode(AttributedString.self, from: data, name: "note formatted content") {
             return formatted
         }
         return AttributedString(fallback)

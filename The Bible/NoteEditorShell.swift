@@ -1,5 +1,12 @@
+import CryptoKit
+import OSLog
 import SwiftData
 import SwiftUI
+
+private let noteDraftLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+    category: "NoteDrafts"
+)
 
 /// An editor's unsaved state, kept on the device so a note survives the app being closed
 /// mid-edit. Saved while typing and cleared on Save or Discard.
@@ -22,32 +29,84 @@ struct NoteDraft: Codable, Equatable {
     }
 }
 
+/// Unsaved editor state, kept in one small file per draft so it survives the app closing
+/// mid-edit. Files live in Application Support, not UserDefaults, so drafts (which hold
+/// whole note bodies) aren't loaded with the app's settings at every launch.
 enum NoteDraftStore {
-    private static let prefix = "noteDraft."
+    /// A draft nobody has touched for this long is dropped, such as one for a note that was
+    /// deleted on another device.
+    static let maximumAge: TimeInterval = 30 * 24 * 60 * 60
+
+    private static let legacyPrefix = "noteDraft."
+
+    /// Where drafts are kept.
+    static var defaultDirectory: URL {
+        URL.applicationSupportDirectory.appending(path: "NoteDrafts", directoryHint: .isDirectory)
+    }
 
     /// One draft slot per verse, so a new and an existing note on a verse share it.
     static func key(forVerse book: String, chapter: Int, verse: Int) -> String {
-        "\(prefix)verse.\(book).\(chapter).\(verse)"
+        "\(legacyPrefix)verse.\(book).\(chapter).\(verse)"
     }
 
     /// A slot per existing personal note, plus one shared slot for a new note.
     static func key(forUserNote note: UserNote?) -> String {
         guard let note,
-              let id = try? JSONEncoder().encode(note.persistentModelID) else { return "\(prefix)user.new" }
-        return "\(prefix)user.\(id.base64EncodedString())"
+              let id = try? JSONEncoder().encode(note.persistentModelID) else { return "\(legacyPrefix)user.new" }
+        return "\(legacyPrefix)user.\(id.base64EncodedString())"
     }
 
-    static func load(_ key: String, defaults: UserDefaults = .standard) -> NoteDraft? {
-        defaults.data(forKey: key).flatMap { try? JSONDecoder().decode(NoteDraft.self, from: $0) }
+    static func load(_ key: String, in directory: URL = defaultDirectory) -> NoteDraft? {
+        guard let data = try? Data(contentsOf: fileURL(for: key, in: directory)) else { return nil }
+        return PersistedDecoding.decode(NoteDraft.self, from: data, name: "note draft")
     }
 
-    static func save(_ draft: NoteDraft, for key: String, defaults: UserDefaults = .standard) {
+    static func save(_ draft: NoteDraft, for key: String, in directory: URL = defaultDirectory) {
         guard let data = try? JSONEncoder().encode(draft) else { return }
-        defaults.set(data, forKey: key)
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try data.write(to: fileURL(for: key, in: directory), options: .atomic)
+        } catch {
+            noteDraftLogger.error("Could not save a note draft: \(String(describing: error), privacy: .public)")
+        }
     }
 
-    static func clear(_ key: String, defaults: UserDefaults = .standard) {
-        defaults.removeObject(forKey: key)
+    static func clear(_ key: String, in directory: URL = defaultDirectory) {
+        try? FileManager.default.removeItem(at: fileURL(for: key, in: directory))
+    }
+
+    /// Deletes drafts that haven't been written for `maximumAge`.
+    static func pruneOldDrafts(now: Date = .now, in directory: URL = defaultDirectory) {
+        let fileManager = FileManager.default
+        guard let files = try? fileManager.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: [.contentModificationDateKey]
+        ) else { return }
+        for file in files {
+            let modified = (try? file.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
+            if let modified, now.timeIntervalSince(modified) > maximumAge {
+                try? fileManager.removeItem(at: file)
+            }
+        }
+    }
+
+    /// Moves drafts that older versions kept in UserDefaults into files, then removes them
+    /// from UserDefaults. A draft already written as a file is not overwritten.
+    static func migrateLegacyDrafts(from defaults: UserDefaults = .standard, to directory: URL = defaultDirectory) {
+        for (key, value) in defaults.dictionaryRepresentation() where key.hasPrefix(legacyPrefix) {
+            if let data = value as? Data,
+               !FileManager.default.fileExists(atPath: fileURL(for: key, in: directory).path),
+               let draft = PersistedDecoding.decode(NoteDraft.self, from: data, name: "legacy note draft") {
+                save(draft, for: key, in: directory)
+            }
+            defaults.removeObject(forKey: key)
+        }
+    }
+
+    /// A fixed-length, filesystem-safe name for a key (keys contain spaces and base64 text).
+    private static func fileURL(for key: String, in directory: URL) -> URL {
+        let digest = SHA256.hash(data: Data(key.utf8)).map { String(format: "%02x", $0) }.joined()
+        return directory.appending(path: "\(digest).json", directoryHint: .notDirectory)
     }
 }
 

@@ -134,7 +134,7 @@ final class BibleStatsStore {
     func loadJSON<T: Decodable>(key: String, default defaultValue: T) -> T {
         let defaults = Defaults.provider
         guard let data = defaults.data(forKey: key) else { return defaultValue }
-        return (try? JSONDecoder().decode(T.self, from: data)) ?? defaultValue
+        return PersistedDecoding.decode(T.self, from: data, key: key, keepingUnreadableIn: defaults) ?? defaultValue
     }
 
     func saveJSON<T: Encodable>(_ value: T, key: String) {

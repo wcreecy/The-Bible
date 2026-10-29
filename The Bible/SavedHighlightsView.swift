@@ -1,6 +1,22 @@
 import SwiftData
 import SwiftUI
 
+/// The parts of a highlighted verse that the list shows or filters by. Watching these, instead
+/// of only the number of highlights, keeps the list current when a highlight is edited.
+private struct HighlightFingerprint: Hashable {
+    let id: PersistentIdentifier
+    let color: String
+    let endVerseNumber: Int
+    let updatedAt: Date?
+
+    init(_ note: VerseNote) {
+        id = note.persistentModelID
+        color = note.highlightColor
+        endVerseNumber = note.endVerseNumber
+        updatedAt = note.updatedAt
+    }
+}
+
 /// The highlighted verses in Saved Verses, filtered by color and search and grouped like
 /// Favorites: one group by recency, or one per book in Bible order.
 @MainActor
@@ -88,6 +104,8 @@ struct SavedHighlightsView: View {
     @State private var colorFilter: VerseHighlightColor?
     @State private var openNote: VerseNote?
     @State private var editingNote: VerseNote?
+    /// Set when Edit is chosen in the detail sheet; the editor opens as that sheet goes away.
+    @State private var noteToEditAfterDismiss: VerseNote?
     @State private var removedHighlight: RemovedHighlight?
     @State private var isShowingRemovalToast = false
     @State private var library = HighlightsLibrary.empty
@@ -137,14 +155,11 @@ struct SavedHighlightsView: View {
                 .scrollContentBackground(.hidden)
             }
         }
-        .sheet(item: $openNote) { note in
+        .sheet(item: $openNote, onDismiss: openPendingEditor) { note in
             HighlightDetailSheet(note: note) {
+                // The editor opens once the sheet has finished closing, so the two don't overlap.
+                noteToEditAfterDismiss = note
                 openNote = nil
-                // Open the editor once the sheet has gone, so the two don't overlap.
-                Task { @MainActor in
-                    try? await Task.sleep(for: .milliseconds(350))
-                    editingNote = note
-                }
             }
         }
         .fullScreenCover(item: $editingNote) { note in
@@ -161,11 +176,18 @@ struct SavedHighlightsView: View {
             action: undoRemoval
         )
         .onAppear { refreshLibrary() }
-        .onChange(of: notes.count) { refreshLibrary() }
+        // Recoloring a highlight or editing its note doesn't change how many there are.
+        .onChange(of: notes.map(HighlightFingerprint.init)) { refreshLibrary() }
         .onChange(of: colorFilter?.rawValue) { refreshLibrary() }
         .onChange(of: searchText) { refreshLibrary() }
         .onChange(of: sortOrder.rawValue) { refreshLibrary() }
         .onChange(of: bookNames) { refreshLibrary() }
+    }
+
+    private func openPendingEditor() {
+        guard let note = noteToEditAfterDismiss else { return }
+        noteToEditAfterDismiss = nil
+        editingNote = note
     }
 
     private func refreshLibrary() {

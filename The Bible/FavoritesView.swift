@@ -126,8 +126,10 @@ struct FavoritesView: View {
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
         .onAppear { refreshVisibleContent() }
-        .onChange(of: favorites.count) { refreshVisibleContent() }
-        .onChange(of: highlights.count) { refreshVisibleContent() }
+        // Compare the saved items themselves, not how many there are: a sync can swap one
+        // for another without changing the count.
+        .onChange(of: favorites.map(\.persistentModelID)) { refreshVisibleContent() }
+        .onChange(of: highlights.map(\.persistentModelID)) { refreshVisibleContent() }
         .onChange(of: searchText) { refreshVisibleContent() }
         .onChange(of: sortOrder.rawValue) { refreshVisibleContent() }
     }

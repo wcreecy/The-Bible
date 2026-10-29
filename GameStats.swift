@@ -1198,7 +1198,7 @@ final class GameStats {
             return [:]
         }
         if let cached = flatMapCache[key], cached.data == data { return cached.map }
-        guard let map = try? JSONDecoder().decode([String: Int].self, from: data) else {
+        guard let map = PersistedDecoding.decode([String: Int].self, from: data, key: key, keepingUnreadableIn: .standard) else {
             flatMapCache[key] = nil
             return [:]
         }
@@ -1218,7 +1218,7 @@ final class GameStats {
             return [:]
         }
         if let cached = nestedMapCache[key], cached.data == data { return cached.map }
-        guard let map = try? JSONDecoder().decode([String: [String: Int]].self, from: data) else {
+        guard let map = PersistedDecoding.decode([String: [String: Int]].self, from: data, key: key, keepingUnreadableIn: .standard) else {
             nestedMapCache[key] = nil
             return [:]
         }
@@ -1633,7 +1633,7 @@ final class GameStats {
     private func playedDailyWithoutWinning(on dayKey: String) -> Bool {
         struct DailyResult: Decodable { let won: Bool }
         guard let data = UserDefaults.standard.data(forKey: "wordleDailyResultMap"),
-              let results = try? JSONDecoder().decode([String: DailyResult].self, from: data),
+              let results = PersistedDecoding.decode([String: DailyResult].self, from: data, key: "wordleDailyResultMap", keepingUnreadableIn: .standard),
               let result = results[dayKey] else {
             return false
         }

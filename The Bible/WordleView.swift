@@ -93,7 +93,7 @@ struct WordleView: View {
     @State private var roundHardMode: Bool = false
 
     // Global Auto‑Win debug toggle
-    @AppStorage(AppStorageKey.debugAutoWinEnabled) private var debugAutoWinEnabled: Bool = false
+    private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
     @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
 
     // Daily
@@ -171,7 +171,7 @@ struct WordleView: View {
     nonisolated private static let curatedAnswerBank: AnswerBank? = {
         guard let url = Bundle.main.url(forResource: "WORDCuratedWordList", withExtension: "json"),
               let data = try? Data(contentsOf: url),
-              let entries = try? JSONDecoder().decode([CuratedWord].self, from: data) else {
+              let entries = PersistedDecoding.decode([CuratedWord].self, from: data, name: "WORDCuratedWordList.json") else {
             print("⚠️ WORDCuratedWordList.json could not be loaded or decoded.")
             return nil
         }
@@ -965,7 +965,7 @@ struct WordleView: View {
     @discardableResult
     private func restoreDailyProgress() -> Bool {
         guard let data = UserDefaults.standard.data(forKey: dailyProgressKey),
-              let progress = try? JSONDecoder().decode(DailyProgress.self, from: data),
+              let progress = PersistedDecoding.decode(DailyProgress.self, from: data, key: dailyProgressKey, keepingUnreadableIn: .standard),
               progress.dayKey == todayKey,
               progress.word == target else {
             UserDefaults.standard.removeObject(forKey: dailyProgressKey)
@@ -1235,7 +1235,7 @@ struct WordleView: View {
             struct DailyResult: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
             var map: [String: DailyResult] = [:]
             if let data = defaults.data(forKey: key),
-               let decoded = try? JSONDecoder().decode([String: DailyResult].self, from: data) {
+               let decoded = PersistedDecoding.decode([String: DailyResult].self, from: data, key: key, keepingUnreadableIn: defaults) {
                 map = decoded
             }
             map[todayKey] = DailyResult(won: win, guesses: rowIndex, elapsed: elapsedSeconds, word: target)
@@ -1278,7 +1278,7 @@ struct WordleView: View {
         // Today's word stays put even if it's no longer in the pool (e.g. it was assigned
         // before the answer list changed), so an in-progress Daily isn't swapped out.
         if let data = defaults.data(forKey: dailyWordAssignmentKey),
-           let assignment = try? JSONDecoder().decode(DailyWordAssignment.self, from: data),
+           let assignment = PersistedDecoding.decode(DailyWordAssignment.self, from: data, key: dailyWordAssignmentKey, keepingUnreadableIn: defaults),
            assignment.dayKey == todayKey,
            assignment.word.count == 5 {
             return assignment.word

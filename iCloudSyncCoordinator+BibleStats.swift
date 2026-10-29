@@ -205,7 +205,7 @@ extension iCloudSyncCoordinator {
 
         case Self.stats_keyReadingSessions:
             // Sessions array: if empty -> clear; else accept wholesale (sessions are append-only analytics)
-            if let arr = try? JSONDecoder().decode([ReadingSessionsStore.Session].self, from: remoteData), arr.isEmpty {
+            if let arr = PersistedDecoding.decode([ReadingSessionsStore.Session].self, from: remoteData, name: "iCloud readingSessions"), arr.isEmpty {
                 clearAndNotify(); return
             }
             defaults.set(remoteData, forKey: key)

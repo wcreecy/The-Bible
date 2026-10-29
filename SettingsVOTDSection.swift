@@ -337,7 +337,10 @@ enum VOTDNotificationScheduler {
         second: (hour: Int, minute: Int)
     ) async {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: identifiers)
+        let existingIdentifiers = await center.pendingNotificationRequests()
+            .filter(isVerseOfDayRequest)
+            .map(\.identifier)
+        center.removePendingNotificationRequests(withIdentifiers: existingIdentifiers)
 
         let times: [(identifier: String, hour: Int, minute: Int)]
         switch frequency {
@@ -373,6 +376,31 @@ enum VOTDNotificationScheduler {
     }
 
     static func cancel() {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: identifiers)
+        center.removeDeliveredNotifications(withIdentifiers: identifiers)
+
+        // Clear every Verse of the Day request, including schedules created by earlier
+        // app versions whose identifiers are no longer part of the current list.
+        Task {
+            let pendingIdentifiers = await center.pendingNotificationRequests()
+                .filter(isVerseOfDayRequest)
+                .map(\.identifier)
+            center.removePendingNotificationRequests(withIdentifiers: pendingIdentifiers)
+
+            let deliveredIdentifiers = await center.deliveredNotifications()
+                .filter(isVerseOfDayNotification)
+                .map(\.request.identifier)
+            center.removeDeliveredNotifications(withIdentifiers: deliveredIdentifiers)
+        }
+    }
+
+    private static func isVerseOfDayRequest(_ request: UNNotificationRequest) -> Bool {
+        request.identifier.hasPrefix("verse-of-day-refresh-")
+            || request.content.userInfo["destination"] as? String == "verseOfDay"
+    }
+
+    private static func isVerseOfDayNotification(_ notification: UNNotification) -> Bool {
+        isVerseOfDayRequest(notification.request)
     }
 }

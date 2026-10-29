@@ -488,7 +488,7 @@ final class GameStatsLedger {
 
     private func loadSnapshot() -> Section {
         guard let data = defaults.data(forKey: snapshotKey),
-              let section = try? JSONDecoder().decode(Section.self, from: data) else {
+              let section = PersistedDecoding.decode(Section.self, from: data, key: snapshotKey, keepingUnreadableIn: defaults) else {
             return Section()
         }
         return section
@@ -528,17 +528,17 @@ final class GameStatsLedger {
 
     private func decodePayload(_ data: Data?) -> Payload? {
         guard let data else { return nil }
-        return try? JSONDecoder().decode(Payload.self, from: data)
+        return PersistedDecoding.decode(Payload.self, from: data, name: "gameStatsLedgerPayload")
     }
 
     private func decodeMap(_ data: Data?) -> [String: Int]? {
         guard let data else { return nil }
-        return try? JSONDecoder().decode([String: Int].self, from: data)
+        return PersistedDecoding.decode([String: Int].self, from: data, name: "gameStatsLedgerMap")
     }
 
     private func decodeNestedMap(_ data: Data?) -> [String: [String: Int]]? {
         guard let data else { return nil }
-        return try? JSONDecoder().decode([String: [String: Int]].self, from: data)
+        return PersistedDecoding.decode([String: [String: Int]].self, from: data, name: "gameStatsLedgerNestedMap")
     }
 }
 

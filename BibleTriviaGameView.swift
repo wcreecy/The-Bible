@@ -102,7 +102,7 @@ final class BibleTriviaProgressStore {
 
     private static func decode(_ data: Data?) -> [String: BibleTriviaDifficultyProgress] {
         guard let data,
-              let decoded = try? JSONDecoder().decode([String: BibleTriviaDifficultyProgress].self, from: data) else {
+              let decoded = PersistedDecoding.decode([String: BibleTriviaDifficultyProgress].self, from: data, name: "bibleTriviaProgress") else {
             return [:]
         }
         return decoded
@@ -282,7 +282,7 @@ final class BibleTriviaGameModel {
         let loadedQuestions = await Task.detached(priority: .userInitiated) { () -> [BibleTriviaQuestion] in
             guard let url = Bundle.main.url(forResource: "BibleTriviaQuestions", withExtension: "json"),
                   let data = try? Data(contentsOf: url, options: .mappedIfSafe),
-                  let decoded = try? JSONDecoder().decode([BibleTriviaQuestion].self, from: data) else {
+                  let decoded = PersistedDecoding.decode([BibleTriviaQuestion].self, from: data, name: "BibleTriviaQuestions.json") else {
                 return []
             }
             return decoded

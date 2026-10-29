@@ -9,7 +9,7 @@ extension BibleStatsStore {
         // Decode optional LastRead (may not exist yet)
         let defaults = Defaults.provider
         guard let data = defaults.data(forKey: Defaults.keyLastRead) else { return nil }
-        let decoded = try? JSONDecoder().decode(LastRead.self, from: data)
+        let decoded = PersistedDecoding.decode(LastRead.self, from: data, key: Defaults.keyLastRead, keepingUnreadableIn: defaults)
         cacheLastRead = decoded
         return decoded
     }

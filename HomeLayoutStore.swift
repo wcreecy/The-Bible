@@ -136,8 +136,7 @@ struct HomeLayoutStore {
 
         // Decode order
         let order: [HomeCardID] = {
-            if let data = orderRaw.data(using: .utf8),
-               let ids = try? JSONDecoder().decode([String].self, from: data) {
+            if let ids = PersistedDecoding.decode([String].self, fromText: orderRaw, key: Self.keyOrder) {
                 let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
                 // Append any newly added IDs to the end
                 let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
@@ -149,8 +148,7 @@ struct HomeLayoutStore {
 
         // Decode hidden
         let hidden: Set<HomeCardID> = {
-            if let data = hiddenRaw.data(using: .utf8),
-               let ids = try? JSONDecoder().decode([String].self, from: data) {
+            if let ids = PersistedDecoding.decode([String].self, fromText: hiddenRaw, key: Self.keyHidden) {
                 var hidden = Set(ids.compactMap { HomeCardID(rawValue: $0) })
                 if !todayVisibilityMigrated && !ids.contains(HomeCardID.today.rawValue) {
                     hidden.insert(.today)
@@ -244,8 +242,7 @@ struct HomeLayoutStore {
         bibleReaderVisible: Bool,
         bibleReaderColumn: HomeColumn
     )? {
-        guard let orderData = favOrderRaw.data(using: .utf8),
-              let orderIDs = try? JSONDecoder().decode([String].self, from: orderData) else {
+        guard let orderIDs = PersistedDecoding.decode([String].self, fromText: favOrderRaw, key: Self.keyFavOrder) else {
             return nil
         }
         var order = orderIDs.compactMap { HomeCardID(rawValue: $0) }
@@ -254,8 +251,7 @@ struct HomeLayoutStore {
         order.append(contentsOf: missing)
 
         var hidden: Set<HomeCardID> = []
-        if let hiddenData = favHiddenRaw.data(using: .utf8),
-           let hiddenIDs = try? JSONDecoder().decode([String].self, from: hiddenData) {
+        if let hiddenIDs = PersistedDecoding.decode([String].self, fromText: favHiddenRaw, key: Self.keyFavHidden) {
             hidden = Set(hiddenIDs.compactMap { HomeCardID(rawValue: $0) })
             if !favoriteTodayVisibilityMigrated && !hiddenIDs.contains(HomeCardID.today.rawValue) {
                 hidden.insert(.today)

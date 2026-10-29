@@ -658,14 +658,6 @@ struct HomeView: View {
                 horizontalPadding: horizontalPadding,
                 searchScrollRequest: searchScrollRequest,
                 dismissCue: { dismissEditHomeOnboardingCue() },
-                onSearchScroll: { scrollProxy in
-                    Task {
-                        try? await Task.sleep(for: .milliseconds(350))
-                        withAnimation(.snappy) {
-                            scrollProxy.scrollTo(HomeCardID.search, anchor: .top)
-                        }
-                    }
-                },
                 dashboard: {
                     dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
                         .accessibilityIdentifier("homeDashboardContent")
@@ -1101,7 +1093,6 @@ private struct HomeScrollContent<Dashboard: View, Compact: View>: View {
     let horizontalPadding: CGFloat
     let searchScrollRequest: Int
     let dismissCue: () -> Void
-    let onSearchScroll: (ScrollViewProxy) -> Void
     private let dashboard: () -> Dashboard
     private let compact: () -> Compact
 
@@ -1112,7 +1103,6 @@ private struct HomeScrollContent<Dashboard: View, Compact: View>: View {
         horizontalPadding: CGFloat,
         searchScrollRequest: Int,
         dismissCue: @escaping () -> Void,
-        onSearchScroll: @escaping (ScrollViewProxy) -> Void,
         @ViewBuilder dashboard: @escaping () -> Dashboard,
         @ViewBuilder compact: @escaping () -> Compact
     ) {
@@ -1122,9 +1112,18 @@ private struct HomeScrollContent<Dashboard: View, Compact: View>: View {
         self.horizontalPadding = horizontalPadding
         self.searchScrollRequest = searchScrollRequest
         self.dismissCue = dismissCue
-        self.onSearchScroll = onSearchScroll
         self.dashboard = dashboard
         self.compact = compact
+    }
+
+    /// When the Search card last asked to be scrolled into view, so the keyboard appearing
+    /// afterward can finish that scroll without reacting to unrelated keyboards.
+    @State private var searchScrollRequestedAt: Date?
+
+    private func scrollSearchIntoView(_ scrollProxy: ScrollViewProxy) {
+        withAnimation(.snappy) {
+            scrollProxy.scrollTo(HomeCardID.search, anchor: .top)
+        }
     }
 
     var body: some View {
@@ -1144,7 +1143,22 @@ private struct HomeScrollContent<Dashboard: View, Compact: View>: View {
             .tabBarContentClearance()
             .simultaneousGesture(DragGesture(minimumDistance: 1).onChanged { _ in dismissCue() })
             .simultaneousGesture(TapGesture().onEnded { dismissCue() })
-            .onChange(of: searchScrollRequest) { _, _ in onSearchScroll(scrollProxy) }
+            .task(id: searchScrollRequest) {
+                guard searchScrollRequest > 0 else { return }
+                searchScrollRequestedAt = .now
+                // Let the card's new height lay out before scrolling to it.
+                await Task.yield()
+                guard !Task.isCancelled else { return }
+                scrollSearchIntoView(scrollProxy)
+            }
+            // The keyboard changes how far the content can scroll, so finish the scroll
+            // once it is fully up.
+            .onNotification(UIResponder.keyboardDidShowNotification) {
+                guard let requestedAt = searchScrollRequestedAt,
+                      Date.now.timeIntervalSince(requestedAt) < 2 else { return }
+                searchScrollRequestedAt = nil
+                scrollSearchIntoView(scrollProxy)
+            }
         }
     }
 }

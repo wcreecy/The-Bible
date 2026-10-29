@@ -128,7 +128,7 @@ private struct TodayChallengeCatalog: Decodable {
     static func load() -> Self {
         guard let url = Bundle.main.url(forResource: "TodayChallengeCatalog", withExtension: "json"),
               let data = try? Data(contentsOf: url),
-              let catalog = try? JSONDecoder().decode(Self.self, from: data),
+              let catalog = PersistedDecoding.decode(Self.self, from: data, name: "TodayChallengeCatalog.json"),
               !catalog.gameNames.isEmpty,
               !catalog.prayerFocuses.isEmpty,
               !catalog.reflectionTasks.isEmpty else {
@@ -263,14 +263,20 @@ final class TodayChallengeStore {
     /// Combines this device's history with the synced copy, so tasks shown on another
     /// device count too.
     private func loadHistory() -> TodayChallengeHistory {
-        func decode(_ data: Data?) -> TodayChallengeHistory {
-            guard let data, let history = try? JSONDecoder().decode(TodayChallengeHistory.self, from: data) else {
-                return TodayChallengeHistory()
-            }
-            return history
+        func decode(_ data: Data?, keepingUnreadableCopy: Bool) -> TodayChallengeHistory {
+            guard let data else { return TodayChallengeHistory() }
+            let history = keepingUnreadableCopy
+                ? PersistedDecoding.decode(
+                    TodayChallengeHistory.self,
+                    from: data,
+                    key: historyKey,
+                    keepingUnreadableIn: .standard
+                )
+                : PersistedDecoding.decode(TodayChallengeHistory.self, from: data, name: "\(historyKey) (iCloud)")
+            return history ?? TodayChallengeHistory()
         }
-        return decode(UserDefaults.standard.data(forKey: historyKey))
-            .merged(with: decode(cloudStore.data(forKey: historyKey)))
+        return decode(UserDefaults.standard.data(forKey: historyKey), keepingUnreadableCopy: true)
+            .merged(with: decode(cloudStore.data(forKey: historyKey), keepingUnreadableCopy: false))
     }
 
     /// Saved locally and to iCloud; the next snapshot publish synchronizes the store.
@@ -403,7 +409,7 @@ final class TodayChallengeStore {
 
     private func snapshot(from data: Data?) -> TodayChallengeSnapshot? {
         guard let data else { return nil }
-        return try? JSONDecoder().decode(TodayChallengeSnapshot.self, from: data)
+        return PersistedDecoding.decode(TodayChallengeSnapshot.self, from: data, name: "todayChallengeSnapshot")
     }
 
     private func persistLocally(lastModified: Date) {

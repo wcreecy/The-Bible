@@ -14,7 +14,7 @@ private actor ReadingSessionsRepository {
 
     func load() -> [ReadingSessionsStore.Session] {
         guard let data = defaults.data(forKey: key) else { return [] }
-        return (try? JSONDecoder().decode([ReadingSessionsStore.Session].self, from: data)) ?? []
+        return PersistedDecoding.decode([ReadingSessionsStore.Session].self, from: data, key: key, keepingUnreadableIn: defaults) ?? []
     }
 
     func save(_ sessions: [ReadingSessionsStore.Session], revision: Int) {

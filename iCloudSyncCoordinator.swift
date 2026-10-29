@@ -780,7 +780,7 @@ final class iCloudSyncCoordinator {
 
     func decode<T: Decodable>(_ data: Data?, as type: T.Type) -> T? {
         guard let d = data else { return nil }
-        return try? JSONDecoder().decode(T.self, from: d)
+        return PersistedDecoding.decode(T.self, from: d, name: "iCloud \(String(describing: T.self))")
     }
 
     private func restartForAccountChange() {

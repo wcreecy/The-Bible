@@ -183,10 +183,11 @@ actor BibleBookOverviewRepository {
 
         var movements: [BibleBookMovement] = []
         while sqlite3_step(statement) == SQLITE_ROW {
-            let passages = (try? JSONDecoder().decode(
+            let passages = PersistedDecoding.decode(
                 [String].self,
-                from: Data(Self.columnText(statement, at: 4).utf8)
-            )) ?? []
+                from: Data(Self.columnText(statement, at: 4).utf8),
+                name: "BibleInsights book movement passages"
+            ) ?? []
             movements.append(
                 BibleBookMovement(
                     id: Int(sqlite3_column_int(statement, 0)),

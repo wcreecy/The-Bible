@@ -110,7 +110,7 @@ struct BeatTheClockGameView: View {
     }
 
     // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+    private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
     // Data
     @State private var loadedPeople: [BibleCharacter] = []

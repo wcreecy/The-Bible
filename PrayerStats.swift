@@ -127,7 +127,7 @@ final class PrayerStatsStore {
     func loadContributions() -> Contributions {
         migrateLegacyIfNeeded()
         guard let data = defaults.data(forKey: contributionsKey) else { return [:] }
-        return (try? JSONDecoder().decode(Contributions.self, from: data)) ?? [:]
+        return PersistedDecoding.decode(Contributions.self, from: data, key: contributionsKey, keepingUnreadableIn: defaults) ?? [:]
     }
 
     func saveContributions(_ contributions: Contributions) {
@@ -139,7 +139,7 @@ final class PrayerStatsStore {
     func loadLastSession() -> LastSession? {
         migrateLegacyIfNeeded()
         guard let data = defaults.data(forKey: lastSessionKey) else { return nil }
-        return try? JSONDecoder().decode(LastSession.self, from: data)
+        return PersistedDecoding.decode(LastSession.self, from: data, key: lastSessionKey, keepingUnreadableIn: defaults)
     }
 
     func saveLastSession(_ session: LastSession) {
@@ -158,9 +158,9 @@ final class PrayerStatsStore {
         guard kind == .prayer else { return }
         if let data = defaults.data(forKey: legacyDailyKey) {
             defaults.removeObject(forKey: legacyDailyKey)
-            let legacy = (try? JSONDecoder().decode([String: Int].self, from: data)) ?? [:]
+            let legacy = PersistedDecoding.decode([String: Int].self, from: data, name: legacyDailyKey) ?? [:]
             var contributions = (defaults.data(forKey: contributionsKey))
-                .flatMap { try? JSONDecoder().decode(Contributions.self, from: $0) } ?? [:]
+                .flatMap { PersistedDecoding.decode(Contributions.self, from: $0, key: contributionsKey, keepingUnreadableIn: defaults) } ?? [:]
             let device = BibleStatsStore.shared.installationID
             for (day, seconds) in legacy where seconds > 0 {
                 contributions[day, default: [:]][device, default: 0] += seconds

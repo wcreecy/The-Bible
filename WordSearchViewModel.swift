@@ -66,6 +66,7 @@ final class WordSearchViewModel {
     var timeUp: Bool = false
     var didWin: Bool = false
     var pulseOn: Bool = false
+    @ObservationIgnored private var pulseTask: Task<Void, Never>?
     var roundOver: Bool = false
     var roundResult: RoundResult?
     /// Shown when no eligible word-search puzzle could be generated.
@@ -297,7 +298,7 @@ final class WordSearchViewModel {
     /// Starts a fresh clock for a new round.
     private func startClock() {
         elapsedSeconds = 0
-        pulseOn = false
+        stopPulse()
         remainingSeconds = isTimedMode ? timeLimitSeconds(wordCount: targetWords.count) : 0
         resumeTimer()
     }
@@ -332,19 +333,27 @@ final class WordSearchViewModel {
         }
     }
 
+    /// Flashes the clock for the last ten seconds. The task is cancelled when the round ends
+    /// or restarts, so a late toggle can't leave the clock lit.
     private func startPulse() {
-        let pulses = 4
-        for i in 0..<(pulses * 2) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.25) { [weak self] in
-                guard let self else { return }
+        pulseTask?.cancel()
+        pulseTask = Task { @MainActor [weak self] in
+            for _ in 0..<8 {
+                guard let self, !Task.isCancelled else { return }
                 withAnimation(.easeInOut(duration: 0.25)) {
                     self.pulseOn.toggle()
                 }
+                try? await Task.sleep(for: .milliseconds(250))
             }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + Double(pulses * 2) * 0.25 + 0.05) { [weak self] in
+            guard !Task.isCancelled else { return }
             self?.pulseOn = false
         }
+    }
+
+    private func stopPulse() {
+        pulseTask?.cancel()
+        pulseTask = nil
+        pulseOn = false
     }
 
     private func handleTimeUp() {
@@ -366,6 +375,7 @@ final class WordSearchViewModel {
 
     private func finishRound(_ result: RoundResult) {
         stopTimer()
+        stopPulse()
         roundResult = result
         timeUp = result == .timeUp
         didWin = result == .won
@@ -477,7 +487,7 @@ final class WordSearchViewModel {
     private static let popularVerses: [PopularVerse] = {
         guard let url = Bundle.main.url(forResource: "LockScreenVerses", withExtension: "json"),
               let data = try? Data(contentsOf: url) else { return [] }
-        return (try? JSONDecoder().decode([PopularVerse].self, from: data)) ?? []
+        return PersistedDecoding.decode([PopularVerse].self, from: data, name: "LockScreenVerses.json") ?? []
     }()
 
     /// Prefers the app's own text for the verse so it matches the reader exactly.

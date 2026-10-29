@@ -14,7 +14,7 @@ struct WhoAmIGameView: View {
     private let isReviewRound: Bool
 
     // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+    private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
     private struct ChoiceHeightKey: PreferenceKey {
         static var defaultValue: CGFloat = 0

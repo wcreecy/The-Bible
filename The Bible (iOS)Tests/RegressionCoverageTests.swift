@@ -447,8 +447,8 @@ struct NotesTabTests {
 
     @Test
     func draftsRoundTripThroughStorage() throws {
-        let defaults = try #require(UserDefaults(suiteName: "NotesTabTests.drafts"))
-        defer { defaults.removePersistentDomain(forName: "NotesTabTests.drafts") }
+        let directory = URL.temporaryDirectory.appending(path: "NoteDraftTests-\(UUID().uuidString)", directoryHint: .isDirectory)
+        defer { try? FileManager.default.removeItem(at: directory) }
 
         let key = NoteDraftStore.key(forVerse: "John", chapter: 3, verse: 16)
         #expect(key == NoteDraftStore.key(forVerse: "John", chapter: 3, verse: 16))
@@ -465,14 +465,64 @@ struct NotesTabTests {
         // Drafts built from the same edits compare equal until one is stamped when saved.
         #expect(draft == draft)
         draft.savedAt = Date(timeIntervalSince1970: 200)
-        NoteDraftStore.save(draft, for: key, defaults: defaults)
+        NoteDraftStore.save(draft, for: key, in: directory)
 
-        let loaded = try #require(NoteDraftStore.load(key, defaults: defaults))
+        let loaded = try #require(NoteDraftStore.load(key, in: directory))
         #expect(loaded == draft)
         #expect(String(loaded.bodyText.characters) == "Body #tag")
 
-        NoteDraftStore.clear(key, defaults: defaults)
-        #expect(NoteDraftStore.load(key, defaults: defaults) == nil)
+        NoteDraftStore.clear(key, in: directory)
+        #expect(NoteDraftStore.load(key, in: directory) == nil)
+    }
+
+    @Test
+    func oldDraftsAreDroppedAndRecentOnesKept() throws {
+        let directory = URL.temporaryDirectory.appending(path: "NoteDraftTests-\(UUID().uuidString)", directoryHint: .isDirectory)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let draft = NoteDraft(title: "Draft", body: Data(), category: NoteCategory.personal.rawValue)
+        let oldKey = NoteDraftStore.key(forVerse: "John", chapter: 3, verse: 16)
+        let recentKey = NoteDraftStore.key(forVerse: "John", chapter: 3, verse: 17)
+        NoteDraftStore.save(draft, for: oldKey, in: directory)
+        NoteDraftStore.save(draft, for: recentKey, in: directory)
+
+        // Judge age from a point in the future so only the file written "long ago" qualifies.
+        let longAfter = Date.now.addingTimeInterval(NoteDraftStore.maximumAge + 60)
+        let oldFile = try #require(
+            FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil).first
+        )
+        // Touch the other file so it looks recent relative to `longAfter`.
+        let touchedFiles = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+            .filter { $0 != oldFile }
+        for file in touchedFiles {
+            try FileManager.default.setAttributes([.modificationDate: longAfter], ofItemAtPath: file.path)
+        }
+
+        NoteDraftStore.pruneOldDrafts(now: longAfter, in: directory)
+
+        let remaining = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        #expect(remaining == touchedFiles)
+    }
+
+    @Test
+    func draftsFromUserDefaultsMoveToFiles() throws {
+        let suite = "NoteDraftMigrationTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let directory = URL.temporaryDirectory.appending(path: "NoteDraftTests-\(UUID().uuidString)", directoryHint: .isDirectory)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        var draft = NoteDraft(title: "Old draft", body: Data(), category: NoteCategory.personal.rawValue)
+        draft.savedAt = Date(timeIntervalSince1970: 300)
+        let key = NoteDraftStore.key(forVerse: "Psalms", chapter: 23, verse: 1)
+        defaults.set(try JSONEncoder().encode(draft), forKey: key)
+        defaults.set("unrelated", forKey: "someOtherSetting")
+
+        NoteDraftStore.migrateLegacyDrafts(from: defaults, to: directory)
+
+        #expect(NoteDraftStore.load(key, in: directory) == draft)
+        #expect(defaults.object(forKey: key) == nil)
+        #expect(defaults.string(forKey: "someOtherSetting") == "unrelated")
     }
 
     @Test

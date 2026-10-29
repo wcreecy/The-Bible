@@ -3,7 +3,7 @@ import UIKit
 
 struct HangmanGameView: View {
     // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+    private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
     enum Theme: String, CaseIterable, Identifiable {
         // Raw values are stored in settings and per-category stats.

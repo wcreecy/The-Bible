@@ -131,6 +131,12 @@ struct ScrambleGameView: View {
 
     @State private var phase: Phase = .setup
     @State private var wordBank: [ScrambleWord] = []
+    /// Start waits for the word list, so a tap never has to decode it on the main thread.
+    @State private var wordBankStatus: WordBankStatus = .loading
+
+    private enum WordBankStatus {
+        case loading, ready, unavailable
+    }
     @State private var deck: [ScrambleWord] = []
     @State private var currentWord: ScrambleWord?
     @State private var shuffledLetters: [Character] = []
@@ -328,6 +334,7 @@ struct ScrambleGameView: View {
                     standard: "A broader word list with 30 seconds per word.",
                     challenge: "Tougher words with no timer."
                 ),
+                isStartEnabled: wordBankStatus == .ready,
                 startAction: startSession
             ) {
                 GameLobbyPreview(kind: .scramble)
@@ -336,6 +343,12 @@ struct ScrambleGameView: View {
                     Text("Build each answer from the scrambled letter tiles.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+
+                    if wordBankStatus == .unavailable {
+                        Label("The word list couldn’t be loaded. Close the game and try again.", systemImage: "exclamationmark.triangle.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(.orange)
+                    }
 
                     Picker("Session length", selection: $sessionLength) {
                         ForEach(SessionLength.allCases) { length in
@@ -478,15 +491,16 @@ struct ScrambleGameView: View {
     }
 
     private func loadWordBank() async {
-        guard wordBank.isEmpty else { return }
+        guard wordBank.isEmpty else {
+            wordBankStatus = .ready
+            return
+        }
         wordBank = await GameDataLoaders.loadScrambleWordsAsync().compactMap(ScrambleWord.init)
+        wordBankStatus = wordBank.isEmpty ? .unavailable : .ready
     }
 
     private func startSession() {
-        // Loading normally finishes while the start screen is showing; this covers an early tap.
-        if wordBank.isEmpty {
-            wordBank = GameDataLoaders.loadScrambleWords().compactMap(ScrambleWord.init)
-        }
+        guard wordBankStatus == .ready else { return }
 
         let eligible = wordBank.filter { word in
             switch difficulty {

@@ -319,7 +319,7 @@ final class MissedGameQuestionStore {
 
     private static func load() -> [Entry] {
         guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let entries = try? JSONDecoder().decode([Entry].self, from: data) else {
+              let entries = PersistedDecoding.decode([Entry].self, from: data, key: storageKey, keepingUnreadableIn: .standard) else {
             return []
         }
         return entries
@@ -327,7 +327,7 @@ final class MissedGameQuestionStore {
 
     private static func loadTombstones() -> [Tombstone] {
         guard let data = UserDefaults.standard.data(forKey: tombstoneStorageKey),
-              let tombstones = try? JSONDecoder().decode([Tombstone].self, from: data) else {
+              let tombstones = PersistedDecoding.decode([Tombstone].self, from: data, key: tombstoneStorageKey, keepingUnreadableIn: .standard) else {
             return []
         }
         return tombstones

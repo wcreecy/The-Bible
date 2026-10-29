@@ -283,8 +283,7 @@ struct HomeColumnLayout: Equatable {
     /// reader panel. Their cards move into the two columns the reader isn't in, so the
     /// dashboard looks the same.
     init?(storageString: String, readerColumn: HomeColumn?) {
-        guard let data = storageString.data(using: .utf8),
-              let raw = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+        guard let raw = PersistedDecoding.decode([String: [String]].self, fromText: storageString, key: "homeColumnLayout") else {
             return nil
         }
         func cards(_ key: String) -> [HomeCardID] {

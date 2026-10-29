@@ -598,7 +598,7 @@ struct GamesView: View {
 
     private func loadTodayWordResult() -> DailyWordResult? {
         guard let data = UserDefaults.standard.data(forKey: "wordleDailyResultMap"),
-              let results = try? JSONDecoder().decode([String: DailyWordResult].self, from: data) else {
+              let results = PersistedDecoding.decode([String: DailyWordResult].self, from: data, key: "wordleDailyResultMap", keepingUnreadableIn: .standard) else {
             return nil
         }
         return results[GameStats.localDayKey(for: Date())]

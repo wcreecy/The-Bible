@@ -35,7 +35,7 @@ private enum WellKnownVerses {
     static func load() -> [MatchVerse] {
         guard let url = Bundle.main.url(forResource: "LockScreenVerses", withExtension: "json"),
               let data = try? Data(contentsOf: url),
-              let entries = try? JSONDecoder().decode([Entry].self, from: data) else { return [] }
+              let entries = PersistedDecoding.decode([Entry].self, from: data, name: "LockScreenVerses.json") else { return [] }
         return entries.map {
             MatchVerse(bookName: $0.book, chapterNumber: $0.chapter, verseNumber: $0.verse, verseText: $0.text)
         }
@@ -147,7 +147,7 @@ struct VerseMatchGameView: View {
     @AppStorage("versematchSections") private var verseSectionsRaw: String = ""
 
     // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+    private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
     @State private var phase: Phase = .setup
     @State private var isFilterReady = QuizVerseFilter.isReady

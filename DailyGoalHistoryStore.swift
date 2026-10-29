@@ -32,7 +32,7 @@ final class DailyGoalHistoryStore {
             cache = []
             return []
         }
-        let decoded = (try? JSONDecoder().decode([Change].self, from: data)) ?? []
+        let decoded = PersistedDecoding.decode([Change].self, from: data, key: historyKey, keepingUnreadableIn: defaults) ?? []
         let sorted = decoded.sorted { $0.isoDate < $1.isoDate }
         cache = sorted
         return sorted
