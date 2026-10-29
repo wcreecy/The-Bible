@@ -360,8 +360,14 @@ struct ContentView: View {
 
             // Ensure we’re on the Bible tab before pushing; reset the stack to avoid stacking multiple readers
             DispatchQueue.main.async {
-                bibleCoordinator.reset() // <-- prevent duplicate stacked readers after deep links
-                bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
+                // Replace the stack in one unanimated step (also prevents duplicate stacked
+                // readers). Animating a pop and push while the tab switch is still settling
+                // briefly lays the reader out at a transitional width, shifting the card left.
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    bibleCoordinator.path = [.reader(book: book, chapter: chapter, startVerse: verseNum)]
+                }
                 // Safety net: Ensure the reading tracker is running even if the inner view's onAppear is delayed.
                 ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)
                 ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: chapter.number)

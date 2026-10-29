@@ -473,6 +473,11 @@ struct ReadingView: View {
                 .heroCardSurface()
                 .padding(.horizontal, 16)
                 .padding(.vertical)
+                // Pin the content to the scroll view's visible width. `scrollPosition`'s
+                // `.top` anchor also targets the horizontal center, so if the lazy stack is
+                // measured at a stale width (e.g. during a navigation transition from a link),
+                // programmatic jumps would otherwise leave the card shifted sideways.
+                .containerRelativeFrame(.horizontal)
                 .scrollTargetLayout()
                 .onChange(of: viewModel.currentChapterIndex) { _, _ in
                     refreshSeenVerses()
