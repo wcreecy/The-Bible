@@ -209,9 +209,9 @@ struct NotesListCard: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    /// The card surface behind each row, tinted for the open note. The first and last rows
-    /// round the card's corners; the list doesn't round them itself without side margins,
-    /// which are left out so cards line up with the page.
+    /// The page's Notes background shows through each card, matching the editor. The first and
+    /// last rows round the card's corners; the list doesn't round them itself without side
+    /// margins, which are left out so cards line up with the page.
     private func rowBackground(isSelected: Bool, isFirst: Bool, isLast: Bool) -> some View {
         let radius = AppDesignMetrics.cardCornerRadius
         let shape = UnevenRoundedRectangle(
@@ -222,7 +222,7 @@ struct NotesListCard: View {
             style: .continuous
         )
         return shape
-            .fill(.regularMaterial)
+            .fill(Color.clear)
             .overlay(isSelected ? Color.accentColor.opacity(0.15) : Color.clear, in: shape)
     }
 
