@@ -397,10 +397,10 @@ final class GameStats {
             .init(name: "Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Trivia", correct: t.correct, answered: t.answered, bestStreak: t.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
-            .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
+            .init(name: "Verses", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Countdown", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
-            .init(name: "Who Am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
+            .init(name: "Who?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
             .init(name: "Word Search", correct: ws.correct, answered: ws.answered, bestStreak: ws.bestStreak),
             .init(name: "Scramble", correct: s.correct, answered: s.answered, bestStreak: s.bestStreak),
             .init(name: "Word", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
@@ -467,8 +467,10 @@ final class GameStats {
     /// by display name goes through this first.
     static func canonicalDisplayName(_ name: String) -> String {
         switch name {
-        case "Verses": return "Verse Match"
-        case "Who?": return "Who Am I?"
+        case "Bible Quiz": return "Quiz"
+        case "Beat the Clock": return "Countdown"
+        case "Verse Match": return "Verses"
+        case "Who Am I?": return "Who?"
         case "WORD", "Wordle (Bible)": return "Word"
         default: return name
         }
@@ -479,10 +481,10 @@ final class GameStats {
         case "Quiz": return "quiz"
         case "Trivia": return "trivia"
         case "Hangman": return "hangman"
-        case "Verse Match": return "versematch"
+        case "Verses": return "versematch"
         case "Countdown": return "beatclock"
         case "Book Order": return "bookorder"
-        case "Who Am I?": return "whoami"
+        case "Who?": return "whoami"
         case "Word Search": return "wordsearch"
         case "Scramble": return "scramble"
         case "Word": return "word"
@@ -1236,9 +1238,9 @@ final class GameStats {
         case .trivia: return "Trivia"
         case .hangman: return "Hangman"
         case .beatclock: return "Countdown"
-        case .versematch: return "Verse Match"
+        case .versematch: return "Verses"
         case .bookorder: return "Book Order"
-        case .whoami: return "Who Am I?"
+        case .whoami: return "Who?"
         case .wordsearch: return "Word Search"
         case .scramble: return "Scramble"
         case .wordle: return "Word"

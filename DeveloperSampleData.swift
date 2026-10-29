@@ -166,9 +166,9 @@ enum DeveloperSampleData {
             "quiz": "Quiz",
             "hangman": "Hangman",
             "beatclock": "Countdown",
-            "versematch": "Verse Match",
+            "versematch": "Verses",
             "bookorder": "Book Order",
-            "whoami": "Who Am I?",
+            "whoami": "Who?",
             "word": "Word"
         ]
         defaults.set(displayNames[lastGame], forKey: "gamesLastPlayedGameName")

@@ -63,11 +63,11 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: "Quiz"
         case .hangman: "Hangman"
         case .beatTheClock: "Countdown"
-        case .verseMatch: "Verse Match"
+        case .verseMatch: "Verses"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .scramble: "Scramble"
-        case .whoAmI: "Who Am I?"
+        case .whoAmI: "Who?"
         case .wordle: "Word"
         case .trivia: "Trivia"
         case .reviewRound: "Review Round"
@@ -79,11 +79,11 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: "Quiz"
         case .hangman: "Hangman"
         case .beatTheClock: "Countdown"
-        case .verseMatch: "Verse Match"
+        case .verseMatch: "Verses"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .scramble: "Scramble"
-        case .whoAmI: "Who Am I?"
+        case .whoAmI: "Who?"
         case .wordle: "Word"
         case .trivia: "Trivia"
         case .reviewRound: "Review Round"
@@ -94,7 +94,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         switch self {
         case .quiz: "Bible facts"
         case .hangman: "People, places & books"
-        case .beatTheClock: "Beat the clock"
+        case .beatTheClock: "Countdown"
         case .verseMatch: "What verse is this?"
         case .bookOrder: "Put books in order"
         case .wordSearch: "Find the words"
@@ -196,11 +196,11 @@ private struct ReviewRoundProgress: Identifiable {
 
     var title: LocalizedStringResource {
         switch game {
-        case .beatTheClock: "Beat the Clock"
+        case .beatTheClock: "Countdown"
         case .bibleQuiz: "Quiz"
         case .bibleTrivia: "Trivia"
-        case .verseMatch: "Verse Match"
-        case .whoAmI: "Who Am I?"
+        case .verseMatch: "Verses"
+        case .whoAmI: "Who?"
         }
     }
 }

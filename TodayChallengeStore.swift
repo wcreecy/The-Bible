@@ -72,7 +72,6 @@ private enum HistoryKey {
 
     /// Shared by reading and study, so a chapter isn't assigned again either way.
     static func chapter(_ bookName: String, _ chapter: Int) -> String { "chapter:\(bookName)-\(chapter)" }
-    static func game(_ name: String) -> String { "game:\(name)" }
     static func prayer(_ minutes: Int) -> String { "prayer:\(minutes)" }
     static func reflection(_ templateTitle: String) -> String { reflectionPrefix + templateTitle }
 }
@@ -518,7 +517,7 @@ final class TodayChallengeStore {
             switch task {
             case .study: challenges.append(makeStudyChallenge(using: &picker))
             case .prayer: challenges.append(makePrayerChallenge(using: &picker))
-            case .game: challenges.append(makeGameChallenge(using: &picker))
+            case .game: challenges.append(makeGameChallenge())
             }
         }
 
@@ -599,8 +598,10 @@ final class TodayChallengeStore {
         )
     }
 
-    private func makeGameChallenge(using picker: inout FreshPicker) -> TodayChallenge {
-        let gameName = picker.pick(from: catalog.gameNames, key: HistoryKey.game) ?? "Quiz"
+    private func makeGameChallenge() -> TodayChallenge {
+        // Each game challenge is an independent, equally likely draw. The Today card still
+        // balances challenge types separately, but a recently shown game may appear again.
+        let gameName = catalog.gameNames.randomElement() ?? "Quiz"
 
         return TodayChallenge(
             id: UUID(),

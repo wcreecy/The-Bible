@@ -16,17 +16,17 @@ struct GamesOverviewCardView: View {
         case "All Games":    return "sparkles"
         case "Quiz":   return "questionmark.circle"
         case "Hangman":      return "figure"
-        case "Verse Match":  return "text.quote"
+        case "Verses":       return "text.quote"
         case "Countdown": return "timer"
         case "Book Order":   return "books.vertical"
-        case "Who Am I?":    return "person.crop.circle.badge.questionmark"
+        case "Who?":         return "person.crop.circle.badge.questionmark"
         case "Word":         return "square.grid.3x3"
         default:             return "gamecontroller"
         }
     }
 
     private func sortKey(for name: String) -> String {
-        let key = (name == "Word") ? "Who Am I?" : name
+        let key = (name == "Word") ? "Who?" : name
         return key.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .autoupdatingCurrent)
     }
 
@@ -34,7 +34,7 @@ struct GamesOverviewCardView: View {
         let l = sortKey(for: lhs)
         let r = sortKey(for: rhs)
         if l == r {
-            let priority: [String: Int] = ["Who Am I?": 0, "Word": 1]
+            let priority: [String: Int] = ["Who?": 0, "Word": 1]
             let pl = priority[lhs] ?? 2
             let pr = priority[rhs] ?? 2
             if pl != pr { return pl < pr }
@@ -85,7 +85,7 @@ struct GamesOverviewCardView: View {
             NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
                     if let g = selectedGenre {
-                        if selectedGame == "Verse Match" {
+                        if selectedGame == "Verses" {
                             let rows = GameStats.shared.verseMatchAccuracyByBook(inGenre: g)
                             if rows.isEmpty {
                                 ContentUnavailableView("No data for \(g)", systemImage: "book")
@@ -202,17 +202,17 @@ private struct GamesOverviewCardContent: View {
         case "All Games":    return "sparkles"
         case "Quiz":   return "questionmark.circle"
         case "Hangman":      return "figure"
-        case "Verse Match":  return "text.quote"
+        case "Verses":       return "text.quote"
         case "Countdown": return "timer"
         case "Book Order":   return "books.vertical"
-        case "Who Am I?":    return "person.crop.circle.badge.questionmark"
+        case "Who?":         return "person.crop.circle.badge.questionmark"
         case "Word":         return "square.grid.3x3"
         default:             return "gamecontroller"
         }
     }
 
     private func sortKey(for name: String) -> String {
-        let key = (name == "Word") ? "Who Am I?" : name
+        let key = (name == "Word") ? "Who?" : name
         return key.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .autoupdatingCurrent)
     }
 
@@ -220,7 +220,7 @@ private struct GamesOverviewCardContent: View {
         let l = sortKey(for: lhs)
         let r = sortKey(for: rhs)
         if l == r {
-            let priority: [String: Int] = ["Who Am I?": 0, "Word": 1]
+            let priority: [String: Int] = ["Who?": 0, "Word": 1]
             let pl = priority[lhs] ?? 2
             let pr = priority[rhs] ?? 2
             if pl != pr { return pl < pr }
@@ -674,7 +674,7 @@ private struct GamesOverviewCardContent: View {
                     }
                 }
 
-                if selectedGame == "Verse Match" {
+                if selectedGame == "Verses" {
                     let summary = GameStats.shared.verseMatchOTNTSummary()
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Accuracy by Testament (OT vs NT)")
@@ -695,7 +695,7 @@ private struct GamesOverviewCardContent: View {
                     }
                 }
 
-                if selectedGame == "Verse Match" {
+                if selectedGame == "Verses" {
                     let rows = GameStats.shared.verseMatchAccuracyByGenre()
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Accuracy by Genre")
@@ -878,7 +878,7 @@ private struct GamesOverviewCardContent: View {
                 }
 
                 // Verses weak/strong sections (mirroring Bible Quiz)
-                if selectedGame == "Verse Match" {
+                if selectedGame == "Verses" {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Top Weak Books")
