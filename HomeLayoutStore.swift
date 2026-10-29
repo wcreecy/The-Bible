@@ -58,29 +58,28 @@ struct HomeLayoutStore {
             ]
         }
 
-        // iPhone: get back into the text and what it's about first, then the daily verse and challenges.
-        // Search, Your Stats and Daily Focus are opt-in. The Welcome card leads until it's hidden.
+        // iPhone: a quiet first home screen—Welcome, then the daily verse, then reading.
         return [
             .setup,
-            .resumeReading,
-            .study,
             .verseOfDay,
-            .savedVerses,
+            .resumeReading,
             .today,
+            .savedVerses,
+            .study,
             .streaks,
             .timer,
+            .dailyFocus,
             .search,
-            .bibleStats,
-            .dailyFocus
+            .bibleStats
         ]
     }
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            // Today's Reading covers Continue Reading, and the header has a Search button.
-            return [.resumeReading, .search, .bibleStats]
+            // Keep the first iPad dashboard focused on Welcome, Today, and the timer.
+            return [.resumeReading, .savedVerses, .study, .streaks, .dailyFocus, .search, .bibleStats]
         }
-        // Search duplicates the header's Search button; Your Stats and Daily Focus are opt-in.
-        return [.search, .bibleStats, .dailyFocus]
+        // Keep the first iPhone home screen focused on Welcome, Verse of the Day, and reading.
+        return [.today, .savedVerses, .study, .streaks, .timer, .dailyFocus, .search, .bibleStats]
     }
     // The iPad Today's Reading panel; iPhone does not show it.
     static let defaultBibleReaderVisible = true
@@ -92,10 +91,19 @@ struct HomeLayoutStore {
     }
 
     static var baselineColumns: HomeColumnLayout {
-        HomeColumnLayout.seeded(
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return HomeColumnLayout(
+                left: [.verseOfDay, .setup, .savedVerses, .study],
+                middle: [.today, .streaks, .dailyFocus],
+                right: [.timer, .resumeReading, .search, .bibleStats],
+                verseOfDayWidth: .allColumns
+            )
+        }
+
+        return HomeColumnLayout.seeded(
             from: baselineOrder,
             hidden: baselineHidden,
-            readerColumn: defaultBibleReaderVisible ? defaultBibleReaderColumn : nil
+            readerColumn: nil
         )
     }
 

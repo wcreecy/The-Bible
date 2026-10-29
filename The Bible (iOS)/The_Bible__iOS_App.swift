@@ -66,6 +66,9 @@ struct The_Bible__iOS_App: App {
     private let persistenceStoreMode: PersistenceStoreMode
 
     init() {
+        UserDefaults.standard.register(defaults: [
+            AppStorageKey.contextualTipsEnabled: true
+        ])
         UITestSupport.configureIfNeeded()
         // Start decoding the bundled corpus while SwiftData initializes. The Home mini reader
         // shares this load, so it can present its first chapter sooner on a cold launch.

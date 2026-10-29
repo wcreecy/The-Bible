@@ -151,6 +151,7 @@ struct ScrambleGameView: View {
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
     @State private var selectedPassage: PassageReference?
+    @State private var isRevealConfirmationPresented = false
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private enum AnswerFeedback {
@@ -293,6 +294,14 @@ struct ScrambleGameView: View {
         .sheet(item: $selectedPassage) { reference in
             ScripturePassageSheet(reference: reference)
         }
+        .confirmationDialog("Reveal answer?", isPresented: $isRevealConfirmationPresented, titleVisibility: .visible) {
+            Button("Reveal & Next", role: .destructive) {
+                revealAnswer()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("The word will be marked incorrect, then the next word will begin.")
+        }
         .onDisappear {
             if phase != .setup {
                 phase = .setup
@@ -422,15 +431,13 @@ struct ScrambleGameView: View {
                             action: showHint
                         )
 
-                        if difficulty == .easy {
-                            ScrambleGlassActionButton(
-                                systemImage: "eye",
-                                accessibilityLabel: "Show answer",
-                                isEnabled: true,
-                                tint: .blue,
-                                action: revealAnswer
-                            )
-                        }
+                        ScrambleGlassActionButton(
+                            systemImage: "eye",
+                            accessibilityLabel: "Show answer",
+                            isEnabled: true,
+                            tint: .blue,
+                            action: { isRevealConfirmationPresented = true }
+                        )
                     }
                     .padding(.top, 8)
 
@@ -609,7 +616,7 @@ struct ScrambleGameView: View {
     }
 
     private func revealAnswer() {
-        guard difficulty == .easy, let currentWord, !isCurrentWordResolved else { return }
+        guard let currentWord, !isCurrentWordResolved else { return }
         typedAnswer = currentWord.answer
         selectedIndices = Array(shuffledLetters.indices)
         answeredCount += 1
