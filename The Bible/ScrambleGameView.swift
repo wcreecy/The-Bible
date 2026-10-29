@@ -354,14 +354,9 @@ struct ScrambleGameView: View {
                 ScramblePrompt(
                     category: currentWord.category,
                     reference: difficulty == .easy ? currentWord.reference : nil,
-                    letters: shuffledLetters
-                )
-
-                ScrambleAnswerTiles(
                     answer: typedAnswer,
                     answerLength: currentWord.answer.count,
-                    isResolved: isCurrentWordResolved,
-                    onRemoveLast: removeLastLetter
+                    isResolved: isCurrentWordResolved
                 )
 
                 if let answerFeedback {
@@ -373,40 +368,24 @@ struct ScrambleGameView: View {
                 ScrambleLetterTray(
                     letters: shuffledLetters,
                     selectedIndices: selectedIndices,
-                    onSelect: selectLetter,
-                    onDeselect: deselectLetter
+                    onSelect: selectLetter
                 )
                 .disabled(isCurrentWordResolved)
 
-                HStack(spacing: 12) {
-                    Button("Clear", systemImage: "delete.left") {
-                        clearAnswer()
+                if isCurrentWordResolved {
+                    Button("Next Word", systemImage: "arrow.right") {
+                        loadNextWord()
                     }
-                    .buttonStyle(.bordered)
-                    .disabled(typedAnswer.isEmpty || isCurrentWordResolved)
-
-                    Button("Shuffle", systemImage: "shuffle") {
-                        shuffleUnusedLetters()
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(isCurrentWordResolved || shuffledLetters.count - selectedIndices.count < 2)
-
-                    if isCurrentWordResolved {
-                        Button("Next Word", systemImage: "arrow.right") {
-                            loadNextWord()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.pink)
-                    } else {
-                        Button("Check Answer", systemImage: "checkmark") {
-                            checkAnswer()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.pink)
-                        .disabled(typedAnswer.count != currentWord.answer.count)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.pink)
+                } else {
+                    HStack(spacing: 10) {
+                        ScrambleActionButton(systemImage: "trash", accessibilityLabel: "Clear answer", isEnabled: !typedAnswer.isEmpty, action: clearAnswer)
+                        ScrambleActionButton(systemImage: "delete.left", accessibilityLabel: "Remove last letter", isEnabled: !typedAnswer.isEmpty, action: removeLastLetter)
+                        ScrambleActionButton(systemImage: "shuffle", accessibilityLabel: "Shuffle available letters", isEnabled: shuffledLetters.count - selectedIndices.count >= 2, action: shuffleUnusedLetters)
+                        ScrambleActionButton(systemImage: "checkmark", accessibilityLabel: "Check answer", isEnabled: typedAnswer.count == currentWord.answer.count, isProminent: true, action: checkAnswer)
                     }
                 }
-                .controlSize(.large)
 
                 if !isCurrentWordResolved {
                     HStack(spacing: 12) {
@@ -416,27 +395,24 @@ struct ScrambleGameView: View {
                         .buttonStyle(.bordered)
                         .tint(.secondary)
 
-                        if currentTimeLimit != nil, pausesRemaining > 0 || isTimerPaused {
-                            Button(isTimerPaused ? "Resume" : "Pause", systemImage: isTimerPaused ? "play.fill" : "pause.fill") {
-                                toggleTimerPause()
+                        if difficulty == .easy {
+                            Button("Show Answer", systemImage: "eye") {
+                                revealAnswer()
                             }
                             .buttonStyle(.bordered)
+                            .tint(.secondary)
                         }
                     }
 
                     if let hintText {
-                        Text(hintText)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
+                        ScrambleHintCard(text: hintText)
                     }
 
-                    if difficulty == .easy {
-                        Button("Show Answer", systemImage: "eye") {
-                            revealAnswer()
+                    if currentTimeLimit != nil, pausesRemaining > 0 || isTimerPaused {
+                        Button(isTimerPaused ? "Resume" : "Pause", systemImage: isTimerPaused ? "play.fill" : "pause.fill") {
+                            toggleTimerPause()
                         }
                         .buttonStyle(.bordered)
-                        .tint(.secondary)
                     }
                 }
             }
@@ -531,13 +507,6 @@ struct ScrambleGameView: View {
 
         selectedIndices.append(index)
         typedAnswer.append(shuffledLetters[index])
-        answerFeedback = nil
-    }
-
-    private func deselectLetter(_ index: Int) {
-        guard let selectedPosition = selectedIndices.firstIndex(of: index) else { return }
-        selectedIndices.remove(at: selectedPosition)
-        typedAnswer.remove(at: typedAnswer.index(typedAnswer.startIndex, offsetBy: selectedPosition))
         answerFeedback = nil
     }
 
@@ -787,7 +756,9 @@ private struct ScrambleLargeTimerView: View {
 private struct ScramblePrompt: View {
     let category: LocalizedStringKey
     let reference: LocalizedStringKey?
-    let letters: [Character]
+    let answer: String
+    let answerLength: Int
+    let isResolved: Bool
 
     var body: some View {
         VStack(spacing: 10) {
@@ -801,14 +772,35 @@ private struct ScramblePrompt: View {
                     .foregroundStyle(.secondary)
             }
 
-            Text(String(letters).map(String.init).joined(separator: " "))
-                .font(.title.weight(.bold).monospaced())
+            Text("Build the word from the letter tiles.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .accessibilityLabel("Scrambled letters")
+
+            Spacer(minLength: 28)
+
+            ScrambleAnswerTiles(
+                answer: answer,
+                answerLength: answerLength,
+                isResolved: isResolved
+            )
         }
         .frame(maxWidth: .infinity)
-        .padding(20)
-        .background(Color.pink.opacity(0.10), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(24)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(UIColor.secondarySystemBackground), Color(UIColor.systemBackground)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+        }
     }
 }
 
@@ -816,24 +808,51 @@ private struct ScrambleAnswerTiles: View {
     let answer: String
     let answerLength: Int
     let isResolved: Bool
-    let onRemoveLast: () -> Void
 
     var body: some View {
-        Button(action: onRemoveLast) {
-            HStack(spacing: 6) {
-                ForEach(0..<answerLength, id: \.self) { index in
-                    Text(index < answer.count ? String(answer[answer.index(answer.startIndex, offsetBy: index)]) : "")
-                        .font(.title2.weight(.bold).monospaced())
-                        .frame(width: 34, height: 42)
-                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8))
-                }
+        HStack(spacing: 7) {
+            ForEach(0..<answerLength, id: \.self) { index in
+                let letter = index < answer.count ? String(answer[answer.index(answer.startIndex, offsetBy: index)]) : ""
+                Text(letter)
+                    .font(.title3.weight(.bold).monospaced())
+                    .foregroundStyle(isResolved ? .secondary : .primary)
+                    .frame(width: 42, height: 48)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(isResolved ? 0.08 : 0.15), lineWidth: 1)
+                    }
             }
         }
-        .buttonStyle(.plain)
-        .disabled(answer.isEmpty || isResolved)
-        .accessibilityLabel("Answer tiles")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Answer")
         .accessibilityValue(answer.isEmpty ? "Empty" : answer)
-        .accessibilityHint("Double tap to remove the last letter.")
+    }
+}
+
+private struct ScrambleHintCard: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color(UIColor.secondarySystemBackground), Color(UIColor.systemBackground)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+            }
     }
 }
 
@@ -841,34 +860,113 @@ private struct ScrambleLetterTray: View {
     let letters: [Character]
     let selectedIndices: [Int]
     let onSelect: (Int) -> Void
-    let onDeselect: (Int) -> Void
 
     var body: some View {
-        LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: 52), spacing: 10)],
-            spacing: 10
-        ) {
-            ForEach(letters.indices, id: \.self) { index in
-                let isSelected = selectedIndices.contains(index)
+        ScrambleLetterFlowLayout {
+            ForEach(letters.indices.filter { !selectedIndices.contains($0) }, id: \.self) { index in
                 Button {
-                    if isSelected {
-                        onDeselect(index)
-                    } else {
-                        onSelect(index)
-                    }
+                    onSelect(index)
                 } label: {
                     Text(String(letters[index]))
                         .font(.title3.weight(.bold))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
+                        .foregroundStyle(.primary)
+                        .frame(width: 48, height: 48)
                 }
-                .buttonStyle(.bordered)
-                .tint(isSelected ? .secondary : .pink)
-                .accessibilityLabel(String(letters[index]) + (isSelected ? ", selected" : ", available"))
-                .accessibilityHint(isSelected ? "Double tap to remove this letter." : "Double tap to add this letter.")
+                .buttonStyle(ScrambleLetterTileStyle())
+                .accessibilityLabel("\(letters[index]), available")
+                .accessibilityHint("Double tap to add this letter.")
             }
         }
-        .frame(maxWidth: 360)
+        .frame(maxWidth: 360, alignment: .center)
         .frame(maxWidth: .infinity, alignment: .center)
+    }
+}
+
+private struct ScrambleLetterFlowLayout: Layout {
+    private let tileSize: CGFloat = 48
+    private let spacing: CGFloat = 10
+    private let maximumWidth: CGFloat = 360
+
+    func sizeThatFits(
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) -> CGSize {
+        guard !subviews.isEmpty else { return .zero }
+        let width = min(proposal.width ?? maximumWidth, maximumWidth)
+        let columns = columnCount(for: width)
+        let rows = max(1, Int(ceil(Double(subviews.count) / Double(columns))))
+        let height = CGFloat(rows) * tileSize + CGFloat(rows - 1) * spacing
+        return CGSize(width: width, height: height)
+    }
+
+    func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) {
+        let columns = columnCount(for: bounds.width)
+
+        for rowStart in stride(from: 0, to: subviews.count, by: columns) {
+            let rowEnd = min(rowStart + columns, subviews.count)
+            let count = rowEnd - rowStart
+            let rowWidth = CGFloat(count) * tileSize + CGFloat(count - 1) * spacing
+            let rowIndex = rowStart / columns
+            let y = bounds.minY + CGFloat(rowIndex) * (tileSize + spacing)
+            var x = bounds.midX - rowWidth / 2
+
+            for index in rowStart..<rowEnd {
+                subviews[index].place(
+                    at: CGPoint(x: x, y: y),
+                    anchor: .topLeading,
+                    proposal: ProposedViewSize(width: tileSize, height: tileSize)
+                )
+                x += tileSize + spacing
+            }
+        }
+    }
+
+    private func columnCount(for width: CGFloat) -> Int {
+        max(1, Int((width + spacing) / (tileSize + spacing)))
+    }
+}
+
+private struct ScrambleLetterTileStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(Color.clear, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.15), lineWidth: 1)
+            }
+            .opacity(configuration.isPressed ? 0.65 : 1)
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+    }
+}
+
+private struct ScrambleActionButton: View {
+    let systemImage: String
+    let accessibilityLabel: LocalizedStringKey
+    let isEnabled: Bool
+    var isProminent = false
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.body.weight(.semibold))
+                .frame(width: 42, height: 42)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(isProminent ? Color.white : Color.pink)
+        .background(isProminent ? Color.pink : Color.pink.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(Color.pink.opacity(isProminent ? 0 : 0.45), lineWidth: 1)
+        }
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.35)
+        .accessibilityLabel(accessibilityLabel)
     }
 }
