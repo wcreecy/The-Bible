@@ -139,7 +139,7 @@ private struct SettingsReadingAndPrayerLinksSection: View {
                 SettingsTimerDetailView()
             } label: {
                 SettingsNavigationRow(
-                    title: "Prayer Timer",
+                    title: "Prayer & Study Timer",
                     subtitle: prayerTimerSummary,
                     systemImage: "timer"
                 )
@@ -630,7 +630,7 @@ private struct SettingsDeveloperSection: View {
                 }
                 Button("Done", role: .cancel) {}
             } message: {
-                Text("App settings are back to their defaults. To make Notifications, Prayer Timer Alarms, Mindful Minutes, or Live Activities appear not requested again, reset them in iOS Settings or reset privacy on the simulator. Photo Selection uses the system picker and has no persistent library permission.")
+                Text("App settings are back to their defaults. To make Notifications, Prayer & Study Timer Alarms, Mindful Minutes, or Live Activities appear not requested again, reset them in iOS Settings or reset privacy on the simulator. Photo Selection uses the system picker and has no persistent library permission.")
             }
         } header: {
             Label("Developer", systemImage: "hammer")
@@ -701,6 +701,8 @@ private enum DeveloperSettingsReset {
             "prayerTimerEndDate": 0.0,
             "prayerTimerStartDate": 0.0,
             PrayerTimerController.lastMinutesKey: 0,
+            PrayerTimerKind.preferenceKey: PrayerTimerKind.prayer.rawValue,
+            "prayerTimerActiveKind": PrayerTimerKind.prayer.rawValue,
             "prayerTimerVerseSource": PrayerVerseSource.verseOfDay.rawValue,
             "prayerSegmentStartDate": 0.0,
             "prayerSessionSeconds": 0,
@@ -832,7 +834,7 @@ struct SettingsDailyGoalDetailView: View {
 
 private struct SettingsTimerDetailView: View {
     var body: some View {
-        SettingsDetailForm(title: "Prayer Timer") {
+        SettingsDetailForm(title: "Prayer & Study Timer") {
             SettingsTimerSection()
             SettingsPrayerTimerAccessSection()
         }

@@ -54,12 +54,19 @@ struct PrayerTimerCard: View {
     private static let presets = [5, 10, 15, 20]
 
     @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
+    /// The kind of the next session; it matches the running one while a timer runs.
+    @AppStorage(PrayerTimerKind.preferenceKey) private var kindRaw = PrayerTimerKind.prayer.rawValue
+
+    private var kind: PrayerTimerKind {
+        PrayerTimerKind(rawValue: kindRaw) ?? .prayer
+    }
 
     var body: some View {
         HeroCard(
-            title: "Prayer Timer",
+            // Names the running session; the generic name invites a choice while idle.
+            title: isTimerRunning ? kind.sessionName : "Prayer & Study Timer",
             subtitle: nil,
-            icon: "timer",
+            icon: kind.systemImage,
             tint: tint
         ) {
             if isTimerRunning {
@@ -192,6 +199,14 @@ struct PrayerTimerCard: View {
 
     private var idleContent: some View {
         VStack(alignment: .leading, spacing: 14) {
+            // One tap chooses what the session is for; presets and Start use it.
+            Picker("Timer type", selection: $kindRaw) {
+                ForEach(PrayerTimerKind.allCases) { kind in
+                    Text(kind.title).tag(kind.rawValue)
+                }
+            }
+            .pickerStyle(.segmented)
+
             // Presets, your last duration (when it isn't a preset), and Custom share one row.
             // Circles and spacing shrink on narrow cards so the row never wraps.
             ViewThatFits(in: .horizontal) {
@@ -204,7 +219,7 @@ struct PrayerTimerCard: View {
 
             if canUndoStop {
                 HStack {
-                    Label("Prayer timer stopped", systemImage: "stop.circle")
+                    Label("\(kind.title) timer stopped", systemImage: "stop.circle")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -300,16 +315,23 @@ struct PrayerTimerCard: View {
 
 // MARK: - Stats summary
 
-/// This week's prayer time, prayer streak, and last session; or an invitation before any history.
+/// This week's time, streak, and last session for the chosen kind of session; or an
+/// invitation before any history.
 private struct PrayerStatsSummaryRow: View {
     let tint: Color
+
+    @AppStorage(PrayerTimerKind.preferenceKey) private var kindRaw = PrayerTimerKind.prayer.rawValue
+
+    private var kind: PrayerTimerKind {
+        PrayerTimerKind(rawValue: kindRaw) ?? .prayer
+    }
 
     /// Bumped when prayer stats change (including from another device).
     @State private var revision = 0
 
     var body: some View {
         let _ = revision
-        let summary = PrayerStatsStore.shared.summary()
+        let summary = PrayerStatsStore.store(for: kind).summary()
 
         content(summary)
             // Refresh on appear too, in case stats changed while Home was hidden.
@@ -326,7 +348,7 @@ private struct PrayerStatsSummaryRow: View {
                 stat(prayerMinutesText(summary.weekSeconds), caption: "This week", systemImage: "clock.fill")
                 stat(
                     summary.currentStreak == 1 ? "1 day" : "\(summary.currentStreak) days",
-                    caption: "Prayer streak",
+                    caption: "\(kind.title) streak",
                     systemImage: "flame.fill"
                 )
                 stat(prayerMinutesText(summary.lastSessionSeconds), caption: "Last session", systemImage: "clock.arrow.circlepath")

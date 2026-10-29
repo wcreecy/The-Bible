@@ -1,24 +1,26 @@
 import Foundation
 
-/// Prayer timer stats sync.
+/// Prayer and study timer stats sync. Each kind has its own pair of keys.
 ///
-/// - `prayerContributionsV1`: JSON `[day: [device: seconds]]`. Each device only adds to
-///   its own entries, so copies merge by keeping the larger value per day and device.
-/// - `prayerLastSessionV1`: JSON `{ seconds, endedAt }`. The most recent session wins.
+/// - `prayerContributionsV1` / `studyContributionsV1`: JSON `[day: [device: seconds]]`.
+///   Each device only adds to its own entries, so copies merge by keeping the larger value
+///   per day and device.
+/// - `prayerLastSessionV1` / `studyLastSessionV1`: JSON `{ seconds, endedAt }`. The most
+///   recent session wins.
 ///
-/// Both are cleared everywhere by the reading stats reset epoch.
+/// All are cleared everywhere by the reading stats reset epoch.
 @MainActor
 extension iCloudSyncCoordinator {
     static var prayerStatsKeys: [String] {
-        [PrayerStatsStore.contributionsKey, PrayerStatsStore.lastSessionKey]
+        PrayerTimerKind.allCases.flatMap { [$0.contributionsKey, $0.lastSessionKey] }
     }
 
     // Local -> KVS
     func mirrorPrayerStatsKeyToKVS(_ key: String) {
-        let store = PrayerStatsStore.shared
+        guard let store = PrayerStatsStore.store(owningKey: key) else { return }
 
         switch key {
-        case PrayerStatsStore.contributionsKey:
+        case store.contributionsKey:
             // Publish the union, so entries only another device has written are kept.
             let remote = decode(kvs.data(forKey: key), as: PrayerStatsStore.Contributions.self) ?? [:]
             let merged = PrayerStatsStore.merged(store.loadContributions(), remote)
@@ -26,7 +28,7 @@ extension iCloudSyncCoordinator {
                   let data = try? JSONEncoder().encode(merged) else { return }
             kvs.set(data, forKey: key)
 
-        case PrayerStatsStore.lastSessionKey:
+        case store.lastSessionKey:
             let remote = decode(kvs.data(forKey: key), as: PrayerStatsStore.LastSession.self)
             guard let newest = PrayerStatsStore.newer(store.loadLastSession(), remote),
                   newest != remote,
@@ -40,11 +42,11 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local
     func mergePrayerStatsIncoming(forKey key: String) {
-        let store = PrayerStatsStore.shared
+        guard let store = PrayerStatsStore.store(owningKey: key) else { return }
         var changedLocally = false
 
         switch key {
-        case PrayerStatsStore.contributionsKey:
+        case store.contributionsKey:
             guard let remote = decode(kvs.data(forKey: key), as: PrayerStatsStore.Contributions.self) else { return }
             let local = store.loadContributions()
             let merged = PrayerStatsStore.merged(local, remote)
@@ -58,7 +60,7 @@ extension iCloudSyncCoordinator {
                 enqueueKeyForSync(key)
             }
 
-        case PrayerStatsStore.lastSessionKey:
+        case store.lastSessionKey:
             guard let remote = decode(kvs.data(forKey: key), as: PrayerStatsStore.LastSession.self) else { return }
             let local = store.loadLastSession()
             let newest = PrayerStatsStore.newer(local, remote)
@@ -80,9 +82,9 @@ extension iCloudSyncCoordinator {
         }
     }
 
-    /// Clears prayer stats on this device and in iCloud, as part of a reading stats reset.
+    /// Clears prayer and study stats on this device and in iCloud, as part of a reading stats reset.
     func clearPrayerStats() {
-        PrayerStatsStore.shared.clearLocal()
+        PrayerStatsStore.all.forEach { $0.clearLocal() }
         for key in Self.prayerStatsKeys {
             kvs.removeObject(forKey: key)
         }

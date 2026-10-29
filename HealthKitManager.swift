@@ -77,6 +77,7 @@ final class HealthKitManager {
 enum MindfulMinutesSource: Hashable {
     case prayerTimer
     case bibleTab
+    case notesTab
     case game
 }
 

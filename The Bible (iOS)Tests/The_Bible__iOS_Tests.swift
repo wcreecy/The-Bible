@@ -338,6 +338,24 @@ struct The_Bible__iOS_Tests {
     }
 
     @Test
+    func prayerAndStudyStatsSyncUnderSeparateKeys() {
+        let keys = PrayerTimerKind.allCases.flatMap { [$0.contributionsKey, $0.lastSessionKey] }
+
+        #expect(Set(keys).count == keys.count)
+        // Prayer keeps the keys it always used, so existing history stays prayer.
+        #expect(PrayerTimerKind.prayer.contributionsKey == "prayerContributionsV1")
+        #expect(PrayerTimerKind.prayer.lastSessionKey == "prayerLastSessionV1")
+
+        for kind in PrayerTimerKind.allCases {
+            let store = PrayerStatsStore.store(for: kind)
+            #expect(store.kind == kind)
+            #expect(PrayerStatsStore.store(owningKey: kind.contributionsKey) === store)
+            #expect(PrayerStatsStore.store(owningKey: kind.lastSessionKey) === store)
+        }
+        #expect(PrayerStatsStore.store(owningKey: "readingSessions") == nil)
+    }
+
+    @Test
     func prayerLastSessionMergeKeepsTheMostRecent() {
         let older = PrayerStatsStore.LastSession(seconds: 600, endedAt: Date(timeIntervalSince1970: 100))
         let newer = PrayerStatsStore.LastSession(seconds: 300, endedAt: Date(timeIntervalSince1970: 200))

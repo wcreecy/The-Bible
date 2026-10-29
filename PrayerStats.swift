@@ -12,12 +12,59 @@ struct PrayerStatsSummary {
     var hasHistory: Bool { bestStreak > 0 || lastSessionSeconds > 0 }
 }
 
+/// What a timer session is for. Each kind keeps its own stats, so study time never
+/// counts toward prayer streaks (or the reverse).
+nonisolated enum PrayerTimerKind: String, CaseIterable, Identifiable, Sendable {
+    case prayer
+    case study
+
+    /// The kind chosen for the next session (and the one last used).
+    static let preferenceKey = "prayerTimerKind"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .prayer: "Prayer"
+        case .study: "Study"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .prayer: "hands.sparkles.fill"
+        case .study: "graduationcap.fill"
+        }
+    }
+
+    /// Name shown in the Live Activity.
+    var sessionName: String { "\(title) Timer" }
+    var finishedTitle: String { "\(title) Timer Finished" }
+    var finishedMessage: String { "Your \(title.lowercased()) timer has finished." }
+
+    /// Prayer keeps the keys it has always used, so existing history stays prayer.
+    var contributionsKey: String {
+        switch self {
+        case .prayer: "prayerContributionsV1"
+        case .study: "studyContributionsV1"
+        }
+    }
+
+    var lastSessionKey: String {
+        switch self {
+        case .prayer: "prayerLastSessionV1"
+        case .study: "studyLastSessionV1"
+        }
+    }
+}
+
 extension Notification.Name {
-    /// Posted when prayer stats change, locally or from another device.
+    /// Posted when prayer or study stats change, locally or from another device.
     static let prayerStatsUpdated = Notification.Name("prayerStatsUpdated")
 }
 
-/// Time spent with the prayer timer counting down, per local day. Only active time
+/// Time spent with the timer counting down for one kind of session (prayer or study),
+/// per local day. Only active time
 /// counts: paused time is left out, like the Apple Health mindful minutes.
 ///
 /// Synced through iCloud key-value storage. Like reading time, each device records
@@ -25,8 +72,30 @@ extension Notification.Name {
 /// device and never double-counts. See `iCloudSyncCoordinator+Prayer`.
 @MainActor
 final class PrayerStatsStore {
-    static let shared = PrayerStatsStore()
-    private init() {}
+    /// Prayer sessions.
+    static let shared = PrayerStatsStore(kind: .prayer)
+    /// Study sessions.
+    static let study = PrayerStatsStore(kind: .study)
+
+    static let all = [shared, study]
+
+    static func store(for kind: PrayerTimerKind) -> PrayerStatsStore {
+        kind == .prayer ? shared : study
+    }
+
+    /// The store that syncs under the given iCloud key, if any.
+    static func store(owningKey key: String) -> PrayerStatsStore? {
+        all.first { $0.contributionsKey == key || $0.lastSessionKey == key }
+    }
+
+    let kind: PrayerTimerKind
+
+    private init(kind: PrayerTimerKind) {
+        self.kind = kind
+    }
+
+    var contributionsKey: String { kind.contributionsKey }
+    var lastSessionKey: String { kind.lastSessionKey }
 
     /// Seconds per day per device.
     typealias Contributions = [String: [String: Int]]
@@ -39,9 +108,6 @@ final class PrayerStatsStore {
 
     /// A day counts toward the prayer streak once this much time is recorded.
     static let minimumStreakSeconds = 60
-
-    nonisolated static let contributionsKey = "prayerContributionsV1"
-    nonisolated static let lastSessionKey = "prayerLastSessionV1"
 
     // Written by the first, device-only version; moved into the synced keys on first load.
     private let legacyDailyKey = "prayerDailySecondsV1"
@@ -60,25 +126,25 @@ final class PrayerStatsStore {
 
     func loadContributions() -> Contributions {
         migrateLegacyIfNeeded()
-        guard let data = defaults.data(forKey: Self.contributionsKey) else { return [:] }
+        guard let data = defaults.data(forKey: contributionsKey) else { return [:] }
         return (try? JSONDecoder().decode(Contributions.self, from: data)) ?? [:]
     }
 
     func saveContributions(_ contributions: Contributions) {
         if let data = try? JSONEncoder().encode(contributions) {
-            defaults.set(data, forKey: Self.contributionsKey)
+            defaults.set(data, forKey: contributionsKey)
         }
     }
 
     func loadLastSession() -> LastSession? {
         migrateLegacyIfNeeded()
-        guard let data = defaults.data(forKey: Self.lastSessionKey) else { return nil }
+        guard let data = defaults.data(forKey: lastSessionKey) else { return nil }
         return try? JSONDecoder().decode(LastSession.self, from: data)
     }
 
     func saveLastSession(_ session: LastSession) {
         if let data = try? JSONEncoder().encode(session) {
-            defaults.set(data, forKey: Self.lastSessionKey)
+            defaults.set(data, forKey: lastSessionKey)
         }
     }
 
@@ -88,10 +154,12 @@ final class PrayerStatsStore {
     }
 
     private func migrateLegacyIfNeeded() {
+        // Only prayer existed in the legacy format.
+        guard kind == .prayer else { return }
         if let data = defaults.data(forKey: legacyDailyKey) {
             defaults.removeObject(forKey: legacyDailyKey)
             let legacy = (try? JSONDecoder().decode([String: Int].self, from: data)) ?? [:]
-            var contributions = (defaults.data(forKey: Self.contributionsKey))
+            var contributions = (defaults.data(forKey: contributionsKey))
                 .flatMap { try? JSONDecoder().decode(Contributions.self, from: $0) } ?? [:]
             let device = BibleStatsStore.shared.installationID
             for (day, seconds) in legacy where seconds > 0 {
@@ -102,7 +170,7 @@ final class PrayerStatsStore {
         if defaults.object(forKey: legacyLastSessionKey) != nil {
             let seconds = defaults.integer(forKey: legacyLastSessionKey)
             defaults.removeObject(forKey: legacyLastSessionKey)
-            if seconds > 0, defaults.data(forKey: Self.lastSessionKey) == nil {
+            if seconds > 0, defaults.data(forKey: lastSessionKey) == nil {
                 saveLastSession(LastSession(seconds: seconds, endedAt: Date()))
             }
         }
@@ -124,22 +192,22 @@ final class PrayerStatsStore {
             cursor = segmentEnd
         }
         saveContributions(contributions)
-        iCloudSyncCoordinator.shared.pushKey(Self.contributionsKey)
+        iCloudSyncCoordinator.shared.pushKey(contributionsKey)
         NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
     }
 
     func recordSessionEnded(seconds: Int, at date: Date = Date()) {
         guard seconds > 0 else { return }
         saveLastSession(LastSession(seconds: seconds, endedAt: date))
-        iCloudSyncCoordinator.shared.pushKey(Self.lastSessionKey)
+        iCloudSyncCoordinator.shared.pushKey(lastSessionKey)
         NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
     }
 
     /// Clears this device's copy only. Use `iCloudSyncCoordinator.resetAllBibleStatsAndSessions()`
     /// to clear every device.
     func clearLocal() {
-        defaults.removeObject(forKey: Self.contributionsKey)
-        defaults.removeObject(forKey: Self.lastSessionKey)
+        defaults.removeObject(forKey: contributionsKey)
+        defaults.removeObject(forKey: lastSessionKey)
         defaults.removeObject(forKey: legacyDailyKey)
         defaults.removeObject(forKey: legacyLastSessionKey)
         NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
@@ -230,25 +298,38 @@ func prayerMinutesText(_ seconds: Int) -> String {
     return "\(hours) hr \(rest) min"
 }
 
-/// Prayer stats for the Stats screen.
+/// Prayer and study stats for the Stats screen, one kind at a time.
 struct PrayerStatsCard: View {
     private let weekdaySymbols = ["S", "M", "T", "W", "Th", "F", "Sa"]
+
+    @AppStorage("prayerStatsSelectedKind") private var selectedKindRaw = PrayerTimerKind.prayer.rawValue
+
+    private var kind: PrayerTimerKind {
+        PrayerTimerKind(rawValue: selectedKindRaw) ?? .prayer
+    }
 
     /// Bumped when prayer stats change so the summary is recomputed.
     @State private var revision = 0
 
     var body: some View {
         let _ = revision
-        let summary = PrayerStatsStore.shared.summary()
+        let summary = PrayerStatsStore.store(for: kind).summary()
         let maxSeconds = max(60, summary.week.map(\.seconds).max() ?? 0)
 
         HeroCard(
-            title: "Prayer",
+            title: "Prayer & Study",
             subtitle: nil,
-            icon: "hands.sparkles.fill",
+            icon: kind.systemImage,
             tint: .indigo
         ) {
             VStack(alignment: .leading, spacing: 16) {
+                Picker("Timer type", selection: $selectedKindRaw) {
+                    ForEach(PrayerTimerKind.allCases) { kind in
+                        Text(kind.title).tag(kind.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+
                 HStack(spacing: 10) {
                     metric("This Week", value: prayerMinutesText(summary.weekSeconds), systemImage: "clock.fill")
                     metric("Streak", value: summary.currentStreak == 1 ? "1 day" : "\(summary.currentStreak) days", systemImage: "flame.fill")
@@ -268,7 +349,7 @@ struct PrayerStatsCard: View {
                         .frame(maxWidth: .infinity)
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(
-                            "\(day.date.formatted(.dateTime.weekday(.wide))), \(prayerMinutesText(day.seconds)) of prayer"
+                            "\(day.date.formatted(.dateTime.weekday(.wide))), \(prayerMinutesText(day.seconds)) of \(kind.title.lowercased())"
                         )
                     }
                 }
@@ -279,7 +360,7 @@ struct PrayerStatsCard: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text("Start the Prayer Timer on Home to track your prayer time here.")
+                    Text("Start the timer on Home as \(kind.title) to track your \(kind.title.lowercased()) time here.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }

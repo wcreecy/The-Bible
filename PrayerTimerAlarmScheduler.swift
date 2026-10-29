@@ -35,10 +35,10 @@ enum PrayerTimerAlarmScheduler {
         return .unavailable
     }
 
-    static func schedule(at date: Date) async -> Bool {
+    static func schedule(at date: Date, title: String) async -> Bool {
         #if canImport(AlarmKit)
         if #available(iOS 26.1, *) {
-            let alert = AlarmPresentation.Alert(title: "Prayer Timer Finished")
+            let alert = AlarmPresentation.Alert(title: LocalizedStringResource(stringLiteral: title))
             let presentation = AlarmPresentation(alert: alert)
             let attributes = AlarmAttributes<PrayerTimerAlarmMetadata>(
                 presentation: presentation,

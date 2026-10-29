@@ -714,6 +714,7 @@ struct HomeView: View {
         .safeAreaInset(edge: .top, spacing: 0) {
             if shouldShowPrayerTimerBanner {
                 ActivePrayerTimerBanner(
+                    kind: timerController.kind,
                     isPaused: timerController.isPaused,
                     remainingSeconds: timerController.remainingSeconds
                 ) {
@@ -838,7 +839,8 @@ struct HomeView: View {
             verseActionToastText = "A prayer timer is already running"
             verseActionToastTint = .orange
         } else {
-            timerController.start(minutes: minutes)
+            // The challenge is to pray, so it always starts a prayer session.
+            timerController.start(minutes: minutes, kind: .prayer)
             verseActionToastSymbol = "timer"
             verseActionToastText = "Prayer timer started · \(minutes) min"
             verseActionToastTint = .green
@@ -863,6 +865,7 @@ struct HomeView: View {
 
 /// A persistent reminder for an active timer when a Dynamic Island presentation is unavailable.
 private struct ActivePrayerTimerBanner: View {
+    let kind: PrayerTimerKind
     let isPaused: Bool
     let remainingSeconds: Int
     let onOpen: () -> Void
@@ -870,12 +873,12 @@ private struct ActivePrayerTimerBanner: View {
     var body: some View {
         Button(action: onOpen) {
             HStack(spacing: 12) {
-                Image(systemName: isPaused ? "pause.circle.fill" : "timer")
+                Image(systemName: isPaused ? "pause.circle.fill" : kind.systemImage)
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(.indigo)
 
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Prayer Timer")
+                    Text(kind.sessionName)
                         .font(.subheadline.weight(.semibold))
                     Text(isPaused ? "Paused" : "In progress")
                         .font(.caption)
@@ -939,7 +942,7 @@ private struct PrayerTimerDetailSheet: View {
                 )
                 .padding()
             }
-            .navigationTitle("Prayer Timer")
+            .navigationTitle("Prayer & Study Timer")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -1037,7 +1040,7 @@ private struct PrayerTimerFinishedAlert: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alert(
-                PrayerTimerController.finishedTitle,
+                timerController.kind.finishedTitle,
                 isPresented: Bindable(timerController).showFinishedAlert
             ) {
                 Button("Dismiss", role: .cancel) {
@@ -1045,7 +1048,7 @@ private struct PrayerTimerFinishedAlert: ViewModifier {
                     timerController.showFinishedAlert = false
                 }
             } message: {
-                Text(PrayerTimerController.finishedMessage)
+                Text(timerController.kind.finishedMessage)
             }
     }
 }

@@ -34,7 +34,7 @@ struct SettingsPermissionsSection: View {
             Text("Permissions")
                 .foregroundStyle(.primary)
         } footer: {
-            Text("Photo backgrounds use the system picker, so the app only receives photos you select. Prayer Timer Alarms, Live Activities, and Mindful Minutes are managed in Prayer Timer settings.")
+            Text("Photo backgrounds use the system picker, so the app only receives photos you select. Prayer & Study Timer Alarms, Live Activities, and Mindful Minutes are managed in Prayer Timer settings.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -110,7 +110,7 @@ struct SettingsPrayerTimerAccessSection: View {
                 Toggle(isOn: alarmAuthorizationBinding) {
                     Label {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Prayer Timer Alarms")
+                            Text("Prayer & Study Timer Alarms")
                             Text(alarmStatusText)
                                 .font(.caption)
                                 .foregroundStyle(alarmStatusColor)
@@ -176,7 +176,7 @@ struct SettingsPrayerTimerAccessSection: View {
             Button("Open Settings", action: openSystemSettings)
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("The Bible can only show the AlarmKit permission prompt once. To change a previous decision, allow Prayer Timer Alarms in iOS Settings.")
+            Text("The Bible can only show the AlarmKit permission prompt once. To change a previous decision, allow Prayer & Study Timer Alarms in iOS Settings.")
         }
         .task {
             updateStatuses()

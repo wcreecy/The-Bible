@@ -505,6 +505,11 @@ struct ContentView: View {
         scenePhase == .active && selectedTab == .bible
     }
 
+    /// Writing study notes and highlights counts as study time.
+    private var isOnNotesTab: Bool {
+        scenePhase == .active && selectedTab == .notes
+    }
+
     /// Keeps Health mindful-session tracking in sync with foreground Bible and game activity.
     private func updateMindfulMinutesTracking() {
         StudyTimeTracker.shared.setApplicationActive(scenePhase == .active)
@@ -513,6 +518,12 @@ struct ContentView: View {
             MindfulMinutesTracker.shared.start(.bibleTab)
         } else {
             MindfulMinutesTracker.shared.stop(.bibleTab)
+        }
+
+        if isOnNotesTab {
+            MindfulMinutesTracker.shared.start(.notesTab)
+        } else {
+            MindfulMinutesTracker.shared.stop(.notesTab)
         }
 
         if isPlayingGame {

@@ -18,6 +18,9 @@ final class PrayerTimerController {
     private(set) var isPaused: Bool = false
     private(set) var remainingSeconds: Int = 0
     private(set) var totalSeconds: Int = 0
+    /// What the running timer is for. After a session ends it stays set, so the finished
+    /// alert still names the session that just completed.
+    private(set) var kind: PrayerTimerKind = .prayer
     var showFinishedAlert: Bool = false
     /// Set for a few seconds after Stop, so an accidental stop can be undone.
     private(set) var undoableStop: StoppedSession?
@@ -43,6 +46,17 @@ final class PrayerTimerController {
     @ObservationIgnored @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
     @ObservationIgnored @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
     @ObservationIgnored @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
+    @ObservationIgnored @AppStorage("prayerTimerActiveKind") private var storedActiveKind: String = PrayerTimerKind.prayer.rawValue
+    /// The kind chosen for the next session; the Home card and setup sheet change it. Read
+    /// from UserDefaults each time, because an `@AppStorage` copy kept here can lag behind
+    /// the views that change it.
+    private var preferredKind: PrayerTimerKind {
+        get {
+            UserDefaults.standard.string(forKey: PrayerTimerKind.preferenceKey)
+                .flatMap(PrayerTimerKind.init(rawValue:)) ?? .prayer
+        }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: PrayerTimerKind.preferenceKey) }
+    }
     @ObservationIgnored @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @ObservationIgnored @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
     /// The most recent duration started, offered as a preset on the card.
@@ -96,6 +110,7 @@ final class PrayerTimerController {
         isRunning = storedRunning
         isPaused = storedPaused
         totalSeconds = storedTotalSeconds
+        kind = PrayerTimerKind(rawValue: storedActiveKind) ?? .prayer
 
         if storedRunning {
             if storedPaused {
@@ -145,9 +160,14 @@ final class PrayerTimerController {
 
     // MARK: - Public control API
 
-    func start(minutes: Int) {
+    /// Starts a timer. Without an explicit `kind`, uses the one chosen on the card or setup sheet.
+    func start(minutes: Int, kind requestedKind: PrayerTimerKind? = nil) {
         Task { await requestNotificationsIfNeeded() }
         clearUndo()
+
+        kind = requestedKind ?? preferredKind
+        storedActiveKind = kind.rawValue
+        preferredKind = kind
 
         lastMinutes = max(1, minutes)
         prayerSessionSeconds = 0
@@ -176,7 +196,7 @@ final class PrayerTimerController {
         scheduleCompletionAlert(at: end)
 
         PrayerTimerActivityController.shared.start(
-            sessionName: Self.sessionName,
+            sessionName: kind.sessionName,
             totalSeconds: storedTotalSeconds,
             remainingSeconds: remainingSeconds,
             isPaused: false
@@ -315,7 +335,7 @@ final class PrayerTimerController {
         }
 
         PrayerTimerActivityController.shared.start(
-            sessionName: Self.sessionName,
+            sessionName: kind.sessionName,
             totalSeconds: stopped.totalSeconds,
             remainingSeconds: stopped.remainingSeconds,
             isPaused: stopped.wasPaused
@@ -410,7 +430,10 @@ final class PrayerTimerController {
         let completedMinutes = storedTotalSeconds / 60
         cancelNotification()
         resetTimerState()
-        TodayChallengeStore.shared.recordPrayerTimerCompletion(minutes: completedMinutes)
+        // "Pray for X minutes" challenges count prayer sessions only.
+        if kind == .prayer {
+            TodayChallengeStore.shared.recordPrayerTimerCompletion(minutes: completedMinutes)
+        }
         PrayerTimerActivityController.shared.finish()
         showFinishedAlert = true
         startFinishAlerts()
@@ -446,18 +469,18 @@ final class PrayerTimerController {
         guard prayerSegmentStartDate > 0 else { return }
         let startDate = Date(timeIntervalSince1970: prayerSegmentStartDate)
         guard endDate > startDate else { return }
-        PrayerStatsStore.shared.record(from: startDate, to: endDate)
+        PrayerStatsStore.store(for: kind).record(from: startDate, to: endDate)
         prayerSessionSeconds += Int(endDate.timeIntervalSince(startDate).rounded())
     }
 
     private func finishPrayerSession() {
-        PrayerStatsStore.shared.recordSessionEnded(seconds: prayerSessionSeconds)
+        PrayerStatsStore.store(for: kind).recordSessionEnded(seconds: prayerSessionSeconds)
         prayerSessionSeconds = 0
     }
 
     // MARK: - HealthKit mindful logging
 
-    // Prayer-timer activity is one source of the shared mindful session.
+    // Timer activity, prayer or study, is one source of the shared mindful session.
     private func beginMindfulSession(at date: Date) {
         MindfulMinutesTracker.shared.start(.prayerTimer, at: date)
     }
@@ -468,22 +491,15 @@ final class PrayerTimerController {
 
     // MARK: - Notifications
 
-    /// Name shown in the Live Activity.
-    static let sessionName = "Prayer Timer"
-
     private static let notificationID = "PrayerStudyTimerFinished"
-    static let finishedTitle = "Prayer Timer Finished"
-    static let finishedMessage = "Your prayer timer has finished."
-    private static let notificationTitle = finishedTitle
-    private static let notificationBody = finishedMessage
 
     private func scheduleNotification(at date: Date) {
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
 
         let content = UNMutableNotificationContent()
-        content.title = Self.notificationTitle
-        content.body = Self.notificationBody
+        content.title = kind.finishedTitle
+        content.body = kind.finishedMessage
         content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, date.timeIntervalSinceNow), repeats: false)
@@ -500,7 +516,7 @@ final class PrayerTimerController {
         scheduleNotification(at: date)
 
         Task {
-            let scheduledWithAlarmKit = await PrayerTimerAlarmScheduler.schedule(at: date)
+            let scheduledWithAlarmKit = await PrayerTimerAlarmScheduler.schedule(at: date, title: kind.finishedTitle)
             guard completionSchedulingToken == token else { return }
             if scheduledWithAlarmKit {
                 cancelNotification()
