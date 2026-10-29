@@ -206,6 +206,7 @@ struct QuizView: View {
     @State private var pulseOn: Bool = false
     @State private var timerOnLeft: Bool = false
     @State private var usesMutedTimerStyle: Bool = false
+    @State private var isTimerDisabled = false
 
     // MARK: - Derived state
 
@@ -237,7 +238,7 @@ struct QuizView: View {
     private var isAnswered: Bool { current?.outcome != nil }
 
     private var isTimerRunning: Bool {
-        phase == .playing && difficulty.timeLimit != nil && !isViewingPrevious && !isAnswered
+        phase == .playing && difficulty.timeLimit != nil && !isTimerDisabled && !isViewingPrevious && !isAnswered
     }
 
     private var canGoPrevious: Bool {
@@ -251,7 +252,7 @@ struct QuizView: View {
     private var canRevealContext: Bool {
         guard let current, current.contextText != nil, !current.contextRevealed,
               !isAnswered, !isViewingPrevious else { return false }
-        return difficulty.timeLimit == nil || remainingSeconds > difficulty.contextCost
+        return difficulty.timeLimit == nil || isTimerDisabled || remainingSeconds > difficulty.contextCost
     }
 
     private var progressText: String {
@@ -312,8 +313,10 @@ struct QuizView: View {
                         tint: timerColor,
                         isPulsing: pulseOn,
                         isTimed: difficulty.timeLimit != nil,
+                        isTimerDisabled: isTimerDisabled,
                         outcome: current?.outcome,
                         usesMutedStyle: $usesMutedTimerStyle,
+                        onToggleTimer: toggleTimer,
                         onSwapSides: {
                             withAnimation(.snappy) {
                                 timerOnLeft.toggle()
@@ -554,13 +557,20 @@ struct QuizView: View {
                 .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
                 .padding(.horizontal)
 
-                if isTimerRunning {
+                if difficulty.timeLimit != nil, !isAnswered, !isViewingPrevious {
                     GameTimerCard(
                         remainingSeconds: remainingSeconds,
-                        tint: timerColor,
-                        isPulsing: pulseOn
+                        tint: isTimerDisabled ? .secondary : timerColor,
+                        isPulsing: isTimerDisabled ? false : pulseOn,
+                        formattedTime: isTimerDisabled ? "Timer off" : nil,
+                        isDisabled: isTimerDisabled
                     )
                     .padding(.horizontal)
+
+                    Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill") {
+                        toggleTimer()
+                    }
+                    .buttonStyle(.bordered)
                 }
 
                 if !isAnswered {
@@ -756,6 +766,7 @@ struct QuizView: View {
         sessionBestStreak = 0
         isNewBestGame = false
         bestStreak = persistentStreak.best
+        isTimerDisabled = false
         phase = .playing
         appendNextQuestion()
     }
@@ -812,7 +823,16 @@ struct QuizView: View {
     private func revealContext() {
         guard canRevealContext else { return }
         history[currentIndex].contextRevealed = true
-        remainingSeconds -= difficulty.contextCost
+        if !isTimerDisabled {
+            remainingSeconds -= difficulty.contextCost
+        }
+    }
+
+    private func toggleTimer() {
+        guard difficulty.timeLimit != nil else { return }
+        isTimerDisabled.toggle()
+        pulseOn = false
+        timerID += 1
     }
 
     private func selectOption(_ name: String) {
@@ -1243,8 +1263,10 @@ private struct QuizLargeTimerView: View {
     let tint: Color
     let isPulsing: Bool
     let isTimed: Bool
+    let isTimerDisabled: Bool
     let outcome: QuizOutcome?
     @Binding var usesMutedStyle: Bool
+    let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
 
     private var isActive: Bool {
@@ -1252,11 +1274,15 @@ private struct QuizLargeTimerView: View {
     }
 
     private var displayTint: Color {
-        outcome?.tint ?? tint
+        isTimerDisabled && outcome == nil ? .secondary : outcome?.tint ?? tint
     }
 
     private var vividTextColor: Color {
         isActive && tint == .yellow ? .black : .white
+    }
+
+    private var usesNeutralStyle: Bool {
+        usesMutedStyle || isTimerDisabled
     }
 
     var body: some View {
@@ -1266,18 +1292,18 @@ private struct QuizLargeTimerView: View {
             VStack(spacing: 24) {
                 Image(systemName: statusSystemImage)
                     .font(.system(size: 72, weight: .semibold))
-                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
+                    .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor.opacity(0.85))
 
                 Text(statusTitle)
                     .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
+                    .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor.opacity(0.85))
 
                 if outcome == nil {
                     Text(isTimed ? "\(remainingSeconds)s" : "∞")
                         .font(.largeTitle.weight(.bold))
                         .fontDesign(.rounded)
                         .monospacedDigit()
-                        .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
+                        .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor)
                 }
             }
             .scaleEffect(isPulsing ? 1.04 : 1)
@@ -1291,6 +1317,10 @@ private struct QuizLargeTimerView: View {
             HStack(spacing: 12) {
                 Button("Swap card sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
 
+                if isTimed, outcome == nil {
+                    Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
+                }
+
                 Button(
                     usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",
                     systemImage: "circle.lefthalf.filled"
@@ -1303,12 +1333,12 @@ private struct QuizLargeTimerView: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.glass(.clear))
             .controlSize(.small)
-            .tint(usesMutedStyle ? displayTint : vividTextColor)
+            .tint(usesNeutralStyle ? displayTint : vividTextColor)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
         .background {
-            if usesMutedStyle {
+            if usesNeutralStyle {
                 Color.clear
                     .heroCardSurface()
             } else {
@@ -1317,23 +1347,25 @@ private struct QuizLargeTimerView: View {
             }
         }
         .overlay {
-            if !usesMutedStyle {
+            if !usesNeutralStyle {
                 RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
                     .strokeBorder(vividTextColor.opacity(0.22), lineWidth: 1)
             }
         }
-        .shadow(color: usesMutedStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
+        .shadow(color: usesNeutralStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
     }
 
     private var statusTitle: LocalizedStringKey {
         if let outcome { return outcome.title }
+        if isTimerDisabled { return "Timer Off" }
         return isTimed ? "Time Remaining" : "Untimed Mode"
     }
 
     private var statusSystemImage: String {
         if let outcome { return outcome.systemImage }
+        if isTimerDisabled { return "timer.slash" }
         return isTimed ? "timer" : "infinity"
     }
 }

@@ -460,9 +460,19 @@ struct GameSplashStartButton: View {
 }
 
 struct GameSplashFacts: View {
-    let first: (icon: String, value: String, label: String)
-    let second: (icon: String, value: String, label: String)
-    let third: (icon: String, value: String, label: String)
+    typealias Fact = (icon: String, value: String, label: String)
+
+    let first: Fact
+    let second: Fact
+    let third: Fact
+    let fourth: Fact?
+
+    init(first: Fact, second: Fact, third: Fact, fourth: Fact? = nil) {
+        self.first = first
+        self.second = second
+        self.third = third
+        self.fourth = fourth
+    }
 
     var body: some View {
         // One flat strip with hairline dividers instead of three separate tiles.
@@ -472,11 +482,15 @@ struct GameSplashFacts: View {
             fact(second)
             Divider().padding(.vertical, 8)
             fact(third)
+            if let fourth {
+                Divider().padding(.vertical, 8)
+                fact(fourth)
+            }
         }
         .background(Color.secondary.opacity(0.1), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
-    private func fact(_ fact: (icon: String, value: String, label: String)) -> some View {
+    private func fact(_ fact: Fact) -> some View {
         VStack(spacing: 3) {
             Text(fact.value)
                 .font(.headline)
@@ -591,7 +605,7 @@ struct GameLobbyPreview: View {
             }
         case .scramble:
             HStack(spacing: 24) {
-                previewPrompt(icon: "text.line.first.and.arrowtriangle.forward", title: "H E S O J", subtitle: "Unscramble the Bible word")
+                previewPrompt(icon: "text.line.first.and.arrowtriangle.forward", title: "H E S O J P", subtitle: "Unscramble the Bible word")
                 Text("JOSEPH")
                     .font(.title2.weight(.bold).monospaced())
                     .foregroundStyle(.pink)

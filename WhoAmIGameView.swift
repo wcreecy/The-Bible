@@ -194,12 +194,17 @@ struct WhoAmIGameView: View {
         )
         .animation(.easeInOut(duration: 0.25), value: vm.remainingSeconds)
 
-        if timerIsActive {
+        if isTimedQuestion {
             GameTimerCard(
                 remainingSeconds: vm.remainingSeconds,
-                tint: timerTint,
-                isPulsing: vm.pulseOn
+                tint: vm.isTimerDisabled ? .secondary : timerTint,
+                isPulsing: vm.isTimerDisabled ? false : vm.pulseOn,
+                formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
+                isDisabled: vm.isTimerDisabled
             )
+
+            Button(vm.isTimerDisabled ? "Timer On" : "Timer Off", systemImage: vm.isTimerDisabled ? "play.fill" : "pause.fill", action: vm.toggleTimer)
+                .buttonStyle(.bordered)
         }
 
         VStack(alignment: .leading, spacing: 8) {
@@ -356,10 +361,12 @@ struct WhoAmIGameView: View {
             remainingSeconds: vm.remainingSeconds,
             tint: timerTint,
             isActive: timerIsActive,
+            isTimerDisabled: vm.isTimerDisabled,
             isPulsing: vm.pulseOn,
             resultIsCorrect: vm.roundOver ? vm.selectedChoice == vm.correctChoice : nil,
             usesMutedStyle: $usesMutedTimerStyle,
-            onSwapSides: { timerOnLeading.toggle() }
+            onSwapSides: { timerOnLeading.toggle() },
+            onToggleTimer: vm.toggleTimer
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -388,6 +395,10 @@ struct WhoAmIGameView: View {
     }
 
     private var timerIsActive: Bool {
+        isTimedQuestion && !vm.isTimerDisabled
+    }
+
+    private var isTimedQuestion: Bool {
         vm.difficulty.timeLimit > 0 && !vm.roundOver
     }
 
@@ -535,13 +546,15 @@ private struct WhoAmITimerCard: View {
     let remainingSeconds: Int
     let tint: Color
     let isActive: Bool
+    let isTimerDisabled: Bool
     let isPulsing: Bool
     let resultIsCorrect: Bool?
     @Binding var usesMutedStyle: Bool
     let onSwapSides: () -> Void
+    let onToggleTimer: () -> Void
 
     private var usesVividStyle: Bool {
-        isTimed && !usesMutedStyle
+        isTimed && !isTimerDisabled && !usesMutedStyle
     }
 
     private var timerTextColor: Color {
@@ -549,6 +562,7 @@ private struct WhoAmITimerCard: View {
     }
 
     private var displayTint: Color {
+        if isTimerDisabled, resultIsCorrect == nil { return .secondary }
         guard !isActive, let resultIsCorrect else { return tint }
         return resultIsCorrect ? .green : .red
     }
@@ -602,6 +616,10 @@ private struct WhoAmITimerCard: View {
                 )
 
                 if isTimed {
+                    if resultIsCorrect == nil {
+                        Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
+                    }
+
                     Button(
                         usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",
                         systemImage: "circle.lefthalf.filled"
@@ -634,6 +652,7 @@ private struct WhoAmITimerCard: View {
         if let resultIsCorrect, !isActive {
             return resultIsCorrect ? "Correct" : "Incorrect"
         }
+        if isTimerDisabled { return "Timer Off" }
         return isTimed ? "Time Remaining" : "Untimed"
     }
 
@@ -641,6 +660,7 @@ private struct WhoAmITimerCard: View {
         if let resultIsCorrect, !isActive {
             return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
         }
+        if isTimerDisabled { return "timer.slash" }
         return isTimed ? "timer" : "infinity"
     }
 
@@ -648,6 +668,7 @@ private struct WhoAmITimerCard: View {
         if let resultIsCorrect, !isActive {
             return resultIsCorrect ? .green : .red
         }
+        if isTimerDisabled { return .secondary }
         return isTimed ? tint : .secondary
     }
 }

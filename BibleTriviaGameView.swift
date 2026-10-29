@@ -199,6 +199,7 @@ final class BibleTriviaGameModel {
     private(set) var currentStreak = 0
     private(set) var currentBestStreak = 0
     private(set) var remainingSeconds = 0
+    var isTimerDisabled = false
     @ObservationIgnored private var timerTask: Task<Void, Never>?
 
     let progressStore = BibleTriviaProgressStore.shared
@@ -316,6 +317,7 @@ final class BibleTriviaGameModel {
         bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
         currentStreak = persistentStreak.current
         currentBestStreak = persistentStreak.best
+        isTimerDisabled = false
         phase = .playing
         prepareCurrentQuestion()
     }
@@ -379,6 +381,7 @@ final class BibleTriviaGameModel {
 
     private func startTimer() {
         timerTask?.cancel()
+        guard !isTimerDisabled else { return }
         timerTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
@@ -391,6 +394,15 @@ final class BibleTriviaGameModel {
                 }
                 self.remainingSeconds -= 1
             }
+        }
+    }
+
+    func toggleTimer() {
+        isTimerDisabled.toggle()
+        if !isTimerDisabled, !isViewingPrevious, !isAnswered {
+            startTimer()
+        } else {
+            timerTask?.cancel()
         }
     }
 
@@ -498,6 +510,7 @@ struct BibleTriviaGameView: View {
                     accuracy: model.accuracy,
                     remainingSeconds: model.remainingSeconds,
                     timerSeconds: model.difficulty.timerSeconds,
+                    isTimerDisabled: model.isTimerDisabled,
                     selectedAnswer: model.selectedAnswer,
                     isAnswered: model.isAnswered,
                     timedOut: model.timedOut,
@@ -506,6 +519,7 @@ struct BibleTriviaGameView: View {
                     canGoNext: model.canGoNext,
                     isLastQuestion: model.isLastQuestion,
                     onChoose: model.choose,
+                    onToggleTimer: model.toggleTimer,
                     onPrevious: model.showPrevious,
                     onAdvance: model.advance
                 )
@@ -621,6 +635,7 @@ private struct BibleTriviaPlayScreen: View {
     let accuracy: Int
     let remainingSeconds: Int
     let timerSeconds: Int
+    let isTimerDisabled: Bool
     let selectedAnswer: String?
     let isAnswered: Bool
     let timedOut: Bool
@@ -629,6 +644,7 @@ private struct BibleTriviaPlayScreen: View {
     let canGoNext: Bool
     let isLastQuestion: Bool
     let onChoose: (String) -> Void
+    let onToggleTimer: () -> Void
     let onPrevious: () -> Void
     let onAdvance: () -> Void
 
@@ -695,12 +711,14 @@ private struct BibleTriviaPlayScreen: View {
                                 currentStreak: currentStreak,
                                 remainingSeconds: remainingSeconds,
                                 timerTint: timerTint,
+                                isTimerDisabled: isTimerDisabled,
                                 outcome: outcome,
                                 reference: question.reference,
                                 selectedAnswer: selectedAnswer,
                                 isAnswered: isAnswered,
                                 isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
+                                onToggleTimer: onToggleTimer,
                                 canGoPrevious: canGoPrevious,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
@@ -727,9 +745,11 @@ private struct BibleTriviaPlayScreen: View {
                 if usesSplitLayout {
                     BibleTriviaLargeTimerView(
                         remainingSeconds: remainingSeconds,
-                        tint: timerTint,
+                        tint: isTimerDisabled ? .secondary : timerTint,
+                        isTimerDisabled: isTimerDisabled,
                         outcome: outcome,
                         usesMutedStyle: $usesMutedTimerStyle,
+                        onToggleTimer: onToggleTimer,
                         onSwapSides: {
                             withAnimation(.snappy) {
                                 timerOnLeft.toggle()
@@ -757,12 +777,14 @@ private struct BibleTriviaCompactBoard: View {
     let currentStreak: Int
     let remainingSeconds: Int
     let timerTint: Color
+    let isTimerDisabled: Bool
     let outcome: BibleTriviaAnswerOutcome?
     let reference: String
     let selectedAnswer: String?
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
+    let onToggleTimer: () -> Void
     let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
@@ -786,11 +808,17 @@ private struct BibleTriviaCompactBoard: View {
                 options: options,
                 remainingSeconds: isAnswered ? nil : remainingSeconds,
                 timerTint: timerTint,
+                isTimerDisabled: isTimerDisabled,
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
                 onChoose: onChoose
             )
+
+            if !isAnswered {
+                Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
+                    .buttonStyle(.bordered)
+            }
 
             if isAnswered {
                 if let outcome {
@@ -850,6 +878,7 @@ private struct BibleTriviaDashboard: View {
                 options: options,
                 remainingSeconds: nil,
                 timerTint: .cyan,
+                isTimerDisabled: false,
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
@@ -885,6 +914,7 @@ private struct BibleTriviaQuestionBoard: View {
     let options: [String]
     let remainingSeconds: Int?
     let timerTint: Color
+    let isTimerDisabled: Bool
     let selectedAnswer: String?
     let isAnswered: Bool
     let isViewingPrevious: Bool
@@ -917,7 +947,13 @@ private struct BibleTriviaQuestionBoard: View {
             .background(.cyan.opacity(0.08), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
 
             if let remainingSeconds, !isAnswered {
-                GameTimerCard(remainingSeconds: remainingSeconds, tint: timerTint, isPulsing: false)
+                GameTimerCard(
+                    remainingSeconds: remainingSeconds,
+                    tint: isTimerDisabled ? .secondary : timerTint,
+                    isPulsing: false,
+                    formattedTime: isTimerDisabled ? "Timer off" : nil,
+                    isDisabled: isTimerDisabled
+                )
             }
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
@@ -1095,16 +1131,22 @@ private struct BibleTriviaAnswerReveal: View {
 private struct BibleTriviaLargeTimerView: View {
     let remainingSeconds: Int
     let tint: Color
+    let isTimerDisabled: Bool
     let outcome: BibleTriviaAnswerOutcome?
     @Binding var usesMutedStyle: Bool
+    let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
 
     private var displayTint: Color {
-        outcome?.tint ?? tint
+        isTimerDisabled && outcome == nil ? .secondary : outcome?.tint ?? tint
     }
 
     private var vividTextColor: Color {
         outcome == nil && tint == .yellow ? .black : .white
+    }
+
+    private var usesNeutralStyle: Bool {
+        usesMutedStyle || isTimerDisabled
     }
 
     var body: some View {
@@ -1112,20 +1154,20 @@ private struct BibleTriviaLargeTimerView: View {
             Spacer(minLength: 0)
 
             VStack(spacing: 24) {
-                Image(systemName: outcome?.systemImage ?? "timer")
+                Image(systemName: outcome?.systemImage ?? (isTimerDisabled ? "timer.slash" : "timer"))
                     .font(.system(size: 72, weight: .semibold))
-                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
+                    .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text(outcome?.title ?? "Time Remaining")
+                Text(outcome?.title ?? (isTimerDisabled ? "Timer Off" : "Time Remaining"))
                     .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
+                    .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor.opacity(0.85))
 
                 if outcome == nil {
                     Text("\(remainingSeconds)s")
                         .font(.largeTitle.weight(.bold))
                         .fontDesign(.rounded)
                         .monospacedDigit()
-                        .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
+                        .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor)
                 }
             }
             .accessibilityElement(children: .ignore)
@@ -1145,16 +1187,20 @@ private struct BibleTriviaLargeTimerView: View {
                         usesMutedStyle.toggle()
                     }
                 }
+
+                if outcome == nil {
+                    Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
+                }
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.glass(.clear))
             .controlSize(.small)
-            .tint(usesMutedStyle ? displayTint : vividTextColor)
+            .tint(usesNeutralStyle ? displayTint : vividTextColor)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
         .background {
-            if usesMutedStyle {
+            if usesNeutralStyle {
                 Color.clear
                     .heroCardSurface()
             } else {
@@ -1163,12 +1209,12 @@ private struct BibleTriviaLargeTimerView: View {
             }
         }
         .overlay {
-            if !usesMutedStyle {
+            if !usesNeutralStyle {
                 RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
                     .strokeBorder(vividTextColor.opacity(0.22), lineWidth: 1)
             }
         }
-        .shadow(color: usesMutedStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
+        .shadow(color: usesNeutralStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
     }

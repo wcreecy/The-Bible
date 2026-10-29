@@ -5,24 +5,27 @@ struct GameTimerCard: View {
     let tint: Color
     let isPulsing: Bool
     let formattedTime: String
+    let isDisabled: Bool
 
     init(
         remainingSeconds: Int,
         tint: Color,
         isPulsing: Bool,
-        formattedTime: String? = nil
+        formattedTime: String? = nil,
+        isDisabled: Bool = false
     ) {
         self.remainingSeconds = remainingSeconds
         self.tint = tint
         self.isPulsing = isPulsing
         self.formattedTime = formattedTime ?? "\(remainingSeconds)s"
+        self.isDisabled = isDisabled
     }
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "timer")
+            Image(systemName: isDisabled ? "timer.slash" : "timer")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(tint)
+                .foregroundStyle(displayTint)
 
             Text("Time Remaining")
                 .font(.subheadline.weight(.semibold))
@@ -33,7 +36,7 @@ struct GameTimerCard: View {
             Text(formattedTime)
                 .font(.headline.weight(.bold))
                 .monospacedDigit()
-                .foregroundStyle(tint)
+                .foregroundStyle(displayTint)
                 .lineLimit(1)
                 .scaleEffect(isPulsing ? 1.12 : 1.0)
                 .animation(.easeOut(duration: 0.18), value: isPulsing)
@@ -47,11 +50,15 @@ struct GameTimerCard: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(tint.opacity(0.35), lineWidth: 1)
+                .strokeBorder(displayTint.opacity(0.35), lineWidth: 1)
         )
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Time remaining")
+        .accessibilityLabel(isDisabled ? "Timer off" : "Time remaining")
         .accessibilityValue(formattedTime)
+    }
+
+    private var displayTint: Color {
+        isDisabled ? .secondary : tint
     }
 }
 

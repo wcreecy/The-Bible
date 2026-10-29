@@ -32,25 +32,39 @@ struct ScrambleGameView: View {
 
         var timeLimit: Int? {
             switch self {
-            case .easy: nil
+            case .easy: 45
             case .normal: 30
-            case .hard: 15
+            case .hard: nil
             }
         }
 
         var timerLabel: String {
             switch self {
-            case .easy: String(localized: "No timer")
+            case .easy: String(localized: "45 seconds")
             case .normal: String(localized: "30 seconds")
-            case .hard: String(localized: "15 seconds")
+            case .hard: String(localized: "No timer")
+            }
+        }
+
+        var hintLimit: Int {
+            switch self {
+            case .easy, .normal: 1
+            case .hard: 2
+            }
+        }
+
+        var hintLabel: String {
+            switch hintLimit {
+            case 1: String(localized: "1 hint")
+            default: String(localized: "\(hintLimit) hints")
             }
         }
 
         var detail: LocalizedStringKey {
             switch self {
-            case .easy: "Familiar words with no timer."
+            case .easy: "Familiar words with 45 seconds per word."
             case .normal: "A broader word list with 30 seconds per word."
-            case .hard: "Tougher words with 15 seconds per word."
+            case .hard: "Tougher words with no timer."
             }
         }
 
@@ -81,7 +95,7 @@ struct ScrambleGameView: View {
 
         let answer: String
         let category: LocalizedStringKey
-        let reference: LocalizedStringKey?
+        let reference: String?
         let level: Level
 
         var id: String { answer }
@@ -91,12 +105,13 @@ struct ScrambleGameView: View {
             let reference = entry.reference?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             self.answer = entry.answer
             self.category = LocalizedStringKey(entry.category)
-            self.reference = reference.isEmpty ? nil : LocalizedStringKey(reference)
+            self.reference = reference.isEmpty ? nil : reference
             self.level = level
         }
     }
 
     enum SessionLength: Int, CaseIterable, Identifiable {
+        case short = 5
         case quick = 10
         case extended = 20
 
@@ -104,6 +119,7 @@ struct ScrambleGameView: View {
 
         var title: LocalizedStringKey {
             switch self {
+            case .short: "5 words"
             case .quick: "10 words"
             case .extended: "20 words"
             }
@@ -125,16 +141,16 @@ struct ScrambleGameView: View {
     @State private var answeredCount = 0
     @State private var currentStreak = 0
     @State private var bestStreak = 0
-    @State private var didRecordStats = false
+    @State private var strikes = 0
     @State private var timeRemaining = 0
     @State private var answerFeedback: AnswerFeedback?
     @State private var timerID = UUID()
     @State private var hintLevel = 0
     @State private var recentlyPlayedAnswers: [String] = []
-    @State private var isTimerPaused = false
-    @State private var pausesRemaining = 1
+    @State private var isTimerDisabled = false
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
+    @State private var selectedPassage: PassageReference?
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private enum AnswerFeedback {
@@ -185,9 +201,7 @@ struct ScrambleGameView: View {
     }
 
     private var currentTimeLimit: Int? {
-        guard let baseLimit = difficulty.timeLimit else { return nil }
-        let reduction = max(0, (currentNumber - 1) / 5) * 2
-        return max(difficulty == .hard ? 8 : 15, baseLimit - reduction)
+        difficulty.timeLimit
     }
 
     private var hintText: String? {
@@ -242,10 +256,9 @@ struct ScrambleGameView: View {
                         timeRemaining: timeRemaining,
                         timeLimit: currentTimeLimit,
                         tint: timerTint,
-                        isPaused: isTimerPaused,
-                        wordsRemaining: deck.count + 1,
+                        isTimerDisabled: isTimerDisabled,
                         usesMutedStyle: $usesMutedTimerStyle,
-                        onTogglePause: toggleTimerPause,
+                        onToggleTimer: toggleTimer,
                         onSwapSides: {
                             withAnimation(.snappy) {
                                 timerOnLeft.toggle()
@@ -277,6 +290,9 @@ struct ScrambleGameView: View {
         .task(id: timerID) {
             await runTimer()
         }
+        .sheet(item: $selectedPassage) { reference in
+            ScripturePassageSheet(reference: reference)
+        }
         .onDisappear {
             if phase != .setup {
                 phase = .setup
@@ -299,9 +315,9 @@ struct ScrambleGameView: View {
                 tint: .pink,
                 experienceLevel: experienceLevel,
                 experienceDetails: GameExperienceDetails(
-                    learn: "Familiar words with no timer.",
+                    learn: "Familiar words with 45 seconds per word.",
                     standard: "A broader word list with 30 seconds per word.",
-                    challenge: "Tougher words with 15 seconds per word."
+                    challenge: "Tougher words with no timer."
                 ),
                 startAction: startSession
             ) {
@@ -322,8 +338,9 @@ struct ScrambleGameView: View {
             } facts: {
                 GameSplashFacts(
                     first: ("number", "\(sessionLength.rawValue) words", "This session"),
-                    second: ("character.textbox", "Bible words", "People, places & books"),
-                    third: ("timer", difficulty.timerLabel, "Per word")
+                    second: ("timer", difficulty.timerLabel, "Per word"),
+                    third: ("lightbulb", difficulty.hintLabel, "Available"),
+                    fourth: difficulty == .hard ? ("xmark.shield", "3 strikes", "Hard mode") : nil
                 )
             }
 
@@ -333,15 +350,6 @@ struct ScrambleGameView: View {
 
     private func gameScreen(usesSplitLayout: Bool) -> some View {
         VStack(spacing: usesSplitLayout ? 18 : 20) {
-            if !usesSplitLayout, let timeLimit = currentTimeLimit {
-                ScrambleTimer(
-                    timeRemaining: timeRemaining,
-                    timeLimit: timeLimit,
-                    tint: timerTint,
-                    isPaused: isTimerPaused
-                )
-            }
-
             GameScoreboardCard(
                 currentCorrect: correctCount,
                 currentAnswered: answeredCount,
@@ -353,16 +361,32 @@ struct ScrambleGameView: View {
             if let currentWord {
                 ScramblePrompt(
                     category: currentWord.category,
-                    reference: difficulty == .easy ? currentWord.reference : nil,
+                    reference: difficulty == .easy || isCurrentWordResolved ? currentWord.reference : nil,
                     answer: typedAnswer,
                     answerLength: currentWord.answer.count,
-                    isResolved: isCurrentWordResolved
+                    isResolved: isCurrentWordResolved,
+                    timerTint: currentTimeLimit == nil || isTimerDisabled ? nil : timerTint,
+                    onShowReference: showCurrentReference
                 )
+
+                if !usesSplitLayout, currentTimeLimit != nil {
+                    GameTimerCard(
+                        remainingSeconds: timeRemaining,
+                        tint: isTimerDisabled ? .secondary : timerTint,
+                        isPulsing: false,
+                        formattedTime: isTimerDisabled ? "Timer off" : nil,
+                        isDisabled: isTimerDisabled
+                    )
+                }
 
                 if let answerFeedback {
                     Text(answerFeedback.message)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(answerFeedback.tint)
+                }
+
+                if difficulty == .hard {
+                    ScrambleStrikeIndicator(strikes: strikes, limit: 3)
                 }
 
                 ScrambleLetterTray(
@@ -385,32 +409,38 @@ struct ScrambleGameView: View {
                         ScrambleActionButton(systemImage: "shuffle", accessibilityLabel: "Shuffle available letters", isEnabled: shuffledLetters.count - selectedIndices.count >= 2, action: shuffleUnusedLetters)
                         ScrambleActionButton(systemImage: "checkmark", accessibilityLabel: "Check answer", isEnabled: typedAnswer.count == currentWord.answer.count, isProminent: true, action: checkAnswer)
                     }
+                    .padding(.top, 12)
                 }
 
                 if !isCurrentWordResolved {
                     HStack(spacing: 12) {
-                        Button(hintLevel == 0 ? "Hint" : "Another Hint", systemImage: "lightbulb") {
-                            showHint()
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(.secondary)
+                        ScrambleGlassActionButton(
+                            systemImage: "lightbulb.fill",
+                            accessibilityLabel: hintLevel == 0 ? "Show hint" : "Show another hint",
+                            isEnabled: hintLevel < min(difficulty.hintLimit, currentWord.answer.count),
+                            tint: .yellow,
+                            action: showHint
+                        )
 
                         if difficulty == .easy {
-                            Button("Show Answer", systemImage: "eye") {
-                                revealAnswer()
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(.secondary)
+                            ScrambleGlassActionButton(
+                                systemImage: "eye",
+                                accessibilityLabel: "Show answer",
+                                isEnabled: true,
+                                tint: .blue,
+                                action: revealAnswer
+                            )
                         }
                     }
+                    .padding(.top, 8)
 
                     if let hintText {
                         ScrambleHintCard(text: hintText)
                     }
 
-                    if currentTimeLimit != nil, pausesRemaining > 0 || isTimerPaused {
-                        Button(isTimerPaused ? "Resume" : "Pause", systemImage: isTimerPaused ? "play.fill" : "pause.fill") {
-                            toggleTimerPause()
+                    if currentTimeLimit != nil {
+                        Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill") {
+                            toggleTimer()
                         }
                         .buttonStyle(.bordered)
                     }
@@ -454,8 +484,8 @@ struct ScrambleGameView: View {
         let eligible = wordBank.filter { word in
             switch difficulty {
             case .easy: word.level == .easy
-            case .normal: word.level == .easy || word.level == .normal
-            case .hard: true
+            case .normal: word.level == .normal
+            case .hard: word.level == .hard
             }
         }
 
@@ -470,17 +500,15 @@ struct ScrambleGameView: View {
         answeredCount = 0
         currentStreak = 0
         bestStreak = 0
-        didRecordStats = false
+        strikes = 0
         hintLevel = 0
-        isTimerPaused = false
-        pausesRemaining = 1
+        isTimerDisabled = false
         phase = .playing
         loadNextWord()
     }
 
     private func loadNextWord() {
         guard let next = deck.popLast() else {
-            recordSessionStats()
             phase = .results
             timerID = UUID()
             return
@@ -493,7 +521,7 @@ struct ScrambleGameView: View {
         typedAnswer = ""
         answerFeedback = nil
         hintLevel = 0
-        isTimerPaused = false
+        strikes = 0
         timeRemaining = currentTimeLimit ?? 0
         timerID = UUID()
     }
@@ -525,17 +553,17 @@ struct ScrambleGameView: View {
 
     private func showHint() {
         guard let currentWord, !isCurrentWordResolved else { return }
-        hintLevel = min(hintLevel + 1, currentWord.answer.count)
+        hintLevel = min(hintLevel + 1, min(difficulty.hintLimit, currentWord.answer.count))
     }
 
-    private func toggleTimerPause() {
+    private func showCurrentReference() {
+        guard let reference = currentWord?.reference else { return }
+        selectedPassage = PassageReferenceParser.parse(reference)
+    }
+
+    private func toggleTimer() {
         guard currentTimeLimit != nil else { return }
-        if isTimerPaused {
-            isTimerPaused = false
-        } else if pausesRemaining > 0 {
-            pausesRemaining -= 1
-            isTimerPaused = true
-        }
+        isTimerDisabled.toggle()
     }
 
     private func shuffleUnusedLetters() {
@@ -560,6 +588,13 @@ struct ScrambleGameView: View {
         guard let currentWord, !isCurrentWordResolved else { return }
 
         guard selectedAnswer.uppercased() == currentWord.answer else {
+            if difficulty == .hard {
+                strikes += 1
+                if strikes >= 3 {
+                    revealAnswerAfterStrikeLimit(for: currentWord)
+                    return
+                }
+            }
             answerFeedback = .incorrect
             return
         }
@@ -568,6 +603,7 @@ struct ScrambleGameView: View {
         correctCount += 1
         currentStreak += 1
         bestStreak = max(bestStreak, currentStreak)
+        recordWordResult(correct: true)
         answerFeedback = .correct
         advanceAfterFeedback()
     }
@@ -578,6 +614,16 @@ struct ScrambleGameView: View {
         selectedIndices = Array(shuffledLetters.indices)
         answeredCount += 1
         currentStreak = 0
+        recordWordResult(correct: false)
+        answerFeedback = .revealed
+    }
+
+    private func revealAnswerAfterStrikeLimit(for word: ScrambleWord) {
+        typedAnswer = word.answer
+        selectedIndices = Array(shuffledLetters.indices)
+        answeredCount += 1
+        currentStreak = 0
+        recordWordResult(correct: false)
         answerFeedback = .revealed
     }
 
@@ -595,27 +641,34 @@ struct ScrambleGameView: View {
         while !Task.isCancelled, phase == .playing, timeRemaining > 0 {
             try? await Task.sleep(for: .seconds(1))
             guard !Task.isCancelled, phase == .playing else { return }
-            guard !isTimerPaused else { continue }
+            guard !isCurrentWordResolved else { return }
+            guard !isTimerDisabled else { continue }
 
             timeRemaining -= 1
             if timeRemaining == 0 {
-                answeredCount += 1
-                currentStreak = 0
-                answerFeedback = .timedOut
-                        advanceAfterFeedback()
+                revealTimedOutAnswer(for: currentWord)
                 return
             }
         }
     }
 
-    private func recordSessionStats() {
-        guard !didRecordStats else { return }
-        didRecordStats = true
+    private func revealTimedOutAnswer(for word: ScrambleWord?) {
+        guard let word else { return }
+        typedAnswer = word.answer
+        selectedIndices = Array(shuffledLetters.indices)
+        answeredCount += 1
+        currentStreak = 0
+        recordWordResult(correct: false)
+        answerFeedback = .timedOut
+        advanceAfterFeedback()
+    }
+
+    private func recordWordResult(correct: Bool) {
         GameStats.shared.recordRound(
             game: .scramble,
             difficulty: difficulty.statsDifficulty,
-            correct: correctCount,
-            answered: answeredCount,
+            correct: correct ? 1 : 0,
+            answered: 1,
             currentBestStreak: bestStreak
         )
     }
@@ -632,93 +685,58 @@ struct ScrambleGameView: View {
     }
 }
 
-private struct ScrambleTimer: View {
-    let timeRemaining: Int
-    let timeLimit: Int
-    let tint: Color
-    let isPaused: Bool
-
-    var body: some View {
-        HStack(spacing: 8) {
-            ProgressView(value: Double(timeRemaining), total: Double(timeLimit))
-                .tint(tint)
-                .frame(maxWidth: 140)
-            Label(
-                isPaused ? "Paused" : "\(timeRemaining)s",
-                systemImage: isPaused ? "pause.fill" : "timer"
-            )
-            .font(.headline.monospacedDigit())
-            .foregroundStyle(isPaused ? .secondary : tint)
-        }
-        .frame(maxWidth: .infinity, alignment: .trailing)
-        .accessibilityLabel(isPaused ? "Timer paused" : "\(timeRemaining) seconds remaining")
-    }
-}
-
 private struct ScrambleLargeTimerView: View {
     let timeRemaining: Int
     let timeLimit: Int?
     let tint: Color
-    let isPaused: Bool
-    let wordsRemaining: Int
+    let isTimerDisabled: Bool
     @Binding var usesMutedStyle: Bool
-    let onTogglePause: () -> Void
+    let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
 
     private var isTimed: Bool { timeLimit != nil }
 
-    private var displayTint: Color { tint }
+    private var displayTint: Color { isTimerDisabled ? .secondary : tint }
 
     private var vividTextColor: Color { .white }
+
+    private var usesNeutralStyle: Bool {
+        usesMutedStyle || isTimerDisabled
+    }
 
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
             VStack(spacing: 24) {
-                Image(systemName: isPaused ? "pause.circle.fill" : (isTimed ? "timer" : "infinity"))
+                Image(systemName: isTimerDisabled ? "timer.slash" : (isTimed ? "timer" : "infinity"))
                     .font(.system(size: 72, weight: .semibold))
-                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
+                    .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text(isTimed ? (isPaused ? "Paused" : "Time Remaining") : "Untimed Mode")
+                Text(isTimed ? (isTimerDisabled ? "Timer Off" : "Time Remaining") : "Untimed Mode")
                     .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
+                    .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor.opacity(0.85))
 
                 Text(isTimed ? "\(timeRemaining)s" : "∞")
                     .font(.largeTitle.weight(.bold))
                     .fontDesign(.rounded)
                     .monospacedDigit()
-                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
-
-                if let timeLimit {
-                    ProgressView(value: Double(timeRemaining), total: Double(timeLimit))
-                        .tint(usesMutedStyle ? displayTint : vividTextColor)
-                        .frame(maxWidth: 260)
-                }
-
-                Label("\(wordsRemaining) words remaining", systemImage: "textformat.abc")
-                    .font(.headline)
-                    .foregroundStyle(usesMutedStyle ? .secondary : vividTextColor.opacity(0.85))
-
-                if isTimed {
-                    Button(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play.fill" : "pause.fill") {
-                        onTogglePause()
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .tint(usesMutedStyle ? displayTint : vividTextColor)
-                }
+                    .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor)
             }
             .accessibilityElement(children: .combine)
-            .accessibilityLabel(isPaused ? "Timer paused" : (isTimed ? "\(timeRemaining) seconds remaining" : "No time limit"))
+            .accessibilityLabel(isTimerDisabled ? "Timer off" : (isTimed ? "\(timeRemaining) seconds remaining" : "No time limit"))
 
             Spacer(minLength: 0)
 
             HStack(spacing: 12) {
-                Button("Swap Sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
+                Button("Swap card sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
+
+                if isTimed {
+                    Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
+                }
 
                 Button(
-                    usesMutedStyle ? "Color Background" : "White Background",
+                    usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",
                     systemImage: "circle.lefthalf.filled"
                 ) {
                     withAnimation(.easeInOut(duration: 0.25)) {
@@ -726,28 +744,29 @@ private struct ScrambleLargeTimerView: View {
                     }
                 }
             }
+            .labelStyle(.iconOnly)
             .buttonStyle(.glass(.clear))
             .controlSize(.small)
-            .tint(usesMutedStyle ? displayTint : vividTextColor)
+            .tint(usesNeutralStyle ? displayTint : vividTextColor)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
         .background {
-            if usesMutedStyle {
-                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                    .fill(Color.white)
+            if usesNeutralStyle {
+                Color.clear
+                    .heroCardSurface()
             } else {
                 RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
                     .fill(displayTint)
             }
         }
         .overlay {
-            if !usesMutedStyle {
+            if !usesNeutralStyle {
                 RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
                     .strokeBorder(vividTextColor.opacity(0.22), lineWidth: 1)
             }
         }
-        .shadow(color: usesMutedStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
+        .shadow(color: usesNeutralStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: timeRemaining)
     }
@@ -755,10 +774,12 @@ private struct ScrambleLargeTimerView: View {
 
 private struct ScramblePrompt: View {
     let category: LocalizedStringKey
-    let reference: LocalizedStringKey?
+    let reference: String?
     let answer: String
     let answerLength: Int
     let isResolved: Bool
+    let timerTint: Color?
+    let onShowReference: () -> Void
 
     var body: some View {
         VStack(spacing: 10) {
@@ -767,9 +788,19 @@ private struct ScramblePrompt: View {
                 .foregroundStyle(.secondary)
 
             if let reference {
-                Label(reference, systemImage: "book.closed")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+                if isResolved {
+                    Button(action: onShowReference) {
+                        Label("Read \(reference)", systemImage: "book.closed")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.accentColor)
+                    .accessibilityHint("Shows a preview of the source verse")
+                } else {
+                    Label(reference, systemImage: "book.closed")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Text("Build the word from the letter tiles.")
@@ -799,7 +830,7 @@ private struct ScramblePrompt: View {
         )
         .overlay {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+                .strokeBorder(timerTint ?? Color.primary.opacity(0.12), lineWidth: timerTint == nil ? 1 : 2)
         }
     }
 }
@@ -853,6 +884,27 @@ private struct ScrambleHintCard: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
             }
+    }
+}
+
+private struct ScrambleStrikeIndicator: View {
+    let strikes: Int
+    let limit: Int
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Label("Strikes", systemImage: "xmark.shield")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            ForEach(0..<limit, id: \.self) { index in
+                Image(systemName: index < strikes ? "xmark.circle.fill" : "circle")
+                    .foregroundStyle(index < strikes ? .red : .secondary)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Strikes")
+        .accessibilityValue("\(strikes) of \(limit) used")
     }
 }
 
@@ -949,6 +1001,7 @@ private struct ScrambleActionButton: View {
     let systemImage: String
     let accessibilityLabel: LocalizedStringKey
     let isEnabled: Bool
+    var tint: Color = .pink
     var isProminent = false
     let action: () -> Void
 
@@ -956,17 +1009,43 @@ private struct ScrambleActionButton: View {
         Button(action: action) {
             Image(systemName: systemImage)
                 .font(.body.weight(.semibold))
-                .frame(width: 42, height: 42)
+                .frame(width: 56, height: 56)
         }
         .buttonStyle(.plain)
-        .foregroundStyle(isProminent ? Color.white : Color.pink)
-        .background(isProminent ? Color.pink : Color.pink.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .foregroundStyle(isEnabled ? (isProminent ? Color.white : tint) : Color.secondary)
+        .background(
+            isEnabled ? (isProminent ? tint : tint.opacity(0.10)) : Color.secondary.opacity(0.10),
+            in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+        )
         .overlay {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(Color.pink.opacity(isProminent ? 0 : 0.45), lineWidth: 1)
+                .strokeBorder(
+                    isEnabled ? tint.opacity(isProminent ? 0 : 0.45) : Color.secondary.opacity(0.25),
+                    lineWidth: 1
+                )
         }
         .disabled(!isEnabled)
-        .opacity(isEnabled ? 1 : 0.35)
+        .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+private struct ScrambleGlassActionButton: View {
+    let systemImage: String
+    let accessibilityLabel: LocalizedStringKey
+    let isEnabled: Bool
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.title3.weight(.semibold))
+                .frame(width: 50, height: 50)
+        }
+        .buttonStyle(.glass(.clear))
+        .buttonBorderShape(.roundedRectangle(radius: 10))
+        .foregroundStyle(isEnabled ? tint : .secondary)
+        .disabled(!isEnabled)
         .accessibilityLabel(accessibilityLabel)
     }
 }

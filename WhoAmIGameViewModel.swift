@@ -163,6 +163,7 @@ final class WhoAmIGameViewModel {
 
     // Timer
     var remainingSeconds: Int = 0
+    var isTimerDisabled = false
     @ObservationIgnored private var timerTask: Task<Void, Never>?
     var pulseOn: Bool = false
 
@@ -269,6 +270,7 @@ final class WhoAmIGameViewModel {
         totalQuestions = questionQueue.count
         questionNumber = 0
         isComplete = false
+        isTimerDisabled = false
         started = true
         nextRound()
     }
@@ -291,7 +293,7 @@ final class WhoAmIGameViewModel {
         wasTimedOut = false
 
         remainingSeconds = difficulty.timeLimit
-        if remainingSeconds > 0 {
+        if remainingSeconds > 0, !isTimerDisabled {
             startTimer()
         }
     }
@@ -392,7 +394,7 @@ final class WhoAmIGameViewModel {
     }
 
     private func tickTimer() {
-        guard !roundOver else { return }
+        guard !roundOver, !isTimerDisabled else { return }
         if remainingSeconds > 0 {
             remainingSeconds -= 1
             if remainingSeconds <= 5 {
@@ -412,5 +414,15 @@ final class WhoAmIGameViewModel {
         timerTask?.cancel()
         timerTask = nil
         pulseOn = false
+    }
+
+    func toggleTimer() {
+        guard difficulty.timeLimit > 0 else { return }
+        isTimerDisabled.toggle()
+        if isTimerDisabled {
+            stopTimer()
+        } else if !roundOver {
+            startTimer()
+        }
     }
 }

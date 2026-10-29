@@ -166,7 +166,7 @@ private enum GameLearningGroup: CaseIterable, Identifiable {
         switch self {
         case .daily: [.wordle]
         case .learn: [.bookOrder, .beatTheClock, .quiz, .trivia, .verseMatch, .whoAmI]
-        case .wordGames: [.hangman, .wordSearch, .scramble]
+        case .wordGames: [.hangman, .scramble, .wordSearch]
         }
     }
 }

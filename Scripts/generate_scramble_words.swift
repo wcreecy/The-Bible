@@ -8,6 +8,18 @@ private struct BibleBook: Decodable {
     let chapters: [[String]]
 }
 
+private struct BibleCharacter: Decodable {
+    let name: String
+}
+
+private struct BibleLocation: Decodable {
+    let locationName: String
+
+    enum CodingKeys: String, CodingKey {
+        case locationName = "location_name"
+    }
+}
+
 private struct ScrambleWord: Encodable {
     let word: String
     let category: String
@@ -44,6 +56,26 @@ private let minimumLength = 4
 private let maximumLength = 10
 private let minimumVerseAppearances = 2
 private let language = "en_US"
+
+private func normalizedSingleWord(_ value: String) -> String? {
+    let name = value
+        .replacingOccurrences(of: #"\\s*\\([^)]*\\)"#, with: "", options: .regularExpression)
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !name.contains(where: { !$0.isLetter }) else { return nil }
+    return name.lowercased()
+}
+
+private func category(
+    for word: String,
+    people: Set<String>,
+    places: Set<String>,
+    books: Set<String>
+) -> String {
+    if people.contains(word) { return "Person" }
+    if places.contains(word) { return "Place" }
+    if books.contains(word) { return "Bible book" }
+    return "Everyday word"
+}
 
 private func isRecognizedEnglishWord(_ word: String, checker: NSSpellChecker) -> Bool {
     let range = checker.checkSpelling(
@@ -104,10 +136,22 @@ let inputPath = arguments.first ?? "The Bible/kjv.json"
 let outputPath = arguments.dropFirst().first ?? "The Bible/ScrambleWords.json"
 let inputURL = URL(fileURLWithPath: inputPath)
 let outputURL = URL(fileURLWithPath: outputPath)
+let projectDirectory = inputURL.deletingLastPathComponent()
+let charactersURL = projectDirectory.appendingPathComponent("Bible_Characters_Game_Clues_With_Difficulty.json")
+let locationsURL = projectDirectory.appendingPathComponent("bible_locations.json")
 
 do {
     let data = try Data(contentsOf: inputURL)
     let books = try JSONDecoder().decode([BibleBook].self, from: data)
+    let people = Set(
+        try JSONDecoder().decode([BibleCharacter].self, from: Data(contentsOf: charactersURL))
+            .compactMap { normalizedSingleWord($0.name) }
+    )
+    let places = Set(
+        try JSONDecoder().decode([BibleLocation].self, from: Data(contentsOf: locationsURL))
+            .compactMap { normalizedSingleWord($0.locationName) }
+    )
+    let bookNames = Set(books.compactMap { normalizedSingleWord($0.name) })
     let checker = NSSpellChecker.shared
     let eligible = candidates(from: books)
     let catalog = eligible
@@ -120,7 +164,7 @@ do {
         .map {
             ScrambleWord(
                 word: $0.word.capitalized,
-                category: "Bible word",
+                category: category(for: $0.word, people: people, places: places, books: bookNames),
                 difficulty: $0.difficulty,
                 reference: $0.references[0]
             )
@@ -130,7 +174,7 @@ do {
 
     let counts = Dictionary(grouping: catalog, by: \.difficulty).mapValues(\.count)
     print("Wrote \(catalog.count) Scramble words to \(outputURL.path)")
-    print("Easy: \(counts[\"easy\", default: 0]), Normal: \(counts[\"normal\", default: 0]), Hard: \(counts[\"hard\", default: 0])")
+    print("Easy: \(counts["easy", default: 0]), Normal: \(counts["normal", default: 0]), Hard: \(counts["hard", default: 0])")
 } catch {
     fputs("Failed to generate Scramble words: \(error)\\n", stderr)
     exit(1)

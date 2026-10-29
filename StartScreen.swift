@@ -6,7 +6,7 @@ struct WordSearchStartScreen: View {
     @Binding var isBlindMode: Bool
     @Binding var isTimedMode: Bool
     let wordCountRange: ClosedRange<Int>
-    let timePerWord: String
+    let totalTime: String
     let eligibleFavoriteCount: Int
     let onStart: () -> Void
 
@@ -69,7 +69,8 @@ struct WordSearchStartScreen: View {
                     GameSplashFacts(
                     first: ("puzzlepiece.extension", "1 puzzle", "This session"),
                     second: ("square.grid.3x3", "\(gridSize)×\(gridSize)", "Grid · \(wordCountRange.lowerBound)–\(wordCountRange.upperBound) target words"),
-                    third: ("eye", isBlindMode ? "Blind" : "Visible", "Verse and word list")
+                    third: ("eye", isBlindMode ? "Blind" : "Visible", "Verse and word list"),
+                    fourth: isTimedMode ? ("timer", totalTime, "Time to solve") : nil
                     )
 
                     Label(

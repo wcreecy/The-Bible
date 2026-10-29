@@ -45,10 +45,7 @@ struct WordSearchGameView: View {
                         )
 
                         Button("Try Again", systemImage: "arrow.clockwise") {
-                            vm.newPuzzle()
-                            if vm.puzzleGenerationError == nil {
-                                vm.started = true
-                            }
+                            vm.start()
                         }
                         .buttonStyle(GameProminentButtonStyle(tint: .green))
 
@@ -63,7 +60,7 @@ struct WordSearchGameView: View {
                             isBlindMode: $vm.isBlindMode,
                             isTimedMode: $vm.isTimedMode,
                             wordCountRange: vm.wordCountRange,
-                            timePerWord: vm.timePerWordString(),
+                            totalTime: vm.totalTimeRangeString(),
                             eligibleFavoriteCount: vm.eligibleFavoriteCount(),
                             onStart: { vm.start() }
                         )

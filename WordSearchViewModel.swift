@@ -174,6 +174,9 @@ final class WordSearchViewModel {
     func start() {
         newPuzzle()
         started = puzzleGenerationError == nil
+        if started {
+            resumeTimer()
+        }
     }
 
     func newPuzzle() {
@@ -276,9 +279,13 @@ final class WordSearchViewModel {
         max(45, secondsPerWord * wordCount)
     }
 
-    /// Shown on the start screen before a puzzle exists, e.g. "20 sec per word".
-    func timePerWordString() -> String {
-        "\(secondsPerWord) sec per word"
+    /// Shown on the start screen before a puzzle exists. The target word count varies by verse.
+    func totalTimeRangeString() -> String {
+        let minimum = timeLimitSeconds(wordCount: wordCountRange.lowerBound)
+        let maximum = timeLimitSeconds(wordCount: wordCountRange.upperBound)
+        return minimum == maximum
+            ? formattedTime(minimum)
+            : "\(formattedTime(minimum))–\(formattedTime(maximum))"
     }
 
     func formattedTime(_ secs: Int) -> String {
