@@ -91,6 +91,12 @@ enum AppStorageKey {
     static let quizScope = "quizScope"
     static let beatTheClockDifficulty = "beatTheClockDifficulty"
     static let beatTheClockCategory = "beatTheClockCategory"
+    static let hangmanTheme = "hangmanTheme"
+    static let hangmanDifficulty = "hangmanDifficulty"
+    static let verseMatchDifficulty = "verseMatchDifficulty"
+    static let verseMatchPool = "versematchPool"
+    static let verseMatchScope = "versematchScope"
+    static let verseMatchSections = "versematchSections"
     static let gameRecommendationPromptDayV1 = "gameRecommendationPromptDayV1"
     static let gameRecommendationPromptedRoutesV1 = "gameRecommendationPromptedRoutesV1"
 
