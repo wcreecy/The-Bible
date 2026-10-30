@@ -78,7 +78,8 @@ struct WordleView: View {
     @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
 
     // Daily
-    private var todayKey: String { Self.localDayKey(for: Date()) }
+    /// Daily results are stored by day and read back by `GameStats`, so both use its day key.
+    private var todayKey: String { GameStats.localDayKey(for: Date()) }
     private var dailyCompletedToday: Bool {
         UserDefaults.standard.string(forKey: AppStorageKey.wordleDailyCompletedDay) == todayKey
     }
@@ -887,17 +888,6 @@ struct WordleView: View {
         #else
         return true
         #endif
-    }
-
-    private static func localDayKey(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-        let start = cal.startOfDay(for: date)
-        let comps = cal.dateComponents([.year, .month, .day], from: start)
-        let y = comps.year ?? 1970
-        let m = comps.month ?? 1
-        let d = comps.day ?? 1
-        return String(format: "%04d-%02d-%02d", y, m, d)
     }
 
     // MARK: - Reference preview presentation
