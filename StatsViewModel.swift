@@ -42,6 +42,29 @@ final class StatsViewModel {
     var lastSessionSeconds: Int = 0
     var readingInsights = ReadingInsights()
 
+    // MARK: - Card scopes and the series behind them
+    //
+    // The Totals, Old/New Testament and Genre cards each have their own time scope. Changing a
+    // scope, or any refresh of the underlying data, recomputes that card's numbers.
+
+    var timeScopeTotals: StatsTimeScope = .allTime { didSet { recomputeTotalsCard() } }
+    var timeScopeOTNT: StatsTimeScope = .allTime { didSet { recomputeOTNTCard() } }
+    var timeScopeGenre: StatsTimeScope = .allTime { didSet { recomputeGenreCard() } }
+
+    // Totals card
+    private(set) var totalsDaily: [(date: Date, seconds: Int)] = []
+    private(set) var allTimeAggregation: StatsSeriesBuilder.Aggregation = .daily
+    private(set) var activeDaysInScope: Int = 0
+    private(set) var avgSecondsPerActiveBucketInScope: Int = 0
+    private(set) var topBookInScope: String = "—"
+
+    // Old/New Testament card
+    private(set) var otSeconds: Int = 0
+    private(set) var ntSeconds: Int = 0
+
+    // Genre card
+    private(set) var perGenreTotals: [(genre: String, seconds: Int)] = []
+
     // MARK: - Refresh scheduling
 
     /// Reading saves its time about every 15 seconds and each save posts a stats
@@ -130,6 +153,7 @@ final class StatsViewModel {
             calendar: calendar
         )
         refreshRevision &+= 1
+        recomputeScopedCards()
     }
 
     // MARK: - Data refresh internals
@@ -275,6 +299,114 @@ final class StatsViewModel {
             return lhs.value > rhs.value
         }
         monthTop3Books = Array(sortedTop.prefix(3)).map { (book: $0.key, seconds: $0.value) }
+    }
+
+    // MARK: - Scoped cards
+
+    /// Every book in canonical order, falling back to the built-in list before the text loads.
+    var orderedBookNames: [String] {
+        if !BibleData.books.isEmpty {
+            return BibleData.books.map { $0.name }
+        }
+        return BibleCanon.canonicalOrder()
+    }
+
+    func perBookTotals(for scope: StatsTimeScope) -> [String: Int] {
+        switch scope {
+        case .allTime: return perBookAllTimeSessionTotals
+        case .thisMonth: return perBookMonthTotals
+        case .last7: return perBookLast7Totals
+        }
+    }
+
+    private var totalsScopedPerBookTotals: [String: Int] { perBookTotals(for: timeScopeTotals) }
+    private var otntScopedPerBookTotals: [String: Int] { perBookTotals(for: timeScopeOTNT) }
+    private var genreScopedPerBookTotals: [String: Int] { perBookTotals(for: timeScopeGenre) }
+
+    var totalsScopedTotalSeconds: Int {
+        totalsScopedPerBookTotals.values.reduce(0, +)
+    }
+
+    /// Every book with its seconds in the Totals scope, in canonical order or most read first.
+    func totalsScopedRows(sortedBy sortMode: StatsSortMode) -> [(book: String, seconds: Int)] {
+        let canonical = orderedBookNames
+        let canonicalPos = Dictionary(uniqueKeysWithValues: canonical.enumerated().map { ($1, $0) })
+        let all: [(book: String, seconds: Int)] = canonical.map { name in
+            (book: name, seconds: totalsScopedPerBookTotals[name, default: 0])
+        }
+
+        switch sortMode {
+        case .canonical:
+            return all
+        case .mostRead:
+            return all.sorted { lhs, rhs in
+                if lhs.seconds == rhs.seconds {
+                    return (canonicalPos[lhs.book] ?? .max) < (canonicalPos[rhs.book] ?? .max)
+                }
+                return lhs.seconds > rhs.seconds
+            }
+        }
+    }
+
+    /// The books in one genre with their seconds in the Genre scope.
+    func genreDetailRows(for genre: StatsSeriesBuilder.Genre) -> [(book: String, seconds: Int)] {
+        let totals = genreScopedPerBookTotals
+        return orderedBookNames
+            .filter { StatsSeriesBuilder.genreForBook($0) == genre }
+            .map { name in (book: name, seconds: totals[name, default: 0]) }
+    }
+
+    var topBookThisWeek: String? {
+        guard let topBook = perBookLast7Totals.max(by: { lhs, rhs in
+            if lhs.value == rhs.value { return lhs.key > rhs.key }
+            return lhs.value < rhs.value
+        }), topBook.value > 0 else {
+            return nil
+        }
+
+        return topBook.key
+    }
+
+    var activeReadingDaysThisWeek: Int {
+        last7Daily.reduce(into: 0) { count, day in
+            if day.seconds > 0 {
+                count += 1
+            }
+        }
+    }
+
+    /// Recomputes all three scoped cards, after a refresh or when the screen reappears.
+    func recomputeScopedCards() {
+        recomputeTotalsCard()
+        recomputeOTNTCard()
+        recomputeGenreCard()
+    }
+
+    private func recomputeTotalsCard() {
+        var calendar = Calendar.autoupdatingCurrent
+        calendar.timeZone = TimeZone.autoupdatingCurrent
+        let chart = StatsTotalsSeries.chart(
+            scope: timeScopeTotals,
+            dailyTotals: BibleStatsStore.shared.loadDailyTotals(),
+            yearlyArchive: BibleStatsStore.shared.loadReadingHistoryArchive()?.years ?? [:],
+            now: Date(),
+            calendar: calendar
+        )
+        totalsDaily = chart.points
+        allTimeAggregation = chart.aggregation
+        activeDaysInScope = StatsTotalsSeries.activeBuckets(in: chart.points)
+        avgSecondsPerActiveBucketInScope = StatsTotalsSeries.averageSecondsPerActiveBucket(in: chart.points)
+        topBookInScope = StatsTotalsSeries.topBook(in: totalsScopedPerBookTotals)
+    }
+
+    private func recomputeOTNTCard() {
+        let split = BibleStatsStore.shared.splitOTNT(totals: otntScopedPerBookTotals)
+        otSeconds = split.ot
+        ntSeconds = split.nt
+    }
+
+    private func recomputeGenreCard() {
+        perGenreTotals = StatsSeriesBuilder.computeGenreTotals(from: genreScopedPerBookTotals).map { ($0.genre, $0.seconds) }
     }
 
     // MARK: - Compute helpers

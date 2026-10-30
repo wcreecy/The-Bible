@@ -121,29 +121,12 @@ struct StatsView: View {
     // View model
     @State private var model = StatsViewModel()
 
-    // Independent scopes per card (Totals, OT/NT, Genre) — UI-only
-    @State private var timeScopeTotals: StatsTimeScope = .allTime
-    @State private var timeScopeOTNT: StatsTimeScope = .allTime
-    @State private var timeScopeGenre: StatsTimeScope = .allTime
-
+    // Each card's time scope, and the series and totals behind them, live in `model`.
     @State private var sortMode: StatsSortMode = .canonical
-
-    // Genre distribution (derived by scope) — UI-only
-    @State private var perGenreTotals: [(genre: String, seconds: Int)] = []
     @State private var selectedGenre: StatsSeriesBuilder.Genre? = nil
-    @State private var genreDetailRows: [(book: String, seconds: Int)] = []
 
     // New: selected book for chapter detail sheet — UI-only
     @State private var selectedBookForChapters: String? = nil
-
-    // Totals card dynamic metrics — UI-only (depends on scope)
-    @State private var totalsDaily: [(date: Date, seconds: Int)] = []
-    @State private var avgSecondsPerActiveBucketInScope: Int = 0
-    @State private var activeDaysInScope: Int = 0
-    @State private var topBookInScope: String = "—"
-
-    // All-time aggregation mode for the totals chart — UI-only
-    @State private var allTimeAggregation: StatsSeriesBuilder.Aggregation = .daily
 
     // Expand/collapse for existing sections — UI-only
     @State private var showBookProgressDetails: Bool = false
@@ -158,10 +141,6 @@ struct StatsView: View {
     @Environment(\.verticalSizeClass) private var vSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.colorScheme) private var colorScheme
-
-    // OT/NT totals for the OTNT card — UI-only
-    @State private var otSeconds: Int = 0
-    @State private var ntSeconds: Int = 0
 
     // Segmented control tint for readability
     private var segmentedTint: Color {
@@ -180,7 +159,7 @@ struct StatsView: View {
 
     private var activeBucketCount: Int {
         // Use the already-computed state to keep type-checking simple and fast.
-        activeDaysInScope
+        model.activeDaysInScope
     }
 
     // Explicit typed bindings to help the type-checker
@@ -233,9 +212,7 @@ struct StatsView: View {
         .onAppear {
             // A refresh recomputes the cards through `refreshRevision` below.
             if !model.start() {
-                recomputeOTNTFromScope()
-                recomputeGenresFromScope()
-                recomputeTotalsCardMetrics()
+                model.recomputeScopedCards()
             }
         }
         .onDisappear {
@@ -265,7 +242,7 @@ struct StatsView: View {
             NavigationStack {
                 List {
                     Section {
-                        ForEach(genreDetailRows, id: \.book) { row in
+                        ForEach(model.genreDetailRows(for: genre), id: \.book) { row in
                             HStack {
                                 Text(row.book)
                                 Spacer()
@@ -286,31 +263,12 @@ struct StatsView: View {
                         Button("Close") { selectedGenre = nil }
                     }
                 }
-                .onAppear {
-                    let totalsMap = genreScopedPerBookTotals
-                    genreDetailRows = rowsForGenre(genre, totals: totalsMap)
-                }
             }
         }
         // Close the chapter sheet when the app navigates somewhere else.
         .onChange(of: AppRouter.shared.latest) { _, request in
             if let request, case .stats = request.destination { return }
             selectedBookForChapters = nil
-        }
-        // Independent scope changes per card
-        .onChange(of: timeScopeTotals) { _, _ in
-            recomputeTotalsCardMetrics()
-        }
-        .onChange(of: timeScopeOTNT) { _, _ in
-            recomputeOTNTFromScope()
-        }
-        .onChange(of: timeScopeGenre) { _, _ in
-            recomputeGenresFromScope()
-        }
-        .onChange(of: model.refreshRevision) { _, _ in
-            recomputeTotalsCardMetrics()
-            recomputeOTNTFromScope()
-            recomputeGenresFromScope()
         }
         // Ensure only one expandable card is open at a time
         .onChange(of: showBookProgressDetails) {
@@ -331,32 +289,13 @@ struct StatsView: View {
         !dynamicTypeSize.isAccessibilitySize && (hSizeClass == .regular || vSizeClass == .compact)
     }
 
-    private var topBookThisWeek: String? {
-        guard let topBook = model.perBookLast7Totals.max(by: { lhs, rhs in
-            if lhs.value == rhs.value { return lhs.key > rhs.key }
-            return lhs.value < rhs.value
-        }), topBook.value > 0 else {
-            return nil
-        }
-
-        return topBook.key
-    }
-
-    private var activeReadingDaysThisWeek: Int {
-        model.last7Daily.reduce(into: 0) { count, day in
-            if day.seconds > 0 {
-                count += 1
-            }
-        }
-    }
-
     private var bibleContent: some View {
         VStack(spacing: 16) {
             WeeklyReadingSummaryCard(
                 thisWeekSeconds: model.thisWeekSeconds,
                 lastWeekSeconds: model.lastWeekSeconds,
-                activeDays: activeReadingDaysThisWeek,
-                topBook: topBookThisWeek,
+                activeDays: model.activeReadingDaysThisWeek,
+                topBook: model.topBookThisWeek,
                 formatSeconds: { BibleStatsStore.shared.format($0) }
             )
 
@@ -397,7 +336,7 @@ struct StatsView: View {
             totalChapters: model.totalChapters,
             completedVerses: model.completedVerses,
             totalVerses: model.totalVerses,
-            orderedBookNames: orderedAllBooks,
+            orderedBookNames: model.orderedBookNames,
             bookProgress: model.bookProgress,
             isExpanded: $showBookProgressDetails,
             filter: $bookFilter,
@@ -409,9 +348,9 @@ struct StatsView: View {
 
     private var totalsCard: some View {
         TotalsCardView(
-            timeScope: $timeScopeTotals,
-            totalSeconds: totalsScopedTotalSeconds,
-            series: totalsDaily,
+            timeScope: $model.timeScopeTotals,
+            totalSeconds: model.totalsScopedTotalSeconds,
+            series: model.totalsDaily,
             chartSubtitle: totalsChartSubtitle,
             currentBarUnit: totalsCurrentBarUnit,
             showValueLabels: totalsShouldShowBarValueLabels,
@@ -419,11 +358,11 @@ struct StatsView: View {
             activeBucketLabel: activeBucketLabel,
             activeBucketCount: activeBucketCount,
             avgPerActiveBucketLabel: avgPerActiveBucketLabel,
-            avgSecondsPerActiveBucket: avgSecondsPerActiveBucketInScope,
-            topBook: topBookInScope,
+            avgSecondsPerActiveBucket: model.avgSecondsPerActiveBucketInScope,
+            topBook: model.topBookInScope,
             isExpanded: $showTotalsSection,
             sortMode: $sortMode,
-            rows: totalsScopedRows,
+            rows: model.totalsScopedRows(sortedBy: sortMode),
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )
         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
@@ -439,9 +378,9 @@ struct StatsView: View {
 
     private var otntCard: some View {
         OTNTCardView(
-            timeScope: $timeScopeOTNT,
-            otSeconds: otSeconds,
-            ntSeconds: ntSeconds,
+            timeScope: $model.timeScopeOTNT,
+            otSeconds: model.otSeconds,
+            ntSeconds: model.ntSeconds,
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )
         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
@@ -449,12 +388,10 @@ struct StatsView: View {
 
     private var genreCard: some View {
         GenreDistributionCardView(
-            timeScope: $timeScopeGenre,
-            perGenreTotals: perGenreTotals,
+            timeScope: $model.timeScopeGenre,
+            perGenreTotals: model.perGenreTotals,
             selectedGenre: $selectedGenre,
-            onSelectGenre: { g in
-                genreDetailRows = rowsForGenre(g, totals: genreScopedPerBookTotals)
-            },
+            onSelectGenre: { _ in },
             genreColor: { genreColor($0) },
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )
@@ -479,71 +416,6 @@ struct StatsView: View {
         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
     }
 
-    // MARK: - Helpers and computed data
-
-    private var orderedAllBooks: [String] {
-        if !BibleData.books.isEmpty {
-            return BibleData.books.map { $0.name }
-        }
-        return BibleCanon.canonicalOrder()
-    }
-
-    // MARK: - Per-card scoped maps
-
-    private var totalsScopedPerBookTotals: [String: Int] {
-        switch timeScopeTotals {
-        case .allTime: return model.perBookAllTimeSessionTotals
-        case .thisMonth: return model.perBookMonthTotals
-        case .last7: return model.perBookLast7Totals
-        }
-    }
-
-    private var otntScopedPerBookTotals: [String: Int] {
-        switch timeScopeOTNT {
-        case .allTime: return model.perBookAllTimeSessionTotals
-        case .thisMonth: return model.perBookMonthTotals
-        case .last7: return model.perBookLast7Totals
-        }
-    }
-
-    private var genreScopedPerBookTotals: [String: Int] {
-        switch timeScopeGenre {
-        case .allTime: return model.perBookAllTimeSessionTotals
-        case .thisMonth: return model.perBookMonthTotals
-        case .last7: return model.perBookLast7Totals
-        }
-    }
-
-    private var totalsScopedTotalSeconds: Int {
-        totalsScopedPerBookTotals.values.reduce(0, +)
-    }
-
-    private var totalsScopedRows: [(book: String, seconds: Int)] {
-        let canonical = orderedAllBooks
-        let canonicalPos = Dictionary(uniqueKeysWithValues: canonical.enumerated().map { ($1, $0) })
-
-        switch sortMode {
-        case .canonical:
-            return canonical.map { name in
-                (book: name, seconds: totalsScopedPerBookTotals[name, default: 0])
-            }
-        case .mostRead:
-            let all: [(book: String, seconds: Int)] = canonical.map { name in
-                (book: name, seconds: totalsScopedPerBookTotals[name, default: 0])
-            }
-            return all.sorted { lhs, rhs in
-                if lhs.seconds == rhs.seconds {
-                    return (canonicalPos[lhs.book] ?? .max) < (canonicalPos[rhs.book] ?? .max)
-                }
-                return lhs.seconds > rhs.seconds
-            }
-        }
-    }
-
-    private var genreScopedPerGenreTotalsComputed: [(genre: String, seconds: Int)] {
-        StatsSeriesBuilder.computeGenreTotals(from: genreScopedPerBookTotals).map { ($0.genre, $0.seconds) }
-    }
-
     // MARK: - Glance helpers
 
     private func openReader(bookName: String, chapter: Int, verse: Int = 1) {
@@ -558,14 +430,6 @@ struct StatsView: View {
             if !complete { return c.number }
         }
         return nil
-    }
-
-    private func rowsForGenre(_ genre: StatsSeriesBuilder.Genre, totals: [String: Int]) -> [(book: String, seconds: Int)] {
-        let canonical = orderedAllBooks
-        let booksInGenre: [String] = canonical.filter { StatsSeriesBuilder.genreForBook($0) == genre }
-        return booksInGenre.map { name in
-            (book: name, seconds: totals[name, default: 0])
-        }
     }
 
     private func genreColor(_ genre: String) -> Color {
@@ -586,22 +450,22 @@ struct StatsView: View {
     // MARK: - Totals chart config via helper
 
     private var totalsChartSubtitle: String {
-        StatsChartConfig.subtitle(for: timeScopeTotals, allTimeAggregation: allTimeAggregation)
+        StatsChartConfig.subtitle(for: model.timeScopeTotals, allTimeAggregation: model.allTimeAggregation)
     }
 
     private var totalsCurrentXAxisAggregation: StatsSeriesBuilder.Aggregation {
-        StatsChartConfig.currentXAxisAggregation(for: timeScopeTotals, allTimeAggregation: allTimeAggregation)
+        StatsChartConfig.currentXAxisAggregation(for: model.timeScopeTotals, allTimeAggregation: model.allTimeAggregation)
     }
 
     private var totalsCurrentBarUnit: Calendar.Component {
-        StatsChartConfig.currentBarUnit(for: timeScopeTotals, allTimeAggregation: allTimeAggregation)
+        StatsChartConfig.currentBarUnit(for: model.timeScopeTotals, allTimeAggregation: model.allTimeAggregation)
     }
 
     private var totalsShouldShowBarValueLabels: Bool {
         StatsChartConfig.shouldShowBarValueLabels(
-            for: timeScopeTotals,
-            allTimeAggregation: allTimeAggregation,
-            count: totalsDaily.count,
+            for: model.timeScopeTotals,
+            allTimeAggregation: model.allTimeAggregation,
+            count: model.totalsDaily.count,
             isRegular: (hSizeClass == .regular)
         )
     }
@@ -609,155 +473,6 @@ struct StatsView: View {
     @AxisContentBuilder
     private var totalsChartXAxisMarks: some AxisContent {
         StatsChartConfig.xAxisMarks(for: totalsCurrentXAxisAggregation)
-    }
-
-    // MARK: - Scope recompute
-
-    private func recomputeOTNTFromScope() {
-        let split = BibleStatsStore.shared.splitOTNT(totals: otntScopedPerBookTotals)
-        otSeconds = split.ot
-        ntSeconds = split.nt
-    }
-
-    private func recomputeGenresFromScope() {
-        perGenreTotals = genreScopedPerGenreTotalsComputed
-        if let g = selectedGenre {
-            genreDetailRows = rowsForGenre(g, totals: genreScopedPerBookTotals)
-        }
-    }
-
-    // MARK: - Totals card metrics and chart config (independent scope)
-
-    private func recomputeTotalsCardMetrics() {
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = TimeZone.autoupdatingCurrent
-        let now = Date()
-        let startOfToday = cal.startOfDay(for: now)
-        let dailyMap = BibleStatsStore.shared.loadDailyTotals()
-
-        switch timeScopeTotals {
-        case .last7:
-            var series: [(Date, Int)] = []
-            for i in stride(from: 6, through: 0, by: -1) {
-                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
-                    series.append((d, max(0, dailyMap[key, default: 0])))
-                }
-            }
-            totalsDaily = series
-            allTimeAggregation = .daily
-
-        case .thisMonth:
-            var series: [(Date, Int)] = []
-            // Enumerate all days in this month using isoKeysForMonth for consistency
-            let keys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: cal)
-            for key in keys {
-                // Rebuild Date from key using calendar startOfDay
-                let comps = key.split(separator: "-").compactMap { Int($0) }
-                if comps.count == 3, let date = cal.date(from: DateComponents(year: comps[0], month: comps[1], day: comps[2])) {
-                    if date <= startOfToday {
-                        series.append((date, max(0, dailyMap[key, default: 0])))
-                    }
-                }
-            }
-            totalsDaily = series
-            allTimeAggregation = .weekly
-
-        case .allTime:
-            // Aggregate daily totals into monthly or yearly buckets based on span, similar to StatsSeriesBuilder
-            // Build a [Date: Int] map of all known daily entries as Dates
-            var entries: [(date: Date, seconds: Int)] = []
-            for (key, seconds) in dailyMap {
-                let parts = key.split(separator: "-").compactMap { Int($0) }
-                if parts.count == 3, let date = cal.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2])) {
-                    entries.append((cal.startOfDay(for: date), max(0, seconds)))
-                }
-            }
-            // Reading older than the retention cutoff is kept as yearly totals. It always
-            // spans more than a year, so the chart uses yearly bars and stays exact.
-            for (year, seconds) in BibleStatsStore.shared.loadReadingHistoryArchive()?.years ?? [:] {
-                if let year = Int(year), let date = cal.date(from: DateComponents(year: year, month: 1, day: 1)) {
-                    entries.append((date, max(0, seconds)))
-                }
-            }
-            guard !entries.isEmpty else {
-                totalsDaily = []
-                allTimeAggregation = .daily
-                break
-            }
-            let start = entries.map { $0.date }.min() ?? startOfToday
-            let end = startOfToday
-            let monthsSpan = cal.dateComponents([.month], from: start, to: end).month ?? 0
-            let aggregation: StatsSeriesBuilder.Aggregation = (monthsSpan <= 12) ? .monthly : .yearly
-
-            func bucketStart(for date: Date) -> Date {
-                switch aggregation {
-                case .monthly:
-                    let comps = cal.dateComponents([.year, .month], from: date)
-                    return cal.date(from: comps) ?? cal.startOfDay(for: date)
-                case .yearly:
-                    let comps = cal.dateComponents([.year], from: date)
-                    return cal.date(from: comps) ?? cal.startOfDay(for: date)
-                default:
-                    return cal.startOfDay(for: date)
-                }
-            }
-
-            var buckets: [Date: Int] = [:]
-            for e in entries {
-                let key = bucketStart(for: e.date)
-                buckets[key, default: 0] += e.seconds
-            }
-
-            var series: [(Date, Int)] = []
-            var cursor: Date = {
-                switch aggregation {
-                case .monthly:
-                    let comps = cal.dateComponents([.year, .month], from: start)
-                    return cal.date(from: comps) ?? start
-                case .yearly:
-                    let comps = cal.dateComponents([.year], from: start)
-                    return cal.date(from: comps) ?? start
-                default:
-                    return start
-                }
-            }()
-
-            func step(_ date: Date) -> Date {
-                switch aggregation {
-                case .monthly: return cal.date(byAdding: .month, value: 1, to: date) ?? date
-                case .yearly: return cal.date(byAdding: .year, value: 1, to: date) ?? date
-                default: return date
-                }
-            }
-
-            while cursor <= end {
-                let val = buckets[cursor, default: 0]
-                series.append((cursor, val))
-                cursor = step(cursor)
-            }
-
-            if aggregation == .monthly {
-                allTimeAggregation = .monthly
-            } else {
-                allTimeAggregation = .yearly
-            }
-
-            totalsDaily = series
-        }
-
-        activeDaysInScope = totalsDaily.reduce(0) { $0 + ($1.seconds > 0 ? 1 : 0) }
-        let totalInSeries = totalsDaily.reduce(0) { $0 + $1.seconds }
-        avgSecondsPerActiveBucketInScope = activeDaysInScope > 0 ? totalInSeries / activeDaysInScope : 0
-
-        if let top = totalsScopedPerBookTotals.sorted(by: { lhs, rhs in
-            if lhs.value == rhs.value { return lhs.key < rhs.key }
-            return lhs.value > rhs.value
-        }).first, top.value > 0 {
-            topBookInScope = top.key
-        } else {
-            topBookInScope = "—"
-        }
     }
 }
 

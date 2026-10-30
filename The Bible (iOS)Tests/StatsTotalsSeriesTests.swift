@@ -2,11 +2,13 @@ import Foundation
 import Testing
 @testable import Bible
 
+@MainActor
 struct StatsTotalsSeriesTests {
-    /// A fixed calendar and clock so the buckets never depend on where or when the tests run.
+    /// A Gregorian calendar in the device's time zone, as the app uses. `isoDateString` always
+    /// keys days by the device's zone, so a calendar in any other zone would shift the days.
     private var calendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC") ?? .gmt
+        calendar.timeZone = TimeZone.autoupdatingCurrent
         return calendar
     }
 
