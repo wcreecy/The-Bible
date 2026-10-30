@@ -115,7 +115,7 @@ struct GamesOverviewCardContent: View {
             Divider()
 
             if !isEmpty {
-                GameActivitySummary(selectedGame: selectedGame, wordScope: wordScope, version: version, kpi: kpi)
+                GameStatsActivitySummary(selectedGame: selectedGame, wordScope: wordScope, version: version, kpi: kpi)
 
                 gameSections
             } else {

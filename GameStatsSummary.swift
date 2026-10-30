@@ -63,7 +63,7 @@ struct GameStatsKPI {
 }
 
 /// The metrics grid and the 30-day activity chart, for all games or one game.
-struct GameActivitySummary: View {
+struct GameStatsActivitySummary: View {
     let selectedGame: String
     let wordScope: Int
     let version: Int

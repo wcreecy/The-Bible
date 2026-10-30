@@ -35,26 +35,7 @@ struct WordleView: View {
     }
 
     // MARK: - Key state
-    enum KeyState: Int {
-        case unknown = 0
-        case absent   // gray
-        case present  // yellow
-        case correct  // green
-
-        // Keep the “max” precedence when merging states (correct > present > absent > unknown)
-        static func merged(_ a: KeyState, _ b: KeyState) -> KeyState {
-            return (a.rawValue >= b.rawValue) ? a : b
-        }
-
-        var tint: Color {
-            switch self {
-            case .unknown: return .blue
-            case .absent:  return .gray
-            case .present: return .yellow
-            case .correct: return .green
-            }
-        }
-    }
+    typealias KeyState = WordleKeyState
 
     // MARK: - State
     @State private var started: Bool = false
@@ -656,7 +637,7 @@ struct WordleView: View {
     /// Records a guess on the board, updates the keyboard colors, and advances to the next row.
     @discardableResult
     private func applyGuess(_ guess: String) -> [KeyState] {
-        let eval = evaluate(guess: guess, against: target)
+        let eval = WordleRules.evaluate(guess: guess, against: target)
         evaluations[rowIndex] = eval
         guesses[rowIndex] = guess
         rowIndex += 1
@@ -666,10 +647,36 @@ struct WordleView: View {
 
     // Update keyboard states with precedence
     private func mergeKeyboardStates(guess: String, evaluation: [KeyState]) {
-        for (i, ch) in guess.enumerated() {
-            let old = keyboardStates[ch] ?? .unknown
-            keyboardStates[ch] = KeyState.merged(old, evaluation[i])
-        }
+        keyboardStates = WordleRules.mergedKeyboardStates(keyboardStates, guess: guess, evaluation: evaluation)
+    }
+
+    // MARK: - Rules
+    // The game's rules live in `WordleRules` and `WordleWordPicker`, where they are tested.
+
+    private func hardModeViolation(for guess: String) -> String? {
+        WordleRules.hardModeViolation(for: guess, guesses: guesses, evaluations: evaluations, playedRows: rowIndex)
+    }
+
+    private var wordPicker: WordleWordPicker {
+        WordleWordPicker(
+            defaults: .standard,
+            practiceBagKey: practiceWordBagKey,
+            lastPracticeWordKey: lastPracticeWordKey,
+            dailyAssignmentKey: dailyWordAssignmentKey,
+            recentDailyWordsKey: recentDailyWordsKey,
+            recentDailyWordLimit: recentDailyWordLimit
+        )
+    }
+
+    private func nextPracticeWord() -> String {
+        var generator = SystemRandomNumberGenerator()
+        return wordPicker.nextPracticeWord(pool: Self.filteredAnswerWords, using: &generator)
+    }
+
+    /// Today's Daily word: picked at random the first time Daily is played each day and kept for the rest of that day.
+    private func wordOfDay() -> String {
+        var generator = SystemRandomNumberGenerator()
+        return wordPicker.wordOfDay(pool: Self.filteredAnswerWords, dayKey: todayKey, using: &generator)
     }
 
     // MARK: - Daily progress
@@ -722,128 +729,7 @@ struct WordleView: View {
         return !progress.guesses.isEmpty
     }
 
-    // Standard Wordle evaluation (two-pass to handle duplicates)
-    private func evaluate(guess: String, against target: String) -> [KeyState] {
-        var result = Array(repeating: KeyState.absent, count: 5)
-        var targetChars = Array(target)
-        let guessChars = Array(guess)
-
-        // First pass: correct positions
-        for i in 0..<5 {
-            if guessChars[i] == targetChars[i] {
-                result[i] = .correct
-                targetChars[i] = "*" // mark used
-            }
-        }
-        // Second pass: present letters
-        for i in 0..<5 where result[i] != .correct {
-            if let idx = targetChars.firstIndex(of: guessChars[i]) {
-                result[i] = .present
-                targetChars[idx] = "*" // mark used
-            } else {
-                result[i] = .absent
-            }
-        }
-        return result
-    }
-
-    // MARK: - Hard Mode constraints
-
-    private func buildHardModeConstraints() -> (greens: [Int: Character], minCount: [Character: Int], disallowedPositions: [Character: Set<Int>]) {
-        var greens: [Int: Character] = [:]
-        var minCount: [Character: Int] = [:]
-        var disallowed: [Character: Set<Int>] = [:]
-
-        for r in 0..<rowIndex {
-            let g = guesses[r]
-            guard g.count == 5 else { continue }
-            let eval = evaluations[r]
-            var perRowCounts: [Character: Int] = [:]
-
-        for i in 0..<5 {
-                let ch = Array(g)[i]
-                switch eval[i] {
-                case .correct:
-                    greens[i] = ch
-                    perRowCounts[ch, default: 0] += 1
-                case .present:
-                    disallowed[ch, default: []].insert(i)
-                    perRowCounts[ch, default: 0] += 1
-                case .absent, .unknown:
-                    break
-                }
-            }
-
-            for (ch, c) in perRowCounts {
-                if let old = minCount[ch] {
-                    if c > old { minCount[ch] = c }
-                } else {
-                    minCount[ch] = c
-                }
-            }
-        }
-
-        return (greens, minCount, disallowed)
-    }
-
-    private func hardModeViolation(for guess: String) -> String? {
-        let (greens, minCount, disallowed) = buildHardModeConstraints()
-        let guessChars = Array(guess)
-
-        for (idx, ch) in greens {
-            if guessChars[idx] != ch {
-                return "Hard Mode: must keep \(ch) at position \(idx + 1)"
-            }
-        }
-
-        var guessCounts: [Character: Int] = [:]
-        for ch in guessChars {
-            guessCounts[ch, default: 0] += 1
-        }
-        for (ch, required) in minCount {
-            let have = guessCounts[ch] ?? 0
-            if have < required {
-                return "Hard Mode: must include \(required) \(ch)\(required > 1 ? "s" : "")"
-            }
-        }
-
-        for (ch, badPositions) in disallowed {
-            for idx in badPositions {
-                if guessChars[idx] == ch {
-                    return "Hard Mode: \(ch) cannot be at position \(idx + 1)"
-                }
-            }
-        }
-
-        return nil
-    }
-
     // MARK: - Rounds
-    private func nextPracticeWord() -> String {
-        let pool = Self.filteredAnswerWords
-        guard !pool.isEmpty else { return "JESUS" }
-
-        let defaults = UserDefaults.standard
-        let eligibleWords = Set(pool)
-        var bag = (defaults.stringArray(forKey: practiceWordBagKey) ?? [])
-            .filter { eligibleWords.contains($0) }
-
-        if bag.isEmpty {
-            bag = pool.shuffled()
-
-            if bag.count > 1,
-               let lastWord = defaults.string(forKey: lastPracticeWordKey),
-               bag.last == lastWord {
-                bag.swapAt(0, bag.count - 1)
-            }
-        }
-
-        let nextWord = bag.removeLast()
-        defaults.set(bag, forKey: practiceWordBagKey)
-        defaults.set(nextWord, forKey: lastPracticeWordKey)
-        return nextWord
-    }
-
     private func startNewRound(practice: Bool) {
         roundHardMode = hardModeEnabled
 
@@ -1001,42 +887,6 @@ struct WordleView: View {
         #else
         return true
         #endif
-    }
-
-    // MARK: - Word of day (from filtered pool with references)
-    /// Today's Daily word: picked at random the first time Daily is played each day and
-    /// kept for the rest of that day. Recent Daily answers are skipped so words don't repeat.
-    private func wordOfDay() -> String {
-        let defaults = UserDefaults.standard
-        let pool = Self.filteredAnswerWords
-        guard !pool.isEmpty else { return "JESUS" }
-
-        // Today's word stays put even if it's no longer in the pool (e.g. it was assigned
-        // before the answer list changed), so an in-progress Daily isn't swapped out.
-        if let data = defaults.data(forKey: dailyWordAssignmentKey),
-           let assignment = PersistedDecoding.decode(DailyWordAssignment.self, from: data, key: dailyWordAssignmentKey, keepingUnreadableIn: defaults),
-           assignment.dayKey == todayKey,
-           assignment.word.count == 5 {
-            return assignment.word
-        }
-
-        var recent = defaults.stringArray(forKey: recentDailyWordsKey) ?? []
-        let recentSet = Set(recent)
-        let word = pool.filter { !recentSet.contains($0) }.randomElement()
-            ?? pool.randomElement()
-            ?? "JESUS"
-
-        recent.append(word)
-        defaults.set(Array(recent.suffix(recentDailyWordLimit)), forKey: recentDailyWordsKey)
-        if let data = try? JSONEncoder().encode(DailyWordAssignment(dayKey: todayKey, word: word)) {
-            defaults.set(data, forKey: dailyWordAssignmentKey)
-        }
-        return word
-    }
-
-    private struct DailyWordAssignment: Codable {
-        let dayKey: String
-        let word: String
     }
 
     private static func localDayKey(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
