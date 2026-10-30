@@ -217,6 +217,11 @@ struct ScrambleGameView: View {
         return "Starts with \(prefix)."
     }
 
+    // MARK: - Persistent streak (per difficulty)
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "scramble", variant: difficulty.rawValue)
+    }
+
     /// Matches Quiz: green above 60%, yellow down to 30%, then red.
     private var timerTint: Color {
         guard let timeLimit = currentTimeLimit else { return .secondary }
@@ -308,10 +313,18 @@ struct ScrambleGameView: View {
         } message: {
             Text("The word will be marked incorrect, then the next word will begin.")
         }
+        .onAppear {
+            bestStreak = persistentStreak.best
+        }
+        .onChange(of: difficulty) { _, _ in
+            bestStreak = persistentStreak.best
+        }
         .onDisappear {
             if phase != .setup {
-                phase = .setup
+                resetToSetup()
             }
+            // The streak carries from one game to the next, but not out of the screen.
+            currentStreak = 0
         }
     }
 
@@ -483,9 +496,7 @@ struct ScrambleGameView: View {
             .buttonStyle(.borderedProminent)
             .tint(.pink)
 
-            Button("Change Settings") {
-                phase = .setup
-            }
+            Button("Change Settings", action: resetToSetup)
         }
         .padding(.top, 72)
     }
@@ -519,13 +530,23 @@ struct ScrambleGameView: View {
         currentNumber = 0
         correctCount = 0
         answeredCount = 0
-        currentStreak = 0
-        bestStreak = 0
+        // The session streak carries from one game to the next.
+        bestStreak = persistentStreak.best
         strikes = 0
         hintLevel = 0
         isTimerDisabled = false
         phase = .playing
         loadNextWord()
+    }
+
+    /// Back to the start screen. The streak is kept so the next game can continue it.
+    private func resetToSetup() {
+        phase = .setup
+        deck = []
+        currentWord = nil
+        answerFeedback = nil
+        correctCount = 0
+        answeredCount = 0
     }
 
     private func loadNextWord() {
@@ -623,7 +644,6 @@ struct ScrambleGameView: View {
         answeredCount += 1
         correctCount += 1
         currentStreak += 1
-        bestStreak = max(bestStreak, currentStreak)
         recordWordResult(correct: true)
         answerFeedback = .correct
         advanceAfterFeedback()
@@ -685,6 +705,14 @@ struct ScrambleGameView: View {
     }
 
     private func recordWordResult(correct: Bool) {
+        if correct {
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            bestStreak = max(bestStreak, streak.best)
+        } else {
+            // Persistent streak: reset on reveal, strike limit, or timeout
+            persistentStreak.reset()
+        }
         GameStats.shared.recordRound(
             game: .scramble,
             difficulty: difficulty.statsDifficulty,

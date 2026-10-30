@@ -225,6 +225,10 @@ extension iCloudSyncCoordinator {
             keys.append("quizPersistentBestStreak_\(difficulty)")
             keys.append("whoamiPersistentStreak_\(difficulty)")
             keys.append("whoamiPersistentBestStreak_\(difficulty)")
+            keys.append("triviaPersistentStreak_\(difficulty)")
+            keys.append("triviaPersistentBestStreak_\(difficulty)")
+            keys.append("scramblePersistentStreak_\(difficulty)")
+            keys.append("scramblePersistentBestStreak_\(difficulty)")
         }
         return keys
     }()

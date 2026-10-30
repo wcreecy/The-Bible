@@ -315,7 +315,7 @@ final class BibleTriviaGameModel {
         score = 0
         answered = 0
         bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
-        currentStreak = persistentStreak.current
+        // The session streak carries from one game to the next.
         currentBestStreak = persistentStreak.best
         isTimerDisabled = false
         phase = .playing
@@ -368,9 +368,24 @@ final class BibleTriviaGameModel {
         currentIndex -= 1
     }
 
+    /// Back to the start screen. The streak is kept so the next game can continue it.
     func returnToSetup() {
         timerTask?.cancel()
         phase = .setup
+        round = []
+        currentIndex = 0
+        furthestPresentedIndex = 0
+        score = 0
+        answered = 0
+    }
+
+    func onDisappear() {
+        // Leaving after answering begins a new game on return.
+        if (phase == .playing || phase == .results) && answered > 0 {
+            returnToSetup()
+        }
+        // The streak carries from one game to the next, but not out of the screen.
+        currentStreak = 0
     }
 
     private func prepareCurrentQuestion() {
@@ -415,8 +430,9 @@ final class BibleTriviaGameModel {
         let isCorrect = answer == question.correctAnswer
         score += isCorrect ? 1 : 0
         if isCorrect {
+            currentStreak += 1
+            // Persistent streak: extend on correct
             let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
             currentBestStreak = max(currentBestStreak, streak.best)
         } else {
             persistentStreak.reset()
@@ -552,6 +568,9 @@ struct BibleTriviaGameView: View {
         }
         .task {
             await model.load()
+        }
+        .onDisappear {
+            model.onDisappear()
         }
     }
 }
