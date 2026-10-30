@@ -92,16 +92,16 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
 
     var subtitle: LocalizedStringResource {
         switch self {
-        case .quiz: "Bible facts"
+        case .quiz: "Select which book the provided verse is from"
         case .hangman: "People, places & books"
-        case .beatTheClock: "Beat the clock"
-        case .verseMatch: "What verse is this?"
+        case .beatTheClock: "Select the correct answer before time runs out"
+        case .verseMatch: "Select the verse text based on the book/verse provided"
         case .bookOrder: "Order the books of the Bible"
         case .wordSearch: "Find the hidden words"
         case .scramble: "Unscramble words found in the Bible"
-        case .whoAmI: "Identify the person listed"
+        case .whoAmI: "Identify the person listed from the description"
         case .wordle: "5 letters, 6 tries"
-        case .trivia: "Bible Trivia"
+        case .trivia: "Test your knowledge of the Bible"
         case .reviewRound: "Previously missed questions"
         }
     }
