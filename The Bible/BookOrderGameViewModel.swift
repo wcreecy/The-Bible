@@ -132,11 +132,9 @@ final class BookOrderGameViewModel {
     var started: Bool = false
     var currentItems: [String] = []
     var correctOrder: [String] = []
-    var score: Int = 0
-    var answered: Int = 0
-    /// Correct puzzles in a row during this visit.
-    var sessionStreak: Int = 0
-    var currentBestStreak: Int = 0
+    /// Score and streaks; see `GameScore` for the rules. The session streak counts correct
+    /// puzzles in a row during this visit.
+    private(set) var session = GameScore()
     var showResult: Bool = false
     var wasCorrect: Bool = false
 
@@ -151,7 +149,7 @@ final class BookOrderGameViewModel {
     ) ?? .normal {
         didSet {
             UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
-            seedStreakFromPersistence()
+            session.syncSavedBest(from: persistentStreak)
         }
     }
 
@@ -183,18 +181,12 @@ final class BookOrderGameViewModel {
         return value > 0 ? value : nil
     }
 
-    private func seedStreakFromPersistence() {
-        currentBestStreak = max(currentBestStreak, persistentStreak.best)
-    }
-
     // MARK: - Game flow
 
     func startGame() {
-        score = 0
-        answered = 0
         // The session streak carries from one game to the next.
         // Do NOT reset persistent streaks here; seed from persistence
-        seedStreakFromPersistence()
+        session.beginGame(savedStreak: persistentStreak)
         started = true
         nextRound()
     }
@@ -202,17 +194,15 @@ final class BookOrderGameViewModel {
     func endGame() {
         started = false
         showResult = false
-        score = 0
-        answered = 0
+        session.clearGame()
     }
 
     func onDisappear() {
         // Leaving after answering begins a new game on return.
-        if started, answered > 0 {
+        if started, session.answered > 0 {
             endGame()
         }
-        // The streak carries from one game to the next, but not out of the screen.
-        sessionStreak = 0
+        session.clearStreak()
     }
 
     /// Picks a run of books in a row from the chosen part and shuffles it.
@@ -252,25 +242,14 @@ final class BookOrderGameViewModel {
         booksInPlace = zip(currentItems, correctOrder).filter { $0 == $1 }.count
         wasCorrect = currentItems == correctOrder
         lastTimeSeconds = elapsedSeconds
-        answered += 1
+        session.record(correct: wasCorrect, savedStreak: persistentStreak)
 
         if wasCorrect {
-            score += 1
-            sessionStreak += 1
-
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentBestStreak = max(currentBestStreak, streak.best)
-
             let previousBest = savedBestTime
             isNewBestTime = previousBest.map { elapsedSeconds < $0 } ?? true
             if isNewBestTime {
                 UserDefaults.standard.set(max(1, elapsedSeconds), forKey: bestTimeKey)
             }
-        } else {
-            // Persistent streak: reset on incorrect
-            sessionStreak = 0
-            persistentStreak.reset()
         }
         bestTimeSeconds = savedBestTime
 
@@ -279,7 +258,7 @@ final class BookOrderGameViewModel {
             difficulty: difficulty.statsDifficulty,
             correct: wasCorrect ? 1 : 0,
             answered: 1,
-            currentBestStreak: currentBestStreak
+            currentBestStreak: session.savedBestStreak
         )
 
         showResult = true

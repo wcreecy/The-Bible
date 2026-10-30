@@ -193,11 +193,9 @@ final class BibleTriviaGameModel {
     private var carryoverQuestionIDs: Set<Int> = []
     private(set) var currentIndex = 0
     private var furthestPresentedIndex = 0
-    private(set) var score = 0
-    private(set) var answered = 0
+    /// Score and streaks; see `GameScore` for the rules. Trivia keeps its own best score below.
+    private(set) var session = GameScore()
     private(set) var bestScore = 0
-    private(set) var currentStreak = 0
-    private(set) var currentBestStreak = 0
     private(set) var remainingSeconds = 0
     var isTimerDisabled = false
     @ObservationIgnored private var timerTask: Task<Void, Never>?
@@ -248,8 +246,8 @@ final class BibleTriviaGameModel {
     }
 
     var accuracy: Int {
-        guard answered > 0 else { return 0 }
-        return Int((Double(score) / Double(answered) * 100).rounded())
+        guard session.answered > 0 else { return 0 }
+        return Int((Double(session.score) / Double(session.answered) * 100).rounded())
     }
 
     var isLastQuestion: Bool {
@@ -312,11 +310,9 @@ final class BibleTriviaGameModel {
 
         currentIndex = 0
         furthestPresentedIndex = 0
-        score = 0
-        answered = 0
-        bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
         // The session streak carries from one game to the next.
-        currentBestStreak = persistentStreak.best
+        session.beginGame(savedStreak: persistentStreak)
+        bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
         isTimerDisabled = false
         phase = .playing
         prepareCurrentQuestion()
@@ -375,17 +371,15 @@ final class BibleTriviaGameModel {
         round = []
         currentIndex = 0
         furthestPresentedIndex = 0
-        score = 0
-        answered = 0
+        session.clearGame()
     }
 
     func onDisappear() {
         // Leaving after answering begins a new game on return.
-        if (phase == .playing || phase == .results) && answered > 0 {
+        if (phase == .playing || phase == .results) && session.answered > 0 {
             returnToSetup()
         }
-        // The streak carries from one game to the next, but not out of the screen.
-        currentStreak = 0
+        session.clearStreak()
     }
 
     private func prepareCurrentQuestion() {
@@ -426,18 +420,8 @@ final class BibleTriviaGameModel {
         timerTask?.cancel()
         round[currentIndex].selectedAnswer = answer
         round[currentIndex].timedOut = answer == nil
-        answered += 1
         let isCorrect = answer == question.correctAnswer
-        score += isCorrect ? 1 : 0
-        if isCorrect {
-            currentStreak += 1
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentBestStreak = max(currentBestStreak, streak.best)
-        } else {
-            persistentStreak.reset()
-            currentStreak = 0
-        }
+        session.record(correct: isCorrect, savedStreak: persistentStreak)
         if !carryoverQuestionIDs.contains(question.id) {
             progressStore.record(questionID: question.id, difficulty: difficulty)
         }
@@ -446,7 +430,7 @@ final class BibleTriviaGameModel {
             difficulty: difficulty.statsDifficulty,
             correct: isCorrect ? 1 : 0,
             answered: 1,
-            currentBestStreak: currentBestStreak
+            currentBestStreak: session.savedBestStreak
         )
         let scriptureReference = BibleReferenceLinker.parse(question.reference)
         if let bookName = scriptureReference?.bookName {
@@ -485,9 +469,9 @@ final class BibleTriviaGameModel {
     }
 
     private func savePersonalBest() {
-        guard score > bestScore else { return }
-        bestScore = score
-        UserDefaults.standard.set(score, forKey: bestScoreKey)
+        guard session.score > bestScore else { return }
+        bestScore = session.score
+        UserDefaults.standard.set(session.score, forKey: bestScoreKey)
         iCloudSyncCoordinator.shared.pushKey(bestScoreKey)
     }
 }
@@ -520,9 +504,9 @@ struct BibleTriviaGameView: View {
                     options: model.options,
                     questionNumber: model.currentIndex + 1,
                     questionCount: model.roundCount,
-                    score: model.score,
-                    answered: model.answered,
-                    currentStreak: model.currentStreak,
+                    score: model.session.score,
+                    answered: model.session.answered,
+                    currentStreak: model.session.streak,
                     accuracy: model.accuracy,
                     remainingSeconds: model.remainingSeconds,
                     timerSeconds: model.difficulty.timerSeconds,
@@ -541,7 +525,7 @@ struct BibleTriviaGameView: View {
                 )
             case .results:
                 BibleTriviaResultsScreen(
-                    score: model.score,
+                    score: model.session.score,
                     questionCount: model.roundCount,
                     accuracy: model.accuracy,
                     difficulty: model.difficulty,

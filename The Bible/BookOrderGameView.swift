@@ -114,9 +114,9 @@ struct BookOrderGameView: View {
     private var compactGameBoard: some View {
         VStack(spacing: 12) {
             GameScoreboardCard(
-                currentCorrect: vm.score,
-                currentAnswered: vm.answered,
-                currentStreak: vm.sessionStreak,
+                currentCorrect: vm.session.score,
+                currentAnswered: vm.session.answered,
+                currentStreak: vm.session.streak,
                 game: .bookorder
             )
 
@@ -161,9 +161,9 @@ struct BookOrderGameView: View {
     private func iPadGameBoard(availableHeight: CGFloat) -> some View {
         VStack(spacing: 12) {
             GameScoreboardCard(
-                currentCorrect: vm.score,
-                currentAnswered: vm.answered,
-                currentStreak: vm.sessionStreak,
+                currentCorrect: vm.session.score,
+                currentAnswered: vm.session.answered,
+                currentStreak: vm.session.streak,
                 game: .bookorder,
                 style: .dashboard
             )
