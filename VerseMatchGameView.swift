@@ -103,7 +103,7 @@ struct VerseMatchGameView: View {
         }
     }
 
-    typealias VerseSection = QuizView.VerseSection
+    typealias VerseSection = QuizVerseSection
 
     static let questionsPerGame = 10
     /// "Any verse" skips longer verses so four choices stay readable.

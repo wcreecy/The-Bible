@@ -641,7 +641,7 @@ struct HangmanGameView: View {
 
     private func bookWords() -> [HangmanWord] {
         BibleCanon.canonicalOrder().map { name in
-            let section = QuizView.VerseSection.containing(name)
+            let section = QuizVerseSection.containing(name)
             let testament = section?.isOldTestament == false
                 ? String(localized: "New Testament")
                 : String(localized: "Old Testament")

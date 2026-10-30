@@ -1,5 +1,9 @@
 import SwiftUI
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
 struct QuizView: View {
     @State private var vm: QuizGameViewModel
 

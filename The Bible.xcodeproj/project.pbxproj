@@ -144,6 +144,8 @@
 		2CBD4225306B575C002E33CE /* VerseActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD4224306B575C002E33CE /* VerseActionMenu.swift */; };
 		2CBDF1DA2ED09F7E00CEE884 /* WordSearchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */; };
 		2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC5D6E82ED608E8009E4C0E /* Haptics.swift */; };
+		2CC76C1E3094ED6600653A8A /* QuizGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC76C1D3094ED6600653A8A /* QuizGameViewModel.swift */; };
+		2CC76C203094ED7F00653A8A /* QuizGameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC76C1F3094ED7F00653A8A /* QuizGameViews.swift */; };
 		2CC853B12EF05DDF00753104 /* ScripturePreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC853B02EF05DDF00753104 /* ScripturePreviewCard.swift */; };
 		2CC853BB2EF086D100753104 /* DailyGoalHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC853BA2EF086D100753104 /* DailyGoalHistoryStore.swift */; };
 		2CD3DAA62EDA7EC900F89FB7 /* VersesChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD3DAA52EDA7EC900F89FB7 /* VersesChecklistView.swift */; };
@@ -342,6 +344,8 @@
 		2CBD4224306B575C002E33CE /* VerseActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseActionMenu.swift; sourceTree = "<group>"; };
 		2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSearchGameView.swift; sourceTree = "<group>"; };
 		2CC5D6E82ED608E8009E4C0E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		2CC76C1D3094ED6600653A8A /* QuizGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizGameViewModel.swift; sourceTree = "<group>"; };
+		2CC76C1F3094ED7F00653A8A /* QuizGameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizGameViews.swift; sourceTree = "<group>"; };
 		2CC853B02EF05DDF00753104 /* ScripturePreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScripturePreviewCard.swift; sourceTree = "<group>"; };
 		2CC853BA2EF086D100753104 /* DailyGoalHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyGoalHistoryStore.swift; sourceTree = "<group>"; };
 		2CD3DAA52EDA7EC900F89FB7 /* VersesChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersesChecklistView.swift; sourceTree = "<group>"; };
@@ -623,6 +627,8 @@
 				2C6FD17A30882504007F22A1 /* ReviewRoundView.swift */,
 				2C0AB1EB308A58A400DA8FD9 /* PerformanceSignposts.swift */,
 				2C0AB1ED308A629900DA8FD9 /* AppStorageKey.swift */,
+				2CC76C1D3094ED6600653A8A /* QuizGameViewModel.swift */,
+				2CC76C1F3094ED7F00653A8A /* QuizGameViews.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -892,6 +898,7 @@
 				2C4BE6362EEDE2260090F5A2 /* AverageSessionCardView.swift in Sources */,
 				2C2A44F02EEE261B00FE8C2F /* Notifications.swift in Sources */,
 				2C27657E2EE8ECB400A321FE /* StreaksViewModel.swift in Sources */,
+				2CC76C1E3094ED6600653A8A /* QuizGameViewModel.swift in Sources */,
 				2CA7DBB5307B249E009CE9AC /* UITestSupport.swift in Sources */,
 				2C02723A3086B11300EDFEE5 /* ReadingAndGamesComparisonCard.swift in Sources */,
 				2C02723C3086B2B800EDFEE5 /* HomeLayoutPreset.swift in Sources */,
@@ -905,6 +912,7 @@
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
 				2C78EFA23083B6CE008941C3 /* SetupChecklistCard.swift in Sources */,
 				2CB92A97306C884700B03AB0 /* GameTimerCard.swift in Sources */,
+				2CC76C203094ED7F00653A8A /* QuizGameViews.swift in Sources */,
 				2C2A44DE2EEE152E00FE8C2F /* StartScreen.swift in Sources */,
 				2C2A44FA2EEE337A00FE8C2F /* SettingsAppearanceSection.swift in Sources */,
 				2C514D0C3075AB4F000CFC0D /* TodayChallengeStore.swift in Sources */,
