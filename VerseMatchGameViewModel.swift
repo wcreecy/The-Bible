@@ -228,17 +228,25 @@ final class VerseMatchGameViewModel {
 
     private var bestGameScoreKey: String { "versematchBestGameScore_\(difficulty.rawValue)" }
 
+    /// Saved verses within the chosen categories, without repeats.
+    private var favoriteVersesInCategories: [VerseMatchVerse] {
+        let books = poolBookNames
+        return uniqueByReference(favoriteVerses).filter { books.contains($0.bookName) }
+    }
+
     /// The pool's own verses within the chosen categories, before any fill-in.
     private var preferredVerses: [VerseMatchVerse] {
         let books = poolBookNames
         switch pool {
         case .wellKnown: return wellKnownVerses.filter { books.contains($0.bookName) }
-        case .favorites: return uniqueByReference(favoriteVerses).filter { books.contains($0.bookName) }
+        case .favorites: return favoriteVersesInCategories
         case .any: return []
         }
     }
 
-    var isFavoritesAvailable: Bool { !preferredVerses.isEmpty }
+    /// Whether the Favorites pool can be chosen: at least one saved verse is in the chosen
+    /// categories. This doesn't depend on which pool is selected right now.
+    var isFavoritesAvailable: Bool { !favoriteVersesInCategories.isEmpty }
 
     var canStart: Bool {
         isFilterReady && (pool != .favorites || !preferredVerses.isEmpty)
