@@ -223,7 +223,7 @@ final class QuizGameViewModel {
     ) ?? .normal {
         didSet {
             UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
-            bestStreak = persistentStreak.best
+            session.syncSavedBest(from: persistentStreak)
         }
     }
 
@@ -270,14 +270,8 @@ final class QuizGameViewModel {
     private(set) var currentIndex: Int = -1
     private(set) var totalQuestions: Int = 0
 
-    // Scoring
-    private(set) var score = 0
-    private(set) var answered = 0
-    private(set) var sessionStreak = 0
-    private(set) var sessionBestStreak = 0
-    private(set) var bestStreak = 0
-    private(set) var bestGameScore = 0
-    private(set) var isNewBestGame = false
+    /// Score, streaks and best game; see `GameScore` for the rules.
+    private(set) var session = GameScore()
 
     // Timer
     private(set) var remainingSeconds: Int = 0 {
@@ -343,7 +337,7 @@ final class QuizGameViewModel {
 
     func onAppear() {
         migrateLegacyScope()
-        bestStreak = persistentStreak.best
+        session.syncSavedBest(from: persistentStreak)
     }
 
     /// Sorts out list and repeated verses while the start screen is showing.
@@ -354,9 +348,10 @@ final class QuizGameViewModel {
 
     func onDisappear() {
         // Leaving after answering begins a new game on return.
-        if phase != .setup && answered > 0 {
+        if phase != .setup && session.answered > 0 {
             resetToSetup()
         }
+        session.clearStreak()
     }
 
     /// Counts down the current question. Run from a task keyed on `timerID` so each
@@ -470,12 +465,7 @@ final class QuizGameViewModel {
         totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
         currentIndex = -1
-        score = 0
-        answered = 0
-        sessionStreak = 0
-        sessionBestStreak = 0
-        isNewBestGame = false
-        bestStreak = persistentStreak.best
+        session.beginGame(savedStreak: persistentStreak)
         isTimerDisabled = false
         phase = .playing
         appendNextQuestion()
@@ -495,12 +485,7 @@ final class QuizGameViewModel {
     }
 
     private func showResults() {
-        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
-        isNewBestGame = score > previousBest
-        bestGameScore = max(previousBest, score)
-        if isNewBestGame {
-            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
-        }
+        session.finishGame(bestScoreKey: bestGameScoreKey)
         phase = .results
     }
 
@@ -510,9 +495,7 @@ final class QuizGameViewModel {
         currentIndex = -1
         questionBag = []
         remainingSeconds = 0
-        score = 0
-        answered = 0
-        sessionStreak = 0
+        session.clearGame()
     }
 
     func showPrevious() {
@@ -556,28 +539,16 @@ final class QuizGameViewModel {
         history[currentIndex].outcome = outcome
         history[currentIndex].selected = selected
         stopTimerPulse()
-        answered += 1
 
         let correct = outcome == .correct
-        if correct {
-            score += 1
-            sessionStreak += 1
-            sessionBestStreak = max(sessionBestStreak, sessionStreak)
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            bestStreak = max(bestStreak, streak.best)
-        } else {
-            // Persistent streak: reset on incorrect or timeout
-            sessionStreak = 0
-            persistentStreak.reset()
-        }
+        session.record(correct: correct, savedStreak: persistentStreak)
 
         GameStats.shared.recordRound(
             game: .quiz,
             difficulty: difficulty.statsDifficulty,
             correct: correct ? 1 : 0,
             answered: 1,
-            currentBestStreak: bestStreak
+            currentBestStreak: session.savedBestStreak
         )
         GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
         if correct, !reviewQuestionIDs.isEmpty {

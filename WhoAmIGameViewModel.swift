@@ -110,7 +110,7 @@ final class WhoAmIGameViewModel {
     var difficulty: Difficulty = Difficulty(rawValue: UserDefaults.standard.string(forKey: WhoAmIGameViewModel.difficultyKey) ?? "") ?? .normal {
         didSet {
             UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
-            currentBestStreak = max(currentBestStreak, persistentStreak.best)
+            session.syncSavedBest(from: persistentStreak)
         }
     }
 
@@ -167,15 +167,8 @@ final class WhoAmIGameViewModel {
     @ObservationIgnored private var timerTask: Task<Void, Never>?
     var pulseOn: Bool = false
 
-    // Scoring
-    var score: Int = 0
-    var answered: Int = 0
-    /// Correct answers in a row during this game.
-    var sessionStreak: Int = 0
-    var sessionBestStreak: Int = 0
-    var currentBestStreak: Int = 0
-    var bestGameScore: Int = 0
-    var isNewBestGame: Bool = false
+    /// Score, streaks and best game; see `GameScore` for the rules.
+    private(set) var session = GameScore()
 
     var roundOver: Bool = false
     var wasTimedOut: Bool = false
@@ -189,7 +182,7 @@ final class WhoAmIGameViewModel {
 
     // Load data
     func onAppear() {
-        currentBestStreak = max(currentBestStreak, persistentStreak.best)
+        session.syncSavedBest(from: persistentStreak)
 
         Task {
             if entries.isEmpty {
@@ -259,12 +252,7 @@ final class WhoAmIGameViewModel {
 
     func startGame() {
         guard isReady else { return }
-        score = 0
-        answered = 0
-        sessionStreak = 0
-        sessionBestStreak = 0
-        isNewBestGame = false
-        currentBestStreak = max(currentBestStreak, persistentStreak.best)
+        session.beginGame(savedStreak: persistentStreak)
         let candidates = reviewQuestionIDs.isEmpty ? eligibleEntries : reviewEntries
         questionQueue = Array(candidates.shuffled().prefix(Self.questionsPerGame))
         totalQuestions = questionQueue.count
@@ -313,27 +301,14 @@ final class WhoAmIGameViewModel {
     private func finishRound(correct: Bool) {
         stopTimer()
         roundOver = true
-        answered += 1
-
-        if correct {
-            score += 1
-            sessionStreak += 1
-            sessionBestStreak = max(sessionBestStreak, sessionStreak)
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentBestStreak = max(currentBestStreak, streak.best)
-        } else {
-            // Persistent streak: reset on incorrect or timeout
-            sessionStreak = 0
-            persistentStreak.reset()
-        }
+        session.record(correct: correct, savedStreak: persistentStreak)
 
         GameStats.shared.recordRound(
             game: .whoami,
             difficulty: difficulty.statsDifficulty,
             correct: correct ? 1 : 0,
             answered: 1,
-            currentBestStreak: currentBestStreak
+            currentBestStreak: session.savedBestStreak
         )
         if correct, !reviewQuestionIDs.isEmpty, let current {
             MissedGameQuestionStore.shared.resolveReviewQuestion(
@@ -351,12 +326,7 @@ final class WhoAmIGameViewModel {
     }
 
     private func finishGame() {
-        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
-        isNewBestGame = score > previousBest
-        bestGameScore = max(previousBest, score)
-        if isNewBestGame {
-            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
-        }
+        session.finishGame(bestScoreKey: bestGameScoreKey)
         current = nil
         isComplete = true
     }
@@ -372,11 +342,15 @@ final class WhoAmIGameViewModel {
         roundOver = false
         isComplete = false
         started = false
+        session.clearGame()
     }
 
     func endRoundWhenLeavingScreen() {
-        guard started, answered > 0 else { return }
-        returnToSetup()
+        // Leaving after answering begins a new game on return.
+        if started, session.answered > 0 {
+            returnToSetup()
+        }
+        session.clearStreak()
     }
 
     // MARK: - Timer

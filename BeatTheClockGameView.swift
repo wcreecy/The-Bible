@@ -36,13 +36,13 @@ struct BeatTheClockGameView: View {
                         case .results:
                             Spacer(minLength: 32)
                             BeatTheClockResultsCard(
-                                score: vm.score,
+                                score: vm.session.score,
                                 total: vm.totalQuestions,
-                                bestStreak: vm.sessionBestStreak,
-                                bestGameScore: vm.bestGameScore,
-                                isNewBest: vm.isNewBestGame,
+                                bestStreak: vm.session.sessionBestStreak,
+                                bestGameScore: vm.session.bestGameScore,
+                                isNewBest: vm.session.isNewBestGame,
                                 onPlayAgain: vm.startGame,
-                                onChangeSettings: vm.resetGameSession
+                                onChangeSettings: vm.resetToSetup
                             )
                             .frame(maxWidth: .infinity)
                         }
@@ -223,9 +223,9 @@ struct BeatTheClockGameView: View {
     @ViewBuilder
     private var compactGameContent: some View {
         GameScoreboardCard(
-            currentCorrect: vm.score,
-            currentAnswered: vm.answered,
-            currentStreak: vm.sessionStreak,
+            currentCorrect: vm.session.score,
+            currentAnswered: vm.session.answered,
+            currentStreak: vm.session.streak,
             game: .beatclock
         )
 
@@ -318,9 +318,9 @@ struct BeatTheClockGameView: View {
     private func dashboard(availableHeight: CGFloat) -> some View {
         VStack(spacing: 18) {
             GameScoreboardCard(
-                currentCorrect: vm.score,
-                currentAnswered: vm.answered,
-                currentStreak: vm.sessionStreak,
+                currentCorrect: vm.session.score,
+                currentAnswered: vm.session.answered,
+                currentStreak: vm.session.streak,
                 game: .beatclock,
                 style: .dashboard
             )

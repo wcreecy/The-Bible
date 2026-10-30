@@ -38,11 +38,11 @@ struct QuizView: View {
                         case .results:
                             Spacer(minLength: 32)
                             QuizResultsCard(
-                                score: vm.score,
+                                score: vm.session.score,
                                 total: vm.totalQuestions,
-                                bestStreak: vm.sessionBestStreak,
-                                bestGameScore: vm.bestGameScore,
-                                isNewBest: vm.isNewBestGame,
+                                bestStreak: vm.session.sessionBestStreak,
+                                bestGameScore: vm.session.bestGameScore,
+                                isNewBest: vm.session.isNewBestGame,
                                 onPlayAgain: vm.startQuiz,
                                 onChangeSettings: vm.resetToSetup
                             )
@@ -218,9 +218,9 @@ struct QuizView: View {
         if let current = vm.current {
             VStack(spacing: 16) {
                 GameScoreboardCard(
-                    currentCorrect: vm.score,
-                    currentAnswered: vm.answered,
-                    currentStreak: vm.sessionStreak,
+                    currentCorrect: vm.session.score,
+                    currentAnswered: vm.session.answered,
+                    currentStreak: vm.session.streak,
                     game: .quiz
                 )
 
@@ -339,9 +339,9 @@ struct QuizView: View {
         if let current = vm.current {
             VStack(spacing: 18) {
                 GameScoreboardCard(
-                    currentCorrect: vm.score,
-                    currentAnswered: vm.answered,
-                    currentStreak: vm.sessionStreak,
+                    currentCorrect: vm.session.score,
+                    currentAnswered: vm.session.answered,
+                    currentStreak: vm.session.streak,
                     game: .quiz,
                     style: .dashboard
                 )

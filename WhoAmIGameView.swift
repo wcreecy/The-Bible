@@ -52,11 +52,11 @@ struct WhoAmIGameView: View {
                 } else if vm.isComplete {
                     Spacer(minLength: 32)
                     WhoAmIResultsCard(
-                        score: vm.score,
+                        score: vm.session.score,
                         total: vm.totalQuestions,
-                        bestStreak: vm.sessionBestStreak,
-                        bestGameScore: vm.bestGameScore,
-                        isNewBest: vm.isNewBestGame,
+                        bestStreak: vm.session.sessionBestStreak,
+                        bestGameScore: vm.session.bestGameScore,
+                        isNewBest: vm.session.isNewBestGame,
                         onPlayAgain: vm.startGame,
                         onChangeSettings: vm.returnToSetup
                     )
@@ -165,9 +165,9 @@ struct WhoAmIGameView: View {
     @ViewBuilder
     private var compactBoard: some View {
         GameScoreboardCard(
-            currentCorrect: vm.score,
-            currentAnswered: vm.answered,
-            currentStreak: vm.sessionStreak,
+            currentCorrect: vm.session.score,
+            currentAnswered: vm.session.answered,
+            currentStreak: vm.session.streak,
             game: .whoami
         )
 
@@ -264,9 +264,9 @@ struct WhoAmIGameView: View {
     private var iPadBoard: some View {
         VStack(spacing: 20) {
             GameScoreboardCard(
-                currentCorrect: vm.score,
-                currentAnswered: vm.answered,
-                currentStreak: vm.sessionStreak,
+                currentCorrect: vm.session.score,
+                currentAnswered: vm.session.answered,
+                currentStreak: vm.session.streak,
                 game: .whoami,
                 style: .dashboard
             )

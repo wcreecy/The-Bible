@@ -156,7 +156,7 @@ final class BeatTheClockGameViewModel {
     ) ?? .normal {
         didSet {
             UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
-            currentBestStreak = persistentStreak.best
+            session.syncSavedBest(from: persistentStreak)
         }
     }
 
@@ -193,14 +193,8 @@ final class BeatTheClockGameViewModel {
     private(set) var hintRevealed = false
     private(set) var isPulsing = false
 
-    // Scoring
-    private(set) var score = 0
-    private(set) var answered = 0
-    private(set) var sessionStreak = 0
-    private(set) var sessionBestStreak = 0
-    private(set) var currentBestStreak = 0
-    private(set) var bestGameScore = 0
-    private(set) var isNewBestGame = false
+    /// Score, streaks and best game; see `GameScore` for the rules.
+    private(set) var session = GameScore()
 
     // Answer entry
     var searchText = "" {
@@ -268,14 +262,15 @@ final class BeatTheClockGameViewModel {
     // MARK: - Lifecycle
 
     func onAppear() {
-        currentBestStreak = persistentStreak.best
+        session.syncSavedBest(from: persistentStreak)
     }
 
     func onDisappear() {
         // Leaving after answering begins a new game session on return.
-        if phase != .setup && answered > 0 {
-            resetGameSession()
+        if phase != .setup && session.answered > 0 {
+            resetToSetup()
         }
+        session.clearStreak()
     }
 
     func loadData() async {
@@ -385,12 +380,7 @@ final class BeatTheClockGameViewModel {
         questionDeck = deck
         totalQuestions = deck.count
         questionNumber = 0
-        score = 0
-        answered = 0
-        sessionStreak = 0
-        sessionBestStreak = 0
-        isNewBestGame = false
-        currentBestStreak = persistentStreak.best
+        session.beginGame(savedStreak: persistentStreak)
         phase = .playing
         nextRound()
     }
@@ -414,17 +404,12 @@ final class BeatTheClockGameViewModel {
     }
 
     private func showResults() {
-        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
-        isNewBestGame = score > previousBest
-        bestGameScore = max(previousBest, score)
-        if isNewBestGame {
-            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
-        }
+        session.finishGame(bestScoreKey: bestGameScoreKey)
         currentQuestion = nil
         phase = .results
     }
 
-    func resetGameSession() {
+    func resetToSetup() {
         phase = .setup
         roundOutcome = nil
         currentQuestion = nil
@@ -432,6 +417,7 @@ final class BeatTheClockGameViewModel {
         questionDeck = []
         searchText = ""
         inputMessage = nil
+        session.clearGame()
     }
 
     private func tick() {
@@ -498,28 +484,16 @@ final class BeatTheClockGameViewModel {
         guard !selectionLocked, let currentQuestion else { return }
         roundOutcome = outcome
         self.submittedBook = submittedBook
-        answered += 1
 
         let correct = outcome == .correct
-        if correct {
-            score += 1
-            sessionStreak += 1
-            sessionBestStreak = max(sessionBestStreak, sessionStreak)
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentBestStreak = max(currentBestStreak, streak.best)
-        } else {
-            // Persistent streak: reset on incorrect or timeout
-            sessionStreak = 0
-            persistentStreak.reset()
-        }
+        session.record(correct: correct, savedStreak: persistentStreak)
 
         GameStats.shared.recordRound(
             game: .beatclock,
             difficulty: difficulty.statsDifficulty,
             correct: correct ? 1 : 0,
             answered: 1,
-            currentBestStreak: currentBestStreak
+            currentBestStreak: session.savedBestStreak
         )
         GameStats.shared.recordBeatClockType(
             type: currentQuestion.subject == .person ? "People" : "Places",

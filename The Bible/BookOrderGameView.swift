@@ -104,6 +104,9 @@ struct BookOrderGameView: View {
                 elapsedSeconds += 1
             }
         }
+        .onDisappear {
+            vm.onDisappear()
+        }
     }
 
     // MARK: - iPhone

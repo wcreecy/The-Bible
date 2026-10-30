@@ -192,7 +192,7 @@ final class BookOrderGameViewModel {
     func startGame() {
         score = 0
         answered = 0
-        sessionStreak = 0
+        // The session streak carries from one game to the next.
         // Do NOT reset persistent streaks here; seed from persistence
         seedStreakFromPersistence()
         started = true
@@ -202,6 +202,17 @@ final class BookOrderGameViewModel {
     func endGame() {
         started = false
         showResult = false
+        score = 0
+        answered = 0
+    }
+
+    func onDisappear() {
+        // Leaving after answering begins a new game on return.
+        if started, answered > 0 {
+            endGame()
+        }
+        // The streak carries from one game to the next, but not out of the screen.
+        sessionStreak = 0
     }
 
     /// Picks a run of books in a row from the chosen part and shuffles it.
