@@ -641,10 +641,11 @@ private struct SettingsDeveloperSection: View {
 }
 
 @MainActor
-private enum DeveloperSettingsReset {
-    static func perform() {
-        let defaults = UserDefaults.standard
-        let defaultValues: [String: Any] = [
+enum DeveloperSettingsReset {
+    /// What each setting is reset to. Game settings are stored as the raw value of their enum,
+    /// so each one must be a real raw value; the tests check this.
+    static var defaultValues: [String: Any] {
+        [
             "colorSchemePreference": "system",
             "dailyGoalMinutes": 30,
             StreakReminderScheduler.enabledKey: false,
@@ -681,15 +682,15 @@ private enum DeveloperSettingsReset {
             "statsSelectedMode": "Reading Stats",
             "statsSelectedGame": "All Games",
             "debugAutoWinEnabled": false,
-            "beatTheClockCategory": "people",
-            "beatTheClockDifficulty": "medium",
-            "hangmanDifficulty": "medium",
-            "hangmanTheme": "people",
+            AppStorageKey.beatTheClockCategory: BeatTheClockCategory.people.rawValue,
+            AppStorageKey.beatTheClockDifficulty: BeatTheClockDifficulty.normal.rawValue,
+            AppStorageKey.hangmanDifficulty: HangmanDifficulty.normal.rawValue,
+            AppStorageKey.hangmanTheme: HangmanTheme.all.rawValue,
             "scrambleDifficulty": "normal",
             "quizDifficulty": "normal",
             "quizScope": "whole",
             "quizSections": "",
-            "verseMatchDifficulty": "medium",
+            AppStorageKey.verseMatchDifficulty: VerseMatchDifficulty.normal.rawValue,
             "versematchScope": "whole",
             "versematchSections": "",
             "wordleAllowDailyReplay": false,
@@ -708,6 +709,10 @@ private enum DeveloperSettingsReset {
             "prayerSessionSeconds": 0,
             "mindfulSessionStartDate": 0.0
         ]
+    }
+
+    static func perform() {
+        let defaults = UserDefaults.standard
 
         for (key, value) in defaultValues {
             defaults.set(value, forKey: key)
