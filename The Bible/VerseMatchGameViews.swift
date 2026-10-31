@@ -173,7 +173,7 @@ private struct VerseMatchAnswersCard: View {
                     }
                 }
                 .padding()
-                .background(backgroundColor(for: index))
+                .glassEffect(answerGlass(for: index), in: .rect(cornerRadius: 12))
                 .overlay {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .stroke(borderColor(for: index), lineWidth: 1)
@@ -203,17 +203,17 @@ private struct VerseMatchAnswersCard: View {
         return ""
     }
 
-    private func backgroundColor(for index: Int) -> Color {
+    private func answerGlass(for index: Int) -> Glass {
         guard let selectedIndex else {
-            return Color(.secondarySystemBackground)
+            return .regular
         }
         if index == correctIndex {
-            return Color.green.opacity(0.18)
+            return .regular.tint(.green.opacity(0.35))
         }
         if index == selectedIndex, selectedIndex != correctIndex {
-            return Color.red.opacity(0.18)
+            return .regular.tint(.red.opacity(0.35))
         }
-        return Color(.secondarySystemBackground)
+        return .regular
     }
 
     private func borderColor(for index: Int) -> Color {
