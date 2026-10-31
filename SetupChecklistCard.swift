@@ -62,6 +62,7 @@ struct SetupChecklistCard: View {
     private static let gameBaselineKey = "homeOnboardingGameBaselineV2"
     private static let homeOrderBaselineKey = "homeOnboardingHomeOrderBaselineV2"
     private static let completionBaselineCapturedKey = "homeOnboardingCompletionBaselineCapturedV1"
+    private static let gameNameKey = "homeOnboardingGameNameV1"
 
     @Query private var favorites: [Favorite]
     @Query private var verseNotes: [VerseNote]
@@ -78,6 +79,7 @@ struct SetupChecklistCard: View {
     @AppStorage(Self.gameBaselineKey) private var gameBaseline = 0
     @AppStorage(Self.homeOrderBaselineKey) private var homeOrderBaseline = ""
     @AppStorage(Self.completionBaselineCapturedKey) private var completionBaselineCaptured = false
+    @AppStorage(Self.gameNameKey) private var gameName = ""
 
     @State private var isShowingDailyGoal = false
     @State private var isShowingResetConfirmation = false
@@ -157,8 +159,11 @@ struct SetupChecklistCard: View {
                         OnboardingStepRow(
                             step: step,
                             isComplete: isComplete(step),
+                            title: step == .playGame ? TodayChallengeStore.gameChallengeTitle(for: selectedGameName) : nil,
                             detail: step == .readVerse
                                 ? verseOfDayReference.map { String(localized: "Start with \($0)") }
+                                : step == .playGame
+                                    ? String(localized: "Finish a round to complete this.")
                                 : nil,
                             action: { open(step) },
                             skipAction: step.canSkip ? { skip(step) } : nil
@@ -173,7 +178,10 @@ struct SetupChecklistCard: View {
                 footer
             }
         }
-        .onAppear(perform: establishCompletionBaselineIfNeeded)
+        .onAppear {
+            establishCompletionBaselineIfNeeded()
+            chooseGameIfNeeded()
+        }
         .sheet(isPresented: $isShowingDailyGoal, onDismiss: { dailyGoalReviewed = true }) {
             NavigationStack {
                 SettingsDailyGoalDetailView()
@@ -203,6 +211,10 @@ struct SetupChecklistCard: View {
         } else {
             String(localized: "\(completedStepCount) of \(steps.count) steps done")
         }
+    }
+
+    private var selectedGameName: String {
+        gameName.isEmpty ? "Quiz" : gameName
     }
 
     private var footer: some View {
@@ -269,6 +281,11 @@ struct SetupChecklistCard: View {
         homeOrderBaseline = homeCardOrderRaw
     }
 
+    private func chooseGameIfNeeded() {
+        guard gameName.isEmpty else { return }
+        gameName = TodayChallengeStore.shared.randomGameName()
+    }
+
     private func skip(_ step: Step) {
         var skipped = skippedSteps
         guard skipped.insert(step).inserted else { return }
@@ -297,7 +314,7 @@ struct SetupChecklistCard: View {
         case .dailyGoal:
             isShowingDailyGoal = true
         case .playGame:
-            GameLaunchRequest.open(gameName: "Quiz")
+            GameLaunchRequest.open(gameName: selectedGameName)
         case .customizeHome:
             onEditHome()
         }
@@ -307,6 +324,7 @@ struct SetupChecklistCard: View {
 private struct OnboardingStepRow: View {
     let step: SetupChecklistCard.Step
     let isComplete: Bool
+    let title: String?
     let detail: String?
     let action: () -> Void
     let skipAction: (() -> Void)?
@@ -327,7 +345,7 @@ private struct OnboardingStepRow: View {
                         .frame(width: 22)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(step.title)
+                        Text(title ?? String(localized: step.title))
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(isComplete ? .secondary : .primary)
                             .strikethrough(isComplete)

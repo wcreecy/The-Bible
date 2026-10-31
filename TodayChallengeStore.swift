@@ -459,12 +459,12 @@ final class TodayChallengeStore {
                     isCompleted: challenge.isCompleted
                 )
             }
-        case .playGame where challenge.title == "Play (gameName)":
+        case .playGame:
             if let gameName = challenge.gameName {
                 challenge = TodayChallenge(
                     id: challenge.id,
                     kind: challenge.kind,
-                    title: "Play \(gameName)",
+                    title: Self.gameChallengeTitle(for: gameName),
                     detail: challenge.detail,
                     bookName: challenge.bookName,
                     chapterNumber: challenge.chapterNumber,
@@ -607,12 +607,12 @@ final class TodayChallengeStore {
     private func makeGameChallenge() -> TodayChallenge {
         // Each game challenge is an independent, equally likely draw. The Today card still
         // balances challenge types separately, but a recently shown game may appear again.
-        let gameName = catalog.gameNames.randomElement() ?? "Quiz"
+        let gameName = randomGameName()
 
         return TodayChallenge(
             id: UUID(),
             kind: .playGame,
-            title: "Play \(gameName)",
+            title: Self.gameChallengeTitle(for: gameName),
             detail: "Finish a round to complete this.",
             bookName: nil,
             chapterNumber: nil,
@@ -620,6 +620,38 @@ final class TodayChallengeStore {
             minimumMinutes: nil,
             isCompleted: false
         )
+    }
+
+    /// Picks from the same catalog of games used by the Today card.
+    func randomGameName() -> String {
+        catalog.gameNames.randomElement() ?? "Quiz"
+    }
+
+    static func gameChallengeTitle(for gameName: String) -> String {
+        switch gameName {
+        case "Quiz":
+            String(localized: "Test your Bible knowledge")
+        case "Trivia":
+            String(localized: "Tackle Bible trivia")
+        case "Hangman":
+            String(localized: "Solve a Bible word")
+        case "Verses":
+            String(localized: "Match the verses")
+        case "Countdown":
+            String(localized: "Race the clock")
+        case "Book Order":
+            String(localized: "Put the books in order")
+        case "Who?":
+            String(localized: "Name the Bible character")
+        case "Word Search":
+            String(localized: "Find hidden Bible words")
+        case "Scramble":
+            String(localized: "Unscramble Bible words")
+        case "Word":
+            String(localized: "Find today's Bible word")
+        default:
+            String(localized: "Play \(gameName)")
+        }
     }
 
     private func makePrayerChallenge(using picker: inout FreshPicker) -> TodayChallenge {

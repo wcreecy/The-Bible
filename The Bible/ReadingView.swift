@@ -91,6 +91,19 @@ struct ReadingView: View {
 
     private var currentChapter: Chapter { viewModel.currentChapter }
 
+    private var searchButton: some View {
+        Button {
+            if let onSearch {
+                onSearch()
+            } else {
+                AppRouter.shared.open(.bibleSearch)
+            }
+        } label: {
+            Image(systemName: "magnifyingglass")
+        }
+        .accessibilityLabel("Search Bible")
+    }
+
     var body: some View {
         @Bindable var chapterInsightsDismissal = chapterInsightsDismissal
 
@@ -109,19 +122,16 @@ struct ReadingView: View {
                         }
                         .accessibilityLabel("Back to chapters")
                     }
+
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        searchButton
+                    }
                 }
 
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        if let onSearch {
-                            onSearch()
-                        } else {
-                            AppRouter.shared.open(.bibleSearch)
-                        }
-                    } label: {
-                        Image(systemName: "magnifyingglass")
+                    if UIDevice.current.userInterfaceIdiom != .phone {
+                        searchButton
                     }
-                    .accessibilityLabel("Search Bible")
 
                     if UIDevice.current.userInterfaceIdiom != .phone {
                         Button {

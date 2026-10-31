@@ -214,6 +214,14 @@ struct RegressionCoverageTests {
     }
 
     @Test
+    func todayGameChallengesDescribeTheSelectedGame() {
+        #expect(TodayChallengeStore.gameChallengeTitle(for: "Quiz") == "Test your Bible knowledge")
+        #expect(TodayChallengeStore.gameChallengeTitle(for: "Verses") == "Match the verses")
+        #expect(TodayChallengeStore.gameChallengeTitle(for: "Word Search") == "Find hidden Bible words")
+        #expect(TodayChallengeStore.gameChallengeTitle(for: "Unlisted") == "Play Unlisted")
+    }
+
+    @Test
     func savedVerseChallengesAreSystemTracked() {
         #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Add a verse to your favorites") == .favoriteVerse)
         #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Highlight a verse to study later") == .highlightVerse)
