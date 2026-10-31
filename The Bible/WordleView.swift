@@ -333,7 +333,7 @@ struct WordleView: View {
     .toolbar {
       ToolbarItem(placement: .principal) {
         if started {
-          GameNavigationTitle(title: "Word", systemImage: "square.grid.3x3.fill", tint: .mint)
+          GameNavigationTitle(title: "Word", systemImage: "textformat.abc", tint: .mint)
         }
       }
       ToolbarItem(placement: .topBarTrailing) {
@@ -444,7 +444,7 @@ struct WordleView: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
-                .gameStartDescriptionStyle(title: "Word", systemImage: "square.grid.3x3.fill", tint: .mint)
+                .gameStartDescriptionStyle(title: "Word", systemImage: "textformat.abc", tint: .mint)
 
             GameSplashLaunchLayout(
                 tint: .mint,

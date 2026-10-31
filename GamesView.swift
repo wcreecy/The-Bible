@@ -116,7 +116,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .wordSearch: "square.grid.3x3.topleft.filled"
         case .scramble: "text.line.first.and.arrowtriangle.forward"
         case .whoAmI: "person.text.rectangle"
-        case .wordle: "square.grid.3x3.fill"
+        case .wordle: "textformat.abc"
         case .trivia: "questionmark.text.page.fill"
         case .reviewRound: "arrow.clockwise.heart.fill"
         }
@@ -298,7 +298,7 @@ struct GamesView: View {
             return GameRecommendation(
                 title: "Play today’s WORD",
                 detail: "Solve today’s five-letter Bible word.",
-                systemImage: "square.grid.3x3.fill",
+                systemImage: "textformat.abc",
                 destination: .game(.wordle)
             )
         }

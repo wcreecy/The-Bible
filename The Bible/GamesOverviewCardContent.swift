@@ -15,15 +15,18 @@ struct GamesOverviewCardContent: View {
 
     private func gameIcon(for name: String) -> String {
         switch name {
-        case "All Games":    return "sparkles"
-        case "Quiz":   return "questionmark.circle"
-        case "Hangman":      return "figure"
-        case "Verses":       return "text.quote"
+        case "All Games": return "sparkles"
+        case "Quiz": return "questionmark.circle"
+        case "Trivia": return "questionmark.text.page.fill"
+        case "Hangman": return "figure"
+        case "Verses": return "text.quote"
         case "Countdown": return "timer"
-        case "Book Order":   return "books.vertical"
-        case "Who?":         return "person.crop.circle.badge.questionmark"
-        case "Word":         return "square.grid.3x3"
-        default:             return "gamecontroller"
+        case "Book Order": return "books.vertical"
+        case "Who?": return "person.crop.circle.badge.questionmark"
+        case "Word Search": return "square.grid.3x3.topleft.filled"
+        case "Scramble": return "text.line.first.and.arrowtriangle.forward"
+        case "Word": return "textformat.abc"
+        default: return "gamecontroller"
         }
     }
 

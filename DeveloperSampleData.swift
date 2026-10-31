@@ -175,11 +175,14 @@ enum DeveloperSampleData {
         let calendar = Calendar.autoupdatingCurrent
         let games: [(dailyKey: String, storagePrefix: String)] = [
             ("quiz", "quiz"),
+            ("trivia", "trivia"),
             ("hangman", "hangman"),
             ("beatclock", "beatclock"),
             ("versematch", "versematch"),
             ("bookorder", "bookorder"),
             ("whoami", "whoami"),
+            ("wordsearch", "wordsearch"),
+            ("scramble", "scramble"),
             ("word", "wordle")
         ]
 
@@ -224,6 +227,19 @@ enum DeveloperSampleData {
             }
         }
 
+        // Guarantee every game has sample activity, even if random selection skipped it.
+        let todayKey = GameStats.localDayKey(for: Date(), calendar: calendar)
+        for game in games where allTimeByPrefix[game.storagePrefix] == nil {
+            let answered = Int.random(in: 8...20)
+            let correct = Int((Double(answered) * Double.random(in: 0.60...0.92)).rounded())
+
+            totalAnsweredByDay[todayKey, default: 0] += answered
+            totalCorrectByDay[todayKey, default: 0] += correct
+            perGameAnswered[game.dailyKey, default: [:]][todayKey, default: 0] += answered
+            perGameCorrect[game.dailyKey, default: [:]][todayKey, default: 0] += correct
+            allTimeByPrefix[game.storagePrefix] = (answered, correct, Int.random(in: 2...12))
+        }
+
         saveMap(totalAnsweredByDay, key: "gamesDailyAnswered")
         saveMap(totalCorrectByDay, key: "gamesDailyCorrect")
 
@@ -252,11 +268,14 @@ enum DeveloperSampleData {
         let lastGame = games.randomElement()?.dailyKey ?? "quiz"
         let displayNames = [
             "quiz": "Quiz",
+            "trivia": "Trivia",
             "hangman": "Hangman",
             "beatclock": "Countdown",
             "versematch": "Verses",
             "bookorder": "Book Order",
             "whoami": "Who?",
+            "wordsearch": "Word Search",
+            "scramble": "Scramble",
             "word": "Word"
         ]
         defaults.set(displayNames[lastGame], forKey: "gamesLastPlayedGameName")
