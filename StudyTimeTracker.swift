@@ -87,17 +87,55 @@ final class StudyTimeTracker {
         let end = start.addingTimeInterval(TimeInterval(elapsed))
         checkpointDate = end
 
+        add(Self.dailyAllocations(seconds: elapsed, from: start, to: end))
+    }
+
+    /// Adds study time to existing daily totals, keeping any time already recorded.
+    func add(_ allocations: [(date: Date, seconds: Int)]) {
         var totals = dailyTotals()
-        for allocation in Self.dailyAllocations(seconds: elapsed, from: start, to: end) {
+        for allocation in allocations where allocation.seconds > 0 {
             totals[Self.dayKey(for: allocation.date), default: 0] += allocation.seconds
         }
 
-        UserDefaults.standard.set(totals, forKey: Self.dailyTotalsKey)
+        saveDailyTotals(totals)
+    }
+
+    /// Removes all recorded study time. An active session keeps counting from now.
+    func clearAll() {
+        if checkpointDate != nil {
+            checkpointDate = .now
+        }
+        UserDefaults.standard.removeObject(forKey: Self.dailyTotalsKey)
+        NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
+    }
+
+    private func saveDailyTotals(_ totals: [String: Int]) {
+        if let data = try? JSONEncoder().encode(totals) {
+            UserDefaults.standard.set(data, forKey: Self.dailyTotalsKey)
+        }
         NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
     }
 
     private func dailyTotals() -> [String: Int] {
-        UserDefaults.standard.dictionary(forKey: Self.dailyTotalsKey) as? [String: Int] ?? [:]
+        let defaults = UserDefaults.standard
+
+        if let data = defaults.data(forKey: Self.dailyTotalsKey),
+           let totals = try? JSONDecoder().decode([String: Int].self, from: data) {
+            return totals
+        }
+
+        // Read the older property-list representation so existing users do not lose data.
+        guard let storedTotals = defaults.dictionary(forKey: Self.dailyTotalsKey) else {
+            return [:]
+        }
+
+        return storedTotals.reduce(into: [String: Int]()) { totals, entry in
+            if let seconds = entry.value as? Int {
+                totals[entry.key] = seconds
+            } else if let number = entry.value as? NSNumber {
+                totals[entry.key] = number.intValue
+            }
+        }
     }
 
     private static func dayKey(for date: Date) -> String {

@@ -9,7 +9,7 @@ struct SettingsResetDataSection: View {
     var body: some View {
         Section(
             header: Text("Reset Data").foregroundStyle(.primary),
-            footer: Text("Reset your all-time game statistics or reading stats. These actions cannot be undone.")
+            footer: Text("Reset your all-time game statistics or reading and study stats. These actions cannot be undone.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         ) {
@@ -38,7 +38,7 @@ struct SettingsResetDataSection: View {
                     requestTypedConfirmation(for: .reading)
                 }
             } message: {
-                Text("All reading statistics, progress, and sessions will be removed. This cannot be undone. Do you want to continue?")
+                Text("All reading statistics, progress, sessions, and study time will be removed. This cannot be undone. Do you want to continue?")
             }
         }
         .headerProminence(.increased)
@@ -77,6 +77,8 @@ struct SettingsResetDataSection: View {
             // older devices cannot restore the deleted reading history.
             // Also clears prayer stats on every device, since they appear under Reading Stats.
             iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
+            // Study time is shown on the Reading Stats page and is stored only on this device.
+            StudyTimeTracker.shared.clearAll()
         }
 
         // Reading time comes from reading stats and game time from the game ledger,
@@ -94,7 +96,7 @@ private enum AppActivityCategory: Identifiable {
 
     var displayName: String {
         switch self {
-        case .reading: "reading statistics"
+        case .reading: "reading and study statistics"
         case .games: "game statistics"
         }
     }

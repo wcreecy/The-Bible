@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ReadingAndGamesComparisonCard: View {
+    @Environment(\.scenePhase) private var scenePhase
+
     private struct Snapshot: Equatable {
         let todayReadingSeconds: Int
         let todayStudySeconds: Int
@@ -44,6 +46,13 @@ struct ReadingAndGamesComparisonCard: View {
                 )
             }
             .onAppear {
+                refresh()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .active else { return }
+                refresh()
+            }
+            .onNotification(UIApplication.willEnterForegroundNotification) {
                 refresh()
             }
             .onNotification(.bibleStatsExternallyUpdated) {

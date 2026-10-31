@@ -5,7 +5,7 @@ enum BibleTriviaCatalogStore {
 
     private static let importedFileName = "BibleTriviaQuestions.json"
 
-    static func loadData() -> Data? {
+    nonisolated static func loadData() -> Data? {
         if let importedURL, let data = try? Data(contentsOf: importedURL) {
             return data
         }

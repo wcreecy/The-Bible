@@ -49,6 +49,9 @@ final class ReadingSessionsStore {
 
     @objc
     private func handleExternalUpdate() {
+        // Our own posts announce a cache that is already current. Dropping it here would
+        // make readers see no sessions and start another load that posts again, in a loop.
+        guard !isPostingOwnUpdate else { return }
         // We are already on the main actor due to @MainActor type.
         revision += 1
         loadTask?.cancel()
@@ -85,6 +88,9 @@ final class ReadingSessionsStore {
     private var loadTask: Task<Void, Never>?
     private var revision = 0
     private var persistenceRevision = 0
+    private var isPostingOwnUpdate = false
+    /// The most recent write to disk. Loads wait for it so they never read older data.
+    private var persistTask: Task<Void, Never>?
 
     // MARK: - Public API
 
@@ -155,12 +161,14 @@ final class ReadingSessionsStore {
         let repository = repository
         persistenceRevision += 1
         let persistenceRevision = persistenceRevision
-        Task {
+        let previousPersist = persistTask
+        persistTask = Task {
+            await previousPersist?.value
             await repository.clear(revision: persistenceRevision)
             iCloudSyncCoordinator.shared.pushKey(Defaults.key)
         }
         // Push sessions key removal to iCloud KVS for cross-device sync and notify listeners
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        postOwnUpdate()
     }
 
     // MARK: - Persistence + cache
@@ -179,7 +187,9 @@ final class ReadingSessionsStore {
 
         let repository = repository
         let revision = revision
+        let pendingPersist = persistTask
         loadTask = Task { [weak self] in
+            await pendingPersist?.value
             let loaded = await repository.load()
             guard let self, !Task.isCancelled, self.revision == revision else { return }
 
@@ -192,8 +202,15 @@ final class ReadingSessionsStore {
             if hadPendingAppends {
                 self.saveAll(all)
             }
-            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            self.postOwnUpdate()
         }
+    }
+
+    /// Notifies other readers that sessions changed without invalidating this store's cache.
+    private func postOwnUpdate() {
+        isPostingOwnUpdate = true
+        defer { isPostingOwnUpdate = false }
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     private func saveAll(_ arr: [Session]) {
@@ -201,13 +218,15 @@ final class ReadingSessionsStore {
         let repository = repository
         persistenceRevision += 1
         let persistenceRevision = persistenceRevision
-        Task {
+        let previousPersist = persistTask
+        persistTask = Task {
+            await previousPersist?.value
             await repository.save(arr, revision: persistenceRevision)
             iCloudSyncCoordinator.shared.pushKey(Defaults.key)
         }
 
         // Views read the cache immediately; other local consumers refresh without
         // waiting for the background encoder to finish.
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        postOwnUpdate()
     }
 }

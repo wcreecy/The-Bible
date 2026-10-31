@@ -8,7 +8,9 @@ enum DeveloperSampleData {
         let books = await BibleRepository.shared.loadAllBooks()
         generateReadingStats(books: books)
         generateGameStats()
+        generateMissedQuestions()
         generateAppUsageSplit()
+        generateTimerStats()
 
         do {
             try generateStudyData(books: books, in: context)
@@ -18,6 +20,7 @@ enum DeveloperSampleData {
 
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
     }
 
     /// Seeds enough saved verses and notes for the study-focused screens to have useful content.
@@ -54,6 +57,33 @@ enum DeveloperSampleData {
                 verseNumber: target.2,
                 verseText: verse.text
             ))
+        }
+
+        let existingHighlights = try context.fetch(FetchDescriptor<VerseNote>()).filter { !$0.highlightColor.isEmpty }
+        var highlightLocations = Set(existingHighlights.map {
+            "\($0.bookName)|\($0.chapterNumber)|\($0.verseNumber)"
+        })
+
+        for target in favoriteTargets where highlightLocations.count < 10 {
+            guard let verse = books.first(where: { $0.name == target.0 })?
+                .chapters.first(where: { $0.number == target.1 })?
+                .verses.first(where: { $0.number == target.2 }) else {
+                continue
+            }
+
+            let location = "\(target.0)|\(target.1)|\(target.2)"
+            guard highlightLocations.insert(location).inserted else { continue }
+
+            let note = VerseNote(
+                bookName: target.0,
+                chapterNumber: target.1,
+                verseNumber: target.2,
+                verseText: verse.text
+            )
+            note.title = "Sample highlight \(target.0) \(target.1):\(target.2)"
+            note.content = "A sample highlighted verse for exploring Saved Verses."
+            note.highlightColor = VerseHighlightColor.yellow.rawValue
+            context.insert(note)
         }
 
         let existingVerseNoteTitles = Set(try context.fetch(FetchDescriptor<VerseNote>()).map(\.title))
@@ -155,6 +185,28 @@ enum DeveloperSampleData {
                     chapter: book.chapters.randomElement()?.number
                 ))
             }
+        }
+
+        // Add a guaranteed valid session on each of the last seven calendar days.
+        // The average-session chart intentionally reads ReadingSessionsStore rather
+        // than the daily reading totals, so these must be persisted as sessions.
+        for dayOffset in 0..<7 {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) else {
+                continue
+            }
+
+            let dayStart = calendar.startOfDay(for: date)
+            let sessionStart = dayOffset == 0
+                ? now.addingTimeInterval(-1_200)
+                : dayStart.addingTimeInterval(9 * 60 * 60)
+            let duration = 10 * 60 + dayOffset * 60
+            sessions.append(.init(
+                readingSessionID: UUID(),
+                start: sessionStart,
+                end: sessionStart.addingTimeInterval(TimeInterval(duration)),
+                book: books[dayOffset % books.count].name,
+                chapter: books[dayOffset % books.count].chapters.first?.number
+            ))
         }
 
         store.cacheReadingContributions = contributions
@@ -285,26 +337,105 @@ enum DeveloperSampleData {
         )
     }
 
+    private static func generateMissedQuestions() {
+        let store = MissedGameQuestionStore.shared
+        let sampleQuestions: [(id: String, book: String, chapter: Int)] = [
+            ("1", "Genesis", 6),
+            ("2", "Genesis", 8),
+            ("3", "Genesis", 9),
+            ("4", "Genesis", 12),
+            ("5", "Genesis", 19),
+            ("6", "Genesis", 41),
+            ("7", "Genesis", 25),
+            ("8", "Genesis", 32),
+            ("9", "Joshua", 2),
+            ("10", "Joshua", 3)
+        ]
+
+        for (offset, sample) in sampleQuestions.enumerated() {
+            store.record(
+                game: .bibleTrivia,
+                bookNames: [sample.book],
+                chapterNumber: sample.chapter,
+                topic: "Sample Trivia miss",
+                questionID: sample.id,
+                date: Date().addingTimeInterval(-Double((offset + 1) * 3_600))
+            )
+        }
+    }
+
     private static func generateAppUsageSplit() {
         let defaults = UserDefaults.standard
         let calendar = Calendar.autoupdatingCurrent
-        var gamesByDay: [String: Int] = [:]
+        var gamesByDay = loadMap(GameStats.dailyPlaySecondsKey)
+        var addedGameSeconds = 0
+        var studyAllocations: [(date: Date, seconds: Int)] = []
 
-        // Seed a month of game play time so today's value is a true subset of all-time.
+        // Add a month of game and study time on top of any existing totals so today's
+        // values are nonzero and the comparison chart has a realistic history.
         for dayOffset in 0..<30 {
             guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: Date()) else {
                 continue
             }
 
             let dayKey = BibleStatsStore.isoDateString(date, calendar: calendar)
-            gamesByDay[dayKey] = Int.random(in: 15...90) * 60
+            let gameSeconds = Int.random(in: 15...90) * 60
+            gamesByDay[dayKey, default: 0] += gameSeconds
+            addedGameSeconds += gameSeconds
+            studyAllocations.append((date, Int.random(in: 8...45) * 60))
         }
 
-        // Reading time comes from the reading stats seeded elsewhere; seed game play time here.
-        if let data = try? JSONEncoder().encode(gamesByDay) {
-            defaults.set(data, forKey: GameStats.dailyPlaySecondsKey)
+        saveMap(gamesByDay, key: GameStats.dailyPlaySecondsKey)
+        defaults.set(
+            max(0, defaults.integer(forKey: GameStats.allTimePlaySecondsKey)) + addedGameSeconds,
+            forKey: GameStats.allTimePlaySecondsKey
+        )
+        // Play time syncs through the game ledger, which records the increase as this device's contribution.
+        iCloudSyncCoordinator.shared.pushKey(GameStats.allTimePlaySecondsKey)
+
+        StudyTimeTracker.shared.add(studyAllocations)
+    }
+
+    /// Seeds the Prayer & Study Timer card: a month of sessions for each kind, with
+    /// every one of the last seven days filled so this week's bars and streaks show.
+    private static func generateTimerStats() {
+        let calendar = Calendar.autoupdatingCurrent
+        let now = Date()
+        let timers: [(store: PrayerStatsStore, minutes: ClosedRange<Int>, hour: Int)] = [
+            (PrayerStatsStore.shared, 5...20, 7),
+            (PrayerStatsStore.study, 10...40, 19)
+        ]
+
+        for timer in timers {
+            var lastSession: (seconds: Int, end: Date)?
+
+            for dayOffset in stride(from: 29, through: 0, by: -1) {
+                // Leave occasional gaps before the last week so best and current streaks differ.
+                if dayOffset >= 7, Int.random(in: 0..<10) < 3 {
+                    continue
+                }
+
+                guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) else {
+                    continue
+                }
+
+                let seconds = Int.random(in: timer.minutes) * 60
+                let scheduledStart = calendar.startOfDay(for: date)
+                    .addingTimeInterval(TimeInterval(timer.hour * 3_600))
+                // Today's session must already be finished, so end it shortly before now.
+                let start = dayOffset == 0
+                    ? min(scheduledStart, now.addingTimeInterval(-TimeInterval(seconds + 300)))
+                    : scheduledStart
+                let end = start.addingTimeInterval(TimeInterval(seconds))
+
+                timer.store.record(from: start, to: end)
+                lastSession = (seconds, end)
+            }
+
+            if let lastSession {
+                timer.store.recordSessionEnded(seconds: lastSession.seconds, at: lastSession.end)
+            }
         }
-        defaults.set(gamesByDay.values.reduce(0, +), forKey: GameStats.allTimePlaySecondsKey)
     }
 
     private static func loadMap(_ key: String) -> [String: Int] {

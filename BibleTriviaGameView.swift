@@ -171,9 +171,23 @@ final class BibleTriviaGameModel {
     private static let bestScoreKeyPrefix = "bibleTriviaBestScore"
 
     private let reviewQuestionIDs: Set<String>
+    @ObservationIgnored private var catalogObserver: NSObjectProtocol?
 
     init(reviewQuestionIDs: Set<String> = []) {
         self.reviewQuestionIDs = reviewQuestionIDs
+        catalogObserver = NotificationCenter.default.addObserver(
+            forName: BibleTriviaCatalogStore.didImportNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.questions = []
+                self.round = []
+                self.phase = .loading
+                await self.load()
+            }
+        }
     }
 
     private struct RoundQuestion: Identifiable {
@@ -278,8 +292,7 @@ final class BibleTriviaGameModel {
 
         // The catalog is large; decode it off the main actor so the screen stays responsive.
         let loadedQuestions = await Task.detached(priority: .userInitiated) { () -> [BibleTriviaQuestion] in
-            guard let url = Bundle.main.url(forResource: "BibleTriviaQuestions", withExtension: "json"),
-                  let data = try? Data(contentsOf: url, options: .mappedIfSafe),
+            guard let data = BibleTriviaCatalogStore.loadData(),
                   let decoded = PersistedDecoding.decode([BibleTriviaQuestion].self, from: data, name: "BibleTriviaQuestions.json") else {
                 return []
             }

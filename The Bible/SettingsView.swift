@@ -436,6 +436,16 @@ private struct SettingsDataManagementLinksSection: View {
     var body: some View {
         Section {
             NavigationLink {
+                SettingsTriviaQuestionCatalogView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Trivia Questions",
+                    subtitle: "Import an editable question and answer catalog",
+                    systemImage: "questionmark.circle"
+                )
+            }
+
+            NavigationLink {
                 SettingsResetDataDetailView()
             } label: {
                 SettingsNavigationRow(
@@ -566,7 +576,7 @@ private struct SettingsDeveloperSection: View {
             } label: {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Generate Sample Stats")
+                        Text("Generate Sample Data")
                         Text("Fill charts, favorites, and notes with sample data")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -578,7 +588,7 @@ private struct SettingsDeveloperSection: View {
             }
             .accessibilityIdentifier("generateDeveloperSampleStatsButton")
             .confirmationDialog(
-                "Generate Sample Statistics?",
+                "Generate Sample Data?",
                 isPresented: $showingConfirmation,
                 titleVisibility: .visible
             ) {
@@ -590,7 +600,7 @@ private struct SettingsDeveloperSection: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This adds about 90 days of randomized reading and game activity, at least 10 favorite verses, and sample notes. You can remove it later from Reset Data.")
+                Text("This adds about 90 days of randomized reading and game activity, 30 days of study, game, and prayer & study timer time, at least 10 favorite verses, and sample notes. Reading, study, and game data can be removed later from Reset Data.")
             }
             .alert("Sample Data Created", isPresented: $showingCompletion) {
                 Button("OK", role: .cancel) {}
