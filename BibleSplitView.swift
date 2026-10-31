@@ -160,6 +160,7 @@ struct BibleSplitView: View {
                     StudyBibleSidebarCard(isActive: isStudyMode)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("studyBibleSidebarCard")
                 .accessibilityAddTraits(isStudyMode ? .isSelected : [])
                 .accessibilityHint(isStudyMode ? "Turns off Study mode so books open for reading" : "Books open their study pages until you turn it off")
             }

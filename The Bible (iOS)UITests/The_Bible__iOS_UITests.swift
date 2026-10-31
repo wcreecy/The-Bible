@@ -148,9 +148,14 @@ final class The_Bible__iOS_UITests: XCTestCase {
         launchAtAccessibilityTextSize()
 
         tapFloatingTab(named: "Bible")
-        let entryCard = app.descendants(matching: .any)["studyBibleEntryCard"]
-        XCTAssertTrue(entryCard.waitForExistence(timeout: 8))
-        entryCard.tap()
+        let studyEntry: XCUIElement
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            studyEntry = app.buttons["studyBibleSidebarCard"]
+        } else {
+            studyEntry = app.descendants(matching: .any)["studyBibleEntryCard"]
+        }
+        XCTAssertTrue(studyEntry.waitForExistence(timeout: 8))
+        studyEntry.tap()
 
         let studyView = app.otherElements["studyBibleView"]
         XCTAssertTrue(studyView.waitForExistence(timeout: 8))
