@@ -308,7 +308,13 @@ final class MissedGameQuestionStore {
                 date: entry.date
             )
         }
-        save()
+        // Publishing here would make iCloud reconcile the history while `shared` is still
+        // initializing, which re-enters this singleton. Persist first and publish on the
+        // next main-actor turn after initialization has completed.
+        save(publishing: false)
+        Task { @MainActor in
+            iCloudSyncCoordinator.shared.pushKey(Self.storageKey)
+        }
         defaults.set(Self.triviaQuestionSetVersion, forKey: Self.triviaQuestionSetVersionKey)
     }
 

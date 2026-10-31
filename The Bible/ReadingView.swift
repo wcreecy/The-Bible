@@ -473,11 +473,12 @@ struct ReadingView: View {
                 .heroCardSurface()
                 .padding(.horizontal, 16)
                 .padding(.vertical)
-                // Pin the content to the scroll view's visible width. `scrollPosition`'s
-                // `.top` anchor also targets the horizontal center, so if the lazy stack is
-                // measured at a stale width (e.g. during a navigation transition from a link),
-                // programmatic jumps would otherwise leave the card shifted sideways.
-                .containerRelativeFrame(.horizontal)
+                // On iPhone, pin the content to the scroll view's visible width. `scrollPosition`'s
+                // `.top` anchor also targets the horizontal center, so a stale measurement during
+                // a navigation transition could otherwise leave the card shifted sideways. On iPad,
+                // the reader lives in a NavigationSplitView detail column; sizing relative to its
+                // outer container can extend the card beneath the Books column.
+                .readerCardWidth()
                 .scrollTargetLayout()
                 .onChange(of: viewModel.currentChapterIndex) { _, _ in
                     refreshSeenVerses()
@@ -724,6 +725,17 @@ struct ReadingView: View {
         viewModel.markActivity()
     }
 
+}
+
+private extension View {
+    @ViewBuilder
+    func readerCardWidth() -> some View {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            containerRelativeFrame(.horizontal)
+        } else {
+            self
+        }
+    }
 }
 
 /// Chapter-local saved-data index for the reader. It replaces repeated whole-collection

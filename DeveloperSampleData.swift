@@ -1,16 +1,104 @@
 #if DEBUG
 import Foundation
+import SwiftData
 
 @MainActor
 enum DeveloperSampleData {
-    static func generate() async {
+    static func generate(in context: ModelContext) async {
         let books = await BibleRepository.shared.loadAllBooks()
         generateReadingStats(books: books)
         generateGameStats()
         generateAppUsageSplit()
 
+        do {
+            try generateStudyData(books: books, in: context)
+        } catch {
+            print("Unable to save developer study samples: \(error.localizedDescription)")
+        }
+
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    /// Seeds enough saved verses and notes for the study-focused screens to have useful content.
+    private static func generateStudyData(books: [Book], in context: ModelContext) throws {
+        let favoriteTargets = [
+            ("Genesis", 1, 1),
+            ("Joshua", 1, 9),
+            ("Psalms", 23, 1),
+            ("Psalms", 46, 1),
+            ("Proverbs", 3, 5),
+            ("Isaiah", 41, 10),
+            ("Matthew", 5, 16),
+            ("John", 3, 16),
+            ("Romans", 8, 28),
+            ("Philippians", 4, 13)
+        ]
+        let existingFavorites = try context.fetch(FetchDescriptor<Favorite>())
+        var favoriteLocations = Set(existingFavorites.map {
+            "\($0.bookName)|\($0.chapterNumber)|\($0.verseNumber)"
+        })
+
+        for target in favoriteTargets where favoriteLocations.count < 10 {
+            guard let verse = books.first(where: { $0.name == target.0 })?
+                .chapters.first(where: { $0.number == target.1 })?
+                .verses.first(where: { $0.number == target.2 }) else {
+                continue
+            }
+
+            let location = "\(target.0)|\(target.1)|\(target.2)"
+            guard favoriteLocations.insert(location).inserted else { continue }
+            context.insert(Favorite(
+                bookName: target.0,
+                chapterNumber: target.1,
+                verseNumber: target.2,
+                verseText: verse.text
+            ))
+        }
+
+        let existingVerseNoteTitles = Set(try context.fetch(FetchDescriptor<VerseNote>()).map(\.title))
+        if !existingVerseNoteTitles.contains("Living with courage") {
+            let note = VerseNote(
+                bookName: "Joshua",
+                chapterNumber: 1,
+                verseNumber: 9,
+                verseText: books.first(where: { $0.name == "Joshua" })?
+                    .chapters.first(where: { $0.number == 1 })?
+                    .verses.first(where: { $0.number == 9 })?.text ?? ""
+            )
+            note.title = "Living with courage"
+            note.content = "A reminder to take the next faithful step, trusting that God is present in every place and season."
+            note.highlightColor = VerseHighlightColor.yellow.rawValue
+            note.isFavorite = true
+            context.insert(note)
+        }
+
+        let existingUserNoteTitles = Set(try context.fetch(FetchDescriptor<UserNote>()).map(\.title))
+        if !existingUserNoteTitles.contains("Morning reflection") {
+            let note = UserNote()
+            note.title = "Morning reflection"
+            note.content = "Today I want to begin with gratitude, listen carefully, and carry peace into each conversation."
+            note.categoryRawValue = NoteCategory.personal.rawValue
+            note.passageReference = "Psalms 46:1"
+            note.isFavorite = true
+            context.insert(note)
+        }
+
+        if !existingUserNoteTitles.contains("Grace in everyday life") {
+            let note = UserNote()
+            note.title = "Grace in everyday life"
+            note.content = "Grace meets us before we have everything figured out and equips us to serve with humility."
+            note.categoryRawValue = NoteCategory.sermon.rawValue
+            note.passageReference = "Ephesians 2:8-10"
+            note.sermonSpeaker = "Pastor Jordan"
+            note.sermonLocation = "Sunday gathering"
+            note.sermonDate = Calendar.autoupdatingCurrent.date(byAdding: .day, value: -7, to: Date())
+            context.insert(note)
+        }
+
+        if context.hasChanges {
+            try context.save()
+        }
     }
 
     private static func generateReadingStats(books: [Book]) {

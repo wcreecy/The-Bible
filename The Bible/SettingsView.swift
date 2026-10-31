@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 import UIKit
 import UserNotifications
@@ -552,6 +553,7 @@ private struct AcknowledgementsView: View {
 
 #if DEBUG
 private struct SettingsDeveloperSection: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var showingConfirmation = false
     @State private var showingCompletion = false
     @State private var showingResetConfirmation = false
@@ -565,7 +567,7 @@ private struct SettingsDeveloperSection: View {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Generate Sample Stats")
-                        Text("Fill reading and game charts with randomized data")
+                        Text("Fill charts, favorites, and notes with sample data")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -582,18 +584,18 @@ private struct SettingsDeveloperSection: View {
             ) {
                 Button("Generate Data") {
                     Task {
-                        await DeveloperSampleData.generate()
+                        await DeveloperSampleData.generate(in: modelContext)
                         showingCompletion = true
                     }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This adds about 90 days of randomized reading and game activity. You can remove it later from Reset Data.")
+                Text("This adds about 90 days of randomized reading and game activity, at least 10 favorite verses, and sample notes. You can remove it later from Reset Data.")
             }
             .alert("Sample Data Created", isPresented: $showingCompletion) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("The Home and Stats views now have randomized reading and game activity to display.")
+                Text("The Home, Stats, Favorites, and Notes views now have sample data to display.")
             }
 
             Button(role: .destructive) {
