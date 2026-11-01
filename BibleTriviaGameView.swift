@@ -272,10 +272,6 @@ final class BibleTriviaGameModel {
         currentIndex < furthestPresentedIndex
     }
 
-    var canGoPrevious: Bool {
-        currentIndex > 0 && (isAnswered || isViewingPrevious)
-    }
-
     var canGoNext: Bool {
         isViewingPrevious || isAnswered
     }
@@ -371,12 +367,6 @@ final class BibleTriviaGameModel {
             furthestPresentedIndex = currentIndex
             prepareCurrentQuestion()
         }
-    }
-
-    func showPrevious() {
-        guard canGoPrevious else { return }
-        timerTask?.cancel()
-        currentIndex -= 1
     }
 
     /// Back to the start screen. The streak is kept so the next game can continue it.
@@ -565,12 +555,10 @@ struct BibleTriviaGameView: View {
                     isAnswered: model.isAnswered,
                     timedOut: model.timedOut,
                     isViewingPrevious: model.isViewingPrevious,
-                    canGoPrevious: model.canGoPrevious,
                     canGoNext: model.canGoNext,
                     isLastQuestion: model.isLastQuestion,
                     onChoose: model.choose,
                     onToggleTimer: model.toggleTimer,
-                    onPrevious: model.showPrevious,
                     onAdvance: model.advance
                 )
             case .results:
@@ -695,12 +683,10 @@ private struct BibleTriviaPlayScreen: View {
     let isAnswered: Bool
     let timedOut: Bool
     let isViewingPrevious: Bool
-    let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
     let onChoose: (String) -> Void
     let onToggleTimer: () -> Void
-    let onPrevious: () -> Void
     let onAdvance: () -> Void
 
     @State private var timerOnLeft = false
@@ -747,10 +733,8 @@ private struct BibleTriviaPlayScreen: View {
                                 isAnswered: isAnswered,
                                 isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
-                                canGoPrevious: canGoPrevious,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
-                                onPrevious: onPrevious,
                                 onAdvance: onAdvance
                             )
                             .frame(minHeight: geometry.size.height - 32, alignment: .top)
@@ -774,16 +758,20 @@ private struct BibleTriviaPlayScreen: View {
                                 isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
                                 onToggleTimer: onToggleTimer,
-                                canGoPrevious: canGoPrevious,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
-                                onPrevious: onPrevious,
                                 onAdvance: onAdvance
                             )
                         }
                     }
                 }
                 .tabBarContentClearance()
+                .pinnedNextQuestionButton(
+                    isShown: !usesSplitLayout && question != nil && isAnswered,
+                    isLastQuestion: isLastQuestion,
+                    tint: .cyan,
+                    action: onAdvance
+                )
                 .background {
                     if usesSplitLayout {
                         Color.clear
@@ -840,10 +828,8 @@ private struct BibleTriviaCompactBoard: View {
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
     let onToggleTimer: () -> Void
-    let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
-    let onPrevious: () -> Void
     let onAdvance: () -> Void
 
     var body: some View {
@@ -879,14 +865,6 @@ private struct BibleTriviaCompactBoard: View {
                 if let outcome {
                     BibleTriviaAnswerReveal(outcome: outcome, reference: reference)
                 }
-
-                BibleTriviaNavigationButtons(
-                    canGoPrevious: canGoPrevious,
-                    canGoNext: canGoNext,
-                    isLastQuestion: isLastQuestion,
-                    onPrevious: onPrevious,
-                    onNext: onAdvance
-                )
             }
         }
         .padding(.horizontal)
@@ -909,10 +887,8 @@ private struct BibleTriviaDashboard: View {
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
-    let canGoPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
-    let onPrevious: () -> Void
     let onAdvance: () -> Void
 
     var body: some View {
@@ -945,13 +921,8 @@ private struct BibleTriviaDashboard: View {
                     BibleTriviaAnswerReveal(outcome: outcome, reference: reference)
                 }
 
-                BibleTriviaNavigationButtons(
-                    canGoPrevious: canGoPrevious,
-                    canGoNext: canGoNext,
-                    isLastQuestion: isLastQuestion,
-                    onPrevious: onPrevious,
-                    onNext: onAdvance
-                )
+                GameNextQuestionButton(isLastQuestion: isLastQuestion, tint: .cyan, action: onAdvance)
+                    .disabled(!canGoNext)
             }
 
             Spacer(minLength: 0)
@@ -1064,32 +1035,6 @@ private struct BibleTriviaAnswerOption: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .font(.body)
-    }
-}
-
-private struct BibleTriviaNavigationButtons: View {
-    let canGoPrevious: Bool
-    let canGoNext: Bool
-    let isLastQuestion: Bool
-    let onPrevious: () -> Void
-    let onNext: () -> Void
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Button("Previous", systemImage: "arrow.left", action: onPrevious)
-                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                .disabled(!canGoPrevious)
-
-            if isLastQuestion {
-                Button("See Results", systemImage: "flag.checkered", action: onNext)
-                    .buttonStyle(GameProminentButtonStyle(tint: .cyan))
-                    .disabled(!canGoNext)
-            } else {
-                Button("Next", systemImage: "arrow.right", action: onNext)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                    .disabled(!canGoNext)
-            }
-        }
     }
 }
 

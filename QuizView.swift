@@ -47,6 +47,12 @@ struct QuizView: View {
                     .padding(.horizontal)
                 }
                 .tabBarContentClearance()
+                .pinnedNextQuestionButton(
+                    isShown: !usesSplitLayout && vm.phase == .playing && vm.isAnswered,
+                    isLastQuestion: vm.isOnLastQuestion,
+                    tint: .blue,
+                    action: vm.showNext
+                )
                 .background {
                     if usesSplitLayout {
                         Color.clear
@@ -198,14 +204,9 @@ struct QuizView: View {
         }
     }
 
-    private var navigationButtons: some View {
-        QuizNavigationButtons(
-            canGoPrevious: vm.canGoPrevious,
-            canGoNext: vm.canGoNext,
-            isLastQuestion: vm.isOnLastQuestion,
-            onPrevious: vm.showPrevious,
-            onNext: vm.showNext
-        )
+    /// The inline Next button for the iPad dashboard; iPhone pins it to the bottom instead.
+    private var nextButton: some View {
+        GameNextQuestionButton(isLastQuestion: vm.isOnLastQuestion, tint: .blue, action: vm.showNext)
     }
 
     @ViewBuilder
@@ -309,9 +310,6 @@ struct QuizView: View {
                 if vm.isAnswered {
                     answerReveal
                         .padding(.horizontal)
-
-                    navigationButtons
-                        .padding(.horizontal)
                 }
 
                 // DEBUG: WIN button
@@ -363,7 +361,8 @@ struct QuizView: View {
                     }
                     .buttonStyle(GameProminentButtonStyle(tint: .red))
                 } else {
-                    navigationButtons
+                    nextButton
+                        .disabled(!vm.canGoNext)
                 }
             }
             .padding(AppDesignMetrics.cardPadding)

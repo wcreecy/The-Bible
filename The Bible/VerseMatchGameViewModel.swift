@@ -262,8 +262,6 @@ final class VerseMatchGameViewModel {
 
     var isOnLastQuestion: Bool { !isViewingPrevious && history.count >= totalQuestions }
 
-    var canGoPrevious: Bool { currentIndex > 0 }
-
     var progressText: String {
         String(localized: "Question \(currentIndex + 1) of \(totalQuestions)")
     }
@@ -331,11 +329,6 @@ final class VerseMatchGameViewModel {
         currentIndex = -1
         questionBag = []
         session.clearGame()
-    }
-
-    func showPrevious() {
-        guard canGoPrevious else { return }
-        currentIndex -= 1
     }
 
     func showNext() {

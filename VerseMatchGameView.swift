@@ -46,6 +46,12 @@ struct VerseMatchGameView: View {
             .padding()
         }
         .tabBarContentClearance()
+        .pinnedNextQuestionButton(
+            isShown: horizontalSizeClass != .regular && vm.phase == .playing && vm.isAnswered,
+            isLastQuestion: vm.isOnLastQuestion,
+            tint: .orange,
+            action: vm.showNext
+        )
         .verseActionToast($verseToast)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -159,13 +165,9 @@ struct VerseMatchGameView: View {
                 onSelect: vm.select
             )
 
-            if vm.isAnswered {
-                VerseMatchNavigationButtons(
-                    canGoPrevious: vm.canGoPrevious,
-                    isLastQuestion: vm.isOnLastQuestion,
-                    onPrevious: vm.showPrevious,
-                    onNext: vm.showNext
-                )
+            // iPhone pins Next to the bottom of the screen instead.
+            if vm.isAnswered, horizontalSizeClass == .regular {
+                GameNextQuestionButton(isLastQuestion: vm.isOnLastQuestion, tint: .orange, action: vm.showNext)
             }
 
             // DEBUG: WIN button

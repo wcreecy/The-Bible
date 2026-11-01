@@ -157,32 +157,6 @@ struct QuizAnswerReveal: View {
     }
 }
 
-struct QuizNavigationButtons: View {
-    let canGoPrevious: Bool
-    let canGoNext: Bool
-    let isLastQuestion: Bool
-    let onPrevious: () -> Void
-    let onNext: () -> Void
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Button("Previous", systemImage: "arrow.left", action: onPrevious)
-                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                .disabled(!canGoPrevious)
-
-            if isLastQuestion {
-                Button("See Results", systemImage: "flag.checkered", action: onNext)
-                    .buttonStyle(GameProminentButtonStyle(tint: .blue))
-                    .disabled(!canGoNext)
-            } else {
-                Button("Next", systemImage: "arrow.right", action: onNext)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                    .disabled(!canGoNext)
-            }
-        }
-    }
-}
-
 struct QuizDashboardQuestion: View {
     let progressText: String
     let verseText: String

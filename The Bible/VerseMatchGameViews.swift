@@ -89,6 +89,15 @@ private struct VerseMatchReferenceCard: View {
     let onSwap: () -> Void
 
     var body: some View {
+        if showsSwapButton {
+            largeCard
+        } else {
+            compactHeader
+        }
+    }
+
+    /// iPad: a tall card beside the answers, with a button to swap sides.
+    private var largeCard: some View {
         ZStack(alignment: .topTrailing) {
             VStack(spacing: 8) {
                 Text(progressText)
@@ -106,18 +115,38 @@ private struct VerseMatchReferenceCard: View {
                 Spacer(minLength: 12)
             }
 
-            if showsSwapButton {
-                Button(action: onSwap) {
-                    Image(systemName: "arrow.left.arrow.right")
-                }
-                .buttonStyle(.bordered)
-                .accessibilityLabel("Swap card sides")
-                .accessibilityHint("Moves the reference and answers cards to opposite sides.")
+            Button(action: onSwap) {
+                Image(systemName: "arrow.left.arrow.right")
             }
+            .buttonStyle(.bordered)
+            .accessibilityLabel("Swap card sides")
+            .accessibilityHint("Moves the reference and answers cards to opposite sides.")
         }
-        .frame(maxWidth: .infinity, minHeight: showsSwapButton ? 280 : 160)
+        .frame(maxWidth: .infinity, minHeight: 280)
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
+    }
+
+    /// iPhone: a short header, so the four verses need less scrolling.
+    private var compactHeader: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(reference)
+                .font(.title2.weight(.bold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Spacer(minLength: 8)
+
+            Text(progressText)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
+        }
+        .padding(.horizontal, AppDesignMetrics.cardPadding)
+        .padding(.vertical, 14)
+        .frame(maxWidth: .infinity)
+        .heroCardSurface()
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -229,27 +258,3 @@ private struct VerseMatchAnswersCard: View {
         return Color.black.opacity(0.12)
     }
 }
-
-struct VerseMatchNavigationButtons: View {
-    let canGoPrevious: Bool
-    let isLastQuestion: Bool
-    let onPrevious: () -> Void
-    let onNext: () -> Void
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Button("Previous", systemImage: "arrow.left", action: onPrevious)
-                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                .disabled(!canGoPrevious)
-
-            if isLastQuestion {
-                Button("See Results", systemImage: "flag.checkered", action: onNext)
-                    .buttonStyle(GameProminentButtonStyle(tint: .orange))
-            } else {
-                Button("Next", systemImage: "arrow.right", action: onNext)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-            }
-        }
-    }
-}
-

@@ -306,10 +306,6 @@ final class QuizGameViewModel {
         phase == .playing && isTimed && !isTimerDisabled && !isViewingPrevious && !isAnswered
     }
 
-    var canGoPrevious: Bool {
-        currentIndex > 0 && (isAnswered || isViewingPrevious || !isTimed)
-    }
-
     var canGoNext: Bool { isViewingPrevious || isAnswered }
 
     var isOnLastQuestion: Bool { !isViewingPrevious && history.count >= totalQuestions }
@@ -497,11 +493,6 @@ final class QuizGameViewModel {
         questionBag = []
         remainingSeconds = 0
         session.clearGame()
-    }
-
-    func showPrevious() {
-        guard canGoPrevious else { return }
-        currentIndex -= 1
     }
 
     func showNext() {
