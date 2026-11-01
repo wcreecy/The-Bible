@@ -46,6 +46,9 @@ public struct WordSearchEngine {
     public let difficulty: Difficulty
     private let alphabet: [Character]
 
+    /// Distinct directions a placement needs before the search stops early.
+    static let targetDirectionVariety = 6
+
     public init(size: Int, difficulty: Difficulty, alphabet: [Character] = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
         self.size = size
         self.difficulty = difficulty
@@ -153,7 +156,10 @@ public struct WordSearchEngine {
                 bestGrid = grid
             }
 
-            let desiredVariety = min(baseAllowedDirections.count, target.count)
+            // Stop once every word is placed with enough directions. With eight directions,
+            // asking for one per word is almost never met, which ran all 20 attempts every
+            // time; six already reads as well mixed and most attempts reach it.
+            let desiredVariety = min(baseAllowedDirections.count, target.count, Self.targetDirectionVariety)
             if count == target.count && variety >= desiredVariety { break }
         }
 
@@ -213,8 +219,9 @@ public struct WordSearchEngine {
 
     private struct PlacementCandidate {
         let row: Int, col: Int, dr: Int, dc: Int
-        let overlap: Int, adjacency: Int
-        let centerDistance: Double
+        let overlap: Int
+        /// Share of the cells around the word that are already filled (0...1).
+        let adjacency: Double
         let startReusePenalty: Int
         let directionUsage: Int
     }
@@ -253,17 +260,18 @@ public struct WordSearchEngine {
         guard !candidates.isEmpty else { return false }
         candidates.shuffle()
 
+        // Lower is better. There's deliberately no term for position on the grid: an
+        // earlier "distance from center" reward pushed most words to start on an edge,
+        // so nearly every puzzle had a word in the first column.
         func score(_ c: PlacementCandidate) -> Double {
             let overlapWeight = -0.9
-            let adjacencyWeight = 0.6
-            let centerWeight = -0.35
+            let adjacencyWeight = 10.0
             let startReuseWeight = 0.5
             let directionWeight = 0.4
             let jitter = Double.random(in: 0..<0.6)
 
             return overlapWeight * Double(c.overlap)
-                 + adjacencyWeight * Double(c.adjacency)
-                 + centerWeight * c.centerDistance
+                 + adjacencyWeight * c.adjacency
                  + startReuseWeight * Double(c.startReusePenalty)
                  + directionWeight * Double(c.directionUsage)
                  + jitter
@@ -283,53 +291,46 @@ public struct WordSearchEngine {
     }
 
     private func enumerateCandidates(for word: String, on grid: [[Character]], placed: [PlacedWord], dirUsage: [String: Int]) -> [PlacementCandidate] {
-        guard word.count <= size else { return [] }
+        let letters = Array(word)
+        guard letters.count <= size else { return [] }
         var list: [PlacementCandidate] = []
         let dirs = directionsForPlacement(biasingWith: dirUsage)
 
         let usedRows = Set(placed.map { $0.startRow })
         let usedCols = Set(placed.map { $0.startCol })
 
-        let centerR = Double(size - 1) / 2.0
-        let centerC = Double(size - 1) / 2.0
-
         for dir in dirs {
             let dr = dir.dr, dc = dir.dc
 
-            let maxRowStart: Int = (dr == 0) ? (size - 1) : (dr > 0 ? (size - word.count) : (size - 1))
-            let minRowStart: Int = (dr == 0) ? 0 : (dr > 0 ? 0 : (word.count - 1))
+            let maxRowStart: Int = (dr == 0) ? (size - 1) : (dr > 0 ? (size - letters.count) : (size - 1))
+            let minRowStart: Int = (dr == 0) ? 0 : (dr > 0 ? 0 : (letters.count - 1))
             if minRowStart > maxRowStart { continue }
-            let rowRange = Array(minRowStart...maxRowStart)
 
-            let maxColStart: Int = (dc == 0) ? (size - 1) : (dc > 0 ? (size - word.count) : (size - 1))
-            let minColStart: Int = (dc == 0) ? 0 : (dc > 0 ? 0 : (word.count - 1))
+            let maxColStart: Int = (dc == 0) ? (size - 1) : (dc > 0 ? (size - letters.count) : (size - 1))
+            let minColStart: Int = (dc == 0) ? 0 : (dc > 0 ? 0 : (letters.count - 1))
             if minColStart > maxColStart { continue }
-            let colRange = Array(minColStart...maxColStart)
-
-            var starts: [(Int, Int)] = []
-            starts.reserveCapacity(rowRange.count * colRange.count)
-            for r in rowRange { for c in colRange { starts.append((r, c)) } }
-            starts.shuffle()
 
             let dirKey = "\(dr),\(dc)"
             let usageCount = dirUsage[dirKey] ?? 0
 
-            for (r, c) in starts {
-                let probe = canPlaceAt(word: word, row: r, col: c, dr: dr, dc: dc, grid: grid)
-                if probe.fits {
-                    let adj = adjacencyCountFor(word: word, row: r, col: c, dr: dr, dc: dc, grid: grid)
-                    let dist = hypot(Double(r) - centerR, Double(c) - centerC)
+            // The caller shuffles the candidates and adds jitter to the score, so the
+            // start positions don't need shuffling here.
+            for r in minRowStart...maxRowStart {
+                for c in minColStart...maxColStart {
+                    let probe = canPlaceAt(letters: letters, row: r, col: c, dr: dr, dc: dc, grid: grid, placed: placed)
+                    guard probe.fits else { continue }
+                    let adj = adjacencyCountFor(length: letters.count, row: r, col: c, dr: dr, dc: dc, grid: grid)
                     let reuse = (usedRows.contains(r) ? 1 : 0) + (usedCols.contains(c) ? 1 : 0)
-                    list.append(PlacementCandidate(row: r, col: c, dr: dr, dc: dc, overlap: probe.overlap, adjacency: adj, centerDistance: dist, startReusePenalty: reuse, directionUsage: usageCount))
+                    list.append(PlacementCandidate(row: r, col: c, dr: dr, dc: dc, overlap: probe.overlap, adjacency: adj, startReusePenalty: reuse, directionUsage: usageCount))
                 }
             }
         }
         return list
     }
 
-    private func canPlaceAt(word: String, row: Int, col: Int, dr: Int, dc: Int, grid: [[Character]]) -> (fits: Bool, overlap: Int) {
+    private func canPlaceAt(letters: [Character], row: Int, col: Int, dr: Int, dc: Int, grid: [[Character]], placed: [PlacedWord]) -> (fits: Bool, overlap: Int) {
         var overlap = 0
-        for (i, letter) in word.enumerated() {
+        for (i, letter) in letters.enumerated() {
             let r = row + dr * i
             let c = col + dc * i
             guard r >= 0, r < size, c >= 0, c < size else { return (false, 0) }
@@ -337,9 +338,11 @@ public struct WordSearchEngine {
             // Filler letters are added only after placement, so any non-space cell
             // belongs to another word.
             if ch == " " { continue }
-            // Expert lets words cross where they share a letter. Other levels keep
-            // every word on its own cells.
-            guard difficulty == .expert, ch == letter else { return (false, 0) }
+            // Words may cross where they share the same letter, on every level, but only
+            // at an angle. Two words on the same line sharing an end letter would read as
+            // one long word ("GOD" + "DOVE" → "GODOVE").
+            guard ch == letter,
+                  !sharesLine(row: r, col: c, dr: dr, dc: dc, with: placed) else { return (false, 0) }
             overlap += 1
         }
         // One shared cell is a crossing; more would let a word hide inside another.
@@ -387,20 +390,47 @@ public struct WordSearchEngine {
         }
     }
 
-    private func adjacencyCountFor(word: String, row: Int, col: Int, dr: Int, dc: Int, grid: [[Character]]) -> Int {
-        var count = 0
-        let path: [(Int, Int)] = (0..<word.count).map { i in (row + dr * i, col + dc * i) }
-        let neighbors = [(-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1), (1,0), (1,1)]
-        for (r, c) in path {
-            for (nr, nc) in neighbors {
+    private static let neighborOffsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    /// The share of the word's neighboring cells that already hold letters. A share rather
+    /// than a count, so a word on the edge (with fewer neighbors) doesn't look less crowded.
+    private func adjacencyCountFor(length: Int, row: Int, col: Int, dr: Int, dc: Int, grid: [[Character]]) -> Double {
+        var filled = 0
+        var neighbors = 0
+        for i in 0..<length {
+            let r = row + dr * i, c = col + dc * i
+            for (nr, nc) in Self.neighborOffsets {
                 let rr = r + nr
                 let cc = c + nc
                 guard rr >= 0, rr < size, cc >= 0, cc < size else { continue }
-                if path.contains(where: { $0.0 == rr && $0.1 == cc }) { continue }
-                if grid[rr][cc] != " " { count += 1 }
+                if isOnPath(row: rr, col: cc, startRow: row, startCol: col, dr: dr, dc: dc, length: length) { continue }
+                neighbors += 1
+                if grid[rr][cc] != " " { filled += 1 }
             }
         }
-        return count
+        return neighbors > 0 ? Double(filled) / Double(neighbors) : 0
+    }
+
+    /// Whether a placed word passes through the cell along the same line as the direction,
+    /// either way. Such words can't share a letter without running together.
+    private func sharesLine(row: Int, col: Int, dr: Int, dc: Int, with placed: [PlacedWord]) -> Bool {
+        placed.contains { word in
+            let isParallel = (word.dr == dr && word.dc == dc) || (word.dr == -dr && word.dc == -dc)
+            return isParallel && isOnPath(
+                row: row, col: col,
+                startRow: word.startRow, startCol: word.startCol,
+                dr: word.dr, dc: word.dc, length: word.word.count
+            )
+        }
+    }
+
+    /// Whether a cell is one of the `length` cells starting at the given cell and direction.
+    private func isOnPath(row: Int, col: Int, startRow: Int, startCol: Int, dr: Int, dc: Int, length: Int) -> Bool {
+        let rowSteps = row - startRow, colSteps = col - startCol
+        // The step count along the line, taken from whichever axis moves.
+        let step = dr != 0 ? rowSteps / dr : colSteps / dc
+        return step >= 0 && step < length
+            && rowSteps == dr * step && colSteps == dc * step
     }
 
     private func write(_ word: String, atRow row: Int, col: Int, dr: Int, dc: Int, into grid: inout [[Character]]) {
@@ -413,7 +443,21 @@ public struct WordSearchEngine {
         }
     }
 
-    private func fillRandom(into grid: inout [[Character]], avoidingAccidentalMatchesFor placed: [PlacedWord]) {
+    /// An answer's letters and the cells it was placed on, prepared once for the filler checks.
+    private struct PlacedAnswer {
+        let letters: [Character]
+        let cells: [(row: Int, col: Int)]
+    }
+
+    private static let allDirections = [
+        (dr: 0, dc: 1), (dr: 1, dc: 0), (dr: 0, dc: -1), (dr: -1, dc: 0),
+        (dr: 1, dc: 1), (dr: 1, dc: -1), (dr: -1, dc: 1), (dr: -1, dc: -1)
+    ]
+
+    private func fillRandom(into grid: inout [[Character]], avoidingAccidentalMatchesFor placedWords: [PlacedWord]) {
+        let placed = placedWords
+            .map { PlacedAnswer(letters: Array($0.originalWord), cells: cellsForPlacedWord($0)) }
+            .filter { !$0.letters.isEmpty }
         for r in 0..<size {
             for c in 0..<size {
                 if grid[r][c] == " " {
@@ -433,34 +477,34 @@ public struct WordSearchEngine {
         }
     }
 
-    private func createsAccidentalMatch(in grid: [[Character]], atRow row: Int, col: Int, placed: [PlacedWord]) -> Bool {
-        let directions = [
-            (dr: 0, dc: 1), (dr: 1, dc: 0), (dr: 0, dc: -1), (dr: -1, dc: 0),
-            (dr: 1, dc: 1), (dr: 1, dc: -1), (dr: -1, dc: 1), (dr: -1, dc: -1)
-        ]
-
+    private func createsAccidentalMatch(in grid: [[Character]], atRow row: Int, col: Int, placed: [PlacedAnswer]) -> Bool {
         for target in placed {
-            let answer = Array(target.originalWord)
-            guard !answer.isEmpty else { continue }
+            let answer = target.letters
+            let length = answer.count
 
             // Try every position the newly filled cell could occupy in the word.
-            for index in answer.indices {
-                for direction in directions {
+            for index in 0..<length {
+                // The new letter must be the one the answer has at this position.
+                guard grid[row][col] == answer[index] else { continue }
+                for direction in Self.allDirections {
                     let startRow = row - direction.dr * index
                     let startCol = col - direction.dc * index
-                    let cells = answer.indices.map { offset in
-                        (row: startRow + direction.dr * offset, col: startCol + direction.dc * offset)
+                    let endRow = startRow + direction.dr * (length - 1)
+                    let endCol = startCol + direction.dc * (length - 1)
+                    guard startRow >= 0, startRow < size, startCol >= 0, startCol < size,
+                          endRow >= 0, endRow < size, endCol >= 0, endCol < size else { continue }
+
+                    var spellsAnswer = true
+                    for offset in 0..<length
+                    where grid[startRow + direction.dr * offset][startCol + direction.dc * offset] != answer[offset] {
+                        spellsAnswer = false
+                        break
                     }
-                    guard cells.allSatisfy({ cell in
-                        cell.row >= 0 && cell.row < size && cell.col >= 0 && cell.col < size
-                    }) else { continue }
+                    guard spellsAnswer else { continue }
 
-                    let letters = cells.map { grid[$0.row][$0.col] }
-                    guard letters == answer else { continue }
-
-                    let actualCells = cellsForPlacedWord(target)
-                    let isIntendedPath = sequenceEquals(cells, actualCells)
-                        || sequenceEquals(cells, actualCells.reversed())
+                    let cells = (0..<length).map { (row: startRow + direction.dr * $0, col: startCol + direction.dc * $0) }
+                    let isIntendedPath = sequenceEquals(cells, target.cells)
+                        || sequenceEquals(cells, target.cells.reversed())
                     if !isIntendedPath { return true }
                 }
             }
@@ -528,17 +572,21 @@ public struct WordSearchEngine {
         return set.count
     }
 
+    /// Average distance between words, measured between their middles. Start cells would
+    /// favor words that begin at opposite edges.
     private func averagePairwiseDistance(of words: [PlacedWord]) -> Double {
         guard words.count > 1 else { return 0 }
+        func middle(_ word: PlacedWord) -> (row: Double, col: Double) {
+            let half = Double(word.word.count - 1) / 2
+            return (Double(word.startRow) + Double(word.dr) * half, Double(word.startCol) + Double(word.dc) * half)
+        }
         var sum: Double = 0
         var pairs = 0
         for i in 0..<(words.count - 1) {
             for j in (i + 1)..<words.count {
-                let a = words[i]
-                let b = words[j]
-                let ar = Double(a.startRow), ac = Double(a.startCol)
-                let br = Double(b.startRow), bc = Double(b.startCol)
-                let d = hypot(ar - br, ac - bc)
+                let a = middle(words[i])
+                let b = middle(words[j])
+                let d = hypot(a.row - b.row, a.col - b.col)
                 sum += d
                 pairs += 1
             }

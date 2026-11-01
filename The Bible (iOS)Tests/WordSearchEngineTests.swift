@@ -48,6 +48,36 @@ struct WordSearchEngineTests {
         }
     }
 
+    /// Words may share one letter, but only where they cross at an angle. Two words on the
+    /// same line sharing an end letter would look like one long word.
+    @Test(arguments: [
+        (WordSearchEngine.Difficulty.easy, 10, 3...6),
+        (.medium, 12, 4...7),
+        (.hard, 14, 5...8),
+        (.expert, 14, 6...10)
+    ])
+    func sharedLettersOnlyJoinWordsThatCross(difficulty: WordSearchEngine.Difficulty, size: Int, range: ClosedRange<Int>) {
+        let engine = WordSearchEngine(size: size, difficulty: difficulty)
+        var crossings = 0
+        for _ in 0..<40 {
+            let words = engine.generatePuzzle(from: Self.verse, countRange: range).placed
+            for (i, first) in words.enumerated() {
+                let firstCells = Set(engine.cellsForPlacedWord(first).map { "\($0.row),\($0.col)" })
+                for second in words[(i + 1)...] {
+                    let shared = engine.cellsForPlacedWord(second).filter { firstCells.contains("\($0.row),\($0.col)") }
+                    guard !shared.isEmpty else { continue }
+                    crossings += 1
+                    let isParallel = (first.dr == second.dr && first.dc == second.dc)
+                        || (first.dr == -second.dr && first.dc == -second.dc)
+                    #expect(!isParallel, "\(first.word) and \(second.word) share a letter on the same line")
+                    #expect(shared.count == 1)
+                }
+            }
+        }
+        // Crossings still happen; they're just never in a straight line.
+        #expect(crossings > 0)
+    }
+
     @Test
     func hardPuzzlesMixDirections() {
         let engine = WordSearchEngine(size: 14, difficulty: .hard)
@@ -56,6 +86,25 @@ struct WordSearchEngineTests {
         }
         let average = Double(varieties.reduce(0, +)) / Double(varieties.count)
         #expect(average >= 5)
+    }
+
+    /// Placement once rewarded distance from the center, so about 80% of words started on an
+    /// edge and nearly every puzzle had a word in the first column. Purely random placement
+    /// gives about 50% on Easy; the limit leaves room for the spacing between words.
+    @Test
+    func wordsAreNotPushedToTheEdges() {
+        let engine = WordSearchEngine(size: 10, difficulty: .easy)
+        var edgeStarts = 0
+        var starts = 0
+        for _ in 0..<150 {
+            for word in engine.generatePuzzle(from: Self.verse, countRange: 3...6).placed {
+                starts += 1
+                if word.startRow == 0 || word.startRow == 9 || word.startCol == 0 || word.startCol == 9 {
+                    edgeStarts += 1
+                }
+            }
+        }
+        #expect(Double(edgeStarts) / Double(starts) < 0.7)
     }
 
     /// Hard puzzles once took over a second each because the placement search almost never
