@@ -36,17 +36,13 @@ struct QuizView: View {
                                 compactGameContent
                             }
                         case .results:
-                            Spacer(minLength: 32)
-                            QuizResultsCard(
-                                score: vm.session.score,
-                                total: vm.totalQuestions,
-                                bestStreak: vm.session.sessionBestStreak,
-                                bestGameScore: vm.session.bestGameScore,
-                                isNewBest: vm.session.isNewBestGame,
+                            GameRoundSummaryView(
+                                summary: GameRoundSummary(score: vm.session),
+                                tint: .blue,
+                                reviewGame: vm.reviewQuestionIDs.isEmpty ? .bibleQuiz : nil,
                                 onPlayAgain: vm.startQuiz,
                                 onChangeSettings: vm.resetToSetup
                             )
-                            .frame(maxWidth: .infinity)
                         }
                     }
                     .padding(.horizontal)

@@ -252,7 +252,7 @@ final class WhoAmIGameViewModel {
 
     func startGame() {
         guard isReady else { return }
-        session.beginGame(savedStreak: persistentStreak)
+        session.beginGame(savedStreak: persistentStreak, isTimed: difficulty.timeLimit > 0)
         let candidates = reviewQuestionIDs.isEmpty ? eligibleEntries : reviewEntries
         questionQueue = Array(candidates.shuffled().prefix(Self.questionsPerGame))
         totalQuestions = questionQueue.count
@@ -279,6 +279,7 @@ final class WhoAmIGameViewModel {
         selectedChoice = nil
         roundOver = false
         wasTimedOut = false
+        session.startQuestion()
 
         remainingSeconds = difficulty.timeLimit
         if remainingSeconds > 0, !isTimerDisabled {
@@ -301,7 +302,21 @@ final class WhoAmIGameViewModel {
     private func finishRound(correct: Bool) {
         stopTimer()
         roundOver = true
-        session.record(correct: correct, savedStreak: persistentStreak)
+        if let current {
+            session.record(
+                GameRoundEntry(
+                    prompt: promptTitle,
+                    outcome: correct ? .correct : (wasTimedOut ? .timedOut : .wrong),
+                    givenAnswer: wasTimedOut ? nil : selectedChoice,
+                    correctAnswer: correctChoice,
+                    category: String(localized: mode(for: current).title),
+                    bookName: current.books.count == 1 ? current.books.first : nil
+                ),
+                savedStreak: persistentStreak
+            )
+        } else {
+            session.record(correct: correct, savedStreak: persistentStreak)
+        }
 
         GameStats.shared.recordRound(
             game: .whoami,
@@ -394,6 +409,7 @@ final class WhoAmIGameViewModel {
         guard difficulty.timeLimit > 0 else { return }
         isTimerDisabled.toggle()
         if isTimerDisabled {
+            session.noteTimerTurnedOff()
             stopTimer()
         } else if !roundOver {
             startTimer()

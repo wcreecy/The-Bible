@@ -95,6 +95,8 @@ struct ScrambleGameView: View {
 
         let answer: String
         let category: LocalizedStringKey
+        /// The category as plain text, for the round summary.
+        let categoryName: String
         let reference: String?
         let level: Level
 
@@ -105,6 +107,7 @@ struct ScrambleGameView: View {
             let reference = entry.reference?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             self.answer = entry.answer
             self.category = LocalizedStringKey(entry.category)
+            self.categoryName = entry.category
             self.reference = reference.isEmpty ? nil : reference
             self.level = level
         }
@@ -482,20 +485,14 @@ struct ScrambleGameView: View {
     }
 
     private var resultsScreen: some View {
-        ContentUnavailableView {
-            Label("Session Complete", systemImage: "checkmark.seal.fill")
-        } description: {
-            Text("You solved \(session.score) of \(sessionLength.rawValue) words.")
-        } actions: {
-            Button("Play Again", systemImage: "arrow.clockwise") {
-                startSession()
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.pink)
-
-            Button("Change Settings", action: resetToSetup)
-        }
-        .padding(.top, 72)
+        GameRoundSummaryView(
+            summary: GameRoundSummary(score: session),
+            tint: .pink,
+            unit: .words,
+            canTimeOut: currentTimeLimit != nil,
+            onPlayAgain: startSession,
+            onChangeSettings: resetToSetup
+        )
     }
 
     private func loadWordBank() async {
@@ -526,7 +523,7 @@ struct ScrambleGameView: View {
         recentlyPlayedAnswers = Array((recentlyPlayedAnswers + deck.map(\.answer)).suffix(40))
         currentNumber = 0
         // The session streak carries from one game to the next.
-        session.beginGame(savedStreak: persistentStreak)
+        session.beginGame(savedStreak: persistentStreak, isTimed: currentTimeLimit != nil)
         strikes = 0
         hintLevel = 0
         isTimerDisabled = false
@@ -545,6 +542,7 @@ struct ScrambleGameView: View {
 
     private func loadNextWord() {
         guard let next = deck.popLast() else {
+            session.endGame()
             phase = .results
             timerID = UUID()
             return
@@ -560,6 +558,7 @@ struct ScrambleGameView: View {
         strikes = 0
         timeRemaining = currentTimeLimit ?? 0
         timerID = UUID()
+        session.startQuestion()
     }
 
     private func selectLetter(_ index: Int) {
@@ -600,6 +599,9 @@ struct ScrambleGameView: View {
     private func toggleTimer() {
         guard currentTimeLimit != nil else { return }
         isTimerDisabled.toggle()
+        if isTimerDisabled {
+            session.noteTimerTurnedOff()
+        }
     }
 
     private func shuffleUnusedLetters() {
@@ -635,7 +637,7 @@ struct ScrambleGameView: View {
             return
         }
 
-        recordWordResult(correct: true)
+        recordWordResult(.correct, givenAnswer: currentWord.answer)
         answerFeedback = .correct
         advanceAfterFeedback()
     }
@@ -644,14 +646,15 @@ struct ScrambleGameView: View {
         guard let currentWord, !isCurrentWordResolved else { return }
         typedAnswer = currentWord.answer
         selectedIndices = Array(shuffledLetters.indices)
-        recordWordResult(correct: false)
+        recordWordResult(.wrong, givenAnswer: nil)
         answerFeedback = .revealed
     }
 
     private func revealAnswerAfterStrikeLimit(for word: ScrambleWord) {
+        let lastGuess = selectedAnswer.uppercased()
         typedAnswer = word.answer
         selectedIndices = Array(shuffledLetters.indices)
-        recordWordResult(correct: false)
+        recordWordResult(.wrong, givenAnswer: lastGuess.isEmpty ? nil : lastGuess)
         answerFeedback = .revealed
     }
 
@@ -684,14 +687,29 @@ struct ScrambleGameView: View {
         guard let word else { return }
         typedAnswer = word.answer
         selectedIndices = Array(shuffledLetters.indices)
-        recordWordResult(correct: false)
+        recordWordResult(.timedOut, givenAnswer: nil)
         answerFeedback = .timedOut
         advanceAfterFeedback()
     }
 
     /// Counts a resolved word. The saved streak ends on a reveal, the strike limit or a timeout.
-    private func recordWordResult(correct: Bool) {
-        session.record(correct: correct, savedStreak: persistentStreak)
+    private func recordWordResult(_ outcome: GameRoundEntry.Outcome, givenAnswer: String?) {
+        let correct = outcome == .correct
+        if let currentWord {
+            session.record(
+                GameRoundEntry(
+                    prompt: String(shuffledLetters),
+                    outcome: outcome,
+                    givenAnswer: givenAnswer,
+                    correctAnswer: currentWord.answer,
+                    category: currentWord.categoryName,
+                    reference: currentWord.reference
+                ),
+                savedStreak: persistentStreak
+            )
+        } else {
+            session.record(correct: correct, savedStreak: persistentStreak)
+        }
         GameStats.shared.recordRound(
             game: .scramble,
             difficulty: difficulty.statsDifficulty,

@@ -328,7 +328,7 @@ final class HangmanGameViewModel {
         guard !deck.isEmpty else { return }
         totalWords = deck.count
         wordNumber = 0
-        session.beginGame(savedStreak: persistentStreak)
+        session.beginGame(savedStreak: persistentStreak, isTimed: false)
         phase = .playing
         nextWord()
     }
@@ -345,6 +345,7 @@ final class HangmanGameViewModel {
         clueRevealed = false
         roundOver = false
         didWin = false
+        session.startQuestion()
     }
 
     private func showResults() {
@@ -406,7 +407,18 @@ final class HangmanGameViewModel {
         guard !roundOver, let current else { return }
         roundOver = true
         didWin = win
-        session.record(correct: win, savedStreak: persistentStreak)
+        let answer = [current.answer, current.qualifier.map { "(\($0))" }].compactMap(\.self).joined(separator: " ")
+        session.record(
+            GameRoundEntry(
+                prompt: current.clue,
+                outcome: win ? .correct : .wrong,
+                givenAnswer: nil,
+                correctAnswer: answer,
+                category: String(localized: current.category.title),
+                reference: current.reference
+            ),
+            savedStreak: persistentStreak
+        )
 
         #if canImport(UIKit)
         UINotificationFeedbackGenerator().notificationOccurred(win ? .success : .error)

@@ -465,7 +465,7 @@ final class QuizGameViewModel {
         totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
         currentIndex = -1
-        session.beginGame(savedStreak: persistentStreak)
+        session.beginGame(savedStreak: persistentStreak, isTimed: isTimed)
         isTimerDisabled = false
         phase = .playing
         appendNextQuestion()
@@ -478,6 +478,7 @@ final class QuizGameViewModel {
         }
         history.append(question)
         currentIndex = history.count - 1
+        session.startQuestion()
         remainingSeconds = difficulty.timeLimit ?? 0
         wasInRedZone = false
         stopTimerPulse()
@@ -524,6 +525,9 @@ final class QuizGameViewModel {
     func toggleTimer() {
         guard isTimed else { return }
         isTimerDisabled.toggle()
+        if isTimerDisabled {
+            session.noteTimerTurnedOff()
+        }
         stopTimerPulse()
         timerID += 1
     }
@@ -541,7 +545,18 @@ final class QuizGameViewModel {
         stopTimerPulse()
 
         let correct = outcome == .correct
-        session.record(correct: correct, savedStreak: persistentStreak)
+        session.record(
+            GameRoundEntry(
+                prompt: current.verseText,
+                outcome: correct ? .correct : (outcome == .timedOut ? .timedOut : .wrong),
+                givenAnswer: selected,
+                correctAnswer: current.correctBook,
+                category: QuizVerseSection.containing(current.correctBook).map { String(localized: $0.title) },
+                bookName: current.correctBook,
+                reference: "\(current.correctBook) \(current.chapter):\(current.verse)"
+            ),
+            savedStreak: persistentStreak
+        )
 
         GameStats.shared.recordRound(
             game: .quiz,

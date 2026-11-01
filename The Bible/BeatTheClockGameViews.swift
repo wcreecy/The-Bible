@@ -2,39 +2,6 @@ import SwiftUI
 
 // MARK: - Setup views
 
-private struct BeatTheClockGameFact: View {
-    let icon: String
-    let value: Text
-    let label: LocalizedStringResource
-
-    var body: some View {
-        VStack(spacing: 5) {
-            Image(systemName: icon)
-                .font(.subheadline)
-                .foregroundStyle(.tint)
-
-            value
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .padding(.horizontal, 6)
-        .background(
-            Color.secondary.opacity(0.08),
-            in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-        )
-        .accessibilityElement(children: .combine)
-    }
-}
-
 struct BeatTheClockSetupControls: View {
     @Binding var category: BeatTheClockCategory
 
@@ -305,56 +272,6 @@ struct BeatTheClockDashboardAnswer: View {
                 }
             }
         }
-    }
-}
-
-struct BeatTheClockResultsCard: View {
-    let score: Int
-    let total: Int
-    let bestStreak: Int
-    let bestGameScore: Int
-    let isNewBest: Bool
-    let onPlayAgain: () -> Void
-    let onChangeSettings: () -> Void
-
-    private var accuracy: Int {
-        guard total > 0 else { return 0 }
-        return Int((Double(score) / Double(total) * 100).rounded())
-    }
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
-                .font(.system(size: 52, weight: .semibold))
-                .foregroundStyle(isNewBest ? Color.yellow : Color.indigo)
-
-            VStack(spacing: 6) {
-                Text(isNewBest ? "New Best Game!" : "Game Over")
-                    .font(.title.weight(.bold))
-
-                Text("\(score) of \(total) correct")
-                    .font(.title2.weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(.secondary)
-            }
-
-            HStack(spacing: 8) {
-                BeatTheClockGameFact(icon: "percent", value: Text("\(accuracy)%"), label: "Accuracy")
-                BeatTheClockGameFact(icon: "flame.fill", value: Text("\(bestStreak)"), label: "Best streak")
-                BeatTheClockGameFact(icon: "trophy", value: Text("\(bestGameScore)/\(total)"), label: "Best game")
-            }
-
-            VStack(spacing: 10) {
-                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
-                    .buttonStyle(GameProminentButtonStyle(tint: .indigo))
-
-                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-            }
-        }
-        .padding(24)
-        .frame(maxWidth: 520)
-        .heroCardSurface()
     }
 }
 

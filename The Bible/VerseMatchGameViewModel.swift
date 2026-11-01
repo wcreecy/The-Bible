@@ -319,7 +319,7 @@ final class VerseMatchGameViewModel {
         totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
         currentIndex = -1
-        session.beginGame(savedStreak: persistentStreak)
+        session.beginGame(savedStreak: persistentStreak, isTimed: false)
         phase = .playing
         appendNextQuestion()
     }
@@ -356,10 +356,12 @@ final class VerseMatchGameViewModel {
             guard let correctIndex = options.firstIndex(of: verse) else { continue }
             history.append(VerseMatchQuestion(verse: verse, options: options, correctIndex: correctIndex))
             currentIndex = history.count - 1
+            session.startQuestion()
             return
         }
         // Ran out of usable verses early; end with what was played.
         totalQuestions = history.count
+        session.endGame()
         showResults()
     }
 
@@ -373,7 +375,18 @@ final class VerseMatchGameViewModel {
         history[currentIndex].selectedIndex = index
 
         let isCorrect = index == current.correctIndex
-        session.record(correct: isCorrect, savedStreak: persistentStreak)
+        session.record(
+            GameRoundEntry(
+                prompt: current.verse.reference,
+                outcome: isCorrect ? .correct : .wrong,
+                givenAnswer: current.options.indices.contains(index) ? "“\(current.options[index].verseText)”" : nil,
+                correctAnswer: "“\(current.verse.verseText)”",
+                category: QuizVerseSection.containing(current.verse.bookName).map { String(localized: $0.title) },
+                bookName: current.verse.bookName,
+                reference: current.verse.reference
+            ),
+            savedStreak: persistentStreak
+        )
 
         #if canImport(UIKit)
         UINotificationFeedbackGenerator().notificationOccurred(isCorrect ? .success : .error)

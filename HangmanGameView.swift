@@ -58,17 +58,14 @@ struct HangmanGameView: View {
                                 .accessibilityLabel("Win this round")
                         }
                     case .results:
-                        Spacer(minLength: 32)
-                        HangmanResultsCard(
-                            score: vm.session.score,
-                            total: vm.totalWords,
-                            bestStreak: vm.session.sessionBestStreak,
-                            bestGameScore: vm.session.bestGameScore,
-                            isNewBest: vm.session.isNewBestGame,
+                        GameRoundSummaryView(
+                            summary: GameRoundSummary(score: vm.session),
+                            tint: .teal,
+                            unit: .words,
+                            canTimeOut: false,
                             onPlayAgain: vm.startGame,
                             onChangeSettings: vm.resetToSetup
                         )
-                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(.horizontal)

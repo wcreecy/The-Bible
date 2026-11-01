@@ -70,56 +70,6 @@ struct HangmanRevealCard: View {
     }
 }
 
-struct HangmanResultsCard: View {
-    let score: Int
-    let total: Int
-    let bestStreak: Int
-    let bestGameScore: Int
-    let isNewBest: Bool
-    let onPlayAgain: () -> Void
-    let onChangeSettings: () -> Void
-
-    private var accuracy: Int {
-        guard total > 0 else { return 0 }
-        return Int((Double(score) / Double(total) * 100).rounded())
-    }
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
-                .font(.system(size: 52, weight: .semibold))
-                .foregroundStyle(isNewBest ? Color.yellow : Color.teal)
-
-            VStack(spacing: 6) {
-                Text(isNewBest ? "New Best Game!" : "Game Over")
-                    .font(.title.weight(.bold))
-
-                Text("\(score) of \(total) words solved")
-                    .font(.title2.weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(.secondary)
-            }
-
-            GameSplashFacts(
-                first: ("percent", "\(accuracy)%", String(localized: "Accuracy")),
-                second: ("flame.fill", "\(bestStreak)", String(localized: "Best streak")),
-                third: ("trophy", "\(bestGameScore)/\(total)", String(localized: "Best game"))
-            )
-
-            VStack(spacing: 10) {
-                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
-                    .buttonStyle(GameProminentButtonStyle(tint: .teal))
-
-                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-            }
-        }
-        .padding(24)
-        .frame(maxWidth: 520)
-        .heroCardSurface()
-    }
-}
-
 struct HangmanKeyboardView: View {
     @Binding var usesAlphabeticalLayout: Bool
     let guessedLetters: Set<Character>

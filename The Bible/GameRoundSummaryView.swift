@@ -222,14 +222,12 @@ private struct GameRoundSummaryBreakdown: View {
     }
 
     /// "8s" for short times, "1m 42s" once a minute has passed.
-    static func format(_ duration: Duration) -> String {
-        let seconds = max(1, Int(duration.components.seconds.rounded(toMultipleOf: 1)))
+    nonisolated static func format(_ duration: Duration) -> String {
+        let components = duration.components
+        let exactSeconds = Double(components.seconds) + Double(components.attoseconds) / 1e18
+        let seconds = max(1, Int(exactSeconds.rounded()))
         return Duration.seconds(seconds).formatted(.units(allowed: [.minutes, .seconds], width: .narrow))
     }
-}
-
-private extension Int64 {
-    func rounded(toMultipleOf _: Int64) -> Int64 { self }
 }
 
 // MARK: - Streak

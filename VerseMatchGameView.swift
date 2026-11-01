@@ -34,17 +34,14 @@ struct VerseMatchGameView: View {
                 case .playing:
                     gameContent
                 case .results:
-                    Spacer(minLength: 32)
-                    VerseMatchResultsCard(
-                        score: vm.session.score,
-                        total: vm.totalQuestions,
-                        bestStreak: vm.session.sessionBestStreak,
-                        bestGameScore: vm.session.bestGameScore,
-                        isNewBest: vm.session.isNewBestGame,
+                    GameRoundSummaryView(
+                        summary: GameRoundSummary(score: vm.session),
+                        tint: .orange,
+                        canTimeOut: false,
+                        reviewGame: vm.reviewQuestionIDs.isEmpty ? .verseMatch : nil,
                         onPlayAgain: vm.startGame,
                         onChangeSettings: vm.resetToSetup
                     )
-                    .frame(maxWidth: .infinity)
                 }
             }
             .padding()

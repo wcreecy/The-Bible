@@ -83,9 +83,9 @@ struct GameRoundSummary {
     // MARK: - Score
 
     var total: Int { entries.count }
-    var correctCount: Int { entries.count { $0.outcome == .correct } }
-    var wrongCount: Int { entries.count { $0.outcome == .wrong } }
-    var timedOutCount: Int { entries.count { $0.outcome == .timedOut } }
+    var correctCount: Int { entries.count(where: { $0.outcome == .correct }) }
+    var wrongCount: Int { entries.count(where: { $0.outcome == .wrong }) }
+    var timedOutCount: Int { entries.count(where: { $0.outcome == .timedOut }) }
 
     var accuracy: Double {
         total > 0 ? Double(correctCount) / Double(total) : 0

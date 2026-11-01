@@ -132,6 +132,7 @@ struct GameRoundSummaryTests {
         score.beginGame(savedStreak: saved)
         score.record(entry(.correct), savedStreak: saved)
         score.noteTimerTurnedOff()
+        score.startQuestion()
         score.record(entry(.correct), savedStreak: saved)
         score.endGame()
 

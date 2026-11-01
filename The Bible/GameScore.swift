@@ -23,12 +23,44 @@ struct GameScore {
     private(set) var bestGameScore = 0
     private(set) var isNewBestGame = false
 
+    // Round summary bookkeeping
+    /// Every answer in the current game, in order, for the end-of-round summary.
+    private(set) var entries: [GameRoundEntry] = []
+    /// The saved run of correct answers, which carries between games and app launches.
+    private(set) var savedCurrentStreak = 0
+    /// The saved best when the game began, so the summary can tell when it was beaten.
+    private(set) var savedBestStreakAtStart = 0
+    /// False when the game has no time limit or the timer was turned off at any point.
+    private(set) var wasTimed = true
+    /// How long the game took from the first question to the end.
+    private(set) var gameDuration: Duration?
+    private var gameStartedAt: ContinuousClock.Instant?
+    private var questionStartedAt: ContinuousClock.Instant?
+
     /// Starts a game. The score clears; the streak carries over from the last one.
-    mutating func beginGame(savedStreak: PersistentGameStreak) {
+    /// Pass `isTimed: false` for games or difficulties without a time limit.
+    mutating func beginGame(savedStreak: PersistentGameStreak, isTimed: Bool = true) {
         score = 0
         answered = 0
         isNewBestGame = false
         savedBestStreak = savedStreak.best
+        savedBestStreakAtStart = savedStreak.best
+        savedCurrentStreak = savedStreak.current
+        entries = []
+        wasTimed = isTimed
+        gameDuration = nil
+        gameStartedAt = .now
+        questionStartedAt = .now
+    }
+
+    /// Marks when a new question is shown, so the summary can time each answer.
+    mutating func startQuestion() {
+        questionStartedAt = .now
+    }
+
+    /// Notes that the player turned the timer off, so the summary labels the round as untimed.
+    mutating func noteTimerTurnedOff() {
+        wasTimed = false
     }
 
     /// Refreshes the saved best, for example when the screen appears or the difficulty changes.
@@ -45,14 +77,37 @@ struct GameScore {
             sessionBestStreak = max(sessionBestStreak, streak)
             let saved = savedStreak.recordWin()
             savedBestStreak = max(savedBestStreak, saved.best)
+            savedCurrentStreak = saved.current
         } else {
             streak = 0
             savedStreak.reset()
+            savedCurrentStreak = 0
+        }
+    }
+
+    /// Counts one answered question like `record(correct:savedStreak:)` and keeps it, with the
+    /// time taken since `startQuestion()`, for the end-of-round summary.
+    mutating func record(_ entry: GameRoundEntry, savedStreak: PersistentGameStreak) {
+        var entry = entry
+        if let questionStartedAt {
+            entry.duration = questionStartedAt.duration(to: .now)
+        }
+        questionStartedAt = nil
+        entries.append(entry)
+        record(correct: entry.outcome == .correct, savedStreak: savedStreak)
+    }
+
+    /// Stops the game clock. `finishGame(bestScoreKey:)` calls this; games without a saved
+    /// best score call it directly when the last question is done.
+    mutating func endGame() {
+        if let gameStartedAt, gameDuration == nil {
+            gameDuration = gameStartedAt.duration(to: .now)
         }
     }
 
     /// Ends the game and works out whether it beat the saved best score.
     mutating func finishGame(bestScoreKey: String, defaults: UserDefaults = .standard) {
+        endGame()
         let previousBest = defaults.integer(forKey: bestScoreKey)
         isNewBestGame = score > previousBest
         bestGameScore = max(previousBest, score)
@@ -66,6 +121,10 @@ struct GameScore {
     mutating func clearGame() {
         score = 0
         answered = 0
+        entries = []
+        gameDuration = nil
+        gameStartedAt = nil
+        questionStartedAt = nil
     }
 
     /// Clears the session streak when the player leaves the screen.

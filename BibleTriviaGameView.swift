@@ -325,6 +325,7 @@ final class BibleTriviaGameModel {
         furthestPresentedIndex = 0
         // The session streak carries from one game to the next.
         session.beginGame(savedStreak: persistentStreak)
+        // The saved best score is still kept (and synced) but no longer shown on the summary.
         bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
         isTimerDisabled = false
         phase = .playing
@@ -362,6 +363,7 @@ final class BibleTriviaGameModel {
         if isViewingPrevious {
             currentIndex += 1
         } else if isLastQuestion {
+            session.endGame()
             savePersonalBest()
             phase = .results
         } else {
@@ -398,6 +400,7 @@ final class BibleTriviaGameModel {
     private func prepareCurrentQuestion() {
         guard !isViewingPrevious, !isAnswered else { return }
         remainingSeconds = difficulty.timerSeconds
+        session.startQuestion()
         startTimer()
     }
 
@@ -421,6 +424,9 @@ final class BibleTriviaGameModel {
 
     func toggleTimer() {
         isTimerDisabled.toggle()
+        if isTimerDisabled {
+            session.noteTimerTurnedOff()
+        }
         if !isTimerDisabled, !isViewingPrevious, !isAnswered {
             startTimer()
         } else {
@@ -434,7 +440,19 @@ final class BibleTriviaGameModel {
         round[currentIndex].selectedAnswer = answer
         round[currentIndex].timedOut = answer == nil
         let isCorrect = answer == question.correctAnswer
-        session.record(correct: isCorrect, savedStreak: persistentStreak)
+        let scriptureReference = BibleReferenceLinker.parse(question.reference)
+        session.record(
+            GameRoundEntry(
+                prompt: question.question,
+                outcome: isCorrect ? .correct : (answer == nil ? .timedOut : .wrong),
+                givenAnswer: answer,
+                correctAnswer: question.correctAnswer,
+                category: Self.questionLevelTitle(question.difficulty),
+                bookName: scriptureReference?.bookName,
+                reference: question.reference
+            ),
+            savedStreak: persistentStreak
+        )
         if !carryoverQuestionIDs.contains(question.id) {
             progressStore.record(questionID: question.id, difficulty: difficulty)
         }
@@ -445,7 +463,6 @@ final class BibleTriviaGameModel {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
-        let scriptureReference = BibleReferenceLinker.parse(question.reference)
         if let bookName = scriptureReference?.bookName {
             GameStats.shared.recordTriviaPerBook(
                 bookName: bookName,
@@ -474,6 +491,26 @@ final class BibleTriviaGameModel {
         return RoundQuestion(
             question: question,
             options: (Array(distractors.shuffled().prefix(3)) + [question.correctAnswer]).shuffled()
+        )
+    }
+
+    /// The question's own level, for the summary's "By Type" breakdown.
+    private static func questionLevelTitle(_ level: String) -> String? {
+        switch level {
+        case "easy": String(localized: "Easy questions")
+        case "normal": String(localized: "Normal questions")
+        case "hard": String(localized: "Hard questions")
+        default: nil
+        }
+    }
+
+    /// Progress through this difficulty's question pool; nil for a review round.
+    var poolProgress: GameRoundSummaryView.PoolProgress? {
+        guard reviewQuestionIDs.isEmpty else { return nil }
+        return GameRoundSummaryView.PoolProgress(
+            title: String(localized: difficulty.title),
+            seen: completedInPool,
+            total: eligibleQuestions.count
         )
     }
 
@@ -537,15 +574,18 @@ struct BibleTriviaGameView: View {
                     onAdvance: model.advance
                 )
             case .results:
-                BibleTriviaResultsScreen(
-                    score: model.session.score,
-                    questionCount: model.roundCount,
-                    accuracy: model.accuracy,
-                    difficulty: model.difficulty,
-                    bestScore: model.bestScore,
-                    onPlayAgain: model.startRound,
-                    onBackToSetup: model.returnToSetup
-                )
+                ScrollView {
+                    GameRoundSummaryView(
+                        summary: GameRoundSummary(score: model.session),
+                        tint: .cyan,
+                        poolProgress: model.poolProgress,
+                        reviewGame: isReviewRound ? nil : .bibleTrivia,
+                        onPlayAgain: model.startRound,
+                        onChangeSettings: model.returnToSetup
+                    )
+                    .padding()
+                }
+                .tabBarContentClearance()
             case .unavailable:
                 ContentUnavailableView(
                     "Trivia questions unavailable",
@@ -1233,76 +1273,6 @@ private struct BibleTriviaLargeTimerView: View {
         .shadow(color: usesNeutralStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
-    }
-}
-
-private struct BibleTriviaResultsScreen: View {
-    let score: Int
-    let questionCount: Int
-    let accuracy: Int
-    let difficulty: BibleTriviaDifficulty
-    let bestScore: Int
-    let onPlayAgain: () -> Void
-    let onBackToSetup: () -> Void
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Spacer(minLength: 24)
-
-            Image(systemName: "trophy.fill")
-                .font(.system(size: 54))
-                .foregroundStyle(.cyan)
-
-            Text("Round Complete")
-                .font(.largeTitle.bold())
-
-            Text("\(score) of \(questionCount) correct · \(accuracy)% accuracy")
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-            BibleTriviaPersonalBestCard(
-                score: bestScore,
-                questionCount: questionCount,
-                difficulty: difficulty
-            )
-
-            HStack {
-                Button("Change Difficulty", action: onBackToSetup)
-                    .buttonStyle(.bordered)
-
-                Button("Play Another Round", action: onPlayAgain)
-                    .buttonStyle(.borderedProminent)
-                    .tint(.cyan)
-            }
-
-            Spacer()
-        }
-        .padding()
-        .tabBarContentClearance()
-    }
-}
-
-private struct BibleTriviaPersonalBestCard: View {
-    let score: Int
-    let questionCount: Int
-    let difficulty: BibleTriviaDifficulty
-
-    private var accuracy: Int {
-        guard questionCount > 0 else { return 0 }
-        return Int((Double(score) / Double(questionCount) * 100).rounded())
-    }
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Label("Personal Best · \(Text(difficulty.title))", systemImage: "trophy.fill")
-                .font(.headline)
-                .foregroundStyle(.cyan)
-            Text("\(score) of \(questionCount) correct · \(accuracy)% accuracy")
-                .font(.title3.weight(.semibold))
-        }
-        .padding(16)
-        .frame(maxWidth: 520)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
 

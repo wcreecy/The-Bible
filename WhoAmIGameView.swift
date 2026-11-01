@@ -50,17 +50,14 @@ struct WhoAmIGameView: View {
                 if !vm.started {
                     setupContent
                 } else if vm.isComplete {
-                    Spacer(minLength: 32)
-                    WhoAmIResultsCard(
-                        score: vm.session.score,
-                        total: vm.totalQuestions,
-                        bestStreak: vm.session.sessionBestStreak,
-                        bestGameScore: vm.session.bestGameScore,
-                        isNewBest: vm.session.isNewBestGame,
+                    GameRoundSummaryView(
+                        summary: GameRoundSummary(score: vm.session),
+                        tint: .brown,
+                        canTimeOut: vm.difficulty.timeLimit > 0,
+                        reviewGame: isReviewRound ? nil : .whoAmI,
                         onPlayAgain: vm.startGame,
                         onChangeSettings: vm.returnToSetup
                     )
-                    .frame(maxWidth: .infinity)
                 } else if horizontalSizeClass == .regular {
                     iPadBoard
                 } else {
@@ -488,56 +485,6 @@ private struct WhoAmIRevealCard: View {
             in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
         )
         .accessibilityElement(children: .combine)
-    }
-}
-
-private struct WhoAmIResultsCard: View {
-    let score: Int
-    let total: Int
-    let bestStreak: Int
-    let bestGameScore: Int
-    let isNewBest: Bool
-    let onPlayAgain: () -> Void
-    let onChangeSettings: () -> Void
-
-    private var accuracy: Int {
-        guard total > 0 else { return 0 }
-        return Int((Double(score) / Double(total) * 100).rounded())
-    }
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
-                .font(.system(size: 52, weight: .semibold))
-                .foregroundStyle(isNewBest ? Color.yellow : Color.brown)
-
-            VStack(spacing: 6) {
-                Text(isNewBest ? "New Best Game!" : "Game Over")
-                    .font(.title.weight(.bold))
-
-                Text("\(score) of \(total) correct")
-                    .font(.title2.weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(.secondary)
-            }
-
-            GameSplashFacts(
-                first: ("percent", "\(accuracy)%", String(localized: "Accuracy")),
-                second: ("flame.fill", "\(bestStreak)", String(localized: "Best streak")),
-                third: ("trophy", "\(bestGameScore)/\(total)", String(localized: "Best game"))
-            )
-
-            VStack(spacing: 10) {
-                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
-                    .buttonStyle(GameProminentButtonStyle(tint: .brown))
-
-                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-            }
-        }
-        .padding(24)
-        .frame(maxWidth: 520)
-        .heroCardSurface()
     }
 }
 

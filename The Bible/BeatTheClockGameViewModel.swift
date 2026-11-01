@@ -404,6 +404,7 @@ final class BeatTheClockGameViewModel {
         remainingSeconds = difficulty.roundTime
         isPulsing = false
         roundID += 1
+        session.startQuestion()
     }
 
     private func showResults() {
@@ -490,7 +491,22 @@ final class BeatTheClockGameViewModel {
         self.submittedBook = submittedBook
 
         let correct = outcome == .correct
-        session.record(correct: correct, savedStreak: persistentStreak)
+        let entryOutcome: GameRoundEntry.Outcome = switch outcome {
+        case .correct: .correct
+        case .incorrect: .wrong
+        case .timedOut: .timedOut
+        }
+        session.record(
+            GameRoundEntry(
+                prompt: currentQuestion.label,
+                outcome: entryOutcome,
+                givenAnswer: submittedBook,
+                correctAnswer: sortedAcceptableBooks.formatted(.list(type: .or)),
+                category: currentQuestion.subject == .person ? String(localized: "People") : String(localized: "Places"),
+                reference: currentQuestion.scriptureReference
+            ),
+            savedStreak: persistentStreak
+        )
 
         GameStats.shared.recordRound(
             game: .beatclock,
