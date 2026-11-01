@@ -281,6 +281,8 @@ final class QuizGameViewModel {
     private(set) var timerID: Int = 0
     private(set) var isTimerDisabled = false
     private(set) var isPulsing = false
+    /// True while the question is paused: the timer stops and the question is hidden.
+    private(set) var isPaused = false
     private var wasInRedZone = false
     private var pulseTask: Task<Void, Never>?
 
@@ -303,8 +305,12 @@ final class QuizGameViewModel {
     var isTimed: Bool { difficulty.timeLimit != nil }
 
     var isTimerRunning: Bool {
-        phase == .playing && isTimed && !isTimerDisabled && !isViewingPrevious && !isAnswered
+        phase == .playing && isTimed && !isTimerDisabled && !isViewingPrevious && !isAnswered && !isPaused
     }
+
+    /// Only a question with its timer running can be paused. With "Timer Off" the question
+    /// stays on screen and untimed, so there's nothing to pause.
+    var canPause: Bool { isTimerRunning }
 
     var canGoNext: Bool { isViewingPrevious || isAnswered }
 
@@ -312,7 +318,7 @@ final class QuizGameViewModel {
 
     var canRevealContext: Bool {
         guard let current, current.contextText != nil, !current.contextRevealed,
-              !isAnswered, !isViewingPrevious else { return false }
+              !isAnswered, !isViewingPrevious, !isPaused else { return false }
         return !isTimed || isTimerDisabled || remainingSeconds > difficulty.contextCost
     }
 
@@ -478,6 +484,7 @@ final class QuizGameViewModel {
         remainingSeconds = difficulty.timeLimit ?? 0
         wasInRedZone = false
         stopTimerPulse()
+        isPaused = false
         timerID += 1
     }
 
@@ -488,6 +495,7 @@ final class QuizGameViewModel {
 
     func resetToSetup() {
         phase = .setup
+        isPaused = false
         history = []
         currentIndex = -1
         questionBag = []
@@ -513,6 +521,22 @@ final class QuizGameViewModel {
         }
     }
 
+    // MARK: - Pausing
+
+    /// Stops the clock and hides the question until `resume()`.
+    func pause() {
+        guard canPause else { return }
+        isPaused = true
+        stopTimerPulse()
+    }
+
+    /// Restarts the countdown with a full first second.
+    func resume() {
+        guard isPaused else { return }
+        isPaused = false
+        timerID += 1
+    }
+
     func toggleTimer() {
         guard isTimed else { return }
         isTimerDisabled.toggle()
@@ -524,7 +548,7 @@ final class QuizGameViewModel {
     }
 
     func selectOption(_ name: String) {
-        guard let current else { return }
+        guard let current, !isPaused else { return }
         finishQuestion(name == current.correctBook ? .correct : .incorrect, selected: name)
     }
 

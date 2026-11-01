@@ -126,3 +126,117 @@ struct WordSearchPauseTests {
         #expect(!vm.isPaused)
     }
 }
+
+/// Quiz, Trivia and Who? pause the same way as Countdown: the clock stops, answers wait for
+/// Resume, and "Timer Off" (an untimed question) has nothing to pause.
+@MainActor
+struct TimedQuestionGamePauseTests {
+    /// Puts back the difficulty settings these tests change.
+    private func withRestoredDefaults(_ body: () async throws -> Void) async rethrows {
+        let defaults = UserDefaults.standard
+        let keys = [AppStorageKey.quizDifficulty, "whoamiDifficulty", "whoamiMode"]
+        let saved = Dictionary(uniqueKeysWithValues: keys.compactMap { key in defaults.object(forKey: key).map { (key, $0) } })
+        defer {
+            keys.forEach { defaults.removeObject(forKey: $0) }
+            saved.forEach { defaults.set($0.value, forKey: $0.key) }
+        }
+        try await body()
+    }
+
+    @Test func quizPausesTheClockAndBlocksAnswers() async throws {
+        try await withRestoredDefaults {
+            let vm = QuizGameViewModel()
+            await vm.prepareFilter()
+            vm.difficulty = .normal
+            vm.startQuiz()
+            try #require(vm.phase == .playing)
+            let seconds = vm.remainingSeconds
+            let timerID = vm.timerID
+            #expect(vm.canPause)
+
+            vm.pause()
+            #expect(vm.isPaused)
+            #expect(!vm.isTimerRunning)
+            // The timer loop exits at once, and answers wait for Resume.
+            await vm.runTimer()
+            #expect(vm.remainingSeconds == seconds)
+            vm.selectOption(vm.current?.correctBook ?? "")
+            #expect(!vm.isAnswered)
+
+            vm.resume()
+            #expect(!vm.isPaused)
+            #expect(vm.isTimerRunning)
+            // Resuming restarts the timer task so the next second is a full one.
+            #expect(vm.timerID == timerID + 1)
+            vm.resetToSetup()
+        }
+    }
+
+    @Test func quizWithTheTimerOffHasNothingToPause() async throws {
+        try await withRestoredDefaults {
+            let vm = QuizGameViewModel()
+            await vm.prepareFilter()
+            vm.difficulty = .normal
+            vm.startQuiz()
+            try #require(vm.phase == .playing)
+            vm.toggleTimer()
+            #expect(!vm.canPause)
+            vm.pause()
+            #expect(!vm.isPaused)
+            vm.resetToSetup()
+        }
+    }
+
+    @Test func triviaPausesTheClockAndBlocksAnswers() async throws {
+        let model = BibleTriviaGameModel()
+        await model.load()
+        model.startRound()
+        try #require(model.phase == .playing)
+        defer { model.returnToSetup() }
+        let seconds = model.remainingSeconds
+        #expect(model.canPause)
+
+        model.pause()
+        #expect(model.isPaused)
+        model.choose(model.options.first ?? "")
+        #expect(!model.isAnswered)
+        // Well over a second passes with no tick while paused.
+        try await Task.sleep(for: .milliseconds(1_300))
+        #expect(model.remainingSeconds == seconds)
+
+        model.resume()
+        #expect(!model.isPaused)
+        #expect(model.canPause)
+    }
+
+    @Test func whoPausesTheClockAndBlocksAnswers() async throws {
+        try await withRestoredDefaults {
+            let vm = WhoAmIGameViewModel()
+            vm.difficulty = .hard
+            vm.onAppear()
+            // The people and questions load in the background.
+            for _ in 0..<100 where !vm.isReady {
+                try await Task.sleep(for: .milliseconds(50))
+            }
+            try #require(vm.isReady)
+            vm.startGame()
+            defer { vm.returnToSetup() }
+            let seconds = vm.remainingSeconds
+            #expect(vm.canPause)
+
+            vm.pause()
+            #expect(vm.isPaused)
+            vm.select(vm.choices.first ?? "")
+            #expect(!vm.roundOver)
+            try await Task.sleep(for: .milliseconds(1_300))
+            #expect(vm.remainingSeconds == seconds)
+
+            vm.resume()
+            #expect(!vm.isPaused)
+
+            // Timer Off leaves the question on screen untimed, so there's nothing to pause.
+            vm.toggleTimer()
+            #expect(!vm.canPause)
+        }
+    }
+}

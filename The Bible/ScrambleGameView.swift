@@ -155,6 +155,8 @@ struct ScrambleGameView: View {
     @State private var hintLevel = 0
     @State private var recentlyPlayedAnswers: [String] = []
     @State private var isTimerDisabled = false
+    /// True while the word is paused: the timer stops and the letters are hidden.
+    @State private var isPaused = false
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
     @State private var selectedPassage: PassageReference?
@@ -212,6 +214,13 @@ struct ScrambleGameView: View {
         difficulty.timeLimit
     }
 
+    /// Only a word with its timer running can be paused. Hard has no timer, and
+    /// "Timer Off" already stops the clock while leaving the word on screen.
+    private var canPause: Bool {
+        phase == .playing && currentTimeLimit != nil && !isTimerDisabled
+            && currentWord != nil && !isCurrentWordResolved && !isPaused
+    }
+
     private var hintText: String? {
         guard hintLevel > 0, let currentWord else { return nil }
         let prefix = currentWord.answer.prefix(min(hintLevel, currentWord.answer.count))
@@ -243,7 +252,14 @@ struct ScrambleGameView: View {
                         case .setup:
                             startScreen
                         case .playing:
-                            gameScreen(usesSplitLayout: usesSplitLayout)
+                            if isPaused {
+                                GamePausedView(tint: .pink, remainingSeconds: timeRemaining) {
+                                    isPaused = false
+                                }
+                                .frame(maxWidth: 620)
+                            } else {
+                                gameScreen(usesSplitLayout: usesSplitLayout)
+                            }
                         case .results:
                             resultsScreen
                         }
@@ -296,11 +312,21 @@ struct ScrambleGameView: View {
                     )
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                if canPause {
+                    GamePauseButton { isPaused = true }
+                }
+            }
+        }
+        // A call, another app, or locking the phone pauses the word until Resume.
+        .onAppActiveChange { isActive in
+            if !isActive, canPause { isPaused = true }
         }
         .task {
             await loadWordBank()
         }
-        .task(id: timerID) {
+        // Restarts with each word, and on resume, so the first second is a full second.
+        .task(id: ScrambleTimerRun(id: timerID, isPaused: isPaused)) {
             await runTimer()
         }
         .sheet(item: $selectedPassage) { reference in
@@ -534,6 +560,7 @@ struct ScrambleGameView: View {
     /// Back to the start screen. The streak is kept so the next game can continue it.
     private func resetToSetup() {
         phase = .setup
+        isPaused = false
         deck = []
         currentWord = nil
         answerFeedback = nil
@@ -557,6 +584,7 @@ struct ScrambleGameView: View {
         hintLevel = 0
         strikes = 0
         timeRemaining = currentTimeLimit ?? 0
+        isPaused = false
         timerID = UUID()
         session.startQuestion()
     }
@@ -667,11 +695,11 @@ struct ScrambleGameView: View {
     }
 
     private func runTimer() async {
-        guard currentTimeLimit != nil, phase == .playing else { return }
+        guard currentTimeLimit != nil, phase == .playing, !isPaused else { return }
 
-        while !Task.isCancelled, phase == .playing, timeRemaining > 0 {
+        while !Task.isCancelled, phase == .playing, !isPaused, timeRemaining > 0 {
             try? await Task.sleep(for: .seconds(1))
-            guard !Task.isCancelled, phase == .playing else { return }
+            guard !Task.isCancelled, phase == .playing, !isPaused else { return }
             guard !isCurrentWordResolved else { return }
             guard !isTimerDisabled else { continue }
 
@@ -1094,4 +1122,10 @@ private struct ScrambleGlassActionButton: View {
         .disabled(!isEnabled)
         .accessibilityLabel(accessibilityLabel)
     }
+}
+
+/// Identifies one run of the Scramble timer: a new word or a resume starts a new run.
+private struct ScrambleTimerRun: Hashable {
+    let id: UUID
+    let isPaused: Bool
 }

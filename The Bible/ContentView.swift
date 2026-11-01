@@ -392,8 +392,8 @@ struct ContentView: View {
             updateGameTimeTracking()
             updateMindfulMinutesTracking()
             ReadingPositionStore.shared.flush()
-            // Backgrounding ends an active game round so returning to Games shows its selection screen.
-            returnToGameSelection()
+            // An open game stays open: switching apps or taking a call pauses it, and the
+            // player comes back to the same round.
         @unknown default:
             break
         }

@@ -195,6 +195,8 @@ final class BeatTheClockGameViewModel {
     private(set) var submittedBook: String?
     private(set) var hintRevealed = false
     private(set) var isPulsing = false
+    /// True while the round is paused. The timer stops and the question is hidden.
+    private(set) var isPaused = false
 
     /// Score, streaks and best game; see `GameScore` for the rules.
     private(set) var session = GameScore()
@@ -217,6 +219,9 @@ final class BeatTheClockGameViewModel {
 
     var selectionLocked: Bool { roundOutcome != nil }
 
+    /// Only a question with time running can be paused.
+    var canPause: Bool { phase == .playing && roundOutcome == nil && !isPaused }
+
     var isLoadingData: Bool {
         loadedPeople.isEmpty || loadedPlaces.isEmpty || placeBooks == nil
     }
@@ -227,7 +232,7 @@ final class BeatTheClockGameViewModel {
 
     var canSubmit: Bool {
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        return !selectionLocked && !trimmed.isEmpty
+        return !selectionLocked && !isPaused && !trimmed.isEmpty
     }
 
     var showsClue: Bool {
@@ -235,7 +240,7 @@ final class BeatTheClockGameViewModel {
     }
 
     var canRequestHint: Bool {
-        !selectionLocked && remainingSeconds > BeatTheClockDifficulty.hintCost
+        !selectionLocked && !isPaused && remainingSeconds > BeatTheClockDifficulty.hintCost
     }
 
     var sortedAcceptableBooks: [String] {
@@ -295,11 +300,25 @@ final class BeatTheClockGameViewModel {
     /// Counts down the current round. Run from a task keyed on `roundID` so each
     /// round restarts it and the first second is a full second.
     func runTimer() async {
-        while !Task.isCancelled, phase == .playing, roundOutcome == nil, remainingSeconds > 0 {
+        while !Task.isCancelled, phase == .playing, roundOutcome == nil, !isPaused, remainingSeconds > 0 {
             try? await Task.sleep(for: .seconds(1))
-            guard !Task.isCancelled, phase == .playing, roundOutcome == nil else { return }
+            guard !Task.isCancelled, phase == .playing, roundOutcome == nil, !isPaused else { return }
             tick()
         }
+    }
+
+    // MARK: - Pausing
+
+    /// Stops the clock and hides the question. Called by the Pause button and whenever the
+    /// app stops being active (a call, switching apps, locking the phone).
+    func pause() {
+        guard canPause else { return }
+        isPaused = true
+    }
+
+    /// Restarts the clock. The view restarts the timer task, so the next second is a full one.
+    func resume() {
+        isPaused = false
     }
 
     // MARK: - Questions
@@ -403,6 +422,7 @@ final class BeatTheClockGameViewModel {
         inputMessage = nil
         remainingSeconds = difficulty.roundTime
         isPulsing = false
+        isPaused = false
         roundID += 1
         session.startQuestion()
     }
@@ -415,6 +435,7 @@ final class BeatTheClockGameViewModel {
 
     func resetToSetup() {
         phase = .setup
+        isPaused = false
         roundOutcome = nil
         currentQuestion = nil
         remainingSeconds = 0
@@ -426,7 +447,7 @@ final class BeatTheClockGameViewModel {
 
     /// Counts down one second. Called by `runTimer()`; internal so tests can tick without waiting.
     func tick() {
-        guard remainingSeconds > 0 else { return }
+        guard remainingSeconds > 0, !isPaused else { return }
         isPulsing = true
         #if canImport(UIKit)
         if remainingSeconds <= 5 {
@@ -457,7 +478,7 @@ final class BeatTheClockGameViewModel {
 
     func submitCurrentEntry() {
         let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, !selectionLocked else { return }
+        guard !text.isEmpty, !selectionLocked, !isPaused else { return }
 
         // Accept an exact name (or common variant), or the only suggestion left.
         let suggestions = filteredBooks

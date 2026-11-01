@@ -64,6 +64,10 @@ struct WordSearchGameView: View {
                             eligibleFavoriteCount: vm.eligibleFavoriteCount(),
                             onStart: { vm.start() }
                         )
+                    } else if vm.isPaused {
+                        GamePausedView(tint: .green, message: "The puzzle is hidden until you resume.", remainingSeconds: vm.remainingSeconds) {
+                            vm.resume()
+                        }
                     } else {
                         WordSearchHeaderBox(
                             verseRef: vm.verseRef,
@@ -139,12 +143,17 @@ struct WordSearchGameView: View {
                     GameNavigationTitle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                if vm.canPause {
+                    GamePauseButton { vm.pause() }
+                }
+            }
         }
         // On phones the controls stay pinned above the tab bar: Hint/Reveal while playing,
         // Settings/Next Puzzle once the round ends. A swipe that starts on the grid selects
         // letters rather than scrolling, so controls below the grid would be hard to reach.
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if vm.started && !isPad {
+            if vm.started && !isPad && !vm.isPaused {
                 phoneControlsBar
             }
         }
@@ -158,6 +167,8 @@ struct WordSearchGameView: View {
         // The clock pauses while the game is off screen and picks up where it left off.
         .onAppear { vm.resumeTimer() }
         .onDisappear { vm.stopTimer() }
+        // A call, another app, or locking the phone pauses a timed round until Resume.
+        .onAppActiveChange { vm.appActiveChanged($0) }
         // Rebind the VM to the real environment context/fetcher once the view is active.
         .task {
             if !didBindVM {

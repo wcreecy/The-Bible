@@ -57,6 +57,11 @@ struct WhoAmIGameView: View {
                         onPlayAgain: vm.startGame,
                         onChangeSettings: vm.returnToSetup
                     )
+                } else if vm.isPaused {
+                    GamePausedView(tint: .brown, remainingSeconds: vm.remainingSeconds) {
+                        vm.resume()
+                    }
+                    .frame(maxWidth: 620)
                 } else if horizontalSizeClass == .regular {
                     iPadBoard
                 } else {
@@ -75,6 +80,7 @@ struct WhoAmIGameView: View {
                 }
             }
         }
+        .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
         .onAppear { vm.onAppear() }
         .onDisappear { vm.endRoundWhenLeavingScreen() }
         .onChange(of: vm.choices) { _, _ in

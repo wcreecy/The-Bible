@@ -30,7 +30,11 @@ struct QuizView: View {
                         case .setup:
                             setupContent
                         case .playing:
-                            if usesSplitLayout {
+                            if vm.isPaused {
+                                GamePausedView(tint: .blue, remainingSeconds: vm.remainingSeconds) {
+                                    vm.resume()
+                                }
+                            } else if usesSplitLayout {
                                 dashboard(availableHeight: geometry.size.height - 32)
                             } else {
                                 compactGameContent
@@ -102,6 +106,7 @@ struct QuizView: View {
                 }
             }
         }
+        .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
         .onAppear {
             vm.onAppear()
         }

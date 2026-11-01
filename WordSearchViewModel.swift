@@ -73,6 +73,8 @@ final class WordSearchViewModel {
     var puzzleGenerationError: String?
     /// Seconds spent playing this round; pauses while the game is off screen.
     var elapsedSeconds: Int = 0
+    /// True while a timed round is paused: the clock stops and the grid is hidden.
+    private(set) var isPaused: Bool = false
 
     // Grid
     var grid: [[Character]] = Array(repeating: Array(repeating: " ", count: 10), count: 10)
@@ -202,6 +204,7 @@ final class WordSearchViewModel {
 
     func changeSettings() {
         started = false
+        isPaused = false
         stopTimer()
         roundOver = false
         showBlindWordList = false
@@ -308,6 +311,7 @@ final class WordSearchViewModel {
     /// Starts a fresh clock for a new round.
     private func startClock() {
         elapsedSeconds = 0
+        isPaused = false
         stopPulse()
         remainingSeconds = isTimedMode ? timeLimitSeconds(wordCount: targetWords.count) : 0
         resumeTimer()
@@ -316,7 +320,7 @@ final class WordSearchViewModel {
     /// Restarts the clock where it left off, e.g. when returning to the game.
     func resumeTimer() {
         stopTimer()
-        guard started, !roundOver else { return }
+        guard started, !roundOver, !isPaused else { return }
         clockTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
@@ -329,6 +333,40 @@ final class WordSearchViewModel {
     func stopTimer() {
         clockTask?.cancel()
         clockTask = nil
+    }
+
+    // MARK: - Pausing
+
+    /// Only a timed round in progress can be paused; untimed rounds just stop the clock
+    /// while the app is in the background.
+    var canPause: Bool {
+        started && !roundOver && isTimedMode && !isPaused && puzzleGenerationError == nil
+    }
+
+    /// Stops the countdown and hides the grid until `resume()`.
+    func pause() {
+        guard canPause else { return }
+        isPaused = true
+        stopTimer()
+    }
+
+    func resume() {
+        guard isPaused else { return }
+        isPaused = false
+        resumeTimer()
+    }
+
+    /// Leaving the app pauses a timed round (grid hidden) and quietly stops the solve clock
+    /// of an untimed one, so time away never counts.
+    func appActiveChanged(_ isActive: Bool) {
+        if isActive {
+            // A paused timed round waits for Resume; an untimed one carries on.
+            resumeTimer()
+        } else if canPause {
+            pause()
+        } else {
+            stopTimer()
+        }
     }
 
     private func tickTimer() {

@@ -212,6 +212,8 @@ final class BibleTriviaGameModel {
     private(set) var bestScore = 0
     private(set) var remainingSeconds = 0
     var isTimerDisabled = false
+    /// True while the question is paused: the timer stops and the question is hidden.
+    private(set) var isPaused = false
     @ObservationIgnored private var timerTask: Task<Void, Never>?
 
     let progressStore = BibleTriviaProgressStore.shared
@@ -350,7 +352,7 @@ final class BibleTriviaGameModel {
     }
 
     func choose(_ answer: String) {
-        guard !isViewingPrevious, !isAnswered, options.contains(answer), let question = currentQuestion else { return }
+        guard !isPaused, !isViewingPrevious, !isAnswered, options.contains(answer), let question = currentQuestion else { return }
         finishAnswer(answer, question: question)
     }
 
@@ -372,6 +374,7 @@ final class BibleTriviaGameModel {
     /// Back to the start screen. The streak is kept so the next game can continue it.
     func returnToSetup() {
         timerTask?.cancel()
+        isPaused = false
         phase = .setup
         round = []
         currentIndex = 0
@@ -391,12 +394,35 @@ final class BibleTriviaGameModel {
         guard !isViewingPrevious, !isAnswered else { return }
         remainingSeconds = difficulty.timerSeconds
         session.startQuestion()
+        isPaused = false
+        startTimer()
+    }
+
+    // MARK: - Pausing
+
+    /// Only a question with its timer running can be paused. With "Timer Off" the question
+    /// stays on screen and untimed, so there's nothing to pause.
+    var canPause: Bool {
+        phase == .playing && !isTimerDisabled && !isViewingPrevious && !isAnswered && !isPaused
+    }
+
+    /// Stops the clock and hides the question until `resume()`.
+    func pause() {
+        guard canPause else { return }
+        isPaused = true
+        timerTask?.cancel()
+    }
+
+    /// Restarts the countdown with a full first second.
+    func resume() {
+        guard isPaused else { return }
+        isPaused = false
         startTimer()
     }
 
     private func startTimer() {
         timerTask?.cancel()
-        guard !isTimerDisabled else { return }
+        guard !isTimerDisabled, !isPaused else { return }
         timerTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
@@ -538,6 +564,15 @@ struct BibleTriviaGameView: View {
                     isReviewRound: isReviewRound,
                     onStart: model.startRound
                 )
+            case .playing where model.isPaused:
+                ScrollView {
+                    GamePausedView(tint: .cyan, remainingSeconds: model.remainingSeconds) {
+                        model.resume()
+                    }
+                    .frame(maxWidth: 620)
+                    .padding()
+                }
+                .tabBarContentClearance()
             case .playing:
                 BibleTriviaPlayScreen(
                     question: model.currentQuestion,
@@ -590,6 +625,7 @@ struct BibleTriviaGameView: View {
                 }
             }
         }
+        .gamePauseControls(canPause: model.canPause, pause: model.pause)
         .task {
             await model.load()
         }

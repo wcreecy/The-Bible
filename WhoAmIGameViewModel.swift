@@ -164,6 +164,8 @@ final class WhoAmIGameViewModel {
     // Timer
     var remainingSeconds: Int = 0
     var isTimerDisabled = false
+    /// True while the question is paused: the timer stops and the question is hidden.
+    private(set) var isPaused = false
     @ObservationIgnored private var timerTask: Task<Void, Never>?
     var pulseOn: Bool = false
 
@@ -279,6 +281,7 @@ final class WhoAmIGameViewModel {
         selectedChoice = nil
         roundOver = false
         wasTimedOut = false
+        isPaused = false
         session.startQuestion()
 
         remainingSeconds = difficulty.timeLimit
@@ -288,7 +291,7 @@ final class WhoAmIGameViewModel {
     }
 
     func select(_ choice: String) {
-        guard !roundOver else { return }
+        guard !roundOver, !isPaused else { return }
         selectedChoice = choice
         finishRound(correct: choice == correctChoice)
     }
@@ -349,6 +352,7 @@ final class WhoAmIGameViewModel {
     /// Back to the start screen, e.g. from the results or when leaving mid-game.
     func returnToSetup() {
         stopTimer()
+        isPaused = false
         questionQueue = []
         current = nil
         choiceEntries = []
@@ -368,11 +372,34 @@ final class WhoAmIGameViewModel {
         session.clearStreak()
     }
 
+    // MARK: - Pausing
+
+    /// Only a question with its timer running can be paused. With "Timer Off" (or on an
+    /// untimed difficulty) the question stays on screen, so there's nothing to pause.
+    var canPause: Bool {
+        started && !isComplete && current != nil && !roundOver
+            && difficulty.timeLimit > 0 && !isTimerDisabled && !isPaused
+    }
+
+    /// Stops the clock and hides the question until `resume()`.
+    func pause() {
+        guard canPause else { return }
+        isPaused = true
+        stopTimer()
+    }
+
+    /// Restarts the countdown with a full first second.
+    func resume() {
+        guard isPaused else { return }
+        isPaused = false
+        startTimer()
+    }
+
     // MARK: - Timer
 
     private func startTimer() {
         stopTimer()
-        guard remainingSeconds > 0 else { return }
+        guard remainingSeconds > 0, !isPaused else { return }
         timerTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))

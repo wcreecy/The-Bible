@@ -3,6 +3,8 @@ import SwiftUI
 struct BookOrderGameView: View {
     @State private var vm = BookOrderGameViewModel()
     @State private var elapsedSeconds: Int = 0
+    /// The solve clock only runs while the app is in front, so time away doesn't count.
+    @State private var isAppActive = true
     @State private var isTimerHidden: Bool = false
     /// Height of the result card, so the iPhone layout can cap it and scroll the rest.
     @State private var resultHeight: CGFloat = 0
@@ -92,20 +94,21 @@ struct BookOrderGameView: View {
                 }
             }
         }
-        .task(id: vm.started && !vm.showResult) {
-            guard vm.started, !vm.showResult else { return }
+        .task(id: vm.started && !vm.showResult && isAppActive) {
+            guard vm.started, !vm.showResult, isAppActive else { return }
 
-            while !Task.isCancelled, vm.started, !vm.showResult {
+            while !Task.isCancelled, vm.started, !vm.showResult, isAppActive {
                 do {
                     try await Task.sleep(for: .seconds(1))
                 } catch {
                     return
                 }
 
-                guard !Task.isCancelled, vm.started, !vm.showResult else { return }
+                guard !Task.isCancelled, vm.started, !vm.showResult, isAppActive else { return }
                 elapsedSeconds += 1
             }
         }
+        .onAppActiveChange { isAppActive = $0 }
         .onDisappear {
             vm.onDisappear()
         }

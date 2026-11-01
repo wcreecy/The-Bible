@@ -28,7 +28,11 @@ struct BeatTheClockGameView: View {
                         case .setup:
                             setupContent
                         case .playing:
-                            if usesSplitLayout {
+                            if vm.isPaused {
+                                GamePausedView(tint: .indigo, remainingSeconds: vm.remainingSeconds) {
+                                    vm.resume()
+                                }
+                            } else if usesSplitLayout {
                                 dashboard(availableHeight: geometry.size.height - 32)
                             } else {
                                 compactGameContent
@@ -78,6 +82,15 @@ struct BeatTheClockGameView: View {
                     GameNavigationTitle(title: "Countdown", systemImage: "hourglass", tint: .indigo)
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                if vm.canPause {
+                    GamePauseButton { vm.pause() }
+                }
+            }
+        }
+        // A call, another app, or locking the phone pauses the question until Resume.
+        .onAppActiveChange { isActive in
+            if !isActive { vm.pause() }
         }
         .task {
             await vm.loadData()
@@ -88,8 +101,8 @@ struct BeatTheClockGameView: View {
         .onDisappear {
             vm.onDisappear()
         }
-        // Restarts with each round so the first second is a full second.
-        .task(id: vm.roundID) {
+        // Restarts with each round, and on resume, so the first second is a full second.
+        .task(id: CountdownTimerRun(roundID: vm.roundID, isPaused: vm.isPaused)) {
             await vm.runTimer()
         }
         // The view model can't touch focus, so the field follows the round state.
@@ -102,6 +115,14 @@ struct BeatTheClockGameView: View {
         }
         .onChange(of: vm.phase) { _, phase in
             if phase != .playing { searchFieldFocused = false }
+        }
+        .onChange(of: vm.isPaused) { _, isPaused in
+            if isPaused {
+                searchFieldFocused = false
+            } else {
+                // Wait a turn so the answer field is back on screen before it takes focus.
+                Task { searchFieldFocused = true }
+            }
         }
         .sheet(isPresented: $showAnswers) {
             NavigationStack {
@@ -354,4 +375,10 @@ struct BeatTheClockGameView: View {
         .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
         .heroCardSurface()
     }
+}
+
+/// Identifies one run of the Countdown timer: a new round or a resume starts a new run.
+private struct CountdownTimerRun: Hashable {
+    let roundID: Int
+    let isPaused: Bool
 }

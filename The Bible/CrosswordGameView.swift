@@ -68,6 +68,8 @@ struct CrosswordGameView: View {
         .sheet(item: $previewRef) { ref in
             CrosswordReferenceSheet(ref: ref)
         }
+        // Time away from the app doesn't count toward the solve time.
+        .onAppActiveChange { vm.appActiveChanged($0) }
     }
 
     // MARK: - Start

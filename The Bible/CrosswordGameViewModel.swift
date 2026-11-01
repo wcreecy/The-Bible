@@ -95,7 +95,8 @@ final class CrosswordGameViewModel {
     private(set) var elapsedSeconds = 0
     private(set) var currentStreak = 0
 
-    private var startedAt: Date?
+    /// Solve time. It only runs while the app is in front, so time away doesn't count.
+    private var clock = GameActiveClock()
     private var clues: [CrosswordClueEntry]?
     private let defaults: UserDefaults
     private let loadClues: () async -> [CrosswordClueEntry]
@@ -147,7 +148,7 @@ final class CrosswordGameViewModel {
         wordHintsUsed = 0
         checksUsed = 0
         elapsedSeconds = 0
-        startedAt = Date()
+        clock.start()
         if let first = puzzle.entries.first {
             direction = first.direction
             selectedCell = first.cells.first
@@ -159,6 +160,24 @@ final class CrosswordGameViewModel {
         phase = .setup
         puzzle = nil
         selectedCell = nil
+    }
+
+    // MARK: - App activity
+
+    /// Stops the solve clock while the app isn't in front and starts it again on return.
+    /// The board stays as it was; only the time away is left out.
+    func appActiveChanged(_ isActive: Bool, at now: Date = Date()) {
+        guard phase == .playing else { return }
+        if isActive {
+            clock.resume(at: now)
+        } else {
+            clock.pause(at: now)
+        }
+    }
+
+    /// Seconds of active play so far in this round.
+    func activeSeconds(at now: Date = Date()) -> Int {
+        clock.elapsedSeconds(at: now)
     }
 
     // MARK: - Selection
@@ -367,9 +386,8 @@ final class CrosswordGameViewModel {
         phase = .finished
         selectedCell = nil
         wrongCells = []
-        if let startedAt {
-            elapsedSeconds = max(1, Int(Date().timeIntervalSince(startedAt).rounded()))
-        }
+        clock.pause()
+        elapsedSeconds = max(1, clock.elapsedSeconds())
 
         // One board is one game: a solve counts as a win (hints are allowed), revealing
         // the puzzle counts as a loss and resets the streak, the same as Word Search.

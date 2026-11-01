@@ -73,6 +73,7 @@ private struct AppActiveChangeModifier: ViewModifier {
 /// used as extra thinking time.
 struct GamePausedView: View {
     let tint: Color
+    var message: LocalizedStringKey = "The question is hidden until you resume."
     /// Seconds left on the clock, shown so the player knows where they stand.
     var remainingSeconds: Int?
     let onResume: () -> Void
@@ -88,7 +89,7 @@ struct GamePausedView: View {
                 Text("Paused")
                     .font(.title2.weight(.bold))
                     .accessibilityAddTraits(.isHeader)
-                Text("The question is hidden until you resume.")
+                Text(message)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -96,7 +97,8 @@ struct GamePausedView: View {
 
             if let remainingSeconds {
                 Label {
-                    Text(Duration.seconds(remainingSeconds).formatted(.time(pattern: .minuteSecond)))
+                    // Same short style as the games' own timers ("12s", "1m 05s").
+                    Text("\(GameTimeFormat.short(seconds: remainingSeconds)) left")
                         .monospacedDigit()
                 } icon: {
                     Image(systemName: "timer")
@@ -117,13 +119,31 @@ struct GamePausedView: View {
     }
 }
 
+extension View {
+    /// Adds the Pause button to the toolbar while `canPause` is true, and pauses the game
+    /// whenever the app stops being active (a call, another app, locking the phone).
+    /// The game itself shows `GamePausedView` in place of its question while paused.
+    func gamePauseControls(canPause: Bool, pause: @escaping () -> Void) -> some View {
+        toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if canPause {
+                    GamePauseButton(action: pause)
+                }
+            }
+        }
+        .onAppActiveChange { isActive in
+            if !isActive, canPause { pause() }
+        }
+    }
+}
+
 /// The toolbar button that pauses a countdown game.
 struct GamePauseButton: View {
     let action: () -> Void
 
     var body: some View {
         Button("Pause", systemImage: "pause.fill", action: action)
-            .accessibilityHint("Stops the timer and hides the question")
+            .accessibilityHint("Stops the timer and hides the game")
     }
 }
 

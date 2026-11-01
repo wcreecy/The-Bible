@@ -92,9 +92,13 @@ struct WordleView: View {
     /// Height of the tip banner above the game (0 once dismissed), so the iPad layout
     /// leaves room for it.
     @State private var tipHeight: CGFloat = 0
+    /// Height of the scoreboard on phones, measured so the board and keyboard can be sized
+    /// to fit above the tab bar.
+    @State private var compactScoreboardHeight: CGFloat = 0
 
     // timing for each round
-    @State private var roundStartAt: Date? = nil
+    /// Solve time. It only runs while the app is in front, so time away doesn't count.
+    @State private var roundClock = GameActiveClock()
     // store elapsed seconds for the last round to show in the bottom chip
     @State private var lastRoundElapsedSeconds: Int? = nil
 
@@ -223,6 +227,10 @@ struct WordleView: View {
     GeometryReader { geometry in
       let usesWideLayout = started && geometry.size.width >= 900
       let usesCompactPhoneLayout = started && geometry.size.width < 600
+      let compactSizes = compactGameSizes(
+        availableHeight: geometry.size.height
+          - (contextualTipsEnabled && tipHeight > 0 ? tipHeight + 12 : 0)
+      )
       let lettersInWord = Self.alphabet.filter {
         keyboardStates[$0] == .correct || keyboardStates[$0] == .present
       }
@@ -283,12 +291,13 @@ struct WordleView: View {
                 wordMode: roundHardMode ? .hard : .normal,
                 style: usesWideLayout ? .dashboard : .compact
               )
+              .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { compactScoreboardHeight = $0 }
             } board: {
               VStack(alignment: .trailing, spacing: 4) {
                 boardView(
                   tileSize: usesWideLayout && !(roundOver || showsOnScreenKeyboard)
                     ? 68
-                    : (usesCompactPhoneLayout ? 42 : 48)
+                    : (usesCompactPhoneLayout ? compactSizes.tile : 48)
                 )
               }
             } feedback: {
@@ -299,8 +308,14 @@ struct WordleView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color.red)
                     .multilineTextAlignment(.center)
+                    // On phones the message keeps to its one-line slot below.
+                    .lineLimit(usesCompactPhoneLayout ? 1 : nil)
+                    .minimumScaleFactor(usesCompactPhoneLayout ? 0.75 : 1)
                 }
               }
+              // On phones the message always has its own slot, so the keyboard doesn't
+              // jump down when "Not in word list" appears.
+              .frame(height: usesCompactPhoneLayout && !roundOver ? Self.compactMessageHeight : nil)
             } letterTray: {
               WordTriedLettersCard(
                 lettersInWord: lettersInWord,
@@ -312,7 +327,7 @@ struct WordleView: View {
                   endOfRoundActionArea()
                 } else {
                   keyboardView(
-                    keyHeight: wideKeyHeight ?? (usesCompactPhoneLayout ? 40 : 52)
+                    keyHeight: wideKeyHeight ?? (usesCompactPhoneLayout ? compactSizes.key : 52)
                   )
 
                   if debugAutoWinEnabled {
@@ -375,6 +390,15 @@ struct WordleView: View {
       for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidDisconnect) {
         hardwareKeyboardConnected = false
         showsOnScreenKeyboard = true
+      }
+    }
+    // Time away from the app doesn't count toward the solve time.
+    .onAppActiveChange { isActive in
+      guard started, !roundOver else { return }
+      if isActive {
+        roundClock.resume()
+      } else {
+        roundClock.pause()
       }
     }
     .sheet(
@@ -548,6 +572,38 @@ struct WordleView: View {
         )
     }
 
+    // MARK: - Phone sizing
+
+    /// Tile and key sizes that fit the scoreboard, board, and whole keyboard (including the
+    /// Enter row) above the tab bar on a phone. Phones with room keep the full sizes; shorter
+    /// ones shrink tiles and keys together, but keys never get too small to tap reliably.
+    /// Height of the one-line message slot between the board and the keyboard on phones.
+    private static let compactMessageHeight: CGFloat = 20
+
+    /// How far the keyboard may extend into the space kept clear above the tab bar. That
+    /// space is 80 points, but the tab bar itself only reaches about 31 points into it, so
+    /// this still leaves a gap above the tab bar.
+    private static let compactTabBarAllowance: CGFloat = 20
+
+    private func compactGameSizes(availableHeight: CGFloat) -> (tile: CGFloat, key: CGFloat) {
+        let fullTile: CGFloat = 42
+        let fullKey: CGFloat = 40
+        // Top padding (8), the three gaps between scoreboard, board, message and keyboard
+        // (3 × 12), and the message slot. The allowance gives back part of the tab bar space.
+        let reserved = 8 + compactScoreboardHeight + 36 + Self.compactMessageHeight
+            - Self.compactTabBarAllowance
+        // Board: 6 tiles + 5 gaps of 6. Keyboard: 4 rows of (key + 16 padding), 3 gaps of 8,
+        // and 6 of top padding.
+        let fixed: CGFloat = 30 + 4 * 16 + 3 * 8 + 6
+        let budget = availableHeight - reserved - fixed
+        let fullSize = 6 * fullTile + 4 * fullKey
+        guard compactScoreboardHeight > 0, budget < fullSize else { return (fullTile, fullKey) }
+
+        // Shrink both by the same proportion so the board and keyboard stay balanced.
+        let scale = max(0, budget) / fullSize
+        return (max(32, (fullTile * scale).rounded(.down)), max(33, (fullKey * scale).rounded(.down)))
+    }
+
     // MARK: - On-screen keyboard
     private func keyboardView(keyHeight: CGFloat) -> some View {
         WordleKeyboardView(
@@ -699,7 +755,7 @@ struct WordleView: View {
     }
 
     private func saveDailyProgress() {
-        let elapsed = max(0, Int(Date().timeIntervalSince(roundStartAt ?? Date())))
+        let elapsed = roundClock.elapsedSeconds()
         let progress = DailyProgress(
             dayKey: todayKey,
             word: target,
@@ -725,7 +781,7 @@ struct WordleView: View {
 
         // The round keeps the difficulty it was started with.
         roundHardMode = progress.hardMode
-        roundStartAt = Date().addingTimeInterval(-Double(progress.elapsedSeconds))
+        roundClock.start(alreadyElapsed: Double(progress.elapsedSeconds))
         for guess in progress.guesses.prefix(6) where guess.count == 5 {
             applyGuess(guess)
         }
@@ -756,7 +812,7 @@ struct WordleView: View {
         pinned = Array(repeating: Array(repeating: nil, count: 5), count: 6)
 
         // Start timing
-        roundStartAt = Date()
+        roundClock.start()
         lastRoundElapsedSeconds = nil
 
         if practice {
@@ -775,11 +831,8 @@ struct WordleView: View {
         // Clear current input to avoid duplicate rendering.
         currentInput = ""
 
-        let elapsedSeconds: Int = {
-            let start = roundStartAt ?? Date()
-            let raw = Int(Date().timeIntervalSince(start))
-            return max(0, raw)
-        }()
+        roundClock.pause()
+        let elapsedSeconds = roundClock.elapsedSeconds()
 
         lastRoundElapsedSeconds = elapsedSeconds
 

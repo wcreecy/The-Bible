@@ -48,6 +48,68 @@ struct BeatTheClockTimerTests {
     }
 
     @Test
+    func pausingStopsTheClockAndBlocksAnswersUntilResume() async {
+        let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+
+        await withRestoredDefaults {
+            game.difficulty = .hard
+            game.startGame()
+            game.tick()
+            let secondsLeft = game.remainingSeconds
+            #expect(game.canPause)
+
+            game.pause()
+            #expect(game.isPaused)
+            #expect(!game.canPause)
+
+            // No time passes while paused, from a tick or from the timer loop.
+            game.tick()
+            await game.runTimer()
+            #expect(game.remainingSeconds == secondsLeft)
+
+            // Answers and hints wait for Resume.
+            game.searchText = "Genesis"
+            #expect(!game.canSubmit)
+            #expect(!game.canRequestHint)
+            game.submitCurrentEntry()
+            #expect(game.roundOutcome == nil)
+            #expect(game.session.answered == 0)
+
+            game.resume()
+            #expect(!game.isPaused)
+            #expect(game.canSubmit)
+            game.tick()
+            #expect(game.remainingSeconds == secondsLeft - 1)
+        }
+    }
+
+    @Test
+    func onlyARunningQuestionCanBePaused() async {
+        let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+
+        await withRestoredDefaults {
+            game.difficulty = .hard
+            // Nothing to pause before the game starts.
+            game.pause()
+            #expect(!game.isPaused)
+
+            game.startGame()
+            game.debugWin()
+            // The answer is showing and the clock has stopped, so there's nothing to pause.
+            #expect(!game.canPause)
+            game.pause()
+            #expect(!game.isPaused)
+
+            // A paused game that's reset or moves on starts unpaused.
+            game.nextRound()
+            game.pause()
+            #expect(game.isPaused)
+            game.resetToSetup()
+            #expect(!game.isPaused)
+        }
+    }
+
+    @Test
     func theTimerStopsOnceTheRoundIsAnsweredAndRestartsForTheNextRound() async {
         let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
 
