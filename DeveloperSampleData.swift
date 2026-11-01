@@ -222,7 +222,8 @@ enum DeveloperSampleData {
         }
     }
 
-    private static func generateGameStats() {
+    /// Internal rather than private so tests can check every game gets sample stats.
+    static func generateGameStats() {
         let defaults = UserDefaults.standard
         let calendar = Calendar.autoupdatingCurrent
         let games: [(dailyKey: String, storagePrefix: String)] = [
@@ -235,8 +236,18 @@ enum DeveloperSampleData {
             ("whoami", "whoami"),
             ("wordsearch", "wordsearch"),
             ("scramble", "scramble"),
+            ("crossword", "crossword"),
             ("word", "wordle")
         ]
+
+        // One Word Search or Crossword is a whole puzzle that takes minutes, so those games
+        // get far fewer plays per day than the question games.
+        func dailyPlays(for game: (dailyKey: String, storagePrefix: String), questionGames: ClosedRange<Int>) -> Int {
+            switch game.dailyKey {
+            case "wordsearch", "crossword": Int.random(in: 1...10)
+            default: Int.random(in: questionGames)
+            }
+        }
 
         var totalAnsweredByDay = loadMap("gamesDailyAnswered")
         var totalCorrectByDay = loadMap("gamesDailyCorrect")
@@ -261,7 +272,7 @@ enum DeveloperSampleData {
             let gamesPlayed = games.shuffled().prefix(Int.random(in: 1...3))
 
             for game in gamesPlayed {
-                let answered = Int.random(in: 4...24)
+                let answered = dailyPlays(for: game, questionGames: 4...24)
                 let accuracy = Double.random(in: 0.52...0.96)
                 let correct = min(answered, max(0, Int((Double(answered) * accuracy).rounded())))
 
@@ -282,7 +293,7 @@ enum DeveloperSampleData {
         // Guarantee every game has sample activity, even if random selection skipped it.
         let todayKey = GameStats.localDayKey(for: Date(), calendar: calendar)
         for game in games where allTimeByPrefix[game.storagePrefix] == nil {
-            let answered = Int.random(in: 8...20)
+            let answered = dailyPlays(for: game, questionGames: 8...20)
             let correct = Int((Double(answered) * Double.random(in: 0.60...0.92)).rounded())
 
             totalAnsweredByDay[todayKey, default: 0] += answered
@@ -328,6 +339,7 @@ enum DeveloperSampleData {
             "whoami": "Who?",
             "wordsearch": "Word Search",
             "scramble": "Scramble",
+            "crossword": "Crossword",
             "word": "Word"
         ]
         defaults.set(displayNames[lastGame], forKey: "gamesLastPlayedGameName")

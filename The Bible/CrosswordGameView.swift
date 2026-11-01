@@ -13,6 +13,15 @@ struct CrosswordGameView: View {
     @FocusState private var isBoardFocused: Bool
 
     private static let scrollTopID = "crosswordTop"
+
+    init() {}
+
+    #if DEBUG
+    /// Lets previews open straight into a round.
+    fileprivate init(viewModel: CrosswordGameViewModel) {
+        _vm = State(initialValue: viewModel)
+    }
+    #endif
     private var isPad: Bool { horizontalSizeClass == .regular }
 
     var body: some View {
@@ -93,7 +102,7 @@ struct CrosswordGameView: View {
                 GameSplashFacts(
                     first: ("puzzlepiece.extension", String(localized: "1 puzzle"), String(localized: "This session")),
                     second: ("square.grid.3x3", "\(vm.difficulty.boardSize)×\(vm.difficulty.boardSize)", String(localized: "Board")),
-                    third: ("lightbulb", String(localized: "Letter & word"), String(localized: "Hints")),
+                    third: ("lightbulb", String(localized: "Unlimited"), String(localized: "Letter & word hints")),
                     fourth: ("flame", "\(vm.currentStreak)", String(localized: "Current streak"))
                 )
             }
@@ -200,60 +209,72 @@ struct CrosswordGameView: View {
     }
 
     private var clueBar: some View {
-        HStack(spacing: 8) {
-            Button("Previous clue", systemImage: "chevron.left") { vm.moveToEntry(offset: -1) }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.circle)
-
-            Button {
-                vm.toggleDirection()
-            } label: {
-                VStack(alignment: .leading, spacing: 2) {
-                    if let entry = vm.currentEntry {
-                        Text(entryLabel(entry))
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Self.tint)
-                        Text(entry.clue)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                .contentShape(Rectangle())
+        // One container so the clue panel and arrow buttons blend as a single glass group.
+        GlassEffectContainer(spacing: 8) {
+            HStack(spacing: 8) {
+                clueArrow("Previous clue", systemImage: "chevron.left", offset: -1)
+                clueText
+                clueArrow("Next clue", systemImage: "chevron.right", offset: 1)
             }
-            .buttonStyle(.plain)
-            .accessibilityHint("Switches between Across and Down")
-
-            Button("Next clue", systemImage: "chevron.right") { vm.moveToEntry(offset: 1) }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.circle)
         }
-        .padding(10)
-        .background(Self.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func clueArrow(_ title: LocalizedStringKey, systemImage: String, offset: Int) -> some View {
+        Button(title, systemImage: systemImage) { vm.moveToEntry(offset: offset) }
+            .labelStyle(.iconOnly)
+            .font(.body.weight(.semibold))
+            .frame(width: 32, height: 32)
+            .buttonStyle(.glass)
+            .buttonBorderShape(.circle)
+    }
+
+    private var clueText: some View {
+        Button {
+            vm.toggleDirection()
+        } label: {
+            VStack(alignment: .leading, spacing: 2) {
+                if let entry = vm.currentEntry {
+                    Text(entryLabel(entry))
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+                    Text(entry.clue)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
+        .accessibilityHint("Switches between Across and Down")
     }
 
     private var hintBar: some View {
         VStack(spacing: 6) {
-            HStack(spacing: 8) {
-                Button("Letter", systemImage: "character.cursor.ibeam") { vm.revealLetter() }
-                    .disabled(!vm.canUseLetterHint)
-                Button("Word", systemImage: "text.cursor") { vm.revealWord() }
-                    .disabled(!vm.canUseWordHint)
-                Button("Check", systemImage: "checkmark.circle") {
-                    let wrong = vm.checkPuzzle()
-                    checkMessage = wrong == 0
-                        ? String(localized: "No mistakes so far.")
-                        : String(localized: "\(wrong) letters to fix.")
+            GlassEffectContainer(spacing: 8) {
+                HStack(spacing: 8) {
+                    Button("Letter", systemImage: "character.cursor.ibeam") { vm.revealLetter() }
+                        .disabled(!vm.canUseLetterHint)
+                    Button("Word", systemImage: "text.cursor") { vm.revealWord() }
+                        .disabled(!vm.canUseWordHint)
+                    Button("Check", systemImage: "checkmark.circle") {
+                        let wrong = vm.checkPuzzle()
+                        checkMessage = wrong == 0
+                            ? String(localized: "No mistakes so far.")
+                            : String(localized: "\(wrong) letters to fix.")
+                    }
+                    Button("Reveal", systemImage: "eye") { confirmReveal = true }
                 }
-                Button("Reveal", systemImage: "eye") { confirmReveal = true }
+                .font(.subheadline.weight(.semibold))
+                .labelStyle(CrosswordHintLabelStyle())
+                .lineLimit(1)
+                .buttonStyle(.glass)
+                .foregroundStyle(.primary)
             }
-            .font(.subheadline.weight(.semibold))
-            .buttonStyle(.bordered)
-            .tint(Self.tint)
-            .controlSize(.small)
 
             if vm.isFilledWithMistakes {
                 Text("The board is full, but some letters are wrong. Tap Check to find them.")
@@ -394,6 +415,14 @@ struct CrosswordGameView: View {
     }
 }
 
+/// Hint button text that fills the button, so all four glass buttons share the width evenly.
+private struct CrosswordHintLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.title
+            .frame(maxWidth: .infinity)
+    }
+}
+
 // MARK: - Keyboard
 
 /// An on-screen QWERTY keyboard for typing into the crossword.
@@ -469,6 +498,18 @@ private struct CrosswordReferenceSheet: View {
     }
 }
 
-#Preview {
+#Preview("Start") {
     NavigationStack { CrosswordGameView() }
 }
+
+#if DEBUG
+#Preview("Playing") {
+    let vm = CrosswordGameViewModel(defaults: UserDefaults(suiteName: "CrosswordPreview") ?? .standard, recordsStats: false)
+    let clues = GameDataLoaders.loadCrosswordClues().filter { $0.difficulty == "easy" }
+    if let puzzle = CrosswordGenerator.generate(from: clues, preferredSize: 9) {
+        vm.begin(with: puzzle)
+        for letter in "ABC" { vm.type(letter) }
+    }
+    return NavigationStack { CrosswordGameView(viewModel: vm) }
+}
+#endif

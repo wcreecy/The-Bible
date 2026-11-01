@@ -647,6 +647,8 @@ final class TodayChallengeStore {
             String(localized: "Find hidden Bible words")
         case "Scramble":
             String(localized: "Unscramble Bible words")
+        case "Crossword":
+            String(localized: "Solve a Bible crossword")
         case "Word":
             String(localized: "Find today's Bible word")
         default:

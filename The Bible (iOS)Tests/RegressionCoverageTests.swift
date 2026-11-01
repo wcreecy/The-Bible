@@ -218,7 +218,16 @@ struct RegressionCoverageTests {
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Quiz") == "Test your Bible knowledge")
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Verses") == "Match the verses")
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Word Search") == "Find hidden Bible words")
+        #expect(TodayChallengeStore.gameChallengeTitle(for: "Crossword") == "Solve a Bible crossword")
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Unlisted") == "Play Unlisted")
+    }
+
+    @Test
+    func todayCardCanPickCrossword() throws {
+        let url = try #require(Bundle.main.url(forResource: "TodayChallengeCatalog", withExtension: "json"))
+        let catalog = try #require(try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        let gameNames = try #require(catalog["gameNames"] as? [String])
+        #expect(gameNames.contains("Crossword"))
     }
 
     @Test

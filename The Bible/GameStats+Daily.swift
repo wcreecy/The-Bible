@@ -13,6 +13,7 @@ extension GameStats {
         case "Who?": return "whoami"
         case "Word Search": return "wordsearch"
         case "Scramble": return "scramble"
+        case "Crossword": return "crossword"
         case "Word": return "word"
         default: return nil
         }

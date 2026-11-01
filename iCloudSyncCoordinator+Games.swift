@@ -192,6 +192,17 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // Game keys: Crossword (easy/normal/hard + combined "all")
+    static let crosswordKeys: [String] = {
+        var keys: [String] = []
+        for difficulty in ["easy", "normal", "hard", "all"] {
+            keys.append("crosswordAllTimeCorrect_\(difficulty)")
+            keys.append("crosswordAllTimeAnswered_\(difficulty)")
+            keys.append("crosswordAllTimeBestStreak_\(difficulty)")
+        }
+        return keys
+    }()
+
     // Game keys: Book Order — per-difficulty (easy/normal/hard/expert), combined "all", + legacy unsuffixed for reset/back-compat
     static let bookOrderKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "expert", "all"]
@@ -222,7 +233,7 @@ extension iCloudSyncCoordinator {
         var keys = [
             "wordlePersistentStreak", "wordlePersistentBestStreak",
             "wordlePersistentStreak_practice", "wordlePersistentBestStreak_practice",
-            "wordsearchCurrentStreak"
+            "wordsearchCurrentStreak", "crosswordCurrentStreak"
         ]
         for difficulty in ["easy", "normal", "hard"] {
             keys.append("quizPersistentStreak_\(difficulty)")
@@ -251,7 +262,7 @@ extension iCloudSyncCoordinator {
         Set(
             hangmanKeys + beatClockKeys + refMatchKeys
                 + verseMatchKeys + quizKeys + bibleTriviaKeys + bookOrderKeys
-                + whoAmIKeys + wordleKeys + wordSearchKeys + scrambleKeys
+                + whoAmIKeys + wordleKeys + wordSearchKeys + scrambleKeys + crosswordKeys
                 + bibleTriviaProgressKeys
                 + gamePlayTimeCounterKeys + gamePlayTimeMapKeys
                 + gameDailyAndLastPlayedKeys + quizPerBookMapKeys + triviaPerBookMapKeys
@@ -353,7 +364,7 @@ extension iCloudSyncCoordinator {
 
     // Per-game (and per-WORD-mode) daily maps (JSON [String:Int]) — now mirrored via KVS
     static let perGameDailyMapKeys: [String] = {
-        let gameKeys = ["quiz","trivia","hangman","beatclock","versematch","bookorder","whoami","wordsearch","scramble","word"]
+        let gameKeys = ["quiz","trivia","hangman","beatclock","versematch","bookorder","whoami","wordsearch","scramble","crossword","word"]
         var keys: [String] = []
         for g in gameKeys {
             keys.append("gamesDailyAnswered_\(g)")
@@ -403,7 +414,7 @@ extension iCloudSyncCoordinator {
         Set(
             allPersistentStreakKeys + hangmanKeys + beatClockKeys + refMatchKeys
                 + verseMatchKeys + quizKeys + bibleTriviaKeys + bookOrderKeys + whoAmIKeys
-                + wordleKeys + wordSearchKeys + scrambleKeys
+                + wordleKeys + wordSearchKeys + scrambleKeys + crosswordKeys
         )
     }()
 
@@ -761,6 +772,8 @@ extension iCloudSyncCoordinator {
             + Self.whoAmIKeys
             + Self.wordleKeys
             + Self.wordSearchKeys
+            + Self.scrambleKeys
+            + Self.crosswordKeys
         )
         for key in gameKeys {
             defaults.set(0, forKey: key)
@@ -800,6 +813,8 @@ extension iCloudSyncCoordinator {
             + Self.whoAmIKeys
             + Self.wordleKeys
             + Self.wordSearchKeys
+            + Self.scrambleKeys
+            + Self.crosswordKeys
         )
         for key in gameKeys {
             defaults.removeObject(forKey: key)
@@ -837,7 +852,7 @@ extension iCloudSyncCoordinator {
         }
 
         // 3) Clear per-game daily maps locally
-        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
+        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","scramble","crossword","word"]
         for g in perGameKeys {
             defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
             defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
@@ -935,7 +950,7 @@ extension iCloudSyncCoordinator {
         defaults.removeObject(forKey: "wordleDailyTarget")
 
         // 3) Clear per-game daily maps (now mirrored — clear both local and remote)
-        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
+        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","scramble","crossword","word"]
         for g in perGameKeys {
             let aKey = "gamesDailyAnswered_\(g)"
             let cKey = "gamesDailyCorrect_\(g)"

@@ -230,6 +230,14 @@ enum GameDataLoaders {
         return words
     }
 
+    static func loadCrosswordClues() -> [CrosswordClueEntry] {
+        guard let clues = tryLoadArray([CrosswordClueEntry].self, resource: "CrosswordClues") else {
+            gameDataLogger.error("The Crossword clue list could not be loaded or decoded.")
+            return []
+        }
+        return clues
+    }
+
     /// Characters, places, and Who? questions all come from one file, so it is decoded once
     /// and shared rather than once per loader.
     private nonisolated static let catalogCache = DecodedCatalogCache()
@@ -261,6 +269,12 @@ enum GameDataLoaders {
     static func loadScrambleWordsAsync() async -> [ScrambleWordEntry] {
         await GameDataCache.shared.load("scrambleWords") {
             await loadOffMainThread { loadScrambleWords() }
+        }.value
+    }
+
+    static func loadCrosswordCluesAsync() async -> [CrosswordClueEntry] {
+        await GameDataCache.shared.load("crosswordClues") {
+            await loadOffMainThread { loadCrosswordClues() }
         }.value
     }
 

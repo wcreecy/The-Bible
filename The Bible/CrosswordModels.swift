@@ -1,7 +1,7 @@
 import Foundation
 
 /// One clue in `CrosswordClues.json`.
-struct CrosswordClueEntry: Decodable, Identifiable, Hashable, Sendable {
+nonisolated struct CrosswordClueEntry: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let answer: String
     let clue: String
@@ -51,7 +51,7 @@ struct CrosswordClueEntry: Decodable, Identifiable, Hashable, Sendable {
 
 /// A finished crossword layout. It is Codable so hand-built or pre-generated puzzles can be
 /// bundled as a fallback.
-struct CrosswordPuzzle: Codable, Hashable, Sendable {
+nonisolated struct CrosswordPuzzle: Codable, Hashable, Sendable {
     enum Direction: String, Codable, CaseIterable, Sendable {
         case across
         case down

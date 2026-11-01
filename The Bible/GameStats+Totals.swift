@@ -41,6 +41,7 @@ extension GameStats {
         let w = whoami
         let ws = wordsearch
         let s = scramble
+        let cw = crossword
 
         let wdDaily = wordle(type: .daily)
         let wdFree = wordle(type: .free)
@@ -63,6 +64,7 @@ extension GameStats {
             .init(name: "Who?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
             .init(name: "Word Search", correct: ws.correct, answered: ws.answered, bestStreak: ws.bestStreak),
             .init(name: "Scramble", correct: s.correct, answered: s.answered, bestStreak: s.bestStreak),
+            .init(name: "Crossword", correct: cw.correct, answered: cw.answered, bestStreak: cw.bestStreak),
             .init(name: "Word", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
         ]
         return GameBreakdown(entries: entries)
@@ -87,6 +89,7 @@ extension GameStats {
         case .whoami: stat = whoami
         case .wordsearch: stat = wordsearch
         case .scramble: stat = scramble
+        case .crossword: stat = crossword
         case .wordle:
             if let wordMode {
                 let counts = wordleCounts(mode: wordMode)
@@ -289,6 +292,20 @@ extension GameStats {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
+    private var crossword: GameStat {
+        let combinedC = max(0, readInt("crosswordAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("crosswordAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("crosswordAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
+        let c = sumAcross(prefix: "crosswordAllTimeCorrect", parts: ["_easy", "_normal", "_hard"], legacyKey: nil)
+        let a = sumAcross(prefix: "crosswordAllTimeAnswered", parts: ["_easy", "_normal", "_hard"], legacyKey: nil)
+        let best = maxAcross(prefix: "crosswordAllTimeBestStreak", parts: ["_easy", "_normal", "_hard"], legacyKey: nil)
+        return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    }
+
     private func wordle(type: WordleType) -> GameStat {
         let suf = (type == .daily) ? "_daily" : "_free"
         let c = readInt("wordleAllTimeCorrect\(suf)")
@@ -304,7 +321,7 @@ extension GameStats {
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, trivia, hangman, versematch, beatclock, bookorder, whoami, wordsearch, scramble]
+        let stats = [quiz, trivia, hangman, versematch, beatclock, bookorder, whoami, wordsearch, scramble, crossword]
         let typedCorrect = wordle(type: .daily).correct + wordle(type: .free).correct
         let typedAnswered = wordle(type: .daily).answered + wordle(type: .free).answered
         let wordleCombined = GameStat(

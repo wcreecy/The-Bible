@@ -536,6 +536,7 @@ enum GameLobbyPreviewKind {
     case bookOrder
     case wordSearch
     case scramble
+    case crossword
     case whoAmI
     case wordle
     case trivia
@@ -627,6 +628,23 @@ struct GameLobbyPreview: View {
                 Text("JOSEPH")
                     .font(.title2.weight(.bold).monospaced())
                     .foregroundStyle(.pink)
+            }
+        case .crossword:
+            HStack(spacing: 24) {
+                VStack(spacing: 3) {
+                    ForEach(["N O A H #", "# A # A #", "# R U T H", "# K # A #"], id: \.self) { row in
+                        HStack(spacing: 3) {
+                            ForEach(Array(row.split(separator: " ").enumerated()), id: \.offset) { _, letter in
+                                Text(letter == "#" ? "" : String(letter))
+                                    .font(.subheadline.weight(.bold).monospaced())
+                                    .frame(width: 24, height: 24)
+                                    .background(letter == "#" ? Color.primary.opacity(0.8) : Color(.systemBackground))
+                                    .border(Color.primary.opacity(0.3), width: 0.5)
+                            }
+                        }
+                    }
+                }
+                previewPrompt(icon: CrosswordGameView.systemImage, title: "1 Across", subtitle: "Built an ark before the flood")
             }
         case .whoAmI:
             HStack(spacing: 24) {

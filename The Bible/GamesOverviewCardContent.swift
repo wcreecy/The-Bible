@@ -25,6 +25,7 @@ struct GamesOverviewCardContent: View {
         case "Who?": return "person.crop.circle.badge.questionmark"
         case "Word Search": return "square.grid.3x3.topleft.filled"
         case "Scramble": return "text.line.first.and.arrowtriangle.forward"
+        case "Crossword": return CrosswordGameView.systemImage
         case "Word": return "textformat.abc"
         default: return "gamecontroller"
         }

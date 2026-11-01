@@ -70,6 +70,7 @@ final class GameStatsLedger {
                 + iCloudSyncCoordinator.wordleKeys
                 + iCloudSyncCoordinator.wordSearchKeys
                 + iCloudSyncCoordinator.scrambleKeys
+                + iCloudSyncCoordinator.crosswordKeys
                 + iCloudSyncCoordinator.gamePlayTimeCounterKeys
         )
     }

@@ -699,6 +699,7 @@ enum DeveloperSettingsReset {
             AppStorageKey.hangmanDifficulty: HangmanDifficulty.normal.rawValue,
             AppStorageKey.hangmanTheme: HangmanTheme.all.rawValue,
             "scrambleDifficulty": "normal",
+            "crosswordDifficulty": "normal",
             "quizDifficulty": "normal",
             "quizScope": "whole",
             "quizSections": "",

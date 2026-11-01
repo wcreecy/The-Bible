@@ -10,8 +10,8 @@ struct CrosswordBoardView: View {
     let revealedCells: Set<CrosswordPuzzle.Cell>
     let selectedCell: CrosswordPuzzle.Cell?
     let selectedDirection: CrosswordPuzzle.Direction
-    /// When true, letters that don't match the solution are marked.
-    var showsMistakes = false
+    /// Wrong letters found by Check, marked with a red slash.
+    var wrongCells: Set<CrosswordPuzzle.Cell> = []
     let onTapCell: (CrosswordPuzzle.Cell) -> Void
 
     /// The cells of the word the selected cell belongs to, in the selected direction.
@@ -47,9 +47,9 @@ struct CrosswordBoardView: View {
 
     @ViewBuilder
     private func cellView(_ cell: CrosswordPuzzle.Cell, size: CGFloat, highlighted: Set<CrosswordPuzzle.Cell>) -> some View {
-        if let solution = puzzle.letter(at: cell) {
+        if puzzle.letter(at: cell) != nil {
             let guess = guesses[cell]
-            let isWrong = showsMistakes && guess != nil && guess != solution
+            let isWrong = wrongCells.contains(cell)
             ZStack(alignment: .topLeading) {
                 Rectangle()
                     .fill(fillColor(for: cell, highlighted: highlighted))
@@ -82,16 +82,21 @@ struct CrosswordBoardView: View {
             .accessibilityAddTraits(cell == selectedCell ? [.isButton, .isSelected] : .isButton)
         } else {
             Rectangle()
-                .fill(Color.primary.opacity(0.85))
+                .fill(Color.black)
                 .frame(width: size, height: size)
                 .accessibilityHidden(true)
         }
     }
 
+    /// White in light mode and a mid gray in dark mode, so black squares always stand out.
+    private static let letterCellColor = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark ? .systemGray4 : .white
+    })
+
     private func fillColor(for cell: CrosswordPuzzle.Cell, highlighted: Set<CrosswordPuzzle.Cell>) -> Color {
         if cell == selectedCell { return Color.accentColor.opacity(0.45) }
         if highlighted.contains(cell) { return Color.accentColor.opacity(0.18) }
-        return Color(.systemBackground)
+        return Self.letterCellColor
     }
 
     private func letterColor(for cell: CrosswordPuzzle.Cell, isWrong: Bool) -> Color {

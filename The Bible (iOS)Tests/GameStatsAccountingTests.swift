@@ -17,7 +17,8 @@ struct GameStatsAccountingTests {
             (.bookorder, "bookorder", "Book Order"),
             (.whoami, "whoami", "Who?"),
             (.wordsearch, "wordsearch", "Word Search"),
-            (.scramble, "scramble", "Scramble")
+            (.scramble, "scramble", "Scramble"),
+            (.crossword, "crossword", "Crossword")
         ]
         let dayKey = GameStats.localDayKey(for: Date())
 
@@ -157,6 +158,56 @@ struct GameStatsAccountingTests {
         #expect(GameStatsLedger.counterKeys.isSuperset(of: keys))
         #expect(iCloudSyncCoordinator.perGameDailyMapKeys.contains("gamesDailyAnswered_scramble"))
         #expect(iCloudSyncCoordinator.perGameDailyMapKeys.contains("gamesDailyCorrect_scramble"))
+    }
+
+    @Test
+    func crosswordStatsSyncThroughTheLedgerAndAreClearedByReset() {
+        let keys = Set(iCloudSyncCoordinator.crosswordKeys)
+
+        // Synced per device, so plays on two devices add up instead of overwriting.
+        #expect(GameStatsLedger.counterKeys.isSuperset(of: keys))
+        #expect(iCloudSyncCoordinator.perGameDailyMapKeys.contains("gamesDailyAnswered_crossword"))
+        #expect(iCloudSyncCoordinator.perGameDailyMapKeys.contains("gamesDailyCorrect_crossword"))
+        // Known to the game data catalog, so a full reset clears it.
+        #expect(iCloudSyncCoordinator.shared.allKnownGameDataKeys.isSuperset(of: keys))
+        #expect(iCloudSyncCoordinator.allPersistentStreakKeys.contains(CrosswordGameViewModel.currentStreakKey))
+    }
+
+    @Test
+    func aCrosswordRoundShowsInStatsAndCompletesItsTodayChallenge() throws {
+        let keys = [
+            "crosswordAllTimeCorrect_hard",
+            "crosswordAllTimeAnswered_hard",
+            "crosswordAllTimeBestStreak_hard",
+            "crosswordAllTimeCorrect_all",
+            "crosswordAllTimeAnswered_all",
+            "crosswordAllTimeBestStreak_all",
+            "gamesDailyAnswered",
+            "gamesDailyCorrect",
+            "gamesDailyAnswered_crossword",
+            "gamesDailyCorrect_crossword",
+            "gamesLastPlayedAt",
+            "gamesLastPlayedGameName"
+        ]
+        let savedValues = savedValues(for: keys)
+        clear(keys)
+        defer { restore(savedValues, for: keys) }
+
+        // Nothing played yet, so today's Crossword challenge isn't complete.
+        #expect((GameStats.shared.dailySeriesLast(days: 1, forDisplayName: "Crossword").last?.answered ?? 0) == 0)
+
+        GameStats.shared.recordRound(game: .crossword, difficulty: .hard, correct: 1, answered: 1, currentBestStreak: 1)
+
+        // The Stats tab and in-game scorecard read the same totals.
+        let entry = try #require(GameStats.shared.breakdownSnapshot().entries.first { $0.name == "Crossword" })
+        #expect(entry.correct == 1)
+        #expect(entry.answered == 1)
+        let scorecard = GameStats.shared.scorecardStats(for: .crossword)
+        #expect(scorecard.correct == 1)
+        #expect(scorecard.attempts == 1)
+
+        // The Today card marks a game challenge done once today's series shows a play.
+        #expect(GameStats.shared.dailySeriesLast(days: 1, forDisplayName: "Crossword").last?.answered == 1)
     }
 
     @Test
@@ -468,5 +519,50 @@ struct GameStatsAccountingTests {
                 defaults.removeObject(forKey: key)
             }
         }
+    }
+}
+
+@MainActor
+struct DeveloperSampleGameStatsTests {
+    private let defaults = UserDefaults.standard
+
+    @Test
+    func generatedSampleDataIncludesCrosswordWithRealisticPlayCounts() throws {
+        let prefixes = ["quiz", "trivia", "hangman", "beatclock", "versematch", "bookorder",
+                        "whoami", "wordsearch", "scramble", "crossword", "word", "wordle"]
+        var keys = ["gamesDailyAnswered", "gamesDailyCorrect", "gamesLastPlayedAt", "gamesLastPlayedGameName"]
+        for prefix in prefixes {
+            keys += ["gamesDailyAnswered_\(prefix)", "gamesDailyCorrect_\(prefix)",
+                     "\(prefix)AllTimeAnswered_all", "\(prefix)AllTimeCorrect_all", "\(prefix)AllTimeBestStreak_all"]
+        }
+        let saved = Dictionary(uniqueKeysWithValues: keys.compactMap { key in defaults.object(forKey: key).map { (key, $0) } })
+        keys.forEach { defaults.removeObject(forKey: $0) }
+        defer {
+            keys.forEach { defaults.removeObject(forKey: $0) }
+            saved.forEach { defaults.set($0.value, forKey: $0.key) }
+        }
+
+        DeveloperSampleData.generateGameStats()
+
+        let answered = defaults.integer(forKey: "crosswordAllTimeAnswered_all")
+        #expect(answered > 0)
+        #expect(defaults.integer(forKey: "crosswordAllTimeCorrect_all") > 0)
+        #expect(defaults.integer(forKey: "crosswordAllTimeBestStreak_all") > 0)
+
+        let daily = try #require(defaults.data(forKey: "gamesDailyAnswered_crossword"))
+        let dailyMap = try JSONDecoder().decode([String: Int].self, from: daily)
+        #expect(dailyMap.values.reduce(0, +) == answered)
+
+        // Whole-puzzle games get 1–10 plays on each day they're played.
+        for prefix in ["crossword", "wordsearch"] {
+            let data = try #require(defaults.data(forKey: "gamesDailyAnswered_\(prefix)"))
+            let perDay = try JSONDecoder().decode([String: Int].self, from: data)
+            #expect(!perDay.isEmpty)
+            #expect(perDay.values.allSatisfy { (1...10).contains($0) }, "\(prefix): \(perDay.values.sorted())")
+        }
+
+        // The Stats tab shows what was generated.
+        let entry = try #require(GameStats.shared.breakdownSnapshot().entries.first { $0.name == "Crossword" })
+        #expect(entry.answered == answered)
     }
 }

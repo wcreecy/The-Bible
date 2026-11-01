@@ -1,0 +1,4002 @@
+[
+  {
+    "id": "adam-001",
+    "answer": "ADAM",
+    "clue": "First man",
+    "reference": "Genesis 2:7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "abel-001",
+    "answer": "ABEL",
+    "clue": "Murdered by Cain",
+    "reference": "Genesis 4:8",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "cain-001",
+    "answer": "CAIN",
+    "clue": "Killed his brother",
+    "reference": "Genesis 4:8",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "seth-001",
+    "answer": "SETH",
+    "clue": "Adam's third named son",
+    "reference": "Genesis 4:25",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "enoch-001",
+    "answer": "ENOCH",
+    "clue": "Walked with God",
+    "reference": "Genesis 5:24",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "noah-001",
+    "answer": "NOAH",
+    "clue": "Built the ark",
+    "reference": "Genesis 6:14",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "shem-001",
+    "answer": "SHEM",
+    "clue": "Noah's eldest-listed son",
+    "reference": "Genesis 6:10",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "japheth-001",
+    "answer": "JAPHETH",
+    "clue": "Brother of Shem",
+    "reference": "Genesis 6:10",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "abram-001",
+    "answer": "ABRAM",
+    "clue": "Abraham's former name",
+    "reference": "Genesis 17:5",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sarai-001",
+    "answer": "SARAI",
+    "clue": "Sarah's former name",
+    "reference": "Genesis 17:15",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sarah-001",
+    "answer": "SARAH",
+    "clue": "Isaac's mother",
+    "reference": "Genesis 21:3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "isaac-001",
+    "answer": "ISAAC",
+    "clue": "Promised son of Abraham",
+    "reference": "Genesis 21:3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "rebekah-001",
+    "answer": "REBEKAH",
+    "clue": "Isaac's wife",
+    "reference": "Genesis 24:67",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "esau-001",
+    "answer": "ESAU",
+    "clue": "Sold his birthright",
+    "reference": "Genesis 25:33",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jacob-001",
+    "answer": "JACOB",
+    "clue": "Wrestled until daybreak",
+    "reference": "Genesis 32:24",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "israel-001",
+    "answer": "ISRAEL",
+    "clue": "Jacob's new name",
+    "reference": "Genesis 32:28",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "leah-001",
+    "answer": "LEAH",
+    "clue": "Jacob's first wife",
+    "reference": "Genesis 29:23",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "rachel-001",
+    "answer": "RACHEL",
+    "clue": "Joseph's mother",
+    "reference": "Genesis 30:24",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "bilhah-001",
+    "answer": "BILHAH",
+    "clue": "Rachel's handmaid",
+    "reference": "Genesis 30:3",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "zilpah-001",
+    "answer": "ZILPAH",
+    "clue": "Leah's handmaid",
+    "reference": "Genesis 30:9",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "reuben-001",
+    "answer": "REUBEN",
+    "clue": "Jacob's firstborn",
+    "reference": "Genesis 29:32",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "simeon-001",
+    "answer": "SIMEON",
+    "clue": "Leah's second son",
+    "reference": "Genesis 29:33",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "levi-001",
+    "answer": "LEVI",
+    "clue": "Father of the priestly tribe",
+    "reference": "Numbers 3:6",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "judah-001",
+    "answer": "JUDAH",
+    "clue": "Tribe of David",
+    "reference": "Hebrews 7:14",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "naphtali-001",
+    "answer": "NAPHTALI",
+    "clue": "Bilhah's second son",
+    "reference": "Genesis 30:8",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "asher-001",
+    "answer": "ASHER",
+    "clue": "Zilpah's second son",
+    "reference": "Genesis 30:13",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "issachar-001",
+    "answer": "ISSACHAR",
+    "clue": "Son named for hire",
+    "reference": "Genesis 30:18",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "zebulun-001",
+    "answer": "ZEBULUN",
+    "clue": "Leah's sixth son",
+    "reference": "Genesis 30:20",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "dinah-001",
+    "answer": "DINAH",
+    "clue": "Daughter of Jacob",
+    "reference": "Genesis 30:21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "joseph-001",
+    "answer": "JOSEPH",
+    "clue": "Sold by his brothers",
+    "reference": "Genesis 37:28",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "benjamin-001",
+    "answer": "BENJAMIN",
+    "clue": "Jacob's youngest son",
+    "reference": "Genesis 35:18",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "ephraim-001",
+    "answer": "EPHRAIM",
+    "clue": "Joseph's younger son",
+    "reference": "Genesis 48:14",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "manasseh-001",
+    "answer": "MANASSEH",
+    "clue": "Joseph's firstborn",
+    "reference": "Genesis 41:51",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "potiphar-001",
+    "answer": "POTIPHAR",
+    "clue": "Bought Joseph in Egypt",
+    "reference": "Genesis 39:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "pharaoh-001",
+    "answer": "PHARAOH",
+    "clue": "Ruler who dreamed of cows",
+    "reference": "Genesis 41:1-4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "goshen-001",
+    "answer": "GOSHEN",
+    "clue": "Israelites' land in Egypt",
+    "reference": "Genesis 47:27",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "egypt-001",
+    "answer": "EGYPT",
+    "clue": "Land of the ten plagues",
+    "reference": "Exodus 7:3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "moses-001",
+    "answer": "MOSES",
+    "clue": "Led Israel from Egypt",
+    "reference": "Exodus 3:10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "aaron-001",
+    "answer": "AARON",
+    "clue": "Moses' brother",
+    "reference": "Exodus 4:14",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "miriam-001",
+    "answer": "MIRIAM",
+    "clue": "Sang after the sea crossing",
+    "reference": "Exodus 15:20-21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jochebed-001",
+    "answer": "JOCHEBED",
+    "clue": "Moses' mother",
+    "reference": "Exodus 6:20",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "amram-001",
+    "answer": "AMRAM",
+    "clue": "Moses' father",
+    "reference": "Exodus 6:20",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "zipporah-001",
+    "answer": "ZIPPORAH",
+    "clue": "Moses' wife",
+    "reference": "Exodus 2:21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jethro-001",
+    "answer": "JETHRO",
+    "clue": "Moses' father-in-law",
+    "reference": "Exodus 3:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "horeb-001",
+    "answer": "HOREB",
+    "clue": "Mountain of the burning bush",
+    "reference": "Exodus 3:1-2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sinai-001",
+    "answer": "SINAI",
+    "clue": "Mountain of the law",
+    "reference": "Exodus 19:20",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "manna-001",
+    "answer": "MANNA",
+    "clue": "Bread from heaven",
+    "reference": "Exodus 16:15",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "quails-001",
+    "answer": "QUAILS",
+    "clue": "Birds sent as food",
+    "reference": "Exodus 16:13",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "altar-001",
+    "answer": "ALTAR",
+    "clue": "Place for burnt offerings",
+    "reference": "Exodus 27:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "laver-001",
+    "answer": "LAVER",
+    "clue": "Priests' washing basin",
+    "reference": "Exodus 30:18",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "incense-001",
+    "answer": "INCENSE",
+    "clue": "Fragrant altar offering",
+    "reference": "Exodus 30:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sabbath-001",
+    "answer": "SABBATH",
+    "clue": "Seventh-day rest",
+    "reference": "Exodus 20:10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "passover-001",
+    "answer": "PASSOVER",
+    "clue": "Feast recalling deliverance",
+    "reference": "Exodus 12:27",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "lamb-001",
+    "answer": "LAMB",
+    "clue": "Passover sacrifice",
+    "reference": "Exodus 12:3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "blood-001",
+    "answer": "BLOOD",
+    "clue": "Marked Israelite doorposts",
+    "reference": "Exodus 12:7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "locusts-001",
+    "answer": "LOCUSTS",
+    "clue": "Eighth plague",
+    "reference": "Exodus 10:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "frogs-001",
+    "answer": "FROGS",
+    "clue": "Second plague",
+    "reference": "Exodus 8:2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "darkness-001",
+    "answer": "DARKNESS",
+    "clue": "Ninth plague",
+    "reference": "Exodus 10:21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "hail-001",
+    "answer": "HAIL",
+    "clue": "Seventh plague",
+    "reference": "Exodus 9:18",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "boils-001",
+    "answer": "BOILS",
+    "clue": "Sixth plague",
+    "reference": "Exodus 9:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "lice-001",
+    "answer": "LICE",
+    "clue": "Plague from dust",
+    "reference": "Exodus 8:16-17",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "flies-001",
+    "answer": "FLIES",
+    "clue": "Fourth plague",
+    "reference": "Exodus 8:21",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "serpent-001",
+    "answer": "SERPENT",
+    "clue": "Staff became this creature",
+    "reference": "Exodus 7:10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "cloud-001",
+    "answer": "CLOUD",
+    "clue": "Led Israel by day",
+    "reference": "Exodus 13:21",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "fire-001",
+    "answer": "FIRE",
+    "clue": "Led Israel by night",
+    "reference": "Exodus 13:21",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "marah-001",
+    "answer": "MARAH",
+    "clue": "Place of bitter water",
+    "reference": "Exodus 15:23",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "elim-001",
+    "answer": "ELIM",
+    "clue": "Oasis with twelve springs",
+    "reference": "Exodus 15:27",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "meribah-001",
+    "answer": "MERIBAH",
+    "clue": "Place of quarreling",
+    "reference": "Exodus 17:7",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "amalek-001",
+    "answer": "AMALEK",
+    "clue": "People who fought Israel",
+    "reference": "Exodus 17:8",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bezalel-001",
+    "answer": "BEZALEL",
+    "clue": "Craftsman of the tabernacle",
+    "reference": "Exodus 31:2",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "oholiab-001",
+    "answer": "OHOLIAB",
+    "clue": "Bezalel's fellow artisan",
+    "reference": "Exodus 31:6",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "cherubim-001",
+    "answer": "CHERUBIM",
+    "clue": "Figures above the ark",
+    "reference": "Exodus 25:18",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "covenant-001",
+    "answer": "COVENANT",
+    "clue": "Sacred binding promise",
+    "reference": "Exodus 24:8",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "priest-001",
+    "answer": "PRIEST",
+    "clue": "Aaron's appointed role",
+    "reference": "Exodus 28:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "ephod-001",
+    "answer": "EPHOD",
+    "clue": "Priestly garment",
+    "reference": "Exodus 28:6",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "nadab-001",
+    "answer": "NADAB",
+    "clue": "Aaron's son who offered strange fire",
+    "reference": "Leviticus 10:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "abihu-001",
+    "answer": "ABIHU",
+    "clue": "Nadab's brother",
+    "reference": "Leviticus 10:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "eleazar-001",
+    "answer": "ELEAZAR",
+    "clue": "Aaron's successor as priest",
+    "reference": "Numbers 20:28",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ithamar-001",
+    "answer": "ITHAMAR",
+    "clue": "Aaron's youngest son",
+    "reference": "Exodus 6:23",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "scapegoat-001",
+    "answer": "SCAPEGOAT",
+    "clue": "Sent into the wilderness",
+    "reference": "Leviticus 16:10",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jubilee-001",
+    "answer": "JUBILEE",
+    "clue": "Year of liberty",
+    "reference": "Leviticus 25:10",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "tithe-001",
+    "answer": "TITHE",
+    "clue": "One-tenth portion",
+    "reference": "Leviticus 27:30",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "clean-001",
+    "answer": "CLEAN",
+    "clue": "Status of permitted foods",
+    "reference": "Leviticus 11:47",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "unclean-001",
+    "answer": "UNCLEAN",
+    "clue": "Status of forbidden animals",
+    "reference": "Leviticus 11:47",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "holy-001",
+    "answer": "HOLY",
+    "clue": "Be ye ___",
+    "reference": "Leviticus 19:2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "love-001",
+    "answer": "LOVE",
+    "clue": "Commanded toward neighbors",
+    "reference": "Leviticus 19:18",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "neighbor-001",
+    "answer": "NEIGHBOR",
+    "clue": "Person to love as yourself",
+    "reference": "Leviticus 19:18",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "harvest-001",
+    "answer": "HARVEST",
+    "clue": "Field gathering time",
+    "reference": "Leviticus 23:22",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sheaf-001",
+    "answer": "SHEAF",
+    "clue": "Firstfruits bundle",
+    "reference": "Leviticus 23:10",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "sacrifice-001",
+    "answer": "SACRIFICE",
+    "clue": "Offering made to God",
+    "reference": "Leviticus 1:3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "atonement-001",
+    "answer": "ATONEMENT",
+    "clue": "Day of reconciliation",
+    "reference": "Leviticus 16:29-30",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "joshua-001",
+    "answer": "JOSHUA",
+    "clue": "Succeeded Moses",
+    "reference": "Joshua 1:1-2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "caleb-001",
+    "answer": "CALEB",
+    "clue": "Faithful spy with Joshua",
+    "reference": "Numbers 14:6",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "balaam-001",
+    "answer": "BALAAM",
+    "clue": "His donkey spoke",
+    "reference": "Numbers 22:28",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "balak-001",
+    "answer": "BALAK",
+    "clue": "Hired Balaam to curse Israel",
+    "reference": "Numbers 22:5-6",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "korah-001",
+    "answer": "KORAH",
+    "clue": "Led rebellion against Moses",
+    "reference": "Numbers 16:1-3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "dathan-001",
+    "answer": "DATHAN",
+    "clue": "Rebel allied with Korah",
+    "reference": "Numbers 16:1-2",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "abiram-001",
+    "answer": "ABIRAM",
+    "clue": "Dathan's fellow rebel",
+    "reference": "Numbers 16:1-2",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "phinehas-001",
+    "answer": "PHINEHAS",
+    "clue": "Stopped a plague with a spear",
+    "reference": "Numbers 25:7-8",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "zimri-001",
+    "answer": "ZIMRI",
+    "clue": "Israelite slain by Phinehas",
+    "reference": "Numbers 25:14",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "cozbi-001",
+    "answer": "COZBI",
+    "clue": "Midianite slain by Phinehas",
+    "reference": "Numbers 25:15",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "midian-001",
+    "answer": "MIDIAN",
+    "clue": "Land where Moses fled",
+    "reference": "Exodus 2:15",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "edom-001",
+    "answer": "EDOM",
+    "clue": "Nation descended from Esau",
+    "reference": "Genesis 36:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "moab-001",
+    "answer": "MOAB",
+    "clue": "Nation descended from Lot",
+    "reference": "Genesis 19:37",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ammon-001",
+    "answer": "AMMON",
+    "clue": "Nation descended from Benammi",
+    "reference": "Genesis 19:38",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "canaan-001",
+    "answer": "CANAAN",
+    "clue": "Promised land",
+    "reference": "Genesis 12:5-7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jericho-001",
+    "answer": "JERICHO",
+    "clue": "City with falling walls",
+    "reference": "Joshua 6:20",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "rahab-001",
+    "answer": "RAHAB",
+    "clue": "Hid the spies",
+    "reference": "Joshua 2:4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "achan-001",
+    "answer": "ACHAN",
+    "clue": "Stole forbidden spoil",
+    "reference": "Joshua 7:20-21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "gilgal-001",
+    "answer": "GILGAL",
+    "clue": "Israel's first camp after Jordan",
+    "reference": "Joshua 4:19",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "jordan-001",
+    "answer": "JORDAN",
+    "clue": "River Israel crossed",
+    "reference": "Joshua 3:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "gibeon-001",
+    "answer": "GIBEON",
+    "clue": "City that tricked Joshua",
+    "reference": "Joshua 9:3-15",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "shechem-001",
+    "answer": "SHECHEM",
+    "clue": "Site of Joshua's final covenant",
+    "reference": "Joshua 24:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "shiloh-001",
+    "answer": "SHILOH",
+    "clue": "Tabernacle location in Joshua",
+    "reference": "Joshua 18:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "hebron-001",
+    "answer": "HEBRON",
+    "clue": "City given to Caleb",
+    "reference": "Joshua 14:13-14",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "deborah-001",
+    "answer": "DEBORAH",
+    "clue": "Judge who led with Barak",
+    "reference": "Judges 4:4-6",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "barak-001",
+    "answer": "BARAK",
+    "clue": "General aided by Deborah",
+    "reference": "Judges 4:6",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jael-001",
+    "answer": "JAEL",
+    "clue": "Killed Sisera with a peg",
+    "reference": "Judges 4:21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sisera-001",
+    "answer": "SISERA",
+    "clue": "Commander defeated by Jael",
+    "reference": "Judges 4:21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "gideon-001",
+    "answer": "GIDEON",
+    "clue": "Judge with 300 men",
+    "reference": "Judges 7:7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "midianites-001",
+    "answer": "MIDIANITES",
+    "clue": "People defeated by Gideon",
+    "reference": "Judges 7:7",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "abimelech-001",
+    "answer": "ABIMELECH",
+    "clue": "Gideon's son who became king",
+    "reference": "Judges 9:1-6",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "jephthah-001",
+    "answer": "JEPHTHAH",
+    "clue": "Judge who made a rash vow",
+    "reference": "Judges 11:30-31",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "samson-001",
+    "answer": "SAMSON",
+    "clue": "Judge of great strength",
+    "reference": "Judges 16:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "delilah-001",
+    "answer": "DELILAH",
+    "clue": "Betrayed Samson",
+    "reference": "Judges 16:19",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "nazarite-001",
+    "answer": "NAZARITE",
+    "clue": "Person under special vow",
+    "reference": "Numbers 6:2",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "philistine-001",
+    "answer": "PHILISTINE",
+    "clue": "Samson's enemy nationality",
+    "reference": "Judges 14:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "gaza-001",
+    "answer": "GAZA",
+    "clue": "City where Samson carried gates",
+    "reference": "Judges 16:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "timnath-001",
+    "answer": "TIMNATH",
+    "clue": "Place Samson sought a wife",
+    "reference": "Judges 14:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "lion-001",
+    "answer": "LION",
+    "clue": "Samson killed this beast",
+    "reference": "Judges 14:5-6",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "honey-001",
+    "answer": "HONEY",
+    "clue": "Found in the lion's carcass",
+    "reference": "Judges 14:8",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jawbone-001",
+    "answer": "JAWBONE",
+    "clue": "Samson's unusual weapon",
+    "reference": "Judges 15:15",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ruth-001",
+    "answer": "RUTH",
+    "clue": "Moabite loyal to Naomi",
+    "reference": "Ruth 1:16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "naomi-001",
+    "answer": "NAOMI",
+    "clue": "Ruth's mother-in-law",
+    "reference": "Ruth 1:3-4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "boaz-001",
+    "answer": "BOAZ",
+    "clue": "Ruth's redeemer husband",
+    "reference": "Ruth 4:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "orpah-001",
+    "answer": "ORPAH",
+    "clue": "Ruth's sister-in-law",
+    "reference": "Ruth 1:14",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bethlehem-001",
+    "answer": "BETHLEHEM",
+    "clue": "David's hometown",
+    "reference": "1 Samuel 17:12",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "obed-001",
+    "answer": "OBED",
+    "clue": "Son of Ruth and Boaz",
+    "reference": "Ruth 4:17",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jesse-001",
+    "answer": "JESSE",
+    "clue": "David's father",
+    "reference": "1 Samuel 16:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "hannah-001",
+    "answer": "HANNAH",
+    "clue": "Samuel's praying mother",
+    "reference": "1 Samuel 1:10-11",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "elkanah-001",
+    "answer": "ELKANAH",
+    "clue": "Samuel's father",
+    "reference": "1 Samuel 1:19-20",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "peninnah-001",
+    "answer": "PENINNAH",
+    "clue": "Hannah's rival",
+    "reference": "1 Samuel 1:6",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "samuel-001",
+    "answer": "SAMUEL",
+    "clue": "Prophet who anointed David",
+    "reference": "1 Samuel 16:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "hophni-001",
+    "answer": "HOPHNI",
+    "clue": "Corrupt son of Eli",
+    "reference": "1 Samuel 2:12",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "ichabod-001",
+    "answer": "ICHABOD",
+    "clue": "Child named for lost glory",
+    "reference": "1 Samuel 4:21",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "saul-001",
+    "answer": "SAUL",
+    "clue": "Israel's first king",
+    "reference": "1 Samuel 10:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jonathan-001",
+    "answer": "JONATHAN",
+    "clue": "Saul's loyal son",
+    "reference": "1 Samuel 18:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "david-001",
+    "answer": "DAVID",
+    "clue": "Defeated Goliath",
+    "reference": "1 Samuel 17:49",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "goliath-001",
+    "answer": "GOLIATH",
+    "clue": "Giant from Gath",
+    "reference": "1 Samuel 17:4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sling-001",
+    "answer": "SLING",
+    "clue": "David's giant-slaying weapon",
+    "reference": "1 Samuel 17:49",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "michal-001",
+    "answer": "MICHAL",
+    "clue": "David's wife and Saul's daughter",
+    "reference": "1 Samuel 18:27",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "abigail-001",
+    "answer": "ABIGAIL",
+    "clue": "Stopped David's revenge",
+    "reference": "1 Samuel 25:32-33",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "nabal-001",
+    "answer": "NABAL",
+    "clue": "Abigail's foolish husband",
+    "reference": "1 Samuel 25:25",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ahimelech-001",
+    "answer": "AHIMELECH",
+    "clue": "Priest who fed David",
+    "reference": "1 Samuel 21:1-6",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "doeg-001",
+    "answer": "DOEG",
+    "clue": "Edomite who betrayed priests",
+    "reference": "1 Samuel 22:9",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "engedi-001",
+    "answer": "ENGEDI",
+    "clue": "David spared Saul near here",
+    "reference": "1 Samuel 24:1-7",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ziklag-001",
+    "answer": "ZIKLAG",
+    "clue": "David's town burned by Amalekites",
+    "reference": "1 Samuel 30:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "ashkelon-001",
+    "answer": "ASHKELON",
+    "clue": "Philistine city",
+    "reference": "1 Samuel 6:17",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "gath-001",
+    "answer": "GATH",
+    "clue": "Goliath's hometown",
+    "reference": "1 Samuel 17:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ashdod-001",
+    "answer": "ASHDOD",
+    "clue": "Philistine city with Dagon",
+    "reference": "1 Samuel 5:1-2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ekron-001",
+    "answer": "EKRON",
+    "clue": "Philistine city",
+    "reference": "1 Samuel 5:10",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "dagon-001",
+    "answer": "DAGON",
+    "clue": "Idol toppled near the ark",
+    "reference": "1 Samuel 5:3-4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "abner-001",
+    "answer": "ABNER",
+    "clue": "Saul's army captain",
+    "reference": "1 Samuel 14:50",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "joab-001",
+    "answer": "JOAB",
+    "clue": "David's army captain",
+    "reference": "2 Samuel 8:16",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "absalom-001",
+    "answer": "ABSALOM",
+    "clue": "David's rebellious son",
+    "reference": "2 Samuel 15:10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "amnon-001",
+    "answer": "AMNON",
+    "clue": "David's son who harmed Tamar",
+    "reference": "2 Samuel 13:1-14",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "tamar-001",
+    "answer": "TAMAR",
+    "clue": "Absalom's sister",
+    "reference": "2 Samuel 13:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bathsheba-001",
+    "answer": "BATHSHEBA",
+    "clue": "Solomon's mother",
+    "reference": "2 Samuel 12:24",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "uriah-001",
+    "answer": "URIAH",
+    "clue": "Bathsheba's first husband",
+    "reference": "2 Samuel 11:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "nathan-001",
+    "answer": "NATHAN",
+    "clue": "Prophet who confronted David",
+    "reference": "2 Samuel 12:1-7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "ziba-001",
+    "answer": "ZIBA",
+    "clue": "Servant of Saul's household",
+    "reference": "2 Samuel 9:2",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "ahithophel-001",
+    "answer": "AHITHOPHEL",
+    "clue": "Absalom's counselor",
+    "reference": "2 Samuel 15:12",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "hushai-001",
+    "answer": "HUSHAI",
+    "clue": "David's loyal counselor",
+    "reference": "2 Samuel 15:32-37",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "adonijah-001",
+    "answer": "ADONIJAH",
+    "clue": "Tried to claim David's throne",
+    "reference": "1 Kings 1:5",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "solomon-001",
+    "answer": "SOLOMON",
+    "clue": "Asked God for wisdom",
+    "reference": "1 Kings 3:9-12",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jerusalem-001",
+    "answer": "JERUSALEM",
+    "clue": "City of David",
+    "reference": "2 Samuel 5:6-9",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "zion-001",
+    "answer": "ZION",
+    "clue": "David's stronghold",
+    "reference": "2 Samuel 5:7",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "cedar-001",
+    "answer": "CEDAR",
+    "clue": "Wood used in the temple",
+    "reference": "1 Kings 6:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "hiram-001",
+    "answer": "HIRAM",
+    "clue": "King who supplied temple timber",
+    "reference": "1 Kings 5:1-10",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sheba-001",
+    "answer": "SHEBA",
+    "clue": "Homeland of visiting queen",
+    "reference": "1 Kings 10:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "rehoboam-001",
+    "answer": "REHOBOAM",
+    "clue": "King after Solomon",
+    "reference": "1 Kings 12:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jeroboam-001",
+    "answer": "JEROBOAM",
+    "clue": "First northern kingdom king",
+    "reference": "1 Kings 12:20",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bethel-001",
+    "answer": "BETHEL",
+    "clue": "Site of Jeroboam's golden calf",
+    "reference": "1 Kings 12:28-29",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "samaria-001",
+    "answer": "SAMARIA",
+    "clue": "Capital of northern Israel",
+    "reference": "1 Kings 16:24",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "omri-001",
+    "answer": "OMRI",
+    "clue": "King who bought Samaria",
+    "reference": "1 Kings 16:23-24",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "ahab-001",
+    "answer": "AHAB",
+    "clue": "King married to Jezebel",
+    "reference": "1 Kings 16:31",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jezebel-001",
+    "answer": "JEZEBEL",
+    "clue": "Threatened Elijah",
+    "reference": "1 Kings 19:2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "elijah-001",
+    "answer": "ELIJAH",
+    "clue": "Prophet on Mount Carmel",
+    "reference": "1 Kings 18:19",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "elisha-001",
+    "answer": "ELISHA",
+    "clue": "Succeeded Elijah",
+    "reference": "2 Kings 2:15",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "carmel-001",
+    "answer": "CARMEL",
+    "clue": "Mountain of Elijah's contest",
+    "reference": "1 Kings 18:19-20",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "baal-001",
+    "answer": "BAAL",
+    "clue": "False god challenged by Elijah",
+    "reference": "1 Kings 18:21",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "obadiah-001",
+    "answer": "OBADIAH",
+    "clue": "Hid 100 prophets",
+    "reference": "1 Kings 18:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ravens-001",
+    "answer": "RAVENS",
+    "clue": "Fed Elijah",
+    "reference": "1 Kings 17:4-6",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "cherith-001",
+    "answer": "CHERITH",
+    "clue": "Brook where Elijah hid",
+    "reference": "1 Kings 17:3",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "zarephath-001",
+    "answer": "ZAREPHATH",
+    "clue": "Town of a generous widow",
+    "reference": "1 Kings 17:9",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "naboth-001",
+    "answer": "NABOTH",
+    "clue": "Owned Ahab's desired vineyard",
+    "reference": "1 Kings 21:1-3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jehu-001",
+    "answer": "JEHU",
+    "clue": "King who ended Ahab's dynasty",
+    "reference": "2 Kings 9:6-10",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "naaman-001",
+    "answer": "NAAMAN",
+    "clue": "Syrian healed of leprosy",
+    "reference": "2 Kings 5:14",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "gehazi-001",
+    "answer": "GEHAZI",
+    "clue": "Elisha's greedy servant",
+    "reference": "2 Kings 5:20",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "shunem-001",
+    "answer": "SHUNEM",
+    "clue": "Town of Elisha's hostess",
+    "reference": "2 Kings 4:8",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "jonah-001",
+    "answer": "JONAH",
+    "clue": "Swallowed by a great fish",
+    "reference": "Jonah 1:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "nineveh-001",
+    "answer": "NINEVEH",
+    "clue": "City Jonah warned",
+    "reference": "Jonah 3:3-4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "tarshish-001",
+    "answer": "TARSHISH",
+    "clue": "Destination Jonah fled toward",
+    "reference": "Jonah 1:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "joppa-001",
+    "answer": "JOPPA",
+    "clue": "Port where Jonah boarded",
+    "reference": "Jonah 1:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "gourd-001",
+    "answer": "GOURD",
+    "clue": "Plant sheltering Jonah",
+    "reference": "Jonah 4:6",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "hosea-001",
+    "answer": "HOSEA",
+    "clue": "Prophet married to Gomer",
+    "reference": "Hosea 1:2-3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "gomer-001",
+    "answer": "GOMER",
+    "clue": "Hosea's wife",
+    "reference": "Hosea 1:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jezreel-001",
+    "answer": "JEZREEL",
+    "clue": "Name of Hosea's son",
+    "reference": "Hosea 1:4",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "amos-001",
+    "answer": "AMOS",
+    "clue": "Shepherd prophet of Tekoa",
+    "reference": "Amos 1:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "tekoa-001",
+    "answer": "TEKOA",
+    "clue": "Amos's hometown",
+    "reference": "Amos 1:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "micah-001",
+    "answer": "MICAH",
+    "clue": "Prophet from Moresheth",
+    "reference": "Micah 1:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "isaiah-001",
+    "answer": "ISAIAH",
+    "clue": "Prophet who saw God's throne",
+    "reference": "Isaiah 6:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "seraphim-001",
+    "answer": "SERAPHIM",
+    "clue": "Beings with six wings",
+    "reference": "Isaiah 6:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "immanuel-001",
+    "answer": "IMMANUEL",
+    "clue": "Name meaning God with us",
+    "reference": "Isaiah 7:14",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "hezekiah-001",
+    "answer": "HEZEKIAH",
+    "clue": "King healed after prayer",
+    "reference": "2 Kings 20:5-6",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "rabshakeh-001",
+    "answer": "RABSHAKEH",
+    "clue": "Assyrian king's spokesman",
+    "reference": "2 Kings 18:17",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "amon-001",
+    "answer": "AMON",
+    "clue": "King after Manasseh",
+    "reference": "2 Kings 21:18-19",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "josiah-001",
+    "answer": "JOSIAH",
+    "clue": "King who found the law book",
+    "reference": "2 Kings 22:8-11",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "huldah-001",
+    "answer": "HULDAH",
+    "clue": "Prophetess consulted by Josiah",
+    "reference": "2 Kings 22:14",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "hilkiah-001",
+    "answer": "HILKIAH",
+    "clue": "Priest who found the law book",
+    "reference": "2 Kings 22:8",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "jeremiah-001",
+    "answer": "JEREMIAH",
+    "clue": "Weeping prophet",
+    "reference": "Jeremiah 9:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "baruch-001",
+    "answer": "BARUCH",
+    "clue": "Jeremiah's scribe",
+    "reference": "Jeremiah 36:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "pashhur-001",
+    "answer": "PASHHUR",
+    "clue": "Priest who struck Jeremiah",
+    "reference": "Jeremiah 20:1-2",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "ebedmelech-001",
+    "answer": "EBEDMELECH",
+    "clue": "Rescued Jeremiah from cistern",
+    "reference": "Jeremiah 38:7-13",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "zedekiah-001",
+    "answer": "ZEDEKIAH",
+    "clue": "Judah's final reigning king",
+    "reference": "2 Kings 25:1-7",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "babylon-001",
+    "answer": "BABYLON",
+    "clue": "City of Judah's captivity",
+    "reference": "2 Kings 24:15",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "ezekiel-001",
+    "answer": "EZEKIEL",
+    "clue": "Prophet of dry bones",
+    "reference": "Ezekiel 37:1-10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "cherub-001",
+    "answer": "CHERUB",
+    "clue": "Guardian being at Eden",
+    "reference": "Genesis 3:24",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "wheels-001",
+    "answer": "WHEELS",
+    "clue": "Ezekiel saw these gleaming like beryl beside the living creatures",
+    "reference": "Ezekiel 1:16",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "daniel-001",
+    "answer": "DANIEL",
+    "clue": "Survived the lions' den",
+    "reference": "Daniel 6:22",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "shadrach-001",
+    "answer": "SHADRACH",
+    "clue": "Survived the fiery furnace",
+    "reference": "Daniel 3:26",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "meshach-001",
+    "answer": "MESHACH",
+    "clue": "Shadrach's fellow captive",
+    "reference": "Daniel 3:26",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "abednego-001",
+    "answer": "ABEDNEGO",
+    "clue": "Third furnace survivor",
+    "reference": "Daniel 3:26",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "belshazzar-001",
+    "answer": "BELSHAZZAR",
+    "clue": "King who saw wall writing",
+    "reference": "Daniel 5:1-5",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "darius-001",
+    "answer": "DARIUS",
+    "clue": "King who put Daniel in den",
+    "reference": "Daniel 6:16",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "cyrus-001",
+    "answer": "CYRUS",
+    "clue": "Persian king who freed exiles",
+    "reference": "Ezra 1:1-3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "lions-001",
+    "answer": "LIONS",
+    "clue": "Beasts in Daniel's den",
+    "reference": "Daniel 6:16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "furnace-001",
+    "answer": "FURNACE",
+    "clue": "Place of three men's trial",
+    "reference": "Daniel 3:23",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "statue-001",
+    "answer": "STATUE",
+    "clue": "Nebuchadnezzar's golden image",
+    "reference": "Daniel 3:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "idol-001",
+    "answer": "IDOL",
+    "clue": "Image forbidden by God",
+    "reference": "Exodus 20:4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "ezra-001",
+    "answer": "EZRA",
+    "clue": "Scribe who taught the law",
+    "reference": "Nehemiah 8:1-3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "nehemiah-001",
+    "answer": "NEHEMIAH",
+    "clue": "Rebuilt Jerusalem's wall",
+    "reference": "Nehemiah 2:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "zerubbabel-001",
+    "answer": "ZERUBBABEL",
+    "clue": "Leader who rebuilt temple",
+    "reference": "Ezra 3:8",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "sanballat-001",
+    "answer": "SANBALLAT",
+    "clue": "Opposed the wall rebuilding",
+    "reference": "Nehemiah 4:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "tobiah-001",
+    "answer": "TOBIAH",
+    "clue": "Sanballat's ally",
+    "reference": "Nehemiah 4:3",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "esther-001",
+    "answer": "ESTHER",
+    "clue": "Queen who saved her people",
+    "reference": "Esther 4:14-16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "mordecai-001",
+    "answer": "MORDECAI",
+    "clue": "Esther's guardian",
+    "reference": "Esther 2:7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "haman-001",
+    "answer": "HAMAN",
+    "clue": "Plotted against the Jews",
+    "reference": "Esther 3:6",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "vashti-001",
+    "answer": "VASHTI",
+    "clue": "Queen removed before Esther",
+    "reference": "Esther 1:19",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ahasuerus-001",
+    "answer": "AHASUERUS",
+    "clue": "Esther's royal husband",
+    "reference": "Esther 2:16-17",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "purim-001",
+    "answer": "PURIM",
+    "clue": "Feast from Esther's story",
+    "reference": "Esther 9:26",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "eliphaz-001",
+    "answer": "ELIPHAZ",
+    "clue": "Job's Temanite friend",
+    "reference": "Job 2:11",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bildad-001",
+    "answer": "BILDAD",
+    "clue": "Job's Shuhite friend",
+    "reference": "Job 2:11",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "zophar-001",
+    "answer": "ZOPHAR",
+    "clue": "Job's Naamathite friend",
+    "reference": "Job 2:11",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "elihu-001",
+    "answer": "ELIHU",
+    "clue": "Young speaker in Job",
+    "reference": "Job 32:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "behemoth-001",
+    "answer": "BEHEMOTH",
+    "clue": "Creature God describes to Job",
+    "reference": "Job 40:15",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "leviathan-001",
+    "answer": "LEVIATHAN",
+    "clue": "Fearsome creature in Job",
+    "reference": "Job 41:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "psalm-001",
+    "answer": "PSALM",
+    "clue": "Sacred song of praise",
+    "reference": "Psalm 3:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "shepherd-001",
+    "answer": "SHEPHERD",
+    "clue": "The Lord is my ___",
+    "reference": "Psalm 23:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "valley-001",
+    "answer": "VALLEY",
+    "clue": "Shadow-of-death setting",
+    "reference": "Psalm 23:4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "mercy-001",
+    "answer": "MERCY",
+    "clue": "Endures forever",
+    "reference": "Psalm 136:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "praise-001",
+    "answer": "PRAISE",
+    "clue": "Response to God's goodness",
+    "reference": "Psalm 150:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "harp-001",
+    "answer": "HARP",
+    "clue": "Stringed praise instrument",
+    "reference": "Psalm 150:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "trumpet-001",
+    "answer": "TRUMPET",
+    "clue": "Instrument in Psalm 150",
+    "reference": "Psalm 150:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "cymbals-001",
+    "answer": "CYMBALS",
+    "clue": "Clashing praise instruments",
+    "reference": "Psalm 150:5",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "dance-001",
+    "answer": "DANCE",
+    "clue": "Way to praise in Psalm 150",
+    "reference": "Psalm 150:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "wisdom-001",
+    "answer": "WISDOM",
+    "clue": "Better than rubies",
+    "reference": "Proverbs 8:11",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "folly-001",
+    "answer": "FOLLY",
+    "clue": "Opposite of wisdom",
+    "reference": "Proverbs 14:8",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "proverb-001",
+    "answer": "PROVERB",
+    "clue": "Wise short saying",
+    "reference": "Proverbs 1:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "slothful-001",
+    "answer": "SLOTHFUL",
+    "clue": "Lazy in Proverbs",
+    "reference": "Proverbs 12:24",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "tongue-001",
+    "answer": "TONGUE",
+    "clue": "Holds power of life and death",
+    "reference": "Proverbs 18:21",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "heart-001",
+    "answer": "HEART",
+    "clue": "Guard it diligently",
+    "reference": "Proverbs 4:23",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "pride-001",
+    "answer": "PRIDE",
+    "clue": "Comes before destruction",
+    "reference": "Proverbs 16:18",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "humility-001",
+    "answer": "HUMILITY",
+    "clue": "Comes before honor",
+    "reference": "Proverbs 15:33",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "friend-001",
+    "answer": "FRIEND",
+    "clue": "Loves at all times",
+    "reference": "Proverbs 17:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "iron-001",
+    "answer": "IRON",
+    "clue": "Metal that sharpens itself, as a friend sharpens a friend",
+    "reference": "Proverbs 27:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "vanity-001",
+    "answer": "VANITY",
+    "clue": "Theme of Ecclesiastes",
+    "reference": "Ecclesiastes 1:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "season-001",
+    "answer": "SEASON",
+    "clue": "There is a time for every ___",
+    "reference": "Ecclesiastes 3:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "lover-001",
+    "answer": "LOVER",
+    "clue": "One cherished in Song of Songs",
+    "reference": "Song of Solomon 2:16",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bride-001",
+    "answer": "BRIDE",
+    "clue": "Wedding figure in Song of Songs",
+    "reference": "Song of Solomon 4:8",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "lily-001",
+    "answer": "LILY",
+    "clue": "Flower of the valleys",
+    "reference": "Song of Solomon 2:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "rose-001",
+    "answer": "ROSE",
+    "clue": "Flower of Sharon",
+    "reference": "Song of Solomon 2:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "vineyard-001",
+    "answer": "VINEYARD",
+    "clue": "Setting in Song of Songs",
+    "reference": "Song of Solomon 1:6",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "joel-001",
+    "answer": "JOEL",
+    "clue": "Prophet of poured-out Spirit",
+    "reference": "Joel 2:28",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "malachi-001",
+    "answer": "MALACHI",
+    "clue": "Last Old Testament prophet book",
+    "reference": "Malachi 4:5",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "haggai-001",
+    "answer": "HAGGAI",
+    "clue": "Prophet urged temple rebuilding",
+    "reference": "Haggai 1:8",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "zechariah-001",
+    "answer": "ZECHARIAH",
+    "clue": "Prophet of humble donkey king",
+    "reference": "Zechariah 9:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "zephaniah-001",
+    "answer": "ZEPHANIAH",
+    "clue": "Prophet of the Lord's day",
+    "reference": "Zephaniah 1:7",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "habakkuk-001",
+    "answer": "HABAKKUK",
+    "clue": "Prophet who lived by faith",
+    "reference": "Habakkuk 2:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "nahum-001",
+    "answer": "NAHUM",
+    "clue": "Prophet against Nineveh",
+    "reference": "Nahum 1:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "edomites-001",
+    "answer": "EDOMITES",
+    "clue": "People condemned in Obadiah",
+    "reference": "Obadiah 1:1",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "locust-001",
+    "answer": "LOCUST",
+    "clue": "Devourer in Joel",
+    "reference": "Joel 1:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "vine-001",
+    "answer": "VINE",
+    "clue": "Jesus calls himself the true ___",
+    "reference": "John 15:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "branch-001",
+    "answer": "BRANCH",
+    "clue": "Must abide in the vine",
+    "reference": "John 15:5",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "fruit-001",
+    "answer": "FRUIT",
+    "clue": "Evidence of discipleship",
+    "reference": "John 15:8",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jesus-001",
+    "answer": "JESUS",
+    "clue": "Born in Bethlehem",
+    "reference": "Matthew 2:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "mary-001",
+    "answer": "MARY",
+    "clue": "Mother of Jesus",
+    "reference": "Luke 1:31",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "gabriel-001",
+    "answer": "GABRIEL",
+    "clue": "Angel who visited Mary",
+    "reference": "Luke 1:26-28",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "elizabeth-001",
+    "answer": "ELIZABETH",
+    "clue": "Mother of John the Baptist",
+    "reference": "Luke 1:57-60",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "zecharias-001",
+    "answer": "ZECHARIAS",
+    "clue": "John the Baptist's father",
+    "reference": "Luke 1:13",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "john-001",
+    "answer": "JOHN",
+    "clue": "Baptized Jesus",
+    "reference": "Matthew 3:13-16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "baptism-001",
+    "answer": "BAPTISM",
+    "clue": "Act in Jordan River",
+    "reference": "Matthew 3:13-16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "dove-001",
+    "answer": "DOVE",
+    "clue": "Spirit's form at baptism",
+    "reference": "Luke 3:22",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "nazareth-001",
+    "answer": "NAZARETH",
+    "clue": "Jesus' hometown",
+    "reference": "Luke 4:16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "galilee-001",
+    "answer": "GALILEE",
+    "clue": "Region of Jesus' ministry",
+    "reference": "Matthew 4:23",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "capernaum-001",
+    "answer": "CAPERNAUM",
+    "clue": "Jesus' Galilean base",
+    "reference": "Matthew 4:13",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bethany-001",
+    "answer": "BETHANY",
+    "clue": "Home of Martha and Mary",
+    "reference": "John 11:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "martha-001",
+    "answer": "MARTHA",
+    "clue": "Sister who served Jesus",
+    "reference": "Luke 10:40",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "lazarus-001",
+    "answer": "LAZARUS",
+    "clue": "Raised after four days",
+    "reference": "John 11:43-44",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "nicodemus-001",
+    "answer": "NICODEMUS",
+    "clue": "Visited Jesus at night",
+    "reference": "John 3:1-2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "samaritan-001",
+    "answer": "SAMARITAN",
+    "clue": "Traveler who helped a stranger",
+    "reference": "Luke 10:33",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sychar-001",
+    "answer": "SYCHAR",
+    "clue": "Town near Jacob's well",
+    "reference": "John 4:5",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "well-001",
+    "answer": "WELL",
+    "clue": "Jesus met a Samaritan woman here",
+    "reference": "John 4:6-7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "water-001",
+    "answer": "WATER",
+    "clue": "Jesus turned it to wine",
+    "reference": "John 2:7-9",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "wine-001",
+    "answer": "WINE",
+    "clue": "Miracle drink at Cana",
+    "reference": "John 2:9",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "cana-001",
+    "answer": "CANA",
+    "clue": "First miracle's town",
+    "reference": "John 2:11",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "wedding-001",
+    "answer": "WEDDING",
+    "clue": "Setting of Jesus' first sign",
+    "reference": "John 2:1-11",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "andrew-001",
+    "answer": "ANDREW",
+    "clue": "Peter's brother",
+    "reference": "John 1:40",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "peter-001",
+    "answer": "PETER",
+    "clue": "Walked on water toward Jesus",
+    "reference": "Matthew 14:29",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "simon-001",
+    "answer": "SIMON",
+    "clue": "Peter's original first name",
+    "reference": "John 1:42",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "james-001",
+    "answer": "JAMES",
+    "clue": "Brother of John the apostle",
+    "reference": "Mark 1:19",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "philip-001",
+    "answer": "PHILIP",
+    "clue": "Disciple who found Nathanael",
+    "reference": "John 1:45",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "nathanael-001",
+    "answer": "NATHANAEL",
+    "clue": "Israelite without guile",
+    "reference": "John 1:47",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "thomas-001",
+    "answer": "THOMAS",
+    "clue": "Doubted the resurrection",
+    "reference": "John 20:25",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "matthew-001",
+    "answer": "MATTHEW",
+    "clue": "Tax collector called by Jesus",
+    "reference": "Matthew 9:9",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "judas-001",
+    "answer": "JUDAS",
+    "clue": "Betrayed Jesus",
+    "reference": "Matthew 26:14-16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "iscariot-001",
+    "answer": "ISCARIOT",
+    "clue": "Surname of betraying Judas",
+    "reference": "Luke 22:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "thaddaeus-001",
+    "answer": "THADDAEUS",
+    "clue": "Apostle named in Matthew",
+    "reference": "Matthew 10:3",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "zealot-001",
+    "answer": "ZEALOT",
+    "clue": "Simon's designation",
+    "reference": "Luke 6:15",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "apostle-001",
+    "answer": "APOSTLE",
+    "clue": "One of the Twelve",
+    "reference": "Luke 6:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "disciple-001",
+    "answer": "DISCIPLE",
+    "clue": "Follower of Jesus",
+    "reference": "Matthew 9:10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "fisher-001",
+    "answer": "FISHER",
+    "clue": "Peter's trade",
+    "reference": "Matthew 4:18",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "nets-001",
+    "answer": "NETS",
+    "clue": "Left by the first disciples",
+    "reference": "Matthew 4:20",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "boat-001",
+    "answer": "BOAT",
+    "clue": "Jesus calmed a storm aboard one",
+    "reference": "Mark 4:37-39",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "storm-001",
+    "answer": "STORM",
+    "clue": "Jesus rebuked its wind",
+    "reference": "Mark 4:39",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "waves-001",
+    "answer": "WAVES",
+    "clue": "Struck the disciples' boat",
+    "reference": "Mark 4:37",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "bread-001",
+    "answer": "BREAD",
+    "clue": "Fed thousands in loaves",
+    "reference": "Matthew 14:19",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "fish-001",
+    "answer": "FISH",
+    "clue": "Multiplied with loaves",
+    "reference": "Matthew 14:19",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "baskets-001",
+    "answer": "BASKETS",
+    "clue": "Twelve filled with leftovers",
+    "reference": "Matthew 14:20",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "miracle-001",
+    "answer": "MIRACLE",
+    "clue": "Sign of divine power",
+    "reference": "John 2:11",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "leper-001",
+    "answer": "LEPER",
+    "clue": "Person Jesus cleansed",
+    "reference": "Mark 1:40-42",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "blind-001",
+    "answer": "BLIND",
+    "clue": "Bartimaeus was ___",
+    "reference": "Mark 10:46-52",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "bartimaeus-001",
+    "answer": "BARTIMAEUS",
+    "clue": "Blind man Jesus healed",
+    "reference": "Mark 10:46-52",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "zacchaeus-001",
+    "answer": "ZACCHAEUS",
+    "clue": "Tax collector in a tree",
+    "reference": "Luke 19:2-4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sycamore-001",
+    "answer": "SYCAMORE",
+    "clue": "Tree Zacchaeus climbed",
+    "reference": "Luke 19:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "cross-001",
+    "answer": "CROSS",
+    "clue": "Instrument of crucifixion",
+    "reference": "John 19:17-18",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "crown-001",
+    "answer": "CROWN",
+    "clue": "Of thorns on Jesus' head",
+    "reference": "Matthew 27:29",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "thorns-001",
+    "answer": "THORNS",
+    "clue": "Made into a mocking crown",
+    "reference": "Matthew 27:29",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "pilate-001",
+    "answer": "PILATE",
+    "clue": "Governor who tried Jesus",
+    "reference": "Matthew 27:2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "herod-001",
+    "answer": "HEROD",
+    "clue": "King who sought baby Jesus",
+    "reference": "Matthew 2:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "barabbas-001",
+    "answer": "BARABBAS",
+    "clue": "Prisoner freed instead of Jesus",
+    "reference": "Matthew 27:21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "golgotha-001",
+    "answer": "GOLGOTHA",
+    "clue": "Place of the skull",
+    "reference": "Mark 15:22",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "calvary-001",
+    "answer": "CALVARY",
+    "clue": "Crucifixion site in Luke",
+    "reference": "Luke 23:33",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "tomb-001",
+    "answer": "TOMB",
+    "clue": "Found empty on third day",
+    "reference": "Luke 24:2-3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "angel-001",
+    "answer": "ANGEL",
+    "clue": "Announced resurrection",
+    "reference": "Matthew 28:5-6",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "emmaus-001",
+    "answer": "EMMAUS",
+    "clue": "Village on risen Jesus' walk",
+    "reference": "Luke 24:13",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ascension-001",
+    "answer": "ASCENSION",
+    "clue": "Jesus went up to heaven",
+    "reference": "Acts 1:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "olivet-001",
+    "answer": "OLIVET",
+    "clue": "Mount of the ascension",
+    "reference": "Acts 1:12",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "pentecost-001",
+    "answer": "PENTECOST",
+    "clue": "Spirit descended at this feast",
+    "reference": "Acts 2:1-4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "tongues-001",
+    "answer": "TONGUES",
+    "clue": "Spoken at Pentecost",
+    "reference": "Acts 2:4",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "spirit-001",
+    "answer": "SPIRIT",
+    "clue": "God's promised Comforter",
+    "reference": "John 14:26",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "comforter-001",
+    "answer": "COMFORTER",
+    "clue": "Title for Holy Spirit",
+    "reference": "John 14:26",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "stephen-001",
+    "answer": "STEPHEN",
+    "clue": "First Christian martyr",
+    "reference": "Acts 7:59-60",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "ethiopian-001",
+    "answer": "ETHIOPIAN",
+    "clue": "Official baptized by Philip",
+    "reference": "Acts 8:27-38",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "eunuch-001",
+    "answer": "EUNUCH",
+    "clue": "Ethiopian convert's title",
+    "reference": "Acts 8:27",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "paul-001",
+    "answer": "PAUL",
+    "clue": "Apostle to the Gentiles",
+    "reference": "Romans 11:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "ananias-001",
+    "answer": "ANANIAS",
+    "clue": "Restored Saul's sight",
+    "reference": "Acts 9:17-18",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "damascus-001",
+    "answer": "DAMASCUS",
+    "clue": "City near Saul's conversion",
+    "reference": "Acts 9:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "tarsus-001",
+    "answer": "TARSUS",
+    "clue": "Paul's hometown",
+    "reference": "Acts 21:39",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "barnabas-001",
+    "answer": "BARNABAS",
+    "clue": "Missionary partner of Paul",
+    "reference": "Acts 13:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "mark-001",
+    "answer": "MARK",
+    "clue": "Surname of John in Acts",
+    "reference": "Acts 12:12",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "silas-001",
+    "answer": "SILAS",
+    "clue": "Sang in prison with Paul",
+    "reference": "Acts 16:25",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "timothy-001",
+    "answer": "TIMOTHY",
+    "clue": "Young coworker of Paul",
+    "reference": "Acts 16:1-3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "titus-001",
+    "answer": "TITUS",
+    "clue": "Paul's partner in ministry",
+    "reference": "2 Corinthians 8:23",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "luke-001",
+    "answer": "LUKE",
+    "clue": "Physician with Paul",
+    "reference": "Colossians 4:14",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "lydia-001",
+    "answer": "LYDIA",
+    "clue": "Seller of purple cloth",
+    "reference": "Acts 16:14",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "philippi-001",
+    "answer": "PHILIPPI",
+    "clue": "City where Lydia believed",
+    "reference": "Acts 16:12-14",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "macedonia-001",
+    "answer": "MACEDONIA",
+    "clue": "Region Paul saw in vision",
+    "reference": "Acts 16:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "corinth-001",
+    "answer": "CORINTH",
+    "clue": "City where Paul worked with tents",
+    "reference": "Acts 18:1-3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "ephesus-001",
+    "answer": "EPHESUS",
+    "clue": "City of Artemis uproar",
+    "reference": "Acts 19:28-29",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "athens-001",
+    "answer": "ATHENS",
+    "clue": "City of Paul's Mars Hill speech",
+    "reference": "Acts 17:22",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "areopagus-001",
+    "answer": "AREOPAGUS",
+    "clue": "Hill where Paul addressed Athenians",
+    "reference": "Acts 17:19-22",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "aquila-001",
+    "answer": "AQUILA",
+    "clue": "Tentmaker with Paul",
+    "reference": "Acts 18:2-3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "priscilla-001",
+    "answer": "PRISCILLA",
+    "clue": "Aquila's wife",
+    "reference": "Acts 18:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "apollos-001",
+    "answer": "APOLLOS",
+    "clue": "Eloquent teacher at Ephesus",
+    "reference": "Acts 18:24",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "demetrius-001",
+    "answer": "DEMETRIUS",
+    "clue": "Silversmith who stirred riot",
+    "reference": "Acts 19:24",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "eutychus-001",
+    "answer": "EUTYCHUS",
+    "clue": "Fell asleep during Paul's sermon",
+    "reference": "Acts 20:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "malta-001",
+    "answer": "MALTA",
+    "clue": "Island of Paul's shipwreck",
+    "reference": "Acts 28:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "rome-001",
+    "answer": "ROME",
+    "clue": "Destination of Paul's appeal",
+    "reference": "Acts 28:14",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "caesar-001",
+    "answer": "CAESAR",
+    "clue": "Ruler Paul appealed to",
+    "reference": "Acts 25:11",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "felix-001",
+    "answer": "FELIX",
+    "clue": "Governor who heard Paul",
+    "reference": "Acts 24:24",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "festus-001",
+    "answer": "FESTUS",
+    "clue": "Governor after Felix",
+    "reference": "Acts 24:27",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "agrippa-001",
+    "answer": "AGRIPPA",
+    "clue": "King who heard Paul's defense",
+    "reference": "Acts 26:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bernice-001",
+    "answer": "BERNICE",
+    "clue": "Agrippa's companion",
+    "reference": "Acts 25:23",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "cornelius-001",
+    "answer": "CORNELIUS",
+    "clue": "Gentile centurion baptized",
+    "reference": "Acts 10:1-2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "dorcas-001",
+    "answer": "DORCAS",
+    "clue": "Woman Peter raised",
+    "reference": "Acts 9:36-40",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "tabitha-001",
+    "answer": "TABITHA",
+    "clue": "Aramaic name for Dorcas",
+    "reference": "Acts 9:36",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "antioch-001",
+    "answer": "ANTIOCH",
+    "clue": "First called Christians here",
+    "reference": "Acts 11:26",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "christian-001",
+    "answer": "CHRISTIAN",
+    "clue": "Name given at Antioch",
+    "reference": "Acts 11:26",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "agabus-001",
+    "answer": "AGABUS",
+    "clue": "Prophet of famine",
+    "reference": "Acts 11:28",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "rhoda-001",
+    "answer": "RHODA",
+    "clue": "Maid who answered for Peter",
+    "reference": "Acts 12:13",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "prison-001",
+    "answer": "PRISON",
+    "clue": "Place angels freed apostles",
+    "reference": "Acts 5:19",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "chains-001",
+    "answer": "CHAINS",
+    "clue": "Fell off Peter in prison",
+    "reference": "Acts 12:7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jailer-001",
+    "answer": "JAILER",
+    "clue": "Asked how to be saved",
+    "reference": "Acts 16:27-30",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "baptize-001",
+    "answer": "BAPTIZE",
+    "clue": "What Philip did for eunuch",
+    "reference": "Acts 8:38",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "grace-001",
+    "answer": "GRACE",
+    "clue": "Salvation is by ___",
+    "reference": "Ephesians 2:8",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "faith-001",
+    "answer": "FAITH",
+    "clue": "Substance of things hoped for",
+    "reference": "Hebrews 11:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "hope-001",
+    "answer": "HOPE",
+    "clue": "Abides with faith and love",
+    "reference": "1 Corinthians 13:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "charity-001",
+    "answer": "CHARITY",
+    "clue": "Greatest of these in KJV",
+    "reference": "1 Corinthians 13:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "peace-001",
+    "answer": "PEACE",
+    "clue": "Fruit of the Spirit",
+    "reference": "Galatians 5:22",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "patience-001",
+    "answer": "PATIENCE",
+    "clue": "Needed in trials",
+    "reference": "James 1:3-4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "kindness-001",
+    "answer": "KINDNESS",
+    "clue": "Quality of love",
+    "reference": "1 Corinthians 13:4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "goodness-001",
+    "answer": "GOODNESS",
+    "clue": "Fruit of the Spirit",
+    "reference": "Galatians 5:22",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "meekness-001",
+    "answer": "MEEKNESS",
+    "clue": "Fruit of the Spirit",
+    "reference": "Galatians 5:23",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "temperance-001",
+    "answer": "TEMPERANCE",
+    "clue": "Fruit of the Spirit",
+    "reference": "Galatians 5:23",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "forgive-001",
+    "answer": "FORGIVE",
+    "clue": "What believers should do",
+    "reference": "Colossians 3:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "prayer-001",
+    "answer": "PRAYER",
+    "clue": "Speak to God",
+    "reference": "Philippians 4:6",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "fasting-001",
+    "answer": "FASTING",
+    "clue": "Practice paired with prayer",
+    "reference": "Acts 13:3",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "armor-001",
+    "answer": "ARMOR",
+    "clue": "Put on God's whole ___",
+    "reference": "Ephesians 6:11",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "helmet-001",
+    "answer": "HELMET",
+    "clue": "Piece called salvation",
+    "reference": "Ephesians 6:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "shield-001",
+    "answer": "SHIELD",
+    "clue": "Piece called faith",
+    "reference": "Ephesians 6:16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sword-001",
+    "answer": "SWORD",
+    "clue": "Piece called God's word",
+    "reference": "Ephesians 6:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "gospel-001",
+    "answer": "GOSPEL",
+    "clue": "Good news of Christ",
+    "reference": "Romans 1:16",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "truth-001",
+    "answer": "TRUTH",
+    "clue": "Belt of God's armor",
+    "reference": "Ephesians 6:14",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "salvation-001",
+    "answer": "SALVATION",
+    "clue": "Deliverance through Christ",
+    "reference": "Romans 10:9-10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sinners-001",
+    "answer": "SINNERS",
+    "clue": "People Christ came to save",
+    "reference": "1 Timothy 1:15",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sinner-001",
+    "answer": "SINNER",
+    "clue": "One who needs repentance",
+    "reference": "Luke 15:7",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "repent-001",
+    "answer": "REPENT",
+    "clue": "Turn from sin",
+    "reference": "Acts 3:19",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "redeemer-001",
+    "answer": "REDEEMER",
+    "clue": "Job says his ___ lives",
+    "reference": "Job 19:25",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "mediator-001",
+    "answer": "MEDIATOR",
+    "clue": "One between God and mankind",
+    "reference": "1 Timothy 2:5",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "savior-001",
+    "answer": "SAVIOR",
+    "clue": "Title of Jesus",
+    "reference": "Luke 2:11",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "messiah-001",
+    "answer": "MESSIAH",
+    "clue": "Hebrew title for Christ",
+    "reference": "John 1:41",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "christ-001",
+    "answer": "CHRIST",
+    "clue": "The Anointed One",
+    "reference": "John 1:41",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "lord-001",
+    "answer": "LORD",
+    "clue": "Title of risen Jesus",
+    "reference": "John 20:28",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "kingdom-001",
+    "answer": "KINGDOM",
+    "clue": "What Jesus preached",
+    "reference": "Matthew 4:17",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "heaven-001",
+    "answer": "HEAVEN",
+    "clue": "God's throne",
+    "reference": "Matthew 5:34",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "paradise-001",
+    "answer": "PARADISE",
+    "clue": "Promise to repentant thief",
+    "reference": "Luke 23:43",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "angels-001",
+    "answer": "ANGELS",
+    "clue": "Heavenly messengers",
+    "reference": "Luke 2:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "demons-001",
+    "answer": "DEMONS",
+    "clue": "Evil spirits cast out",
+    "reference": "Luke 8:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "satan-001",
+    "answer": "SATAN",
+    "clue": "Tempter of Jesus",
+    "reference": "Matthew 4:10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "devil-001",
+    "answer": "DEVIL",
+    "clue": "Accuser and tempter",
+    "reference": "Matthew 4:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "dragon-001",
+    "answer": "DRAGON",
+    "clue": "Symbol of Satan in Revelation",
+    "reference": "Revelation 12:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "beast-001",
+    "answer": "BEAST",
+    "clue": "Rises from the sea in Revelation",
+    "reference": "Revelation 13:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "scroll-001",
+    "answer": "SCROLL",
+    "clue": "Book with seven seals",
+    "reference": "Revelation 5:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "seals-001",
+    "answer": "SEALS",
+    "clue": "Seven on heavenly scroll",
+    "reference": "Revelation 5:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "trumpets-001",
+    "answer": "TRUMPETS",
+    "clue": "Seven angels sounded these",
+    "reference": "Revelation 8:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "bowls-001",
+    "answer": "BOWLS",
+    "clue": "Seven of God's wrath",
+    "reference": "Revelation 16:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "patmos-001",
+    "answer": "PATMOS",
+    "clue": "John's island of exile",
+    "reference": "Revelation 1:9",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "smyrna-001",
+    "answer": "SMYRNA",
+    "clue": "One of seven churches",
+    "reference": "Revelation 2:8",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "pergamos-001",
+    "answer": "PERGAMOS",
+    "clue": "One of seven churches",
+    "reference": "Revelation 2:12",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "thyatira-001",
+    "answer": "THYATIRA",
+    "clue": "One of seven churches",
+    "reference": "Revelation 2:18",
+    "difficulty": "hard",
+    "aliases": []
+  },
+  {
+    "id": "sardis-001",
+    "answer": "SARDIS",
+    "clue": "One of seven churches",
+    "reference": "Revelation 3:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "laodicea-001",
+    "answer": "LAODICEA",
+    "clue": "Lukewarm church",
+    "reference": "Revelation 3:14-16",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "alpha-001",
+    "answer": "ALPHA",
+    "clue": "First letter of God's title",
+    "reference": "Revelation 22:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "omega-001",
+    "answer": "OMEGA",
+    "clue": "Last letter of God's title",
+    "reference": "Revelation 22:13",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "jasper-001",
+    "answer": "JASPER",
+    "clue": "Stone in heavenly Jerusalem",
+    "reference": "Revelation 21:19",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sapphire-001",
+    "answer": "SAPPHIRE",
+    "clue": "Second foundation stone",
+    "reference": "Revelation 21:19",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "emerald-001",
+    "answer": "EMERALD",
+    "clue": "Fourth foundation stone",
+    "reference": "Revelation 21:19",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "pearls-001",
+    "answer": "PEARLS",
+    "clue": "Material of twelve gates",
+    "reference": "Revelation 21:21",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "gold-001",
+    "answer": "GOLD",
+    "clue": "Material of heavenly street",
+    "reference": "Revelation 21:21",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "river-001",
+    "answer": "RIVER",
+    "clue": "Flows from God's throne",
+    "reference": "Revelation 22:1",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "tree-001",
+    "answer": "TREE",
+    "clue": "Bears twelve kinds of fruit",
+    "reference": "Revelation 22:2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "life-001",
+    "answer": "LIFE",
+    "clue": "What the tree gives",
+    "reference": "Revelation 22:2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "bones-001",
+    "answer": "BONES",
+    "clue": "Dry remains brought to life",
+    "reference": "Ezekiel 37:1-10",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "righteous-001",
+    "answer": "RIGHTEOUS",
+    "clue": "Describes God's judgment",
+    "reference": "Romans 2:5",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "leaven-001",
+    "answer": "LEAVEN",
+    "clue": "Yeast in Jesus' parables",
+    "reference": "Matthew 13:33",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "redeem-001",
+    "answer": "REDEEM",
+    "clue": "Buy back or rescue",
+    "reference": "Leviticus 25:25",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "vinegar-001",
+    "answer": "VINEGAR",
+    "clue": "Offered to Jesus on cross",
+    "reference": "John 19:29",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "scourge-001",
+    "answer": "SCOURGE",
+    "clue": "Instrument of punishment",
+    "reference": "John 19:1",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "rooster-001",
+    "answer": "ROOSTER",
+    "clue": "Crowed after Peter's denials",
+    "reference": "Matthew 26:74-75",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "denarius-001",
+    "answer": "DENARIUS",
+    "clue": "Coin in a vineyard parable",
+    "reference": "Matthew 20:2",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "talents-001",
+    "answer": "TALENTS",
+    "clue": "Money entrusted to servants",
+    "reference": "Matthew 25:15",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "pearl-001",
+    "answer": "PEARL",
+    "clue": "Treasure in Jesus' parable",
+    "reference": "Matthew 13:45-46",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "mustard-001",
+    "answer": "MUSTARD",
+    "clue": "Tiny seed used in parable",
+    "reference": "Matthew 13:31-32",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sower-001",
+    "answer": "SOWER",
+    "clue": "Scattered seed in parable",
+    "reference": "Matthew 13:3",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "seeds-001",
+    "answer": "SEEDS",
+    "clue": "Scattered beside the road",
+    "reference": "Matthew 13:4",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "weeds-001",
+    "answer": "WEEDS",
+    "clue": "Enemy planted among wheat",
+    "reference": "Matthew 13:25",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "wheat-001",
+    "answer": "WHEAT",
+    "clue": "Grew alongside tares",
+    "reference": "Matthew 13:25-30",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "tares-001",
+    "answer": "TARES",
+    "clue": "Weeds in kingdom parable",
+    "reference": "Matthew 13:25",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sheep-001",
+    "answer": "SHEEP",
+    "clue": "Separated from goats",
+    "reference": "Matthew 25:32",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "goats-001",
+    "answer": "GOATS",
+    "clue": "Separated from sheep",
+    "reference": "Matthew 25:32",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "coins-001",
+    "answer": "COINS",
+    "clue": "Lost one searched for by woman",
+    "reference": "Luke 15:8",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "prodigal-001",
+    "answer": "PRODIGAL",
+    "clue": "Son who returned home",
+    "reference": "Luke 15:11-24",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "father-001",
+    "answer": "FATHER",
+    "clue": "Welcomed the lost son",
+    "reference": "Luke 15:20",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "servant-001",
+    "answer": "SERVANT",
+    "clue": "Washed feet of disciples",
+    "reference": "John 13:5-14",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "towel-001",
+    "answer": "TOWEL",
+    "clue": "Used when Jesus washed feet",
+    "reference": "John 13:4-5",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "basin-001",
+    "answer": "BASIN",
+    "clue": "Held water for foot washing",
+    "reference": "John 13:5",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "betrayal-001",
+    "answer": "BETRAYAL",
+    "clue": "Judas's act toward Jesus",
+    "reference": "Luke 22:48",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "kiss-001",
+    "answer": "KISS",
+    "clue": "Judas's betrayal signal",
+    "reference": "Luke 22:47-48",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "garden-001",
+    "answer": "GARDEN",
+    "clue": "Where Jesus prayed in anguish",
+    "reference": "Matthew 26:36",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "gethsemane-001",
+    "answer": "GETHSEMANE",
+    "clue": "Garden of Jesus' prayer",
+    "reference": "Matthew 26:36",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sleep-001",
+    "answer": "SLEEP",
+    "clue": "What disciples did in garden",
+    "reference": "Matthew 26:40",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "sweat-001",
+    "answer": "SWEAT",
+    "clue": "Became as blood drops",
+    "reference": "Luke 22:44",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "mockery-001",
+    "answer": "MOCKERY",
+    "clue": "Soldiers' treatment of Jesus",
+    "reference": "Matthew 27:29-31",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "sponge-001",
+    "answer": "SPONGE",
+    "clue": "Held vinegar for Jesus",
+    "reference": "John 19:29",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "spear-001",
+    "answer": "SPEAR",
+    "clue": "Pierced Jesus' side",
+    "reference": "John 19:34",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "linen-001",
+    "answer": "LINEN",
+    "clue": "Cloth wrapped Jesus' body",
+    "reference": "John 19:40",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "spices-001",
+    "answer": "SPICES",
+    "clue": "Brought for Jesus' burial",
+    "reference": "John 19:40",
+    "difficulty": "normal",
+    "aliases": []
+  },
+  {
+    "id": "stone-001",
+    "answer": "STONE",
+    "clue": "Rolled away from the tomb",
+    "reference": "Matthew 28:2",
+    "difficulty": "easy",
+    "aliases": []
+  },
+  {
+    "id": "women-001",
+    "answer": "WOMEN",
+    "clue": "First visitors to empty tomb",
+    "reference": "Luke 24:1-10",
+    "difficulty": "easy",
+    "aliases": []
+  }
+]

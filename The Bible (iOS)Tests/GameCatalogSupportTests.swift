@@ -4,8 +4,19 @@ import Testing
 
 @MainActor
 struct GameCatalogSupportTests {
+    /// The full Bible, loaded before validating. `BibleData.books` is empty until the app
+    /// finishes loading the KJV in the background, and the validators skip every reference
+    /// check when given no books, so reading it directly let these tests pass without
+    /// checking references at all.
+    private func loadedBooks() async throws -> [Book] {
+        let books = await BibleRepository.shared.loadAllBooks()
+        try #require(!books.isEmpty, "The bundled Bible failed to load.")
+        return books
+    }
+
     @Test
-    func bundledTriviaAndWhoCatalogsPassValidation() throws {
+    func bundledTriviaAndWhoCatalogsPassValidation() async throws {
+        let books = try await loadedBooks()
         let triviaURL = try #require(Bundle.main.url(forResource: "BibleTriviaQuestions", withExtension: "json"))
         let triviaData = try Data(contentsOf: triviaURL)
         let trivia = try JSONDecoder().decode([BibleTriviaQuestion].self, from: triviaData)
@@ -13,7 +24,7 @@ struct GameCatalogSupportTests {
         // Minimums sit well below today's pool sizes but high enough to catch a gutted deck.
         let triviaIssues = GameCatalogValidator.validateTrivia(
             trivia,
-            books: BibleData.books,
+            books: books,
             minimumQuestionsPerDifficulty: 100
         )
         #expect(triviaIssues.isEmpty, "\(triviaIssues)")
@@ -22,7 +33,7 @@ struct GameCatalogSupportTests {
             characters: GameDataLoaders.loadCharacters(),
             locations: GameDataLoaders.loadLocationChallenges(),
             questions: GameDataLoaders.loadWhoQuestions(),
-            books: BibleData.books,
+            books: books,
             minimumQuestionsPerMode: 30,
             minimumEntriesPerDifficulty: 30
         )
@@ -54,17 +65,50 @@ struct GameCatalogSupportTests {
     }
 
     @Test
-    func bundledScrambleWordsPassValidation() {
+    func bundledScrambleWordsPassValidation() async throws {
+        let books = try await loadedBooks()
         let words = GameDataLoaders.loadScrambleWords()
 
         // One session draws 10 words, so each difficulty needs at least that many.
         let issues = GameCatalogValidator.validateScrambleWords(
             words,
-            books: BibleData.books,
+            books: books,
             minimumWordsPerDifficulty: 10
         )
         #expect(issues.isEmpty, "\(issues)")
         #expect(words.count > 900)
+    }
+
+    @Test
+    func bundledCrosswordCluesPassValidation() async throws {
+        let clues = GameDataLoaders.loadCrosswordClues()
+        let books = try await loadedBooks()
+
+        // The smallest board needs at least 8 answers, so each pool needs far more than that.
+        let issues = GameCatalogValidator.validateCrosswordClues(
+            clues,
+            books: books,
+            minimumCluesPerDifficulty: 50
+        )
+        #expect(issues.isEmpty, "\(issues)")
+        #expect(clues.count >= 500)
+    }
+
+    @Test
+    func crosswordValidatorFlagsBadClues() async throws {
+        let books = try await loadedBooks()
+        let clues = [
+            CrosswordClueEntry(id: "a", answer: "NOAH", clue: "Built an ark", reference: "Genesis 6:14", difficulty: "easy"),
+            CrosswordClueEntry(id: "a", answer: "IRON", clue: "Sharpens iron", reference: "Proverbs 27:17", difficulty: "easy"),
+            CrosswordClueEntry(id: "b", answer: "RED SEA", clue: "Parted waters", reference: "Exodus 14:21", difficulty: "easy"),
+            CrosswordClueEntry(id: "c", answer: "MOSES", clue: "Lawgiver", reference: "Exodus 99:1", difficulty: "trivial"),
+        ]
+        let messages = GameCatalogValidator.validateCrosswordClues(clues, books: books).map(\.message)
+        #expect(messages.contains("Duplicate ID."))
+        #expect(messages.contains("Clue contains its own answer."))
+        #expect(messages.contains("Answer 'RED SEA' must be 4–10 capital letters."))
+        #expect(messages.contains("Unknown difficulty 'trivial'."))
+        #expect(messages.contains("Reference 'Exodus 99:1' does not exist."))
     }
 
     @Test
@@ -79,7 +123,8 @@ struct GameCatalogSupportTests {
     }
 
     @Test
-    func scrambleValidationDetectsBadEntries() {
+    func scrambleValidationDetectsBadEntries() async throws {
+        let books = try await loadedBooks()
         let entries = [
             ScrambleWordEntry(word: "Bethel", category: "Place", difficulty: "easy", reference: "Genesis 12:8"),
             ScrambleWordEntry(word: "Beth El", category: "Place", difficulty: "easy", reference: nil),
@@ -89,7 +134,7 @@ struct GameCatalogSupportTests {
 
         let issues = GameCatalogValidator.validateScrambleWords(
             entries,
-            books: BibleData.books,
+            books: books,
             minimumWordsPerDifficulty: 2
         )
 
@@ -104,7 +149,8 @@ struct GameCatalogSupportTests {
     }
 
     @Test
-    func bundledCuratedWordsPassValidation() throws {
+    func bundledCuratedWordsPassValidation() async throws {
+        let books = try await loadedBooks()
         struct Entry: Decodable { let word: String; let reference: String; let verse: String }
 
         let url = try #require(Bundle.main.url(forResource: "WORDCuratedWordList", withExtension: "json"))
@@ -112,13 +158,14 @@ struct GameCatalogSupportTests {
 
         let issues = GameCatalogValidator.validateCuratedWords(
             entries.map { GameCatalogWordEntry(word: $0.word, reference: $0.reference, verse: $0.verse) },
-            books: BibleData.books
+            books: books
         )
         #expect(issues.isEmpty, "\(issues)")
     }
 
     @Test
-    func bundledWellKnownVersesPassValidation() throws {
+    func bundledWellKnownVersesPassValidation() async throws {
+        let books = try await loadedBooks()
         struct Entry: Decodable { let book: String; let chapter: Int; let verse: Int; let text: String }
 
         let url = try #require(Bundle.main.url(forResource: "LockScreenVerses", withExtension: "json"))
@@ -126,7 +173,7 @@ struct GameCatalogSupportTests {
 
         let issues = GameCatalogValidator.validateWellKnownVerses(
             entries.map { GameCatalogVerseEntry(book: $0.book, chapter: $0.chapter, verse: $0.verse, text: $0.text) },
-            books: BibleData.books
+            books: books
         )
         #expect(issues.isEmpty, "\(issues)")
     }
@@ -148,14 +195,15 @@ struct GameCatalogSupportTests {
     }
 
     @Test
-    func curatedWordValidationDetectsBadEntries() {
+    func curatedWordValidationDetectsBadEntries() async throws {
+        let books = try await loadedBooks()
         let issues = GameCatalogValidator.validateCuratedWords(
             [
                 GameCatalogWordEntry(word: "grace", reference: "Genesis 1:1", verse: "In the beginning"),
                 GameCatalogWordEntry(word: "GRACE", reference: "Genesis 99:1", verse: "Grace be with you"),
                 GameCatalogWordEntry(word: "Noah1", reference: "Genesis 1:1", verse: "Noah1")
             ],
-            books: BibleData.books
+            books: books
         )
 
         #expect(issues.contains { $0.message == "Verse text does not contain the word." })
@@ -165,14 +213,15 @@ struct GameCatalogSupportTests {
     }
 
     @Test
-    func wellKnownVerseValidationDetectsBadEntries() {
+    func wellKnownVerseValidationDetectsBadEntries() async throws {
+        let books = try await loadedBooks()
         let issues = GameCatalogValidator.validateWellKnownVerses(
             [
                 GameCatalogVerseEntry(book: "Genesis", chapter: 1, verse: 1, text: "In the beginning"),
                 GameCatalogVerseEntry(book: "Genesis", chapter: 1, verse: 1, text: " "),
                 GameCatalogVerseEntry(book: "Nowhere", chapter: 1, verse: 1, text: "Text")
             ],
-            books: BibleData.books,
+            books: books,
             minimumVerses: 5
         )
 
@@ -183,7 +232,8 @@ struct GameCatalogSupportTests {
     }
 
     @Test
-    func hangmanValidationDetectsBadEntries() {
+    func hangmanValidationDetectsBadEntries() async throws {
+        let books = try await loadedBooks()
         let characters = [
             BibleCharacter(id: 1, name: "Noah", books: ["Genesis"], shortDescription: "Built an ark", difficulty: "Easy"),
             BibleCharacter(id: 1, name: " noah ", books: ["Nowhere"], shortDescription: "", difficulty: "Legendary")
@@ -209,7 +259,7 @@ struct GameCatalogSupportTests {
             characters: characters,
             locations: locations,
             questions: [],
-            books: BibleData.books,
+            books: books,
             minimumQuestionsPerMode: 0,
             minimumEntriesPerDifficulty: 2
         )

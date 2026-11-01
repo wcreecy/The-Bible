@@ -247,6 +247,48 @@ enum GameCatalogValidator {
         return issues
     }
 
+    /// Checks the Crossword clue list: answers of 4–10 letters A–Z, unique IDs and answers,
+    /// clues that don't give away their answer, known difficulties, and real references.
+    static func validateCrosswordClues(
+        _ clues: [CrosswordClueEntry],
+        books: [Book],
+        minimumCluesPerDifficulty: Int = 1
+    ) -> [GameCatalogValidationIssue] {
+        var issues: [GameCatalogValidationIssue] = []
+
+        for clue in clues {
+            let identifier = "crossword.\(clue.id)"
+
+            if clue.answer != clue.gridAnswer || !CrosswordGenerator.answerLengths.contains(clue.answer.count) {
+                issues.append(.init(identifier: identifier, message: "Answer '\(clue.answer)' must be 4–10 capital letters."))
+            }
+            if normalize(clue.clue).isEmpty {
+                issues.append(.init(identifier: identifier, message: "Clue must not be empty."))
+            } else if normalize(clue.clue).contains(normalize(clue.answer)) {
+                issues.append(.init(identifier: identifier, message: "Clue contains its own answer."))
+            }
+            if !whoDifficulties.contains(normalizedDifficulty(clue.difficulty)) {
+                issues.append(.init(identifier: identifier, message: "Unknown difficulty '\(clue.difficulty)'."))
+            }
+            if !books.isEmpty, !referenceExists(clue.reference, in: books) {
+                issues.append(.init(identifier: identifier, message: "Reference '\(clue.reference)' does not exist."))
+            }
+        }
+
+        appendDuplicateIssues(for: clues.map(\.id), identifier: { "crossword.\($0)" }, issues: &issues)
+        appendDuplicateIssues(for: clues.map(\.gridAnswer), identifier: { "crossword.\($0)" }, issues: &issues)
+
+        appendMinimumPoolIssues(
+            for: clues.map { normalizedDifficulty($0.difficulty) },
+            categories: whoDifficulties,
+            minimumCount: minimumCluesPerDifficulty,
+            identifier: { "crossword.\($0)" },
+            issues: &issues
+        )
+
+        return issues
+    }
+
     /// Checks the well-known verse list shared by Verse Match and the lock-screen widget.
     static func validateWellKnownVerses(
         _ verses: [GameCatalogVerseEntry],

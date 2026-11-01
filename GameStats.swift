@@ -21,6 +21,7 @@ final class GameStats {
         case whoami
         case wordsearch
         case scramble
+        case crossword
         case wordle
     }
 

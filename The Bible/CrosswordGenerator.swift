@@ -7,7 +7,7 @@ import Foundation
 /// answer after the first must cross another, the board is always one connected piece.
 /// Boards that are too sparse, too small, or too lopsided are rejected; the best of several
 /// attempts is kept, and if a size never produces a good board the next smaller size is tried.
-struct CrosswordGenerator: Sendable {
+nonisolated struct CrosswordGenerator: Sendable {
     struct Settings: Sendable {
         let size: Int
         let minEntries: Int
@@ -22,11 +22,11 @@ struct CrosswordGenerator: Sendable {
         static func standard(size: Int) -> Settings {
             switch size {
             case ..<10:
-                Settings(size: size, minEntries: 8, minCrossings: 8, minSpan: 0.75, attempts: 24, candidatePoolSize: 70)
+                Settings(size: size, minEntries: 8, minCrossings: 8, minSpan: 0.75, attempts: 40, candidatePoolSize: 70)
             case 10..<12:
-                Settings(size: size, minEntries: 11, minCrossings: 11, minSpan: 0.75, attempts: 24, candidatePoolSize: 90)
+                Settings(size: size, minEntries: 11, minCrossings: 11, minSpan: 0.75, attempts: 40, candidatePoolSize: 90)
             default:
-                Settings(size: size, minEntries: 14, minCrossings: 14, minSpan: 0.75, attempts: 24, candidatePoolSize: 110)
+                Settings(size: size, minEntries: 14, minCrossings: 14, minSpan: 0.75, attempts: 40, candidatePoolSize: 110)
             }
         }
 
@@ -154,7 +154,7 @@ struct CrosswordGenerator: Sendable {
 
 // MARK: - Layout
 
-extension CrosswordGenerator {
+nonisolated extension CrosswordGenerator {
     struct Placement {
         let clue: CrosswordClueEntry
         let letters: [Character]

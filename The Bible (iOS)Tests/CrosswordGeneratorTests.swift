@@ -49,19 +49,17 @@ struct CrosswordGeneratorTests {
 
     @Test(arguments: CrosswordGenerator.supportedSizes)
     func generatedBoardsMeetTheRules(size: Int) throws {
-        let settings = CrosswordGenerator.Settings.standard(size: size)
+        let settings = CrosswordGenerator.Settings.relaxed(size: size)
         for _ in 0..<10 {
             let puzzle = try #require(CrosswordGenerator.generate(from: Self.clues, preferredSize: size))
             #expect(puzzle.size <= size)
             #expect(puzzle.rows.count == puzzle.size)
             #expect(puzzle.rows.allSatisfy { $0.count == puzzle.size })
 
-            // Fallback boards are smaller or relaxed, so only full-size boards are held to the
-            // standard minimums.
-            if puzzle.size == size {
-                #expect(puzzle.entries.count >= settings.minEntries)
-                #expect(puzzle.crossingCount >= settings.minCrossings)
-            }
+            // A fallback board may be smaller or built with relaxed rules, so hold every board
+            // to the relaxed minimums.
+            #expect(puzzle.entries.count >= settings.minEntries)
+            #expect(puzzle.crossingCount >= settings.minCrossings)
 
             // Every answer is written into its cells, and no answer repeats.
             for entry in puzzle.entries {

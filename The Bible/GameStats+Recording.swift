@@ -13,6 +13,7 @@ extension GameStats {
         case .whoami: return "whoami"
         case .wordsearch: return "wordsearch"
         case .scramble: return "scramble"
+        case .crossword: return "crossword"
         case .wordle: return "word"
         }
     }
@@ -129,7 +130,7 @@ extension GameStats {
                 case .hard: return "hard"
                 case .medium, .none: return nil
                 }
-            case .trivia, .hangman, .beatclock, .versematch, .wordsearch, .scramble:
+            case .trivia, .hangman, .beatclock, .versematch, .wordsearch, .scramble, .crossword:
                 switch difficulty {
                 case .easy: return "easy"
                 case .normal: return "normal"
@@ -256,6 +257,15 @@ extension GameStats {
             counters.increment("scrambleAllTimeCorrect_all", by: addCorrect)
             counters.increment("scrambleAllTimeAnswered_all", by: addAnswered)
             counters.raise("scrambleAllTimeBestStreak_all", candidate: currentBestStreak)
+
+        case .crossword:
+            guard let s = suf else { return }
+            counters.increment("crosswordAllTimeCorrect_\(s)", by: addCorrect)
+            counters.increment("crosswordAllTimeAnswered_\(s)", by: addAnswered)
+            counters.raise("crosswordAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            counters.increment("crosswordAllTimeCorrect_all", by: addCorrect)
+            counters.increment("crosswordAllTimeAnswered_all", by: addAnswered)
+            counters.raise("crosswordAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .wordle:
             guard let s = suf else { return }
@@ -385,6 +395,7 @@ extension GameStats {
         case .whoami: return "Who?"
         case .wordsearch: return "Word Search"
         case .scramble: return "Scramble"
+        case .crossword: return "Crossword"
         case .wordle: return "Word"
         }
     }
