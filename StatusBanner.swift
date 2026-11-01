@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// End-of-round summary: how it went, plus the full verse the puzzle came from.
+/// The end-of-puzzle result for Word Search, shown under the finished grid.
 struct WordSearchSummaryCard: View {
     let result: WordSearchViewModel.RoundResult
     let foundCount: Int
@@ -9,15 +9,36 @@ struct WordSearchSummaryCard: View {
     let hintsUsed: Int
     /// Nil outside Blind mode; otherwise whether the word list was shown.
     let usedWordList: Bool?
+    /// Words the puzzle had that weren't found, in the word list's order.
+    let missedWords: [String]
+    let currentStreak: Int
     let verseRef: String
     let verseText: String
     let onReadInContext: () -> Void
 
-    private var title: LocalizedStringResource {
+    private var title: String {
         switch result {
-        case .won: totalCount == 1 ? "You found the word!" : "You found all \(totalCount) words!"
-        case .timeUp: "Time’s up!"
-        case .revealed: "Words revealed"
+        case .won:
+            totalCount == 1 ? String(localized: "You found the word!") : String(localized: "All \(totalCount) words found")
+        case .timeUp: String(localized: "Time’s up!")
+        case .revealed: String(localized: "Words revealed")
+        }
+    }
+
+    private var subtitle: String? {
+        switch result {
+        case .won:
+            hintsUsed == 0 ? String(localized: "No hints needed.") : nil
+        case .timeUp, .revealed:
+            String(localized: "You found \(foundCount) of \(totalCount).")
+        }
+    }
+
+    private var systemImage: String {
+        switch result {
+        case .won: "checkmark.seal.fill"
+        case .timeUp: "hourglass.bottomhalf.filled"
+        case .revealed: "eye.fill"
         }
     }
 
@@ -29,57 +50,35 @@ struct WordSearchSummaryCard: View {
         }
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(title)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(tint)
-
-            HStack(spacing: 10) {
-                stat("Time", value: elapsed, systemImage: "clock")
-                stat("Found", value: "\(foundCount)/\(totalCount)", systemImage: "checkmark.circle")
-                stat("Hints", value: "\(hintsUsed)", systemImage: "lightbulb")
-                if let usedWordList {
-                    stat("Word List", value: usedWordList ? "Used" : "Hidden", systemImage: "eye.slash")
-                }
-            }
-
-            Divider()
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text(verseRef)
-                    .font(.headline)
-                Text("“\(verseText)”")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Button("Read in Context", systemImage: "book", action: onReadInContext)
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+    private var facts: [GameSplashFacts.Fact] {
+        var facts: [GameSplashFacts.Fact] = [
+            ("clock", elapsed, String(localized: "Time")),
+            ("checkmark.circle", "\(foundCount)/\(totalCount)", String(localized: "Found")),
+            ("lightbulb", "\(hintsUsed)", String(localized: "Hints"))
+        ]
+        if let usedWordList {
+            facts.append(("eye.slash", usedWordList ? String(localized: "Used") : String(localized: "Hidden"), String(localized: "Word List")))
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .accessibilityElement(children: .contain)
+        return facts
     }
 
-    private func stat(_ label: LocalizedStringResource, value: String, systemImage: String) -> some View {
-        VStack(spacing: 4) {
-            Image(systemName: systemImage)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.headline.monospacedDigit())
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+    var body: some View {
+        GamePuzzleResultCard(
+            title: title,
+            subtitle: subtitle,
+            systemImage: systemImage,
+            tint: tint,
+            facts: facts,
+            streak: GamePuzzleStreak(current: currentStreak),
+            scripture: GamePuzzleScripture(reference: verseRef, text: verseText, onOpen: onReadInContext)
+        ) {
+            if !missedWords.isEmpty {
+                GamePuzzleResultSection(title: "Missed Words", systemImage: "xmark.circle", tint: .red) {
+                    Text(missedWords.formatted(.list(type: .and)))
+                        .font(.subheadline.weight(.medium))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
     }
 }
