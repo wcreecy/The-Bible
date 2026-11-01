@@ -201,9 +201,10 @@ extension WordleView {
                     Button(action: onDelete) {
                         Image(systemName: "delete.left")
                             .font(.headline)
+                            .foregroundStyle(.white)
                             .frame(maxWidth: .infinity, minHeight: keyHeight)
                     }
-                    .buttonStyle(.glass(.regular.tint(.orange)))
+                    .buttonStyle(.glass(.regular.tint(.red)))
                     .disabled(isRoundOver || !canDelete)
                     .accessibilityLabel("Backspace")
                 }
