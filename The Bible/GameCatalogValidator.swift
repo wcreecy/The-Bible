@@ -249,6 +249,9 @@ enum GameCatalogValidator {
 
     /// Checks the Crossword clue list: answers of 4–10 letters A–Z, unique IDs and answers,
     /// clues that don't give away their answer, known difficulties, and real references.
+    ///
+    /// A clue gives its answer away only when the answer appears as a whole word ("Sharpens
+    /// iron" for IRON). Letters inside a longer word, like SING in "crossing", don't count.
     static func validateCrosswordClues(
         _ clues: [CrosswordClueEntry],
         books: [Book],
@@ -264,7 +267,7 @@ enum GameCatalogValidator {
             }
             if normalize(clue.clue).isEmpty {
                 issues.append(.init(identifier: identifier, message: "Clue must not be empty."))
-            } else if normalize(clue.clue).contains(normalize(clue.answer)) {
+            } else if clueWords(clue.clue).contains(normalize(clue.answer)) {
                 issues.append(.init(identifier: identifier, message: "Clue contains its own answer."))
             }
             if !whoDifficulties.contains(normalizedDifficulty(clue.difficulty)) {
@@ -287,6 +290,11 @@ enum GameCatalogValidator {
         )
 
         return issues
+    }
+
+    /// The clue's words, lowercased, split on anything that isn't a letter.
+    private static func clueWords(_ clue: String) -> Set<String> {
+        Set(normalize(clue).split { !$0.isLetter }.map(String.init))
     }
 
     /// Checks the well-known verse list shared by Verse Match and the lock-screen widget.

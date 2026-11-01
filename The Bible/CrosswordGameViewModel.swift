@@ -73,6 +73,10 @@ final class CrosswordGameViewModel {
     }
 
     private static let difficultyKey = "crosswordDifficulty"
+    /// Answers from the player's last few puzzles, kept on this device only.
+    static let recentAnswersKey = "crosswordRecentAnswers"
+    /// How many recent puzzles' answers are kept out of the next board.
+    static let rememberedPuzzleCount = 6
     static let currentStreakKey = "crosswordCurrentStreak"
 
     var difficulty: Difficulty {
@@ -125,16 +129,30 @@ final class CrosswordGameViewModel {
         let levels = difficulty.clueDifficulties
         let pool = (clues ?? []).filter { levels.contains($0.difficulty.lowercased()) }
         let size = difficulty.boardSize
+        // Shared across difficulties, since Normal and Hard also draw from easier clues.
+        let recentAnswers = Set(recentPuzzleAnswers.joined())
         // Building takes a few milliseconds per attempt; keep it off the main actor.
         let generated = await Task.detached(priority: .userInitiated) {
-            CrosswordGenerator.generate(from: pool, preferredSize: size)
+            CrosswordGenerator.generate(from: pool, preferredSize: size, avoiding: recentAnswers)
         }.value
 
         guard let generated else {
             phase = .unavailable
             return
         }
+        remember(generated)
         begin(with: generated)
+    }
+
+    /// Each recent puzzle's answers, oldest first.
+    private var recentPuzzleAnswers: [[String]] {
+        defaults.array(forKey: Self.recentAnswersKey) as? [[String]] ?? []
+    }
+
+    /// Adds this board's answers to the recent list, keeping only the last few puzzles.
+    private func remember(_ puzzle: CrosswordPuzzle) {
+        let updated = recentPuzzleAnswers + [puzzle.entries.map(\.answer)]
+        defaults.set(Array(updated.suffix(Self.rememberedPuzzleCount)), forKey: Self.recentAnswersKey)
     }
 
     /// Starts a round on a given board. Used by `start()` and by tests.

@@ -130,6 +130,23 @@ struct CrosswordGeneratorTests {
         }
     }
 
+    @Test func recentAnswersAreLeftOutWhenThereAreEnoughOthers() throws {
+        let clues = GameDataLoaders.loadCrosswordClues()
+        try #require(clues.count > 1_000)
+        let recent = Set(clues.prefix(300).map(\.gridAnswer))
+        for _ in 0..<10 {
+            let puzzle = try #require(CrosswordGenerator.generate(from: clues, preferredSize: 11, avoiding: recent))
+            #expect(puzzle.entries.allSatisfy { !recent.contains($0.answer) })
+        }
+    }
+
+    @Test func recentAnswersAreIgnoredWhenTooFewCluesWouldBeLeft() throws {
+        // Avoiding every answer would leave nothing, so the whole list is used instead.
+        let recent = Set(Self.clues.map(\.gridAnswer))
+        let puzzle = try #require(CrosswordGenerator.generate(from: Self.clues, preferredSize: 11, avoiding: recent))
+        #expect(!puzzle.entries.isEmpty)
+    }
+
     @Test func tooFewCluesReturnsNil() {
         let clues = Array(Self.clues.prefix(3))
         #expect(CrosswordGenerator.generate(from: clues, preferredSize: 9) == nil)

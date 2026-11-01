@@ -91,7 +91,7 @@ struct GameCatalogSupportTests {
             minimumCluesPerDifficulty: 50
         )
         #expect(issues.isEmpty, "\(issues)")
-        #expect(clues.count >= 500)
+        #expect(clues.count >= 1_400)
     }
 
     @Test
@@ -102,6 +102,8 @@ struct GameCatalogSupportTests {
             CrosswordClueEntry(id: "a", answer: "IRON", clue: "Sharpens iron", reference: "Proverbs 27:17", difficulty: "easy"),
             CrosswordClueEntry(id: "b", answer: "RED SEA", clue: "Parted waters", reference: "Exodus 14:21", difficulty: "easy"),
             CrosswordClueEntry(id: "c", answer: "MOSES", clue: "Lawgiver", reference: "Exodus 99:1", difficulty: "trivial"),
+            // Letters inside a longer word aren't a giveaway.
+            CrosswordClueEntry(id: "d", answer: "SING", clue: "What Israel did after crossing the sea", reference: "Exodus 15:1", difficulty: "easy"),
         ]
         let messages = GameCatalogValidator.validateCrosswordClues(clues, books: books).map(\.message)
         #expect(messages.contains("Duplicate ID."))
@@ -109,6 +111,7 @@ struct GameCatalogSupportTests {
         #expect(messages.contains("Answer 'RED SEA' must be 4–10 capital letters."))
         #expect(messages.contains("Unknown difficulty 'trivial'."))
         #expect(messages.contains("Reference 'Exodus 99:1' does not exist."))
+        #expect(messages.filter { $0 == "Clue contains its own answer." }.count == 1)
     }
 
     @Test

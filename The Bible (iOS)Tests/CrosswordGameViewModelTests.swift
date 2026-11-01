@@ -150,6 +150,28 @@ struct CrosswordGameViewModelTests {
         #expect(vm.currentEntry?.answer == "NOAH")
     }
 
+    @Test func newPuzzlesDontReuseAnswersFromRecentPuzzles() async throws {
+        let suite = "CrosswordGameViewModelTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let vm = CrosswordGameViewModel(defaults: defaults, recordsStats: false)
+        vm.difficulty = .easy
+
+        var previous: [Set<String>] = []
+        for _ in 0..<8 {
+            await vm.start()
+            let answers = Set(try #require(vm.puzzle).entries.map(\.answer))
+            // Nothing from the last few puzzles comes back.
+            let recent = previous.suffix(CrosswordGameViewModel.rememberedPuzzleCount).reduce(into: Set<String>()) { $0.formUnion($1) }
+            #expect(answers.isDisjoint(with: recent), "Repeated: \(answers.intersection(recent).sorted())")
+            previous.append(answers)
+        }
+
+        // Only the last few puzzles are remembered.
+        let stored = defaults.array(forKey: CrosswordGameViewModel.recentAnswersKey) as? [[String]]
+        #expect(stored?.count == CrosswordGameViewModel.rememberedPuzzleCount)
+    }
+
     @Test func bundledCluesBuildABoardAtEveryDifficulty() async {
         for difficulty in CrosswordGameViewModel.Difficulty.allCases {
             let suite = "CrosswordGameViewModelTests.\(UUID().uuidString)"

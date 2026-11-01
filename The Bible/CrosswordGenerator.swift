@@ -42,38 +42,46 @@ nonisolated struct CrosswordGenerator: Sendable {
     /// Generates a board at `preferredSize`, falling back to smaller sizes and then to relaxed
     /// rules. Returns nil only when the pool can't make any acceptable board, in which case the
     /// caller should use a pre-generated puzzle.
+    ///
+    /// Answers in `recentAnswers` (from the player's last few puzzles) are left out while
+    /// enough other clues remain, so the same words don't come back puzzle after puzzle.
     static func generate<R: RandomNumberGenerator>(
         from clues: [CrosswordClueEntry],
         preferredSize: Int,
+        avoiding recentAnswers: Set<String> = [],
         using rng: inout R
     ) -> CrosswordPuzzle? {
         let sizes = supportedSizes.filter { $0 <= preferredSize }.sorted(by: >)
         for size in sizes.isEmpty ? [supportedSizes[0]] : sizes {
-            if let puzzle = generate(from: clues, settings: .standard(size: size), using: &rng) {
+            if let puzzle = generate(from: clues, settings: .standard(size: size), avoiding: recentAnswers, using: &rng) {
                 return puzzle
             }
         }
-        return generate(from: clues, settings: .relaxed(size: sizes.last ?? supportedSizes[0]), using: &rng)
+        return generate(from: clues, settings: .relaxed(size: sizes.last ?? supportedSizes[0]), avoiding: recentAnswers, using: &rng)
     }
 
-    static func generate(from clues: [CrosswordClueEntry], preferredSize: Int) -> CrosswordPuzzle? {
+    static func generate(from clues: [CrosswordClueEntry], preferredSize: Int, avoiding recentAnswers: Set<String> = []) -> CrosswordPuzzle? {
         var rng = SystemRandomNumberGenerator()
-        return generate(from: clues, preferredSize: preferredSize, using: &rng)
+        return generate(from: clues, preferredSize: preferredSize, avoiding: recentAnswers, using: &rng)
     }
 
     /// One size, one set of rules. Returns the best acceptable board from all attempts.
     static func generate<R: RandomNumberGenerator>(
         from clues: [CrosswordClueEntry],
         settings: Settings,
+        avoiding recentAnswers: Set<String> = [],
         using rng: inout R
     ) -> CrosswordPuzzle? {
         let maxLength = min(answerLengths.upperBound, settings.size)
-        let eligible = clues.filter { clue in
+        let fitting = clues.filter { clue in
             let answer = clue.gridAnswer
             return answer.count >= answerLengths.lowerBound
                 && answer.count <= maxLength
                 && answer.count == clue.answer.count
         }
+        // Skip recently used answers, but only while plenty of clues are left to build from.
+        let fresh = fitting.filter { !recentAnswers.contains($0.gridAnswer) }
+        let eligible = fresh.count >= max(settings.candidatePoolSize, settings.minEntries * 6) ? fresh : fitting
         guard eligible.count >= settings.minEntries else { return nil }
 
         var best: (layout: Layout, score: Double)?
@@ -98,9 +106,13 @@ nonisolated struct CrosswordGenerator: Sendable {
         size: Int,
         using rng: inout R
     ) -> Layout? {
-        // Longest answers first so short ones fill the gaps they leave. The pool is already
-        // shuffled, so answers of equal length come out in a different order every attempt.
-        let ordered = pool.sorted { $0.gridAnswer.count > $1.gridAnswer.count }
+        // Roughly longest first, so short answers fill the gaps long ones leave. Each answer's
+        // length gets a random boost of up to 3 letters, so the first (seed) answer isn't always
+        // one of the few longest words in the list, which made those repeat on most boards.
+        let ordered = pool
+            .map { (clue: $0, rank: Double($0.gridAnswer.count) + Double.random(in: 0..<3, using: &rng)) }
+            .sorted { $0.rank > $1.rank }
+            .map(\.clue)
         guard let seed = ordered.first else { return nil }
 
         var layout = Layout(size: size)
