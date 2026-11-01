@@ -9,8 +9,8 @@ import Testing
 /// the game writes (stats, streaks, difficulty) are put back when each test ends.
 @MainActor
 struct BeatTheClockTimerTests {
-    /// A game that has started its first round on Hard, the shortest round.
-    private func startedGame(missedQuestions: MissedGameQuestionStore) async -> BeatTheClockGameViewModel {
+    /// A game with its people, places and book index loaded, ready to start.
+    private func loadedGame(missedQuestions: MissedGameQuestionStore) async -> BeatTheClockGameViewModel {
         let game = BeatTheClockGameViewModel(missedQuestions: missedQuestions)
         await game.loadData()
         return game
@@ -19,9 +19,9 @@ struct BeatTheClockTimerTests {
     @Test
     func tickingDownToZeroTimesOutTheRound() async {
         let missed = MissedGameQuestionStore(entries: [])
-        let game = await startedGame(missedQuestions: missed)
+        let game = await loadedGame(missedQuestions: missed)
 
-        withRestoredDefaults {
+        await withRestoredDefaults {
             game.difficulty = .hard
             game.startGame()
             #expect(game.phase == .playing)
@@ -49,7 +49,7 @@ struct BeatTheClockTimerTests {
 
     @Test
     func theTimerStopsOnceTheRoundIsAnsweredAndRestartsForTheNextRound() async {
-        let game = await startedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+        let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
 
         await withRestoredDefaults {
             game.difficulty = .hard
@@ -73,7 +73,7 @@ struct BeatTheClockTimerTests {
 
     @Test
     func leavingAfterAnsweringResetsTheGameAndStopsTheTimer() async {
-        let game = await startedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+        let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
 
         await withRestoredDefaults {
             game.difficulty = .hard
@@ -96,9 +96,9 @@ struct BeatTheClockTimerTests {
 
     @Test
     func leavingBeforeAnsweringKeepsTheRoundGoing() async {
-        let game = await startedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+        let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
 
-        withRestoredDefaults {
+        await withRestoredDefaults {
             game.difficulty = .hard
             game.startGame()
             game.tick()
@@ -113,12 +113,6 @@ struct BeatTheClockTimerTests {
     // MARK: - Defaults
 
     /// Runs `body`, then puts back every default it added, changed or removed.
-    private func withRestoredDefaults(_ body: () -> Void) {
-        let before = UserDefaults.standard.dictionaryRepresentation()
-        defer { restore(before) }
-        body()
-    }
-
     private func withRestoredDefaults(_ body: () async -> Void) async {
         let before = UserDefaults.standard.dictionaryRepresentation()
         defer { restore(before) }

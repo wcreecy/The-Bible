@@ -144,9 +144,12 @@ final class BeatTheClockGameViewModel {
 
     /// Questions to replay from the missed-questions list; empty for a normal game.
     let reviewQuestionIDs: Set<String>
+    /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
+    private let missedQuestions: MissedGameQuestionStore
 
-    init(reviewQuestionIDs: Set<String> = []) {
+    init(reviewQuestionIDs: Set<String> = [], missedQuestions: MissedGameQuestionStore = .shared) {
         self.reviewQuestionIDs = reviewQuestionIDs
+        self.missedQuestions = missedQuestions
     }
 
     // MARK: - Settings
@@ -420,7 +423,8 @@ final class BeatTheClockGameViewModel {
         session.clearGame()
     }
 
-    private func tick() {
+    /// Counts down one second. Called by `runTimer()`; internal so tests can tick without waiting.
+    func tick() {
         guard remainingSeconds > 0 else { return }
         isPulsing = true
         #if canImport(UIKit)
@@ -501,7 +505,7 @@ final class BeatTheClockGameViewModel {
             correct: correct ? 1 : 0
         )
         if correct, !reviewQuestionIDs.isEmpty {
-            MissedGameQuestionStore.shared.resolveReviewQuestion(game: .beatTheClock, questionID: currentQuestion.id)
+            missedQuestions.resolveReviewQuestion(game: .beatTheClock, questionID: currentQuestion.id)
         } else if !correct {
             let scriptureReference: ScriptureRef?
             if let referenceText = currentQuestion.scriptureReference {
@@ -509,7 +513,7 @@ final class BeatTheClockGameViewModel {
             } else {
                 scriptureReference = nil
             }
-            MissedGameQuestionStore.shared.record(
+            missedQuestions.record(
                 game: .beatTheClock,
                 bookNames: scriptureReference.map { [$0.bookName] } ?? Array(currentQuestion.acceptableBooks),
                 chapterNumber: scriptureReference?.chapter,
