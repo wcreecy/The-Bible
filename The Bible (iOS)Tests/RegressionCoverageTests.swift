@@ -289,6 +289,10 @@ struct RegressionCoverageTests {
         #expect(allKeys.contains("quizAllTimeCorrect_all"))
         #expect(allKeys.contains("bookorderAllTimeBestStreak_expert"))
         #expect(iCloudSyncCoordinator.allPersistentStreakKeys.contains("wordsearchCurrentStreak"))
+        // WORD keeps separate Daily and Practice streaks; both must sync and reset.
+        let practiceStreak = PersistentGameStreak(game: "wordle", variant: "practice")
+        #expect(iCloudSyncCoordinator.allPersistentStreakKeys.contains(practiceStreak.currentKey))
+        #expect(iCloudSyncCoordinator.allPersistentStreakKeys.contains(practiceStreak.bestKey))
     }
 }
 

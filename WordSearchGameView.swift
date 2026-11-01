@@ -254,6 +254,8 @@ struct WordSearchGameView: View {
                 elapsed: vm.formattedTime(vm.elapsedSeconds),
                 hintsUsed: vm.hintsUsed,
                 usedWordList: vm.isBlindMode ? vm.showBlindWordList : nil,
+                missedWords: vm.missedWords,
+                currentStreak: vm.currentStreak,
                 verseRef: vm.verseRef,
                 verseText: vm.verseText,
                 onReadInContext: {

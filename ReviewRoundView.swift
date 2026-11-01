@@ -65,6 +65,9 @@ struct ReviewRoundView: View {
             VerseMatchGameView(reviewQuestionIDs: questionIDs)
         case .whoAmI:
             WhoAmIGameView(reviewQuestionIDs: questionIDs)
+        case .bookOrder:
+            // Book Order misses are study history only and never offered for review.
+            EmptyView()
         }
     }
 }
@@ -137,6 +140,7 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .bibleTrivia: "Trivia"
         case .verseMatch: "Verses"
         case .whoAmI: "Who?"
+        case .bookOrder: "Book Order"
         }
     }
 
@@ -147,6 +151,7 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .bibleTrivia: "questionmark.text.page.fill"
         case .verseMatch: "text.quote"
         case .whoAmI: "person.text.rectangle"
+        case .bookOrder: "list.number"
         }
     }
 
@@ -157,6 +162,7 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .bibleTrivia: .cyan
         case .verseMatch: .orange
         case .whoAmI: .brown
+        case .bookOrder: .purple
         }
     }
 }

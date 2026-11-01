@@ -365,3 +365,48 @@ struct FilledGameKeyButtonStyle: ButtonStyle {
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
+
+/// All-time wins by number of guesses, with this round's bar highlighted.
+struct WordGuessDistributionView: View {
+  /// Wins on guess 1 through 6.
+  let winsByGuess: [Int]
+  /// The guess count this round was won on, if it was won.
+  let highlightedGuess: Int?
+  let tint: Color
+
+  private var maxWins: Int { max(1, winsByGuess.max() ?? 0) }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      ForEach(Array(winsByGuess.enumerated()), id: \.offset) { index, wins in
+        let guess = index + 1
+        let isHighlighted = guess == highlightedGuess
+        HStack(spacing: 8) {
+          Text("\(guess)")
+            .font(.caption.weight(.semibold))
+            .monospacedDigit()
+            .frame(width: 14, alignment: .trailing)
+
+          GeometryReader { proxy in
+            let fraction = CGFloat(wins) / CGFloat(maxWins)
+            let width = max(26, proxy.size.width * fraction)
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+              .fill(isHighlighted ? tint : Color.secondary.opacity(0.35))
+              .frame(width: width)
+              .overlay(alignment: .trailing) {
+                Text("\(wins)")
+                  .font(.caption2.weight(.bold))
+                  .monospacedDigit()
+                  .foregroundStyle(isHighlighted ? Color.white : Color.primary)
+                  .padding(.trailing, 6)
+              }
+          }
+          .frame(height: 18)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(guess) guesses")
+        .accessibilityValue(isHighlighted ? "\(wins) wins, this round" : "\(wins) wins")
+      }
+    }
+  }
+}

@@ -143,6 +143,12 @@ final class BookOrderGameViewModel {
     var lastTimeSeconds: Int = 0
     var bestTimeSeconds: Int?
     var isNewBestTime: Bool = false
+    /// The last check's time against the best saved before it.
+    private(set) var bestTimeComparison: GameBestTimeComparison?
+    /// Books from the last check that weren't in their place, in Bible order.
+    private(set) var booksToReview: [BookOrderReviewItem] = []
+    /// True when the last check raised the saved best streak.
+    private(set) var isNewBestStreak = false
 
     var difficulty: BookOrderDifficulty = BookOrderDifficulty(
         rawValue: UserDefaults.standard.string(forKey: BookOrderGameViewModel.difficultyKey) ?? ""
@@ -211,6 +217,9 @@ final class BookOrderGameViewModel {
         wasCorrect = false
         booksInPlace = 0
         isNewBestTime = false
+        bestTimeComparison = nil
+        booksToReview = []
+        isNewBestStreak = false
 
         let books = source.bookNames
         guard !books.isEmpty else {
@@ -242,7 +251,16 @@ final class BookOrderGameViewModel {
         booksInPlace = zip(currentItems, correctOrder).filter { $0 == $1 }.count
         wasCorrect = currentItems == correctOrder
         lastTimeSeconds = elapsedSeconds
+        let bestStreakBefore = persistentStreak.best
         session.record(correct: wasCorrect, savedStreak: persistentStreak)
+        isNewBestStreak = persistentStreak.best > bestStreakBefore
+        booksToReview = Self.reviewItems(current: currentItems, correct: correctOrder)
+        bestTimeComparison = GameBestTimeComparison(
+            seconds: max(1, elapsedSeconds),
+            previousBest: savedBestTime,
+            isSolved: wasCorrect
+        )
+        recordMissedBooks()
 
         if wasCorrect {
             let previousBest = savedBestTime
@@ -264,9 +282,54 @@ final class BookOrderGameViewModel {
         showResult = true
     }
 
+    /// The books out of place, each with the book that should come before it, in Bible order.
+    static func reviewItems(current: [String], correct: [String]) -> [BookOrderReviewItem] {
+        correct.indices.compactMap { index in
+            guard current.indices.contains(index), current[index] != correct[index] else { return nil }
+            return BookOrderReviewItem(
+                book: correct[index],
+                previousBook: index > 0 ? correct[index - 1] : nil,
+                nextBook: index + 1 < correct.count ? correct[index + 1] : nil
+            )
+        }
+    }
+
+    /// Adds misplaced books to the missed-question history (study only, never a review round)
+    /// and retires a book from it once it is placed correctly again.
+    private func recordMissedBooks() {
+        let store = MissedGameQuestionStore.shared
+        let missed = Set(booksToReview.map(\.book))
+        for book in correctOrder {
+            if missed.contains(book) {
+                store.record(game: .bookOrder, bookNames: [book], topic: "Book order", questionID: book)
+            } else if store.containsMiss(game: .bookOrder, questionID: book) {
+                store.resolveReviewQuestion(game: .bookOrder, questionID: book)
+            }
+        }
+    }
+
     func move(from source: IndexSet, to destination: Int) {
         guard !showResult else { return }
         currentItems.move(fromOffsets: source, toOffset: destination)
+    }
+}
+
+/// A book that was out of place, described by its neighbors in the correct order.
+struct BookOrderReviewItem: Identifiable, Equatable {
+    let book: String
+    let previousBook: String?
+    let nextBook: String?
+
+    var id: String { book }
+
+    var hint: String {
+        if let previousBook {
+            String(localized: "\(book) comes after \(previousBook)")
+        } else if let nextBook {
+            String(localized: "\(book) comes before \(nextBook)")
+        } else {
+            book
+        }
     }
 }
 

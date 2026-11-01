@@ -4,6 +4,8 @@ struct BookOrderGameView: View {
     @State private var vm = BookOrderGameViewModel()
     @State private var elapsedSeconds: Int = 0
     @State private var isTimerHidden: Bool = false
+    /// Height of the result card, so the iPhone layout can cap it and scroll the rest.
+    @State private var resultHeight: CGFloat = 0
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -148,7 +150,13 @@ struct BookOrderGameView: View {
             .clipShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
 
             if vm.showResult {
-                resultSummary
+                // The list needs most of the screen, so the result scrolls within a capped height.
+                ScrollView {
+                    resultSummary
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { resultHeight = $0 }
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .frame(height: min(max(resultHeight, 1), 300))
             }
 
             actionButtons
@@ -352,14 +360,38 @@ struct BookOrderGameView: View {
     }
 
     private var resultSummary: some View {
-        BookOrderResultSummary(
-            wasCorrect: vm.wasCorrect,
-            booksInPlace: vm.booksInPlace,
-            total: vm.correctOrder.count,
-            time: Self.formatted(vm.lastTimeSeconds),
-            bestTime: vm.bestTimeSeconds.map(Self.formatted),
-            isNewBestTime: vm.isNewBestTime
-        )
+        let total = vm.correctOrder.count
+        return GamePuzzleResultCard(
+            title: vm.wasCorrect
+                ? String(localized: "Perfect Order")
+                : String(localized: "\(vm.booksInPlace) of \(total) in place"),
+            subtitle: vm.wasCorrect
+                ? String(localized: "All \(total) books are in the right order.")
+                : String(localized: "The books to review are added to your missed list."),
+            systemImage: vm.wasCorrect ? "checkmark.seal.fill" : "arrow.up.arrow.down.circle.fill",
+            tint: vm.wasCorrect ? .green : .red,
+            facts: [
+                ("stopwatch", GameTimeFormat.short(seconds: vm.lastTimeSeconds), String(localized: "Time")),
+                ("checkmark.circle", "\(vm.booksInPlace)/\(total)", String(localized: "In place")),
+                ("trophy", vm.bestTimeSeconds.map { GameTimeFormat.short(seconds: $0) } ?? "—", String(localized: "Best time"))
+            ],
+            bestTime: vm.bestTimeComparison,
+            streak: GamePuzzleStreak(
+                current: vm.session.savedCurrentStreak,
+                best: vm.persistentBestStreak,
+                isNewBest: vm.isNewBestStreak,
+                caption: String(localized: "This visit: \(vm.session.score) of \(vm.session.answered) puzzles in order")
+            )
+        ) {
+            if !vm.booksToReview.isEmpty {
+                GamePuzzleResultSection(title: "Books to Review", systemImage: "books.vertical", tint: .red) {
+                    ForEach(vm.booksToReview) { item in
+                        Label(item.hint, systemImage: "arrow.turn.down.right")
+                            .font(.subheadline)
+                    }
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -480,51 +512,6 @@ private struct BookOrderRow: View {
                     .foregroundStyle(isInPlace ? .green : .red)
             }
         }
-        .accessibilityElement(children: .combine)
-    }
-}
-
-private struct BookOrderResultSummary: View {
-    let wasCorrect: Bool
-    let booksInPlace: Int
-    let total: Int
-    let time: String
-    let bestTime: String?
-    let isNewBestTime: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label(
-                wasCorrect ? "Correct!" : "Not quite",
-                systemImage: wasCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
-            )
-            .font(.headline)
-            .foregroundStyle(wasCorrect ? Color.green : Color.red)
-
-            Text(wasCorrect ? "All \(total) books are in order." : "\(booksInPlace) of \(total) books are in the right place.")
-                .font(.subheadline)
-
-            HStack(spacing: 16) {
-                Label(time, systemImage: "stopwatch")
-                    .monospacedDigit()
-
-                if isNewBestTime {
-                    Label("New best time!", systemImage: "trophy.fill")
-                        .foregroundStyle(.orange)
-                } else if let bestTime {
-                    Label("Best \(bestTime)", systemImage: "trophy")
-                        .monospacedDigit()
-                }
-            }
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(
-            (wasCorrect ? Color.green : Color.red).opacity(0.1),
-            in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-        )
         .accessibilityElement(children: .combine)
     }
 }

@@ -201,6 +201,7 @@ private struct ReviewRoundProgress: Identifiable {
         case .bibleTrivia: "Trivia"
         case .verseMatch: "Verses"
         case .whoAmI: "Who?"
+        case .bookOrder: "Book Order"
         }
     }
 }
@@ -508,7 +509,7 @@ struct GamesView: View {
             progressByRoute = Dictionary(uniqueKeysWithValues: GameRoute.allCases.map { route in
                 (route, progressText(for: route, entry: statsByName[route.displayName], todayWordResult: todayWordResult))
             })
-            reviewProgress = MissedGameQuestionStore.Entry.Game.allCases.map { game in
+            reviewProgress = MissedGameQuestionStore.Entry.Game.reviewableCases.map { game in
                 ReviewRoundProgress(
                     game: game,
                     count: MissedGameQuestionStore.shared.reviewCount(for: game)

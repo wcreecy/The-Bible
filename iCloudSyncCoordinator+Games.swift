@@ -219,7 +219,11 @@ extension iCloudSyncCoordinator {
     // Streak values stored separately from the all-time counters by the remaining games.
     // These are local-only today, but still form part of the user's game history.
     static let additionalPersistentStreakKeys: [String] = {
-        var keys = ["wordlePersistentStreak", "wordlePersistentBestStreak", "wordsearchCurrentStreak"]
+        var keys = [
+            "wordlePersistentStreak", "wordlePersistentBestStreak",
+            "wordlePersistentStreak_practice", "wordlePersistentBestStreak_practice",
+            "wordsearchCurrentStreak"
+        ]
         for difficulty in ["easy", "normal", "hard"] {
             keys.append("quizPersistentStreak_\(difficulty)")
             keys.append("quizPersistentBestStreak_\(difficulty)")

@@ -101,8 +101,16 @@ struct WordleView: View {
     // confirmation for reveal
     @State private var confirmReveal: Bool = false
 
+    // End-of-round result
+    /// True when the round just finished raised the best streak for its mode.
+    @State private var isNewBestStreak: Bool = false
+    /// All-time wins by guess count for the round's mode, read once when the round ends.
+    @State private var guessDistribution: [Int] = []
+
     // MARK: - Persistent WORD streak (overall, survives app relaunch)
     private let persistentStreak = PersistentGameStreak(game: "wordle")
+    /// The Practice streak: solved Practice words in a row, kept until a Practice word is missed.
+    private let practicePersistentStreak = PersistentGameStreak(game: "wordle", variant: "practice")
     private let practiceWordBagKey = AppStorageKey.wordlePracticeWordBag
     private let lastPracticeWordKey = AppStorageKey.wordleLastPracticeWord
     private let dailyWordAssignmentKey = AppStorageKey.wordleDailyWordAssignment
@@ -285,15 +293,12 @@ struct WordleView: View {
               }
             } feedback: {
               VStack(spacing: 10) {
-                if let msg = message {
+                // Once the round ends, the result card below the board covers the outcome.
+                if !roundOver, let msg = message {
                   Text(msg)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(roundOver ? (didWin ? Color.green : Color.secondary) : Color.red)
+                    .foregroundStyle(Color.red)
                     .multilineTextAlignment(.center)
-                }
-
-                if roundOver {
-                  answerHighlightView()
                 }
               }
             } letterTray: {
@@ -435,6 +440,8 @@ struct WordleView: View {
             // Daily streaks count consecutive solved days, derived from the synced solved-days map.
             currentStreak = GameStats.shared.wordleDailyWinStreak()
             currentBestStreak = max(currentBestStreak, persistentStreak.best)
+            practiceStreak = practicePersistentStreak.current
+            practiceBestStreak = practicePersistentStreak.best
         }
     }
 
@@ -743,6 +750,7 @@ struct WordleView: View {
         message = nil
         keyboardStates.removeAll()
         roundRef = nil
+        isNewBestStreak = false
 
         // Reset locked letters.
         pinned = Array(repeating: Array(repeating: nil, count: 5), count: 6)
@@ -793,11 +801,13 @@ struct WordleView: View {
                 score += 1
 
                 // Counts today plus the run of solved days immediately before it.
+                let bestBefore = persistentStreak.best
                 let streak = persistentStreak.recordWin(
                     reaching: GameStats.shared.wordleDailyWinStreak(treatingTodayAsSolved: true)
                 )
                 currentStreak = streak.current
                 currentBestStreak = max(currentBestStreak, streak.best)
+                isNewBestStreak = streak.best > bestBefore
             } else {
                 // A Daily loss, including Reveal, ends the tracked streak.
                 persistentStreak.reset()
@@ -822,9 +832,14 @@ struct WordleView: View {
 
             if win {
                 score += 1
-                practiceStreak += 1
-                practiceBestStreak = max(practiceBestStreak, practiceStreak)
+                let bestBefore = practicePersistentStreak.best
+                let streak = practicePersistentStreak.recordWin()
+                practiceStreak = streak.current
+                practiceBestStreak = streak.best
+                isNewBestStreak = streak.best > bestBefore
             } else {
+                // A Practice loss, including Reveal, ends the Practice streak.
+                practicePersistentStreak.reset()
                 practiceStreak = 0
             }
 
@@ -844,6 +859,7 @@ struct WordleView: View {
         }
 
         roundRef = Self.verseIndex[target]
+        guessDistribution = GameStats.shared.wordleWinGuessStats(type: mode == .daily ? .daily : .free).winsByGuess
 
         if mode == .daily {
             UserDefaults.standard.set(todayKey, forKey: AppStorageKey.wordleDailyCompletedDay)
@@ -898,119 +914,115 @@ struct WordleView: View {
         showRefSheet = true
     }
 
-    // MARK: - Answer highlight
-    @ViewBuilder
-    private func answerHighlightView() -> some View {
-        let bg = (didWin ? Color.green : Color.red).opacity(0.15)
-        let border = (didWin ? Color.green : Color.red).opacity(0.45)
-        VStack(spacing: 6) {
-            Text("Answer")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(target.uppercased())
-                .font(.title.weight(.heavy).monospaced())
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.center)
-                .accessibilityLabel("Answer: \(target)")
+    // MARK: - End-of-round result
+
+    private var resultTitle: String {
+        if didWin {
+            return rowIndex == 1 ? String(localized: "Solved in 1 guess") : String(localized: "Solved in \(rowIndex) guesses")
+        }
+        return rowIndex < 6 ? String(localized: "Word revealed") : String(localized: "Out of guesses")
+    }
+
+    private var resultFacts: [GameSplashFacts.Fact] {
+        [
+            ("square.grid.3x2", didWin ? "\(rowIndex)/6" : "X/6", String(localized: "Guesses")),
+            ("stopwatch", lastRoundElapsedSeconds.map(formatElapsed) ?? "—", String(localized: "Time")),
+            (mode.icon, String(localized: mode.title), String(localized: "Puzzle")),
+            (roundHardMode ? "flame" : "circle", roundHardMode ? String(localized: "Hard") : String(localized: "Normal"), String(localized: "Mode"))
+        ]
+    }
+
+    private var resultStreak: GamePuzzleStreak {
+        mode == .daily
+            ? GamePuzzleStreak(current: currentStreak, best: currentBestStreak, isNewBest: isNewBestStreak)
+            : GamePuzzleStreak(current: practiceStreak, best: practiceBestStreak, isNewBest: isNewBestStreak)
+    }
+
+    private func resultCard() -> some View {
+        GamePuzzleResultCard(
+            title: resultTitle,
+            systemImage: didWin ? "checkmark.seal.fill" : (rowIndex < 6 ? "eye.fill" : "xmark.octagon.fill"),
+            tint: didWin ? .green : .red,
+            facts: resultFacts,
+            streak: resultStreak,
+            scripture: roundRef.map { ref in
+                GamePuzzleScripture(reference: ref.display, text: ref.text) {
+                    presentReferencePreview(ref)
+                }
+            }
+        ) {
+            answerTiles
+
+            if guessDistribution.contains(where: { $0 > 0 }) {
+                GamePuzzleResultSection(title: "Guess Distribution", systemImage: "chart.bar.fill") {
+                    WordGuessDistributionView(
+                        winsByGuess: guessDistribution,
+                        highlightedGuess: didWin ? rowIndex : nil,
+                        tint: .green
+                    )
+                }
+            }
+        }
+    }
+
+    /// The answer spelled out in tiles, green when solved and red otherwise.
+    private var answerTiles: some View {
+        HStack(spacing: 6) {
+            ForEach(Array(target.uppercased().enumerated()), id: \.offset) { _, letter in
+                Text(String(letter))
+                    .font(.title2.weight(.heavy).monospaced())
+                    .foregroundStyle(.white)
+                    .frame(width: 40, height: 40)
+                    .background(
+                        (didWin ? Color.green : Color.red).opacity(0.85),
+                        in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    )
+            }
         }
         .frame(maxWidth: .infinity)
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(bg)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(border, lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Answer: \(target)")
+    }
+
+    /// Midnight tonight, when the next Daily word is available.
+    private var nextDailyDate: Date {
+        let calendar = Calendar.autoupdatingCurrent
+        let startOfToday = calendar.startOfDay(for: Date())
+        return calendar.date(byAdding: .day, value: 1, to: startOfToday) ?? startOfToday.addingTimeInterval(86_400)
     }
 
     // MARK: - End-of-round action area (replaces keyboard)
     @ViewBuilder
     private func endOfRoundActionArea() -> some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 10) {
-                if let ref = roundRef {
-                    Button {
-                        presentReferencePreview(ref)
-                    } label: {
-                        Text(ref.display)
-                            .font(.headline)
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.large)
-                } else {
-                    Button { } label: {
-                        Text("Reference")
-                            .font(.headline)
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.large)
-                    .disabled(true)
-                    .opacity(0.6)
-                    .accessibilityHidden(true)
-                }
-
-                if let secs = lastRoundElapsedSeconds {
-                    Button(action: { }) {
-                        Text(formatElapsed(secs))
-                            .font(.headline)
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
-                    .controlSize(.large)
-                    .disabled(true)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("Time \(formatElapsed(secs))")
-                } else {
-                    Button(action: { }) {
-                        Text("--:--")
-                            .font(.headline)
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
-                    .controlSize(.large)
-                    .disabled(true)
-                    .opacity(0.6)
-                    .accessibilityHidden(true)
-                }
-
-                ShareLink(item: shareText) {
-                    Label("Share Result", systemImage: "square.and.arrow.up")
-                        .labelStyle(.iconOnly)
-                        .font(.headline)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .mint))
-                .controlSize(.large)
-            }
+        VStack(spacing: 12) {
+            resultCard()
 
             HStack(spacing: 12) {
-                Button("Previous", systemImage: "arrow.left") { }
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                    .disabled(true)
+                ShareLink(item: shareText) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .mint))
 
                 if mode == .practice {
-                    Button("Next", systemImage: "arrow.right") {
+                    Button("Next Word", systemImage: "arrow.right") {
                         startNewRound(practice: true)
                     }
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    .buttonStyle(GameProminentButtonStyle(tint: .mint))
                 } else if dailyCompletedToday && !wordleAllowDailyReplay {
-                    Button("Next", systemImage: "arrow.right") { }
-                        .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                        .disabled(true)
-                        .accessibilityLabel("Daily completed. Come back tomorrow.")
+                    Label {
+                        Text("Next word in \(Text(nextDailyDate, style: .relative))")
+                            .monospacedDigit()
+                    } icon: {
+                        Image(systemName: "calendar.badge.clock")
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
                 } else {
-                    Button("Next", systemImage: "arrow.right") {
+                    Button("Play Again", systemImage: "arrow.clockwise") {
                         startNewRound(practice: false)
                     }
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    .buttonStyle(GameProminentButtonStyle(tint: .mint))
                 }
             }
         }

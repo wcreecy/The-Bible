@@ -13,6 +13,14 @@ final class MissedGameQuestionStore {
             case bibleTrivia
             case verseMatch
             case whoAmI
+            /// Books placed out of order. Kept as study history only; never offered as a review round.
+            case bookOrder
+
+            /// Whether misses from this game can be replayed in a review round.
+            var isReviewable: Bool { self != .bookOrder }
+
+            /// The games that offer review rounds.
+            static var reviewableCases: [Game] { allCases.filter(\.isReviewable) }
         }
 
         let id: UUID
@@ -131,13 +139,14 @@ final class MissedGameQuestionStore {
     /// The review feature works with distinct, replayable questions only. Older history entries
     /// without an identifier remain available for study recommendations but cannot be replayed.
     func reviewCount(for game: Entry.Game) -> Int {
-        Set(entries.compactMap { entry in
+        guard game.isReviewable else { return 0 }
+        return Set(entries.compactMap { entry in
             entry.game == game ? entry.questionID : nil
         }).count
     }
 
     func reviewableGames(minimumQuestions: Int = 10) -> [Entry.Game] {
-        Entry.Game.allCases.filter { reviewCount(for: $0) >= minimumQuestions }
+        Entry.Game.reviewableCases.filter { reviewCount(for: $0) >= minimumQuestions }
     }
 
     func questionIDsForReview(game: Entry.Game, count: Int = 10) -> [String] {
@@ -149,6 +158,11 @@ final class MissedGameQuestionStore {
         .shuffled()
         .prefix(count)
         .map(\.self)
+    }
+
+    /// Whether a miss with this identifier is still in the history.
+    func containsMiss(game: Entry.Game, questionID: String) -> Bool {
+        entries.contains { $0.game == game && $0.questionID == questionID }
     }
 
     /// A correct answer in a review round retires that question from future review rounds.

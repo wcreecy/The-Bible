@@ -168,6 +168,16 @@ final class WordSearchViewModel {
     }
 
     /// True while the word list (and verse text) should stay hidden.
+    /// Words in the puzzle that weren't found, in word-list order.
+    var missedWords: [String] {
+        targetWords.filter { !foundWords.contains($0) }
+    }
+
+    /// Solved puzzles in a row, as saved after each round.
+    var currentStreak: Int {
+        UserDefaults.standard.integer(forKey: Self.currentStreakKey)
+    }
+
     var hidesWordList: Bool { isBlindMode && !showBlindWordList && !roundOver }
 
     // MARK: - Intents

@@ -223,10 +223,7 @@ private struct GameRoundSummaryBreakdown: View {
 
     /// "8s" for short times, "1m 42s" once a minute has passed.
     nonisolated static func format(_ duration: Duration) -> String {
-        let components = duration.components
-        let exactSeconds = Double(components.seconds) + Double(components.attoseconds) / 1e18
-        let seconds = max(1, Int(exactSeconds.rounded()))
-        return Duration.seconds(seconds).formatted(.units(allowed: [.minutes, .seconds], width: .narrow))
+        GameTimeFormat.short(duration)
     }
 }
 
