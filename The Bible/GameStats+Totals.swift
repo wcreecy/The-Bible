@@ -325,9 +325,9 @@ extension GameStats {
 
     func accuracyByDifficulty() -> [(difficulty: String, answered: Int, correct: Int, pct: Double)] {
         [
-            (key: "easy", title: String(localized: "Learn")),
-            (key: "normal", title: String(localized: "Standard")),
-            (key: "hard", title: String(localized: "Challenge"))
+            (key: "easy", title: String(localized: "Easy")),
+            (key: "normal", title: String(localized: "Normal")),
+            (key: "hard", title: String(localized: "Hard"))
         ].map { difficulty in
             let prefixes = ["quiz", "hangman", "versematch", "beatclock", "bookorder", "whoami"]
             let answered = prefixes.reduce(0) { $0 + max(0, readInt("\($1)AllTimeAnswered_\(difficulty.key)")) }
