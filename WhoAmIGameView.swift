@@ -54,7 +54,6 @@ struct WhoAmIGameView: View {
                         summary: GameRoundSummary(score: vm.session),
                         tint: .brown,
                         canTimeOut: vm.difficulty.timeLimit > 0,
-                        reviewGame: isReviewRound ? nil : .whoAmI,
                         onPlayAgain: vm.startGame,
                         onChangeSettings: vm.returnToSetup
                     )

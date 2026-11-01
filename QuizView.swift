@@ -39,7 +39,6 @@ struct QuizView: View {
                             GameRoundSummaryView(
                                 summary: GameRoundSummary(score: vm.session),
                                 tint: .blue,
-                                reviewGame: vm.reviewQuestionIDs.isEmpty ? .bibleQuiz : nil,
                                 onPlayAgain: vm.startQuiz,
                                 onChangeSettings: vm.resetToSetup
                             )

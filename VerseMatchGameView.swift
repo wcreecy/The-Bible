@@ -38,7 +38,6 @@ struct VerseMatchGameView: View {
                         summary: GameRoundSummary(score: vm.session),
                         tint: .orange,
                         canTimeOut: false,
-                        reviewGame: vm.reviewQuestionIDs.isEmpty ? .verseMatch : nil,
                         onPlayAgain: vm.startGame,
                         onChangeSettings: vm.resetToSetup
                     )

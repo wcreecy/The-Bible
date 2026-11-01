@@ -23,8 +23,6 @@ struct GameRoundSummaryView: View {
     /// Shown only when the round had a timer, since untimed games can't run out of time.
     var canTimeOut = true
     var poolProgress: PoolProgress?
-    /// The game's missed-question list, offered as a review round when this round had misses.
-    var reviewGame: MissedGameQuestionStore.Entry.Game?
     let onPlayAgain: () -> Void
     let onChangeSettings: () -> Void
 
@@ -77,25 +75,10 @@ struct GameRoundSummaryView: View {
         !summary.bookTallies.isEmpty
     }
 
-    private var showsReviewMissed: Bool {
-        guard let reviewGame, summary.correctCount < summary.total else { return false }
-        return MissedGameQuestionStore.shared.reviewCount(for: reviewGame) > 0
-    }
-
     private var actions: some View {
         VStack(spacing: 10) {
             Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
                 .buttonStyle(GameProminentButtonStyle(tint: tint))
-
-            if showsReviewMissed, let reviewGame {
-                NavigationLink {
-                    ReviewRoundView(reviewGameRawValue: reviewGame.rawValue)
-                        .background(AppBackgroundView(tab: .games))
-                } label: {
-                    Label("Review Missed Questions", systemImage: "arrow.clockwise.heart.fill")
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .purple))
-            }
 
             Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
                 .buttonStyle(ModernPillButtonStyle(tint: .accentColor))

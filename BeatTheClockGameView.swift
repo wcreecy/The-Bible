@@ -37,7 +37,6 @@ struct BeatTheClockGameView: View {
                             GameRoundSummaryView(
                                 summary: GameRoundSummary(score: vm.session),
                                 tint: .indigo,
-                                reviewGame: vm.reviewQuestionIDs.isEmpty ? .beatTheClock : nil,
                                 onPlayAgain: vm.startGame,
                                 onChangeSettings: vm.resetToSetup
                             )

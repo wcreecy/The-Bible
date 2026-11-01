@@ -579,7 +579,6 @@ struct BibleTriviaGameView: View {
                         summary: GameRoundSummary(score: model.session),
                         tint: .cyan,
                         poolProgress: model.poolProgress,
-                        reviewGame: isReviewRound ? nil : .bibleTrivia,
                         onPlayAgain: model.startRound,
                         onChangeSettings: model.returnToSetup
                     )
