@@ -44,6 +44,8 @@ enum VerseActionPresentation {
     case buttons
     case focus
     case menu
+    /// Favorite and share sit on the card; everything else is in a "more" menu.
+    case cardActions
 }
 
 enum VerseActionFeedback {
@@ -351,6 +353,34 @@ struct VerseActionMenuContent: View {
                 }
                 .accessibilityLabel("More verse actions")
             }
+            .buttonStyle(.plain)
+
+        case .cardActions:
+            HStack(spacing: 24) {
+                Button(action: toggleFavorite) {
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(Color.accentColor))
+                }
+                .accessibilityLabel(favoriteActionTitle)
+
+                VerseShareMenu(verse: verse, onCreateImage: showImageComposer) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .foregroundStyle(Color.accentColor)
+                .accessibilityLabel("Share")
+
+                Menu {
+                    noteMenuButton(notifiesPresentation: false)
+                    mentionsButton
+                    bookmarkMenuButton
+                    pinMenuButton
+                    copyMenuButton
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("Verse actions")
+            }
+            .font(.title3)
             .buttonStyle(.plain)
 
         case .menu:

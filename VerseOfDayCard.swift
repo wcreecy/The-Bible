@@ -5,7 +5,9 @@ struct VerseOfDayCard: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var verseActionPresentation: VerseActionPresentation {
-        dynamicTypeSize.isAccessibilitySize || horizontalSizeClass == .compact ? .menu : .buttons
+        dynamicTypeSize.isAccessibilitySize || horizontalSizeClass == .compact || columnCount == 1
+            ? .cardActions
+            : .buttons
     }
 
     @Binding var verseOfDay: HomeVerseRef?
