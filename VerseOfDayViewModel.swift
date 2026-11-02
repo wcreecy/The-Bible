@@ -133,57 +133,22 @@ final class VerseOfDayViewModel {
         shared.set(votdRefresh2Minute, forKey: "votdRefresh2Minute")
     }
 
-    private enum VerseScope: String { case old, new, whole, book }
-
     private func loadRandomVerse() {
         guard !paused else { return }
         let allBooks = BibleData.books
         guard !allBooks.isEmpty else { return }
 
-        let scope = VerseScope(rawValue: verseScopeRaw) ?? .whole
-        let books: [Book]
-        switch scope {
-        case .old:
-            books = allBooks.filter { oldTestamentBooks.contains($0.name) }
-        case .new:
-            books = allBooks.filter { !oldTestamentBooks.contains($0.name) }
-        case .whole:
-            books = allBooks
-        case .book:
-            if let chosen = allBooks.first(where: { $0.name == verseSpecificBook }) {
-                books = [chosen]
-            } else {
-                books = allBooks
-            }
-        }
-
-        // Pick a uniformly random verse without creating a temporary entry for every
-        // verse in the corpus. A random offset across the eligible verse count gives
-        // every verse the same probability of being selected.
-        let eligibleVerseCount = books.reduce(into: 0) { total, book in
-            total += book.chapters.reduce(into: 0) { $0 += $1.verses.count }
-        }
-        guard eligibleVerseCount > 0 else { return }
-
-        var remainingOffset = Int.random(in: 0..<eligibleVerseCount)
-        var selection: (book: Book, chapter: Chapter, verse: Verse)?
-        selectionLoop: for book in books {
-            for chapter in book.chapters {
-                if remainingOffset < chapter.verses.count {
-                    selection = (book, chapter, chapter.verses[remainingOffset])
-                    break selectionLoop
-                }
-                remainingOffset -= chapter.verses.count
-            }
-        }
-
-        guard let selection else { return }
+        guard let selection = VerseOfDaySelector.select(
+            from: allBooks,
+            scopeRaw: verseScopeRaw,
+            specificBook: verseSpecificBook
+        ) else { return }
 
         let ref = HomeVerseRef(
-            bookName: selection.book.name,
-            chapterNumber: selection.chapter.number,
-            verseNumber: selection.verse.number,
-            verseText: selection.verse.text
+            bookName: selection.bookName,
+            chapterNumber: selection.chapterNumber,
+            verseNumber: selection.verseNumber,
+            verseText: selection.text
         )
         verse = ref
         storedVerseBook = ref.bookName
@@ -260,18 +225,3 @@ final class VerseOfDayViewModel {
         }
     }
 }
-
-// Keep in sync with HomeView’s old constant
-private let oldTestamentBooks: Set<String> = [
-    "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
-    "Joshua","Judges","Ruth",
-    "1 Samuel","2 Samuel",
-    "1 Kings","2 Kings",
-    "1 Chronicles","2 Chronicles",
-    "Ezra","Nehemiah","Esther",
-    "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
-    "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
-    "Hosea","Joel","Amos","Obadiah","Jonah",
-    "Micah","Nahum","Habakkuk","Zephaniah",
-    "Haggai","Zechariah","Malachi"
-]

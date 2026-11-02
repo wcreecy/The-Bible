@@ -1,5 +1,5 @@
 import Testing
-@testable import The_Bible
+@testable import Bible
 
 struct VerseOfDaySelectorTests {
     @Test func excludesCuratedGenealogyAndMeasurementPassages() {

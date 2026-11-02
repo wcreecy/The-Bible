@@ -150,7 +150,9 @@ nonisolated enum VerseOfDaySelector {
 
         if lowercase.contains(" begat ")
             || lowercase.hasPrefix("the sons of ")
-            || lowercase.hasPrefix("the children of ") {
+            || lowercase.hasPrefix("and the sons of ")
+            || lowercase.hasPrefix("the children of ")
+            || lowercase.hasPrefix("and the children of ") {
             return 0
         }
 
