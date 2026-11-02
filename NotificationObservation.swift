@@ -31,19 +31,6 @@ extension View {
     }
 }
 
-extension View {
-    /// Runs `action` once a second while this view is on screen. The async replacement
-    /// for `onReceive(Timer.publish(every: 1, ...).autoconnect())`.
-    func onEverySecond(perform action: @escaping @MainActor () -> Void) -> some View {
-        task {
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(1))
-                guard !Task.isCancelled else { return }
-                action()
-            }
-        }
-    }
-}
 
 extension NotificationCenter {
     /// Calls `action` with `owner` on the main actor for each `name` notification, for as

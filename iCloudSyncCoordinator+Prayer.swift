@@ -8,15 +8,29 @@ import Foundation
 /// - `prayerLastSessionV1` / `studyLastSessionV1`: JSON `{ seconds, endedAt }`. The most
 ///   recent session wins.
 ///
+/// - `studyTimeContributionsV1`: Study Bible time (`StudyTimeTracker`), in the same
+///   `[day: [device: seconds]]` form and merged the same way.
+///
 /// All are cleared everywhere by the reading stats reset epoch.
 @MainActor
 extension iCloudSyncCoordinator {
     static var prayerStatsKeys: [String] {
         PrayerTimerKind.allCases.flatMap { [$0.contributionsKey, $0.lastSessionKey] }
+            + [StudyTimeTracker.contributionsKey]
     }
 
     // Local -> KVS
     func mirrorPrayerStatsKeyToKVS(_ key: String) {
+        if key == StudyTimeTracker.contributionsKey {
+            // Publish the union, so entries only another device has written are kept.
+            let remote = decode(kvs.data(forKey: key), as: StudyTimeTracker.Contributions.self) ?? [:]
+            let merged = PrayerStatsStore.merged(StudyTimeTracker.shared.loadContributions(), remote)
+            guard !merged.isEmpty, merged != remote,
+                  let data = try? JSONEncoder().encode(merged) else { return }
+            kvs.set(data, forKey: key)
+            return
+        }
+
         guard let store = PrayerStatsStore.store(owningKey: key) else { return }
 
         switch key {
@@ -42,6 +56,11 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local
     func mergePrayerStatsIncoming(forKey key: String) {
+        if key == StudyTimeTracker.contributionsKey {
+            mergeStudyTimeIncoming()
+            return
+        }
+
         guard let store = PrayerStatsStore.store(owningKey: key) else { return }
         var changedLocally = false
 
@@ -82,9 +101,27 @@ extension iCloudSyncCoordinator {
         }
     }
 
-    /// Clears prayer and study stats on this device and in iCloud, as part of a reading stats reset.
+    private func mergeStudyTimeIncoming() {
+        let key = StudyTimeTracker.contributionsKey
+        guard let remote = decode(kvs.data(forKey: key), as: StudyTimeTracker.Contributions.self) else { return }
+        let tracker = StudyTimeTracker.shared
+        let local = tracker.loadContributions()
+        let merged = PrayerStatsStore.merged(local, remote)
+        if merged != local {
+            tracker.saveContributions(merged)
+        }
+        // This device had entries the cloud copy lacked; republish the union.
+        if merged != remote, let data = try? JSONEncoder().encode(merged) {
+            kvs.set(data, forKey: key)
+            enqueueKeyForSync(key)
+        }
+    }
+
+    /// Clears prayer, study timer, and Study Bible time on this device and in iCloud, as part
+    /// of a reading stats reset.
     func clearPrayerStats() {
         PrayerStatsStore.all.forEach { $0.clearLocal() }
+        StudyTimeTracker.shared.clearAll()
         for key in Self.prayerStatsKeys {
             kvs.removeObject(forKey: key)
         }

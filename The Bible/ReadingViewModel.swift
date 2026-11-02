@@ -19,8 +19,14 @@ final class ReadingViewModel {
     var highlightedVerse: Int? = nil
     var selectedVerse: Int? = nil
     var menuVerse: Int? = nil
-    var pinVerse: Int? = nil
-    var topVisibleVerseID: String? = nil
+    /// The row at the top of the reader. Saved here rather than from the view, so scrolling
+    /// past a verse doesn't redraw the whole reader.
+    var topVisibleVerseID: String? = nil {
+        didSet {
+            guard topVisibleVerseID != oldValue else { return }
+            saveVisiblePosition()
+        }
+    }
 
     // Reading progress
     var highlightOnAppear: Bool = true
@@ -367,6 +373,18 @@ final class ReadingViewModel {
 
     func rowID(for verseNumber: Int) -> String {
         "\(currentBook.name)-\(currentChapter.number)-\(verseNumber)"
+    }
+
+    /// Records the verse at the top of the reader, or the current verse when none is known.
+    func saveVisiblePosition() {
+        let visibleVerse = topVisibleVerseID.flatMap { visibleID in
+            currentChapter.verses.first { rowID(for: $0.number) == visibleID }?.number
+        }
+        ReadingPositionStore.shared.record(
+            bookName: currentBook.name,
+            chapter: currentChapter.number,
+            verse: visibleVerse ?? currentVerse
+        )
     }
 }
 

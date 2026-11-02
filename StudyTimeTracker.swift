@@ -2,11 +2,22 @@ import Foundation
 
 /// Records foreground time spent in the Study Bible and Chapter Insights views.
 /// Overlapping study views share one active session, so time is never counted twice.
+/// Time stops counting five minutes after the last touch (see `UserActivityMonitor`).
+///
+/// Synced through iCloud key-value storage like prayer time: each device records under its
+/// own ID (day → device → seconds), so merging keeps the larger value per device and never
+/// double-counts. See `iCloudSyncCoordinator+Prayer`.
 @MainActor
 final class StudyTimeTracker {
     static let shared = StudyTimeTracker()
 
-    private static let dailyTotalsKey = "studyTimeDailyTotals"
+    /// Seconds per day per device.
+    typealias Contributions = [String: [String: Int]]
+
+    static let contributionsKey = "studyTimeContributionsV1"
+    /// Device-only daily totals written by earlier versions; moved into this device's
+    /// contributions on first load.
+    private static let legacyDailyTotalsKey = "studyTimeDailyTotals"
     private let persistInterval: Duration = .seconds(15)
 
     private var activeSources: Set<UUID> = []
@@ -79,56 +90,99 @@ final class StudyTimeTracker {
     }
 
     private func recordElapsed(now: Date = .now) {
-        guard let start = checkpointDate else { return }
+        guard let checkpoint = checkpointDate else { return }
 
-        let elapsed = Int(now.timeIntervalSince(start))
-        guard elapsed > 0 else { return }
+        let span = UserActivityMonitor.shared.countedSpan(since: checkpoint, now: now)
+        checkpointDate = span.nextCheckpoint
+        guard span.seconds > 0 else { return }
 
-        let end = start.addingTimeInterval(TimeInterval(elapsed))
-        checkpointDate = end
-
-        add(Self.dailyAllocations(seconds: elapsed, from: start, to: end))
+        let end = span.start.addingTimeInterval(TimeInterval(span.seconds))
+        add(Self.dailyAllocations(seconds: span.seconds, from: span.start, to: end))
     }
 
-    /// Adds study time to existing daily totals, keeping any time already recorded.
+    /// Adds study time to this device's daily totals, keeping any time already recorded.
     func add(_ allocations: [(date: Date, seconds: Int)]) {
-        var totals = dailyTotals()
+        var contributions = loadContributions()
+        let device = BibleStatsStore.shared.installationID
         for allocation in allocations where allocation.seconds > 0 {
-            totals[Self.dayKey(for: allocation.date), default: 0] += allocation.seconds
+            contributions[Self.dayKey(for: allocation.date), default: [:]][device, default: 0] += allocation.seconds
         }
 
-        saveDailyTotals(totals)
+        saveContributions(contributions)
+        iCloudSyncCoordinator.shared.pushKey(Self.contributionsKey)
     }
 
-    /// Removes all recorded study time. An active session keeps counting from now.
+    /// Removes all recorded study time on this device. An active session keeps counting from now.
+    /// The reading stats reset calls this through `iCloudSyncCoordinator.clearPrayerStats()`,
+    /// which also removes the iCloud copy.
     func clearAll() {
         if checkpointDate != nil {
             checkpointDate = .now
         }
-        UserDefaults.standard.removeObject(forKey: Self.dailyTotalsKey)
+        UserDefaults.standard.removeObject(forKey: Self.contributionsKey)
+        UserDefaults.standard.removeObject(forKey: Self.legacyDailyTotalsKey)
         NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
     }
 
-    private func saveDailyTotals(_ totals: [String: Int]) {
-        if let data = try? JSONEncoder().encode(totals) {
-            UserDefaults.standard.set(data, forKey: Self.dailyTotalsKey)
+    // MARK: - Storage
+
+    func loadContributions() -> Contributions {
+        migrateLegacyTotalsIfNeeded()
+        let defaults = UserDefaults.standard
+        guard let data = defaults.data(forKey: Self.contributionsKey) else { return [:] }
+        return PersistedDecoding.decode(
+            Contributions.self,
+            from: data,
+            key: Self.contributionsKey,
+            keepingUnreadableIn: defaults
+        ) ?? [:]
+    }
+
+    /// Saves contributions, including ones merged from another device.
+    func saveContributions(_ contributions: Contributions) {
+        if let data = try? JSONEncoder().encode(contributions) {
+            UserDefaults.standard.set(data, forKey: Self.contributionsKey)
         }
         NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
     }
 
+    /// Seconds per day, summed across devices.
     private func dailyTotals() -> [String: Int] {
-        let defaults = UserDefaults.standard
+        loadContributions().mapValues { devices in devices.values.reduce(0) { $0 + max(0, $1) } }
+    }
 
-        if let data = defaults.data(forKey: Self.dailyTotalsKey),
+    /// Moves the device-only totals of earlier versions into this device's contributions.
+    private func migrateLegacyTotalsIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: Self.legacyDailyTotalsKey) != nil else { return }
+
+        let legacy = Self.legacyDailyTotals(in: defaults)
+        defaults.removeObject(forKey: Self.legacyDailyTotalsKey)
+        guard !legacy.isEmpty else { return }
+
+        var contributions = defaults.data(forKey: Self.contributionsKey).flatMap {
+            PersistedDecoding.decode(Contributions.self, from: $0, key: Self.contributionsKey, keepingUnreadableIn: defaults)
+        } ?? [:]
+        let device = BibleStatsStore.shared.installationID
+        for (day, seconds) in legacy where seconds > 0 {
+            contributions[day, default: [:]][device, default: 0] += seconds
+        }
+        if let data = try? JSONEncoder().encode(contributions) {
+            defaults.set(data, forKey: Self.contributionsKey)
+        }
+        iCloudSyncCoordinator.shared.pushKey(Self.contributionsKey)
+    }
+
+    private static func legacyDailyTotals(in defaults: UserDefaults) -> [String: Int] {
+        if let data = defaults.data(forKey: legacyDailyTotalsKey),
            let totals = try? JSONDecoder().decode([String: Int].self, from: data) {
             return totals
         }
 
-        // Read the older property-list representation so existing users do not lose data.
-        guard let storedTotals = defaults.dictionary(forKey: Self.dailyTotalsKey) else {
+        // The oldest versions stored a property list.
+        guard let storedTotals = defaults.dictionary(forKey: legacyDailyTotalsKey) else {
             return [:]
         }
-
         return storedTotals.reduce(into: [String: Int]()) { totals, entry in
             if let seconds = entry.value as? Int {
                 totals[entry.key] = seconds

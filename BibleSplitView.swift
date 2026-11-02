@@ -186,6 +186,11 @@ struct BibleSplitView: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
             }
+            .overlay {
+                if BibleStore.shared.loadFailed {
+                    BibleLoadFailedView()
+                }
+            }
         }
         .background(AppBackgroundView(tab: .bible))
         .toolbar(.hidden, for: .navigationBar)

@@ -75,10 +75,8 @@ struct SettingsResetDataSection: View {
         case .reading:
             // Clears local data and iCloud copies, then stamps a reset epoch so
             // older devices cannot restore the deleted reading history.
-            // Also clears prayer stats on every device, since they appear under Reading Stats.
+            // Also clears prayer and study time on every device, since they appear under Reading Stats.
             iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
-            // Study time is shown on the Reading Stats page and is stored only on this device.
-            StudyTimeTracker.shared.clearAll()
         }
 
         // Reading time comes from reading stats and game time from the game ledger,

@@ -696,14 +696,6 @@ struct GameLobbyPreview: View {
         .frame(maxWidth: 330)
     }
 
-    private func previewCard(rotation: Double, offset: CGFloat, color: Color) -> some View {
-        RoundedRectangle(cornerRadius: 18, style: .continuous)
-            .fill(color)
-            .frame(width: 280, height: 118)
-            .rotationEffect(.degrees(rotation))
-            .offset(x: offset)
-    }
-
     private func previewOrderRow(_ number: String, _ title: String) -> some View {
         HStack {
             Text(number).font(.caption.bold()).foregroundStyle(.secondary).frame(width: 24)

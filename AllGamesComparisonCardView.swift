@@ -324,27 +324,3 @@ fileprivate extension AllGamesComparisonCardView {
         }
     }
 }
-
-// MARK: - Compatibility helper to silence iOS 17 deprecation while supporting earlier OS versions
-fileprivate struct OnChangeCompatModifier<Value: Equatable>: ViewModifier {
-    let value: Value
-    let action: () -> Void
-
-    func body(content: Content) -> some View {
-        if #available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *) {
-            content.onChange(of: value) {
-                action()
-            }
-        } else {
-            content.onChange(of: value) { _ in
-                action()
-            }
-        }
-    }
-}
-
-fileprivate extension View {
-    func onChangeCompat<Value: Equatable>(of value: Value, _ action: @escaping () -> Void) -> some View {
-        self.modifier(OnChangeCompatModifier(value: value, action: action))
-    }
-}

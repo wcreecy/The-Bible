@@ -136,9 +136,10 @@ let inputPath = arguments.first ?? "The Bible/kjv.json"
 let outputPath = arguments.dropFirst().first ?? "The Bible/ScrambleWords.json"
 let inputURL = URL(fileURLWithPath: inputPath)
 let outputURL = URL(fileURLWithPath: outputPath)
-let projectDirectory = inputURL.deletingLastPathComponent()
-let charactersURL = projectDirectory.appendingPathComponent("Bible_Characters_Game_Clues_With_Difficulty.json")
-let locationsURL = projectDirectory.appendingPathComponent("bible_locations.json")
+// Source lists used only by this script; they are not bundled with the app. Run from the repo root.
+let sourceDataDirectory = URL(fileURLWithPath: "Scripts/data")
+let charactersURL = sourceDataDirectory.appendingPathComponent("Bible_Characters_Game_Clues_With_Difficulty.json")
+let locationsURL = sourceDataDirectory.appendingPathComponent("bible_locations.json")
 
 do {
     let data = try Data(contentsOf: inputURL)

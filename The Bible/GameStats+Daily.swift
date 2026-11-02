@@ -178,14 +178,4 @@ extension GameStats {
         Self.accuracyTrend(in: dailySeriesLast(days: 14, forWordMode: mode, now: now, calendar: calendar))
     }
 
-    func lastPlayedSummary(now: Date = Date()) -> (name: String?, relative: String?) {
-        let defaults = UserDefaults.standard
-        let name = lastPlayedGameName
-        let ts = defaults.double(forKey: "gamesLastPlayedAt")
-        guard ts > 0 else { return (name, nil) }
-        let date = Date(timeIntervalSince1970: ts)
-        let f = RelativeDateTimeFormatter()
-        f.unitsStyle = .short
-        return (name, f.localizedString(for: date, relativeTo: now))
-    }
 }

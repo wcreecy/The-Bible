@@ -173,20 +173,6 @@ extension GameStats {
         )
     }
 
-    func triviaCounts(difficulty: Difficulty) -> (correct: Int, answered: Int) {
-        let suffix: String
-        switch difficulty {
-        case .easy: suffix = "easy"
-        case .normal, .medium: suffix = "normal"
-        case .hard: suffix = "hard"
-        case .none: suffix = "all"
-        }
-        return (
-            max(0, readInt("triviaAllTimeCorrect_\(suffix)")),
-            max(0, readInt("triviaAllTimeAnswered_\(suffix)"))
-        )
-    }
-
     private var hangman: GameStat {
         // Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
         let combinedC = max(0, readInt("hangmanAllTimeCorrect_all"))

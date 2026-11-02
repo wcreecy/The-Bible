@@ -787,19 +787,6 @@ extension iCloudSyncCoordinator {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // Reset only Wordle counters (including timing + histogram) to zero.
-    func resetWordleCountersToZero() {
-        let keys = Set(Self.wordleKeys)
-        for key in keys {
-            defaults.set(0, forKey: key)
-            writeLocalTimestampNow(for: key)
-            kvs.set(Int(0), forKey: key)
-            writeRemoteTimestampNow(for: key)
-        }
-        enqueueKeysForSync(keys)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
-    }
-
     // Local-only purge of all game-related data (used when a newer remote reset epoch is observed).
     func clearAllGameDataLocalOnly() {
         // 1) Remove numeric counters locally (let remote zeros/timestamps win)

@@ -6,9 +6,6 @@ import WidgetKit
 @MainActor
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var favorites: [Favorite]
-    @Query private var verseNotes: [VerseNote]
-    @Query private var bookmarks: [Bookmark]
     @Environment(\.scenePhase) private var scenePhase
 
     let book: Book
@@ -27,12 +24,6 @@ struct ReadingView: View {
 
     // Reader-specific font size (independent from global app UI font)
     @AppStorage(AppStorageKey.readerFontSize) private var readerFontSize: Double = 17
-    @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers: Bool = true
     // Older versions used this key for every status icon; it now controls read progress only.
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress: Bool = false
     /// The verse whose note is open from its note marker.
@@ -69,8 +60,9 @@ struct ReadingView: View {
     /// Plays the slide-in of a new chapter; the direction follows the swipe.
     @State private var chapterSlideTrigger = 0
     @State private var chapterSlideDirection: CGFloat = 1
-    /// The floating chapter arrows step aside while the text is moving.
-    @State private var isScrolling = false
+    /// The floating chapter arrows step aside while the text is moving. Only the arrows read
+    /// it, so the start and end of each scroll don't redraw the whole reader.
+    @State private var scrollActivity = ReaderScrollActivity()
 
     init(
         book: Book,
@@ -390,17 +382,6 @@ struct ReadingView: View {
 
     @ViewBuilder
     private var content: some View {
-        // Build this once per reader update instead of scanning every saved-data collection
-        // separately for every rendered verse.
-        let chapterStatus = ReadingChapterStatusIndex(
-            favorites: favorites,
-            notes: verseNotes,
-            bookmarks: bookmarks,
-            crossReferences: chapterRelatedVerses,
-            bookName: viewModel.currentBook.name,
-            chapterNumber: viewModel.currentChapter.number
-        )
-
         ZStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
@@ -424,86 +405,22 @@ struct ReadingView: View {
                         Divider()
                     }
 
-                    ForEach(currentChapter.verses) { verse in
-                        let bookName = viewModel.currentBook.name
-                        let chapterNumber = viewModel.currentChapter.number
-                        let readUpdate = SeenVerseUpdate(
-                            bookName: bookName,
-                            chapter: chapterNumber,
-                            verse: verse.number,
-                            totalVerses: currentChapter.verses.count
-                        )
-
-                        ReadingVerseRow(
-                            verse: verse,
-                            bookName: bookName,
-                            chapterNumber: chapterNumber,
-                            isHighlighted: viewModel.highlightedVerse == verse.number,
-                            isSelected: viewModel.selectedVerse == verse.number,
-                            isFavorite: chapterStatus.favoriteVerseNumbers.contains(verse.number),
-                            hasNote: chapterStatus.hasNote(verse.number),
-                            isPinned: chapterStatus.bookmarkedVerseNumbers.contains(verse.number),
-                            isCurrentlyPinned: pinnedStore.isPinned(
-                                bookName: bookName,
-                                chapter: chapterNumber,
-                                verse: verse.number
-                            ),
-                            hasCrossReferences: chapterStatus.crossReferenceVerseNumbers.contains(verse.number),
-                            isRead: showsReadProgress &&
-                                seenVerseLocation == verseLocationKey &&
-                                seenVerseNumbers.contains(verse.number),
-                            showsMarkers: showsVerseMarkers,
-                            showsBookmarkMarker: showsBookmarkMarkers,
-                            showsPinnedVerseMarker: showsPinnedVerseMarker,
-                            showsFavoriteMarker: showsFavoriteMarkers,
-                            showsNoteMarker: showsNoteMarkers,
-                            showsCrossReferenceMarker: showsCrossReferenceMarkers,
-                            showsReadProgress: showsReadProgress,
-                            savedHighlightColor: chapterStatus.highlightColor(for: verse.number),
-                            readerFontSize: readerFontSize,
-                            showsFullReference: showsFullReferences,
-                            onVisibilityChange: { isVisible in
-                                viewModel.verseVisibilityChanged(readUpdate, isVisible: isVisible)
-                            },
-                            onTap: { v in
-                                let generator = UISelectionFeedbackGenerator()
-                                generator.selectionChanged()
-                                // Tapping a verse that is already selected opens its actions,
-                                // the same as a long press; a third tap closes them.
-                                let opensActions = viewModel.selectedVerse == v.number
-                                    && viewModel.menuVerse != v.number
-                                viewModel.clearMenuIfNeeded()
-                                // Tap otherwise only highlights/selects (no bookmarking)
-                                viewModel.handleVerseTap(context: modelContext, verse: v)
-                                if opensActions {
-                                    viewModel.handleVerseLongPress(verseNumber: v.number)
-                                }
-                            },
-                            onLongPress: { number in
-                                let generator = UIImpactFeedbackGenerator(style: .heavy)
-                                generator.impactOccurred()
-                                viewModel.handleVerseLongPress(verseNumber: number)
-                            },
-                            onOpenNote: {
-                                noteEditorVerse = verse
-                            },
-                            onOpenCrossReferences: {
-                                crossReferenceVerse = verse
-                            }
-                        )
-                        .id(viewModel.rowID(for: verse.number))
-                        .animation(.easeInOut(duration: 0.6), value: viewModel.highlightedVerse)
-                        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedVerse)
-
-                        if viewModel.menuVerse == verse.number {
-                            verseMenu(for: verse, bookName: bookName, chapterNumber: chapterNumber)
-                                .transition(.opacity)
-                        }
-
-                        if verse.number != currentChapter.verses.count {
-                            Divider()
-                        }
-                    }
+                    ReadingChapterVerseList(
+                        bookName: viewModel.currentBook.name,
+                        chapterNumber: viewModel.currentChapter.number,
+                        viewModel: viewModel,
+                        pinnedStore: pinnedStore,
+                        crossReferences: chapterRelatedVerses,
+                        readVerseNumbers: showsReadProgress && seenVerseLocation == verseLocationKey
+                            ? seenVerseNumbers
+                            : [],
+                        showsReadProgress: showsReadProgress,
+                        readerFontSize: readerFontSize,
+                        showsFullReferences: showsFullReferences,
+                        onOpenNote: { verse in noteEditorVerse = verse },
+                        onOpenCrossReferences: { verse in crossReferenceVerse = verse },
+                        onVerseActionFeedback: handleVerseActionFeedback
+                    )
 
                     // The way forward at the end of a chapter, without a swipe or the small arrows.
                     if let nextTitle = viewModel.nextChapterTitle {
@@ -558,11 +475,8 @@ struct ReadingView: View {
             }
             .scrollPosition(id: $viewModel.topVisibleVerseID, anchor: .top)
             .tabBarContentClearance()
-            .onChange(of: viewModel.topVisibleVerseID) { _, _ in
-                saveVisibleReaderPosition()
-            }
             .onScrollPhaseChange { _, phase in
-                isScrolling = phase != .idle
+                scrollActivity.isScrolling = phase != .idle
             }
             // A new chapter slides in from the side it was swiped toward.
             .keyframeAnimator(initialValue: ChapterSlide(), trigger: chapterSlideTrigger) { view, slide in
@@ -584,10 +498,11 @@ struct ReadingView: View {
             .animation(.easeOut(duration: 0.15), value: isInitialPositionReady)
 
             // Bottom corner navigation arrows overlay
-            overlayArrows
-                .opacity(isScrolling ? 0 : 1)
-                .allowsHitTesting(!isScrolling)
-                .animation(.easeInOut(duration: 0.2), value: isScrolling)
+            ReaderChapterArrows(
+                scrollActivity: scrollActivity,
+                onPrevious: { changeChapter(forward: false) },
+                onNext: { changeChapter(forward: true) }
+            )
         }
         .background(AppBackgroundView(tab: .bible))
         .contentShape(Rectangle())
@@ -702,15 +617,7 @@ struct ReadingView: View {
     }
 
     private func saveVisibleReaderPosition() {
-        guard let visibleID = viewModel.topVisibleVerseID,
-              let verse = currentChapter.verses.first(where: {
-                  viewModel.rowID(for: $0.number) == visibleID
-              }) else {
-            saveReaderPosition(verseNumber: viewModel.currentVerse)
-            return
-        }
-
-        saveReaderPosition(verseNumber: verse.number)
+        viewModel.saveVisiblePosition()
     }
 
     private func saveReaderPosition(verseNumber: Int) {
@@ -732,85 +639,22 @@ struct ReadingView: View {
         seenVerseLocation = "\(bookName):\(chapterNumber)"
     }
 
-    /// The editor needs the existing note for the selected verse only; row rendering uses
-    /// `ReadingChapterStatusIndex` instead of performing this lookup repeatedly.
+    /// The editor needs the existing note for the selected verse only, so it fetches just this
+    /// chapter's notes when the editor opens rather than keeping every note queried.
     private func note(for verseNumber: Int) -> VerseNote? {
-        verseNotes
-            .filter {
-                $0.covers(
-                    bookName: viewModel.currentBook.name,
-                    chapterNumber: viewModel.currentChapter.number,
-                    verseNumber: verseNumber
-                )
-            }
+        let bookName = viewModel.currentBook.name
+        let chapterNumber = viewModel.currentChapter.number
+        let descriptor = FetchDescriptor<VerseNote>(predicate: #Predicate {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber
+        })
+        let chapterNotes = (try? modelContext.fetch(descriptor)) ?? []
+        return chapterNotes
+            .filter { $0.covers(bookName: bookName, chapterNumber: chapterNumber, verseNumber: verseNumber) }
             .sorted {
                 ($0.verseNumber == verseNumber ? 0 : 1, $0.lastVerseNumber - $0.verseNumber) <
                     ($1.verseNumber == verseNumber ? 0 : 1, $1.lastVerseNumber - $1.verseNumber)
             }
             .first
-    }
-
-    // MARK: - Overlay Arrows
-
-    private var overlayArrows: some View {
-        // Small, semi-transparent chevrons in bottom-left and bottom-right.
-        // Use padding to respect safe area and provide a larger hit target.
-        ZStack {
-            VStack {
-                Spacer()
-                HStack {
-                    Button(action: {
-                        changeChapter(forward: false)
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.primary)
-                            .frame(width: 44, height: 44) // hit target
-                            .background(.ultraThinMaterial, in: Circle())
-                            .opacity(0.7)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Previous chapter")
-                    .padding(.leading, 12)
-
-                    Spacer()
-
-                    Button(action: {
-                        changeChapter(forward: true)
-                    }) {
-                        Image(systemName: "chevron.right")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.primary)
-                            .frame(width: 44, height: 44) // hit target
-                            .background(.ultraThinMaterial, in: Circle())
-                            .opacity(0.7)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Next chapter")
-                    .padding(.trailing, 12)
-                }
-                .padding(.bottom, 10)
-            }
-        }
-        .allowsHitTesting(true)
-    }
-
-    // Extracted to reduce type-checking complexity
-    @ViewBuilder
-    private func verseMenu(for verse: Verse, bookName: String, chapterNumber: Int) -> some View {
-        VerseActionMenu(
-            verse: VerseActionReference(
-                bookName: bookName,
-                chapterNumber: chapterNumber,
-                verseNumber: verse.number,
-                verseText: verse.text
-            ),
-            presentation: .buttons,
-            onFeedback: handleVerseActionFeedback
-        )
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal)
-        .padding(.bottom, 6)
     }
 
     private func handleVerseActionFeedback(_ feedback: VerseActionFeedback) {
@@ -883,6 +727,227 @@ private extension View {
 
 /// Chapter-local saved-data index for the reader. It replaces repeated whole-collection
 /// searches while keeping the existing marker and note precedence rules intact.
+/// The reader's verse rows for one chapter. The saved-item queries live here, filtered to that
+/// chapter, so the reader indexes only this chapter's favorites, notes, and bookmarks rather
+/// than every one saved.
+private struct ReadingChapterVerseList: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [Favorite]
+    @Query private var verseNotes: [VerseNote]
+    @Query private var bookmarks: [Bookmark]
+
+    @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers: Bool = true
+
+    let bookName: String
+    let chapterNumber: Int
+    let viewModel: ReadingViewModel
+    let pinnedStore: PinnedVerseStore
+    let crossReferences: [ChapterRelatedVerse]
+    /// Verses already read in this chapter; empty while read progress is off.
+    let readVerseNumbers: Set<Int>
+    let showsReadProgress: Bool
+    let readerFontSize: Double
+    let showsFullReferences: Bool
+    let onOpenNote: (Verse) -> Void
+    let onOpenCrossReferences: (Verse) -> Void
+    let onVerseActionFeedback: (VerseActionFeedback) -> Void
+
+    init(
+        bookName: String,
+        chapterNumber: Int,
+        viewModel: ReadingViewModel,
+        pinnedStore: PinnedVerseStore,
+        crossReferences: [ChapterRelatedVerse],
+        readVerseNumbers: Set<Int>,
+        showsReadProgress: Bool,
+        readerFontSize: Double,
+        showsFullReferences: Bool,
+        onOpenNote: @escaping (Verse) -> Void,
+        onOpenCrossReferences: @escaping (Verse) -> Void,
+        onVerseActionFeedback: @escaping (VerseActionFeedback) -> Void
+    ) {
+        self.bookName = bookName
+        self.chapterNumber = chapterNumber
+        self.viewModel = viewModel
+        self.pinnedStore = pinnedStore
+        self.crossReferences = crossReferences
+        self.readVerseNumbers = readVerseNumbers
+        self.showsReadProgress = showsReadProgress
+        self.readerFontSize = readerFontSize
+        self.showsFullReferences = showsFullReferences
+        self.onOpenNote = onOpenNote
+        self.onOpenCrossReferences = onOpenCrossReferences
+        self.onVerseActionFeedback = onVerseActionFeedback
+
+        // Rebuilt whenever the reader moves to another chapter, which re-creates this view.
+        _favorites = Query(filter: #Predicate<Favorite> {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber
+        })
+        _verseNotes = Query(filter: #Predicate<VerseNote> {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber
+        })
+        _bookmarks = Query(filter: #Predicate<Bookmark> {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber
+        })
+    }
+
+    var body: some View {
+        let verses = viewModel.currentChapter.verses
+        // Build this once per update instead of scanning the saved items for every verse.
+        let chapterStatus = ReadingChapterStatusIndex(
+            favorites: favorites,
+            notes: verseNotes,
+            bookmarks: bookmarks,
+            crossReferences: crossReferences,
+            bookName: bookName,
+            chapterNumber: chapterNumber
+        )
+
+        ForEach(verses) { verse in
+            let readUpdate = SeenVerseUpdate(
+                bookName: bookName,
+                chapter: chapterNumber,
+                verse: verse.number,
+                totalVerses: verses.count
+            )
+
+            ReadingVerseRow(
+                verse: verse,
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                isHighlighted: viewModel.highlightedVerse == verse.number,
+                isSelected: viewModel.selectedVerse == verse.number,
+                isFavorite: chapterStatus.favoriteVerseNumbers.contains(verse.number),
+                hasNote: chapterStatus.hasNote(verse.number),
+                isPinned: chapterStatus.bookmarkedVerseNumbers.contains(verse.number),
+                isCurrentlyPinned: pinnedStore.isPinned(
+                    bookName: bookName,
+                    chapter: chapterNumber,
+                    verse: verse.number
+                ),
+                hasCrossReferences: chapterStatus.crossReferenceVerseNumbers.contains(verse.number),
+                isRead: readVerseNumbers.contains(verse.number),
+                showsMarkers: showsVerseMarkers,
+                showsBookmarkMarker: showsBookmarkMarkers,
+                showsPinnedVerseMarker: showsPinnedVerseMarker,
+                showsFavoriteMarker: showsFavoriteMarkers,
+                showsNoteMarker: showsNoteMarkers,
+                showsCrossReferenceMarker: showsCrossReferenceMarkers,
+                showsReadProgress: showsReadProgress,
+                savedHighlightColor: chapterStatus.highlightColor(for: verse.number),
+                readerFontSize: readerFontSize,
+                showsFullReference: showsFullReferences,
+                onVisibilityChange: { isVisible in
+                    viewModel.verseVisibilityChanged(readUpdate, isVisible: isVisible)
+                },
+                onTap: { v in
+                    let generator = UISelectionFeedbackGenerator()
+                    generator.selectionChanged()
+                    // Tapping a verse that is already selected opens its actions,
+                    // the same as a long press; a third tap closes them.
+                    let opensActions = viewModel.selectedVerse == v.number
+                        && viewModel.menuVerse != v.number
+                    viewModel.clearMenuIfNeeded()
+                    // Tap otherwise only highlights/selects (no bookmarking)
+                    viewModel.handleVerseTap(context: modelContext, verse: v)
+                    if opensActions {
+                        viewModel.handleVerseLongPress(verseNumber: v.number)
+                    }
+                },
+                onLongPress: { number in
+                    let generator = UIImpactFeedbackGenerator(style: .heavy)
+                    generator.impactOccurred()
+                    viewModel.handleVerseLongPress(verseNumber: number)
+                },
+                onOpenNote: {
+                    onOpenNote(verse)
+                },
+                onOpenCrossReferences: {
+                    onOpenCrossReferences(verse)
+                }
+            )
+            .id(viewModel.rowID(for: verse.number))
+            .animation(.easeInOut(duration: 0.6), value: viewModel.highlightedVerse)
+            .animation(.easeInOut(duration: 0.2), value: viewModel.selectedVerse)
+
+            if viewModel.menuVerse == verse.number {
+                VerseActionMenu(
+                    verse: VerseActionReference(
+                        bookName: bookName,
+                        chapterNumber: chapterNumber,
+                        verseNumber: verse.number,
+                        verseText: verse.text
+                    ),
+                    presentation: .buttons,
+                    onFeedback: onVerseActionFeedback
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal)
+                .padding(.bottom, 6)
+                .transition(.opacity)
+            }
+
+            if verse.number != verses.count {
+                Divider()
+            }
+        }
+    }
+}
+
+/// Whether the reader's text is moving. A reference type, so writing it from the scroll
+/// view doesn't invalidate the reader; only views that read it redraw.
+@MainActor
+@Observable
+private final class ReaderScrollActivity {
+    var isScrolling = false
+}
+
+/// Small, semi-transparent chapter arrows in the bottom corners, hidden while scrolling.
+private struct ReaderChapterArrows: View {
+    let scrollActivity: ReaderScrollActivity
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+
+    var body: some View {
+        let isScrolling = scrollActivity.isScrolling
+
+        VStack {
+            Spacer()
+            HStack {
+                arrow("chevron.left", label: "Previous chapter", action: onPrevious)
+                    .padding(.leading, 12)
+
+                Spacer()
+
+                arrow("chevron.right", label: "Next chapter", action: onNext)
+                    .padding(.trailing, 12)
+            }
+            .padding(.bottom, 10)
+        }
+        .opacity(isScrolling ? 0 : 1)
+        .allowsHitTesting(!isScrolling)
+        .animation(.easeInOut(duration: 0.2), value: isScrolling)
+    }
+
+    private func arrow(_ systemImage: String, label: LocalizedStringResource, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.primary)
+                .frame(width: 44, height: 44) // hit target
+                .background(.ultraThinMaterial, in: Circle())
+                .opacity(0.7)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(label))
+    }
+}
+
 private struct ReadingChapterStatusIndex {
     let favoriteVerseNumbers: Set<Int>
     let bookmarkedVerseNumbers: Set<Int>

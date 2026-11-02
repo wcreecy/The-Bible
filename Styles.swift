@@ -60,32 +60,11 @@ struct HeroCardListRowBackground: View {
     }
 }
 
-private struct ImageOverlaySurfaceModifier: ViewModifier {
-    let cornerRadius: CGFloat
-
-    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
-
-    func body(content: Content) -> some View {
-        content
-            .glassEffect(
-                .regular,
-                in: .rect(cornerRadius: cornerRadius)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(.primary.opacity(colorSchemeContrast == .increased ? 0.32 : 0.14))
-            }
-    }
-}
-
 extension View {
     func heroCardSurface(cornerRadius: CGFloat = AppDesignMetrics.cardCornerRadius) -> some View {
         modifier(HeroCardSurfaceModifier(cornerRadius: cornerRadius))
     }
 
-    func imageOverlaySurface(cornerRadius: CGFloat = AppDesignMetrics.cardCornerRadius) -> some View {
-        modifier(ImageOverlaySurfaceModifier(cornerRadius: cornerRadius))
-    }
 }
 
 /// A modern pill-shaped button style used across the app for secondary actions.

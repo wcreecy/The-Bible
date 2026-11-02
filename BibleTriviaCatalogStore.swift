@@ -3,7 +3,8 @@ import Foundation
 enum BibleTriviaCatalogStore {
     static let didImportNotification = Notification.Name("BibleTriviaCatalogDidImport")
 
-    private static let importedFileName = "BibleTriviaQuestions.json"
+    // Read from `loadData()`, which runs off the main actor.
+    private nonisolated static let importedFileName = "BibleTriviaQuestions.json"
 
     nonisolated static func loadData() -> Data? {
         if let importedURL, let data = try? Data(contentsOf: importedURL) {
@@ -32,14 +33,14 @@ enum BibleTriviaCatalogStore {
         NotificationCenter.default.post(name: didImportNotification, object: nil)
     }
 
-    private static var importedURL: URL? {
+    private nonisolated static var importedURL: URL? {
         guard let directoryURL = try? applicationSupportDirectory() else {
             return nil
         }
         return directoryURL.appendingPathComponent(importedFileName)
     }
 
-    private static func applicationSupportDirectory() throws -> URL {
+    private nonisolated static func applicationSupportDirectory() throws -> URL {
         try FileManager.default.url(
             for: .applicationSupportDirectory,
             in: .userDomainMask,
@@ -56,16 +57,16 @@ enum BibleTriviaCatalogStore {
         var identifiers = Set<Int>()
         for question in questions {
             guard identifiers.insert(question.id).inserted else {
-                throw ImportError.invalidQuestion("Duplicate id (question.id).")
+                throw ImportError.invalidQuestion("Duplicate id \(question.id).")
             }
             guard !question.question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                throw ImportError.invalidQuestion("Question (question.id) has no question text.")
+                throw ImportError.invalidQuestion("Question \(question.id) has no question text.")
             }
             guard !question.correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                throw ImportError.invalidQuestion("Question (question.id) has no correct answer.")
+                throw ImportError.invalidQuestion("Question \(question.id) has no correct answer.")
             }
             guard question.incorrectAnswers.count >= 3 else {
-                throw ImportError.invalidQuestion("Question (question.id) needs at least three incorrect answers.")
+                throw ImportError.invalidQuestion("Question \(question.id) needs at least three incorrect answers.")
             }
 
             let normalizedAnswers = question.incorrectAnswers.map {
@@ -73,13 +74,13 @@ enum BibleTriviaCatalogStore {
             }
             guard normalizedAnswers.allSatisfy({ !$0.isEmpty }),
                   Set(normalizedAnswers).count == normalizedAnswers.count else {
-                throw ImportError.invalidQuestion("Question (question.id) has empty or duplicate incorrect answers.")
+                throw ImportError.invalidQuestion("Question \(question.id) has empty or duplicate incorrect answers.")
             }
             guard !normalizedAnswers.contains(question.correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()) else {
-                throw ImportError.invalidQuestion("Question (question.id) lists the correct answer as incorrect.")
+                throw ImportError.invalidQuestion("Question \(question.id) lists the correct answer as incorrect.")
             }
             guard ["easy", "normal", "hard"].contains(question.difficulty.lowercased()) else {
-                throw ImportError.invalidQuestion("Question (question.id) has an invalid difficulty.")
+                throw ImportError.invalidQuestion("Question \(question.id) has an invalid difficulty.")
             }
         }
     }

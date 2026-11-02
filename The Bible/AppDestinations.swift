@@ -14,10 +14,6 @@ extension View {
                         coordinator.push(.reader(book: book, chapter: chapter, startVerse: 1))
                     }
 
-                case .chapter(let book, let chapter):
-                    // Show the verses list so the user can pick which verse to read.
-                    VersesView(book: book, chapter: chapter)
-
                 case .reader(let book, let chapter, let startVerse):
                     ReadingView(
                         book: book,

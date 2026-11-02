@@ -181,7 +181,7 @@ struct SavedHighlightsView: View {
         )
         .onAppear { refreshLibrary() }
         // Recoloring a highlight or editing its note doesn't change how many there are.
-        .onChange(of: notes.map(HighlightFingerprint.init)) { refreshLibrary() }
+        .onChange(of: notes.map { HighlightFingerprint($0) }) { refreshLibrary() }
         .onChange(of: colorFilter?.rawValue) { refreshLibrary() }
         .onChange(of: searchText) { refreshLibrary() }
         .onChange(of: sortOrder.rawValue) { refreshLibrary() }

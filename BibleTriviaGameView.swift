@@ -257,10 +257,6 @@ final class BibleTriviaGameModel {
         min(progressStore.progress(for: difficulty).completedQuestionIDs.count, eligibleQuestions.count)
     }
 
-    var isPoolComplete: Bool {
-        !eligibleQuestions.isEmpty && completedInPool == eligibleQuestions.count
-    }
-
     var accuracy: Int {
         guard session.answered > 0 else { return 0 }
         return Int((Double(session.score) / Double(session.answered) * 100).rounded())

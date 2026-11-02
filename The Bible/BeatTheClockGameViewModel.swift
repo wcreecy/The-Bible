@@ -147,9 +147,11 @@ final class BeatTheClockGameViewModel {
     /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
     private let missedQuestions: MissedGameQuestionStore
 
-    init(reviewQuestionIDs: Set<String> = [], missedQuestions: MissedGameQuestionStore = .shared) {
+    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
+    /// default argument, which would be evaluated outside the main actor.
+    init(reviewQuestionIDs: Set<String> = [], missedQuestions: MissedGameQuestionStore? = nil) {
         self.reviewQuestionIDs = reviewQuestionIDs
-        self.missedQuestions = missedQuestions
+        self.missedQuestions = missedQuestions ?? .shared
     }
 
     // MARK: - Settings

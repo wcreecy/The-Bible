@@ -175,6 +175,7 @@ struct RandomVerseLockScreenView: View {
     private func shortBookAbbrev(_ name: String) -> String {
         // Very compact abbreviation for circular
         let parts = name.split(separator: " ")
+        guard let firstPart = parts.first else { return "" }
         if parts.count == 1 {
             return String(parts[0].prefix(3)).uppercased()
         }
@@ -183,7 +184,7 @@ struct RandomVerseLockScreenView: View {
             let rest = parts.dropFirst().first.map { String($0.prefix(3)).uppercased() } ?? ""
             return "\(first) \(rest)"
         }
-        return String(parts.first!.prefix(3)).uppercased()
+        return String(firstPart.prefix(3)).uppercased()
     }
 
     private func deepLinkURL() -> URL? {

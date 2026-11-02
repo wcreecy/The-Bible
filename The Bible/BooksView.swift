@@ -30,6 +30,11 @@ struct BooksView: View {
             .padding(.horizontal, 16)
             .padding(.vertical)
         }
+        .overlay {
+            if BibleStore.shared.loadFailed {
+                BibleLoadFailedView()
+            }
+        }
         .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")

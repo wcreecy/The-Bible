@@ -21,7 +21,6 @@
 		2C1400FE2EF2C0D400A93CA9 /* StatsChartConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */; };
 		2C1E7EE53087876D00DB8E2A /* StudyTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1E7EE43087876D00DB8E2A /* StudyTimeTracker.swift */; };
 		2C1E7EE730879C2700DB8E2A /* MissedGameQuestionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1E7EE630879C2700DB8E2A /* MissedGameQuestionStore.swift */; };
-		2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */; };
 		2C2764E42EE8C20000A321FE /* HeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2764E32EE8C1FF00A321FE /* HeroCard.swift */; };
 		2C2764EC2EE8C20D00A321FE /* PrayerStudyTimerSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2764EB2EE8C20D00A321FE /* PrayerStudyTimerSetupView.swift */; };
 		2C2764EE2EE8C22A00A321FE /* DebouncedWidgetReloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2764ED2EE8C22A00A321FE /* DebouncedWidgetReloader.swift */; };
@@ -813,7 +812,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */,
 				2C514D0B3075AB4F000CFC0D /* TodayChallengeCatalog.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

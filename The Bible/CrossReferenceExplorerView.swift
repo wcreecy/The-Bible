@@ -52,10 +52,6 @@ struct CrossReferenceExplorerView: View {
     @State private var isShowingSavedOnly = false
     @State private var selectedEntry: CrossReferenceExplorerEntry?
 
-    private var resultCount: Int {
-        sections.reduce(into: 0) { $0 += $1.entries.count }
-    }
-
     private var sourceBookNames: [String] {
         let availableBooks = Set(entries.map(\.bookName))
         return BibleCanon.canonicalOrder().filter(availableBooks.contains)

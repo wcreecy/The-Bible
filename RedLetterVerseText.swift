@@ -44,9 +44,6 @@ enum RedLetterText {
 }
 
 extension Verse {
-    var redLetterAttributedText: AttributedString {
-        attributedText(italicizingSuppliedWords: false)
-    }
 
     func attributedText(italicizingSuppliedWords: Bool) -> AttributedString {
         RedLetterText.attributedText(

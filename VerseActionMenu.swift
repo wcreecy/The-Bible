@@ -177,6 +177,32 @@ struct VerseActionMenu: View {
     var onNoteEditorPresented: () -> Void = {}
     var onNoteEditorDismissed: () -> Void = {}
 
+    init(
+        verse: VerseActionReference,
+        presentation: VerseActionPresentation = .menu,
+        onFeedback: ((VerseActionFeedback) -> Void)? = nil,
+        onNoteEditorPresented: @escaping () -> Void = {},
+        onNoteEditorDismissed: @escaping () -> Void = {}
+    ) {
+        self.verse = verse
+        self.presentation = presentation
+        self.onFeedback = onFeedback
+        self.onNoteEditorPresented = onNoteEditorPresented
+        self.onNoteEditorDismissed = onNoteEditorDismissed
+
+        // Favorites and bookmarks matter only for this verse. Notes stay unfiltered: a note
+        // anywhere can mention this verse, and the mention count needs them all.
+        let bookName = verse.bookName
+        let chapterNumber = verse.chapterNumber
+        let verseNumber = verse.verseNumber
+        _favorites = Query(filter: #Predicate<Favorite> {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber && $0.verseNumber == verseNumber
+        })
+        _bookmarks = Query(filter: #Predicate<Bookmark> {
+            $0.bookName == bookName && $0.chapterNumber == chapterNumber && $0.verseNumber == verseNumber
+        })
+    }
+
     var body: some View {
         VerseActionMenuContent(
             verse: verse,

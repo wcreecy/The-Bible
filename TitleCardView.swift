@@ -41,23 +41,6 @@ struct TitleCardView: View {
             }
         }
 
-        var quickActionForeground: Color {
-            switch self {
-            case .afternoon:
-                .black
-            case .sunrise, .evening, .night:
-                .white
-            }
-        }
-
-        var quickActionBackdrop: Color {
-            switch self {
-            case .afternoon:
-                .white.opacity(0.72)
-            case .sunrise, .evening, .night:
-                .black.opacity(0.52)
-            }
-        }
     }
 
     private var greetingScene: GreetingScene {

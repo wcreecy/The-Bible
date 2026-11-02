@@ -45,24 +45,6 @@ extension BibleStatsStore {
         return cacheSeenVersesByChapter ?? [:]
     }
 
-    func saveSeenVerses(_ verses: [Int], bookName: String, chapter: Int) {
-        ensureSeenVerseCacheLoaded()
-        var map = cacheSeenVersesByChapter ?? [:]
-        map["\(bookName):\(chapter)"] = Set(verses)
-        persistSeenVerseMap(map)
-    }
-
-    func markVerseSeen(bookName: String, chapter: Int, verse: Int, totalVerses: Int) {
-        markVersesSeen([
-            SeenVerseUpdate(
-                bookName: bookName,
-                chapter: chapter,
-                verse: verse,
-                totalVerses: totalVerses
-            )
-        ])
-    }
-
     /// Applies a group of verse updates with one seen-verse persistence and sync operation.
     func markVersesSeen(_ updates: Set<SeenVerseUpdate>, date: Date = Date()) {
         let validUpdates = updates.filter {
@@ -131,25 +113,6 @@ extension BibleStatsStore {
         let dict: [String: Date] = loadJSON(key: Defaults.keyChapterCompletionDates, default: [:])
         cacheChapterCompletionDates = dict
         return dict
-    }
-
-    func saveChapterCompletionDates(_ dict: [String: Date]) {
-        cacheChapterCompletionDates = dict
-        saveJSON(dict, key: Defaults.keyChapterCompletionDates)
-        iCloudSyncCoordinator.shared.pushKey(Defaults.keyChapterCompletionDates)
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-    }
-
-    func chapterCompletions(inMonth date: Date, calendar: Calendar = .autoupdatingCurrent) -> [String: Date] {
-        let map = loadChapterCompletionDates()
-        var calendar = calendar
-        calendar.timeZone = TimeZone.autoupdatingCurrent
-        let year = calendar.component(.year, from: date)
-        let month = calendar.component(.month, from: date)
-        return map.filter { _, completionDate in
-            let components = calendar.dateComponents([.year, .month], from: completionDate)
-            return components.year == year && components.month == month
-        }
     }
 
     // MARK: - Marking chapters unread

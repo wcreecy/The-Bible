@@ -70,6 +70,9 @@ struct The_Bible__iOS_App: App {
             AppStorageKey.contextualTipsEnabled: true
         ])
         UITestSupport.configureIfNeeded()
+        // Re-bucket old GMT daily keys before any screen reads stats or iCloud sync starts
+        // (sync starts in ContentView's onAppear). It runs once and is local only.
+        BibleStatsStore.shared.migrateDailyKeysFromGMTToLocalIfNeeded()
         // Start decoding the bundled corpus while SwiftData initializes. The Home mini reader
         // shares this load, so it can present its first chapter sooner on a cold launch.
         Task.detached(priority: .userInitiated) {
@@ -249,9 +252,6 @@ struct The_Bible__iOS_App: App {
 
                     await cloudKitManager.prepare()
                     // iCloud key-value sync is started by ContentView.
-
-                    // Run the GMT→local daily key migration once before any stats/streaks are read.
-                    BibleStatsStore.shared.migrateDailyKeysFromGMTToLocalIfNeeded()
 
                     // Removed StoreKit environment hint to avoid Simulator auth logs when not using StoreKit.
                 }

@@ -999,7 +999,7 @@ private struct ScrambleLetterTray: View {
                         .frame(width: 48, height: 48)
                 }
                 .buttonStyle(ScrambleLetterTileStyle())
-                .accessibilityLabel("\(letters[index]), available")
+                .accessibilityLabel("\(String(letters[index])), available")
                 .accessibilityHint("Double tap to add this letter.")
             }
         }

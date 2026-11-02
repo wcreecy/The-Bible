@@ -115,6 +115,8 @@ struct ContentView: View {
                 guard let tab = AppTab(rawValue: tabIndex), tab == selectedTab else { return }
                 handleTabReselection(tab)
             }
+            // Lets study and game time stop counting while the app sits untouched.
+            UserActivityCaptureView()
         }
     }
 
@@ -379,6 +381,8 @@ struct ContentView: View {
     private func handleScenePhaseChange(_ newValue: ScenePhase) {
         switch newValue {
         case .active:
+            // Returning to the app counts as activity, so time counts before the first touch.
+            UserActivityMonitor.shared.recordInteraction()
             // Pull and merge stats changed on other devices while the app was away.
             iCloudSyncCoordinator.shared.refreshNow()
 
@@ -555,10 +559,15 @@ struct ContentView: View {
 
     private func flushGameTime() {
         guard let start = gameTimeStart else { return }
-        let elapsed = Int(Date().timeIntervalSince(start))
-        guard elapsed > 0 else { return }
-        gameTimeStart = start.addingTimeInterval(TimeInterval(elapsed))
-        GameStats.shared.recordPlayTime(seconds: elapsed, endingAt: Date())
+        // A game left open and untouched stops counting after the idle limit.
+        let now = Date()
+        let span = UserActivityMonitor.shared.countedSpan(since: start, now: now)
+        gameTimeStart = span.nextCheckpoint
+        guard span.seconds > 0 else { return }
+        GameStats.shared.recordPlayTime(
+            seconds: span.seconds,
+            endingAt: span.start.addingTimeInterval(TimeInterval(span.seconds))
+        )
     }
 
     // MARK: - Tab reselection

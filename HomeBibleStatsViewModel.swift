@@ -179,21 +179,6 @@ final class HomeBibleStatsViewModel {
         }
     }
 
-    var weekDeltaOnlyValue: String {
-        let delta = thisWeekSeconds - lastWeekSeconds
-        if delta == 0 { return "—" }
-        let sign = delta > 0 ? "+" : "−"
-        return "\(sign)\(formatted(abs(delta)))"
-    }
-
-    // Today vs Yesterday delta (totals-based)
-    var todayDeltaOnlyValue: String {
-        let delta = todaySeconds - snapshot.yesterdaySeconds
-        if delta == 0 { return "—" }
-        let sign = delta > 0 ? "+" : "−"
-        return "\(sign)\(formatted(abs(delta)))"
-    }
-
     private func relativeTimeString(from date: Date, to now: Date = Date()) -> String {
         let f = RelativeDateTimeFormatter()
         f.unitsStyle = .short

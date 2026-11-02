@@ -9,13 +9,21 @@ nonisolated private let bibleDataLogger = Logger(
 private nonisolated final class BibleCorpusCache: @unchecked Sendable {
     private let lock = NSLock()
     private var storage: [Book] = []
+    private var failed = false
 
     var books: [Book] {
         lock.withLock { storage }
     }
 
+    var loadFailed: Bool {
+        lock.withLock { failed }
+    }
+
     func store(_ books: [Book]) {
-        lock.withLock { storage = books }
+        lock.withLock {
+            storage = books
+            failed = books.isEmpty
+        }
     }
 }
 
@@ -29,6 +37,11 @@ actor BibleRepository {
         cache.books
     }
 
+    /// Whether the last load found no usable Bible text. The next load tries again.
+    nonisolated var loadFailed: Bool {
+        cache.loadFailed
+    }
+
     func loadAllBooks() async -> [Book] {
         let cached = cache.books
         if !cached.isEmpty { return cached }
@@ -36,16 +49,17 @@ actor BibleRepository {
 
         let resourceURL = Bundle.main.url(forResource: "kjv", withExtension: "json")
         let task = Task.detached(priority: .userInitiated) {
+            // No books means the load failed; screens show an error instead of placeholder text.
             guard let resourceURL else {
-                bibleDataLogger.error("The bundled Bible corpus resource is missing; using fallback data.")
-                return BibleData.fallbackBooks
+                bibleDataLogger.error("The bundled Bible corpus resource is missing.")
+                return [Book]()
             }
             do {
                 let data = try Data(contentsOf: resourceURL, options: .mappedIfSafe)
                 return try BibleData.decodeBooks(from: data)
             } catch {
-                bibleDataLogger.error("Failed to load the bundled Bible corpus; using fallback data. Error: \(String(describing: error), privacy: .public)")
-                return BibleData.fallbackBooks
+                bibleDataLogger.error("Failed to load the bundled Bible corpus. Error: \(String(describing: error), privacy: .public)")
+                return [Book]()
             }
         }
         loadTask = task
@@ -307,29 +321,4 @@ enum BibleData {
             )
         }
     }
-
-    nonisolated static let fallbackBooks: [Book] = [
-            Book(
-                name: "Genesis",
-                chapters: [
-                    Chapter(number: 1, verses: (1...31).map { Verse(number: $0, text: "Genesis 1:\($0) text") }),
-                    Chapter(number: 2, verses: (1...25).map { Verse(number: $0, text: "Genesis 2:\($0) text") }),
-                    Chapter(number: 3, verses: (1...24).map { Verse(number: $0, text: "Genesis 3:\($0) text") })
-                ]
-            ),
-            Book(
-                name: "Exodus",
-                chapters: [
-                    Chapter(number: 1, verses: (1...22).map { Verse(number: $0, text: "Exodus 1:\($0) text") }),
-                    Chapter(number: 2, verses: (1...25).map { Verse(number: $0, text: "Exodus 2:\($0) text") })
-                ]
-            ),
-            Book(
-                name: "Matthew",
-                chapters: [
-                    Chapter(number: 1, verses: (1...25).map { Verse(number: $0, text: "Matthew 1:\($0) text") }),
-                    Chapter(number: 2, verses: (1...23).map { Verse(number: $0, text: "Matthew 2:\($0) text") })
-                ]
-            )
-    ]
 }

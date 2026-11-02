@@ -17,10 +17,6 @@ final class HealthKitManager {
         HKObjectType.categoryType(forIdentifier: .mindfulSession)
     }
 
-    func isAvailable() -> Bool {
-        return healthStore != nil && mindfulType != nil
-    }
-
     func mindfulMinutesAuthorizationStatus() -> HKAuthorizationStatus? {
         guard let healthStore, let mindfulType else { return nil }
         return healthStore.authorizationStatus(for: mindfulType)
