@@ -17,13 +17,21 @@ struct RefreshVerseOfDayIntent: AppIntent {
         let specificBook = defaults.string(forKey: "verseOfDaySpecificBook") ?? ""
 
         let allBooks = await BibleRepository.shared.loadAllBooks()
+        // Prefer a verse that hasn't been shown lately; with nothing else left, any verse will do.
+        let recent = Set(VerseOfDaySelector.History.recent())
         guard let selection = VerseOfDaySelector.select(
+            from: allBooks,
+            scopeRaw: scopeRaw,
+            specificBook: specificBook,
+            avoiding: { recent.contains($0.historyKey) }
+        ) ?? VerseOfDaySelector.select(
             from: allBooks,
             scopeRaw: scopeRaw,
             specificBook: specificBook
         ) else {
             return .result()
         }
+        VerseOfDaySelector.History.record(selection)
 
         // Persist to standard defaults (so the app UI updates)
         defaults.set(selection.bookName, forKey: "verseOfDayBook")

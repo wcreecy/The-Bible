@@ -78,30 +78,36 @@ struct VerseOfDayCard: View {
                         .italic()
                         .lineLimit(8)
                         .truncationMode(.tail)
+                        .contentTransition(.opacity)
 
                     Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .contentTransition(.opacity)
 
                     HStack(spacing: 24) {
-                        if canUndoRefresh {
-                            Button(action: onUndoRefresh) {
-                                Label("Undo Verse Refresh", systemImage: "arrow.uturn.backward")
-                            }
-                            .labelStyle(.iconOnly)
-                            .foregroundStyle(.orange)
-                            .font(.title3)
-                            .help("Return to the previous verse")
+                        // Always laid out, so the buttons beside it don't move when it appears.
+                        Button(action: onUndoRefresh) {
+                            Label("Undo Verse Refresh", systemImage: "arrow.uturn.backward")
                         }
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(.orange)
+                        .font(.title3)
+                        .help("Return to the previous verse")
+                        .opacity(canUndoRefresh ? 1 : 0)
+                        .disabled(!canUndoRefresh)
+                        .accessibilityHidden(!canUndoRefresh)
+                        .animation(.easeInOut(duration: 0.2), value: canUndoRefresh)
 
+                        // Not disabled while pinned: tapping it explains why nothing changes.
                         Button(action: onRefresh) {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
                         .labelStyle(.iconOnly)
                         .foregroundStyle(verseOfDayPaused ? AnyShapeStyle(.secondary) : AnyShapeStyle(.green))
                         .font(.title3)
-                        .help("Refresh")
-                        .disabled(verseOfDayPaused)
+                        .help(verseOfDayPaused ? "Unpin to refresh" : "Refresh")
+                        .accessibilityHint(verseOfDayPaused ? "Unpin the verse first" : "Shows a different verse")
 
                         VerseActionMenu(
                             verse: VerseActionReference(

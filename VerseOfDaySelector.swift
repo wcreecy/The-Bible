@@ -16,6 +16,81 @@ nonisolated enum VerseOfDaySelector {
         let chapterNumber: Int
         let verseNumber: Int
         let text: String
+
+        /// Identifies the verse in the recent-history list.
+        var historyKey: String { "\(bookName)|\(chapterNumber)|\(verseNumber)" }
+    }
+
+    /// The weighted verses of one scope. Scoring every verse in the Bible is slow, so it is done
+    /// once; picking a verse from the result is a single random number and a binary search.
+    struct Pool: Sendable {
+        /// Identifies the scope the pool was built for; see `VerseOfDaySelector.poolKey`.
+        let key: String
+        private let entries: [Selection]
+        /// Running total of the weights: `cumulativeWeights[i]` is the sum through `entries[i]`.
+        private let cumulativeWeights: [Int]
+
+        fileprivate init(key: String, entries: [Selection], cumulativeWeights: [Int]) {
+            self.key = key
+            self.entries = entries
+            self.cumulativeWeights = cumulativeWeights
+        }
+
+        var count: Int { entries.count }
+
+        /// A weighted random verse that `isExcluded` doesn't reject, or nil if it rejects them all.
+        func pick(avoiding isExcluded: (Selection) -> Bool = { _ in false }) -> Selection? {
+            guard let total = cumulativeWeights.last, total > 0 else { return nil }
+
+            for _ in 0..<12 {
+                let candidate = entries[firstIndex(above: Int.random(in: 0..<total))]
+                if !isExcluded(candidate) { return candidate }
+            }
+
+            // Nearly everything is excluded (a small scope), so walk from a random start instead.
+            let start = Int.random(in: 0..<entries.count)
+            for offset in 0..<entries.count {
+                let candidate = entries[(start + offset) % entries.count]
+                if !isExcluded(candidate) { return candidate }
+            }
+            return nil
+        }
+
+        /// The first entry whose running total is above `target`.
+        private func firstIndex(above target: Int) -> Int {
+            var low = 0
+            var high = cumulativeWeights.count - 1
+            while low < high {
+                let middle = (low + high) / 2
+                if cumulativeWeights[middle] > target {
+                    high = middle
+                } else {
+                    low = middle + 1
+                }
+            }
+            return low
+        }
+    }
+
+    /// The verses shown most recently, newest last, so a verse doesn't come back within days.
+    /// It lives in the app group so the widget's refresh intent shares it with the app.
+    enum History {
+        static let capacity = 60
+        private static let storageKey = "verseOfDayRecentVerses"
+
+        static var defaults: UserDefaults {
+            UserDefaults(suiteName: "group.bible.app") ?? .standard
+        }
+
+        static func recent(in defaults: UserDefaults = History.defaults) -> [String] {
+            defaults.stringArray(forKey: storageKey) ?? []
+        }
+
+        static func record(_ selection: Selection, in defaults: UserDefaults = History.defaults) {
+            var keys = recent(in: defaults).filter { $0 != selection.historyKey }
+            keys.append(selection.historyKey)
+            defaults.set(Array(keys.suffix(capacity)), forKey: storageKey)
+        }
     }
 
     private struct Passage: Sendable {
@@ -94,18 +169,68 @@ nonisolated enum VerseOfDaySelector {
         "these are the"
     ]
 
+    private static let fragmentOpenings: Set<String> = [
+        "and", "but", "then", "so", "now", "for", "also", "moreover", "therefore", "wherefore"
+    ]
+
     private static let measurementWords: Set<String> = [
         "cubit", "cubits", "socket", "sockets", "board", "boards", "curtain", "curtains",
         "chapiter", "chapiters", "fillet", "fillets", "taches", "loops", "knops"
     ]
 
-    static func select(from allBooks: [Book], scopeRaw: String, specificBook: String) -> Selection? {
+    /// Scans the whole scope for one verse. This is the slow path; `makePool` is for repeated picks.
+    static func select(
+        from allBooks: [Book],
+        scopeRaw: String,
+        specificBook: String,
+        avoiding isExcluded: (Selection) -> Bool = { _ in false }
+    ) -> Selection? {
         let scope = Scope(rawValue: scopeRaw) ?? .whole
         let books = books(in: scope, specificBook: specificBook, from: allBooks)
 
         var selected: Selection?
         var totalWeight = 0
 
+        forEachWeightedVerse(in: books) { candidate, weight in
+            guard !isExcluded(candidate) else { return }
+            totalWeight += weight
+            if Int.random(in: 0..<totalWeight) < weight {
+                selected = candidate
+            }
+        }
+
+        return selected
+    }
+
+    /// Scores every verse in the scope once, so later picks don't have to.
+    static func makePool(from allBooks: [Book], scopeRaw: String, specificBook: String) -> Pool {
+        let scope = Scope(rawValue: scopeRaw) ?? .whole
+        let books = books(in: scope, specificBook: specificBook, from: allBooks)
+
+        var entries: [Selection] = []
+        var cumulativeWeights: [Int] = []
+        var totalWeight = 0
+
+        forEachWeightedVerse(in: books) { candidate, weight in
+            totalWeight += weight
+            entries.append(candidate)
+            cumulativeWeights.append(totalWeight)
+        }
+
+        return Pool(
+            key: poolKey(scopeRaw: scopeRaw, specificBook: specificBook),
+            entries: entries,
+            cumulativeWeights: cumulativeWeights
+        )
+    }
+
+    /// Two settings give the same pool when they give the same key.
+    static func poolKey(scopeRaw: String, specificBook: String) -> String {
+        let scope = Scope(rawValue: scopeRaw) ?? .whole
+        return scope == .book ? "book|\(specificBook)" : scope.rawValue
+    }
+
+    private static func forEachWeightedVerse(in books: [Book], _ body: (Selection, Int) -> Void) {
         for book in books {
             for chapter in book.chapters {
                 for verse in chapter.verses {
@@ -117,20 +242,18 @@ nonisolated enum VerseOfDaySelector {
                     )
                     guard weight > 0 else { continue }
 
-                    totalWeight += weight
-                    if Int.random(in: 0..<totalWeight) < weight {
-                        selected = Selection(
+                    body(
+                        Selection(
                             bookName: book.name,
                             chapterNumber: chapter.number,
                             verseNumber: verse.number,
                             text: verse.text
-                        )
-                    }
+                        ),
+                        weight
+                    )
                 }
             }
         }
-
-        return selected
     }
 
     static func suitabilityWeight(bookName: String, chapter: Int, verse: Int, text: String) -> Int {
@@ -144,7 +267,7 @@ nonisolated enum VerseOfDaySelector {
         let lowercase = trimmed.lowercased()
         let words = lowercase.split { !$0.isLetter }.map(String.init)
 
-        guard words.count >= 6, !trimmed.hasSuffix(":"), !trimmed.hasSuffix(";") else {
+        guard words.count >= 3, !trimmed.hasSuffix(":"), !trimmed.hasSuffix(";") else {
             return 0
         }
 
@@ -161,15 +284,22 @@ nonisolated enum VerseOfDaySelector {
         }
         if measurementCount >= 2 { return 0 }
 
+        // A very short line that opens with a connective is a fragment ("And he died."), not a
+        // saying that stands alone like "Pray without ceasing."
+        if words.count < 6, fragmentOpenings.contains(words[0]) { return 0 }
+
         if contextDependentOpenings.contains(where: lowercase.hasPrefix) {
             return words.count < 20 ? 1 : 3
         }
 
+        // Length is a weak signal, so the curve is flat; context dependence is handled above.
         switch words.count {
-        case 6..<10:
-            return 1
-        case 10..<16:
+        case 3..<6:
             return 4
+        case 6..<10:
+            return 5
+        case 10..<16:
+            return 6
         case 16...55:
             return 10
         case 56...75:

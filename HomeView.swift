@@ -233,8 +233,8 @@ struct HomeView: View {
                 isBibleStoreReady: bibleStore.isReady,
                 nextRefreshDescription: votdVM.nextRefreshDescription,
                 canUndoRefresh: votdVM.canUndoManualRefresh,
-                onRefresh: { votdVM.refreshNow() },
-                onUndoRefresh: { votdVM.undoManualRefresh() },
+                onRefresh: refreshVerseOfDay,
+                onUndoRefresh: { withAnimation(.easeInOut(duration: 0.25)) { votdVM.undoManualRefresh() } },
                 onVerseActionFeedback: handleVerseActionFeedback,
                 onOpenReader: { verse in
                     openInBibleTab(verse)
@@ -780,6 +780,10 @@ struct HomeView: View {
                 break
             }
         }
+        // Score the Bible for the Verse of the Day as soon as it has loaded.
+        .onChange(of: bibleStore.isReady, initial: true) { _, isReady in
+            if isReady { votdVM.warmSelectionPool() }
+        }
         // Forward VOTD schedule changes to the VM
         .onChange(of: votdRefreshFrequency) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh1Hour) { _, _ in votdVM.refreshScheduleChanged() }
@@ -819,6 +823,24 @@ struct HomeView: View {
 
         withAnimation(.spring()) {
             showCopyToast = true
+        }
+    }
+
+    /// Refreshes the Verse of the Day. A pinned verse doesn't refresh, so say why.
+    private func refreshVerseOfDay() {
+        guard !votdVM.paused else {
+            Haptics.warning()
+            verseActionToastSymbol = "pin.fill"
+            verseActionToastText = "Unpin the verse to refresh it"
+            verseActionToastTint = .orange
+            withAnimation(.spring()) {
+                showCopyToast = true
+            }
+            return
+        }
+
+        withAnimation(.easeInOut(duration: 0.25)) {
+            votdVM.refreshNow()
         }
     }
 

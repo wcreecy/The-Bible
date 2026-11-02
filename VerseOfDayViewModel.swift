@@ -11,6 +11,16 @@ final class VerseOfDayViewModel {
     var paused: Bool = false
     var nextRefreshDescription: String = ""
     private var manualRefreshHistory: [HomeVerseRef] = []
+    private static let maxManualRefreshHistory = 20
+    /// Taps this soon after a refresh are ignored, so a double tap (or taps queued behind a
+    /// slow refresh) advances one verse instead of skipping past one.
+    private static let refreshCooldown: TimeInterval = 0.25
+    @ObservationIgnored private var lastRefreshFinishedAt: Date?
+
+    /// Every verse of the current scope, scored once so a refresh doesn't rescan the Bible.
+    @ObservationIgnored private var selectionPool: VerseOfDaySelector.Pool?
+    @ObservationIgnored private var selectionPoolBuildKey: String?
+    @ObservationIgnored private var selectionPoolTask: Task<Void, Never>?
 
     var canUndoManualRefresh: Bool {
         !manualRefreshHistory.isEmpty
@@ -63,6 +73,7 @@ final class VerseOfDayViewModel {
     deinit {
         nextRefreshTimer?.invalidate()
         nextRefreshTimer = nil
+        selectionPoolTask?.cancel()
     }
 
     // MARK: - Public API
@@ -73,6 +84,7 @@ final class VerseOfDayViewModel {
         }
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
+        warmSelectionPool()
     }
 
     func handleScenePhaseChange(_ phase: ScenePhase) {
@@ -80,18 +92,51 @@ final class VerseOfDayViewModel {
         case .active:
             updateNextDescription()
             scheduleNextVerseRefreshTimer()
+            warmSelectionPool()
         default:
             break
         }
     }
 
+    /// Scores the Bible for the current scope in the background. It does nothing until the Bible
+    /// has loaded, or when the pool for this scope exists or is already being built, so it can be
+    /// called whenever the Bible becomes ready, the app opens, or a refresh finds no pool.
+    func warmSelectionPool() {
+        let key = VerseOfDaySelector.poolKey(scopeRaw: verseScopeRaw, specificBook: verseSpecificBook)
+        guard selectionPool?.key != key, selectionPoolBuildKey != key else { return }
+        let books = BibleData.books
+        guard !books.isEmpty else { return }
+
+        let scopeRaw = verseScopeRaw
+        let specificBook = verseSpecificBook
+        selectionPoolBuildKey = key
+        selectionPoolTask?.cancel()
+        selectionPoolTask = Task { [weak self] in
+            let pool = await Task.detached(priority: .utility) {
+                VerseOfDaySelector.makePool(from: books, scopeRaw: scopeRaw, specificBook: specificBook)
+            }.value
+            guard let self, !Task.isCancelled else { return }
+            selectionPool = pool
+            if selectionPoolBuildKey == pool.key { selectionPoolBuildKey = nil }
+        }
+    }
+
     func refreshNow() {
         guard !paused else { return }
+        if let lastRefreshFinishedAt, Date().timeIntervalSince(lastRefreshFinishedAt) < Self.refreshCooldown {
+            return
+        }
+        defer { lastRefreshFinishedAt = Date() }
+
         let previousVerse = verse
         guard loadRandomVerse(excluding: previousVerse) else { return }
         if let previousVerse {
             manualRefreshHistory.append(previousVerse)
+            if manualRefreshHistory.count > Self.maxManualRefreshHistory {
+                manualRefreshHistory.removeFirst(manualRefreshHistory.count - Self.maxManualRefreshHistory)
+            }
         }
+        Haptics.selection()
         UserDefaults.standard.set(true, forKey: "homeOnboardingVerseOfDayRefreshedV2")
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
@@ -156,22 +201,7 @@ final class VerseOfDayViewModel {
     @discardableResult
     private func loadRandomVerse(excluding excludedVerse: HomeVerseRef? = nil) -> Bool {
         guard !paused else { return false }
-        let allBooks = BibleData.books
-        guard !allBooks.isEmpty else { return false }
-
-        var selection: VerseOfDaySelector.Selection?
-        for _ in 0..<5 {
-            let candidate = VerseOfDaySelector.select(
-                from: allBooks,
-                scopeRaw: verseScopeRaw,
-                specificBook: verseSpecificBook
-            )
-            guard let candidate else { return false }
-            selection = candidate
-            if !candidate.matches(excludedVerse) { break }
-        }
-
-        guard let selection, !selection.matches(excludedVerse) else { return false }
+        guard let selection = chooseVerse(excluding: excludedVerse) else { return false }
 
         let ref = HomeVerseRef(
             bookName: selection.bookName,
@@ -180,7 +210,39 @@ final class VerseOfDayViewModel {
             verseText: selection.text
         )
         apply(ref)
+        VerseOfDaySelector.History.record(selection)
         return true
+    }
+
+    /// Picks a verse that isn't the current one and wasn't shown recently. The scored pool makes
+    /// this instant; until it's ready the Bible is scanned directly, as before.
+    private func chooseVerse(excluding current: HomeVerseRef?) -> VerseOfDaySelector.Selection? {
+        let history = VerseOfDaySelector.History.recent()
+        let key = VerseOfDaySelector.poolKey(scopeRaw: verseScopeRaw, specificBook: verseSpecificBook)
+
+        if let pool = selectionPool, pool.key == key {
+            // In a small scope, avoiding 60 recent verses could leave almost nothing to pick.
+            let recent = Set(history.suffix(min(VerseOfDaySelector.History.capacity, pool.count / 2)))
+            return pool.pick(avoiding: { $0.matches(current) || recent.contains($0.historyKey) })
+                ?? pool.pick(avoiding: { $0.matches(current) })
+        }
+
+        warmSelectionPool()
+        let allBooks = BibleData.books
+        guard !allBooks.isEmpty else { return nil }
+
+        let recent = Set(history)
+        return VerseOfDaySelector.select(
+            from: allBooks,
+            scopeRaw: verseScopeRaw,
+            specificBook: verseSpecificBook,
+            avoiding: { $0.matches(current) || recent.contains($0.historyKey) }
+        ) ?? VerseOfDaySelector.select(
+            from: allBooks,
+            scopeRaw: verseScopeRaw,
+            specificBook: verseSpecificBook,
+            avoiding: { $0.matches(current) }
+        )
     }
 
     private func apply(_ ref: HomeVerseRef) {
