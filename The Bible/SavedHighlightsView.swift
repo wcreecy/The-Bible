@@ -109,6 +109,7 @@ struct SavedHighlightsView: View {
     @State private var removedHighlight: RemovedHighlight?
     @State private var isShowingRemovalToast = false
     @State private var library = HighlightsLibrary.empty
+    @State private var imageComposerVerse: VerseActionReference?
 
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -166,6 +167,9 @@ struct SavedHighlightsView: View {
             NavigationStack {
                 NoteEditorView(item: .scripture(note))
             }
+        }
+        .fullScreenCover(item: $imageComposerVerse) { verse in
+            VerseImageComposerView(verse: verse)
         }
         .appToast(
             isPresented: $isShowingRemovalToast,
@@ -294,14 +298,20 @@ struct SavedHighlightsView: View {
             } label: {
                 Label("Change Color", systemImage: "paintpalette")
             }
-            ShareLink(item: item.shareText) {
+            VerseShareMenu(
+                verse: shareReference(for: note),
+                onCreateImage: { imageComposerVerse = shareReference(for: note) }
+            ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Divider()
             Button("Remove Highlight", systemImage: "highlighter", role: .destructive) { removeHighlight(note) }
         }
         .swipeActions(edge: .leading) {
-            ShareLink(item: item.shareText) {
+            VerseShareMenu(
+                verse: shareReference(for: note),
+                onCreateImage: { imageComposerVerse = shareReference(for: note) }
+            ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             .tint(.blue)
@@ -320,6 +330,15 @@ struct SavedHighlightsView: View {
         modelContext.saveLoggingErrors()
         refreshLibrary()
         Haptics.selection()
+    }
+
+    private func shareReference(for note: VerseNote) -> VerseActionReference {
+        VerseActionReference(
+            bookName: note.bookName,
+            chapterNumber: note.chapterNumber,
+            verseNumber: note.verseNumber,
+            verseText: note.verseText
+        )
     }
 
     /// A verse with a note keeps its note, which stays in Notes; a highlight alone is removed.

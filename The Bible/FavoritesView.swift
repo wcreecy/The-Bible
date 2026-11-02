@@ -59,6 +59,7 @@ struct FavoritesView: View {
     @State private var removedFavorites: [RemovedFavorite] = []
     @State private var toastMessage: ToastMessage?
     @State private var persistenceFailure: PersistenceFailure?
+    @State private var imageComposerVerse: VerseActionReference?
     /// Prepared only when saved content, search text, or sort order changes—not for every
     /// unrelated SwiftUI body update (toolbar, toast, sheet presentation, and so on).
     @State private var visibleFavoriteSections: [FavoriteSection] = []
@@ -125,6 +126,9 @@ struct FavoritesView: View {
             action: toastAction
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
+        .fullScreenCover(item: $imageComposerVerse) { verse in
+            VerseImageComposerView(verse: verse)
+        }
         .onAppear { refreshVisibleContent() }
         // Compare the saved items themselves, not how many there are: a sync can swap one
         // for another without changing the count.
@@ -261,14 +265,20 @@ struct FavoritesView: View {
         .contextMenu {
             Button("Open in Bible", systemImage: "book") { openInBibleTab(favorite) }
             Button("Copy", systemImage: "doc.on.doc") { copy(favorite) }
-            ShareLink(item: favorite.shareText) {
+            VerseShareMenu(
+                verse: shareReference(for: favorite),
+                onCreateImage: { imageComposerVerse = shareReference(for: favorite) }
+            ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             Divider()
             Button("Remove Favorite", systemImage: "heart.slash", role: .destructive) { remove([favorite]) }
         }
         .swipeActions(edge: .leading) {
-            ShareLink(item: favorite.shareText) {
+            VerseShareMenu(
+                verse: shareReference(for: favorite),
+                onCreateImage: { imageComposerVerse = shareReference(for: favorite) }
+            ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             .tint(.blue)
@@ -339,6 +349,15 @@ struct FavoritesView: View {
         UIPasteboard.general.string = favorite.shareText
         Haptics.success()
         toastMessage = .copied
+    }
+
+    private func shareReference(for favorite: Favorite) -> VerseActionReference {
+        VerseActionReference(
+            bookName: favorite.bookName,
+            chapterNumber: favorite.chapterNumber,
+            verseNumber: favorite.verseNumber,
+            verseText: favorite.currentVerseText
+        )
     }
 
     private func remove(_ items: [Favorite]) {

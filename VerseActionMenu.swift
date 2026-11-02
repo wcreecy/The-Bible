@@ -2,14 +2,41 @@ import SwiftData
 import SwiftUI
 import UIKit
 
-struct VerseActionReference: Hashable {
+struct VerseActionReference: Hashable, Identifiable {
     let bookName: String
     let chapterNumber: Int
     let verseNumber: Int
     let verseText: String
 
+    var id: String {
+        "\(bookName)|\(chapterNumber)|\(verseNumber)|\(verseText)"
+    }
+
     var shareText: String {
         "\(verseText)\n\(bookName) \(chapterNumber):\(verseNumber)"
+    }
+}
+
+/// A single entry point for sharing a verse as text or as a designed image.
+struct VerseShareMenu<MenuLabel: View>: View {
+    let verse: VerseActionReference
+    let onCreateImage: () -> Void
+    @ViewBuilder let label: () -> MenuLabel
+
+    var body: some View {
+        Menu {
+            ShareLink(item: verse.shareText) {
+                Label("Share Verse", systemImage: "text.quote")
+            }
+
+            Button {
+                onCreateImage()
+            } label: {
+                Label("Create Verse Image", systemImage: "photo.on.rectangle.angled")
+            }
+        } label: {
+            label()
+        }
     }
 }
 
@@ -162,7 +189,7 @@ struct VerseActionMenuContent: View {
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isShowingNoteEditor = false
     @State private var isShowingMentions = false
-    @State private var isShowingImageComposer = false
+    @State private var imageComposerVerse: VerseActionReference?
 
     let verse: VerseActionReference
     let saved: SavedVerseCollections
@@ -241,7 +268,7 @@ struct VerseActionMenuContent: View {
                     NoteMentionsView(verse: verse)
                 }
             }
-            .fullScreenCover(isPresented: $isShowingImageComposer) {
+            .fullScreenCover(item: $imageComposerVerse) { verse in
                 VerseImageComposerView(verse: verse)
             }
     }
@@ -291,17 +318,11 @@ struct VerseActionMenuContent: View {
                 .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Copy")
 
-                ShareLink(item: verse.shareText) {
+                VerseShareMenu(verse: verse, onCreateImage: showImageComposer) {
                     Image(systemName: "square.and.arrow.up")
                 }
                 .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Share")
-
-                Button(action: { isShowingImageComposer = true }) {
-                    Image(systemName: "photo.on.rectangle.angled")
-                }
-                .foregroundStyle(Color.accentColor)
-                .accessibilityLabel("Share as Image")
 
             }
             .font(.title3)
@@ -324,7 +345,6 @@ struct VerseActionMenuContent: View {
 
                     copyMenuButton
                     shareMenuButton
-                    shareImageMenuButton
                     pinMenuButton
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -342,7 +362,6 @@ struct VerseActionMenuContent: View {
                 pinMenuButton
                 copyMenuButton
                 shareMenuButton
-                shareImageMenuButton
             } label: {
                 Image(systemName: "ellipsis.circle")
                     .font(.title3)
@@ -404,15 +423,13 @@ struct VerseActionMenuContent: View {
     }
 
     private var shareMenuButton: some View {
-        ShareLink(item: verse.shareText) {
+        VerseShareMenu(verse: verse, onCreateImage: showImageComposer) {
             Label("Share", systemImage: "square.and.arrow.up")
         }
     }
 
-    private var shareImageMenuButton: some View {
-        Button(action: { isShowingImageComposer = true }) {
-            Label("Share as Image", systemImage: "photo.on.rectangle.angled")
-        }
+    private func showImageComposer() {
+        imageComposerVerse = verse
     }
 
     @ViewBuilder
