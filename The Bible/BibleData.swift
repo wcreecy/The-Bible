@@ -219,6 +219,14 @@ struct Chapter: Identifiable, Hashable, Sendable {
     var id: String { "\(number)" }
     let number: Int
     let verses: [Verse]
+
+    // Navigation paths hash their routes, and the synthesized hash would walk every verse's
+    // text. Hashing a subset of the compared fields keeps equal values hashing equally.
+    // Equality stays synthesized; copies of one chapter share a verse buffer and compare in O(1).
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(number)
+        hasher.combine(verses.count)
+    }
 }
 
 struct Book: Identifiable, Hashable, Sendable {
@@ -226,6 +234,12 @@ struct Book: Identifiable, Hashable, Sendable {
     var id: String { name }
     let name: String
     let chapters: [Chapter]
+
+    // See `Chapter.hash(into:)`: hashing every chapter would hash the whole book's text.
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(chapters.count)
+    }
 }
 
 // DTOs matching the provided KJV JSON structure: [{ abbrev: String, chapters: [[String]], name?: String }]

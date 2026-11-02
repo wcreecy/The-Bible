@@ -2,6 +2,7 @@ import Foundation
 import Testing
 @testable import Bible
 
+@MainActor
 struct BibleDataHashingTests {
     private func makeBook(_ name: String, verseText: String = "In the beginning") -> Book {
         Book(name: name, chapters: [
