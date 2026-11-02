@@ -9,10 +9,9 @@ struct WordSetupControls: View {
 
     var body: some View {
         GameSettingsGroup {
-            GameChoiceSetting(
+            WordSegmentedSetting(
                 title: "Game type",
                 systemImage: "calendar",
-                tint: .mint,
                 selection: $mode,
                 choices: [
                     GameChoice(
@@ -30,14 +29,67 @@ struct WordSetupControls: View {
                 ]
             )
 
-            GameToggleSetting(
-                title: "Hard Mode",
-                detail: "Reuse confirmed letters in every guess.",
+            WordSegmentedSetting(
+                title: "Difficulty",
                 systemImage: "flame.fill",
-                tint: .mint,
-                isOn: $hardModeEnabled
+                selection: $hardModeEnabled,
+                choices: [
+                    GameChoice(
+                        value: false,
+                        title: "Normal",
+                        detail: "Guess any five-letter word.",
+                        icon: "circle"
+                    ),
+                    GameChoice(
+                        value: true,
+                        title: "Hard",
+                        detail: "Reuse confirmed letters in every guess.",
+                        icon: "flame.fill"
+                    )
+                ]
             )
         }
+    }
+}
+
+/// A settings row with every option visible in a segmented control, so the current choice
+/// is clear at a glance and changing it takes one tap. The selected option's description
+/// sits underneath.
+private struct WordSegmentedSetting<Value: Hashable>: View {
+    let title: LocalizedStringResource
+    let systemImage: String
+    @Binding var selection: Value
+    let choices: [GameChoice<Value>]
+
+    private var selectedDetail: LocalizedStringResource? {
+        choices.first { $0.value == selection }?.detail
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            GameSettingBadge(systemImage: systemImage, tint: .mint)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+
+                Picker(title, selection: $selection) {
+                    ForEach(choices) { choice in
+                        Text(choice.title).tag(choice.value)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+
+                if let selectedDetail {
+                    Text(selectedDetail)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
     }
 }
 
@@ -410,3 +462,19 @@ struct WordGuessDistributionView: View {
     }
   }
 }
+
+#if DEBUG
+#Preview("Setup – Normal") {
+    @Previewable @State var mode = WordleView.Mode.daily
+    @Previewable @State var hard = false
+    WordSetupControls(mode: $mode, hardModeEnabled: $hard)
+        .padding()
+}
+
+#Preview("Setup – Hard") {
+    @Previewable @State var mode = WordleView.Mode.practice
+    @Previewable @State var hard = true
+    WordSetupControls(mode: $mode, hardModeEnabled: $hard)
+        .padding()
+}
+#endif

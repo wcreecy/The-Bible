@@ -64,9 +64,6 @@ struct WordleView: View {
     @State private var practiceStreak: Int = 0
     @State private var practiceBestStreak: Int = 0
 
-    // Debug flag to allow replaying Daily Wordle (matches Settings/Games)
-    @AppStorage(AppStorageKey.wordleAllowDailyReplay) private var wordleAllowDailyReplay: Bool = false
-
     // Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
     @AppStorage(AppStorageKey.wordleHardModeEnabled) private var hardModeEnabled: Bool = false
 
@@ -480,7 +477,7 @@ struct WordleView: View {
             GameSplashLaunchLayout(
                 tint: .mint,
                 isStartEnabled: isAnswerBankPrepared
-                    && (mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay),
+                    && (mode != .daily || !dailyCompletedToday),
                 startAction: { startNewRound(practice: mode == .practice) }
             ) {
                 GameLobbyPreview(kind: .wordle)
@@ -490,7 +487,7 @@ struct WordleView: View {
                     hardModeEnabled: $hardModeEnabled
                 )
 
-                if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
+                if mode == .daily && dailyCompletedToday {
                     Label(
                         "Daily completed. Come back tomorrow.",
                         systemImage: "exclamationmark.triangle.fill"
@@ -501,10 +498,20 @@ struct WordleView: View {
                     .background(Color.red.opacity(0.15), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 }
             } facts: {
+                // Game type, difficulty, and how many puzzles can be played today.
+                let allowsUnlimitedPlays = mode == .practice
                 GameSplashFacts(
-                    first: ("number", "6 guesses", "This session"),
-                    second: ("number", "6 tries", "Guesses"),
-                    third: ("calendar", mode == .daily ? "Daily" : "Practice", "Game type")
+                    first: (mode.icon, String(localized: mode.title), String(localized: "Game type")),
+                    second: (
+                        hardModeEnabled ? "flame" : "circle",
+                        hardModeEnabled ? String(localized: "Hard") : String(localized: "Normal"),
+                        String(localized: "Difficulty")
+                    ),
+                    third: (
+                        allowsUnlimitedPlays ? "infinity" : "1.circle",
+                        allowsUnlimitedPlays ? String(localized: "Unlimited") : String(localized: "Once"),
+                        String(localized: "Plays today")
+                    )
                 )
             }
             Spacer(minLength: 24)
@@ -1061,7 +1068,7 @@ struct WordleView: View {
                         startNewRound(practice: true)
                     }
                     .buttonStyle(GameProminentButtonStyle(tint: .mint))
-                } else if dailyCompletedToday && !wordleAllowDailyReplay {
+                } else if dailyCompletedToday {
                     Label {
                         Text("Next word in \(Text(nextDailyDate, style: .relative))")
                             .monospacedDigit()
