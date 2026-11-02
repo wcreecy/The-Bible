@@ -34,7 +34,7 @@
   {
     "id": "enoch-001",
     "answer": "ENOCH",
-    "clue": "Walked with God",
+    "clue": "Walked with God and was taken away without dying",
     "reference": "Genesis 5:24",
     "difficulty": "normal",
     "aliases": []
@@ -50,7 +50,7 @@
   {
     "id": "shem-001",
     "answer": "SHEM",
-    "clue": "Noah's son who helped cover his father; ancestor of Abraham",
+    "clue": "Noah’s son listed first, ancestor of Abraham",
     "reference": "Genesis 9:23",
     "difficulty": "normal",
     "aliases": []
@@ -258,7 +258,7 @@
   {
     "id": "manasseh-001",
     "answer": "MANASSEH",
-    "clue": "Joseph’s son blessed by Jacob",
+    "clue": "Joseph’s firstborn son, blessed by Jacob with his left hand",
     "reference": "Genesis 48:14-20",
     "difficulty": "normal",
     "aliases": []
@@ -378,7 +378,7 @@
   {
     "id": "quails-001",
     "answer": "QUAILS",
-    "clue": "Birds sent as food",
+    "clue": "Birds God sent to feed Israel in the wilderness",
     "reference": "Exodus 16:13",
     "difficulty": "normal",
     "aliases": []
@@ -546,7 +546,7 @@
   {
     "id": "amalek-001",
     "answer": "AMALEK",
-    "clue": "People who fought Israel",
+    "clue": "People who attacked Israel at Rephidim while Moses held up his hands",
     "reference": "Exodus 17:8",
     "difficulty": "normal",
     "aliases": []
@@ -602,7 +602,7 @@
   {
     "id": "nadab-001",
     "answer": "NADAB",
-    "clue": "Offered unauthorized fire to God",
+    "clue": "Aaron’s son who offered strange fire alongside Abihu",
     "reference": "Leviticus 10:1-2",
     "difficulty": "hard",
     "aliases": []
@@ -610,7 +610,7 @@
   {
     "id": "abihu-001",
     "answer": "ABIHU",
-    "clue": "Died after offering strange fire",
+    "clue": "Aaron’s son who offered strange fire alongside Nadab",
     "reference": "Leviticus 10:1-2",
     "difficulty": "hard",
     "aliases": []
@@ -634,7 +634,7 @@
   {
     "id": "scapegoat-001",
     "answer": "SCAPEGOAT",
-    "clue": "Sent into the wilderness",
+    "clue": "Goat sent into the wilderness on the Day of Atonement",
     "reference": "Leviticus 16:10",
     "difficulty": "normal",
     "aliases": []
@@ -714,7 +714,7 @@
   {
     "id": "sacrifice-001",
     "answer": "SACRIFICE",
-    "clue": "Offering made to God",
+    "clue": "Animal or other gift offered to God in worship",
     "reference": "Leviticus 1:3",
     "difficulty": "easy",
     "aliases": []
@@ -906,7 +906,7 @@
   {
     "id": "shiloh-001",
     "answer": "SHILOH",
-    "clue": "Tabernacle location in Joshua",
+    "clue": "Town where Joshua set up the tabernacle after entering Canaan",
     "reference": "Joshua 18:1",
     "difficulty": "normal",
     "aliases": []
@@ -978,7 +978,7 @@
   {
     "id": "jephthah-001",
     "answer": "JEPHTHAH",
-    "clue": "Judge who made a rash vow",
+    "clue": "Judge whose vow involved whatever first came from his house",
     "reference": "Judges 11:30-31",
     "difficulty": "normal",
     "aliases": []
@@ -1146,7 +1146,7 @@
   {
     "id": "hophni-001",
     "answer": "HOPHNI",
-    "clue": "Priest condemned for evil deeds",
+    "clue": "One of Eli’s two wicked sons, named alongside Phinehas",
     "reference": "1 Samuel 2:12-17",
     "difficulty": "hard",
     "aliases": []
@@ -1258,7 +1258,7 @@
   {
     "id": "ashkelon-001",
     "answer": "ASHKELON",
-    "clue": "One of five Philistine cities that sent a golden offering with the ark",
+    "clue": "Philistine city named alongside Ashdod, Gaza, Gath and Ekron in 1 Samuel 6:17",
     "reference": "1 Samuel 6:17",
     "difficulty": "hard",
     "aliases": []
@@ -1282,7 +1282,7 @@
   {
     "id": "ekron-001",
     "answer": "EKRON",
-    "clue": "Philistine city where the ark caused panic",
+    "clue": "Philistine city where people cried out after the ark arrived from Gath",
     "reference": "1 Samuel 5:10",
     "difficulty": "hard",
     "aliases": []
@@ -1362,7 +1362,7 @@
   {
     "id": "ziba-001",
     "answer": "ZIBA",
-    "clue": "Servant of Saul's household",
+    "clue": "Saul’s servant who managed land for Mephibosheth",
     "reference": "2 Samuel 9:2",
     "difficulty": "hard",
     "aliases": []
@@ -1378,7 +1378,7 @@
   {
     "id": "hushai-001",
     "answer": "HUSHAI",
-    "clue": "David's loyal counselor",
+    "clue": "David’s adviser who countered Ahithophel’s counsel during Absalom’s revolt",
     "reference": "2 Samuel 15:32-37",
     "difficulty": "hard",
     "aliases": []
@@ -1418,7 +1418,7 @@
   {
     "id": "cedar-001",
     "answer": "CEDAR",
-    "clue": "Wood used in the temple",
+    "clue": "Fragrant timber supplied by Hiram for Solomon’s temple",
     "reference": "1 Kings 6:9",
     "difficulty": "normal",
     "aliases": []
@@ -1554,7 +1554,7 @@
   {
     "id": "zarephath-001",
     "answer": "ZAREPHATH",
-    "clue": "Town of a generous widow",
+    "clue": "Town where Elijah stayed with a widow during the drought",
     "reference": "1 Kings 17:9",
     "difficulty": "hard",
     "aliases": []
@@ -1594,7 +1594,7 @@
   {
     "id": "shunem-001",
     "answer": "SHUNEM",
-    "clue": "Town of Elisha's hostess",
+    "clue": "Town where a woman gave Elisha a room and later received her son back",
     "reference": "2 Kings 4:8",
     "difficulty": "hard",
     "aliases": []
@@ -1786,7 +1786,7 @@
   {
     "id": "ebedmelech-001",
     "answer": "EBEDMELECH",
-    "clue": "Rescued Jeremiah from cistern (name has a hyphen)",
+    "clue": "Ethiopian official who lifted Jeremiah from a muddy cistern",
     "reference": "Jeremiah 38:7-13",
     "difficulty": "hard",
     "aliases": []
@@ -1850,7 +1850,7 @@
   {
     "id": "meshach-001",
     "answer": "MESHACH",
-    "clue": "Shadrach's fellow captive",
+    "clue": "One of Shadrach’s furnace companions, named between Shadrach and Abednego",
     "reference": "Daniel 3:26",
     "difficulty": "normal",
     "aliases": []
@@ -1858,7 +1858,7 @@
   {
     "id": "abednego-001",
     "answer": "ABEDNEGO",
-    "clue": "Third furnace survivor",
+    "clue": "Furnace survivor named alongside Shadrach and Meshach",
     "reference": "Daniel 3:26",
     "difficulty": "normal",
     "aliases": []
@@ -2082,7 +2082,7 @@
   {
     "id": "mercy-001",
     "answer": "MERCY",
-    "clue": "Endures forever",
+    "clue": "God’s steadfast quality that “endureth for ever” in Psalm 136",
     "reference": "Psalm 136:1",
     "difficulty": "easy",
     "aliases": []
@@ -2122,7 +2122,7 @@
   {
     "id": "dance-001",
     "answer": "DANCE",
-    "clue": "Way to praise in Psalm 150",
+    "clue": "Form of praise mentioned with the timbrel in Psalm 150",
     "reference": "Psalm 150:4",
     "difficulty": "normal",
     "aliases": []
@@ -2258,7 +2258,7 @@
   {
     "id": "vineyard-001",
     "answer": "VINEYARD",
-    "clue": "Setting in Song of Songs",
+    "clue": "Place the bride says she was made keeper of, in Song of Solomon 1:6",
     "reference": "Song of Solomon 1:6",
     "difficulty": "normal",
     "aliases": []
@@ -2402,7 +2402,7 @@
   {
     "id": "john-001",
     "answer": "JOHN",
-    "clue": "Baptized Jesus",
+    "clue": "John who baptized Jesus in the Jordan River",
     "reference": "Matthew 3:13-16",
     "difficulty": "easy",
     "aliases": []
@@ -2666,7 +2666,7 @@
   {
     "id": "boat-001",
     "answer": "BOAT",
-    "clue": "Jesus calmed a storm aboard one",
+    "clue": "Vessel Jesus was sleeping in when He calmed a storm",
     "reference": "Mark 4:37-39",
     "difficulty": "easy",
     "aliases": []
@@ -2722,7 +2722,7 @@
   {
     "id": "leper-001",
     "answer": "LEPER",
-    "clue": "Person Jesus cleansed",
+    "clue": "Person with leprosy whom Jesus touched and made clean",
     "reference": "Mark 1:40-42",
     "difficulty": "normal",
     "aliases": []
@@ -2794,7 +2794,7 @@
   {
     "id": "herod-001",
     "answer": "HEROD",
-    "clue": "King who sought baby Jesus",
+    "clue": "King who ordered the killing of boys in Bethlehem after Jesus’ birth",
     "reference": "Matthew 2:13",
     "difficulty": "easy",
     "aliases": []
@@ -2834,7 +2834,7 @@
   {
     "id": "angel-001",
     "answer": "ANGEL",
-    "clue": "Announced resurrection",
+    "clue": "Heavenly messenger who told the women Jesus had risen",
     "reference": "Matthew 28:5-6",
     "difficulty": "easy",
     "aliases": []
@@ -2930,7 +2930,7 @@
   {
     "id": "ananias-001",
     "answer": "ANANIAS",
-    "clue": "Restored Saul's sight",
+    "clue": "Disciple in Damascus who laid hands on Saul to restore his sight",
     "reference": "Acts 9:17-18",
     "difficulty": "normal",
     "aliases": []
@@ -2986,7 +2986,7 @@
   {
     "id": "titus-001",
     "answer": "TITUS",
-    "clue": "Paul's partner in ministry",
+    "clue": "Coworker Paul left in Crete to appoint elders",
     "reference": "2 Corinthians 8:23",
     "difficulty": "normal",
     "aliases": []
@@ -3146,7 +3146,7 @@
   {
     "id": "bernice-001",
     "answer": "BERNICE",
-    "clue": "Agrippa's companion",
+    "clue": "Woman accompanying King Agrippa during Paul’s hearing",
     "reference": "Acts 25:23",
     "difficulty": "hard",
     "aliases": []
@@ -3194,7 +3194,7 @@
   {
     "id": "agabus-001",
     "answer": "AGABUS",
-    "clue": "Prophet of famine",
+    "clue": "Prophet in Acts who foretold a great famine",
     "reference": "Acts 11:28",
     "difficulty": "hard",
     "aliases": []
@@ -3282,7 +3282,7 @@
   {
     "id": "patience-001",
     "answer": "PATIENCE",
-    "clue": "Needed in trials",
+    "clue": "Virtue James says the testing of faith produces",
     "reference": "James 1:3-4",
     "difficulty": "easy",
     "aliases": []
@@ -3290,7 +3290,7 @@
   {
     "id": "kindness-001",
     "answer": "KINDNESS",
-    "clue": "Love's trait: it is patient and this",
+    "clue": "Quality that 1 Corinthians 13:4 says love shows to others",
     "reference": "1 Corinthians 13:4",
     "difficulty": "easy",
     "aliases": []
@@ -3442,7 +3442,7 @@
   {
     "id": "savior-001",
     "answer": "SAVIOR",
-    "clue": "Title of Jesus",
+    "clue": "Title meaning one who rescues or delivers, used for Jesus",
     "reference": "Luke 2:11",
     "difficulty": "easy",
     "aliases": []
@@ -3466,7 +3466,7 @@
   {
     "id": "lord-001",
     "answer": "LORD",
-    "clue": "Title of risen Jesus",
+    "clue": "Title given to Jesus meaning master and ruler",
     "reference": "John 20:28",
     "difficulty": "easy",
     "aliases": []
@@ -3498,7 +3498,7 @@
   {
     "id": "angels-001",
     "answer": "ANGELS",
-    "clue": "Heavenly messengers",
+    "clue": "Spiritual beings sent by God as messengers",
     "reference": "Luke 2:13",
     "difficulty": "easy",
     "aliases": []
@@ -5146,7 +5146,7 @@
   {
     "id": "mildew-644",
     "answer": "MILDEW",
-    "clue": "Impurity on house walls",
+    "clue": "Growth on a house wall that priests inspected in Leviticus 14",
     "reference": "Leviticus 14:34",
     "difficulty": "normal",
     "aliases": []
@@ -5250,7 +5250,7 @@
   {
     "id": "edrei-657",
     "answer": "EDREI",
-    "clue": "King Og's battlefield",
+    "clue": "City where Israel defeated King Og of Bashan",
     "reference": "Numbers 21:33",
     "difficulty": "hard",
     "aliases": []
@@ -5298,7 +5298,7 @@
   {
     "id": "refuge-663",
     "answer": "REFUGE",
-    "clue": "City for manslayers",
+    "clue": "Designated city where someone who killed unintentionally could flee",
     "reference": "Numbers 35:11",
     "difficulty": "normal",
     "aliases": []
@@ -5354,7 +5354,7 @@
   {
     "id": "dryground-670",
     "answer": "DRYGROUND",
-    "clue": "Israel crossed Jordan on it (2 words)",
+    "clue": "What Israel walked on when crossing the Jordan River",
     "reference": "Joshua 3:17",
     "difficulty": "normal",
     "aliases": []
@@ -5418,7 +5418,7 @@
   {
     "id": "kedesh-678",
     "answer": "KEDESH",
-    "clue": "City of refuge",
+    "clue": "Galilean city of refuge in Naphtali",
     "reference": "Joshua 20:7",
     "difficulty": "hard",
     "aliases": []
@@ -5426,7 +5426,7 @@
   {
     "id": "ramoth-679",
     "answer": "RAMOTH",
-    "clue": "Refuge city in Gilead",
+    "clue": "City of refuge in Gilead assigned to the tribe of Gad",
     "reference": "Joshua 20:8",
     "difficulty": "normal",
     "aliases": []
@@ -5434,7 +5434,7 @@
   {
     "id": "bezer-680",
     "answer": "BEZER",
-    "clue": "Refuge city in the wilderness",
+    "clue": "City of refuge east of the Jordan in Reuben’s territory",
     "reference": "Joshua 20:8",
     "difficulty": "hard",
     "aliases": []
@@ -5546,7 +5546,7 @@
   {
     "id": "ibzan-694",
     "answer": "IBZAN",
-    "clue": "Judge from Bethlehem",
+    "clue": "Judge with thirty sons and thirty daughters who came from Bethlehem",
     "reference": "Judges 12:8",
     "difficulty": "hard",
     "aliases": []
@@ -5594,7 +5594,7 @@
   {
     "id": "pillars-700",
     "answer": "PILLARS",
-    "clue": "Samson pushed these down",
+    "clue": "Supports Samson pushed apart in the Philistine temple",
     "reference": "Judges 16:29",
     "difficulty": "normal",
     "aliases": []
@@ -5626,7 +5626,7 @@
   {
     "id": "euphrates-704",
     "answer": "EUPHRATES",
-    "clue": "River near ancient kingdoms",
+    "clue": "River by Babylon where exiles wept, also a river of Eden",
     "reference": "2 Kings 23:29",
     "difficulty": "normal",
     "aliases": []
@@ -5674,7 +5674,7 @@
   {
     "id": "brook-710",
     "answer": "BROOK",
-    "clue": "David gathered five stones",
+    "clue": "Watercourse from which David chose stones before fighting Goliath",
     "reference": "1 Samuel 17:40",
     "difficulty": "easy",
     "aliases": []
@@ -5682,7 +5682,7 @@
   {
     "id": "pebbles-711",
     "answer": "PEBBLES",
-    "clue": "David selected five",
+    "clue": "Five smooth objects David chose from a brook before facing Goliath",
     "reference": "1 Samuel 17:40",
     "difficulty": "normal",
     "aliases": []
@@ -5818,7 +5818,7 @@
   {
     "id": "babies-728",
     "answer": "BABIES",
-    "clue": "Two women disputed a child",
+    "clue": "Infants involved when two women came before Solomon seeking a ruling",
     "reference": "1 Kings 3:22",
     "difficulty": "easy",
     "aliases": []
@@ -5850,7 +5850,7 @@
   {
     "id": "jachin-732",
     "answer": "JACHIN",
-    "clue": "One temple pillar",
+    "clue": "Solomon’s temple pillar paired with Boaz",
     "reference": "1 Kings 7:21",
     "difficulty": "hard",
     "aliases": []
@@ -5946,7 +5946,7 @@
   {
     "id": "samaritans-744",
     "answer": "SAMARITANS",
-    "clue": "Neighbors of the Jews who worshiped at Gerizim",
+    "clue": "People who worshiped on Mount Gerizim and argued with Jews over the holy place",
     "reference": "2 Kings 17:29",
     "difficulty": "normal",
     "aliases": []
@@ -6026,7 +6026,7 @@
   {
     "id": "heman-754",
     "answer": "HEMAN",
-    "clue": "Temple musician",
+    "clue": "Temple musician named with Asaph and Jeduthun in Chronicles",
     "reference": "1 Chronicles 6:33",
     "difficulty": "hard",
     "aliases": []
@@ -6034,7 +6034,7 @@
   {
     "id": "jeduthun-755",
     "answer": "JEDUTHUN",
-    "clue": "Temple singer",
+    "clue": "One of David’s named music leaders alongside Asaph and Heman",
     "reference": "1 Chronicles 25:1",
     "difficulty": "hard",
     "aliases": []
@@ -6098,7 +6098,7 @@
   {
     "id": "amaziah-763",
     "answer": "AMAZIAH",
-    "clue": "King after Joash",
+    "clue": "King of Judah who succeeded his father Joash",
     "reference": "2 Kings 14:1",
     "difficulty": "normal",
     "aliases": []
@@ -6130,7 +6130,7 @@
   {
     "id": "cups-767",
     "answer": "CUPS",
-    "clue": "Items on the sacred table",
+    "clue": "Drinking vessels placed on the table of showbread",
     "reference": "Numbers 4:7",
     "difficulty": "normal",
     "aliases": []
@@ -6162,7 +6162,7 @@
   {
     "id": "rehum-771",
     "answer": "REHUM",
-    "clue": "Opposed temple work",
+    "clue": "Official who wrote to Artaxerxes against rebuilding Jerusalem",
     "reference": "Ezra 4:8",
     "difficulty": "hard",
     "aliases": []
@@ -6274,7 +6274,7 @@
   {
     "id": "bigthan-785",
     "answer": "BIGTHAN",
-    "clue": "Plotted against the king",
+    "clue": "One of the two palace conspirators, named before Teresh",
     "reference": "Esther 2:21",
     "difficulty": "hard",
     "aliases": []
@@ -6282,7 +6282,7 @@
   {
     "id": "teresh-786",
     "answer": "TERESH",
-    "clue": "Plotted with Bigthan",
+    "clue": "One of the two palace conspirators, named after Bigthan",
     "reference": "Esther 2:21",
     "difficulty": "hard",
     "aliases": []
@@ -6330,7 +6330,7 @@
   {
     "id": "ashheap-792",
     "answer": "ASHHEAP",
-    "clue": "Where Job sat after his affliction (2 words)",
+    "clue": "Place where Job sat and scraped himself with a potsherd",
     "reference": "Job 2:8",
     "difficulty": "normal",
     "aliases": []
@@ -6370,7 +6370,7 @@
   {
     "id": "whirlwind-797",
     "answer": "WHIRLWIND",
-    "clue": "God answered Job from this",
+    "clue": "Storm from which God spoke to Job",
     "reference": "Job 38:1",
     "difficulty": "normal",
     "aliases": []
@@ -6410,7 +6410,7 @@
   {
     "id": "horse-802",
     "answer": "HORSE",
-    "clue": "Animal in God's speech",
+    "clue": "Powerful animal whose neck is clothed with thunder in Job 39",
     "reference": "Job 39:19",
     "difficulty": "easy",
     "aliases": []
@@ -6418,7 +6418,7 @@
   {
     "id": "hawk-803",
     "answer": "HAWK",
-    "clue": "Bird in God's speech",
+    "clue": "Bird whose wings spread southward in God’s speech to Job",
     "reference": "Job 39:26",
     "difficulty": "normal",
     "aliases": []
@@ -6490,7 +6490,7 @@
   {
     "id": "strength-812",
     "answer": "STRENGTH",
-    "clue": "God gives this",
+    "clue": "What Psalm 29:11 says the Lord gives his people, before peace",
     "reference": "Psalm 46:1",
     "difficulty": "easy",
     "aliases": []
@@ -6498,7 +6498,7 @@
   {
     "id": "beasts-813",
     "answer": "BEASTS",
-    "clue": "Animals praise the Lord",
+    "clue": "Living creatures of the field called to praise the Lord in Psalm 148",
     "reference": "Psalm 148:10",
     "difficulty": "normal",
     "aliases": []
@@ -6506,7 +6506,7 @@
   {
     "id": "mountains-814",
     "answer": "MOUNTAINS",
-    "clue": "Called to praise God",
+    "clue": "Great landforms named among creation’s praises in Psalm 148",
     "reference": "Psalm 148:9",
     "difficulty": "normal",
     "aliases": []
@@ -6610,7 +6610,7 @@
   {
     "id": "rejoice-827",
     "answer": "REJOICE",
-    "clue": "Call to gladness",
+    "clue": "Verb used when praising God with joy",
     "reference": "Psalm 118:24",
     "difficulty": "easy",
     "aliases": []
@@ -6626,7 +6626,7 @@
   {
     "id": "trust-829",
     "answer": "TRUST",
-    "clue": "Place this in God",
+    "clue": "Verb in Proverbs 3:5: ___ in the Lord with all thine heart",
     "reference": "Proverbs 3:5",
     "difficulty": "easy",
     "aliases": []
@@ -6658,7 +6658,7 @@
   {
     "id": "lazy-833",
     "answer": "LAZY",
-    "clue": "A sluggard is this",
+    "clue": "Proverbs’ word for a person who avoids work",
     "reference": "Proverbs 6:6",
     "difficulty": "easy",
     "aliases": []
@@ -6714,7 +6714,7 @@
   {
     "id": "cheerful-840",
     "answer": "CHEERFUL",
-    "clue": "Heart that helps healing",
+    "clue": "Kind of heart described as good medicine in Proverbs 17:22",
     "reference": "Proverbs 17:22",
     "difficulty": "normal",
     "aliases": []
@@ -6730,7 +6730,7 @@
   {
     "id": "mother-842",
     "answer": "MOTHER",
-    "clue": "Honor her teaching",
+    "clue": "Parent whose law Proverbs 1:8 tells you not to forsake",
     "reference": "Proverbs 1:8",
     "difficulty": "easy",
     "aliases": []
@@ -6770,7 +6770,7 @@
   {
     "id": "weeping-847",
     "answer": "WEEPING",
-    "clue": "What Ecclesiastes says has its own time",
+    "clue": "What Ecclesiastes 3:4 pairs with laughing as a time for",
     "reference": "Ecclesiastes 3:4",
     "difficulty": "normal",
     "aliases": []
@@ -6810,7 +6810,7 @@
   {
     "id": "silvercord-852",
     "answer": "SILVERCORD",
-    "clue": "Broken in old age image (2 words)",
+    "clue": "What Ecclesiastes 12:6 says is loosed or broken",
     "reference": "Ecclesiastes 12:6",
     "difficulty": "hard",
     "aliases": []
@@ -6850,7 +6850,7 @@
   {
     "id": "lebanon-857",
     "answer": "LEBANON",
-    "clue": "Cedars from this region",
+    "clue": "Region whose cedars were renowned and used for temple building",
     "reference": "Song of Solomon 5:15",
     "difficulty": "normal",
     "aliases": []
@@ -6978,7 +6978,7 @@
   {
     "id": "sorrows-873",
     "answer": "SORROWS",
-    "clue": "Man of these",
+    "clue": "In Isaiah 53, the suffering servant is a man of these",
     "reference": "Isaiah 53:3",
     "difficulty": "normal",
     "aliases": []
@@ -7082,7 +7082,7 @@
   {
     "id": "drybones-886",
     "answer": "DRYBONES",
-    "clue": "Ezekiel saw a valley of these (2 words)",
+    "clue": "What Ezekiel saw filling a valley in his vision",
     "reference": "Ezekiel 37:1-4",
     "difficulty": "normal",
     "aliases": []
@@ -7114,7 +7114,7 @@
   {
     "id": "eastgate-890",
     "answer": "EASTGATE",
-    "clue": "Temple vision entrance (2 words)",
+    "clue": "Gate facing the sunrise in Ezekiel’s temple vision",
     "reference": "Ezekiel 40:6",
     "difficulty": "hard",
     "aliases": []
@@ -7138,7 +7138,7 @@
   {
     "id": "music-893",
     "answer": "MUSIC",
-    "clue": "Signal to bow to image",
+    "clue": "Sound that signaled everyone to bow to Nebuchadnezzar’s image",
     "reference": "Daniel 3:5",
     "difficulty": "easy",
     "aliases": []
@@ -7154,7 +7154,7 @@
   {
     "id": "harpers-895",
     "answer": "HARPERS",
-    "clue": "Players at dedication",
+    "clue": "People who played harps when Nebuchadnezzar’s golden image was dedicated",
     "reference": "Daniel 3:5",
     "difficulty": "normal",
     "aliases": []
@@ -7202,7 +7202,7 @@
   {
     "id": "goat-901",
     "answer": "GOAT",
-    "clue": "Vision's swift attacker",
+    "clue": "Male animal that struck the ram in Daniel 8",
     "reference": "Daniel 8:5",
     "difficulty": "normal",
     "aliases": []
@@ -7306,7 +7306,7 @@
   {
     "id": "eastwind-914",
     "answer": "EASTWIND",
-    "clue": "Scorched Jonah (2 words)",
+    "clue": "Scorching wind God prepared to strike Jonah after the plant withered",
     "reference": "Jonah 4:8",
     "difficulty": "normal",
     "aliases": []
@@ -7322,7 +7322,7 @@
   {
     "id": "exile-916",
     "answer": "EXILE",
-    "clue": "Punishment foretold",
+    "clue": "Being forced from one’s homeland, as warned by the prophets",
     "reference": "Amos 5:27",
     "difficulty": "normal",
     "aliases": []
@@ -7330,7 +7330,7 @@
   {
     "id": "merciful-917",
     "answer": "MERCIFUL",
-    "clue": "God's character",
+    "clue": "Describes God’s readiness to show compassion and forgive",
     "reference": "Jonah 4:2",
     "difficulty": "easy",
     "aliases": []
@@ -7338,7 +7338,7 @@
   {
     "id": "justice-918",
     "answer": "JUSTICE",
-    "clue": "God requires this",
+    "clue": "Fair treatment of people that God requires, alongside mercy and humility",
     "reference": "Micah 6:8",
     "difficulty": "easy",
     "aliases": []
@@ -7394,7 +7394,7 @@
   {
     "id": "quirinius-925",
     "answer": "QUIRINIUS",
-    "clue": "Roman governor at census",
+    "clue": "Alternative spelling of Cyrenius, governor mentioned at Jesus’ birth",
     "reference": "Luke 2:2",
     "difficulty": "hard",
     "aliases": []
@@ -7458,7 +7458,7 @@
   {
     "id": "fetters-933",
     "answer": "FETTERS",
-    "clue": "Chains that bound the troubled man",
+    "clue": "Iron restraints that could not hold the man among the tombs",
     "reference": "Mark 5:4",
     "difficulty": "easy",
     "aliases": []
@@ -7466,7 +7466,7 @@
   {
     "id": "camelhair-934",
     "answer": "CAMELHAIR",
-    "clue": "John's clothing (2 words)",
+    "clue": "Material of John the Baptist’s clothing, made from an animal’s hair",
     "reference": "Matthew 3:4",
     "difficulty": "normal",
     "aliases": []
@@ -7482,7 +7482,7 @@
   {
     "id": "wildhoney-936",
     "answer": "WILDHONEY",
-    "clue": "John's wilderness food (2 words)",
+    "clue": "Sweet food John the Baptist ate in the wilderness alongside locusts",
     "reference": "Matthew 3:4",
     "difficulty": "normal",
     "aliases": []
@@ -7498,7 +7498,7 @@
   {
     "id": "tempted-938",
     "answer": "TEMPTED",
-    "clue": "Jesus in wilderness",
+    "clue": "What the devil did to Jesus in the wilderness",
     "reference": "Matthew 4:1",
     "difficulty": "easy",
     "aliases": []
@@ -7578,7 +7578,7 @@
   {
     "id": "candle-948",
     "answer": "CANDLE",
-    "clue": "Placed on a stand",
+    "clue": "Object lit and placed on a candlestick in Jesus’ teaching",
     "reference": "Matthew 5:15",
     "difficulty": "easy",
     "aliases": []
@@ -7626,7 +7626,7 @@
   {
     "id": "roof-954",
     "answer": "ROOF",
-    "clue": "Paralyzed man lowered through",
+    "clue": "Part of a house opened to lower a paralyzed man to Jesus",
     "reference": "Mark 2:4",
     "difficulty": "easy",
     "aliases": []
@@ -7634,7 +7634,7 @@
   {
     "id": "mats-955",
     "answer": "MATS",
-    "clue": "Paralytic carried on one",
+    "clue": "Portable bedding used to carry the paralyzed man to Jesus",
     "reference": "Mark 2:4",
     "difficulty": "normal",
     "aliases": []
@@ -7642,7 +7642,7 @@
   {
     "id": "stretcher-956",
     "answer": "STRETCHER",
-    "clue": "Carried the paralyzed man",
+    "clue": "Portable frame on which friends carried a paralyzed man to Jesus",
     "reference": "Mark 2:4",
     "difficulty": "normal",
     "aliases": []
@@ -7706,7 +7706,7 @@
   {
     "id": "goodsoil-964",
     "answer": "GOODSOIL",
-    "clue": "Seed grew well here (2 words)",
+    "clue": "Fertile ground in Jesus’ parable where seed bore fruit",
     "reference": "Mark 4:8",
     "difficulty": "easy",
     "aliases": []
@@ -7770,7 +7770,7 @@
   {
     "id": "loaves-972",
     "answer": "LOAVES",
-    "clue": "Five fed thousands",
+    "clue": "Pieces of bread Jesus multiplied from five to feed a crowd",
     "reference": "Mark 6:38",
     "difficulty": "easy",
     "aliases": []
@@ -7850,7 +7850,7 @@
   {
     "id": "riches-982",
     "answer": "RICHES",
-    "clue": "Hard to enter kingdom with",
+    "clue": "Material wealth Jesus warned can make entering God’s kingdom difficult",
     "reference": "Mark 10:23",
     "difficulty": "normal",
     "aliases": []
@@ -7898,7 +7898,7 @@
   {
     "id": "master-988",
     "answer": "MASTER",
-    "clue": "Servants await his return",
+    "clue": "Person whose servants watch for his return in Jesus’ parable",
     "reference": "Mark 13:35",
     "difficulty": "normal",
     "aliases": []
@@ -7914,7 +7914,7 @@
   {
     "id": "upperroom-990",
     "answer": "UPPERROOM",
-    "clue": "Place of last supper (2 words)",
+    "clue": "Upstairs chamber where Jesus ate the Last Supper",
     "reference": "Mark 14:15",
     "difficulty": "normal",
     "aliases": []
@@ -7938,7 +7938,7 @@
   {
     "id": "accused-993",
     "answer": "ACCUSED",
-    "clue": "Jesus before the council",
+    "clue": "What religious leaders did to Jesus when alleging wrongdoing",
     "reference": "Mark 14:60",
     "difficulty": "easy",
     "aliases": []
@@ -7962,7 +7962,7 @@
   {
     "id": "alexander-996",
     "answer": "ALEXANDER",
-    "clue": "Son of Simon of Cyrene, named before Rufus",
+    "clue": "One of Simon of Cyrene’s sons mentioned before Rufus in Mark 15:21",
     "reference": "Mark 15:21",
     "difficulty": "normal",
     "aliases": []
@@ -7970,7 +7970,7 @@
   {
     "id": "rufus-997",
     "answer": "RUFUS",
-    "clue": "Son of Simon of Cyrene, named after Alexander",
+    "clue": "One of Simon of Cyrene’s sons mentioned after Alexander in Mark 15:21",
     "reference": "Mark 15:21",
     "difficulty": "hard",
     "aliases": []
@@ -7994,7 +7994,7 @@
   {
     "id": "faithful-1000",
     "answer": "FAITHFUL",
-    "clue": "Stewards must be this",
+    "clue": "Quality required of stewards entrusted with God's work",
     "reference": "1 Corinthians 4:2",
     "difficulty": "easy",
     "aliases": []
@@ -8050,7 +8050,7 @@
   {
     "id": "kings-1007",
     "answer": "KINGS",
-    "clue": "Four ___ made war with five in the vale of Siddim",
+    "clue": "Rulers who fought a battle in the valley of Siddim",
     "reference": "Genesis 14:9",
     "difficulty": "easy",
     "aliases": []
@@ -8058,7 +8058,7 @@
   {
     "id": "blessed-1008",
     "answer": "BLESSED",
-    "clue": "What God did to creatures of sea and sky",
+    "clue": "What God did for the first sea creatures and birds",
     "reference": "Genesis 1:22",
     "difficulty": "easy",
     "aliases": []
@@ -8074,7 +8074,7 @@
   {
     "id": "deliver-1010",
     "answer": "DELIVER",
-    "clue": "What Jacob asked God to do about Esau",
+    "clue": "What Jacob prayed God would do when he feared Esau",
     "reference": "Genesis 32:11",
     "difficulty": "easy",
     "aliases": []
@@ -8098,7 +8098,7 @@
   {
     "id": "prophet-1013",
     "answer": "PROPHET",
-    "clue": "God told Abimelech that Abraham was one",
+    "clue": "Role God assigned Abraham when speaking to Abimelech",
     "reference": "Genesis 20:7",
     "difficulty": "easy",
     "aliases": []
@@ -8106,7 +8106,7 @@
   {
     "id": "seed-1014",
     "answer": "SEED",
-    "clue": "What God commanded plants to yield",
+    "clue": "What fruit-bearing plants produce according to Genesis 1",
     "reference": "Genesis 1:11",
     "difficulty": "easy",
     "aliases": []
@@ -8114,7 +8114,7 @@
   {
     "id": "disciples-1015",
     "answer": "DISCIPLES",
-    "clue": "Those among whom Isaiah sealed the law",
+    "clue": "Followers among whom Isaiah was told to seal God's teaching",
     "reference": "Isaiah 8:16",
     "difficulty": "normal",
     "aliases": []
@@ -8154,7 +8154,7 @@
   {
     "id": "mountain-1020",
     "answer": "MOUNTAIN",
-    "clue": "High ground east of Bethel",
+    "clue": "High land where Abram built an altar east of Bethel",
     "reference": "Genesis 12:8",
     "difficulty": "normal",
     "aliases": []
@@ -8170,7 +8170,7 @@
   {
     "id": "heavens-1022",
     "answer": "HEAVENS",
-    "clue": "Created realm completed with the earth",
+    "clue": "What God finished creating along with the earth",
     "reference": "Genesis 2:1",
     "difficulty": "normal",
     "aliases": []
@@ -8194,7 +8194,7 @@
   {
     "id": "wall-1025",
     "answer": "WALL",
-    "clue": "Barrier Jacob said his brothers undermined",
+    "clue": "Stone barrier Laban and Jacob erected as a witness to their covenant",
     "reference": "Genesis 49:6",
     "difficulty": "easy",
     "aliases": []
@@ -8226,7 +8226,7 @@
   {
     "id": "worship-1029",
     "answer": "WORSHIP",
-    "clue": "What Abraham said he and Isaac would do",
+    "clue": "What Abraham told his servants he and Isaac would do on the mountain",
     "reference": "Genesis 22:5",
     "difficulty": "normal",
     "aliases": []
@@ -8266,7 +8266,7 @@
   {
     "id": "bring-1034",
     "answer": "BRING",
-    "clue": "What God told the land to do with vegetation",
+    "clue": "What God commanded the earth to do with plants on the third day",
     "reference": "Genesis 1:11",
     "difficulty": "easy",
     "aliases": []
@@ -8282,7 +8282,7 @@
   {
     "id": "walls-1036",
     "answer": "WALLS",
-    "clue": "House surfaces inspected for leprosy",
+    "clue": "House surfaces the priest examined for signs of leprosy",
     "reference": "Leviticus 14:37",
     "difficulty": "easy",
     "aliases": []
@@ -8290,7 +8290,7 @@
   {
     "id": "blessing-1037",
     "answer": "BLESSING",
-    "clue": "What God promised Abram to become",
+    "clue": "What God promised Abram would become to other people",
     "reference": "Genesis 12:2",
     "difficulty": "normal",
     "aliases": []
@@ -8298,7 +8298,7 @@
   {
     "id": "redeemed-1038",
     "answer": "REDEEMED",
-    "clue": "What Jacob said the angel had done for him",
+    "clue": "What Jacob said an angel had done for him from all evil",
     "reference": "Genesis 48:16",
     "difficulty": "normal",
     "aliases": []
@@ -8314,7 +8314,7 @@
   {
     "id": "preached-1040",
     "answer": "PREACHED",
-    "clue": "What the psalmist did with righteousness",
+    "clue": "What the psalmist did with righteousness in the great congregation",
     "reference": "Psalms 40:9",
     "difficulty": "normal",
     "aliases": []
@@ -8330,7 +8330,7 @@
   {
     "id": "assyria-1042",
     "answer": "ASSYRIA",
-    "clue": "Land east of which the river Hiddekel flowed",
+    "clue": "Land east of the Hiddekel River in Genesis 2",
     "reference": "Genesis 2:14",
     "difficulty": "normal",
     "aliases": []
@@ -8354,7 +8354,7 @@
   {
     "id": "judges-1045",
     "answer": "JUDGES",
-    "clue": "Those hearing disputes under Mosaic law",
+    "clue": "Officials to whom a Hebrew servant could be brought under Exodus 21",
     "reference": "Exodus 21:6",
     "difficulty": "normal",
     "aliases": []
@@ -8370,7 +8370,7 @@
   {
     "id": "promise-1047",
     "answer": "PROMISE",
-    "clue": "God told Israel this could be broken",
+    "clue": "What God told rebellious Israel they would know he could break",
     "reference": "Numbers 14:34",
     "difficulty": "normal",
     "aliases": []
@@ -8394,7 +8394,7 @@
   {
     "id": "eternal-1050",
     "answer": "ETERNAL",
-    "clue": "Describes the God who is a refuge",
+    "clue": "Word describing God as Israel's everlasting refuge",
     "reference": "Deuteronomy 33:27",
     "difficulty": "normal",
     "aliases": []
@@ -8418,7 +8418,7 @@
   {
     "id": "promised-1053",
     "answer": "PROMISED",
-    "clue": "What God had done about the land of Israel",
+    "clue": "What God had done concerning the land Israel would enter",
     "reference": "Exodus 12:25",
     "difficulty": "normal",
     "aliases": []
@@ -8450,7 +8450,7 @@
   {
     "id": "evil-1057",
     "answer": "EVIL",
-    "clue": "Knowledge the forbidden tree paired with good",
+    "clue": "The opposite of good in the forbidden tree's name",
     "reference": "Genesis 2:9",
     "difficulty": "easy",
     "aliases": []
@@ -8482,7 +8482,7 @@
   {
     "id": "hear-1061",
     "answer": "HEAR",
-    "clue": "What Lamech urged his two wives to do",
+    "clue": "What Lamech told Adah and Zillah to do with his voice",
     "reference": "Genesis 4:23",
     "difficulty": "easy",
     "aliases": []
@@ -8506,7 +8506,7 @@
   {
     "id": "flesh-1064",
     "answer": "FLESH",
-    "clue": "What God closed over Adam's rib wound",
+    "clue": "What God closed over the place where he took Adam's rib",
     "reference": "Genesis 2:21",
     "difficulty": "easy",
     "aliases": []
@@ -8546,7 +8546,7 @@
   {
     "id": "commanded-1069",
     "answer": "COMMANDED",
-    "clue": "What God did when warning Adam of the tree",
+    "clue": "What God did when instructing Adam about Eden's trees",
     "reference": "Genesis 2:16",
     "difficulty": "normal",
     "aliases": []
@@ -8570,7 +8570,7 @@
   {
     "id": "wicked-1072",
     "answer": "WICKED",
-    "clue": "How Genesis describes Sodom's men",
+    "clue": "How Genesis 13 describes the men of Sodom before the Lord",
     "reference": "Genesis 13:13",
     "difficulty": "easy",
     "aliases": []
@@ -8578,7 +8578,7 @@
   {
     "id": "stood-1073",
     "answer": "STOOD",
-    "clue": "How the three visitors appeared near Abraham",
+    "clue": "What the three men did near Abraham's tent in Genesis 18",
     "reference": "Genesis 18:2",
     "difficulty": "easy",
     "aliases": []
@@ -8602,7 +8602,7 @@
   {
     "id": "dwell-1076",
     "answer": "DWELL",
-    "clue": "What Jabal’s descendants did in tents",
+    "clue": "What Jabal's family did in tents while keeping cattle",
     "reference": "Genesis 4:20",
     "difficulty": "easy",
     "aliases": []
@@ -8610,7 +8610,7 @@
   {
     "id": "cause-1077",
     "answer": "CAUSE",
-    "clue": "God said, \"I will ___ it to rain upon the earth\"",
+    "clue": "What God said he would do to make rain fall for forty days",
     "reference": "Genesis 7:4",
     "difficulty": "easy",
     "aliases": []
@@ -8618,7 +8618,7 @@
   {
     "id": "high-1078",
     "answer": "HIGH",
-    "clue": "Describes the hills covered by the flood",
+    "clue": "Word describing the hills covered by Noah's flood",
     "reference": "Genesis 7:19",
     "difficulty": "easy",
     "aliases": []
@@ -8626,7 +8626,7 @@
   {
     "id": "crucified-1079",
     "answer": "CRUCIFIED",
-    "clue": "How Jesus was executed under Rome",
+    "clue": "How Jesus said he would be executed after the Passover",
     "reference": "Matthew 26:2",
     "difficulty": "normal",
     "aliases": []
@@ -8642,7 +8642,7 @@
   {
     "id": "round-1081",
     "answer": "ROUND",
-    "clue": "How Sodom's crowd surrounded Lot's house",
+    "clue": "How the men of Sodom surrounded Lot's house",
     "reference": "Genesis 19:4",
     "difficulty": "easy",
     "aliases": []
@@ -8658,7 +8658,7 @@
   {
     "id": "work-1083",
     "answer": "WORK",
-    "clue": "What God rested from on the seventh day",
+    "clue": "What God finished and rested from on the seventh day",
     "reference": "Genesis 2:2",
     "difficulty": "easy",
     "aliases": []
@@ -8674,7 +8674,7 @@
   {
     "id": "young-1085",
     "answer": "YOUNG",
-    "clue": "Describes the man Lamech said he had slain",
+    "clue": "Age description of the man Lamech said he had slain",
     "reference": "Genesis 4:23",
     "difficulty": "easy",
     "aliases": []
@@ -8682,7 +8682,7 @@
   {
     "id": "bashan-1086",
     "answer": "BASHAN",
-    "clue": "King Og's territory",
+    "clue": "King Og's kingdom east of the Jordan",
     "reference": "Numbers 21:33",
     "difficulty": "normal",
     "aliases": []
@@ -8690,7 +8690,7 @@
   {
     "id": "spoken-1087",
     "answer": "SPOKEN",
-    "clue": "What God had done before Abram left Haran",
+    "clue": "What the Lord had done to Abram before he left Haran",
     "reference": "Genesis 12:4",
     "difficulty": "easy",
     "aliases": []
@@ -8706,7 +8706,7 @@
   {
     "id": "fishes-1089",
     "answer": "FISHES",
-    "clue": "Sea creatures placed under human dominion",
+    "clue": "Sea creatures that God placed under humanity's dominion after the flood",
     "reference": "Genesis 9:2",
     "difficulty": "normal",
     "aliases": []
@@ -8714,7 +8714,7 @@
   {
     "id": "mighty-1090",
     "answer": "MIGHTY",
-    "clue": "How Genesis 6 calls ancient men of renown",
+    "clue": "Description of ancient men of renown in Genesis 6",
     "reference": "Genesis 6:4",
     "difficulty": "easy",
     "aliases": []
@@ -8722,7 +8722,7 @@
   {
     "id": "turned-1091",
     "answer": "TURNED",
-    "clue": "What the flaming sword did at Eden's gate",
+    "clue": "What the flaming sword did as it guarded Eden",
     "reference": "Genesis 3:24",
     "difficulty": "easy",
     "aliases": []
@@ -8730,7 +8730,7 @@
   {
     "id": "written-1092",
     "answer": "WRITTEN",
-    "clue": "How the law was recorded on stone tablets",
+    "clue": "How God's law appeared on the stone tablets given to Moses",
     "reference": "Exodus 24:12",
     "difficulty": "easy",
     "aliases": []
@@ -8738,7 +8738,7 @@
   {
     "id": "chief-1093",
     "answer": "CHIEF",
-    "clue": "Rank of Abimelech's military commander",
+    "clue": "Military rank held by Phichol in Abraham's time",
     "reference": "Genesis 21:22",
     "difficulty": "easy",
     "aliases": []
@@ -8770,7 +8770,7 @@
   {
     "id": "field-1097",
     "answer": "FIELD",
-    "clue": "Ground that had no shrub before rain",
+    "clue": "Ground with no plant before God sent rain in Genesis 2",
     "reference": "Genesis 2:5",
     "difficulty": "easy",
     "aliases": []
@@ -8802,7 +8802,7 @@
   {
     "id": "power-1101",
     "answer": "POWER",
-    "clue": "What Jacob used while serving Laban",
+    "clue": "What Jacob said he used fully while working for Laban",
     "reference": "Genesis 31:6",
     "difficulty": "easy",
     "aliases": []
@@ -8810,7 +8810,7 @@
   {
     "id": "humble-1102",
     "answer": "HUMBLE",
-    "clue": "What Pharaoh refused to do before God",
+    "clue": "What Moses demanded Pharaoh do before the Lord",
     "reference": "Exodus 10:3",
     "difficulty": "normal",
     "aliases": []
@@ -8834,7 +8834,7 @@
   {
     "id": "waters-1105",
     "answer": "WATERS",
-    "clue": "What God's Spirit moved over at creation",
+    "clue": "What God's Spirit moved upon at creation",
     "reference": "Genesis 1:2",
     "difficulty": "easy",
     "aliases": []
@@ -8842,7 +8842,7 @@
   {
     "id": "gathered-1106",
     "answer": "GATHERED",
-    "clue": "How God brought the waters into one place",
+    "clue": "What the waters did into one place on the third day",
     "reference": "Genesis 1:9",
     "difficulty": "normal",
     "aliases": []
@@ -8850,7 +8850,7 @@
   {
     "id": "dead-1107",
     "answer": "DEAD",
-    "clue": "What God warned Abimelech he was",
+    "clue": "What God warned Abimelech he was because he had taken Sarah",
     "reference": "Genesis 20:3",
     "difficulty": "easy",
     "aliases": []
@@ -8882,7 +8882,7 @@
   {
     "id": "return-1111",
     "answer": "RETURN",
-    "clue": "What humans do to dust after death",
+    "clue": "What humans must do to dust according to God's words to Adam",
     "reference": "Genesis 3:19",
     "difficulty": "easy",
     "aliases": []
@@ -8890,7 +8890,7 @@
   {
     "id": "whole-1112",
     "answer": "WHOLE",
-    "clue": "How Genesis describes the face of the ground",
+    "clue": "Word describing the face of the ground watered by Eden's mist",
     "reference": "Genesis 2:6",
     "difficulty": "easy",
     "aliases": []
@@ -8898,7 +8898,7 @@
   {
     "id": "mount-1113",
     "answer": "MOUNT",
-    "clue": "Highland mentioned in Joktan's territory",
+    "clue": "Highland at the eastern edge of Joktan's territory",
     "reference": "Genesis 10:30",
     "difficulty": "easy",
     "aliases": []
@@ -8930,7 +8930,7 @@
   {
     "id": "delivered-1117",
     "answer": "DELIVERED",
-    "clue": "What God had done with animals into human hands",
+    "clue": "What God had done to animals by placing them in Noah's hands",
     "reference": "Genesis 9:2",
     "difficulty": "normal",
     "aliases": []
@@ -8994,7 +8994,7 @@
   {
     "id": "told-1125",
     "answer": "TOLD",
-    "clue": "What God asked Adam about his nakedness",
+    "clue": "What God asked Adam about who revealed his nakedness",
     "reference": "Genesis 3:11",
     "difficulty": "easy",
     "aliases": []
@@ -9002,7 +9002,7 @@
   {
     "id": "seas-1126",
     "answer": "SEAS",
-    "clue": "What God called the gathered waters",
+    "clue": "Name God gave to the gathered waters at creation",
     "reference": "Genesis 1:10",
     "difficulty": "normal",
     "aliases": []
@@ -9026,7 +9026,7 @@
   {
     "id": "cried-1129",
     "answer": "CRIED",
-    "clue": "How Esau reacted to his stolen blessing",
+    "clue": "What Esau did bitterly after Isaac blessed Jacob",
     "reference": "Genesis 27:34",
     "difficulty": "easy",
     "aliases": []
@@ -9042,7 +9042,7 @@
   {
     "id": "full-1132",
     "answer": "FULL",
-    "clue": "Completely filled",
+    "clue": "Complete, as the Amorites' iniquity was not yet this",
     "reference": "Genesis 15:16",
     "difficulty": "easy",
     "aliases": []
@@ -9050,7 +9050,7 @@
   {
     "id": "afraid-1133",
     "answer": "AFRAID",
-    "clue": "How Adam felt when God called in Eden",
+    "clue": "How Adam felt when he heard God's voice in Eden",
     "reference": "Genesis 3:10",
     "difficulty": "easy",
     "aliases": []
@@ -9058,7 +9058,7 @@
   {
     "id": "jews-1134",
     "answer": "JEWS",
-    "clue": "People driven out of Elath by Syria's king",
+    "clue": "People driven out of Elath by the king of Syria in 2 Kings 16",
     "reference": "2 Kings 16:6",
     "difficulty": "easy",
     "aliases": []
@@ -9090,7 +9090,7 @@
   {
     "id": "month-1138",
     "answer": "MONTH",
-    "clue": "Part of the calendar",
+    "clue": "Calendar division used to date the start of Noah's flood",
     "reference": "Genesis 7:11",
     "difficulty": "easy",
     "aliases": []
@@ -9114,7 +9114,7 @@
   {
     "id": "seek-1141",
     "answer": "SEEK",
-    "clue": "Look for",
+    "clue": "What Joseph's brother said he was doing when searching for his brothers",
     "reference": "Genesis 37:16",
     "difficulty": "easy",
     "aliases": []
@@ -9146,7 +9146,7 @@
   {
     "id": "dragons-1145",
     "answer": "DRAGONS",
-    "clue": "Creatures used to symbolize venom",
+    "clue": "Poisonous creatures mentioned alongside asps in Moses' song",
     "reference": "Deuteronomy 32:33",
     "difficulty": "normal",
     "aliases": []
@@ -9154,7 +9154,7 @@
   {
     "id": "save-1146",
     "answer": "SAVE",
-    "clue": "Keep alive",
+    "clue": "What Abram thought the Egyptians would do to Sarai's life",
     "reference": "Genesis 12:12",
     "difficulty": "easy",
     "aliases": []
@@ -9162,7 +9162,7 @@
   {
     "id": "send-1147",
     "answer": "SEND",
-    "clue": "To dispatch an angel",
+    "clue": "What Abraham said God would do with his angel before the servant",
     "reference": "Genesis 24:7",
     "difficulty": "easy",
     "aliases": []
@@ -9170,7 +9170,7 @@
   {
     "id": "moreover-1148",
     "answer": "MOREOVER",
-    "clue": "In addition",
+    "clue": "Word Abraham's servant used when offering straw and feed were mentioned",
     "reference": "Genesis 24:25",
     "difficulty": "normal",
     "aliases": []
@@ -9186,7 +9186,7 @@
   {
     "id": "judge-1150",
     "answer": "JUDGE",
-    "clue": "What God would do to oppressors",
+    "clue": "What God promised to do to the nation that enslaved Abram's descendants",
     "reference": "Genesis 15:14",
     "difficulty": "easy",
     "aliases": []
@@ -9202,7 +9202,7 @@
   {
     "id": "slain-1152",
     "answer": "SLAIN",
-    "clue": "Killed by another",
+    "clue": "What Lamech said he had done to a man who wounded him",
     "reference": "Genesis 4:23",
     "difficulty": "easy",
     "aliases": []
@@ -9218,7 +9218,7 @@
   {
     "id": "receive-1154",
     "answer": "RECEIVE",
-    "clue": "To accept something",
+    "clue": "What Cain could no longer do with the ground's full strength",
     "reference": "Genesis 4:11",
     "difficulty": "easy",
     "aliases": []
@@ -9242,7 +9242,7 @@
   {
     "id": "gods-1157",
     "answer": "GODS",
-    "clue": "False deities",
+    "clue": "What the serpent claimed Adam and Eve would become like",
     "reference": "Genesis 3:5",
     "difficulty": "easy",
     "aliases": []
@@ -9250,7 +9250,7 @@
   {
     "id": "reign-1158",
     "answer": "REIGN",
-    "clue": "To rule as king",
+    "clue": "What Joseph's brothers asked whether he would do over them",
     "reference": "Genesis 37:8",
     "difficulty": "easy",
     "aliases": []
@@ -9258,7 +9258,7 @@
   {
     "id": "battle-1159",
     "answer": "BATTLE",
-    "clue": "Conflict fought in Siddim",
+    "clue": "Conflict fought by kings in the vale of Siddim",
     "reference": "Genesis 14:8",
     "difficulty": "easy",
     "aliases": []
@@ -9274,7 +9274,7 @@
   {
     "id": "tell-1161",
     "answer": "TELL",
-    "clue": "To inform someone",
+    "clue": "What Pharaoh demanded Abram do about Sarai being his wife",
     "reference": "Genesis 12:18",
     "difficulty": "easy",
     "aliases": []
@@ -9282,7 +9282,7 @@
   {
     "id": "filled-1162",
     "answer": "FILLED",
-    "clue": "How Genesis describes the earth and violence",
+    "clue": "How the earth was described when violence spread before the flood",
     "reference": "Genesis 6:11",
     "difficulty": "easy",
     "aliases": []
@@ -9298,7 +9298,7 @@
   {
     "id": "reigned-1164",
     "answer": "REIGNED",
-    "clue": "Ruled as a king",
+    "clue": "What the kings of Edom did before Israel had kings",
     "reference": "Genesis 36:31",
     "difficulty": "easy",
     "aliases": []
@@ -9314,7 +9314,7 @@
   {
     "id": "walk-1166",
     "answer": "WALK",
-    "clue": "To travel on foot",
+    "clue": "What God told Abram to do through the length and breadth of Canaan",
     "reference": "Genesis 13:17",
     "difficulty": "easy",
     "aliases": []
@@ -9322,7 +9322,7 @@
   {
     "id": "build-1167",
     "answer": "BUILD",
-    "clue": "Construct, as at Babel",
+    "clue": "What Babel's people planned to do with a city and tower",
     "reference": "Genesis 11:4",
     "difficulty": "easy",
     "aliases": []
@@ -9354,7 +9354,7 @@
   {
     "id": "long-1171",
     "answer": "LONG",
-    "clue": "Describes Isaac’s stay among the Philistines",
+    "clue": "How Isaac's time living in Gerar is described before Abimelech saw him",
     "reference": "Genesis 26:8",
     "difficulty": "easy",
     "aliases": []
@@ -9378,7 +9378,7 @@
   {
     "id": "concerning-1174",
     "answer": "CONCERNING",
-    "clue": "Regarding a subject",
+    "clue": "Word Noah's father used when speaking about the curse on the ground",
     "reference": "Genesis 5:29",
     "difficulty": "normal",
     "aliases": []
@@ -9386,7 +9386,7 @@
   {
     "id": "near-1175",
     "answer": "NEAR",
-    "clue": "Close by",
+    "clue": "How Abram described his approach to Egypt",
     "reference": "Genesis 12:11",
     "difficulty": "easy",
     "aliases": []
@@ -9394,7 +9394,7 @@
   {
     "id": "arise-1176",
     "answer": "ARISE",
-    "clue": "To get up and go",
+    "clue": "What God told Abram to do before walking through Canaan",
     "reference": "Genesis 13:17",
     "difficulty": "easy",
     "aliases": []
@@ -9402,7 +9402,7 @@
   {
     "id": "passed-1177",
     "answer": "PASSED",
-    "clue": "Moved through a territory",
+    "clue": "What Abram did through the land to Shechem",
     "reference": "Genesis 12:6",
     "difficulty": "normal",
     "aliases": []
@@ -9410,7 +9410,7 @@
   {
     "id": "heathen-1178",
     "answer": "HEATHEN",
-    "clue": "Gentile peoples",
+    "clue": "Peoples from whom Israel could buy servants under Leviticus 25",
     "reference": "Leviticus 25:44",
     "difficulty": "normal",
     "aliases": []
@@ -9434,7 +9434,7 @@
   {
     "id": "ransom-1181",
     "answer": "RANSOM",
-    "clue": "Price paid for release",
+    "clue": "Payment that could be imposed for certain injuries under Exodus 21",
     "reference": "Exodus 21:30",
     "difficulty": "normal",
     "aliases": []
@@ -9450,7 +9450,7 @@
   {
     "id": "remember-1183",
     "answer": "REMEMBER",
-    "clue": "What God would do for Noah's covenant",
+    "clue": "What God promised to do with his covenant when seeing the rainbow",
     "reference": "Genesis 9:15",
     "difficulty": "normal",
     "aliases": []
@@ -9458,7 +9458,7 @@
   {
     "id": "looked-1184",
     "answer": "LOOKED",
-    "clue": "What God did before seeing earth’s corruption",
+    "clue": "What God did upon the earth and saw its corruption",
     "reference": "Genesis 6:12",
     "difficulty": "normal",
     "aliases": []
@@ -9466,7 +9466,7 @@
   {
     "id": "living-1185",
     "answer": "LIVING",
-    "clue": "Describes creatures God made in the waters",
+    "clue": "Description of creatures moving in the sea on the fifth day",
     "reference": "Genesis 1:21",
     "difficulty": "normal",
     "aliases": []
@@ -9498,7 +9498,7 @@
   {
     "id": "honour-1189",
     "answer": "HONOUR",
-    "clue": "Respect or esteem",
+    "clue": "What Jacob told Simeon and Levi his soul should not join",
     "reference": "Genesis 49:6",
     "difficulty": "normal",
     "aliases": []
@@ -9530,7 +9530,7 @@
   {
     "id": "disease-1193",
     "answer": "DISEASE",
-    "clue": "Illness of King Ahaziah",
+    "clue": "Illness from which King Ahaziah hoped to recover",
     "reference": "2 Kings 1:2",
     "difficulty": "normal",
     "aliases": []
@@ -9538,7 +9538,7 @@
   {
     "id": "break-1194",
     "answer": "BREAK",
-    "clue": "To force apart",
+    "clue": "What the men outside Lot's house threatened to do to his door",
     "reference": "Genesis 19:9",
     "difficulty": "easy",
     "aliases": []
@@ -9546,7 +9546,7 @@
   {
     "id": "kept-1195",
     "answer": "KEPT",
-    "clue": "What Abraham did with God’s commandments",
+    "clue": "What God said Abraham had done with his charge and commandments",
     "reference": "Genesis 26:5",
     "difficulty": "easy",
     "aliases": []
@@ -9554,7 +9554,7 @@
   {
     "id": "carried-1196",
     "answer": "CARRIED",
-    "clue": "Transported livestock and goods",
+    "clue": "What Jacob did with livestock and goods as he departed for Canaan",
     "reference": "Genesis 31:18",
     "difficulty": "normal",
     "aliases": []
@@ -9570,7 +9570,7 @@
   {
     "id": "desolate-1198",
     "answer": "DESOLATE",
-    "clue": "Empty and abandoned",
+    "clue": "How Egyptians feared their land would become during the famine",
     "reference": "Genesis 47:19",
     "difficulty": "normal",
     "aliases": []
@@ -9586,7 +9586,7 @@
   {
     "id": "believe-1200",
     "answer": "BELIEVE",
-    "clue": "Put trust in",
+    "clue": "What Moses feared Israel would not do when he described God's appearance",
     "reference": "Exodus 4:1",
     "difficulty": "normal",
     "aliases": []
@@ -9594,7 +9594,7 @@
   {
     "id": "cattle-1201",
     "answer": "CATTLE",
-    "clue": "Livestock tended by shepherds",
+    "clue": "Domestic animals God created on the sixth day",
     "reference": "Genesis 1:24",
     "difficulty": "normal",
     "aliases": []
@@ -9618,7 +9618,7 @@
   {
     "id": "border-1204",
     "answer": "BORDER",
-    "clue": "Edge of a territory",
+    "clue": "Word marking the territorial limits of the Canaanites in Genesis 10",
     "reference": "Genesis 10:19",
     "difficulty": "normal",
     "aliases": []
@@ -9626,7 +9626,7 @@
   {
     "id": "answer-1205",
     "answer": "ANSWER",
-    "clue": "A reply to a question",
+    "clue": "What Jacob said his righteousness would do for him when Laban checked his wages",
     "reference": "Genesis 30:33",
     "difficulty": "normal",
     "aliases": []
@@ -9634,7 +9634,7 @@
   {
     "id": "captain-1206",
     "answer": "CAPTAIN",
-    "clue": "Leader of a military unit",
+    "clue": "Military office held by Phichol under Abimelech",
     "reference": "Genesis 21:22",
     "difficulty": "normal",
     "aliases": []
@@ -9642,7 +9642,7 @@
   {
     "id": "nation-1207",
     "answer": "NATION",
-    "clue": "A people or country",
+    "clue": "What God promised to make of Abram in Genesis 12",
     "reference": "Genesis 12:2",
     "difficulty": "normal",
     "aliases": []
@@ -9674,7 +9674,7 @@
   {
     "id": "become-1211",
     "answer": "BECOME",
-    "clue": "What God said Adam had done, like one of us",
+    "clue": "What God said the man had done, like one knowing good and evil",
     "reference": "Genesis 3:22",
     "difficulty": "normal",
     "aliases": []
@@ -9682,7 +9682,7 @@
   {
     "id": "beside-1212",
     "answer": "BESIDE",
-    "clue": "Next to or alongside",
+    "clue": "Where Isaac lived in relation to King Abimelech at Gerar",
     "reference": "Genesis 26:1",
     "difficulty": "normal",
     "aliases": []
@@ -9698,7 +9698,7 @@
   {
     "id": "offered-1214",
     "answer": "OFFERED",
-    "clue": "What Noah did with sacrifices after the flood",
+    "clue": "What Noah did with burnt sacrifices after leaving the ark",
     "reference": "Genesis 8:20",
     "difficulty": "normal",
     "aliases": []
@@ -9714,7 +9714,7 @@
   {
     "id": "robes-1216",
     "answer": "ROBES",
-    "clue": "Royal garments worn by Tamar",
+    "clue": "Special garments worn by royal daughters such as Tamar",
     "reference": "2 Samuel 13:18",
     "difficulty": "normal",
     "aliases": []
@@ -9722,7 +9722,7 @@
   {
     "id": "money-1217",
     "answer": "MONEY",
-    "clue": "Payment used for purchase",
+    "clue": "What Abraham used to buy servants born outside his household",
     "reference": "Genesis 17:12",
     "difficulty": "easy",
     "aliases": []
@@ -9730,7 +9730,7 @@
   {
     "id": "sought-1218",
     "answer": "SOUGHT",
-    "clue": "What Joseph wanted in private",
+    "clue": "What Joseph did for a private place to weep on seeing Benjamin",
     "reference": "Genesis 43:30",
     "difficulty": "normal",
     "aliases": []
@@ -9746,7 +9746,7 @@
   {
     "id": "chosen-1220",
     "answer": "CHOSEN",
-    "clue": "Selected for a purpose",
+    "clue": "What Pharaoh's six hundred chariots were called",
     "reference": "Exodus 14:7",
     "difficulty": "normal",
     "aliases": []
@@ -9786,7 +9786,7 @@
   {
     "id": "look-1225",
     "answer": "LOOK",
-    "clue": "What Noah could do at the rainbow",
+    "clue": "What God said he would do upon the rainbow to remember his covenant",
     "reference": "Genesis 9:16",
     "difficulty": "easy",
     "aliases": []
@@ -9794,7 +9794,7 @@
   {
     "id": "numbered-1226",
     "answer": "NUMBERED",
-    "clue": "Counted, like innumerable dust",
+    "clue": "What Genesis says the dust of the earth could not be, like Abram's descendants",
     "reference": "Genesis 13:16",
     "difficulty": "normal",
     "aliases": []
@@ -9802,7 +9802,7 @@
   {
     "id": "sinned-1227",
     "answer": "SINNED",
-    "clue": "What Pharaoh admitted during plagues",
+    "clue": "What Pharaoh confessed after the plague of hail",
     "reference": "Exodus 9:27",
     "difficulty": "normal",
     "aliases": []
@@ -9810,7 +9810,7 @@
   {
     "id": "born-1228",
     "answer": "BORN",
-    "clue": "Came into the world",
+    "clue": "What happened to Irad in the genealogy of Cain",
     "reference": "Genesis 4:18",
     "difficulty": "easy",
     "aliases": []
@@ -9818,7 +9818,7 @@
   {
     "id": "east-1229",
     "answer": "EAST",
-    "clue": "Compass direction opposite west",
+    "clue": "Direction named when describing the Hiddekel River near Assyria",
     "reference": "Genesis 2:14",
     "difficulty": "easy",
     "aliases": []
@@ -9826,7 +9826,7 @@
   {
     "id": "find-1230",
     "answer": "FIND",
-    "clue": "To discover a righteous person",
+    "clue": "What God proposed doing if there were fifty righteous people in Sodom",
     "reference": "Genesis 18:26",
     "difficulty": "easy",
     "aliases": []
@@ -9842,7 +9842,7 @@
   {
     "id": "ashamed-1233",
     "answer": "ASHAMED",
-    "clue": "Embarrassed over nudity",
+    "clue": "What Adam and Eve were not despite being naked before sin",
     "reference": "Genesis 2:25",
     "difficulty": "normal",
     "aliases": []
@@ -9874,7 +9874,7 @@
   {
     "id": "trouble-1237",
     "answer": "TROUBLE",
-    "clue": "What stolen devoted goods bring",
+    "clue": "What Achan's forbidden spoils would bring to Israel",
     "reference": "Joshua 6:18",
     "difficulty": "normal",
     "aliases": []
@@ -9882,7 +9882,7 @@
   {
     "id": "ghost-1238",
     "answer": "GHOST",
-    "clue": "Old term for a person's spirit",
+    "clue": "Word used for the spirit Isaac gave up at death in KJV wording",
     "reference": "Genesis 25:8",
     "difficulty": "easy",
     "aliases": []
@@ -9898,7 +9898,7 @@
   {
     "id": "spread-1240",
     "answer": "SPREAD",
-    "clue": "Moved outward, as peoples did",
+    "clue": "What the Canaanite families did after they multiplied",
     "reference": "Genesis 10:18",
     "difficulty": "normal",
     "aliases": []
@@ -9914,7 +9914,7 @@
   {
     "id": "teach-1242",
     "answer": "TEACH",
-    "clue": "What God promised Moses to do",
+    "clue": "What God promised to do for Moses' mouth when he spoke",
     "reference": "Exodus 4:12",
     "difficulty": "easy",
     "aliases": []
@@ -9922,7 +9922,7 @@
   {
     "id": "rise-1243",
     "answer": "RISE",
-    "clue": "Stand up from the ground",
+    "clue": "What Lot asked the angels to do early in the morning",
     "reference": "Genesis 19:2",
     "difficulty": "easy",
     "aliases": []
@@ -9930,7 +9930,7 @@
   {
     "id": "enemy-1244",
     "answer": "ENEMY",
-    "clue": "Opponent in a conflict",
+    "clue": "Opponent whom God's right hand shattered in Moses' victory song",
     "reference": "Exodus 15:6",
     "difficulty": "easy",
     "aliases": []
@@ -9938,7 +9938,7 @@
   {
     "id": "spoil-1245",
     "answer": "SPOIL",
-    "clue": "Goods taken from enemies",
+    "clue": "Goods that Benjamin is compared to dividing in Jacob's blessing",
     "reference": "Genesis 49:27",
     "difficulty": "easy",
     "aliases": []
@@ -9946,7 +9946,7 @@
   {
     "id": "followed-1246",
     "answer": "FOLLOWED",
-    "clue": "What Rebekah's attendants did",
+    "clue": "What Rebekah and her attendants did behind Abraham's servant",
     "reference": "Genesis 24:61",
     "difficulty": "normal",
     "aliases": []
@@ -9954,7 +9954,7 @@
   {
     "id": "alone-1247",
     "answer": "ALONE",
-    "clue": "Without a companion",
+    "clue": "What God said it was not good for Adam to be",
     "reference": "Genesis 2:18",
     "difficulty": "easy",
     "aliases": []
@@ -9962,7 +9962,7 @@
   {
     "id": "desire-1248",
     "answer": "DESIRE",
-    "clue": "Longing or strong wish",
+    "clue": "What God said Eve would have toward her husband",
     "reference": "Genesis 3:16",
     "difficulty": "normal",
     "aliases": []
@@ -9970,7 +9970,7 @@
   {
     "id": "husband-1249",
     "answer": "HUSBAND",
-    "clue": "Eve's relationship to Adam",
+    "clue": "Adam’s relationship to Eve",
     "reference": "Genesis 3:6",
     "difficulty": "normal",
     "aliases": []
@@ -9986,7 +9986,7 @@
   {
     "id": "fled-1251",
     "answer": "FLED",
-    "clue": "Ran away from a battle",
+    "clue": "What the kings of Sodom and Gomorrah did at the battle of Siddim",
     "reference": "Genesis 14:10",
     "difficulty": "easy",
     "aliases": []
@@ -9994,7 +9994,7 @@
   {
     "id": "command-1252",
     "answer": "COMMAND",
-    "clue": "God said Abraham would give this",
+    "clue": "What God said Abraham would give his children after him",
     "reference": "Genesis 18:19",
     "difficulty": "normal",
     "aliases": []
@@ -10010,7 +10010,7 @@
   {
     "id": "likewise-1254",
     "answer": "LIKEWISE",
-    "clue": "In a similar way",
+    "clue": "Word introducing a similar instruction concerning animals in Exodus 22",
     "reference": "Exodus 22:30",
     "difficulty": "normal",
     "aliases": []
@@ -10018,7 +10018,7 @@
   {
     "id": "sweet-1255",
     "answer": "SWEET",
-    "clue": "What God called Noah's sacrifice",
+    "clue": "How God described the aroma of Noah's burnt offering",
     "reference": "Genesis 8:21",
     "difficulty": "easy",
     "aliases": []
@@ -10026,7 +10026,7 @@
   {
     "id": "sake-1256",
     "answer": "SAKE",
-    "clue": "For the benefit of someone",
+    "clue": "Word in God's explanation that the ground was cursed for Adam's this",
     "reference": "Genesis 3:17",
     "difficulty": "easy",
     "aliases": []
@@ -10034,7 +10034,7 @@
   {
     "id": "beloved-1257",
     "answer": "BELOVED",
-    "clue": "Loved more than another",
+    "clue": "Term for the more-loved wife under Deuteronomy's inheritance law",
     "reference": "Deuteronomy 21:15",
     "difficulty": "normal",
     "aliases": []
@@ -10042,7 +10042,7 @@
   {
     "id": "captains-1258",
     "answer": "CAPTAINS",
-    "clue": "Officers commanding chariots",
+    "clue": "Officers assigned to Pharaoh's chosen chariots",
     "reference": "Exodus 14:7",
     "difficulty": "normal",
     "aliases": []
@@ -10058,7 +10058,7 @@
   {
     "id": "bound-1260",
     "answer": "BOUND",
-    "clue": "How Isaac was placed on the altar",
+    "clue": "What Abraham did to Isaac before placing him on the altar",
     "reference": "Genesis 22:9",
     "difficulty": "easy",
     "aliases": []
@@ -10066,7 +10066,7 @@
   {
     "id": "buried-1261",
     "answer": "BURIED",
-    "clue": "Laid to rest after death",
+    "clue": "What God told Abram would happen to him in a good old age",
     "reference": "Genesis 15:15",
     "difficulty": "normal",
     "aliases": []
@@ -10082,7 +10082,7 @@
   {
     "id": "sanctuary-1263",
     "answer": "SANCTUARY",
-    "clue": "Holy place for worship",
+    "clue": "Holy place God promised to establish for his people",
     "reference": "Exodus 15:17",
     "difficulty": "normal",
     "aliases": []
@@ -10090,7 +10090,7 @@
   {
     "id": "burn-1264",
     "answer": "BURN",
-    "clue": "What builders did to bricks at Babel",
+    "clue": "What Babel's builders proposed doing to bricks thoroughly",
     "reference": "Genesis 11:3",
     "difficulty": "easy",
     "aliases": []
@@ -10154,7 +10154,7 @@
   {
     "id": "possess-1272",
     "answer": "POSSESS",
-    "clue": "To take ownership of land",
+    "clue": "What God promised Abraham's descendants would do to their enemies' gate",
     "reference": "Genesis 22:17",
     "difficulty": "normal",
     "aliases": []
@@ -10162,7 +10162,7 @@
   {
     "id": "shame-1273",
     "answer": "SHAME",
-    "clue": "Disgrace caused by idolatry",
+    "clue": "Disgrace Aaron brought upon Israel through the golden calf",
     "reference": "Exodus 32:25",
     "difficulty": "easy",
     "aliases": []
@@ -10170,7 +10170,7 @@
   {
     "id": "wrought-1274",
     "answer": "WROUGHT",
-    "clue": "Made or performed",
+    "clue": "What Shechem was accused of doing in Israel through Dinah",
     "reference": "Genesis 34:7",
     "difficulty": "normal",
     "aliases": []
@@ -10194,7 +10194,7 @@
   {
     "id": "meet-1277",
     "answer": "MEET",
-    "clue": "Suitable as a partner",
+    "clue": "Word describing a suitable helper God wanted for Adam",
     "reference": "Genesis 2:18",
     "difficulty": "easy",
     "aliases": []
@@ -10210,7 +10210,7 @@
   {
     "id": "burned-1279",
     "answer": "BURNED",
-    "clue": "What the bush did without being consumed",
+    "clue": "What the bush did without being consumed when Moses saw it",
     "reference": "Exodus 3:2",
     "difficulty": "normal",
     "aliases": []
@@ -10226,7 +10226,7 @@
   {
     "id": "ready-1281",
     "answer": "READY",
-    "clue": "Prepared to host visitors",
+    "clue": "What Abraham urged Sarah to do quickly when preparing cakes for guests",
     "reference": "Genesis 18:6",
     "difficulty": "easy",
     "aliases": []
@@ -10234,7 +10234,7 @@
   {
     "id": "utterly-1282",
     "answer": "UTTERLY",
-    "clue": "Completely, with nothing left",
+    "clue": "How God promised to blot out Amalek's remembrance",
     "reference": "Exodus 17:14",
     "difficulty": "normal",
     "aliases": []
@@ -10282,7 +10282,7 @@
   {
     "id": "charge-1288",
     "answer": "CHARGE",
-    "clue": "Responsibility entrusted to someone",
+    "clue": "What Abraham obeyed along with God's statutes and laws",
     "reference": "Genesis 26:5",
     "difficulty": "normal",
     "aliases": []
@@ -10306,7 +10306,7 @@
   {
     "id": "declare-1291",
     "answer": "DECLARE",
-    "clue": "To tell Pharaoh a dream",
+    "clue": "What Joseph's fellow prisoners wanted done with their dreams before Pharaoh",
     "reference": "Genesis 41:24",
     "difficulty": "normal",
     "aliases": []
@@ -10314,7 +10314,7 @@
   {
     "id": "small-1292",
     "answer": "SMALL",
-    "clue": "How the Sodomites were described alongside great",
+    "clue": "How the men around Lot's house were described along with great",
     "reference": "Genesis 19:11",
     "difficulty": "easy",
     "aliases": []
@@ -10322,7 +10322,7 @@
   {
     "id": "open-1293",
     "answer": "OPEN",
-    "clue": "Not closed",
+    "clue": "Description of the firmament in which birds flew above the earth",
     "reference": "Genesis 1:20",
     "difficulty": "easy",
     "aliases": []
@@ -10330,7 +10330,7 @@
   {
     "id": "suffer-1294",
     "answer": "SUFFER",
-    "clue": "To allow something to happen",
+    "clue": "What God refused to do to the destroyer concerning Israelite doors",
     "reference": "Exodus 12:23",
     "difficulty": "normal",
     "aliases": []
@@ -10346,7 +10346,7 @@
   {
     "id": "caused-1296",
     "answer": "CAUSED",
-    "clue": "Made something happen",
+    "clue": "What God had not done with rain before vegetation grew",
     "reference": "Genesis 2:5",
     "difficulty": "normal",
     "aliases": []
@@ -10362,7 +10362,7 @@
   {
     "id": "kill-1298",
     "answer": "KILL",
-    "clue": "To take a life",
+    "clue": "What God promised to punish sevenfold if someone did this to Cain",
     "reference": "Genesis 4:15",
     "difficulty": "easy",
     "aliases": []
@@ -10370,7 +10370,7 @@
   {
     "id": "remnant-1299",
     "answer": "REMNANT",
-    "clue": "What is left over",
+    "clue": "The leftover curtain fabric hanging over the tabernacle",
     "reference": "Exodus 26:12",
     "difficulty": "normal",
     "aliases": []
@@ -10378,7 +10378,7 @@
   {
     "id": "removed-1300",
     "answer": "REMOVED",
-    "clue": "What Noah did to the ark’s covering",
+    "clue": "What Noah did to the ark's covering when the ground dried",
     "reference": "Genesis 8:13",
     "difficulty": "normal",
     "aliases": []
@@ -10386,7 +10386,7 @@
   {
     "id": "loved-1301",
     "answer": "LOVED",
-    "clue": "How Isaac felt about Rebekah",
+    "clue": "What Isaac did toward Rebekah after marrying her",
     "reference": "Genesis 24:67",
     "difficulty": "easy",
     "aliases": []
@@ -10394,7 +10394,7 @@
   {
     "id": "half-1302",
     "answer": "HALF",
-    "clue": "One of two equal parts",
+    "clue": "Fraction of a shekel represented by the gold earring given to Rebekah",
     "reference": "Genesis 24:22",
     "difficulty": "easy",
     "aliases": []
@@ -10410,7 +10410,7 @@
   {
     "id": "carry-1304",
     "answer": "CARRY",
-    "clue": "To transport goods",
+    "clue": "What the Ishmaelite traders did with spices toward Egypt",
     "reference": "Genesis 37:25",
     "difficulty": "easy",
     "aliases": []
@@ -10418,7 +10418,7 @@
   {
     "id": "greatly-1305",
     "answer": "GREATLY",
-    "clue": "To a very large degree",
+    "clue": "Adverb in God's warning that he would multiply Eve's sorrow",
     "reference": "Genesis 3:16",
     "difficulty": "normal",
     "aliases": []
@@ -10426,7 +10426,7 @@
   {
     "id": "increase-1306",
     "answer": "INCREASE",
-    "clue": "What the land would yield if Israel obeyed",
+    "clue": "What God promised the land would yield if Israel obeyed",
     "reference": "Leviticus 26:4",
     "difficulty": "normal",
     "aliases": []
@@ -10466,7 +10466,7 @@
   {
     "id": "wind-1311",
     "answer": "WIND",
-    "clue": "What God sent to dry floodwaters",
+    "clue": "What God sent across the earth to lower floodwaters",
     "reference": "Genesis 8:1",
     "difficulty": "easy",
     "aliases": []
@@ -10474,7 +10474,7 @@
   {
     "id": "early-1312",
     "answer": "EARLY",
-    "clue": "At the start of the day",
+    "clue": "When Lot urged the visiting men to rise and go on their way",
     "reference": "Genesis 19:2",
     "difficulty": "easy",
     "aliases": []
@@ -10482,7 +10482,7 @@
   {
     "id": "follow-1313",
     "answer": "FOLLOW",
-    "clue": "What Rebekah was asked to do with Abraham’s servant",
+    "clue": "What Abraham's servant feared the woman might refuse to do",
     "reference": "Genesis 24:5",
     "difficulty": "normal",
     "aliases": []
@@ -10490,7 +10490,7 @@
   {
     "id": "alive-1314",
     "answer": "ALIVE",
-    "clue": "Having life",
+    "clue": "Condition of the animals Noah brought into the ark",
     "reference": "Genesis 6:19",
     "difficulty": "easy",
     "aliases": []
@@ -10506,7 +10506,7 @@
   {
     "id": "raised-1316",
     "answer": "RAISED",
-    "clue": "What God said he had done with Pharaoh",
+    "clue": "What God said he had done with Pharaoh to display his power",
     "reference": "Exodus 9:16",
     "difficulty": "normal",
     "aliases": []
@@ -10514,7 +10514,7 @@
   {
     "id": "write-1317",
     "answer": "WRITE",
-    "clue": "What God told Moses to do on a scroll",
+    "clue": "What God ordered Moses to do to memorialize the battle with Amalek",
     "reference": "Exodus 17:14",
     "difficulty": "easy",
     "aliases": []
@@ -10530,7 +10530,7 @@
   {
     "id": "poured-1319",
     "answer": "POURED",
-    "clue": "What Jacob did with oil on his stone pillow",
+    "clue": "What Jacob did with oil on the stone he raised at Bethel",
     "reference": "Genesis 28:18",
     "difficulty": "normal",
     "aliases": []
@@ -10538,7 +10538,7 @@
   {
     "id": "ruler-1320",
     "answer": "RULER",
-    "clue": "One in authority",
+    "clue": "Joseph's position in Egypt when he ordered a meal for his brothers",
     "reference": "Genesis 43:16",
     "difficulty": "easy",
     "aliases": []
@@ -10546,7 +10546,7 @@
   {
     "id": "image-1321",
     "answer": "IMAGE",
-    "clue": "Likeness in which humanity was made",
+    "clue": "Likeness of God in which humanity was created",
     "reference": "Genesis 1:26",
     "difficulty": "easy",
     "aliases": []
@@ -10570,7 +10570,7 @@
   {
     "id": "taught-1324",
     "answer": "TAUGHT",
-    "clue": "What Moses did with God’s statutes",
+    "clue": "What Moses did with the statutes and judgments he received",
     "reference": "Deuteronomy 4:5",
     "difficulty": "normal",
     "aliases": []
@@ -10618,7 +10618,7 @@
   {
     "id": "shut-1330",
     "answer": "SHUT",
-    "clue": "What the Lord did to Noah inside the ark",
+    "clue": "What the Lord did to the ark door after Noah entered",
     "reference": "Genesis 7:16",
     "difficulty": "easy",
     "aliases": []
@@ -10626,7 +10626,7 @@
   {
     "id": "sing-1331",
     "answer": "SING",
-    "clue": "What Moses and Israel did after crossing the sea",
+    "clue": "What Moses and Israel did after the Red Sea crossing",
     "reference": "Exodus 15:1",
     "difficulty": "easy",
     "aliases": []
@@ -10634,7 +10634,7 @@
   {
     "id": "abide-1332",
     "answer": "ABIDE",
-    "clue": "To stay overnight",
+    "clue": "What Lot invited the heavenly visitors to do overnight",
     "reference": "Genesis 19:2",
     "difficulty": "easy",
     "aliases": []
@@ -10666,7 +10666,7 @@
   {
     "id": "flee-1336",
     "answer": "FLEE",
-    "clue": "Lot said Zoar was near enough to ___ to",
+    "clue": "What Lot wished to do to Zoar to escape Sodom’s destruction",
     "reference": "Genesis 19:20",
     "difficulty": "easy",
     "aliases": []
@@ -10674,7 +10674,7 @@
   {
     "id": "neighbour-1337",
     "answer": "NEIGHBOUR",
-    "clue": "Person living nearby",
+    "clue": "Person from whom each Israelite woman was told to borrow jewelry",
     "reference": "Exodus 3:22",
     "difficulty": "normal",
     "aliases": []
@@ -10682,7 +10682,7 @@
   {
     "id": "vain-1338",
     "answer": "VAIN",
-    "clue": "Pointless or empty",
+    "clue": "How Pharaoh described Moses' and Aaron's words to the workers",
     "reference": "Exodus 5:9",
     "difficulty": "easy",
     "aliases": []
@@ -10706,7 +10706,7 @@
   {
     "id": "flocks-1341",
     "answer": "FLOCKS",
-    "clue": "Groups of sheep and goats",
+    "clue": "Livestock Abram and Lot both owned as they journeyed together",
     "reference": "Genesis 13:5",
     "difficulty": "normal",
     "aliases": []
@@ -10714,7 +10714,7 @@
   {
     "id": "portion-1342",
     "answer": "PORTION",
-    "clue": "One's share of something",
+    "clue": "Share Abram allowed the young men to take after rescuing Lot",
     "reference": "Genesis 14:24",
     "difficulty": "normal",
     "aliases": []
@@ -10730,7 +10730,7 @@
   {
     "id": "remain-1344",
     "answer": "REMAIN",
-    "clue": "To stay behind",
+    "clue": "What Judah told Tamar to do as a widow in her father's house",
     "reference": "Genesis 38:11",
     "difficulty": "normal",
     "aliases": []
@@ -10738,7 +10738,7 @@
   {
     "id": "nigh-1345",
     "answer": "NIGH",
-    "clue": "Close by, in older language",
+    "clue": "Word used for the approaching time of Jacob's death",
     "reference": "Genesis 47:29",
     "difficulty": "easy",
     "aliases": []
@@ -10754,7 +10754,7 @@
   {
     "id": "wait-1347",
     "answer": "WAIT",
-    "clue": "To stay until later",
+    "clue": "What Exodus 21 says a killer did not do if he did not lie in this",
     "reference": "Exodus 21:13",
     "difficulty": "easy",
     "aliases": []
@@ -10762,7 +10762,7 @@
   {
     "id": "bowed-1348",
     "answer": "BOWED",
-    "clue": "What Abraham did before the three visitors",
+    "clue": "What Abraham did toward the ground when three visitors approached",
     "reference": "Genesis 18:2",
     "difficulty": "easy",
     "aliases": []
@@ -10778,7 +10778,7 @@
   {
     "id": "moved-1350",
     "answer": "MOVED",
-    "clue": "What God’s Spirit did upon the waters",
+    "clue": "What God's Spirit did upon the face of the waters",
     "reference": "Genesis 1:2",
     "difficulty": "easy",
     "aliases": []
@@ -10794,7 +10794,7 @@
   {
     "id": "clothed-1352",
     "answer": "CLOTHED",
-    "clue": "What God did for Adam and Eve with coats of skins",
+    "clue": "What God did for Adam and Eve by making them coats of animal skins",
     "reference": "Genesis 3:21",
     "difficulty": "normal",
     "aliases": []
@@ -10802,7 +10802,7 @@
   {
     "id": "except-1353",
     "answer": "EXCEPT",
-    "clue": "Unless or if not",
+    "clue": "Word Jacob used before saying God had been with him under Laban",
     "reference": "Genesis 31:42",
     "difficulty": "normal",
     "aliases": []
@@ -10818,7 +10818,7 @@
   {
     "id": "plain-1355",
     "answer": "PLAIN",
-    "clue": "Flat open land",
+    "clue": "Flat land in Shinar where Babel's builders settled",
     "reference": "Genesis 11:2",
     "difficulty": "easy",
     "aliases": []
@@ -10826,7 +10826,7 @@
   {
     "id": "served-1356",
     "answer": "SERVED",
-    "clue": "Worked under a king",
+    "clue": "What the five kings did for Chedorlaomer before rebelling",
     "reference": "Genesis 14:4",
     "difficulty": "normal",
     "aliases": []
@@ -10874,7 +10874,7 @@
   {
     "id": "oxen-1362",
     "answer": "OXEN",
-    "clue": "Animals used for plowing",
+    "clue": "Farm animals Pharaoh gave Abram along with sheep and servants",
     "reference": "Genesis 12:16",
     "difficulty": "easy",
     "aliases": []
@@ -10882,7 +10882,7 @@
   {
     "id": "pure-1363",
     "answer": "PURE",
-    "clue": "Describes the gold on the ark",
+    "clue": "Kind of gold specified for the ark's covering",
     "reference": "Exodus 25:11",
     "difficulty": "easy",
     "aliases": []
@@ -10898,7 +10898,7 @@
   {
     "id": "favour-1365",
     "answer": "FAVOUR",
-    "clue": "Kindness someone asks to receive",
+    "clue": "Kindness Abraham asked the Lord to grant as he welcomed visitors",
     "reference": "Genesis 18:3",
     "difficulty": "normal",
     "aliases": []
@@ -10914,7 +10914,7 @@
   {
     "id": "aside-1367",
     "answer": "ASIDE",
-    "clue": "To one side",
+    "clue": "Direction Moses turned to inspect the burning bush",
     "reference": "Exodus 3:3",
     "difficulty": "easy",
     "aliases": []
@@ -10922,7 +10922,7 @@
   {
     "id": "behind-1368",
     "answer": "BEHIND",
-    "clue": "At the rear",
+    "clue": "Where Sarah stood in the tent door as God spoke to Abraham",
     "reference": "Genesis 18:10",
     "difficulty": "normal",
     "aliases": []
@@ -10930,7 +10930,7 @@
   {
     "id": "devour-1369",
     "answer": "DEVOUR",
-    "clue": "To consume or eat eagerly",
+    "clue": "What Jacob compared Benjamin to doing like a wolf",
     "reference": "Genesis 49:27",
     "difficulty": "normal",
     "aliases": []
@@ -10938,7 +10938,7 @@
   {
     "id": "matter-1370",
     "answer": "MATTER",
-    "clue": "Issue to be decided",
+    "clue": "Word Abraham's servant used for the business he was sent to settle",
     "reference": "Genesis 24:9",
     "difficulty": "normal",
     "aliases": []
@@ -10962,7 +10962,7 @@
   {
     "id": "mind-1373",
     "answer": "MIND",
-    "clue": "Seat of thought or intention",
+    "clue": "What Abraham asked the Hittites to agree to concerning Sarah's burial",
     "reference": "Genesis 23:8",
     "difficulty": "easy",
     "aliases": []
@@ -10970,7 +10970,7 @@
   {
     "id": "brake-1374",
     "answer": "BRAKE",
-    "clue": "Old form of broke",
+    "clue": "KJV past-tense word for what hail did to the trees of Egypt",
     "reference": "Exodus 9:25",
     "difficulty": "easy",
     "aliases": []
@@ -10978,7 +10978,7 @@
   {
     "id": "cursed-1375",
     "answer": "CURSED",
-    "clue": "What the serpent was after his sin",
+    "clue": "What God declared the serpent to be for deceiving Eve",
     "reference": "Genesis 3:14",
     "difficulty": "normal",
     "aliases": []
@@ -10986,7 +10986,7 @@
   {
     "id": "doors-1376",
     "answer": "DOORS",
-    "clue": "Entrances to houses",
+    "clue": "Exits of Rahab's house mentioned in the warning to her family",
     "reference": "Joshua 2:19",
     "difficulty": "easy",
     "aliases": []
@@ -10994,7 +10994,7 @@
   {
     "id": "reason-1377",
     "answer": "REASON",
-    "clue": "Explanation of something",
+    "clue": "What Joseph said would explain the forgotten abundance of Egypt",
     "reference": "Genesis 41:31",
     "difficulty": "normal",
     "aliases": []
@@ -11002,7 +11002,7 @@
   {
     "id": "troubled-1378",
     "answer": "TROUBLED",
-    "clue": "How Jacob said Simeon and Levi had made him",
+    "clue": "What Jacob accused Simeon and Levi of doing to him",
     "reference": "Genesis 34:30",
     "difficulty": "normal",
     "aliases": []
@@ -11018,7 +11018,7 @@
   {
     "id": "committed-1380",
     "answer": "COMMITTED",
-    "clue": "Entrusted to someone's care",
+    "clue": "What Potiphar had done with his household into Joseph's hands",
     "reference": "Genesis 39:8",
     "difficulty": "normal",
     "aliases": []
@@ -11034,7 +11034,7 @@
   {
     "id": "abode-1382",
     "answer": "ABODE",
-    "clue": "Stayed, in older wording",
+    "clue": "What Jacob did with Laban for a month after meeting him",
     "reference": "Genesis 29:14",
     "difficulty": "easy",
     "aliases": []
@@ -11042,7 +11042,7 @@
   {
     "id": "egyptians-1383",
     "answer": "EGYPTIANS",
-    "clue": "People of the Nile who feared for Abram's life over Sarai",
+    "clue": "People Abram feared might kill him because of Sarai’s beauty",
     "reference": "Genesis 12:12",
     "difficulty": "normal",
     "aliases": []
@@ -11050,7 +11050,7 @@
   {
     "id": "hour-1384",
     "answer": "HOUR",
-    "clue": "Time by which the image had to be worshiped or the furnace faced",
+    "clue": "Time word in the threat about bowing to Nebuchadnezzar's image",
     "reference": "Daniel 3:6",
     "difficulty": "easy",
     "aliases": []
@@ -11058,7 +11058,7 @@
   {
     "id": "tent-1385",
     "answer": "TENT",
-    "clue": "Temporary home made of fabric",
+    "clue": "Shelter Noah entered when he drank wine after the flood",
     "reference": "Genesis 9:21",
     "difficulty": "easy",
     "aliases": []
@@ -11066,7 +11066,7 @@
   {
     "id": "appeared-1386",
     "answer": "APPEARED",
-    "clue": "What the Lord did to Abram in Canaan",
+    "clue": "What the Lord did to Abram when he arrived at Canaan",
     "reference": "Genesis 12:7",
     "difficulty": "normal",
     "aliases": []
@@ -11074,7 +11074,7 @@
   {
     "id": "commit-1387",
     "answer": "COMMIT",
-    "clue": "Do a forbidden act",
+    "clue": "Verb used in the commandment prohibiting adultery",
     "reference": "Exodus 20:14",
     "difficulty": "normal",
     "aliases": []
@@ -11082,7 +11082,7 @@
   {
     "id": "consider-1388",
     "answer": "CONSIDER",
-    "clue": "To think about carefully",
+    "clue": "What Moses urged God to do about the people He had called His own",
     "reference": "Exodus 33:13",
     "difficulty": "normal",
     "aliases": []
@@ -11090,7 +11090,7 @@
   {
     "id": "divided-1389",
     "answer": "DIVIDED",
-    "clue": "What God did between light and darkness",
+    "clue": "What God did to separate light from darkness",
     "reference": "Genesis 1:4",
     "difficulty": "normal",
     "aliases": []
@@ -11098,7 +11098,7 @@
   {
     "id": "youth-1390",
     "answer": "YOUTH",
-    "clue": "Period before adulthood",
+    "clue": "Stage of life from which Genesis says the human heart imagines evil",
     "reference": "Genesis 8:21",
     "difficulty": "easy",
     "aliases": []
@@ -11106,7 +11106,7 @@
   {
     "id": "rain-1391",
     "answer": "RAIN",
-    "clue": "Had not yet fallen at creation",
+    "clue": "What the Lord had not caused to fall before field plants grew",
     "reference": "Genesis 2:5",
     "difficulty": "easy",
     "aliases": []
@@ -11122,7 +11122,7 @@
   {
     "id": "kindled-1393",
     "answer": "KINDLED",
-    "clue": "How Jacob’s anger against Rachel was described",
+    "clue": "How Genesis describes Jacob's anger toward Rachel",
     "reference": "Genesis 30:2",
     "difficulty": "normal",
     "aliases": []
@@ -11130,7 +11130,7 @@
   {
     "id": "sanctify-1394",
     "answer": "SANCTIFY",
-    "clue": "What God commanded for Israel’s firstborn",
+    "clue": "What God commanded Moses to do to every Israelite firstborn",
     "reference": "Exodus 13:2",
     "difficulty": "normal",
     "aliases": []
@@ -11138,7 +11138,7 @@
   {
     "id": "secret-1395",
     "answer": "SECRET",
-    "clue": "Hidden from public knowledge",
+    "clue": "Word Jacob used for the counsel of Simeon and Levi",
     "reference": "Genesis 49:6",
     "difficulty": "normal",
     "aliases": []
@@ -11154,7 +11154,7 @@
   {
     "id": "hate-1397",
     "answer": "HATE",
-    "clue": "Quoted saying: \"love thy neighbour, and ___ thine enemy\"",
+    "clue": "What Jesus said people had heard they should do to their enemies",
     "reference": "Matthew 5:44",
     "difficulty": "easy",
     "aliases": []
@@ -11178,7 +11178,7 @@
   {
     "id": "burden-1400",
     "answer": "BURDEN",
-    "clue": "Heavy load a donkey carries",
+    "clue": "Load under which an enemy's donkey might lie in Exodus 23",
     "reference": "Exodus 23:5",
     "difficulty": "normal",
     "aliases": []
@@ -11186,7 +11186,7 @@
   {
     "id": "killed-1401",
     "answer": "KILLED",
-    "clue": "Put to death",
+    "clue": "What Joseph's brothers pretended had happened to him using a bloodied coat",
     "reference": "Genesis 37:31",
     "difficulty": "normal",
     "aliases": []
@@ -11202,7 +11202,7 @@
   {
     "id": "wash-1403",
     "answer": "WASH",
-    "clue": "What Abraham offered travelers' feet",
+    "clue": "What Abraham offered the three visitors for their feet",
     "reference": "Genesis 18:4",
     "difficulty": "easy",
     "aliases": []
@@ -11218,7 +11218,7 @@
   {
     "id": "streets-1405",
     "answer": "STREETS",
-    "clue": "Roadways where news could be told",
+    "clue": "Places where David said not to announce Saul's death in Gath and Ashkelon",
     "reference": "2 Samuel 1:20",
     "difficulty": "normal",
     "aliases": []
@@ -11226,7 +11226,7 @@
   {
     "id": "tents-1406",
     "answer": "TENTS",
-    "clue": "Homes used by early herders",
+    "clue": "Homes occupied by Jabal's family, who raised livestock",
     "reference": "Genesis 4:20",
     "difficulty": "easy",
     "aliases": []
@@ -11250,7 +11250,7 @@
   {
     "id": "comfort-1409",
     "answer": "COMFORT",
-    "clue": "Consolation in sorrow",
+    "clue": "Relief Lamech hoped Noah would bring from the toil of the cursed ground",
     "reference": "Genesis 5:29",
     "difficulty": "normal",
     "aliases": []
@@ -11266,7 +11266,7 @@
   {
     "id": "exalted-1411",
     "answer": "EXALTED",
-    "clue": "Lifted to a higher position",
+    "clue": "How Balaam described Israel's kingdom compared with Agag",
     "reference": "Numbers 24:7",
     "difficulty": "normal",
     "aliases": []
@@ -11274,7 +11274,7 @@
   {
     "id": "smitten-1412",
     "answer": "SMITTEN",
-    "clue": "Struck by a plague",
+    "clue": "What the water of the Nile was after Moses' plague",
     "reference": "Exodus 7:25",
     "difficulty": "normal",
     "aliases": []
@@ -11282,7 +11282,7 @@
   {
     "id": "waste-1413",
     "answer": "WASTE",
-    "clue": "Ruined or laid desolate",
+    "clue": "What God warned Israel would happen to its cities after disobedience",
     "reference": "Leviticus 26:31",
     "difficulty": "easy",
     "aliases": []
@@ -11298,7 +11298,7 @@
   {
     "id": "hide-1415",
     "answer": "HIDE",
-    "clue": "Keep something concealed",
+    "clue": "What God considered doing from Abraham about Sodom",
     "reference": "Genesis 18:17",
     "difficulty": "easy",
     "aliases": []
@@ -11306,7 +11306,7 @@
   {
     "id": "last-1416",
     "answer": "LAST",
-    "clue": "How Jesus says the first may become",
+    "clue": "What Jesus said many who are first would become",
     "reference": "Matthew 19:30",
     "difficulty": "easy",
     "aliases": []
@@ -11322,7 +11322,7 @@
   {
     "id": "golden-1418",
     "answer": "GOLDEN",
-    "clue": "Made of gold",
+    "clue": "Material describing the earring Abraham's servant gave to Rebekah",
     "reference": "Genesis 24:22",
     "difficulty": "normal",
     "aliases": []
@@ -11330,7 +11330,7 @@
   {
     "id": "inherit-1419",
     "answer": "INHERIT",
-    "clue": "To receive promised land",
+    "clue": "What God promised Abram's descendants would do with Canaan",
     "reference": "Genesis 15:7",
     "difficulty": "normal",
     "aliases": []
@@ -11346,7 +11346,7 @@
   {
     "id": "pleased-1421",
     "answer": "PLEASED",
-    "clue": "Esau saw Canaan's daughters \"___ not\" Isaac; missing word",
+    "clue": "How Esau’s Canaanite wives made Isaac and Rebekah feel: not ___",
     "reference": "Genesis 28:8",
     "difficulty": "normal",
     "aliases": []
@@ -11354,7 +11354,7 @@
   {
     "id": "speaking-1422",
     "answer": "SPEAKING",
-    "clue": "What Rebekah was doing at the well",
+    "clue": "What Rebekah was still doing when Abraham's servant saw her",
     "reference": "Genesis 24:15",
     "difficulty": "normal",
     "aliases": []
@@ -11362,7 +11362,7 @@
   {
     "id": "heed-1423",
     "answer": "HEED",
-    "clue": "Listen carefully",
+    "clue": "What Laban was warned to take to how he spoke with Jacob",
     "reference": "Genesis 31:24",
     "difficulty": "easy",
     "aliases": []
@@ -11370,7 +11370,7 @@
   {
     "id": "strangers-1424",
     "answer": "STRANGERS",
-    "clue": "Foreigners within a household",
+    "clue": "What Rachel and Leah felt their father treated them as",
     "reference": "Genesis 31:15",
     "difficulty": "normal",
     "aliases": []
@@ -11378,7 +11378,7 @@
   {
     "id": "asses-1425",
     "answer": "ASSES",
-    "clue": "Beasts used for carrying loads",
+    "clue": "Pack animals among Pharaoh's gifts to Abram",
     "reference": "Genesis 12:16",
     "difficulty": "easy",
     "aliases": []
@@ -11386,7 +11386,7 @@
   {
     "id": "false-1426",
     "answer": "FALSE",
-    "clue": "Untrue or dishonest",
+    "clue": "Type of witness forbidden in the Ten Commandments",
     "reference": "Exodus 20:16",
     "difficulty": "easy",
     "aliases": []
@@ -11402,7 +11402,7 @@
   {
     "id": "pleasure-1428",
     "answer": "PLEASURE",
-    "clue": "Delight in something",
+    "clue": "What Sarah said she might have in old age after hearing the promise",
     "reference": "Genesis 18:12",
     "difficulty": "normal",
     "aliases": []
@@ -11426,7 +11426,7 @@
   {
     "id": "horns-1431",
     "answer": "HORNS",
-    "clue": "Parts of a ram caught in a thicket",
+    "clue": "Parts of the ram caught in the thicket when Abraham spared Isaac",
     "reference": "Genesis 22:13",
     "difficulty": "easy",
     "aliases": []
@@ -11434,7 +11434,7 @@
   {
     "id": "thereon-1432",
     "answer": "THEREON",
-    "clue": "On that surface",
+    "clue": "KJV word for what Jacob did with oil on the pillar at Bethel",
     "reference": "Genesis 35:14",
     "difficulty": "normal",
     "aliases": []
@@ -11442,7 +11442,7 @@
   {
     "id": "upward-1433",
     "answer": "UPWARD",
-    "clue": "Toward a higher place",
+    "clue": "Direction the floodwaters rose over the mountains",
     "reference": "Genesis 7:20",
     "difficulty": "normal",
     "aliases": []
@@ -11450,7 +11450,7 @@
   {
     "id": "wrote-1434",
     "answer": "WROTE",
-    "clue": "What Moses did with the Lord’s words in a book",
+    "clue": "What Moses did with all the Lord's words before building an altar",
     "reference": "Exodus 24:4",
     "difficulty": "easy",
     "aliases": []
@@ -11458,7 +11458,7 @@
   {
     "id": "feed-1435",
     "answer": "FEED",
-    "clue": "To give food to the hungry",
+    "clue": "What Esau asked Jacob to do for him with the red stew",
     "reference": "Genesis 25:30",
     "difficulty": "easy",
     "aliases": []
@@ -11466,7 +11466,7 @@
   {
     "id": "rams-1436",
     "answer": "RAMS",
-    "clue": "Male sheep used in flocks",
+    "clue": "Male sheep Jacob saw in a dream while breeding Laban's flocks",
     "reference": "Genesis 31:10",
     "difficulty": "easy",
     "aliases": []
@@ -11474,7 +11474,7 @@
   {
     "id": "true-1437",
     "answer": "TRUE",
-    "clue": "Not false",
+    "clue": "What Joseph's brothers claimed to be when questioned in Egypt",
     "reference": "Genesis 42:11",
     "difficulty": "easy",
     "aliases": []
@@ -11482,7 +11482,7 @@
   {
     "id": "choose-1438",
     "answer": "CHOOSE",
-    "clue": "To select people",
+    "clue": "What Moses was told to do with men to fight Amalek",
     "reference": "Exodus 17:9",
     "difficulty": "normal",
     "aliases": []
@@ -11490,7 +11490,7 @@
   {
     "id": "fields-1439",
     "answer": "FIELDS",
-    "clue": "Open areas outside cities",
+    "clue": "Places where frogs died after the plague in Egypt",
     "reference": "Exodus 8:13",
     "difficulty": "normal",
     "aliases": []
@@ -11514,7 +11514,7 @@
   {
     "id": "raise-1442",
     "answer": "RAISE",
-    "clue": "What a man was asked to do for his brother’s lineage",
+    "clue": "What Onan was supposed to do to produce offspring for his brother",
     "reference": "Genesis 38:8",
     "difficulty": "easy",
     "aliases": []
@@ -11530,7 +11530,7 @@
   {
     "id": "draw-1444",
     "answer": "DRAW",
-    "clue": "To collect water from a well",
+    "clue": "What Abraham's servant waited for women to do at the well",
     "reference": "Genesis 24:11",
     "difficulty": "easy",
     "aliases": []
@@ -11546,7 +11546,7 @@
   {
     "id": "branches-1446",
     "answer": "BRANCHES",
-    "clue": "Parts of the vine in the butler's dream",
+    "clue": "Three parts of the vine in Pharaoh's cupbearer's dream",
     "reference": "Genesis 40:10",
     "difficulty": "normal",
     "aliases": []
@@ -11554,7 +11554,7 @@
   {
     "id": "drive-1447",
     "answer": "DRIVE",
-    "clue": "To expel a people from a land",
+    "clue": "What God said Pharaoh would do to the Israelites with a strong hand",
     "reference": "Exodus 6:1",
     "difficulty": "easy",
     "aliases": []
@@ -11562,7 +11562,7 @@
   {
     "id": "forsake-1448",
     "answer": "FORSAKE",
-    "clue": "To abandon God's covenant",
+    "clue": "What God promised not to do to Israel in Deuteronomy 4",
     "reference": "Deuteronomy 4:31",
     "difficulty": "normal",
     "aliases": []
@@ -11578,7 +11578,7 @@
   {
     "id": "lying-1450",
     "answer": "LYING",
-    "clue": "Resting horizontally",
+    "clue": "Position of the flocks gathered near the well where Jacob met Rachel",
     "reference": "Genesis 29:2",
     "difficulty": "easy",
     "aliases": []
@@ -11586,7 +11586,7 @@
   {
     "id": "months-1451",
     "answer": "MONTHS",
-    "clue": "Periods of about 30 days",
+    "clue": "Time units counted before Tamar's pregnancy became known",
     "reference": "Genesis 38:24",
     "difficulty": "normal",
     "aliases": []
@@ -11602,7 +11602,7 @@
   {
     "id": "pleasant-1453",
     "answer": "PLEASANT",
-    "clue": "Attractive to the eye",
+    "clue": "Description of trees God made grow in Eden, good for food",
     "reference": "Genesis 2:9",
     "difficulty": "normal",
     "aliases": []
@@ -11610,7 +11610,7 @@
   {
     "id": "swear-1454",
     "answer": "SWEAR",
-    "clue": "To promise under oath",
+    "clue": "What Abraham asked Abimelech to do by God about future dealings",
     "reference": "Genesis 21:23",
     "difficulty": "easy",
     "aliases": []
@@ -11618,7 +11618,7 @@
   {
     "id": "watch-1455",
     "answer": "WATCH",
-    "clue": "To observe from a lookout",
+    "clue": "What the Lord was asked to do between Jacob and Laban when apart",
     "reference": "Genesis 31:49",
     "difficulty": "easy",
     "aliases": []
@@ -11626,7 +11626,7 @@
   {
     "id": "dealt-1456",
     "answer": "DEALT",
-    "clue": "Treated someone in a certain way",
+    "clue": "What Sarai said Abram had allowed her to do to Hagar",
     "reference": "Genesis 16:6",
     "difficulty": "easy",
     "aliases": []
@@ -11634,7 +11634,7 @@
   {
     "id": "escaped-1457",
     "answer": "ESCAPED",
-    "clue": "Fled the battle and told Abram that Lot was taken",
+    "clue": "What the messenger did after the battle before reporting Lot’s capture to Abram",
     "reference": "Genesis 14:13",
     "difficulty": "normal",
     "aliases": []
@@ -11642,7 +11642,7 @@
   {
     "id": "grass-1458",
     "answer": "GRASS",
-    "clue": "Food for grazing animals",
+    "clue": "Vegetation God told the earth to bring forth on the third day",
     "reference": "Genesis 1:11",
     "difficulty": "easy",
     "aliases": []
@@ -11690,7 +11690,7 @@
   {
     "id": "dominion-1464",
     "answer": "DOMINION",
-    "clue": "Authority given to humanity over animals",
+    "clue": "Authority God gave humanity over fish, birds and animals",
     "reference": "Genesis 1:26",
     "difficulty": "normal",
     "aliases": []
@@ -11698,7 +11698,7 @@
   {
     "id": "height-1465",
     "answer": "HEIGHT",
-    "clue": "Measurement from bottom to top",
+    "clue": "Ark measurement given as thirty cubits in Genesis 6",
     "reference": "Genesis 6:15",
     "difficulty": "normal",
     "aliases": []
@@ -11706,7 +11706,7 @@
   {
     "id": "journey-1466",
     "answer": "JOURNEY",
-    "clue": "Travel from one place to another",
+    "clue": "What Abraham's servant made to find a wife for Isaac",
     "reference": "Genesis 24:21",
     "difficulty": "normal",
     "aliases": []
@@ -11762,7 +11762,7 @@
   {
     "id": "named-1473",
     "answer": "NAMED",
-    "clue": "Given a name",
+    "clue": "What Ephron had done to the silver price of Sarah's burial field before witnesses",
     "reference": "Genesis 23:16",
     "difficulty": "easy",
     "aliases": []
@@ -11770,7 +11770,7 @@
   {
     "id": "army-1474",
     "answer": "ARMY",
-    "clue": "Military force with a commander",
+    "clue": "Force commanded by Phichol when he visited Isaac",
     "reference": "Genesis 26:26",
     "difficulty": "easy",
     "aliases": []
@@ -11794,7 +11794,7 @@
   {
     "id": "beyond-1477",
     "answer": "BEYOND",
-    "clue": "On the far side of",
+    "clue": "Position of Jacob's tower of Edar in relation to Bethlehem",
     "reference": "Genesis 35:21",
     "difficulty": "normal",
     "aliases": []
@@ -11802,7 +11802,7 @@
   {
     "id": "graven-1478",
     "answer": "GRAVEN",
-    "clue": "Carved idol forbidden by law",
+    "clue": "Word for the carved image forbidden by the second commandment",
     "reference": "Exodus 20:4",
     "difficulty": "normal",
     "aliases": []
@@ -11810,7 +11810,7 @@
   {
     "id": "rather-1479",
     "answer": "RATHER",
-    "clue": "Instead or preferably",
+    "clue": "Word Naaman's servants used when suggesting obedience to Elisha",
     "reference": "2 Kings 5:13",
     "difficulty": "normal",
     "aliases": []
@@ -11818,7 +11818,7 @@
   {
     "id": "thoughts-1480",
     "answer": "THOUGHTS",
-    "clue": "Ideas within the human heart",
+    "clue": "What God saw were only evil continually in people's hearts before the flood",
     "reference": "Genesis 6:5",
     "difficulty": "normal",
     "aliases": []
@@ -11826,7 +11826,7 @@
   {
     "id": "prey-1481",
     "answer": "PREY",
-    "clue": "Animal caught by a lion",
+    "clue": "What Judah was compared to a lion going up from",
     "reference": "Genesis 49:9",
     "difficulty": "easy",
     "aliases": []
@@ -11834,7 +11834,7 @@
   {
     "id": "scattered-1482",
     "answer": "SCATTERED",
-    "clue": "What Babel's people feared happening",
+    "clue": "What Babel's builders feared becoming across the whole earth",
     "reference": "Genesis 11:4",
     "difficulty": "normal",
     "aliases": []
@@ -11842,7 +11842,7 @@
   {
     "id": "beheld-1483",
     "answer": "BEHELD",
-    "clue": "Saw with one's eyes",
+    "clue": "KJV word for what Egyptians did when they saw Sarai's beauty",
     "reference": "Genesis 12:14",
     "difficulty": "normal",
     "aliases": []
@@ -11850,7 +11850,7 @@
   {
     "id": "devoured-1484",
     "answer": "DEVOURED",
-    "clue": "Ate completely",
+    "clue": "What Leah and Rachel said their father had done with their money",
     "reference": "Genesis 31:15",
     "difficulty": "normal",
     "aliases": []
@@ -11858,7 +11858,7 @@
   {
     "id": "dwelling-1485",
     "answer": "DWELLING",
-    "clue": "Place where someone resides",
+    "clue": "Place where Joktan's descendants lived in Genesis 10",
     "reference": "Genesis 10:30",
     "difficulty": "normal",
     "aliases": []
@@ -11874,7 +11874,7 @@
   {
     "id": "mingled-1487",
     "answer": "MINGLED",
-    "clue": "Mixed together, as hail and fire",
+    "clue": "How fire appeared together with hail during Egypt's plague",
     "reference": "Exodus 9:24",
     "difficulty": "normal",
     "aliases": []
@@ -11882,7 +11882,7 @@
   {
     "id": "observe-1488",
     "answer": "OBSERVE",
-    "clue": "To obey a sacred festival",
+    "clue": "What God commanded Israel to do with the Feast of Unleavened Bread",
     "reference": "Exodus 12:17",
     "difficulty": "normal",
     "aliases": []
@@ -11890,7 +11890,7 @@
   {
     "id": "remained-1489",
     "answer": "REMAINED",
-    "clue": "Survived after others perished",
+    "clue": "What Noah did as the only survivor with those in the ark",
     "reference": "Genesis 7:23",
     "difficulty": "normal",
     "aliases": []
@@ -11906,7 +11906,7 @@
   {
     "id": "standing-1491",
     "answer": "STANDING",
-    "clue": "Remaining upright",
+    "clue": "Position of corn that a fire could spread to under Exodus 22",
     "reference": "Exodus 22:6",
     "difficulty": "normal",
     "aliases": []
@@ -11914,7 +11914,7 @@
   {
     "id": "terrible-1492",
     "answer": "TERRIBLE",
-    "clue": "Awe-inspiring or fearsome",
+    "clue": "Word describing the awe-inspiring acts God promised to do before Israel",
     "reference": "Exodus 34:10",
     "difficulty": "normal",
     "aliases": []
@@ -11922,7 +11922,7 @@
   {
     "id": "ship-1493",
     "answer": "SHIP",
-    "clue": "Vessel traveling at sea",
+    "clue": "Vessel whose way through the sea amazed the writer of Proverbs 30",
     "reference": "Proverbs 30:19",
     "difficulty": "easy",
     "aliases": []
@@ -11954,7 +11954,7 @@
   {
     "id": "appear-1497",
     "answer": "APPEAR",
-    "clue": "To come into view",
+    "clue": "What the dry land was commanded to do when waters gathered",
     "reference": "Genesis 1:9",
     "difficulty": "normal",
     "aliases": []
@@ -11962,7 +11962,7 @@
   {
     "id": "coast-1498",
     "answer": "COAST",
-    "clue": "Region threatened by locusts",
+    "clue": "Area of Egypt Moses said locusts would cover",
     "reference": "Exodus 10:4",
     "difficulty": "easy",
     "aliases": []
@@ -11978,7 +11978,7 @@
   {
     "id": "forget-1500",
     "answer": "FORGET",
-    "clue": "What Rebekah hoped Esau would do about Jacob’s trick",
+    "clue": "What Rebekah hoped Esau would do about Jacob's deception",
     "reference": "Genesis 27:45",
     "difficulty": "normal",
     "aliases": []
