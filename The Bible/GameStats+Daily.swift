@@ -7,7 +7,6 @@ extension GameStats {
         case "Quiz": return "quiz"
         case "Trivia": return "trivia"
         case "Hangman": return "hangman"
-        case "Verses": return "versematch"
         case "Countdown": return "beatclock"
         case "Book Order": return "bookorder"
         case "Who?": return "whoami"
@@ -76,7 +75,13 @@ extension GameStats {
         guard name != "All Games", let gameKey = Self.storageKey(forDisplayName: name) else {
             return dailySeriesLast(days: days, now: now, calendar: calendar)
         }
-        return dailySeries(days: days, gameKey: gameKey, now: now, calendar: calendar)
+        let series = dailySeries(days: days, gameKey: gameKey, now: now, calendar: calendar)
+        guard gameKey == "quiz" else { return series }
+        let legacy = dailySeries(days: days, gameKey: "versematch", now: now, calendar: calendar)
+        return zip(series, legacy).map {
+            (date: $0.0.date, answered: $0.0.answered + $0.1.answered,
+             correct: $0.0.correct + $0.1.correct)
+        }
     }
 
     func dailySeriesLast(days: Int, forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {

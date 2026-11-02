@@ -8,7 +8,6 @@ extension GameStats {
         case .trivia: return "trivia"
         case .hangman: return "hangman"
         case .beatclock: return "beatclock"
-        case .versematch: return "versematch"
         case .bookorder: return "bookorder"
         case .whoami: return "whoami"
         case .wordsearch: return "wordsearch"
@@ -46,10 +45,6 @@ extension GameStats {
 
     func recordTriviaPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
         recordPerBook(.trivia, bookName: bookName, answered: addAnswered, correct: addCorrect)
-    }
-
-    func recordVerseMatchPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
-        recordPerBook(.verseMatch, bookName: bookName, answered: addAnswered, correct: addCorrect)
     }
 
     /// Adds one round's result for a book to the all-time and today's maps.
@@ -130,7 +125,7 @@ extension GameStats {
                 case .hard: return "hard"
                 case .medium, .none: return nil
                 }
-            case .trivia, .hangman, .beatclock, .versematch, .wordsearch, .scramble, .crossword:
+            case .trivia, .hangman, .beatclock, .wordsearch, .scramble, .crossword:
                 switch difficulty {
                 case .easy: return "easy"
                 case .normal: return "normal"
@@ -204,17 +199,6 @@ extension GameStats {
             counters.increment("beatclockAllTimeCorrect_all", by: addCorrect)
             counters.increment("beatclockAllTimeAnswered_all", by: addAnswered)
             counters.raise("beatclockAllTimeBestStreak_all", candidate: currentBestStreak)
-
-        case .versematch:
-            guard let s = suf else { return }
-            // Keep per-difficulty keys for back-compat/analytics
-            counters.increment("versematchAllTimeCorrect_\(s)", by: addCorrect)
-            counters.increment("versematchAllTimeAnswered_\(s)", by: addAnswered)
-            counters.raise("versematchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            // Mirror to combined keys so all difficulties share the same all-time stats
-            counters.increment("versematchAllTimeCorrect_all", by: addCorrect)
-            counters.increment("versematchAllTimeAnswered_all", by: addAnswered)
-            counters.raise("versematchAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .bookorder:
             guard let s = suf else { return }
@@ -390,7 +374,6 @@ extension GameStats {
         case .trivia: return "Trivia"
         case .hangman: return "Hangman"
         case .beatclock: return "Countdown"
-        case .versematch: return "Verses"
         case .bookorder: return "Book Order"
         case .whoami: return "Who?"
         case .wordsearch: return "Word Search"

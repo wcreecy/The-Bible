@@ -19,7 +19,6 @@ struct GamesOverviewCardContent: View {
         case "Quiz": return "questionmark.circle"
         case "Trivia": return "questionmark.text.page.fill"
         case "Hangman": return "figure"
-        case "Verses": return "text.quote"
         case "Countdown": return "timer"
         case "Book Order": return "books.vertical"
         case "Who?": return "person.crop.circle.badge.questionmark"
@@ -189,18 +188,6 @@ struct GamesOverviewCardContent: View {
                     default: return .gray
                     }
                 }
-            )
-
-        case "Verses":
-            TestamentAccuracySection(summary: GameStats.shared.verseMatchOTNTSummary())
-            GenreAccuracySection(
-                rows: GameStats.shared.verseMatchAccuracyByGenre(),
-                onSelect: openGenreDrill
-            )
-            bookRankings(
-                gameName: "Verses",
-                weak: { GameStats.shared.verseMatchWeakBooks(lastNDays: $0, minAttempts: $1) },
-                strong: { GameStats.shared.verseMatchStrongBooks(lastNDays: $0, minAttempts: $1) }
             )
 
         case "Word":

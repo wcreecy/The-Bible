@@ -77,7 +77,8 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Verses (new)
+    // Legacy Verse Match history: Quiz aggregates these original keys on read.
+    // Keep sync/reset support for existing ledgers and late updates from older devices.
     static let verseMatchKeys: [String] = {
         // Include "easy/normal/medium/hard" and combined "all" to match UI's aggregated reads
         let diffs = ["easy", "normal", "medium", "hard", "all"]
@@ -92,7 +93,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Verses persistent streak keys (local-only; used by VerseMatchGameView)
+    // Retired local streak keys, retained only so resetting game history clears them.
     static let verseMatchPersistentStreakKeys: [String] = {
         var keys: [String] = []
         for d in ["easy","normal","hard"] {
@@ -102,7 +103,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Verses per-book maps mirrored via KVS (JSON [String:Int])
+    // Legacy per-book maps, still included in Quiz's combined history.
     static let verseMatchPerBookMapKeys: [String] = [
         "versematchPerBookAnsweredMap",
         "versematchPerBookCorrectMap"
@@ -160,7 +161,7 @@ extension iCloudSyncCoordinator {
         "triviaPerBookDailyCorrect"
     ]
 
-    // Per-book daily maps used by the detailed Verses statistics screen.
+    // Legacy daily book maps, still included in Quiz's combined history.
     static let verseMatchPerBookDailyMapKeys: [String] = [
         "versematchPerBookDailyAnswered",
         "versematchPerBookDailyCorrect"

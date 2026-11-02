@@ -331,7 +331,7 @@ final class TodayChallengeStore {
            !Self.needsNewChallenges(snapshotDayKey: cloudSnapshot.dayKey, on: now),
            cloudSnapshot.challenges.count == 3,
            !Self.containsRetiredBookmarkTask(in: cloudSnapshot.challenges) {
-            let cloudChallenges = cloudSnapshot.challenges.map(repairedChallenge)
+            let cloudChallenges = cloudSnapshot.challenges.map(Self.repairedChallenge)
             challenges = cloudChallenges
             lastAppliedCloudSnapshot = cloudSnapshot
             todayChallengesLogger.debug("Loaded Today challenges from the iCloud snapshot; count=\(cloudChallenges.count, privacy: .public).")
@@ -344,7 +344,7 @@ final class TodayChallengeStore {
                   !Self.needsNewChallenges(snapshotDayKey: localSnapshot.dayKey, on: now),
                   localSnapshot.challenges.count == 3,
                   !Self.containsRetiredBookmarkTask(in: localSnapshot.challenges) {
-            challenges = localSnapshot.challenges.map(repairedChallenge)
+            challenges = localSnapshot.challenges.map(Self.repairedChallenge)
             todayChallengesLogger.debug("Loaded Today challenges from the local snapshot; count=\(self.challenges.count, privacy: .public).")
             if challenges != localSnapshot.challenges {
                 save()
@@ -441,7 +441,7 @@ final class TodayChallengeStore {
         GameStats.localDayKey(for: date)
     }
 
-    private func repairedChallenge(_ challenge: TodayChallenge) -> TodayChallenge {
+    static func repairedChallenge(_ challenge: TodayChallenge) -> TodayChallenge {
         var challenge = challenge
 
         switch challenge.kind {
@@ -468,7 +468,7 @@ final class TodayChallengeStore {
                     detail: challenge.detail,
                     bookName: challenge.bookName,
                     chapterNumber: challenge.chapterNumber,
-                    gameName: challenge.gameName,
+                    gameName: GameStats.canonicalDisplayName(gameName),
                     minimumMinutes: challenge.minimumMinutes,
                     isCompleted: challenge.isCompleted
                 )
@@ -624,19 +624,17 @@ final class TodayChallengeStore {
 
     /// Picks from the same catalog of games used by the Today card.
     func randomGameName() -> String {
-        catalog.gameNames.randomElement() ?? "Quiz"
+        Array(Set(catalog.gameNames.map(GameStats.canonicalDisplayName))).randomElement() ?? "Quiz"
     }
 
     static func gameChallengeTitle(for gameName: String) -> String {
-        switch gameName {
+        switch GameStats.canonicalDisplayName(gameName) {
         case "Quiz":
             String(localized: "Test your Bible knowledge")
         case "Trivia":
             String(localized: "Tackle Bible trivia")
         case "Hangman":
             String(localized: "Solve a Bible word")
-        case "Verses":
-            String(localized: "Match the verses")
         case "Countdown":
             String(localized: "Race the clock")
         case "Book Order":

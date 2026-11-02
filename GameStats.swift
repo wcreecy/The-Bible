@@ -16,7 +16,6 @@ final class GameStats {
         case trivia
         case hangman
         case beatclock
-        case versematch
         case bookorder
         case whoami
         case wordsearch
@@ -66,7 +65,7 @@ final class GameStats {
         switch name {
         case "Bible Quiz": return "Quiz"
         case "Beat the Clock": return "Countdown"
-        case "Verse Match": return "Verses"
+        case "Verse Match", "Verses": return "Quiz"
         case "Who Am I?": return "Who?"
         case "WORD", "Wordle (Bible)": return "Word"
         default: return name

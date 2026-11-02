@@ -47,7 +47,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     case quiz
     case hangman
     case beatTheClock
-    case verseMatch
     case bookOrder
     case wordSearch
     case scramble
@@ -64,7 +63,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: "Quiz"
         case .hangman: "Hangman"
         case .beatTheClock: "Countdown"
-        case .verseMatch: "Verses"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .scramble: "Scramble"
@@ -81,7 +79,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: "Quiz"
         case .hangman: "Hangman"
         case .beatTheClock: "Countdown"
-        case .verseMatch: "Verses"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .scramble: "Scramble"
@@ -95,10 +92,9 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
 
     var subtitle: LocalizedStringResource {
         switch self {
-        case .quiz: "Select which book the provided verse is from"
+        case .quiz: "Match verses to books or references to verse text"
         case .hangman: "People, places & books"
         case .beatTheClock: "Select the correct answer before time runs out"
-        case .verseMatch: "Select the verse text based on the book/verse provided"
         case .bookOrder: "Order the books of the Bible"
         case .wordSearch: "Find the hidden words"
         case .scramble: "Unscramble words found in the Bible"
@@ -115,7 +111,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: "questionmark.circle.fill"
         case .hangman: "text.word.spacing"
         case .beatTheClock: "hourglass"
-        case .verseMatch: "text.quote"
         case .bookOrder: "list.number"
         case .wordSearch: "square.grid.3x3.topleft.filled"
         case .scramble: "text.line.first.and.arrowtriangle.forward"
@@ -132,7 +127,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .quiz: .blue
         case .hangman: .teal
         case .beatTheClock: .indigo
-        case .verseMatch: .orange
         case .bookOrder: .purple
         case .wordSearch: .green
         case .scramble: .pink
@@ -171,7 +165,7 @@ private enum GameLearningGroup: CaseIterable, Identifiable {
     var routes: [GameRoute] {
         switch self {
         case .daily: [.wordle]
-        case .learn: [.bookOrder, .beatTheClock, .quiz, .trivia, .verseMatch, .whoAmI]
+        case .learn: [.bookOrder, .beatTheClock, .quiz, .trivia, .whoAmI]
         case .wordGames: [.crossword, .hangman, .scramble, .wordSearch]
         }
     }
@@ -205,7 +199,7 @@ private struct ReviewRoundProgress: Identifiable {
         case .beatTheClock: "Countdown"
         case .bibleQuiz: "Quiz"
         case .bibleTrivia: "Trivia"
-        case .verseMatch: "Verses"
+        case .quizReverse: "Quiz — Reverse"
         case .whoAmI: "Who?"
         case .bookOrder: "Book Order"
         }
@@ -493,7 +487,6 @@ struct GamesView: View {
             case .quiz: QuizView()
             case .hangman: HangmanGameView()
             case .beatTheClock: BeatTheClockGameView()
-            case .verseMatch: VerseMatchGameView()
             case .bookOrder: BookOrderGameView()
             case .wordSearch: WordSearchGameView()
             case .scramble: ScrambleGameView()

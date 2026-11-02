@@ -117,7 +117,6 @@ struct AllGamesComparisonCardView: View {
         case "Quiz": "Quiz"
         case "Trivia": "Trivia"
         case "Countdown": "Countdown"
-        case "Verses": "Verses"
         case "Book Order": "Order"
         case "Who?": "Who?"
         case "Word Search": "Search"

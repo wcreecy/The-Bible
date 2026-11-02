@@ -1,14 +1,16 @@
 import SwiftUI
+import SwiftData
 
 #if canImport(UIKit)
 import UIKit
 #endif
 
 struct QuizView: View {
+    @Query private var favorites: [Favorite]
     @State private var vm: QuizGameViewModel
 
-    init(reviewQuestionIDs: Set<String> = []) {
-        _vm = State(initialValue: QuizGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
+    init(reviewQuestionIDs: Set<String> = [], mode: QuizMode = .standard) {
+        _vm = State(initialValue: QuizGameViewModel(reviewQuestionIDs: reviewQuestionIDs, mode: mode))
     }
 
     // Global Auto‑Win debug toggle
@@ -21,7 +23,7 @@ struct QuizView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let usesSplitLayout = vm.phase == .playing && geometry.size.width >= 700
+            let usesSplitLayout = vm.mode == .standard && vm.phase == .playing && geometry.size.width >= 700
 
             ZStack {
                 ScrollView {
@@ -43,6 +45,7 @@ struct QuizView: View {
                             GameRoundSummaryView(
                                 summary: GameRoundSummary(score: vm.session),
                                 tint: .blue,
+                                canTimeOut: vm.isTimed,
                                 onPlayAgain: vm.startQuiz,
                                 onChangeSettings: vm.resetToSetup
                             )
@@ -107,6 +110,9 @@ struct QuizView: View {
             }
         }
         .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
+        .onChange(of: favoriteVerses, initial: true) { _, verses in
+            vm.favoriteVerses = verses
+        }
         .onAppear {
             vm.onAppear()
         }
@@ -118,11 +124,18 @@ struct QuizView: View {
         }
     }
 
+    private var favoriteVerses: [QuizVerse] {
+        favorites.map {
+            QuizVerse(bookName: $0.bookName, chapterNumber: $0.chapterNumber,
+                      verseNumber: $0.verseNumber, verseText: $0.verseText)
+        }
+    }
+
     // MARK: - Setup
 
     @ViewBuilder
     private var setupContent: some View {
-        Text("Test your knowledge by guessing the book of the Bible from a given verse.")
+        Text(vm.mode == .reverse ? "Choose the verse text that matches the reference." : "Test your knowledge by guessing the book of the Bible from a given verse.")
             .gameStartDescriptionStyle(title: "Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
 
         GameSplashLaunchLayout(
@@ -130,18 +143,47 @@ struct QuizView: View {
             experienceLevel: $vm.experienceLevel,
             experienceDetails: GameExperienceDetails(
                 learn: "Untimed practice at your own pace.",
-                standard: "15 seconds for each verse.",
-                challenge: "12 seconds for each verse."
+                standard: vm.mode == .reverse ? "Untimed. Choices from your categories." : "15 seconds for each verse.",
+                challenge: vm.mode == .reverse ? "Untimed. Choices from the same book." : "12 seconds for each verse."
             ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,
-            isStartEnabled: vm.isFilterReady,
+            isStartEnabled: vm.canStart,
             startAction: vm.startQuiz
         ) {
-            GameLobbyPreview(kind: .quiz)
+            GameLobbyPreview(kind: vm.mode == .reverse ? .quizReverse : .quiz)
         } configuration: {
             VStack(alignment: .leading, spacing: 8) {
                 GameSettingsGroup {
+                    GameChoiceSetting(
+                        title: "Mode",
+                        systemImage: "arrow.left.arrow.right",
+                        tint: .blue,
+                        selection: $vm.mode,
+                        choices: [
+                            GameChoice(value: QuizMode.standard, title: "Standard",
+                                       detail: "Verse text → book", icon: "book.closed"),
+                            GameChoice(value: QuizMode.reverse, title: "Reverse",
+                                       detail: "Reference → verse text", icon: "text.quote")
+                        ]
+                    )
+
+                    if vm.mode == .reverse {
+                        GameChoiceSetting(
+                            title: "Verse pool",
+                            systemImage: "text.quote",
+                            tint: .blue,
+                            selection: $vm.pool,
+                            choices: QuizReversePool.allCases.map {
+                                GameChoice(value: $0, title: $0.title,
+                                           detail: $0 == .favorites && !vm.isFavoritesAvailable
+                                               ? "Save a favorite verse to unlock this." : $0.detail,
+                                           icon: $0.icon,
+                                           isEnabled: $0 != .favorites || vm.isFavoritesAvailable)
+                            }
+                        )
+                    }
+
                     QuizCategoryQuickPicks(tint: .blue, selection: $vm.selectedSections)
 
                     GameStartMultiPickerCard(
@@ -170,13 +212,13 @@ struct QuizView: View {
                 first: ("number", "\(QuizGameViewModel.questionsPerGame) questions", String(localized: "This session")),
                 second: (
                     "timer",
-                    vm.difficulty.timeLimit.map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),
+                    (vm.isTimed ? vm.difficulty.timeLimit : nil).map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),
                     String(localized: "Per verse")
                 ),
                 third: (
                     "text.alignleft",
-                    vm.difficulty.contextCost == 0 ? String(localized: "Free") : String(localized: "−\(vm.difficulty.contextCost) sec"),
-                    String(localized: "Previous verse")
+                    vm.mode == .reverse ? "4" : (vm.difficulty.contextCost == 0 ? String(localized: "Free") : String(localized: "−\(vm.difficulty.contextCost) sec")),
+                    vm.mode == .reverse ? String(localized: "Choices") : String(localized: "Previous verse")
                 )
             )
         }
@@ -232,7 +274,7 @@ struct QuizView: View {
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .center)
 
-                    Text("“\(current.verseText)”")
+                    Text(current.prompt)
                         .italic()
                         .font(.title3)
                         .multilineTextAlignment(.center)
@@ -281,13 +323,13 @@ struct QuizView: View {
                 }
 
                 if !vm.isAnswered {
-                    Text("Which book is this from?")
+                    Text(vm.mode == .reverse ? "Which verse matches this reference?" : "Which book is this from?")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
                 }
 
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+                LazyVGrid(columns: vm.mode == .reverse ? [GridItem(.flexible())] : [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                     ForEach(current.options, id: \.self) { option in
                         Button {
                             vm.selectOption(option)
@@ -302,8 +344,8 @@ struct QuizView: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
                                 .stroke(
-                                    vm.isAnswered && option == current.correctBook ? Color.green : Color.black.opacity(0.15),
-                                    lineWidth: vm.isAnswered && option == current.correctBook ? 3 : 1
+                                    vm.isAnswered && option == current.correctAnswer ? Color.green : Color.black.opacity(0.15),
+                                    lineWidth: vm.isAnswered && option == current.correctAnswer ? 3 : 1
                                 )
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -320,7 +362,7 @@ struct QuizView: View {
                 // DEBUG: WIN button
                 if debugAutoWinEnabled, !vm.isAnswered, !vm.isViewingPrevious {
                     Button("WIN") {
-                        vm.selectOption(current.correctBook)
+                        vm.selectOption(current.correctAnswer)
                     }
                     .buttonStyle(ModernPillButtonStyle(tint: .red))
                     .controlSize(.large)
@@ -362,7 +404,7 @@ struct QuizView: View {
 
                 if debugAutoWinEnabled && !vm.isAnswered && !vm.isViewingPrevious {
                     Button("Win", systemImage: "checkmark.seal.fill") {
-                        vm.selectOption(current.correctBook)
+                        vm.selectOption(current.correctAnswer)
                     }
                     .buttonStyle(GameProminentButtonStyle(tint: .red))
                 } else {
@@ -380,7 +422,7 @@ struct QuizView: View {
 
     private func buttonBackground(for option: String, in question: QuizQuestion) -> Color {
         guard question.outcome != nil, question.selected == option else { return .clear }
-        return option == question.correctBook ? Color.green.opacity(0.3) : Color.red.opacity(0.3)
+        return option == question.correctAnswer ? Color.green.opacity(0.3) : Color.red.opacity(0.3)
     }
 }
 

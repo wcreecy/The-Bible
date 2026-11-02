@@ -1,18 +1,34 @@
 import Foundation
 
-/// Per-book and per-category accuracy for Quiz, Trivia, Verse Match, Hangman and Countdown, plus book mastery.
+/// Per-book and per-category accuracy for Quiz, Trivia, Hangman and Countdown, plus book mastery.
 extension GameStats {
-    // MARK: - Per-book analytics (Quiz, Trivia, Verse Match)
+    // MARK: - Per-book analytics (Quiz and Trivia)
     //
-    // The three games record the same four maps per book (see `PerBookKeys`), so one set of
+    // The games record the same four maps per book (see `PerBookKeys`), so one set of
     // helpers serves all of them.
 
     private func perBookMaps(_ keys: PerBookKeys) -> (answered: [String: Int], correct: [String: Int]) {
-        (loadJSONMap(forKey: keys.answered), loadJSONMap(forKey: keys.correct))
+        var answered = loadJSONMap(forKey: keys.answered)
+        var correct = loadJSONMap(forKey: keys.correct)
+        if keys.answered == PerBookKeys.quiz.answered {
+            answered.merge(loadJSONMap(forKey: PerBookKeys.verseMatch.answered)) { max(0, $0) + max(0, $1) }
+            correct.merge(loadJSONMap(forKey: PerBookKeys.verseMatch.correct)) { max(0, $0) + max(0, $1) }
+        }
+        return (answered, correct)
     }
 
     private func perBookDailyMaps(_ keys: PerBookKeys) -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
-        (loadNestedJSONMap(forKey: keys.dailyAnswered), loadNestedJSONMap(forKey: keys.dailyCorrect))
+        var answered = loadNestedJSONMap(forKey: keys.dailyAnswered)
+        var correct = loadNestedJSONMap(forKey: keys.dailyCorrect)
+        if keys.answered == PerBookKeys.quiz.answered {
+            for (day, books) in loadNestedJSONMap(forKey: PerBookKeys.verseMatch.dailyAnswered) {
+                answered[day, default: [:]].merge(books) { max(0, $0) + max(0, $1) }
+            }
+            for (day, books) in loadNestedJSONMap(forKey: PerBookKeys.verseMatch.dailyCorrect) {
+                correct[day, default: [:]].merge(books) { max(0, $0) + max(0, $1) }
+            }
+        }
+        return (answered, correct)
     }
 
     private static func percentage(correct: Int, answered: Int) -> Double {
@@ -45,8 +61,7 @@ extension GameStats {
         return (otA, otC, ntA, ntC, Self.percentage(correct: otC, answered: otA), Self.percentage(correct: ntC, answered: ntA))
     }
 
-    /// Accuracy for each genre, in canonical genre order. Verse Match counts every book it
-    /// has recorded; the other games count only names found in the Bible.
+    /// Accuracy for each genre, in canonical genre order.
     private func perBookGenreAccuracy(
         answeredMap: [String: Int],
         correctMap: [String: Int],
@@ -193,42 +208,14 @@ extension GameStats {
         }
     }
 
-    // MARK: Verse Match
-
-    func verseMatchOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
-        let maps = perBookMaps(.verseMatch)
-        return perBookTestamentSummary(answeredMap: maps.answered, correctMap: maps.correct)
-    }
-
-    func verseMatchAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = perBookMaps(.verseMatch)
-        return perBookGenreAccuracy(answeredMap: maps.answered, correctMap: maps.correct, requiresKnownBook: false)
-    }
-
-    func verseMatchAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = perBookMaps(.verseMatch)
-        return perBookAccuracy(inGenre: genreName, answeredMap: maps.answered, correctMap: maps.correct)
-    }
-
-    func verseMatchWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = perBookDailyMaps(.verseMatch)
-        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: false)
-    }
-
-    func verseMatchStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
-        let maps = perBookDailyMaps(.verseMatch)
-        return rankedPerBookRows(dailyAnswered: maps.answered, dailyCorrect: maps.correct, lastNDays: lastNDays, minAttempts: minAttempts, strongestFirst: true)
-    }
-
-    /// Combined book mastery from the two games that record canonical Bible-book results.
+    /// Quiz book mastery, including the former Verses game's history.
     func bookMastery(minAttempts: Int = 5) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let quizMaps = perBookMaps(.quiz)
-        let verseMaps = perBookMaps(.verseMatch)
         return BibleData.books.compactMap { book in
             let name = book.name
-            let answered = max(0, quizMaps.answered[name] ?? 0) + max(0, verseMaps.answered[name] ?? 0)
+            let answered = max(0, quizMaps.answered[name] ?? 0)
             guard answered >= minAttempts else { return nil }
-            let correct = max(0, quizMaps.correct[name] ?? 0) + max(0, verseMaps.correct[name] ?? 0)
+            let correct = max(0, quizMaps.correct[name] ?? 0)
             return (name, answered, correct, min(100, max(0, Double(correct) / Double(answered) * 100)))
         }
         .sorted { lhs, rhs in

@@ -583,7 +583,7 @@ struct The_Bible__iOS_Tests {
     ) -> MissedGameQuestionStore.Entry {
         MissedGameQuestionStore.Entry(
             id: UUID(),
-            game: .verseMatch,
+            game: .quizReverse,
             bookNames: [bookName],
             chapterNumber: chapterNumber,
             topic: "Verse matching",

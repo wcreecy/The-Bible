@@ -6,6 +6,14 @@ import SwiftUI
 import UIKit
 #endif
 
+enum QuizMode: String, CaseIterable, Identifiable {
+    case standard
+    case reverse
+
+    var id: Self { self }
+    var title: LocalizedStringResource { self == .standard ? "Standard" : "Reverse" }
+}
+
 enum QuizDifficulty: String, CaseIterable, Identifiable {
     case easy
     case normal
@@ -72,7 +80,7 @@ enum QuizDifficulty: String, CaseIterable, Identifiable {
     }
 }
 
-/// Parts of the Bible a verse can be drawn from. Also used by Hangman and Verse Match.
+/// Parts of the Bible a verse can be drawn from. Also used by Hangman.
 enum QuizVerseSection: String, CaseIterable, Identifiable {
     case law
     case history
@@ -175,12 +183,18 @@ struct QuizQuestion: Identifiable {
     /// The verse before this one, offered as a hint.
     let contextText: String?
     let options: [String]
+    var mode: QuizMode = .standard
+    /// Full verse metadata in the same order as the Reverse answer texts.
+    var optionVerses: [QuizVerse] = []
+    var correctAnswer: String { mode == .reverse ? verseText : correctBook }
+    var reference: String { "\(correctBook) \(chapter):\(verse)" }
+    var prompt: String { mode == .reverse ? reference : "“\(verseText)”" }
     var selected: String?
     var outcome: QuizOutcome?
     var contextRevealed = false
 
     /// Identifies the verse for missed-question review.
-    var reviewID: String { "\(correctBook)|\(chapter)|\(verse)" }
+    var reviewID: String { mode == .reverse ? reference : "\(correctBook)|\(chapter)|\(verse)" }
 }
 
 @MainActor
@@ -212,8 +226,29 @@ final class QuizGameViewModel {
     /// Verses to replay from the missed-questions list; empty for a normal game.
     let reviewQuestionIDs: Set<String>
 
-    init(reviewQuestionIDs: Set<String> = []) {
+    init(reviewQuestionIDs: Set<String> = [], mode: QuizMode = .standard) {
         self.reviewQuestionIDs = reviewQuestionIDs
+        self.mode = mode
+    }
+
+    var mode: QuizMode
+    var pool: QuizReversePool = QuizReversePool(
+        rawValue: UserDefaults.standard.string(forKey: AppStorageKey.quizReversePool) ?? ""
+    ) ?? .wellKnown {
+        didSet { UserDefaults.standard.set(pool.rawValue, forKey: AppStorageKey.quizReversePool) }
+    }
+    var favoriteVerses: [QuizVerse] = []
+    private var reverseSource: QuizReverseQuestionSource?
+    private var reverseBag: [QuizVerse] = []
+
+    private var configuredReverseSource: QuizReverseQuestionSource {
+        QuizReverseQuestionSource(difficulty: difficulty, pool: pool,
+                                  selectedSections: selectedSections, favoriteVerses: favoriteVerses)
+    }
+
+    var isFavoritesAvailable: Bool { configuredReverseSource.isFavoritesAvailable }
+    var canStart: Bool {
+        isFilterReady && (!reviewQuestionIDs.isEmpty || pool != .favorites || isFavoritesAvailable)
     }
 
     // MARK: - Settings
@@ -302,7 +337,16 @@ final class QuizGameViewModel {
 
     var isAnswered: Bool { current?.outcome != nil }
 
-    var isTimed: Bool { difficulty.timeLimit != nil }
+    var timeLimit: Int? {
+        guard mode == .reverse else { return difficulty.timeLimit }
+        switch difficulty {
+        case .easy: return nil
+        case .normal: return 20
+        case .hard: return 30
+        }
+    }
+
+    var isTimed: Bool { timeLimit != nil }
 
     var isTimerRunning: Bool {
         phase == .playing && isTimed && !isTimerDisabled && !isViewingPrevious && !isAnswered && !isPaused
@@ -317,7 +361,7 @@ final class QuizGameViewModel {
     var isOnLastQuestion: Bool { !isViewingPrevious && history.count >= totalQuestions }
 
     var canRevealContext: Bool {
-        guard let current, current.contextText != nil, !current.contextRevealed,
+        guard mode == .standard, let current, current.contextText != nil, !current.contextRevealed,
               !isAnswered, !isViewingPrevious, !isPaused else { return false }
         return !isTimed || isTimerDisabled || remainingSeconds > difficulty.contextCost
     }
@@ -328,7 +372,7 @@ final class QuizGameViewModel {
 
     /// Green, then yellow, then red as the question runs down, scaled to the time limit.
     var timerColor: Color {
-        guard let timeLimit = difficulty.timeLimit else { return .secondary }
+        guard let timeLimit else { return .secondary }
         let fraction = Double(remainingSeconds) / Double(max(1, timeLimit))
         if fraction <= 0.3 { return .red }
         if fraction <= 0.6 { return .yellow }
@@ -383,6 +427,22 @@ final class QuizGameViewModel {
     // MARK: - Questions
 
     private func buildQuestionBag() -> [VerseCandidate] {
+        // Explicit pools share Reverse's selection rules. Keep Standard's existing
+        // difficulty filtering for Any verse and its separate missed-question review.
+        if reviewQuestionIDs.isEmpty, pool != .any {
+            var source = configuredReverseSource
+            source.prepare()
+            return source.buildQuestionBag().map { verse in
+                let chapter = BibleData.books.first { $0.name == verse.bookName }?
+                    .chapters.first { $0.number == verse.chapterNumber }
+                let previousText = chapter?.verses.first { $0.number == verse.verseNumber - 1 }?.text
+                return VerseCandidate(
+                    text: verse.verseText, bookName: verse.bookName,
+                    chapter: verse.chapterNumber, verse: verse.verseNumber,
+                    contextText: previousText
+                )
+            }
+        }
         let pool = poolBookNames
         let difficultyKey = reviewQuestionIDs.isEmpty ? difficulty.rawValue : QuizDifficulty.hard.rawValue
         return BibleData.books
@@ -444,6 +504,20 @@ final class QuizGameViewModel {
     }
 
     private func makeQuestion() -> QuizQuestion? {
+        if mode == .reverse {
+            while let verse = reverseBag.popLast() {
+                guard let wrong = reverseSource?.wrongChoices(for: verse), wrong.count == 3 else { continue }
+                let options = (wrong + [verse]).shuffled()
+                return QuizQuestion(
+                    verseText: verse.verseText, correctBook: verse.bookName,
+                    chapter: verse.chapterNumber, verse: verse.verseNumber, contextText: nil,
+                    options: options.map(\.verseText),
+                    mode: .reverse,
+                    optionVerses: options
+                )
+            }
+            return nil
+        }
         guard let candidate = questionBag.popLast() else { return nil }
         return QuizQuestion(
             verseText: candidate.text,
@@ -458,13 +532,24 @@ final class QuizGameViewModel {
     // MARK: - Game flow
 
     func startQuiz() {
-        guard isFilterReady else { return }
-        questionBag = buildQuestionBag()
-        if !reviewQuestionIDs.isEmpty {
-            questionBag = questionBag.filter { reviewQuestionIDs.contains($0.reviewID) }
+        guard canStart else { return }
+        if mode == .reverse {
+            var source = configuredReverseSource
+            source.prepare()
+            reverseSource = source
+            reverseBag = reviewQuestionIDs.isEmpty
+                ? source.buildQuestionBag()
+                : source.reviewVerses().filter { reviewQuestionIDs.contains($0.reference) }.shuffled()
+            guard !reverseBag.isEmpty else { return }
+            totalQuestions = min(Self.questionsPerGame, reverseBag.count)
+        } else {
+            questionBag = buildQuestionBag()
+            if !reviewQuestionIDs.isEmpty {
+                questionBag = questionBag.filter { reviewQuestionIDs.contains($0.reviewID) }
+            }
+            guard !questionBag.isEmpty else { return }
+            totalQuestions = min(Self.questionsPerGame, questionBag.count)
         }
-        guard !questionBag.isEmpty else { return }
-        totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
         currentIndex = -1
         session.beginGame(savedStreak: persistentStreak, isTimed: isTimed)
@@ -475,13 +560,14 @@ final class QuizGameViewModel {
 
     private func appendNextQuestion() {
         guard let question = makeQuestion() else {
+            totalQuestions = history.count
             showResults()
             return
         }
         history.append(question)
         currentIndex = history.count - 1
         session.startQuestion()
-        remainingSeconds = difficulty.timeLimit ?? 0
+        remainingSeconds = timeLimit ?? 0
         wasInRedZone = false
         stopTimerPulse()
         isPaused = false
@@ -499,6 +585,8 @@ final class QuizGameViewModel {
         history = []
         currentIndex = -1
         questionBag = []
+        reverseBag = []
+        reverseSource = nil
         remainingSeconds = 0
         session.clearGame()
     }
@@ -548,8 +636,8 @@ final class QuizGameViewModel {
     }
 
     func selectOption(_ name: String) {
-        guard let current, !isPaused else { return }
-        finishQuestion(name == current.correctBook ? .correct : .incorrect, selected: name)
+        guard let current, current.options.contains(name), !isPaused else { return }
+        finishQuestion(name == current.correctAnswer ? .correct : .incorrect, selected: name)
     }
 
     /// Records the answer (or timeout) on the latest question, so it can't be answered again.
@@ -562,10 +650,10 @@ final class QuizGameViewModel {
         let correct = outcome == .correct
         session.record(
             GameRoundEntry(
-                prompt: current.verseText,
+                prompt: current.prompt,
                 outcome: correct ? .correct : (outcome == .timedOut ? .timedOut : .wrong),
                 givenAnswer: selected,
-                correctAnswer: current.correctBook,
+                correctAnswer: current.correctAnswer,
                 category: QuizVerseSection.containing(current.correctBook).map { String(localized: $0.title) },
                 bookName: current.correctBook,
                 reference: "\(current.correctBook) \(current.chapter):\(current.verse)"
@@ -583,15 +671,15 @@ final class QuizGameViewModel {
         GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
         if correct, !reviewQuestionIDs.isEmpty {
             MissedGameQuestionStore.shared.resolveReviewQuestion(
-                game: .bibleQuiz,
+                game: mode == .reverse ? .quizReverse : .bibleQuiz,
                 questionID: current.reviewID
             )
         } else if !correct {
             MissedGameQuestionStore.shared.record(
-                game: .bibleQuiz,
+                game: mode == .reverse ? .quizReverse : .bibleQuiz,
                 bookNames: [current.correctBook],
                 chapterNumber: current.chapter,
-                topic: "Book identification",
+                topic: mode == .reverse ? "Verse matching" : "Book identification",
                 questionID: current.reviewID
             )
         }

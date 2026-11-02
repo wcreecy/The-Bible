@@ -532,7 +532,7 @@ enum GameLobbyPreviewKind {
     case quiz
     case hangman
     case beatTheClock
-    case verseMatch
+    case quizReverse
     case bookOrder
     case wordSearch
     case scramble
@@ -596,7 +596,7 @@ struct GameLobbyPreview: View {
                 .frame(width: 96, height: 96)
                 previewPrompt(icon: "person.fill", title: "Moses", subtitle: "Name a book that mentions this person")
             }
-        case .verseMatch:
+        case .quizReverse:
             HStack(spacing: 24) {
                 previewPrompt(icon: "bookmark.fill", title: "Psalm 23:1", subtitle: "Choose the matching verse")
                 VStack(spacing: 8) {

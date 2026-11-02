@@ -5,18 +5,18 @@ import Testing
 /// Whether the Favorites pool can be chosen must follow the saved verses, not whichever pool
 /// happens to be selected.
 @MainActor
-struct VerseMatchFavoritesTests {
-    private let genesis = VerseMatchVerse(bookName: "Genesis", chapterNumber: 1, verseNumber: 1, verseText: "In the beginning God created the heaven and the earth.")
-    private let john = VerseMatchVerse(bookName: "John", chapterNumber: 3, verseNumber: 16, verseText: "For God so loved the world.")
+struct QuizReverseFavoritesTests {
+    private let genesis = QuizVerse(bookName: "Genesis", chapterNumber: 1, verseNumber: 1, verseText: "In the beginning God created the heaven and the earth.")
+    private let john = QuizVerse(bookName: "John", chapterNumber: 3, verseNumber: 16, verseText: "For God so loved the world.")
 
-    /// Runs `body` with the Verse Match settings set as given, then puts the stored settings back.
+    /// Runs `body` with the Quiz Reverse settings set as given, then puts the stored settings back.
     private func withSettings(
-        pool: VerseMatchPool,
+        pool: QuizReversePool,
         sections: Set<QuizVerseSection>? = nil,
-        _ body: (VerseMatchGameViewModel) -> Void
+        _ body: (QuizGameViewModel) -> Void
     ) {
         let defaults = UserDefaults.standard
-        let keys = [AppStorageKey.verseMatchPool, AppStorageKey.verseMatchSections, AppStorageKey.verseMatchScope]
+        let keys = [AppStorageKey.verseMatchPool, AppStorageKey.quizSections, AppStorageKey.quizScope]
         let saved = keys.map { defaults.object(forKey: $0) }
         defer {
             for (key, value) in zip(keys, saved) {
@@ -25,10 +25,10 @@ struct VerseMatchFavoritesTests {
         }
 
         defaults.set(pool.rawValue, forKey: AppStorageKey.verseMatchPool)
-        defaults.removeObject(forKey: AppStorageKey.verseMatchSections)
-        defaults.removeObject(forKey: AppStorageKey.verseMatchScope)
+        defaults.removeObject(forKey: AppStorageKey.quizSections)
+        defaults.removeObject(forKey: AppStorageKey.quizScope)
 
-        let model = VerseMatchGameViewModel()
+        let model = QuizGameViewModel(mode: .reverse)
         if let sections { model.selectedSections = sections }
         body(model)
     }
@@ -36,7 +36,7 @@ struct VerseMatchFavoritesTests {
     @Test
     func withNoSavedVersesFavoritesIsUnavailableEvenWhenWellKnownVersesExist() {
         withSettings(pool: .wellKnown) { model in
-            model.onAppear() // loads the well-known verses
+            model.onAppear()
             model.favoriteVerses = []
 
             #expect(!model.isFavoritesAvailable)
@@ -45,7 +45,7 @@ struct VerseMatchFavoritesTests {
 
     @Test
     func savedVersesMakeFavoritesAvailableInEveryPool() {
-        for pool in VerseMatchPool.allCases {
+        for pool in QuizReversePool.allCases {
             withSettings(pool: pool) { model in
                 model.favoriteVerses = [genesis]
 

@@ -94,10 +94,8 @@ enum AppStorageKey {
     static let beatTheClockCategory = "beatTheClockCategory"
     static let hangmanTheme = "hangmanTheme"
     static let hangmanDifficulty = "hangmanDifficulty"
-    static let verseMatchDifficulty = "verseMatchDifficulty"
-    static let verseMatchPool = "versematchPool"
-    static let verseMatchScope = "versematchScope"
-    static let verseMatchSections = "versematchSections"
+    // Shared Quiz pool; retain the stored key to preserve existing preferences.
+    static let quizVersePool = "versematchPool"
     static let gameRecommendationPromptDayV1 = "gameRecommendationPromptDayV1"
     static let gameRecommendationPromptedRoutesV1 = "gameRecommendationPromptedRoutesV1"
 

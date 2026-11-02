@@ -11,7 +11,8 @@ final class MissedGameQuestionStore {
             case beatTheClock
             case bibleQuiz
             case bibleTrivia
-            case verseMatch
+            // Keep the stored name so synced misses and resolution tombstones retain their identity.
+            case quizReverse = "verseMatch"
             case whoAmI
             /// Books placed out of order. Kept as study history only; never offered as a review round.
             case bookOrder

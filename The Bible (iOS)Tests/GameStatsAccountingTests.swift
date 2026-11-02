@@ -13,7 +13,6 @@ struct GameStatsAccountingTests {
             (.trivia, "trivia", "Trivia"),
             (.hangman, "hangman", "Hangman"),
             (.beatclock, "beatclock", "Countdown"),
-            (.versematch, "versematch", "Verses"),
             (.bookorder, "bookorder", "Book Order"),
             (.whoami, "whoami", "Who?"),
             (.wordsearch, "wordsearch", "Word Search"),
@@ -278,7 +277,7 @@ struct GameStatsAccountingTests {
     func previousGameNamesStillResolveToTheRenamedGames() {
         #expect(GameStats.canonicalDisplayName("Bible Quiz") == "Quiz")
         #expect(GameStats.canonicalDisplayName("Beat the Clock") == "Countdown")
-        #expect(GameStats.canonicalDisplayName("Verse Match") == "Verses")
+        #expect(GameStats.canonicalDisplayName("Verse Match") == "Quiz")
         #expect(GameStats.canonicalDisplayName("Who Am I?") == "Who?")
         #expect(GameStats.canonicalDisplayName("WORD") == "Word")
         #expect(GameStats.canonicalDisplayName("Wordle (Bible)") == "Word")
@@ -301,7 +300,7 @@ struct GameStatsAccountingTests {
         let overallKeys = ["gamesDailyAnswered", "gamesDailyCorrect"]
         let quizKeys = ["gamesDailyAnswered_quiz", "gamesDailyCorrect_quiz"]
         let wordKeys = ["gamesDailyAnswered_word_normal", "gamesDailyCorrect_word_normal"]
-        let keys = overallKeys + quizKeys + wordKeys
+        let keys = overallKeys + quizKeys + wordKeys + ["gamesDailyAnswered_versematch", "gamesDailyCorrect_versematch"]
         let savedValues = savedValues(for: keys)
         clear(keys)
         defer { restore(savedValues, for: keys) }
@@ -368,8 +367,7 @@ struct GameStatsAccountingTests {
         #expect(abs(GameStats.shared.accuracy7DayTrend(forDisplayName: "All Games", now: now).currentPct - 60) < 0.001)
     }
 
-    /// Quiz, Trivia and Verse Match keep the same per-book maps, so identical data must give
-    /// identical analytics for all three, and the values below are worked out by hand.
+    /// Legacy Verses per-book history appears in Quiz with the same analytics.
     @Test
     func perBookAnalyticsAgreeAcrossQuizTriviaAndVerseMatch() async throws {
         _ = await BibleRepository.shared.loadAllBooks()
@@ -400,7 +398,8 @@ struct GameStatsAccountingTests {
             dayKey(5): ["Matthew": 9]
         ]
         let encoder = JSONEncoder()
-        for p in prefixes {
+        // The Quiz view also reads the historical Verses maps.
+        for p in prefixes where p != "quiz" {
             defaults.set(try encoder.encode(allTimeAnswered), forKey: "\(p)PerBookAnsweredMap")
             defaults.set(try encoder.encode(allTimeCorrect), forKey: "\(p)PerBookCorrectMap")
             defaults.set(try encoder.encode(dailyAnswered), forKey: "\(p)PerBookDailyAnswered")
@@ -408,7 +407,7 @@ struct GameStatsAccountingTests {
         }
 
         let stats = GameStats.shared
-        let testaments = [stats.quizOTNTSummary(), stats.triviaOTNTSummary(), stats.verseMatchOTNTSummary()]
+        let testaments = [stats.quizOTNTSummary(), stats.triviaOTNTSummary()]
         for t in testaments {
             #expect(t.otAnswered == 9 && t.otCorrect == 3)
             #expect(t.ntAnswered == 16 && t.ntCorrect == 14)
@@ -416,7 +415,7 @@ struct GameStatsAccountingTests {
             #expect(abs(t.ntPct - 87.5) < 0.001)
         }
 
-        let genreSets = [stats.quizAccuracyByGenre(), stats.triviaAccuracyByGenre(), stats.verseMatchAccuracyByGenre()]
+        let genreSets = [stats.quizAccuracyByGenre(), stats.triviaAccuracyByGenre()]
         for genres in genreSets {
             #expect(genres.map(\.genre) == StatsSeriesBuilder.Genre.allCases.map(\.rawValue))
             let byName = Dictionary(uniqueKeysWithValues: genres.map { ($0.genre, $0) })
@@ -426,19 +425,19 @@ struct GameStatsAccountingTests {
             #expect(byName["History"]?.answered == 0 && byName["History"]?.pct == 0)
         }
 
-        let weak = [stats.quizWeakBooks(lastNDays: 3, minAttempts: 3), stats.triviaWeakBooks(lastNDays: 3, minAttempts: 3), stats.verseMatchWeakBooks(lastNDays: 3, minAttempts: 3)]
+        let weak = [stats.quizWeakBooks(lastNDays: 3, minAttempts: 3), stats.triviaWeakBooks(lastNDays: 3, minAttempts: 3)]
         for rows in weak {
             #expect(rows.map(\.book) == ["Genesis", "Psalms", "John"])
             #expect(rows.map(\.answered) == [3, 5, 6])
             #expect(rows.map(\.correct) == [1, 2, 5])
         }
-        let strong = [stats.quizStrongBooks(lastNDays: 3, minAttempts: 5), stats.triviaStrongBooks(lastNDays: 3, minAttempts: 5), stats.verseMatchStrongBooks(lastNDays: 3, minAttempts: 5)]
+        let strong = [stats.quizStrongBooks(lastNDays: 3, minAttempts: 5), stats.triviaStrongBooks(lastNDays: 3, minAttempts: 5)]
         for rows in strong {
             #expect(rows.map(\.book) == ["John", "Psalms"]) // Matthew's 9 answers are outside 3 days
         }
 
         let gospels = StatsSeriesBuilder.Genre.Gospels.rawValue
-        let byBook = [stats.quizAccuracyByBook(inGenre: gospels), stats.triviaAccuracyByBook(inGenre: gospels), stats.verseMatchAccuracyByBook(inGenre: gospels)]
+        let byBook = [stats.quizAccuracyByBook(inGenre: gospels), stats.triviaAccuracyByBook(inGenre: gospels)]
         for rows in byBook {
             #expect(rows.map(\.book) == ["Matthew", "Mark", "Luke", "John"]) // canonical order
             #expect(rows.map(\.answered) == [6, 0, 0, 10])
@@ -464,7 +463,6 @@ struct GameStatsAccountingTests {
         stats.recordQuizPerBook(bookName: " John ", answered: 3, correct: 2)
         stats.recordQuizPerBook(bookName: "John", answered: 2, correct: 0)
         stats.recordTriviaPerBook(bookName: "Genesis", answered: 4, correct: 4)
-        stats.recordVerseMatchPerBook(bookName: "Psalms", answered: 1, correct: 1)
         // Empty names and empty results are ignored; negative amounts never subtract
         // (they leave a zero entry, as before).
         stats.recordQuizPerBook(bookName: "  ", answered: 5, correct: 5)
@@ -477,8 +475,6 @@ struct GameStatsAccountingTests {
         #expect(nestedMap(named: "quizPerBookDailyCorrect")[dayKey] == ["John": 2, "Acts": 1])
         #expect(map(named: "triviaPerBookAnsweredMap") == ["Genesis": 4])
         #expect(nestedMap(named: "triviaPerBookDailyCorrect")[dayKey] == ["Genesis": 4])
-        #expect(map(named: "versematchPerBookCorrectMap") == ["Psalms": 1])
-        #expect(nestedMap(named: "versematchPerBookDailyAnswered")[dayKey] == ["Psalms": 1])
 
         stats.recordHangmanCategory(category: "People", answered: 2, correct: 1)
         stats.recordBeatClockType(type: "Places", answered: 3, correct: 3)
@@ -488,6 +484,82 @@ struct GameStatsAccountingTests {
         #expect(abs((hangman.first?.pct ?? 0) - 50) < 0.001)
         let beatClock = stats.beatclockAccuracyByType()
         #expect(beatClock.last?.answered == 3 && beatClock.last?.pct == 100)
+    }
+
+    @Test
+    func quizIncludesLegacyVersesWithoutDuplicatingOverallTotals() async throws {
+        _ = await BibleRepository.shared.loadAllBooks()
+        let stats = GameStats.shared
+        let day = GameStats.localDayKey(for: Date())
+        let prefixes = ["quiz", "versematch"]
+        let keys = prefixes.flatMap { prefix in
+            ["\(prefix)AllTimeAnswered_all", "\(prefix)AllTimeCorrect_all", "\(prefix)AllTimeBestStreak_all",
+             "gamesDailyAnswered_\(prefix)", "gamesDailyCorrect_\(prefix)",
+             "\(prefix)PerBookAnsweredMap", "\(prefix)PerBookCorrectMap",
+             "\(prefix)PerBookDailyAnswered", "\(prefix)PerBookDailyCorrect"]
+        }
+        let saved = savedValues(for: keys)
+        clear(keys)
+        defer { restore(saved, for: keys) }
+
+        for (prefix, answered, correct, best) in [("quiz", 10, 7, 4), ("versematch", 5, 2, 6)] {
+            defaults.set(answered, forKey: "\(prefix)AllTimeAnswered_all")
+            defaults.set(correct, forKey: "\(prefix)AllTimeCorrect_all")
+            defaults.set(best, forKey: "\(prefix)AllTimeBestStreak_all")
+            stats.saveJSONMap([day: answered], forKey: "gamesDailyAnswered_\(prefix)")
+            stats.saveJSONMap([day: correct], forKey: "gamesDailyCorrect_\(prefix)")
+            stats.saveJSONMap(["John": answered], forKey: "\(prefix)PerBookAnsweredMap")
+            stats.saveJSONMap(["John": correct], forKey: "\(prefix)PerBookCorrectMap")
+            stats.saveNestedJSONMap([day: ["John": answered]], forKey: "\(prefix)PerBookDailyAnswered")
+            stats.saveNestedJSONMap([day: ["John": correct]], forKey: "\(prefix)PerBookDailyCorrect")
+        }
+
+        for _ in 0..<2 {
+            let breakdown = stats.breakdownSnapshot()
+            let quiz = try #require(breakdown.entries.first { $0.name == "Quiz" })
+            #expect(!breakdown.entries.contains { $0.name == "Verses" })
+            #expect(quiz.answered == 15 && quiz.correct == 9 && quiz.bestStreak == 6)
+            #expect(stats.scorecardStats(for: .quiz).attempts == 15)
+            #expect(stats.snapshot().totalAnswered == breakdown.totalAnswered)
+            #expect(stats.snapshot().totalCorrect == breakdown.totalCorrect)
+            let daily = try #require(stats.dailySeriesLast(days: 1, forDisplayName: "Quiz").last)
+            #expect(daily.answered == 15 && daily.correct == 9)
+            #expect(stats.accuracy7DayTrend(forDisplayName: "Quiz").currentPct == 60)
+            let john = try #require(stats.quizAccuracyByBook(inGenre: "Gospels").first { $0.book == "John" })
+            #expect(john.answered == 15 && john.correct == 9 && john.pct == 60)
+            #expect(stats.quizStrongBooks(lastNDays: 1, minAttempts: 1).first?.answered == 15)
+            #expect(stats.bookMastery().first { $0.book == "John" }?.answered == 15)
+        }
+
+        // Late-arriving legacy history is reflected without rewriting either store.
+        defaults.set(8, forKey: "versematchAllTimeAnswered_all")
+        #expect(stats.scorecardStats(for: .quiz).attempts == 18)
+        #expect(defaults.integer(forKey: "quizAllTimeAnswered_all") == 10)
+        #expect(defaults.integer(forKey: "versematchAllTimeAnswered_all") == 8)
+        #expect(GameStats.canonicalDisplayName("Verses") == "Quiz")
+    }
+
+    @Test
+    func retiredTodayGameBecomesQuizAndKeepsCompletion() throws {
+        for oldName in ["Verses", "Verse Match"] {
+            let challenge = TodayChallenge(
+                id: UUID(), kind: .playGame, title: "Match the verses",
+                detail: "Finish a round to complete this.", bookName: nil, chapterNumber: nil,
+                gameName: oldName, minimumMinutes: nil, isCompleted: true
+            )
+            let repaired = TodayChallengeStore.repairedChallenge(challenge)
+            #expect(repaired.id == challenge.id)
+            #expect(repaired.gameName == "Quiz")
+            #expect(repaired.title == TodayChallengeStore.gameChallengeTitle(for: "Quiz"))
+            #expect(repaired.isCompleted)
+            #expect(TodayChallengeStore.repairedChallenge(repaired) == repaired)
+        }
+        let url = try #require(Bundle.main.url(forResource: "TodayChallengeCatalog", withExtension: "json"))
+        let object = try #require(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        let games = try #require(object["gameNames"] as? [String])
+        #expect(games.contains("Quiz"))
+        #expect(!games.contains("Verses") && !games.contains("Verse Match"))
+        #expect(Set(games.map(GameStats.canonicalDisplayName)).count == games.count)
     }
 
     private func nestedMap(named key: String) -> [String: [String: Int]] {

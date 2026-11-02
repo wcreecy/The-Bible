@@ -35,7 +35,6 @@ extension GameStats {
         let q = quiz
         let t = trivia
         let h = hangman
-        let r = versematch
         let b = beatclock
         let o = bookorder
         let w = whoami
@@ -58,7 +57,6 @@ extension GameStats {
             .init(name: "Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Trivia", correct: t.correct, answered: t.answered, bestStreak: t.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
-            .init(name: "Verses", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Countdown", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
             .init(name: "Who?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
@@ -84,7 +82,6 @@ extension GameStats {
         case .trivia: stat = trivia
         case .hangman: stat = hangman
         case .beatclock: stat = beatclock
-        case .versematch: stat = versematch
         case .bookorder: stat = bookorder
         case .whoami: stat = whoami
         case .wordsearch: stat = wordsearch
@@ -140,7 +137,17 @@ extension GameStats {
         let bestStreak: Int?
     }
 
+    /// Read both original stores without copying counters into the synced ledger.
     private var quiz: GameStat {
+        let standard = originalQuiz
+        let legacy = versematch
+        let best = max(standard.bestStreak ?? 0, legacy.bestStreak ?? 0)
+        return GameStat(correct: standard.correct + legacy.correct,
+                        answered: standard.answered + legacy.answered,
+                        bestStreak: best == 0 ? nil : best)
+    }
+
+    private var originalQuiz: GameStat {
         // Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
         let combinedC = max(0, readInt("quizAllTimeCorrect_all"))
         let combinedA = max(0, readInt("quizAllTimeAnswered_all"))
@@ -321,7 +328,7 @@ extension GameStats {
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, trivia, hangman, versematch, beatclock, bookorder, whoami, wordsearch, scramble, crossword]
+        let stats = [quiz, trivia, hangman, beatclock, bookorder, whoami, wordsearch, scramble, crossword]
         let typedCorrect = wordle(type: .daily).correct + wordle(type: .free).correct
         let typedAnswered = wordle(type: .daily).answered + wordle(type: .free).answered
         let wordleCombined = GameStat(
