@@ -138,16 +138,16 @@ struct HangmanGameView: View {
     @ViewBuilder
     private var startSection: some View {
         Spacer(minLength: 24)
-        Text("Guess the person, place or book from the Bible")
+        Text("Guess the person, place, word, or book from the Bible")
             .gameStartDescriptionStyle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
 
         GameSplashLaunchLayout(
             tint: .teal,
             experienceLevel: $vm.experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Well-known names, 8 mistakes, and a clue for every word.",
-                standard: "More names, 6 mistakes; a clue costs one mistake.",
-                challenge: "Every name, 5 mistakes, and no clues."
+                learn: "Well-known answers, 8 mistakes, and a clue for every word.",
+                standard: "More answers, 6 mistakes; a clue costs one mistake.",
+                challenge: "Every answer, 5 mistakes, and no clues."
             ),
             isStartEnabled: vm.isDataLoaded,
             startAction: vm.startGame

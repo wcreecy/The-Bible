@@ -52,6 +52,22 @@ struct BibleLocationChallenge: Decodable, Identifiable, Hashable {
     }
 }
 
+struct BibleWordChallenge: Decodable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let shortDescription: String
+    let difficulty: String
+    let scriptureReferences: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case shortDescription = "short_description"
+        case difficulty
+        case scriptureReferences = "scripture_references"
+    }
+}
+
 /// A curated Who? question with six authored distractors. The game selects
 /// three of those distractors at random for each round.
 struct WhoGameQuestion: Decodable, Identifiable, Hashable {
@@ -95,7 +111,7 @@ struct ScrambleWordEntry: Decodable, Hashable, Sendable {
     }
 }
 
-/// The editable source of truth for Who? and Hangman answers.
+/// The editable source of truth for Who?, Hangman, and Countdown answers.
 private struct GameAnswerCatalog: Decodable {
     private struct WhoGameCatalog: Decodable {
         let questions: [WhoGameQuestion]
@@ -104,6 +120,7 @@ private struct GameAnswerCatalog: Decodable {
     private enum EntryType: String, Decodable {
         case person = "Person"
         case place = "Place"
+        case bibleWords = "Bible Words"
     }
 
     private struct Entry: Decodable {
@@ -112,6 +129,7 @@ private struct GameAnswerCatalog: Decodable {
         let name: String
         let books: [String]?
         let scriptureMentioned: String?
+        let scriptureReferences: String?
         let shortDescription: String
         let difficulty: String
 
@@ -121,6 +139,7 @@ private struct GameAnswerCatalog: Decodable {
             case name
             case books
             case scriptureMentioned = "scripture_mentioned"
+            case scriptureReferences = "scripture_references"
             case shortDescription = "short_description"
             case difficulty
         }
@@ -158,6 +177,21 @@ private struct GameAnswerCatalog: Decodable {
                 scriptureMentioned: scriptureMentioned,
                 shortDescription: entry.shortDescription,
                 difficulty: entry.difficulty
+            )
+        }
+    }
+
+    var bibleWords: [BibleWordChallenge] {
+        entries.compactMap { entry in
+            guard entry.type == .bibleWords, let scriptureReferences = entry.scriptureReferences else {
+                return nil
+            }
+            return BibleWordChallenge(
+                id: entry.id,
+                name: entry.name,
+                shortDescription: entry.shortDescription,
+                difficulty: entry.difficulty,
+                scriptureReferences: scriptureReferences
             )
         }
     }
@@ -222,6 +256,14 @@ enum GameDataLoaders {
         return catalog.whoQuestions
     }
 
+    static func loadBibleWords() -> [BibleWordChallenge] {
+        guard let catalog = loadCatalog() else {
+            gameDataLogger.error("The Hangman Bible Words catalog could not be loaded or decoded.")
+            return []
+        }
+        return catalog.bibleWords
+    }
+
     static func loadScrambleWords() -> [ScrambleWordEntry] {
         guard let words = tryLoadArray([ScrambleWordEntry].self, resource: "ScrambleWords") else {
             gameDataLogger.error("The Scramble word list could not be loaded or decoded.")
@@ -263,6 +305,12 @@ enum GameDataLoaders {
     static func loadWhoQuestionsAsync() async -> [WhoGameQuestion] {
         await GameDataCache.shared.load("whoQuestions") {
             await loadOffMainThread { loadWhoQuestions() }
+        }.value
+    }
+
+    static func loadBibleWordsAsync() async -> [BibleWordChallenge] {
+        await GameDataCache.shared.load("bibleWords") {
+            await loadOffMainThread { loadBibleWords() }
         }.value
     }
 

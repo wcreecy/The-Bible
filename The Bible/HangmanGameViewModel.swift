@@ -11,6 +11,7 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
     case all = "All"
     case people = "People"
     case places = "Places"
+    case bibleWords = "Bible Words"
     case books = "Books"
 
     var id: String { rawValue }
@@ -20,6 +21,7 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
         case .all: "Mixed"
         case .people: "People"
         case .places: "Places"
+        case .bibleWords: "Bible Words"
         case .books: "Books"
         }
     }
@@ -28,6 +30,7 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
         switch self {
         case .people: "person.fill"
         case .places: "mappin.and.ellipse"
+        case .bibleWords: "text.book.closed.fill"
         case .books: "book.fill"
         case .all: "square.grid.2x2.fill"
         }
@@ -35,9 +38,10 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
 
     var detail: LocalizedStringResource {
         switch self {
-        case .all: "People, places, and books"
+        case .all: "People, places, Bible words, and books"
         case .people: "Bible people"
         case .places: "Bible places"
+        case .bibleWords: "Familiar words from the Bible"
         case .books: "Books of the Bible"
         }
     }
@@ -68,9 +72,9 @@ enum HangmanDifficulty: String, CaseIterable, Identifiable {
 
     var detail: LocalizedStringResource {
         switch self {
-        case .easy: "Well-known names, 8 mistakes, and a clue for every word."
-        case .normal: "Adds less familiar names and allows 6 mistakes. A clue costs one mistake."
-        case .hard: "Every name in the game, 5 mistakes, and no clues."
+        case .easy: "Well-known answers, 8 mistakes, and a clue for every word."
+        case .normal: "Adds less familiar answers and allows 6 mistakes. A clue costs one mistake."
+        case .hard: "Every answer in the game, 5 mistakes, and no clues."
         }
     }
 
@@ -106,7 +110,7 @@ enum HangmanDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Easy uses easy entries, Normal adds medium ones, and Hard uses everything.
+    /// Easy uses easy entries, Normal adds normal entries (and legacy medium ones), and Hard uses everything.
     func includes(_ entryDifficulty: String) -> Bool {
         switch entryDifficulty.lowercased() {
         case "easy": true
@@ -166,6 +170,7 @@ final class HangmanGameViewModel {
 
     private var loadedPeople: [BibleCharacter] = []
     private var loadedPlaces: [BibleLocationChallenge] = []
+    private var loadedBibleWords: [BibleWordChallenge] = []
     private var deck: [HangmanWord] = []
 
     // MARK: - Game state
@@ -193,7 +198,9 @@ final class HangmanGameViewModel {
 
     private var bestGameScoreKey: String { "hangmanBestGameScore_\(difficulty.rawValue.lowercased())" }
 
-    var isDataLoaded: Bool { !loadedPeople.isEmpty && !loadedPlaces.isEmpty }
+    var isDataLoaded: Bool {
+        !loadedPeople.isEmpty && !loadedPlaces.isEmpty && !loadedBibleWords.isEmpty
+    }
 
     var maxWrong: Int { difficulty.maxWrong }
 
@@ -250,6 +257,7 @@ final class HangmanGameViewModel {
     func loadData() async {
         if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadCharactersAsync() }
         if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationChallengesAsync() }
+        if loadedBibleWords.isEmpty { loadedBibleWords = await GameDataLoaders.loadBibleWordsAsync() }
     }
 
     // MARK: - Words
@@ -285,6 +293,20 @@ final class HangmanGameViewModel {
             }
     }
 
+    private func bibleWords() -> [HangmanWord] {
+        loadedBibleWords
+            .filter { difficulty.includes($0.difficulty) }
+            .map { entry in
+                HangmanWord(
+                    answer: entry.name,
+                    category: .bibleWords,
+                    clue: entry.shortDescription,
+                    qualifier: nil,
+                    reference: entry.scriptureReferences.isEmpty ? nil : entry.scriptureReferences
+                )
+            }
+    }
+
     private func bookWords() -> [HangmanWord] {
         BibleCanon.canonicalOrder().map { name in
             let section = QuizVerseSection.containing(name)
@@ -299,11 +321,12 @@ final class HangmanGameViewModel {
     /// Draws the game's words without repeats. Mixed picks a category for each word.
     private func makeDeck() -> [HangmanWord] {
         var pools: [HangmanTheme: [HangmanWord]] = [:]
-        let themes: [HangmanTheme] = theme == .all ? [.people, .places, .books] : [theme]
+        let themes: [HangmanTheme] = theme == .all ? [.people, .places, .bibleWords, .books] : [theme]
         for item in themes {
             switch item {
             case .people: pools[item] = peopleWords().shuffled()
             case .places: pools[item] = placeWords().shuffled()
+            case .bibleWords: pools[item] = bibleWords().shuffled()
             case .books: pools[item] = bookWords().shuffled()
             case .all: break
             }

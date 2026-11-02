@@ -6,7 +6,9 @@
     "Hangman book answers are generated from the app’s canonical Bible book list and are not listed here.",
     "Audit policy: Character book lists may include references to a person by alternate biblical spellings, family/tribal descendants, or a book heading; ambiguous instances require source-level review. Location references are illustrative citations, not exhaustive book lists.",
     "Character scripture_references give selected identifying or key-event passages, not every occurrence. Location scripture_mentioned fields are preserved. Some biblical names are shared by multiple people, and disputed identifications are not assumed.",
-    "Combined entries array: type distinguishes Person from Place. IDs are unique within each type, not across the combined catalog."
+    "Combined entries array: type distinguishes Person from Place. IDs are unique within each type, not across the combined catalog.",
+    "Bible Words entries use type \"Bible Words\" with IDs unique within that type, short_description, difficulty, and scripture_references. Existing Person, Place, and who_game records are unchanged. Bible Words entries are not automatically added to who_game questions.",
+    "Additional Bible Words prioritize recognizable concrete terms (at least four alphabetic characters); longer and abstract entries are generally Normal or Hard. Existing Bible Words IDs 1–150 remain unchanged."
   ],
   "entries": [
     {
@@ -6022,6 +6024,2166 @@
       "short_description": "Town given to David where Amalekites later raided his camp",
       "difficulty": "Normal",
       "scripture_references": "1 Samuel 27:6; 30:1–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 1,
+      "name": "Ark",
+      "short_description": "Large boat Noah built to survive the flood",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 6:14–18"
+    },
+    {
+      "type": "Bible Words",
+      "id": 2,
+      "name": "Altar",
+      "short_description": "Place where offerings and sacrifices were presented to God",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 8:20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 3,
+      "name": "Angel",
+      "short_description": "Messenger from God who carries out his commands",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 1:26–28"
+    },
+    {
+      "type": "Bible Words",
+      "id": 4,
+      "name": "Manna",
+      "short_description": "Food God provided for Israel in the wilderness",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 16:14–15"
+    },
+    {
+      "type": "Bible Words",
+      "id": 5,
+      "name": "Temple",
+      "short_description": "House of worship Solomon built in Jerusalem",
+      "difficulty": "Easy",
+      "scripture_references": "1 Kings 6:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 6,
+      "name": "Prayer",
+      "short_description": "Speaking to God with requests, praise, or thanks",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 6:9–13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 7,
+      "name": "Faith",
+      "short_description": "Trusting God and believing what he has promised",
+      "difficulty": "Easy",
+      "scripture_references": "Hebrews 11:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 8,
+      "name": "Grace",
+      "short_description": "God's undeserved kindness and favor",
+      "difficulty": "Easy",
+      "scripture_references": "Ephesians 2:8–9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 9,
+      "name": "Mercy",
+      "short_description": "Compassion shown instead of deserved punishment",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 18:13–14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 10,
+      "name": "Prophet",
+      "short_description": "Person chosen to speak God's message",
+      "difficulty": "Easy",
+      "scripture_references": "Jeremiah 1:4–10"
+    },
+    {
+      "type": "Bible Words",
+      "id": 11,
+      "name": "Shepherd",
+      "short_description": "Person who cares for and protects sheep",
+      "difficulty": "Easy",
+      "scripture_references": "Psalm 23:1–4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 12,
+      "name": "Disciple",
+      "short_description": "Follower or learner of Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 4:19–22"
+    },
+    {
+      "type": "Bible Words",
+      "id": 13,
+      "name": "Covenant",
+      "short_description": "Binding promise or agreement, often between God and people",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 9:8–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 14,
+      "name": "Sabbath",
+      "short_description": "Day set apart for rest and worship",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 20:8–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 15,
+      "name": "Passover",
+      "short_description": "Israel's remembrance of deliverance from Egypt",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 12:11–14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 16,
+      "name": "Bible",
+      "short_description": "Sacred writings that teach and instruct believers",
+      "difficulty": "Easy",
+      "scripture_references": "2 Timothy 3:16–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 17,
+      "name": "Scripture",
+      "short_description": "Sacred writing regarded as God's word",
+      "difficulty": "Easy",
+      "scripture_references": "2 Timothy 3:16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 18,
+      "name": "Gospel",
+      "short_description": "Good news about Jesus Christ",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 1:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 19,
+      "name": "Salvation",
+      "short_description": "Rescue from sin through Jesus Christ",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 4:12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 20,
+      "name": "Forgiveness",
+      "short_description": "Releasing someone from the debt of wrongdoing",
+      "difficulty": "Easy",
+      "scripture_references": "Ephesians 4:32"
+    },
+    {
+      "type": "Bible Words",
+      "id": 21,
+      "name": "Repentance",
+      "short_description": "Turning away from sin and toward God",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 3:19"
+    },
+    {
+      "type": "Bible Words",
+      "id": 22,
+      "name": "Sin",
+      "short_description": "Disobeying God's will and commands",
+      "difficulty": "Easy",
+      "scripture_references": "1 John 3:4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 23,
+      "name": "Righteousness",
+      "short_description": "Doing what is right in God's sight",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 6:33"
+    },
+    {
+      "type": "Bible Words",
+      "id": 24,
+      "name": "Holiness",
+      "short_description": "Being set apart for God and his purposes",
+      "difficulty": "Normal",
+      "scripture_references": "1 Peter 1:15–16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 25,
+      "name": "Worship",
+      "short_description": "Honoring God with praise and devotion",
+      "difficulty": "Easy",
+      "scripture_references": "John 4:23–24"
+    },
+    {
+      "type": "Bible Words",
+      "id": 26,
+      "name": "Praise",
+      "short_description": "Expressing honor and thanks to God",
+      "difficulty": "Easy",
+      "scripture_references": "Psalm 150:1–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 27,
+      "name": "Blessing",
+      "short_description": "Good gift or favor received from God",
+      "difficulty": "Easy",
+      "scripture_references": "Numbers 6:24–26"
+    },
+    {
+      "type": "Bible Words",
+      "id": 28,
+      "name": "Promise",
+      "short_description": "Commitment that God will keep his word",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 12:2–3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 29,
+      "name": "Hope",
+      "short_description": "Confident expectation rooted in God's promises",
+      "difficulty": "Easy",
+      "scripture_references": "Romans 15:13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 30,
+      "name": "Love",
+      "short_description": "Self-giving care for God and others",
+      "difficulty": "Easy",
+      "scripture_references": "1 Corinthians 13:4–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 31,
+      "name": "Peace",
+      "short_description": "Wholeness and calm given by God",
+      "difficulty": "Easy",
+      "scripture_references": "John 14:27"
+    },
+    {
+      "type": "Bible Words",
+      "id": 32,
+      "name": "Joy",
+      "short_description": "Gladness rooted in the Lord",
+      "difficulty": "Easy",
+      "scripture_references": "Philippians 4:4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 33,
+      "name": "Patience",
+      "short_description": "Enduring trouble without giving up or becoming angry",
+      "difficulty": "Easy",
+      "scripture_references": "James 5:7–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 34,
+      "name": "Kindness",
+      "short_description": "Showing care and goodness to others",
+      "difficulty": "Easy",
+      "scripture_references": "Ephesians 4:32"
+    },
+    {
+      "type": "Bible Words",
+      "id": 35,
+      "name": "Goodness",
+      "short_description": "Doing what is morally good",
+      "difficulty": "Easy",
+      "scripture_references": "Galatians 5:22–23"
+    },
+    {
+      "type": "Bible Words",
+      "id": 36,
+      "name": "Gentleness",
+      "short_description": "Treating others with humility and care",
+      "difficulty": "Normal",
+      "scripture_references": "Galatians 5:22–23"
+    },
+    {
+      "type": "Bible Words",
+      "id": 37,
+      "name": "Self-Control",
+      "short_description": "Resisting harmful desires and choosing what is right",
+      "difficulty": "Normal",
+      "scripture_references": "Galatians 5:22–23"
+    },
+    {
+      "type": "Bible Words",
+      "id": 38,
+      "name": "Wisdom",
+      "short_description": "Knowing how to live according to God's ways",
+      "difficulty": "Easy",
+      "scripture_references": "Proverbs 2:6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 39,
+      "name": "Knowledge",
+      "short_description": "Understanding that helps people grow in wisdom",
+      "difficulty": "Easy",
+      "scripture_references": "Proverbs 1:7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 40,
+      "name": "Truth",
+      "short_description": "What is real and trustworthy in God's word",
+      "difficulty": "Easy",
+      "scripture_references": "John 17:17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 41,
+      "name": "Light",
+      "short_description": "Picture of God's goodness and guidance",
+      "difficulty": "Easy",
+      "scripture_references": "John 8:12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 42,
+      "name": "Darkness",
+      "short_description": "Picture of evil or life without God's light",
+      "difficulty": "Easy",
+      "scripture_references": "John 3:19–21"
+    },
+    {
+      "type": "Bible Words",
+      "id": 43,
+      "name": "Life",
+      "short_description": "Gift given by God, promised eternally through Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "John 3:16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 44,
+      "name": "Eternity",
+      "short_description": "Existence without end",
+      "difficulty": "Normal",
+      "scripture_references": "John 3:16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 45,
+      "name": "Heaven",
+      "short_description": "God's dwelling place",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 6:9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 46,
+      "name": "Kingdom",
+      "short_description": "God's reign and rule",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 6:10"
+    },
+    {
+      "type": "Bible Words",
+      "id": 47,
+      "name": "Resurrection",
+      "short_description": "Rising from the dead, as Jesus did",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 24:5–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 48,
+      "name": "Cross",
+      "short_description": "Instrument on which Jesus was crucified",
+      "difficulty": "Easy",
+      "scripture_references": "John 19:17–18"
+    },
+    {
+      "type": "Bible Words",
+      "id": 49,
+      "name": "Crucifixion",
+      "short_description": "Execution by being nailed or fastened to a cross",
+      "difficulty": "Normal",
+      "scripture_references": "Mark 15:24–25"
+    },
+    {
+      "type": "Bible Words",
+      "id": 50,
+      "name": "Baptism",
+      "short_description": "Washing with water that marks a response of faith",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 8:36–38"
+    },
+    {
+      "type": "Bible Words",
+      "id": 51,
+      "name": "Communion",
+      "short_description": "Believers' shared remembrance of Jesus' death through bread and cup",
+      "difficulty": "Normal",
+      "scripture_references": "1 Corinthians 11:23–26"
+    },
+    {
+      "type": "Bible Words",
+      "id": 52,
+      "name": "Bread",
+      "short_description": "Food Jesus broke and shared at the Last Supper",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 22:19"
+    },
+    {
+      "type": "Bible Words",
+      "id": 53,
+      "name": "Lamb",
+      "short_description": "Animal used in Passover sacrifice and title given to Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "John 1:29"
+    },
+    {
+      "type": "Bible Words",
+      "id": 54,
+      "name": "Sacrifice",
+      "short_description": "Offering given to God, often involving an animal",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 1:3–5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 55,
+      "name": "Offering",
+      "short_description": "Gift brought to God in worship",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 12:41–44"
+    },
+    {
+      "type": "Bible Words",
+      "id": 56,
+      "name": "Tithe",
+      "short_description": "One-tenth of produce set apart for God",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 27:30"
+    },
+    {
+      "type": "Bible Words",
+      "id": 57,
+      "name": "Firstfruits",
+      "short_description": "First part of a harvest offered to God",
+      "difficulty": "Normal",
+      "scripture_references": "Proverbs 3:9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 58,
+      "name": "Harvest",
+      "short_description": "Gathering crops, also used as a picture of spiritual work",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 9:37–38"
+    },
+    {
+      "type": "Bible Words",
+      "id": 59,
+      "name": "Vineyard",
+      "short_description": "Field of grapevines used in many of Jesus' teachings",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 20:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 60,
+      "name": "Vine",
+      "short_description": "Plant Jesus used to picture believers' dependence on him",
+      "difficulty": "Easy",
+      "scripture_references": "John 15:5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 61,
+      "name": "Fig",
+      "short_description": "Fruit tree Jesus used in a teaching about fruitfulness",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 13:6–9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 62,
+      "name": "Olive",
+      "short_description": "Fruit of a tree associated with oil and blessing",
+      "difficulty": "Normal",
+      "scripture_references": "Deuteronomy 8:8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 63,
+      "name": "Oil",
+      "short_description": "Used for lamps and for anointing people",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 16:13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 64,
+      "name": "Anointing",
+      "short_description": "Applying oil to set someone apart for a role",
+      "difficulty": "Normal",
+      "scripture_references": "1 Samuel 16:12–13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 65,
+      "name": "Priest",
+      "short_description": "Person who served God and offered sacrifices for the people",
+      "difficulty": "Easy",
+      "scripture_references": "Leviticus 1:5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 66,
+      "name": "High Priest",
+      "short_description": "Chief priest who entered the Most Holy Place on the Day of Atonement",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 16:2–3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 67,
+      "name": "Levite",
+      "short_description": "Member of the tribe appointed for tabernacle service",
+      "difficulty": "Normal",
+      "scripture_references": "Numbers 3:5–9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 68,
+      "name": "Tabernacle",
+      "short_description": "Portable worship tent used by Israel in the wilderness",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 25:8–9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 69,
+      "name": "Ark of the Covenant",
+      "short_description": "Sacred chest associated with God's presence among Israel",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 25:10–22"
+    },
+    {
+      "type": "Bible Words",
+      "id": 70,
+      "name": "Cherubim",
+      "short_description": "Heavenly beings depicted above the ark's mercy seat",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 25:18–22"
+    },
+    {
+      "type": "Bible Words",
+      "id": 71,
+      "name": "Incense",
+      "short_description": "Fragrant substance burned as an offering",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 30:7–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 72,
+      "name": "Laver",
+      "short_description": "Basin where priests washed before serving",
+      "difficulty": "Hard",
+      "scripture_references": "Exodus 30:18–21"
+    },
+    {
+      "type": "Bible Words",
+      "id": 73,
+      "name": "Lampstand",
+      "short_description": "Golden stand holding lamps in the tabernacle",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 25:31–37"
+    },
+    {
+      "type": "Bible Words",
+      "id": 74,
+      "name": "Veil",
+      "short_description": "Curtain separating the Holy Place from the Most Holy Place",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 26:31–33"
+    },
+    {
+      "type": "Bible Words",
+      "id": 75,
+      "name": "Commandment",
+      "short_description": "Instruction God gives his people to obey",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 20:1–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 76,
+      "name": "Law",
+      "short_description": "God's instructions for how his people should live",
+      "difficulty": "Easy",
+      "scripture_references": "Deuteronomy 6:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 77,
+      "name": "Obedience",
+      "short_description": "Doing what God commands",
+      "difficulty": "Easy",
+      "scripture_references": "John 14:15"
+    },
+    {
+      "type": "Bible Words",
+      "id": 78,
+      "name": "Idol",
+      "short_description": "Image or false god worshiped in place of the Lord",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 20:4–5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 79,
+      "name": "Idolatry",
+      "short_description": "Worship of false gods or created things",
+      "difficulty": "Normal",
+      "scripture_references": "1 Corinthians 10:14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 80,
+      "name": "Golden Calf",
+      "short_description": "Idol made by Israelites while Moses was on Sinai",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 32:1–4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 81,
+      "name": "Plague",
+      "short_description": "Severe disaster used in the judgments against Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 7:14–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 82,
+      "name": "Exodus",
+      "short_description": "Israel's departure from slavery in Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 12:31–42"
+    },
+    {
+      "type": "Bible Words",
+      "id": 83,
+      "name": "Wilderness",
+      "short_description": "Desert region where Israel wandered after leaving Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Numbers 14:32–34"
+    },
+    {
+      "type": "Bible Words",
+      "id": 84,
+      "name": "Promised Land",
+      "short_description": "Land God promised to Abraham's descendants",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 12:6–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 85,
+      "name": "Red Sea",
+      "short_description": "Sea God parted so Israel could escape Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 14:21–22"
+    },
+    {
+      "type": "Bible Words",
+      "id": 86,
+      "name": "Jordan River",
+      "short_description": "River Israel crossed to enter Canaan",
+      "difficulty": "Normal",
+      "scripture_references": "Joshua 3:14–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 87,
+      "name": "Jericho Walls",
+      "short_description": "Walls that fell after Israel marched around Jericho",
+      "difficulty": "Normal",
+      "scripture_references": "Joshua 6:15–20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 88,
+      "name": "Rainbow",
+      "short_description": "Sign of God's covenant after the flood",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 9:12–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 89,
+      "name": "Flood",
+      "short_description": "Great waters that covered the earth in Noah's days",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 7:17–24"
+    },
+    {
+      "type": "Bible Words",
+      "id": 90,
+      "name": "Dove",
+      "short_description": "Bird Noah released from the ark",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 8:8–12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 91,
+      "name": "Serpent",
+      "short_description": "Creature that tempted Eve in Eden",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 3:1–5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 92,
+      "name": "Tree of Life",
+      "short_description": "Tree in Eden associated with life",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 2:9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 93,
+      "name": "Fruit",
+      "short_description": "Produce of a tree, used to describe results of a person's life",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 7:16–20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 94,
+      "name": "Parable",
+      "short_description": "Short teaching story Jesus used to illustrate truth",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:34–35"
+    },
+    {
+      "type": "Bible Words",
+      "id": 95,
+      "name": "Miracle",
+      "short_description": "Extraordinary act revealing God's power",
+      "difficulty": "Easy",
+      "scripture_references": "John 2:1–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 96,
+      "name": "Healing",
+      "short_description": "Restoration of health, often performed by Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 8:14–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 97,
+      "name": "Leprosy",
+      "short_description": "Skin disease category mentioned in biblical healing accounts",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 17:12–19"
+    },
+    {
+      "type": "Bible Words",
+      "id": 98,
+      "name": "Demon",
+      "short_description": "Evil spirit driven out by Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 1:23–27"
+    },
+    {
+      "type": "Bible Words",
+      "id": 99,
+      "name": "Temptation",
+      "short_description": "Invitation or pressure to do wrong",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 4:1–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 100,
+      "name": "Fasting",
+      "short_description": "Going without food for a time to seek God",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 6:16–18"
+    },
+    {
+      "type": "Bible Words",
+      "id": 101,
+      "name": "Sermon",
+      "short_description": "Teaching or spoken message about God",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 5:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 102,
+      "name": "Blessed",
+      "short_description": "Described as favored by God",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 5:3–12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 103,
+      "name": "Beatitudes",
+      "short_description": "Blessings Jesus taught in the Sermon on the Mount",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 5:3–12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 104,
+      "name": "Neighbor",
+      "short_description": "Person we are commanded to love as ourselves",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 10:27"
+    },
+    {
+      "type": "Bible Words",
+      "id": 105,
+      "name": "Samaritan",
+      "short_description": "Person from Samaria featured in Jesus' story of helping a wounded traveler",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 10:30–37"
+    },
+    {
+      "type": "Bible Words",
+      "id": 106,
+      "name": "Prodigal",
+      "short_description": "Word used for the wasteful son in Jesus' story of a lost son",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 15:11–24"
+    },
+    {
+      "type": "Bible Words",
+      "id": 107,
+      "name": "Lost Sheep",
+      "short_description": "One sheep the shepherd searches for in Jesus' parable",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 15:3–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 108,
+      "name": "Talents",
+      "short_description": "Large sums of money entrusted to servants in Jesus' parable",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 25:14–30"
+    },
+    {
+      "type": "Bible Words",
+      "id": 109,
+      "name": "Denarius",
+      "short_description": "Roman coin mentioned in Jesus' teachings",
+      "difficulty": "Hard",
+      "scripture_references": "Matthew 20:2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 110,
+      "name": "Widow",
+      "short_description": "Woman whose husband has died; Jesus praised one for her offering",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 12:41–44"
+    },
+    {
+      "type": "Bible Words",
+      "id": 111,
+      "name": "Orphan",
+      "short_description": "Child without parents, whom believers are called to care for",
+      "difficulty": "Easy",
+      "scripture_references": "James 1:27"
+    },
+    {
+      "type": "Bible Words",
+      "id": 112,
+      "name": "Enemy",
+      "short_description": "Person Jesus taught his followers to love",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 5:44"
+    },
+    {
+      "type": "Bible Words",
+      "id": 113,
+      "name": "Servant",
+      "short_description": "Person who serves another, used as a picture of humble leadership",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 10:43–45"
+    },
+    {
+      "type": "Bible Words",
+      "id": 114,
+      "name": "Master",
+      "short_description": "Person with authority over servants",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 25:14–21"
+    },
+    {
+      "type": "Bible Words",
+      "id": 115,
+      "name": "Apostle",
+      "short_description": "Messenger specially sent by Jesus to proclaim his message",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 6:12–13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 116,
+      "name": "Evangelist",
+      "short_description": "Person who shares the good news about Jesus",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 21:8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 117,
+      "name": "Church",
+      "short_description": "Community of believers in Jesus Christ",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 2:42–47"
+    },
+    {
+      "type": "Bible Words",
+      "id": 118,
+      "name": "Fellowship",
+      "short_description": "Shared life and encouragement among believers",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 2:42"
+    },
+    {
+      "type": "Bible Words",
+      "id": 119,
+      "name": "Gentile",
+      "short_description": "Person who is not Jewish",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 10:44–45"
+    },
+    {
+      "type": "Bible Words",
+      "id": 120,
+      "name": "Pharisee",
+      "short_description": "Member of a Jewish religious group active in Jesus' day",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 18:10–12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 121,
+      "name": "Sadducee",
+      "short_description": "Member of a Jewish group that denied resurrection",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 23:8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 122,
+      "name": "Synagogue",
+      "short_description": "Jewish gathering place for teaching and worship",
+      "difficulty": "Normal",
+      "scripture_references": "Luke 4:16–20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 123,
+      "name": "Scroll",
+      "short_description": "Rolled writing surface from which Scripture was read",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 4:17–20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 124,
+      "name": "Epistle",
+      "short_description": "Letter written to instruct believers",
+      "difficulty": "Normal",
+      "scripture_references": "Colossians 4:16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 125,
+      "name": "Psalm",
+      "short_description": "Sacred song or poem used in worship",
+      "difficulty": "Easy",
+      "scripture_references": "Psalm 1:1–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 126,
+      "name": "Proverb",
+      "short_description": "Short saying that teaches wisdom",
+      "difficulty": "Easy",
+      "scripture_references": "Proverbs 1:1–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 127,
+      "name": "Lament",
+      "short_description": "Expression of grief brought before God",
+      "difficulty": "Normal",
+      "scripture_references": "Lamentations 1:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 128,
+      "name": "Prophecy",
+      "short_description": "Message from God about his will or future events",
+      "difficulty": "Normal",
+      "scripture_references": "2 Peter 1:20–21"
+    },
+    {
+      "type": "Bible Words",
+      "id": 129,
+      "name": "Vision",
+      "short_description": "Revelation given through a vivid experience",
+      "difficulty": "Normal",
+      "scripture_references": "Daniel 7:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 130,
+      "name": "Dream",
+      "short_description": "Experience during sleep through which God sometimes spoke",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 37:5–10"
+    },
+    {
+      "type": "Bible Words",
+      "id": 131,
+      "name": "Messiah",
+      "short_description": "Promised anointed king and rescuer",
+      "difficulty": "Normal",
+      "scripture_references": "John 1:41"
+    },
+    {
+      "type": "Bible Words",
+      "id": 132,
+      "name": "Christ",
+      "short_description": "Greek title meaning the Anointed One",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 16:16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 133,
+      "name": "Emmanuel",
+      "short_description": "Name meaning God with us",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 1:23"
+    },
+    {
+      "type": "Bible Words",
+      "id": 134,
+      "name": "Redeemer",
+      "short_description": "One who rescues or buys someone back",
+      "difficulty": "Normal",
+      "scripture_references": "Job 19:25"
+    },
+    {
+      "type": "Bible Words",
+      "id": 135,
+      "name": "Redemption",
+      "short_description": "Deliverance or freedom bought at a cost",
+      "difficulty": "Normal",
+      "scripture_references": "Ephesians 1:7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 136,
+      "name": "Atonement",
+      "short_description": "Act of making things right between God and people",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 16:29–30"
+    },
+    {
+      "type": "Bible Words",
+      "id": 137,
+      "name": "Justification",
+      "short_description": "Being declared righteous before God",
+      "difficulty": "Hard",
+      "scripture_references": "Romans 5:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 138,
+      "name": "Sanctification",
+      "short_description": "Being set apart and made holy",
+      "difficulty": "Hard",
+      "scripture_references": "1 Thessalonians 4:3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 139,
+      "name": "Reconciliation",
+      "short_description": "Restoring a broken relationship with God",
+      "difficulty": "Hard",
+      "scripture_references": "2 Corinthians 5:18–19"
+    },
+    {
+      "type": "Bible Words",
+      "id": 140,
+      "name": "Holy Spirit",
+      "short_description": "Spirit of God who guides and helps believers",
+      "difficulty": "Easy",
+      "scripture_references": "John 14:26"
+    },
+    {
+      "type": "Bible Words",
+      "id": 141,
+      "name": "Ascension",
+      "short_description": "Jesus' return to heaven after his resurrection",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 1:9–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 142,
+      "name": "Pentecost",
+      "short_description": "Day when the Holy Spirit came upon Jesus' followers",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 2:1–4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 143,
+      "name": "Revelation",
+      "short_description": "Making something previously hidden known",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 1:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 144,
+      "name": "New Heaven",
+      "short_description": "Part of God's promised renewed creation",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 21:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 145,
+      "name": "New Earth",
+      "short_description": "Part of God's promised renewed creation",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 21:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 146,
+      "name": "New Jerusalem",
+      "short_description": "Holy city pictured descending from heaven",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 21:2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 147,
+      "name": "Book of Life",
+      "short_description": "Book associated with those belonging to God",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 20:12–15"
+    },
+    {
+      "type": "Bible Words",
+      "id": 148,
+      "name": "Judgment",
+      "short_description": "God's just assessment of human actions",
+      "difficulty": "Easy",
+      "scripture_references": "Revelation 20:11–13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 149,
+      "name": "Eternal Life",
+      "short_description": "Life with God promised through faith in Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "John 3:16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 150,
+      "name": "Amen",
+      "short_description": "Word used to affirm a prayer or statement as true",
+      "difficulty": "Easy",
+      "scripture_references": "Revelation 22:20–21"
+    },
+    {
+      "type": "Bible Words",
+      "id": 151,
+      "name": "Staff",
+      "short_description": "Walking stick Moses held when God performed signs in Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 4:2–4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 152,
+      "name": "Stone",
+      "short_description": "Object David used with his sling against Goliath",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 17:40–49"
+    },
+    {
+      "type": "Bible Words",
+      "id": 153,
+      "name": "Sling",
+      "short_description": "Weapon David used to defeat Goliath",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 17:49"
+    },
+    {
+      "type": "Bible Words",
+      "id": 154,
+      "name": "Basket",
+      "short_description": "Container in which baby Moses was placed on the Nile",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 2:3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 155,
+      "name": "River",
+      "short_description": "Flowing water where baby Moses was placed in a basket",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 2:3–5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 156,
+      "name": "Burning Bush",
+      "short_description": "Bush that burned without being consumed when God called Moses",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 3:2–4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 157,
+      "name": "Sandals",
+      "short_description": "Footwear Moses was told to remove on holy ground",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 3:5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 158,
+      "name": "Tablet",
+      "short_description": "Stone slab on which God's commandments were written",
+      "difficulty": "Easy",
+      "scripture_references": "Exodus 31:18"
+    },
+    {
+      "type": "Bible Words",
+      "id": 159,
+      "name": "Trumpet",
+      "short_description": "Instrument sounded by priests as Israel marched around Jericho",
+      "difficulty": "Easy",
+      "scripture_references": "Joshua 6:4–5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 160,
+      "name": "Torch",
+      "short_description": "Flame carried in jars by Gideon's men",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 7:16–20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 161,
+      "name": "Pitcher",
+      "short_description": "Clay vessel Gideon's men broke before the battle",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 7:16–20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 162,
+      "name": "Fleece",
+      "short_description": "Wool Gideon used when asking God for a sign",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 6:36–40"
+    },
+    {
+      "type": "Bible Words",
+      "id": 163,
+      "name": "Millstone",
+      "short_description": "Heavy grinding stone dropped on Abimelech",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 9:53"
+    },
+    {
+      "type": "Bible Words",
+      "id": 164,
+      "name": "Jawbone",
+      "short_description": "Bone Samson used as a weapon against Philistines",
+      "difficulty": "Easy",
+      "scripture_references": "Judges 15:15"
+    },
+    {
+      "type": "Bible Words",
+      "id": 165,
+      "name": "Honeycomb",
+      "short_description": "Sweet food Jonathan ate during battle",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 14:27"
+    },
+    {
+      "type": "Bible Words",
+      "id": 166,
+      "name": "Robe",
+      "short_description": "Garment Jonathan gave to David as a sign of friendship",
+      "difficulty": "Easy",
+      "scripture_references": "1 Samuel 18:4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 167,
+      "name": "Crown",
+      "short_description": "Royal headpiece taken from the king of Rabbah",
+      "difficulty": "Easy",
+      "scripture_references": "2 Samuel 12:30"
+    },
+    {
+      "type": "Bible Words",
+      "id": 168,
+      "name": "Throne",
+      "short_description": "Seat associated with a king's authority",
+      "difficulty": "Easy",
+      "scripture_references": "1 Kings 10:18–20"
+    },
+    {
+      "type": "Bible Words",
+      "id": 169,
+      "name": "Scepter",
+      "short_description": "Royal staff extended to Esther by the king",
+      "difficulty": "Easy",
+      "scripture_references": "Esther 5:2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 170,
+      "name": "Banquet",
+      "short_description": "Special meal Esther prepared for the king and Haman",
+      "difficulty": "Easy",
+      "scripture_references": "Esther 5:4–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 171,
+      "name": "Lions",
+      "short_description": "Animals surrounding Daniel in the den",
+      "difficulty": "Easy",
+      "scripture_references": "Daniel 6:16–22"
+    },
+    {
+      "type": "Bible Words",
+      "id": 172,
+      "name": "Furnace",
+      "short_description": "Fiery place where Daniel's three friends were thrown",
+      "difficulty": "Easy",
+      "scripture_references": "Daniel 3:19–25"
+    },
+    {
+      "type": "Bible Words",
+      "id": 173,
+      "name": "Statue",
+      "short_description": "Large image King Nebuchadnezzar commanded people to worship",
+      "difficulty": "Easy",
+      "scripture_references": "Daniel 3:1–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 174,
+      "name": "Fish",
+      "short_description": "Great sea creature that swallowed Jonah",
+      "difficulty": "Easy",
+      "scripture_references": "Jonah 1:17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 175,
+      "name": "Worm",
+      "short_description": "Creature God appointed to damage Jonah's shade plant",
+      "difficulty": "Easy",
+      "scripture_references": "Jonah 4:7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 176,
+      "name": "Boat",
+      "short_description": "Vessel Jesus used when traveling across the Sea of Galilee",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 4:35–39"
+    },
+    {
+      "type": "Bible Words",
+      "id": 177,
+      "name": "Anchor",
+      "short_description": "Ship equipment used as a picture of hope",
+      "difficulty": "Easy",
+      "scripture_references": "Hebrews 6:19"
+    },
+    {
+      "type": "Bible Words",
+      "id": 178,
+      "name": "Shipwreck",
+      "short_description": "Disaster Paul survived while sailing to Rome",
+      "difficulty": "Normal",
+      "scripture_references": "Acts 27:39–44"
+    },
+    {
+      "type": "Bible Words",
+      "id": 179,
+      "name": "Prison",
+      "short_description": "Place where Paul and Silas sang hymns at midnight",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 16:23–26"
+    },
+    {
+      "type": "Bible Words",
+      "id": 180,
+      "name": "Chains",
+      "short_description": "Restraints that fell from Peter's hands in prison",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 12:7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 181,
+      "name": "Gate",
+      "short_description": "Entrance where Peter was met after leaving prison",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 12:13–14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 182,
+      "name": "Keys",
+      "short_description": "Objects Jesus said He would give Peter, symbolizing authority",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 16:19"
+    },
+    {
+      "type": "Bible Words",
+      "id": 183,
+      "name": "Coins",
+      "short_description": "Money a poor widow put into the temple treasury",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 12:41–44"
+    },
+    {
+      "type": "Bible Words",
+      "id": 184,
+      "name": "Sand",
+      "short_description": "What God compared Abraham's descendants to",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 22:17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 185,
+      "name": "Stars",
+      "short_description": "What God showed Abraham when promising many descendants",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 15:5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 186,
+      "name": "Dust",
+      "short_description": "Material from which God formed the first man",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 2:7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 187,
+      "name": "Garden",
+      "short_description": "Place God planted in Eden for the first humans",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 2:8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 188,
+      "name": "Thorns",
+      "short_description": "Sharp plants that grew because the ground was cursed",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 3:17–18"
+    },
+    {
+      "type": "Bible Words",
+      "id": 189,
+      "name": "Leaves",
+      "short_description": "What Adam and Eve sewed together for clothing",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 3:7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 190,
+      "name": "Dreams",
+      "short_description": "Experiences Joseph described that angered his brothers",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 37:5–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 191,
+      "name": "Well",
+      "short_description": "Water source where Jesus spoke with a Samaritan woman",
+      "difficulty": "Easy",
+      "scripture_references": "John 4:6–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 192,
+      "name": "Water",
+      "short_description": "What Jesus turned into wine at a wedding in Cana",
+      "difficulty": "Easy",
+      "scripture_references": "John 2:7–9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 193,
+      "name": "Wine",
+      "short_description": "Drink Jesus provided at the wedding in Cana",
+      "difficulty": "Easy",
+      "scripture_references": "John 2:9–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 194,
+      "name": "Wedding",
+      "short_description": "Celebration where Jesus performed His first sign in Cana",
+      "difficulty": "Easy",
+      "scripture_references": "John 2:1–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 195,
+      "name": "Loaves",
+      "short_description": "Bread Jesus multiplied to feed a large crowd",
+      "difficulty": "Easy",
+      "scripture_references": "John 6:9–13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 196,
+      "name": "Mustard Seed",
+      "short_description": "Tiny seed Jesus used to compare with the kingdom of heaven",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:31–32"
+    },
+    {
+      "type": "Bible Words",
+      "id": 197,
+      "name": "Pearl",
+      "short_description": "Precious object Jesus compared to the kingdom of heaven",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:45–46"
+    },
+    {
+      "type": "Bible Words",
+      "id": 198,
+      "name": "Treasure",
+      "short_description": "Valuable discovery in a field used in Jesus' parable",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:44"
+    },
+    {
+      "type": "Bible Words",
+      "id": 199,
+      "name": "Seed",
+      "short_description": "What a sower scattered in Jesus' parable",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:3–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 200,
+      "name": "Soil",
+      "short_description": "Ground on which the seed fell in Jesus' parable",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:3–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 201,
+      "name": "Weeds",
+      "short_description": "Unwanted plants in Jesus' parable of wheat and tares",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:24–30"
+    },
+    {
+      "type": "Bible Words",
+      "id": 202,
+      "name": "Wheat",
+      "short_description": "Grain gathered into the barn in Jesus' parable",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 13:30"
+    },
+    {
+      "type": "Bible Words",
+      "id": 203,
+      "name": "Sparrow",
+      "short_description": "Small bird Jesus said the Father cares for",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 10:29–31"
+    },
+    {
+      "type": "Bible Words",
+      "id": 204,
+      "name": "Lily",
+      "short_description": "Flower Jesus pointed to when teaching against worry",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 6:28–29"
+    },
+    {
+      "type": "Bible Words",
+      "id": 205,
+      "name": "Raven",
+      "short_description": "Bird Jesus said God feeds without sowing or reaping",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 12:24"
+    },
+    {
+      "type": "Bible Words",
+      "id": 206,
+      "name": "Donkey",
+      "short_description": "Animal Jesus rode into Jerusalem",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 21:1–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 207,
+      "name": "Colt",
+      "short_description": "Young donkey brought for Jesus to ride",
+      "difficulty": "Easy",
+      "scripture_references": "Mark 11:2–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 208,
+      "name": "Palm",
+      "short_description": "Tree whose branches people carried to welcome Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "John 12:12–13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 209,
+      "name": "Cloak",
+      "short_description": "Garment people spread on the road as Jesus entered Jerusalem",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 21:8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 210,
+      "name": "Towel",
+      "short_description": "Cloth Jesus used when washing His disciples' feet",
+      "difficulty": "Easy",
+      "scripture_references": "John 13:4–5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 211,
+      "name": "Basin",
+      "short_description": "Container Jesus used to wash His disciples' feet",
+      "difficulty": "Easy",
+      "scripture_references": "John 13:5"
+    },
+    {
+      "type": "Bible Words",
+      "id": 212,
+      "name": "Rooster",
+      "short_description": "Bird that crowed after Peter denied Jesus",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 26:74–75"
+    },
+    {
+      "type": "Bible Words",
+      "id": 213,
+      "name": "Sword",
+      "short_description": "Weapon Peter used when Jesus was arrested",
+      "difficulty": "Easy",
+      "scripture_references": "John 18:10–11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 214,
+      "name": "Nails",
+      "short_description": "Objects mentioned in the marks of Jesus' crucifixion",
+      "difficulty": "Easy",
+      "scripture_references": "John 20:25"
+    },
+    {
+      "type": "Bible Words",
+      "id": 215,
+      "name": "Sponge",
+      "short_description": "Object used to offer sour wine to Jesus on the cross",
+      "difficulty": "Easy",
+      "scripture_references": "John 19:29"
+    },
+    {
+      "type": "Bible Words",
+      "id": 216,
+      "name": "Tomb",
+      "short_description": "Burial place found empty after Jesus rose",
+      "difficulty": "Easy",
+      "scripture_references": "John 20:1–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 217,
+      "name": "Linen",
+      "short_description": "Cloth used to wrap Jesus' body for burial",
+      "difficulty": "Easy",
+      "scripture_references": "John 19:40"
+    },
+    {
+      "type": "Bible Words",
+      "id": 218,
+      "name": "Spices",
+      "short_description": "Fragrant substances women prepared for Jesus' burial",
+      "difficulty": "Easy",
+      "scripture_references": "Luke 23:55–56"
+    },
+    {
+      "type": "Bible Words",
+      "id": 219,
+      "name": "Flame",
+      "short_description": "Appearance of what rested on each believer at Pentecost",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 2:3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 220,
+      "name": "Tongues",
+      "short_description": "What the believers began speaking in through the Holy Spirit",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 2:4"
+    },
+    {
+      "type": "Bible Words",
+      "id": 221,
+      "name": "Earthquake",
+      "short_description": "Event that shook the prison holding Paul and Silas",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 16:26"
+    },
+    {
+      "type": "Bible Words",
+      "id": 222,
+      "name": "Tent",
+      "short_description": "Portable shelter associated with Paul's trade",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 18:3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 223,
+      "name": "Chariot",
+      "short_description": "Vehicle an Ethiopian official rode while reading Isaiah",
+      "difficulty": "Easy",
+      "scripture_references": "Acts 8:27–31"
+    },
+    {
+      "type": "Bible Words",
+      "id": 224,
+      "name": "Helmet",
+      "short_description": "Piece of armor used as a picture of salvation",
+      "difficulty": "Easy",
+      "scripture_references": "Ephesians 6:17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 225,
+      "name": "Shield",
+      "short_description": "Piece of armor Paul used to illustrate faith",
+      "difficulty": "Easy",
+      "scripture_references": "Ephesians 6:16"
+    },
+    {
+      "type": "Bible Words",
+      "id": 226,
+      "name": "Breastplate",
+      "short_description": "Armor protecting the chest, compared with righteousness",
+      "difficulty": "Normal",
+      "scripture_references": "Ephesians 6:14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 227,
+      "name": "Belt",
+      "short_description": "Item of armor associated with truth",
+      "difficulty": "Easy",
+      "scripture_references": "Ephesians 6:14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 228,
+      "name": "Armor",
+      "short_description": "Protective gear Paul told believers to put on spiritually",
+      "difficulty": "Easy",
+      "scripture_references": "Ephesians 6:11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 229,
+      "name": "Race",
+      "short_description": "Contest Paul used as a picture of disciplined Christian living",
+      "difficulty": "Easy",
+      "scripture_references": "1 Corinthians 9:24–27"
+    },
+    {
+      "type": "Bible Words",
+      "id": 230,
+      "name": "Clay",
+      "short_description": "Material shaped by a potter in Jeremiah's lesson",
+      "difficulty": "Easy",
+      "scripture_references": "Jeremiah 18:3–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 231,
+      "name": "Potter",
+      "short_description": "Craftsperson God used as an illustration of His authority",
+      "difficulty": "Easy",
+      "scripture_references": "Jeremiah 18:3–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 232,
+      "name": "Vessel",
+      "short_description": "Container shaped by a potter in Jeremiah's lesson",
+      "difficulty": "Normal",
+      "scripture_references": "Jeremiah 18:3–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 233,
+      "name": "Watchman",
+      "short_description": "Person appointed to warn others of danger in Ezekiel",
+      "difficulty": "Normal",
+      "scripture_references": "Ezekiel 33:7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 234,
+      "name": "Dry Bones",
+      "short_description": "What Ezekiel saw come together and live in a vision",
+      "difficulty": "Normal",
+      "scripture_references": "Ezekiel 37:1–10"
+    },
+    {
+      "type": "Bible Words",
+      "id": 235,
+      "name": "Valley",
+      "short_description": "Low area filled with dry bones in Ezekiel's vision",
+      "difficulty": "Easy",
+      "scripture_references": "Ezekiel 37:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 236,
+      "name": "Trumpets",
+      "short_description": "Instruments sounded by seven angels in Revelation",
+      "difficulty": "Easy",
+      "scripture_references": "Revelation 8:2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 237,
+      "name": "Seals",
+      "short_description": "Closures opened on the scroll in John's Revelation vision",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 6:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 238,
+      "name": "White Robes",
+      "short_description": "Clothing given to the martyrs in John's vision",
+      "difficulty": "Normal",
+      "scripture_references": "Revelation 6:11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 239,
+      "name": "Living Water",
+      "short_description": "Gift Jesus described as water that satisfies forever",
+      "difficulty": "Normal",
+      "scripture_references": "John 4:10–14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 240,
+      "name": "Cornerstone",
+      "short_description": "Stone image Peter used to describe Jesus",
+      "difficulty": "Normal",
+      "scripture_references": "1 Peter 2:6–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 241,
+      "name": "Foundation",
+      "short_description": "Base on which Jesus said a wise person builds",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 7:24–25"
+    },
+    {
+      "type": "Bible Words",
+      "id": 242,
+      "name": "Rock",
+      "short_description": "Firm place on which a wise builder built his house",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 7:24–25"
+    },
+    {
+      "type": "Bible Words",
+      "id": 243,
+      "name": "Salt",
+      "short_description": "What Jesus called His followers in the Sermon on the Mount",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 5:13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 244,
+      "name": "Lamp",
+      "short_description": "Light source Jesus said should not be hidden",
+      "difficulty": "Easy",
+      "scripture_references": "Matthew 5:15"
+    },
+    {
+      "type": "Bible Words",
+      "id": 245,
+      "name": "Olive Branch",
+      "short_description": "Plant part the dove brought back to Noah",
+      "difficulty": "Normal",
+      "scripture_references": "Genesis 8:11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 246,
+      "name": "Threshing Floor",
+      "short_description": "Place where Ruth lay at Boaz's feet",
+      "difficulty": "Hard",
+      "scripture_references": "Ruth 3:6–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 247,
+      "name": "Kinsman",
+      "short_description": "Family relative with a right to redeem property",
+      "difficulty": "Normal",
+      "scripture_references": "Ruth 4:3–6"
+    },
+    {
+      "type": "Bible Words",
+      "id": 248,
+      "name": "Gleaning",
+      "short_description": "Gathering leftover grain, as Ruth did in Boaz's field",
+      "difficulty": "Normal",
+      "scripture_references": "Ruth 2:2–3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 249,
+      "name": "Mantle",
+      "short_description": "Outer garment Elijah left behind for Elisha",
+      "difficulty": "Normal",
+      "scripture_references": "2 Kings 2:13–14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 250,
+      "name": "Almonds",
+      "short_description": "Food among the gifts sent by Jacob's sons to Egypt",
+      "difficulty": "Easy",
+      "scripture_references": "Genesis 43:11"
+    },
+    {
+      "type": "Bible Words",
+      "id": 251,
+      "name": "Pomegranates",
+      "short_description": "Fruit depicted on the hem of the high priest's robe",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 28:33–34"
+    },
+    {
+      "type": "Bible Words",
+      "id": 252,
+      "name": "Hyssop",
+      "short_description": "Plant used to apply Passover blood to the doorposts",
+      "difficulty": "Normal",
+      "scripture_references": "Exodus 12:22"
+    },
+    {
+      "type": "Bible Words",
+      "id": 253,
+      "name": "Unleavened Bread",
+      "short_description": "Bread without yeast eaten during Passover",
+      "difficulty": "Hard",
+      "scripture_references": "Exodus 12:8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 254,
+      "name": "Censer",
+      "short_description": "Vessel used for carrying incense before God",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 16:12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 255,
+      "name": "Showbread",
+      "short_description": "Bread placed continually before the Lord in the tabernacle",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 24:5–9"
+    },
+    {
+      "type": "Bible Words",
+      "id": 256,
+      "name": "Jubilee",
+      "short_description": "Year of liberty and returning property to families",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 25:10"
+    },
+    {
+      "type": "Bible Words",
+      "id": 257,
+      "name": "Scapegoat",
+      "short_description": "Goat sent away into the wilderness on the Day of Atonement",
+      "difficulty": "Normal",
+      "scripture_references": "Leviticus 16:20–22"
+    },
+    {
+      "type": "Bible Words",
+      "id": 258,
+      "name": "Purification",
+      "short_description": "Being made ceremonially clean under the law",
+      "difficulty": "Hard",
+      "scripture_references": "Leviticus 12:6–8"
+    },
+    {
+      "type": "Bible Words",
+      "id": 259,
+      "name": "Intercession",
+      "short_description": "Prayer offered to God on behalf of another person",
+      "difficulty": "Hard",
+      "scripture_references": "1 Timothy 2:1"
+    },
+    {
+      "type": "Bible Words",
+      "id": 260,
+      "name": "Stewardship",
+      "short_description": "Responsibility for faithfully managing what is entrusted",
+      "difficulty": "Hard",
+      "scripture_references": "1 Corinthians 4:1–2"
+    },
+    {
+      "type": "Bible Words",
+      "id": 261,
+      "name": "Perseverance",
+      "short_description": "Steadfast endurance through hardship encouraged in Scripture",
+      "difficulty": "Hard",
+      "scripture_references": "James 1:12"
+    },
+    {
+      "type": "Bible Words",
+      "id": 262,
+      "name": "Inheritance",
+      "short_description": "What believers are promised as God's children",
+      "difficulty": "Normal",
+      "scripture_references": "Romans 8:16–17"
+    },
+    {
+      "type": "Bible Words",
+      "id": 263,
+      "name": "Reverence",
+      "short_description": "Deep respect and awe shown toward God",
+      "difficulty": "Normal",
+      "scripture_references": "Hebrews 12:28"
+    },
+    {
+      "type": "Bible Words",
+      "id": 264,
+      "name": "Humility",
+      "short_description": "Attitude of putting others before oneself",
+      "difficulty": "Normal",
+      "scripture_references": "Philippians 2:3"
+    },
+    {
+      "type": "Bible Words",
+      "id": 265,
+      "name": "Compassion",
+      "short_description": "Mercy Jesus felt when seeing people in need",
+      "difficulty": "Normal",
+      "scripture_references": "Matthew 9:36"
+    },
+    {
+      "type": "Bible Words",
+      "id": 266,
+      "name": "Hospitality",
+      "short_description": "Welcoming and caring for guests as Scripture teaches",
+      "difficulty": "Normal",
+      "scripture_references": "Romans 12:13"
+    },
+    {
+      "type": "Bible Words",
+      "id": 267,
+      "name": "Generosity",
+      "short_description": "Giving freely as the believers were urged to do",
+      "difficulty": "Normal",
+      "scripture_references": "2 Corinthians 9:6–7"
+    },
+    {
+      "type": "Bible Words",
+      "id": 268,
+      "name": "Faithfulness",
+      "short_description": "Steadfast loyalty described as fruit of the Spirit",
+      "difficulty": "Hard",
+      "scripture_references": "Galatians 5:22–23"
+    },
+    {
+      "type": "Bible Words",
+      "id": 269,
+      "name": "Discernment",
+      "short_description": "Ability to distinguish good from evil through maturity",
+      "difficulty": "Hard",
+      "scripture_references": "Hebrews 5:14"
+    },
+    {
+      "type": "Bible Words",
+      "id": 270,
+      "name": "Contentment",
+      "short_description": "Being satisfied in all circumstances as Paul learned",
+      "difficulty": "Normal",
+      "scripture_references": "Philippians 4:11–12"
     }
   ],
   "who_game": {
