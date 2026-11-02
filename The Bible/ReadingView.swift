@@ -59,6 +59,18 @@ struct ReadingView: View {
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isBookPickerPresented = false
     @State private var bookPickerSearchText = ""
+    @State private var isDisplayOptionsPresented = false
+    @AppStorage(AppStorageKey.readerShowsFullReferences) private var showsFullReferences = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// False until the reader has scrolled to the verse it was opened at, so the chapter's first
+    /// verses aren't shown for a moment before it jumps there.
+    @State private var isInitialPositionReady: Bool
+    /// Plays the slide-in of a new chapter; the direction follows the swipe.
+    @State private var chapterSlideTrigger = 0
+    @State private var chapterSlideDirection: CGFloat = 1
+    /// The floating chapter arrows step aside while the text is moving.
+    @State private var isScrolling = false
 
     init(
         book: Book,
@@ -80,6 +92,7 @@ struct ReadingView: View {
         // Create a single pinned store instance and share it with the view model
         let pinned = PinnedVerseStore.shared
         _pinnedStore = State(initialValue: pinned)
+        _isInitialPositionReady = State(initialValue: startVerse <= 1)
         _viewModel = State(initialValue: ReadingViewModel(
             book: book,
             chapter: chapter,
@@ -143,27 +156,20 @@ struct ReadingView: View {
                         .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
                     }
 
+                    Button {
+                        isDisplayOptionsPresented = true
+                    } label: {
+                        Image(systemName: "textformat.size")
+                    }
+                    .accessibilityLabel("Text Size and Display")
+                    .popover(isPresented: $isDisplayOptionsPresented) {
+                        ReaderDisplayOptions(
+                            fontSize: $readerFontSize,
+                            showsFullReferences: $showsFullReferences
+                        )
+                    }
+
                     Menu {
-                        Button {
-                            readerFontSize = max(12, readerFontSize - 1)
-                        } label: {
-                            Label("Decrease Text Size", systemImage: "textformat.size.smaller")
-                        }
-
-                        Button {
-                            readerFontSize = min(30, readerFontSize + 1)
-                        } label: {
-                            Label("Increase Text Size", systemImage: "textformat.size.larger")
-                        }
-
-                        if readerFontSize != 17 {
-                            Button("Reset Text Size") {
-                                readerFontSize = 17
-                            }
-                        }
-
-                        Divider()
-
                         Button {
                             presentFocusMode()
                         } label: {
@@ -183,7 +189,7 @@ struct ReadingView: View {
                         Image(systemName: "ellipsis.circle")
                     }
                     .accessibilityLabel("Reader Options")
-                    .accessibilityHint("Adjust text size or enter Focus Mode")
+                    .accessibilityHint("Enter Focus Mode or open chapter insights")
                 }
 
                 ToolbarItem(placement: .principal) {
@@ -192,11 +198,19 @@ struct ReadingView: View {
                         h.impactOccurred()
                         isBookPickerPresented = true
                     } label: {
-                        Text("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                            .contentShape(Rectangle())
+                        HStack(spacing: 4) {
+                            Text("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+
+                            // Shows that the title opens the book picker.
+                            Image(systemName: "chevron.down")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.secondary)
+                                .accessibilityHidden(true)
+                        }
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Choose a book")
@@ -218,13 +232,18 @@ struct ReadingView: View {
                 // Setting a scroll position during the navigation transition can otherwise
                 // preserve the transition's temporary horizontal geometry.
                 await Task.yield()
-                try? await Task.sleep(nanoseconds: 250_000_000)
+                try? await Task.sleep(for: .milliseconds(250))
                 guard !Task.isCancelled else { return }
                 viewModel.positionInitialVerse()
 
                 await Task.yield()
                 guard !Task.isCancelled else { return }
                 viewModel.showInitialHighlight()
+
+                // Give the scroll a moment to land before the text is shown.
+                try? await Task.sleep(for: .milliseconds(40))
+                guard !Task.isCancelled else { return }
+                isInitialPositionReady = true
             }
             .onDisappear {
                 saveVisibleReaderPosition()
@@ -442,15 +461,23 @@ struct ReadingView: View {
                             showsReadProgress: showsReadProgress,
                             savedHighlightColor: chapterStatus.highlightColor(for: verse.number),
                             readerFontSize: readerFontSize,
+                            showsFullReference: showsFullReferences,
                             onVisibilityChange: { isVisible in
                                 viewModel.verseVisibilityChanged(readUpdate, isVisible: isVisible)
                             },
                             onTap: { v in
                                 let generator = UISelectionFeedbackGenerator()
                                 generator.selectionChanged()
+                                // Tapping a verse that is already selected opens its actions,
+                                // the same as a long press; a third tap closes them.
+                                let opensActions = viewModel.selectedVerse == v.number
+                                    && viewModel.menuVerse != v.number
                                 viewModel.clearMenuIfNeeded()
-                                // Tap now only highlights/selects (no bookmarking)
+                                // Tap otherwise only highlights/selects (no bookmarking)
                                 viewModel.handleVerseTap(context: modelContext, verse: v)
+                                if opensActions {
+                                    viewModel.handleVerseLongPress(verseNumber: v.number)
+                                }
                             },
                             onLongPress: { number in
                                 let generator = UIImpactFeedbackGenerator(style: .heavy)
@@ -477,7 +504,32 @@ struct ReadingView: View {
                             Divider()
                         }
                     }
+
+                    // The way forward at the end of a chapter, without a swipe or the small arrows.
+                    if let nextTitle = viewModel.nextChapterTitle {
+                        Divider()
+
+                        Button {
+                            changeChapter(forward: true)
+                        } label: {
+                            HStack {
+                                Text("Continue to \(nextTitle)")
+                                    .font(.headline)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.horizontal)
+                            .frame(minHeight: 52)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint("Opens the next chapter")
+                    }
                 }
+                // Lets an opening verse menu push the text below it down smoothly.
+                .animation(.easeInOut(duration: 0.2), value: viewModel.menuVerse)
                 .padding(AppDesignMetrics.cardPadding)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .heroCardSurface()
@@ -509,9 +561,33 @@ struct ReadingView: View {
             .onChange(of: viewModel.topVisibleVerseID) { _, _ in
                 saveVisibleReaderPosition()
             }
+            .onScrollPhaseChange { _, phase in
+                isScrolling = phase != .idle
+            }
+            // A new chapter slides in from the side it was swiped toward.
+            .keyframeAnimator(initialValue: ChapterSlide(), trigger: chapterSlideTrigger) { view, slide in
+                view
+                    .offset(x: slide.offset)
+                    .opacity(slide.opacity)
+            } keyframes: { _ in
+                KeyframeTrack(\.offset) {
+                    LinearKeyframe(reduceMotion ? 0 : 36 * chapterSlideDirection, duration: 0.01)
+                    CubicKeyframe(0, duration: 0.25)
+                }
+                KeyframeTrack(\.opacity) {
+                    LinearKeyframe(0, duration: 0.01)
+                    CubicKeyframe(1, duration: 0.25)
+                }
+            }
+            // Hidden only while a verse deep in the chapter is being scrolled to.
+            .opacity(isInitialPositionReady ? 1 : 0)
+            .animation(.easeOut(duration: 0.15), value: isInitialPositionReady)
 
             // Bottom corner navigation arrows overlay
             overlayArrows
+                .opacity(isScrolling ? 0 : 1)
+                .allowsHitTesting(!isScrolling)
+                .animation(.easeInOut(duration: 0.2), value: isScrolling)
         }
         .background(AppBackgroundView(tab: .bible))
         .contentShape(Rectangle())
@@ -524,12 +600,9 @@ struct ReadingView: View {
                 .onEnded { value in
                     let horizontal = value.translation.width
                     let vertical = value.translation.height
-                    if abs(horizontal) > abs(vertical) && abs(horizontal) > 40 {
-                        if horizontal < 0 {
-                            viewModel.nextChapter()
-                        } else {
-                            viewModel.previousChapter()
-                        }
+                    // A clearly sideways swipe; a diagonal scroll shouldn't change chapters.
+                    if abs(horizontal) > 80 && abs(horizontal) > abs(vertical) * 2 {
+                        changeChapter(forward: horizontal < 0)
                     }
                     viewModel.markActivity()
                 }
@@ -601,6 +674,23 @@ struct ReadingView: View {
         onReferenceSelected?(reference.book, reference.chapter, reference.reference.startVerse)
     }
 
+    /// Moves to the next or previous chapter, sliding the new one in from that side. Nothing
+    /// slides when there is no chapter that way (the first or last of the Bible).
+    private func changeChapter(forward: Bool) {
+        let book = viewModel.currentBook.name
+        let chapterIndex = viewModel.currentChapterIndex
+
+        if forward {
+            viewModel.nextChapter()
+        } else {
+            viewModel.previousChapter()
+        }
+
+        guard viewModel.currentBook.name != book || viewModel.currentChapterIndex != chapterIndex else { return }
+        chapterSlideDirection = forward ? 1 : -1
+        chapterSlideTrigger += 1
+    }
+
     /// Hands read tracking to Focus Mode before its cover hides the reader's rows.
     private func presentFocusMode() {
         viewModel.setFocusModeActive(true)
@@ -670,12 +760,12 @@ struct ReadingView: View {
                 Spacer()
                 HStack {
                     Button(action: {
-                        viewModel.previousChapter()
+                        changeChapter(forward: false)
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.headline.weight(.bold))
                             .foregroundStyle(.primary)
-                            .padding(10) // hit target
+                            .frame(width: 44, height: 44) // hit target
                             .background(.ultraThinMaterial, in: Circle())
                             .opacity(0.7)
                     }
@@ -686,12 +776,12 @@ struct ReadingView: View {
                     Spacer()
 
                     Button(action: {
-                        viewModel.nextChapter()
+                        changeChapter(forward: true)
                     }) {
                         Image(systemName: "chevron.right")
                             .font(.headline.weight(.bold))
                             .foregroundStyle(.primary)
-                            .padding(10) // hit target
+                            .frame(width: 44, height: 44) // hit target
                             .background(.ultraThinMaterial, in: Circle())
                             .opacity(0.7)
                     }
@@ -735,6 +825,49 @@ struct ReadingView: View {
         viewModel.markActivity()
     }
 
+}
+
+/// The values a new chapter animates from as it slides in.
+private struct ChapterSlide {
+    var offset: CGFloat = 0
+    var opacity: Double = 1
+}
+
+/// Text size and display choices. A popover stays open while the slider moves, which the
+/// toolbar menu it replaces couldn't do.
+private struct ReaderDisplayOptions: View {
+    @Binding var fontSize: Double
+    @Binding var showsFullReferences: Bool
+
+    private static let defaultFontSize = 17.0
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 12) {
+                Image(systemName: "textformat.size.smaller")
+                    .accessibilityHidden(true)
+                Slider(value: $fontSize, in: 12...30, step: 1) {
+                    Text("Text Size")
+                }
+                .accessibilityValue(Text("\(Int(fontSize)) points"))
+                Image(systemName: "textformat.size.larger")
+                    .accessibilityHidden(true)
+            }
+
+            if fontSize != Self.defaultFontSize {
+                Button("Reset Text Size") {
+                    fontSize = Self.defaultFontSize
+                }
+            }
+
+            Divider()
+
+            Toggle("Full reference on each verse", isOn: $showsFullReferences)
+        }
+        .padding()
+        .frame(minWidth: 300)
+        .presentationCompactAdaptation(.popover)
+    }
 }
 
 private extension View {

@@ -37,6 +37,8 @@ struct ReadingVerseRow: View {
     let showsReadProgress: Bool
     let savedHighlightColor: Color?
     let readerFontSize: Double
+    /// Shows "Genesis 1:1" under each verse; otherwise just "Verse 1".
+    var showsFullReference = true
 
     // Preserve the reader's size preference while scaling its 17-point baseline with Dynamic Type.
     @ScaledMetric(relativeTo: .body) private var defaultReaderFontSize: CGFloat = 17
@@ -61,7 +63,7 @@ struct ReadingVerseRow: View {
                 // Markers sit on the reference line, in caption size, so they scale with
                 // Dynamic Type and never cover the verse text.
                 HStack(spacing: 8) {
-                    Text("\(bookName) \(chapterNumber):\(verse.number)")
+                    Text(showsFullReference ? "\(bookName) \(chapterNumber):\(verse.number)" : "Verse \(verse.number)")
                         .foregroundStyle(.secondary)
 
                     if showsMarkers {

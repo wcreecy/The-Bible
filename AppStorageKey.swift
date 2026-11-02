@@ -9,6 +9,7 @@ enum AppStorageKey {
     static let colorSchemePreference = "colorSchemePreference"
     static let fontFamilyPreference = "fontFamilyPreference"
     static let readerFontSize = "readerFontSize"
+    static let readerShowsFullReferences = "readerShowsFullReferences"
     static let contextualTipsEnabled = "contextualTipsEnabled"
     static let contextualTipsResetGeneration = "contextualTipsResetGeneration"
     static let focusReadingEnabled = "focusReadingEnabled"

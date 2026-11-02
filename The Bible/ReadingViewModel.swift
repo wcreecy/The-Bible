@@ -261,6 +261,17 @@ final class ReadingViewModel {
 
     // MARK: - Navigation
 
+    /// The chapter `nextChapter()` opens, for the Continue row at the end of a chapter.
+    /// Nil after the last chapter of the last book.
+    var nextChapterTitle: String? {
+        if currentChapterIndex + 1 < currentBook.chapters.count {
+            return "\(currentBook.name) \(currentBook.chapters[currentChapterIndex + 1].number)"
+        }
+        guard let bookIdx = indexOfCurrentBookInCanonical(),
+              orderedBookNames.indices.contains(bookIdx + 1) else { return nil }
+        return "\(orderedBookNames[bookIdx + 1]) 1"
+    }
+
     func show(location: FocusVerseLocation) {
         guard let book = BibleData.books.first(where: { $0.name == location.bookName }),
               let chapterIndex = book.chapters.firstIndex(where: { $0.number == location.chapterNumber }) else {

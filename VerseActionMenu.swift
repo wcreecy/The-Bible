@@ -40,6 +40,17 @@ struct VerseShareMenu<MenuLabel: View>: View {
     }
 }
 
+/// Gives each icon in an inline verse action row a comfortable touch target without changing
+/// how the icons look.
+private struct VerseActionButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .frame(minWidth: 40, minHeight: 44)
+            .contentShape(Rectangle())
+            .opacity(configuration.isPressed ? 0.5 : 1)
+    }
+}
+
 enum VerseActionPresentation {
     case buttons
     case focus
@@ -279,7 +290,7 @@ struct VerseActionMenuContent: View {
     private var actionPresentation: some View {
         switch presentation {
         case .buttons:
-            HStack(spacing: 20) {
+            HStack(spacing: 0) {
                 Button(action: { isShowingNoteEditor = true }) {
                     Image(systemName: "highlighter")
                         .foregroundStyle(existingNote == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
@@ -322,13 +333,15 @@ struct VerseActionMenuContent: View {
 
                 VerseShareMenu(verse: verse, onCreateImage: showImageComposer) {
                     Image(systemName: "square.and.arrow.up")
+                        .frame(minWidth: 40, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Share")
 
             }
             .font(.title3)
-            .buttonStyle(.plain)
+            .buttonStyle(VerseActionButtonStyle())
 
         case .focus:
             HStack(spacing: 18) {
@@ -356,7 +369,7 @@ struct VerseActionMenuContent: View {
             .buttonStyle(.plain)
 
         case .cardActions:
-            HStack(spacing: 24) {
+            HStack(spacing: 8) {
                 Button(action: toggleFavorite) {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(Color.accentColor))
@@ -365,6 +378,8 @@ struct VerseActionMenuContent: View {
 
                 VerseShareMenu(verse: verse, onCreateImage: showImageComposer) {
                     Image(systemName: "square.and.arrow.up")
+                        .frame(minWidth: 40, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Share")
@@ -377,11 +392,13 @@ struct VerseActionMenuContent: View {
                     copyMenuButton
                 } label: {
                     Image(systemName: "ellipsis.circle")
+                        .frame(minWidth: 40, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .accessibilityLabel("Verse actions")
             }
             .font(.title3)
-            .buttonStyle(.plain)
+            .buttonStyle(VerseActionButtonStyle())
 
         case .menu:
             Menu {

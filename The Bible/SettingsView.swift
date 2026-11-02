@@ -679,6 +679,7 @@ enum DeveloperSettingsReset {
             "didRequestNotifications": false,
             "contextualTipsEnabled": false,
             "readerFontSize": 17.0,
+            AppStorageKey.readerShowsFullReferences: true,
             ReaderDisplaySettings.showsReadProgressKey: false,
             ReaderDisplaySettings.showsVerseMarkersKey: true,
             ReaderDisplaySettings.showsPinnedVerseMarkerKey: true,

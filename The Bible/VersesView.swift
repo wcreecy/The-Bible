@@ -35,12 +35,18 @@ struct VersesView: View {
                     NavigationLink(
                         value: Route.reader(book: book, chapter: chapter, startVerse: verse.number)
                     ) {
-                        HStack(spacing: 0) {
-                            Text("Verse \(verse.number)")
-                            Text(" of \(chapter.verses.count)")
-                                .font(.caption)
+                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                            Text("\(verse.number)")
+                                .font(.headline.monospacedDigit())
+                                .frame(minWidth: 28, alignment: .trailing)
+                                .accessibilityLabel("Verse \(verse.number) of \(chapter.verses.count)")
+                            // A glimpse of the verse, so the list says where to start reading.
+                            Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))
+                                .font(.subheadline)
                                 .foregroundStyle(.secondary)
-                            Spacer()
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.tertiary)
