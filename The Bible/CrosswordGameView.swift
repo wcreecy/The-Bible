@@ -252,6 +252,11 @@ struct CrosswordGameView: View {
         }
         .buttonStyle(.plain)
         .glassEffect(.regular.interactive(), in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius)
+                .stroke(.primary.opacity(0.12), lineWidth: 0.75)
+        }
+        .shadow(color: .black.opacity(0.10), radius: 3, y: 1)
         .accessibilityHint("Switches between Across and Down")
     }
 

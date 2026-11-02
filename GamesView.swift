@@ -102,7 +102,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .bookOrder: "Order the books of the Bible"
         case .wordSearch: "Find the hidden words"
         case .scramble: "Unscramble words found in the Bible"
-        case .crossword: "Solve clues about Bible people and places"
+        case .crossword: "Solve clues about the Bible"
         case .whoAmI: "Identify the person listed from the description"
         case .wordle: "5 letters, 6 tries"
         case .trivia: "Test your knowledge of the Bible"
