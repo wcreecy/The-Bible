@@ -162,6 +162,7 @@ struct VerseActionMenuContent: View {
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isShowingNoteEditor = false
     @State private var isShowingMentions = false
+    @State private var isShowingImageComposer = false
 
     let verse: VerseActionReference
     let saved: SavedVerseCollections
@@ -240,6 +241,9 @@ struct VerseActionMenuContent: View {
                     NoteMentionsView(verse: verse)
                 }
             }
+            .fullScreenCover(isPresented: $isShowingImageComposer) {
+                VerseImageComposerView(verse: verse)
+            }
     }
 
     @ViewBuilder
@@ -293,6 +297,12 @@ struct VerseActionMenuContent: View {
                 .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Share")
 
+                Button(action: { isShowingImageComposer = true }) {
+                    Image(systemName: "photo.on.rectangle.angled")
+                }
+                .foregroundStyle(Color.accentColor)
+                .accessibilityLabel("Share as Image")
+
             }
             .font(.title3)
             .buttonStyle(.plain)
@@ -314,6 +324,7 @@ struct VerseActionMenuContent: View {
 
                     copyMenuButton
                     shareMenuButton
+                    shareImageMenuButton
                     pinMenuButton
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -331,6 +342,7 @@ struct VerseActionMenuContent: View {
                 pinMenuButton
                 copyMenuButton
                 shareMenuButton
+                shareImageMenuButton
             } label: {
                 Image(systemName: "ellipsis.circle")
                     .font(.title3)
@@ -394,6 +406,12 @@ struct VerseActionMenuContent: View {
     private var shareMenuButton: some View {
         ShareLink(item: verse.shareText) {
             Label("Share", systemImage: "square.and.arrow.up")
+        }
+    }
+
+    private var shareImageMenuButton: some View {
+        Button(action: { isShowingImageComposer = true }) {
+            Label("Share as Image", systemImage: "photo.on.rectangle.angled")
         }
     }
 

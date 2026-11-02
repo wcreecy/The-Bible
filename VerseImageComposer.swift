@@ -198,6 +198,8 @@ final class VerseImageComposerModel {
 
 struct VerseShareArtwork: View {
     let model: VerseImageComposerModel
+    var photoTranslation = CGSize.zero
+    var textTranslation = CGSize.zero
 
     var body: some View {
         GeometryReader { proxy in
@@ -227,8 +229,8 @@ struct VerseShareArtwork: View {
                 .foregroundStyle(model.textColor)
                 .frame(width: size.width * 0.82, alignment: frameAlignment)
                 .offset(
-                    x: model.textOffset.width * size.width,
-                    y: model.textOffset.height * size.height
+                    x: model.textOffset.width * size.width + textTranslation.width,
+                    y: model.textOffset.height * size.height + textTranslation.height
                 )
 
                 if model.showsBranding {
@@ -261,8 +263,8 @@ struct VerseShareArtwork: View {
                     .frame(width: size.width, height: size.height)
                     .scaleEffect(model.photoScale)
                     .offset(
-                        x: model.photoOffset.width * size.width,
-                        y: model.photoOffset.height * size.height
+                        x: model.photoOffset.width * size.width + photoTranslation.width,
+                        y: model.photoOffset.height * size.height + photoTranslation.height
                     )
                     .blur(radius: model.photoBlur * size.width / 360)
             } else {
@@ -395,7 +397,11 @@ private struct VerseImagePreview: View {
             let size = proxy.size
 
             ZStack {
-                VerseShareArtwork(model: model)
+                VerseShareArtwork(
+                    model: model,
+                    photoTranslation: model.background == .photo ? photoDrag : .zero,
+                    textTranslation: textDrag
+                )
 
                 Color.clear
                     .contentShape(Rectangle())
@@ -431,7 +437,6 @@ private struct VerseImagePreview: View {
                             }
                     )
             }
-            .offset(x: model.background == .photo ? photoDrag.width : 0, y: model.background == .photo ? photoDrag.height : 0)
             .overlay {
                 RoundedRectangle(cornerRadius: 18)
                     .stroke(.white.opacity(0.25), lineWidth: 1)
@@ -483,8 +488,9 @@ private struct VerseImageCanvasControls: View {
             case .solid:
                 ColorPicker("Background Color", selection: Bindable(model).solidColor, supportsOpacity: false)
             case .photo:
+                let photoButtonTitle: LocalizedStringResource = model.photo == nil ? "Choose Photo" : "Change Photo"
                 PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                    Label(model.photo == nil ? "Choose Photo" : "Change Photo", systemImage: "photo.on.rectangle")
+                    Label(photoButtonTitle, systemImage: "photo.on.rectangle")
                 }
                 .buttonStyle(.glass)
                 .tint(.orange)
