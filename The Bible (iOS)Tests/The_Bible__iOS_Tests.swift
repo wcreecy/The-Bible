@@ -385,12 +385,30 @@ struct The_Bible__iOS_Tests {
             """.data(using: .utf8)
         )
 
-        let books = try BibleData.decodeBooks(from: data)
+        let books = try BibleData.decodeSourceBooks(from: data)
 
         #expect(books.map(\.name) == ["John"])
         #expect(books.first?.chapters.first?.number == 1)
         #expect(books.first?.chapters.first?.verses.map(\.number) == [1, 2])
         #expect(books.first?.chapters.first?.verses[1].text == "And said")
+    }
+
+    @Test
+    func preCleanedBibleDataKeepsMarkedWordRanges() throws {
+        let data = try #require(
+            """
+            [{"abbrev":"joh","chapters":[[["In the beginning"], ["And said",[4,8],[0,3]], ["Bad",[2,99]]]]}]
+            """.data(using: .utf8)
+        )
+
+        let verses = try #require(BibleData.decodeBooks(from: data).first?.chapters.first?.verses)
+
+        #expect(verses.map(\.text) == ["In the beginning", "And said", "Bad"])
+        #expect(verses[0].redLetterRanges.isEmpty && verses[0].suppliedWordRanges.isEmpty)
+        #expect(verses[1].redLetterRanges == [4..<8])
+        #expect(verses[1].suppliedWordRanges == [0..<3])
+        // Offsets past the end of the text are dropped rather than trusted.
+        #expect(verses[2].redLetterRanges.isEmpty)
     }
 
     @Test

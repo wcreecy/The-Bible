@@ -85,7 +85,7 @@ struct StudyChapterOutlineTests {
     /// or are left ungrouped.
     @Test
     func shippedSectionsCoverEveryChapterOnce() async throws {
-        let url = try #require(Bundle.main.url(forResource: "kjv", withExtension: "json"))
+        let url = try #require(Bundle.main.url(forResource: "KJVText", withExtension: "json"))
         let books = try BibleData.decodeBooks(from: Data(contentsOf: url))
         #expect(books.count == 66)
 

@@ -380,6 +380,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FE7CF0676C4B9328D9E96C69 /* Exceptions for "The Bible" folder in "The Bible (iOS)Tests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				kjv.json,
+			);
+			target = 2C49CF0F2EBE0F6D0006FF79 /* The Bible (iOS)Tests */;
+		};
 		1DC55AC1079FE4DD9987A2C2 /* Exceptions for "The Bible Widgets" folder in "The Bible (iOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -401,11 +408,22 @@
 			);
 			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
 		};
+		A24E3D15C90029A944BFAB90 /* Exceptions for "The Bible" folder in "The Bible (iOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				kjv.json,
+			);
+			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2C3B0F6F2EB14F3D0089556C /* The Bible */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A24E3D15C90029A944BFAB90 /* Exceptions for "The Bible" folder in "The Bible (iOS)" target */,
+				FE7CF0676C4B9328D9E96C69 /* Exceptions for "The Bible" folder in "The Bible (iOS)Tests" target */,
+			);
 			path = "The Bible";
 			sourceTree = "<group>";
 		};
