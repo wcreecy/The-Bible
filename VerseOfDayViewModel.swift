@@ -10,6 +10,11 @@ final class VerseOfDayViewModel {
     var verse: HomeVerseRef?
     var paused: Bool = false
     var nextRefreshDescription: String = ""
+    private var manualRefreshHistory: [HomeVerseRef] = []
+
+    var canUndoManualRefresh: Bool {
+        !manualRefreshHistory.isEmpty
+    }
 
     // AppStorage-backed settings/state (same keys as HomeView used)
     @ObservationIgnored @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
@@ -82,10 +87,25 @@ final class VerseOfDayViewModel {
 
     func refreshNow() {
         guard !paused else { return }
-        loadRandomVerse()
+        let previousVerse = verse
+        guard loadRandomVerse(excluding: previousVerse) else { return }
+        if let previousVerse {
+            manualRefreshHistory.append(previousVerse)
+        }
         UserDefaults.standard.set(true, forKey: "homeOnboardingVerseOfDayRefreshedV2")
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
+    }
+
+    func undoManualRefresh() {
+        guard let previousVerse = manualRefreshHistory.popLast() else { return }
+        apply(previousVerse)
+        updateNextDescription()
+        scheduleNextVerseRefreshTimer()
+    }
+
+    func clearManualRefreshHistory() {
+        manualRefreshHistory.removeAll(keepingCapacity: false)
     }
 
     func togglePaused() {
@@ -133,16 +153,25 @@ final class VerseOfDayViewModel {
         shared.set(votdRefresh2Minute, forKey: "votdRefresh2Minute")
     }
 
-    private func loadRandomVerse() {
-        guard !paused else { return }
+    @discardableResult
+    private func loadRandomVerse(excluding excludedVerse: HomeVerseRef? = nil) -> Bool {
+        guard !paused else { return false }
         let allBooks = BibleData.books
-        guard !allBooks.isEmpty else { return }
+        guard !allBooks.isEmpty else { return false }
 
-        guard let selection = VerseOfDaySelector.select(
-            from: allBooks,
-            scopeRaw: verseScopeRaw,
-            specificBook: verseSpecificBook
-        ) else { return }
+        var selection: VerseOfDaySelector.Selection?
+        for _ in 0..<5 {
+            let candidate = VerseOfDaySelector.select(
+                from: allBooks,
+                scopeRaw: verseScopeRaw,
+                specificBook: verseSpecificBook
+            )
+            guard let candidate else { return false }
+            selection = candidate
+            if !candidate.matches(excludedVerse) { break }
+        }
+
+        guard let selection, !selection.matches(excludedVerse) else { return false }
 
         let ref = HomeVerseRef(
             bookName: selection.bookName,
@@ -150,6 +179,11 @@ final class VerseOfDayViewModel {
             verseNumber: selection.verseNumber,
             verseText: selection.text
         )
+        apply(ref)
+        return true
+    }
+
+    private func apply(_ ref: HomeVerseRef) {
         verse = ref
         storedVerseBook = ref.bookName
         storedVerseChapter = ref.chapterNumber
@@ -223,5 +257,14 @@ final class VerseOfDayViewModel {
                 second: (votdRefresh2Hour, votdRefresh2Minute)
             )
         }
+    }
+}
+
+private extension VerseOfDaySelector.Selection {
+    func matches(_ verse: HomeVerseRef?) -> Bool {
+        guard let verse else { return false }
+        return bookName == verse.bookName
+            && chapterNumber == verse.chapterNumber
+            && verseNumber == verse.verseNumber
     }
 }

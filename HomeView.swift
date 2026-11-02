@@ -232,7 +232,9 @@ struct HomeView: View {
                 verseOfDayPaused: $votdVM.paused,
                 isBibleStoreReady: bibleStore.isReady,
                 nextRefreshDescription: votdVM.nextRefreshDescription,
+                canUndoRefresh: votdVM.canUndoManualRefresh,
                 onRefresh: { votdVM.refreshNow() },
+                onUndoRefresh: { votdVM.undoManualRefresh() },
                 onVerseActionFeedback: handleVerseActionFeedback,
                 onOpenReader: { verse in
                     openInBibleTab(verse)
@@ -762,6 +764,7 @@ struct HomeView: View {
         }
         .onDisappear {
             isEditingLayout = false
+            votdVM.clearManualRefreshHistory()
         }
 
         .onChange(of: scenePhase) { _, newPhase in

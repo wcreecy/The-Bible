@@ -13,9 +13,11 @@ struct VerseOfDayCard: View {
 
     let isBibleStoreReady: Bool
     let nextRefreshDescription: String
+    let canUndoRefresh: Bool
 
     // Actions/closures provided by HomeView to keep behavior centralized
     let onRefresh: () -> Void
+    let onUndoRefresh: () -> Void
     let onVerseActionFeedback: (VerseActionFeedback) -> Void
     let onOpenReader: (HomeVerseRef) -> Void
     let onTogglePaused: () -> Void
@@ -80,6 +82,16 @@ struct VerseOfDayCard: View {
                         .foregroundStyle(.secondary)
 
                     HStack(spacing: 24) {
+                        if canUndoRefresh {
+                            Button(action: onUndoRefresh) {
+                                Label("Undo Verse Refresh", systemImage: "arrow.uturn.backward")
+                            }
+                            .labelStyle(.iconOnly)
+                            .foregroundStyle(.orange)
+                            .font(.title3)
+                            .help("Return to the previous verse")
+                        }
+
                         Button(action: onRefresh) {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
