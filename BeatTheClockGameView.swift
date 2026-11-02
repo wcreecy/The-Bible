@@ -158,9 +158,9 @@ struct BeatTheClockGameView: View {
             tint: .indigo,
             experienceLevel: $vm.experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Known names • 25 sec.",
-                standard: "More names • 15 sec.",
-                challenge: "All names • 10 sec."
+                learn: "Popular/Familiar names",
+                standard: "More challenging names",
+                challenge: "All names"
             ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,

@@ -26,9 +26,9 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
 
     var roundTime: Int {
         switch self {
-        case .easy: 25
-        case .normal: 15
-        case .hard: 10
+        case .easy: 30
+        case .normal: 20
+        case .hard: 15
         }
     }
 
@@ -38,11 +38,11 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
     var detail: LocalizedStringResource {
         switch self {
         case .easy:
-            "Well-known names, with a clue shown for each one."
+            "\(roundTime) seconds per question. Well-known names, with a clue shown for each one."
         case .normal:
-            "Adds less familiar names. A clue costs \(Self.hintCost) seconds."
+            "\(roundTime) seconds per question. Adds less familiar names. A clue costs \(Self.hintCost) seconds."
         case .hard:
-            "Every name in the game. A clue costs \(Self.hintCost) seconds."
+            "\(roundTime) seconds per question. Every name in the game. A clue costs \(Self.hintCost) seconds."
         }
     }
 
