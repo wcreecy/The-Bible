@@ -562,6 +562,23 @@ struct GameStatsAccountingTests {
         #expect(Set(games.map(GameStats.canonicalDisplayName)).count == games.count)
     }
 
+    @Test
+    func quizModesUseExistingSyncKeysAndKeepLegacyReviewIdentity() throws {
+        let syncedKeys = Set(iCloudSyncCoordinator.quizKeys
+            + iCloudSyncCoordinator.quizPerBookMapKeys
+            + iCloudSyncCoordinator.quizPerBookDailyMapKeys
+            + ["gamesDailyAnswered_quiz", "gamesDailyCorrect_quiz"])
+        #expect(syncedKeys.isSubset(of: GameStatsLedger.managedKeys))
+        #expect(syncedKeys.isSubset(of: iCloudSyncCoordinator.shared.allKnownKeys))
+        #expect(GameStatsLedger.isManaged("versematchAllTimeAnswered_all"))
+        #expect(GameStatsLedger.isManaged("versematchPerBookDailyAnswered"))
+        #expect(iCloudSyncCoordinator.missedQuestionKeys.contains(MissedGameQuestionStore.storageKey))
+        let oldGame = Data("\"verseMatch\"".utf8)
+        let decoded = try JSONDecoder().decode(MissedGameQuestionStore.Entry.Game.self, from: oldGame)
+        #expect(decoded == .quizReverse)
+        #expect(try JSONEncoder().encode(decoded) == oldGame)
+    }
+
     private func nestedMap(named key: String) -> [String: [String: Int]] {
         guard let data = defaults.data(forKey: key),
               let decoded = try? JSONDecoder().decode([String: [String: Int]].self, from: data) else { return [:] }

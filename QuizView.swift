@@ -143,8 +143,8 @@ struct QuizView: View {
             experienceLevel: $vm.experienceLevel,
             experienceDetails: GameExperienceDetails(
                 learn: "Untimed practice at your own pace.",
-                standard: vm.mode == .reverse ? "Untimed. Choices from your categories." : "15 seconds for each verse.",
-                challenge: vm.mode == .reverse ? "Untimed. Choices from the same book." : "12 seconds for each verse."
+                standard: vm.mode == .reverse ? "20 seconds. Choices from your categories." : "15 seconds for each verse.",
+                challenge: vm.mode == .reverse ? "30 seconds. Choices from the same book." : "12 seconds for each verse."
             ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,
@@ -168,21 +168,19 @@ struct QuizView: View {
                         ]
                     )
 
-                    if vm.mode == .reverse {
-                        GameChoiceSetting(
-                            title: "Verse pool",
-                            systemImage: "text.quote",
-                            tint: .blue,
-                            selection: $vm.pool,
-                            choices: QuizReversePool.allCases.map {
-                                GameChoice(value: $0, title: $0.title,
-                                           detail: $0 == .favorites && !vm.isFavoritesAvailable
-                                               ? "Save a favorite verse to unlock this." : $0.detail,
-                                           icon: $0.icon,
-                                           isEnabled: $0 != .favorites || vm.isFavoritesAvailable)
-                            }
-                        )
-                    }
+                    GameChoiceSetting(
+                        title: "Verse pool",
+                        systemImage: "text.quote",
+                        tint: .blue,
+                        selection: $vm.pool,
+                        choices: QuizReversePool.allCases.map {
+                            GameChoice(value: $0, title: $0.title,
+                                       detail: $0 == .favorites && !vm.isFavoritesAvailable
+                                           ? "Save a favorite verse to unlock this." : $0.detail,
+                                       icon: $0.icon,
+                                       isEnabled: $0 != .favorites || vm.isFavoritesAvailable)
+                        }
+                    )
 
                     QuizCategoryQuickPicks(tint: .blue, selection: $vm.selectedSections)
 
@@ -212,7 +210,7 @@ struct QuizView: View {
                 first: ("number", "\(QuizGameViewModel.questionsPerGame) questions", String(localized: "This session")),
                 second: (
                     "timer",
-                    (vm.isTimed ? vm.difficulty.timeLimit : nil).map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),
+                    vm.timeLimit.map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),
                     String(localized: "Per verse")
                 ),
                 third: (
@@ -331,15 +329,37 @@ struct QuizView: View {
 
                 LazyVGrid(columns: vm.mode == .reverse ? [GridItem(.flexible())] : [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                     ForEach(current.options, id: \.self) { option in
-                        Button {
-                            vm.selectOption(option)
-                        } label: {
-                            Text(option)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .foregroundStyle(.primary)
+                        VStack(spacing: 0) {
+                            Button {
+                                vm.selectOption(option)
+                            } label: {
+                                Text(option)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .foregroundStyle(.primary)
+                            }
+                            .disabled(vm.isAnswered || vm.isViewingPrevious)
+
+                            if vm.isAnswered,
+                               let verse = current.optionVerses.first(where: { $0.verseText == option }) {
+                                HStack {
+                                    Text(verse.reference)
+                                        .font(.subheadline.weight(.semibold))
+                                    Spacer()
+                                    VerseActionMenu(
+                                        verse: VerseActionReference(
+                                            bookName: verse.bookName,
+                                            chapterNumber: verse.chapterNumber,
+                                            verseNumber: verse.verseNumber,
+                                            verseText: verse.verseText
+                                        )
+                                    )
+                                    .accessibilityLabel("Actions for \(verse.reference)")
+                                }
+                                .padding(.horizontal)
+                                .padding(.bottom)
+                            }
                         }
-                        .disabled(vm.isAnswered || vm.isViewingPrevious)
                         .background(buttonBackground(for: option, in: current))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)

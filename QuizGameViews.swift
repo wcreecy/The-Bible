@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Setup views
 
-/// One-tap shortcuts for the whole Bible or one Testament. Also used by Verses.
+/// One-tap shortcuts for the whole Bible or one Testament.
 struct QuizCategoryQuickPicks: View {
     let tint: Color
 

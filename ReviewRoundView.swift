@@ -61,8 +61,8 @@ struct ReviewRoundView: View {
             QuizView(reviewQuestionIDs: questionIDs)
         case .bibleTrivia:
             BibleTriviaGameView(reviewQuestionIDs: questionIDs)
-        case .verseMatch:
-            VerseMatchGameView(reviewQuestionIDs: questionIDs)
+        case .quizReverse:
+            QuizView(reviewQuestionIDs: questionIDs, mode: .reverse)
         case .whoAmI:
             WhoAmIGameView(reviewQuestionIDs: questionIDs)
         case .bookOrder:
@@ -138,7 +138,7 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .beatTheClock: "Countdown"
         case .bibleQuiz: "Quiz"
         case .bibleTrivia: "Trivia"
-        case .verseMatch: "Verses"
+        case .quizReverse: "Quiz — Reverse"
         case .whoAmI: "Who?"
         case .bookOrder: "Book Order"
         }
@@ -149,7 +149,7 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .beatTheClock: "hourglass"
         case .bibleQuiz: "questionmark.circle.fill"
         case .bibleTrivia: "questionmark.text.page.fill"
-        case .verseMatch: "text.quote"
+        case .quizReverse: "text.quote"
         case .whoAmI: "person.text.rectangle"
         case .bookOrder: "list.number"
         }
@@ -160,7 +160,7 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .beatTheClock: .indigo
         case .bibleQuiz: .blue
         case .bibleTrivia: .cyan
-        case .verseMatch: .orange
+        case .quizReverse: .orange
         case .whoAmI: .brown
         case .bookOrder: .purple
         }

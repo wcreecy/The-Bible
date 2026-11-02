@@ -233,9 +233,9 @@ final class QuizGameViewModel {
 
     var mode: QuizMode
     var pool: QuizReversePool = QuizReversePool(
-        rawValue: UserDefaults.standard.string(forKey: AppStorageKey.quizReversePool) ?? ""
+        rawValue: UserDefaults.standard.string(forKey: AppStorageKey.quizVersePool) ?? ""
     ) ?? .wellKnown {
-        didSet { UserDefaults.standard.set(pool.rawValue, forKey: AppStorageKey.quizReversePool) }
+        didSet { UserDefaults.standard.set(pool.rawValue, forKey: AppStorageKey.quizVersePool) }
     }
     var favoriteVerses: [QuizVerse] = []
     private var reverseSource: QuizReverseQuestionSource?

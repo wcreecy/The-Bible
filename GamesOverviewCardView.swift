@@ -37,7 +37,10 @@ struct GamesOverviewCardView: View {
                 selectedGenre: $selectedGenre
             )
         }
-        .onAppear { version &+= 1 }
+        .onAppear {
+            selectedGame = GameStats.canonicalDisplayName(selectedGame)
+            version &+= 1
+        }
         .onChange(of: stats.version) { _, _ in
             version &+= 1
             let names = Array(Set(GameStats.shared.breakdownSnapshot().entries.map { $0.name }))
@@ -80,7 +83,6 @@ struct GamesOverviewCardView: View {
 
     private func booksInGenre(_ genre: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         switch selectedGame {
-        case "Verses": return GameStats.shared.verseMatchAccuracyByBook(inGenre: genre)
         case "Trivia": return GameStats.shared.triviaAccuracyByBook(inGenre: genre)
         default: return GameStats.shared.quizAccuracyByBook(inGenre: genre)
         }

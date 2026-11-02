@@ -4,6 +4,7 @@ import Testing
 
 /// Whether the Favorites pool can be chosen must follow the saved verses, not whichever pool
 /// happens to be selected.
+@Suite(.serialized)
 @MainActor
 struct QuizReverseFavoritesTests {
     private let genesis = QuizVerse(bookName: "Genesis", chapterNumber: 1, verseNumber: 1, verseText: "In the beginning God created the heaven and the earth.")
@@ -16,7 +17,7 @@ struct QuizReverseFavoritesTests {
         _ body: (QuizGameViewModel) -> Void
     ) {
         let defaults = UserDefaults.standard
-        let keys = [AppStorageKey.verseMatchPool, AppStorageKey.quizSections, AppStorageKey.quizScope]
+        let keys = [AppStorageKey.quizVersePool, AppStorageKey.quizSections, AppStorageKey.quizScope]
         let saved = keys.map { defaults.object(forKey: $0) }
         defer {
             for (key, value) in zip(keys, saved) {
@@ -24,7 +25,7 @@ struct QuizReverseFavoritesTests {
             }
         }
 
-        defaults.set(pool.rawValue, forKey: AppStorageKey.verseMatchPool)
+        defaults.set(pool.rawValue, forKey: AppStorageKey.quizVersePool)
         defaults.removeObject(forKey: AppStorageKey.quizSections)
         defaults.removeObject(forKey: AppStorageKey.quizScope)
 
@@ -62,6 +63,41 @@ struct QuizReverseFavoritesTests {
 
             model.favoriteVerses = [genesis, john]
             #expect(model.isFavoritesAvailable)
+        }
+    }
+
+    @Test
+    func standardUsesOnlyFavoritesInTheSelectedCategories() async throws {
+        _ = await BibleRepository.shared.loadAllBooks()
+        await QuizVerseFilter.prepare()
+        withSettings(pool: .favorites, sections: [.gospels]) { model in
+            model.mode = .standard
+            #expect(!model.canStart)
+            model.favoriteVerses = [genesis, john, john]
+            #expect(model.canStart)
+            model.startQuiz()
+            #expect(model.totalQuestions == 1)
+            #expect(model.current?.reference == "John 3:16")
+            #expect(model.current?.correctAnswer == "John")
+            #expect(model.current?.options.count == 4)
+            #expect(model.current?.contextText != nil)
+            model.resetToSetup()
+        }
+    }
+
+    @Test
+    func standardWellKnownPoolAndAnyVerseCanStart() async throws {
+        _ = await BibleRepository.shared.loadAllBooks()
+        await QuizVerseFilter.prepare()
+        for pool in [QuizReversePool.wellKnown, .any] {
+            withSettings(pool: pool) { model in
+                model.mode = .standard
+                model.startQuiz()
+                #expect(model.phase == .playing)
+                #expect(model.totalQuestions == QuizGameViewModel.questionsPerGame)
+                #expect(model.current?.options.contains(model.current?.correctBook ?? "") == true)
+                model.resetToSetup()
+            }
         }
     }
 
