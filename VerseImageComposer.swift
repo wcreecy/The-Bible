@@ -1,3 +1,4 @@
+import ImageIO
 import Photos
 import PhotosUI
 import SwiftUI
@@ -145,6 +146,8 @@ final class VerseImageComposerModel {
     var photoOffset = CGSize.zero
     var photoDimming: Double = 0.28
     var photoBlur: Double = 0
+    /// Average brightness of the chosen photo, used to warn about unreadable text.
+    private var photoLuminance = 0.5
 
     var fontStyle: VerseImageFontStyle = .serif
     var textScale: CGFloat = 1
@@ -156,10 +159,11 @@ final class VerseImageComposerModel {
 
     init(verse: VerseActionReference) {
         self.verse = verse
+        loadPreferences()
     }
 
+    /// Restores the look; the chosen canvas format stays.
     func reset() {
-        format = .portrait
         background = .gradient
         gradient = .sunrise
         solidColor = .indigo
@@ -177,14 +181,205 @@ final class VerseImageComposerModel {
         showsBranding = true
     }
 
-    func loadPhoto(from item: PhotosPickerItem?) async {
-        guard let item else { return }
+    /// Loads the picked photo at a size that suits the canvas. Returns false if it can't be read.
+    @discardableResult
+    func loadPhoto(from item: PhotosPickerItem?) async -> Bool {
+        guard let item else { return true }
         guard let data = try? await item.loadTransferable(type: Data.self),
-              let image = UIImage(data: data) else { return }
-        photo = image
+              let decoded = await Task.detached(priority: .userInitiated, operation: {
+                  VerseImageComposerModel.decodePhoto(data)
+              }).value else { return false }
+        photo = decoded.image
+        photoLuminance = decoded.luminance
         background = .photo
         photoScale = 1
         photoOffset = .zero
+        return true
+    }
+
+    /// Photos are decoded at no more than the largest canvas side so a 48MP photo doesn't fill memory.
+    nonisolated private static func decodePhoto(_ data: Data) -> (image: UIImage, luminance: Double)? {
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: 2160
+        ]
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+
+        // Drawing the photo into a single pixel gives its average color.
+        var pixel = [UInt8](repeating: 0, count: 4)
+        let luminance: Double = pixel.withUnsafeMutableBytes { buffer in
+            guard let context = CGContext(
+                data: buffer.baseAddress,
+                width: 1,
+                height: 1,
+                bitsPerComponent: 8,
+                bytesPerRow: 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return 0.5 }
+            context.interpolationQuality = .medium
+            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+            return VerseImageComposerModel.luminance(
+                red: Double(buffer[0]) / 255,
+                green: Double(buffer[1]) / 255,
+                blue: Double(buffer[2]) / 255
+            )
+        }
+        return (UIImage(cgImage: cgImage), luminance)
+    }
+
+    // MARK: Placement
+
+    private static let textOffsetLimit: CGFloat = 0.35
+    private static let nudgeStep: CGFloat = 0.03
+
+    /// How far, as a fraction of the canvas, the photo can move before an edge would show.
+    private var photoOffsetLimit: CGSize {
+        guard let photo, photo.size.width > 0, photo.size.height > 0 else { return .zero }
+        let canvas = format.pixelSize
+        let fill = max(canvas.width / photo.size.width, canvas.height / photo.size.height) * photoScale
+        return CGSize(
+            width: max(0, photo.size.width * fill - canvas.width) / 2 / canvas.width,
+            height: max(0, photo.size.height * fill - canvas.height) / 2 / canvas.height
+        )
+    }
+
+    func clampedPhotoOffset(_ offset: CGSize) -> CGSize {
+        let limit = photoOffsetLimit
+        return CGSize(
+            width: min(max(offset.width, -limit.width), limit.width),
+            height: min(max(offset.height, -limit.height), limit.height)
+        )
+    }
+
+    func clampedTextOffset(_ offset: CGSize) -> CGSize {
+        let limit = Self.textOffsetLimit
+        return CGSize(
+            width: min(max(offset.width, -limit), limit),
+            height: min(max(offset.height, -limit), limit)
+        )
+    }
+
+    /// Zooming out or changing the format can leave the photo offset past its new limit.
+    func clampPhotoOffset() {
+        photoOffset = clampedPhotoOffset(photoOffset)
+    }
+
+    func movePhoto(by fraction: CGSize) {
+        photoOffset = clampedPhotoOffset(CGSize(width: photoOffset.width + fraction.width, height: photoOffset.height + fraction.height))
+    }
+
+    func moveText(by fraction: CGSize) {
+        textOffset = clampedTextOffset(CGSize(width: textOffset.width + fraction.width, height: textOffset.height + fraction.height))
+    }
+
+    /// Moves one step in a direction, for people who can't drag the preview.
+    func nudgePhoto(dx: CGFloat, dy: CGFloat) {
+        movePhoto(by: CGSize(width: dx * Self.nudgeStep, height: dy * Self.nudgeStep))
+    }
+
+    func nudgeText(dx: CGFloat, dy: CGFloat) {
+        moveText(by: CGSize(width: dx * Self.nudgeStep, height: dy * Self.nudgeStep))
+    }
+
+    // MARK: Readability
+
+    /// WCAG contrast of the text against what is behind it, after the darkening overlay.
+    /// Gradients are averaged, so this is an estimate.
+    private var contrastRatio: Double {
+        let behind: Double
+        switch background {
+        case .gradient: behind = Self.gradientLuminance(gradient)
+        case .solid: behind = Self.luminance(solidColor)
+        case .photo: behind = photo == nil ? Self.gradientLuminance(.sunrise) : photoLuminance
+        }
+        let overlay = background == .photo ? photoDimming : 0.12
+        let back = behind * (1 - overlay)
+        let text = Self.luminance(textColor)
+        return (max(back, text) + 0.05) / (min(back, text) + 0.05)
+    }
+
+    var hasLowContrast: Bool { contrastRatio < 3 }
+
+    private static func gradientLuminance(_ gradient: VerseImageGradient) -> Double {
+        let values = gradient.colors.map(luminance)
+        return values.reduce(0, +) / Double(values.count)
+    }
+
+    private static func luminance(_ color: Color) -> Double {
+        let rgb = components(of: color)
+        return luminance(red: rgb[0], green: rgb[1], blue: rgb[2])
+    }
+
+    nonisolated private static func luminance(red: Double, green: Double, blue: Double) -> Double {
+        func linear(_ value: Double) -> Double {
+            value <= 0.03928 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * linear(red) + 0.7152 * linear(green) + 0.0722 * linear(blue)
+    }
+
+    private static func components(of color: Color) -> [Double] {
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return [Double(red), Double(green), Double(blue)]
+    }
+
+    // MARK: Remembered choices
+
+    private static let preferencesKey = "verseImageComposerPreferences"
+
+    /// The look is remembered between verses. A photo isn't, so it falls back to a gradient.
+    private struct Preferences: Codable {
+        var format: String
+        var background: String
+        var gradient: String
+        var fontStyle: String
+        var textAlignment: String
+        var textScale: Double
+        var showsReference: Bool
+        var showsBranding: Bool
+        var solidColor: [Double]
+        var textColor: [Double]
+    }
+
+    func savePreferences() {
+        let preferences = Preferences(
+            format: format.rawValue,
+            background: (background == .photo ? .gradient : background).rawValue,
+            gradient: gradient.rawValue,
+            fontStyle: fontStyle.rawValue,
+            textAlignment: textAlignment.rawValue,
+            textScale: Double(textScale),
+            showsReference: showsReference,
+            showsBranding: showsBranding,
+            solidColor: Self.components(of: solidColor),
+            textColor: Self.components(of: textColor)
+        )
+        guard let data = try? JSONEncoder().encode(preferences) else { return }
+        UserDefaults.standard.set(data, forKey: Self.preferencesKey)
+    }
+
+    private func loadPreferences() {
+        guard let data = UserDefaults.standard.data(forKey: Self.preferencesKey),
+              let preferences = try? JSONDecoder().decode(Preferences.self, from: data) else { return }
+        format = VerseImageFormat(rawValue: preferences.format) ?? format
+        background = VerseImageBackground(rawValue: preferences.background) ?? background
+        gradient = VerseImageGradient(rawValue: preferences.gradient) ?? gradient
+        fontStyle = VerseImageFontStyle(rawValue: preferences.fontStyle) ?? fontStyle
+        textAlignment = VerseImageTextAlignment(rawValue: preferences.textAlignment) ?? textAlignment
+        textScale = CGFloat(min(max(preferences.textScale, 0.65), 1.6))
+        showsReference = preferences.showsReference
+        showsBranding = preferences.showsBranding
+        if let color = Self.color(from: preferences.solidColor) { solidColor = color }
+        if let color = Self.color(from: preferences.textColor) { textColor = color }
+    }
+
+    private static func color(from components: [Double]) -> Color? {
+        guard components.count == 3 else { return nil }
+        return Color(red: components[0], green: components[1], blue: components[2])
     }
 
     func render() -> UIImage? {
@@ -204,6 +399,7 @@ struct VerseShareArtwork: View {
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
+            let textOffset = textOffset(in: size)
 
             ZStack {
                 background(size: size)
@@ -228,10 +424,7 @@ struct VerseShareArtwork: View {
                 }
                 .foregroundStyle(model.textColor)
                 .frame(width: size.width * 0.82, alignment: frameAlignment)
-                .offset(
-                    x: model.textOffset.width * size.width + textTranslation.width,
-                    y: model.textOffset.height * size.height + textTranslation.height
-                )
+                .offset(x: textOffset.width * size.width, y: textOffset.height * size.height)
 
                 if model.showsBranding {
                     VStack {
@@ -257,20 +450,42 @@ struct VerseShareArtwork: View {
             model.solidColor
         case .photo:
             if let photo = model.photo {
+                let photoOffset = photoOffset(in: size)
                 Image(uiImage: photo)
                     .resizable()
                     .scaledToFill()
                     .frame(width: size.width, height: size.height)
                     .scaleEffect(model.photoScale)
-                    .offset(
-                        x: model.photoOffset.width * size.width + photoTranslation.width,
-                        y: model.photoOffset.height * size.height + photoTranslation.height
-                    )
+                    .offset(x: photoOffset.width * size.width, y: photoOffset.height * size.height)
                     .blur(radius: model.photoBlur * size.width / 360)
             } else {
                 LinearGradient(colors: VerseImageGradient.sunrise.colors, startPoint: .topLeading, endPoint: .bottomTrailing)
             }
         }
+    }
+
+    /// A drag distance in points, as a fraction of the canvas.
+    private func fraction(of translation: CGSize, in size: CGSize) -> CGSize {
+        guard size.width > 0, size.height > 0 else { return .zero }
+        return CGSize(width: translation.width / size.width, height: translation.height / size.height)
+    }
+
+    /// The saved offset plus the drag in progress, held to the same limits as the final one
+    /// so the preview doesn't jump when the drag ends.
+    private func photoOffset(in size: CGSize) -> CGSize {
+        let drag = fraction(of: photoTranslation, in: size)
+        return model.clampedPhotoOffset(CGSize(
+            width: model.photoOffset.width + drag.width,
+            height: model.photoOffset.height + drag.height
+        ))
+    }
+
+    private func textOffset(in size: CGSize) -> CGSize {
+        let drag = fraction(of: textTranslation, in: size)
+        return model.clampedTextOffset(CGSize(
+            width: model.textOffset.width + drag.width,
+            height: model.textOffset.height + drag.height
+        ))
     }
 
     private func verseFontSize(for size: CGSize) -> CGFloat {
@@ -298,6 +513,7 @@ struct VerseImageComposerView: View {
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var shareImage: ShareableVerseImage?
     @State private var saveMessage: String?
+    @State private var isExporting = false
 
     init(verse: VerseActionReference) {
         _model = State(initialValue: VerseImageComposerModel(verse: verse))
@@ -305,16 +521,27 @@ struct VerseImageComposerView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    VerseImagePreview(model: model)
-                    VerseImageCanvasControls(model: model, selectedPhoto: $selectedPhoto)
-                    VerseImageTextControls(model: model)
-                    exportButtons
+            // The preview stays above the controls so it can be dragged without fighting the
+            // scroll view, and stays visible while a slider moves.
+            VStack(spacing: 0) {
+                VerseImagePreview(model: model)
+                    .frame(maxHeight: 320)
+                    .padding([.horizontal, .top])
+                    .padding(.bottom, 12)
+
+                ScrollView {
+                    VStack(spacing: 20) {
+                        VerseImageCanvasControls(model: model, selectedPhoto: $selectedPhoto)
+                        VerseImageTextControls(model: model)
+                        exportButtons
+                    }
+                    .padding()
                 }
-                .padding()
             }
             .background(Color(.systemGroupedBackground))
+            .onDisappear { model.savePreferences() }
+            .onChange(of: model.photoScale) { model.clampPhotoOffset() }
+            .onChange(of: model.format) { model.clampPhotoOffset() }
             .navigationTitle("Share as Image")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -326,7 +553,14 @@ struct VerseImageComposerView: View {
                 }
             }
             .onChange(of: selectedPhoto) { _, item in
-                Task { await model.loadPhoto(from: item) }
+                guard let item else { return }
+                Task {
+                    if !(await model.loadPhoto(from: item)) {
+                        saveMessage = String(localized: "That photo could not be loaded.")
+                    }
+                    // Clearing the pick lets the same photo be chosen again.
+                    selectedPhoto = nil
+                }
             }
             .sheet(item: $shareImage) { item in
                 VerseImageShareSheet(image: item.image)
@@ -345,44 +579,64 @@ struct VerseImageComposerView: View {
     private var exportButtons: some View {
         HStack(spacing: 12) {
             Button("Share", systemImage: "square.and.arrow.up") {
-                if let image = model.render() {
-                    shareImage = ShareableVerseImage(image: image)
-                }
+                Task { await share() }
             }
             .buttonStyle(.glassProminent)
             .tint(.orange)
 
             Button("Save Image", systemImage: "square.and.arrow.down") {
-                saveToPhotos()
+                Task { await saveToPhotos() }
             }
             .buttonStyle(.glass)
             .tint(.orange)
         }
         .font(.headline)
+        .disabled(isExporting)
+        .opacity(isExporting ? 0.4 : 1)
+        .overlay {
+            if isExporting {
+                ProgressView()
+            }
+        }
     }
 
-    private func saveToPhotos() {
-        guard let image = model.render() else {
+    /// Renders the full-size image. Rendering occupies the main thread, so the progress
+    /// indicator gets a moment to appear first.
+    private func renderImage() async -> UIImage? {
+        isExporting = true
+        defer { isExporting = false }
+        try? await Task.sleep(for: .milliseconds(60))
+        return model.render()
+    }
+
+    private func share() async {
+        guard let image = await renderImage() else {
+            saveMessage = String(localized: "The image could not be created.")
+            return
+        }
+        shareImage = ShareableVerseImage(image: image)
+    }
+
+    private func saveToPhotos() async {
+        guard let image = await renderImage() else {
             saveMessage = String(localized: "The image could not be created.")
             return
         }
 
-        Task {
-            let status = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
-            guard status == .authorized || status == .limited else {
-                saveMessage = String(localized: "Allow photo access in Settings to save this image.")
-                return
-            }
+        let status = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
+        guard status == .authorized || status == .limited else {
+            saveMessage = String(localized: "Allow photo access in Settings to save this image.")
+            return
+        }
 
-            do {
-                try await PHPhotoLibrary.shared().performChanges {
-                    PHAssetChangeRequest.creationRequestForAsset(from: image)
-                }
-                Haptics.success()
-                saveMessage = String(localized: "Saved to Photos.")
-            } catch {
-                saveMessage = String(localized: "The image could not be saved.")
+        do {
+            try await PHPhotoLibrary.shared().performChanges {
+                PHAssetChangeRequest.creationRequestForAsset(from: image)
             }
+            Haptics.success()
+            saveMessage = String(localized: "Saved to Photos.")
+        } catch {
+            saveMessage = String(localized: "The image could not be saved.")
         }
     }
 }
@@ -409,9 +663,11 @@ private struct VerseImagePreview: View {
                         DragGesture()
                             .updating($photoDrag) { value, state, _ in state = value.translation }
                             .onEnded { value in
-                                guard model.background == .photo else { return }
-                                model.photoOffset.width += value.translation.width / size.width
-                                model.photoOffset.height += value.translation.height / size.height
+                                guard model.background == .photo, size.width > 0, size.height > 0 else { return }
+                                model.movePhoto(by: CGSize(
+                                    width: value.translation.width / size.width,
+                                    height: value.translation.height / size.height
+                                ))
                             }
                     )
 
@@ -426,14 +682,11 @@ private struct VerseImagePreview: View {
                         DragGesture()
                             .updating($textDrag) { value, state, _ in state = value.translation }
                             .onEnded { value in
-                                model.textOffset.width = clamped(
-                                    model.textOffset.width + value.translation.width / size.width,
-                                    to: -0.35...0.35
-                                )
-                                model.textOffset.height = clamped(
-                                    model.textOffset.height + value.translation.height / size.height,
-                                    to: -0.35...0.35
-                                )
+                                guard size.width > 0, size.height > 0 else { return }
+                                model.moveText(by: CGSize(
+                                    width: value.translation.width / size.width,
+                                    height: value.translation.height / size.height
+                                ))
                             }
                     )
             }
@@ -448,11 +701,7 @@ private struct VerseImagePreview: View {
         .aspectRatio(model.format.aspectRatio, contentMode: .fit)
         .animation(.snappy, value: model.format)
         .accessibilityLabel("Verse image preview")
-        .accessibilityHint("Drag the verse text to reposition it. Drag a selected photo to reposition the background.")
-    }
-
-    private func clamped(_ value: CGFloat, to range: ClosedRange<CGFloat>) -> CGFloat {
-        min(max(value, range.lowerBound), range.upperBound)
+        .accessibilityHint("Drag the verse text to reposition it. Drag a selected photo to reposition the background. The position buttons below do the same.")
     }
 }
 
@@ -504,6 +753,12 @@ private struct VerseImageCanvasControls: View {
                 LabeledContent("Blur") {
                     Slider(value: Bindable(model).photoBlur, in: 0...16)
                 }
+                VerseImageNudgeRow(
+                    title: "Photo Position",
+                    onNudge: model.nudgePhoto,
+                    onCenter: { model.photoOffset = .zero }
+                )
+                .disabled(model.photo == nil)
             }
         }
         .padding()
@@ -535,12 +790,46 @@ private struct VerseImageTextControls: View {
             }
             .pickerStyle(.segmented)
 
+            VerseImageNudgeRow(
+                title: "Text Position",
+                onNudge: model.nudgeText,
+                onCenter: { model.textOffset = .zero }
+            )
+
             ColorPicker("Text Color", selection: Bindable(model).textColor, supportsOpacity: false)
+
+            if model.hasLowContrast {
+                Label("This text color may be hard to read on this background.", systemImage: "exclamationmark.triangle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+            }
+
             Toggle("Show Reference", isOn: Bindable(model).showsReference)
             Toggle("Show App Branding", isOn: Bindable(model).showsBranding)
         }
         .padding()
         .glassEffect(.regular, in: .rect(cornerRadius: 18))
+    }
+}
+
+/// Moves the text or photo a step at a time, for people who can't drag the preview.
+private struct VerseImageNudgeRow: View {
+    let title: LocalizedStringKey
+    let onNudge: (CGFloat, CGFloat) -> Void
+    let onCenter: () -> Void
+
+    var body: some View {
+        LabeledContent(title) {
+            HStack(spacing: 16) {
+                Button("Move Left", systemImage: "arrow.left") { onNudge(-1, 0) }
+                Button("Move Right", systemImage: "arrow.right") { onNudge(1, 0) }
+                Button("Move Up", systemImage: "arrow.up") { onNudge(0, -1) }
+                Button("Move Down", systemImage: "arrow.down") { onNudge(0, 1) }
+                Button("Center", systemImage: "scope", action: onCenter)
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+        }
     }
 }
 
