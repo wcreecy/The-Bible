@@ -47,22 +47,22 @@ struct VerseOfDayCard: View {
             trailingAccessory: {
                 HStack(spacing: 8) {
                     if verseOfDayPaused {
-                        Text("Paused")
+                        Text("Pinned")
                             .font(.caption2).bold()
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Capsule().fill(Color.red.opacity(0.15)))
-                            .overlay(Capsule().stroke(Color.red.opacity(0.4), lineWidth: 1))
-                            .foregroundStyle(.red)
+                            .background(Capsule().fill(Color.orange.opacity(0.15)))
+                            .overlay(Capsule().stroke(Color.orange.opacity(0.4), lineWidth: 1))
+                            .foregroundStyle(.orange)
                     }
                     Button(action: onTogglePaused) {
-                        Image(systemName: verseOfDayPaused ? "pause.circle.fill" : "pause.circle")
+                        Image(systemName: verseOfDayPaused ? "pin.circle.fill" : "pin.circle")
                             .font(.title3)
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(verseOfDayPaused ? Color.red : Color.accentColor)
-                    .accessibilityLabel(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
-                    .help(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
+                    .foregroundStyle(verseOfDayPaused ? Color.orange : Color.accentColor)
+                    .accessibilityLabel(verseOfDayPaused ? "Unpin Verse" : "Pin Verse")
+                    .help(verseOfDayPaused ? "Unpin to resume automatic refresh" : "Pin to stop automatic refresh")
                 }
             }
         ) {

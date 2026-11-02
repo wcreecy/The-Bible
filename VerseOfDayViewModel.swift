@@ -173,7 +173,7 @@ final class VerseOfDayViewModel {
 
     private func updateNextDescription() {
         if paused {
-            nextRefreshDescription = "Auto refresh is paused."
+            nextRefreshDescription = "Pinned verses do not refresh automatically."
             return
         }
         nextRefreshDescription = VOTDSchedule.nextAutoRefreshDescription(

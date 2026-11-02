@@ -65,7 +65,7 @@ struct SettingsVOTDSection: View {
     var body: some View {
         Section(
             header: Text("Verse of the Day").foregroundStyle(.primary),
-            footer: Text("Choose where verses come from and how often they refresh. Auto-refresh remains disabled while the verse is paused on the Home page.")
+            footer: Text("Choose where verses come from and how often they refresh. Auto-refresh remains disabled while the verse is pinned on the Home page.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         ) {
