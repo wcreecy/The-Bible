@@ -318,30 +318,32 @@ final class HangmanGameViewModel {
         }
     }
 
-    /// Draws the game's words without repeats. Mixed picks a category for each word.
+    /// Draws the game's words without repeats, including words used in recent rounds.
     private func makeDeck() -> [HangmanWord] {
-        var pools: [HangmanTheme: [HangmanWord]] = [:]
         let themes: [HangmanTheme] = theme == .all ? [.people, .places, .bibleWords, .books] : [theme]
-        for item in themes {
+        let allWords = themes.flatMap { item -> [HangmanWord] in
             switch item {
-            case .people: pools[item] = peopleWords().shuffled()
-            case .places: pools[item] = placeWords().shuffled()
-            case .bibleWords: pools[item] = bibleWords().shuffled()
-            case .books: pools[item] = bookWords().shuffled()
-            case .all: break
+            case .people: peopleWords()
+            case .places: placeWords()
+            case .bibleWords: bibleWords()
+            case .books: bookWords()
+            case .all: []
             }
         }
 
-        var words: [HangmanWord] = []
+        var uniqueWords: [HangmanWord] = []
         var usedAnswers: Set<String> = []
-        while words.count < Self.wordsPerGame {
-            let available = themes.filter { !(pools[$0]?.isEmpty ?? true) }
-            guard let pick = available.randomElement(), let word = pools[pick]?.popLast() else { break }
-            // Same-named people or places ("Joseph", "Bethlehem") would look like repeats.
-            guard usedAnswers.insert(word.answer.uppercased()).inserted else { continue }
-            words.append(word)
+        for word in allWords where usedAnswers.insert(word.answer.uppercased()).inserted {
+            uniqueWords.append(word)
         }
-        return words
+
+        return RecentGameQuestionStore.shared.select(
+            from: uniqueWords.shuffled(),
+            game: "hangman",
+            count: Self.wordsPerGame,
+            cooldown: Self.wordsPerGame * 7,
+            id: { $0.answer.uppercased() }
+        )
     }
 
     // MARK: - Game flow
@@ -362,6 +364,7 @@ final class HangmanGameViewModel {
             return
         }
         current = word
+        RecentGameQuestionStore.shared.record(word, game: "hangman", id: { $0.answer.uppercased() })
         wordNumber += 1
         guessedLetters = []
         wrongGuesses = 0

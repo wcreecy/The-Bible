@@ -397,7 +397,13 @@ final class BeatTheClockGameViewModel {
     func startGame() {
         guard !isLoadingData else { return }
         let availableQuestions = reviewQuestionIDs.isEmpty
-            ? makeQuestionDeck()
+            ? RecentGameQuestionStore.shared.select(
+                from: makeQuestionDeck(),
+                game: "countdown",
+                count: Self.questionsPerGame,
+                cooldown: Self.questionsPerGame * 7,
+                id: \.id
+            )
             : makeQuestionDeck().filter { reviewQuestionIDs.contains($0.id) }
         let deck = Array(availableQuestions.prefix(Self.questionsPerGame))
         guard !deck.isEmpty else { return }
@@ -416,6 +422,7 @@ final class BeatTheClockGameViewModel {
         }
 
         currentQuestion = question
+        RecentGameQuestionStore.shared.record(question, game: "countdown", id: \.id)
         questionNumber += 1
         roundOutcome = nil
         submittedBook = nil

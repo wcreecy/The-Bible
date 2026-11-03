@@ -62,18 +62,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		ACB8B8898852C32F5747E5A9 /* Exceptions for "The Bible" folder in "The Bible WidgetsExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Widgets/LastReadProvider.swift,
-				Widgets/LastReadWidget.swift,
-				Widgets/PinnedVerseProvider.swift,
-				Widgets/PinnedVerseWidget.swift,
-				Widgets/PrayerTimerActivityController.swift,
-				Widgets/PrayerTimerAttributes.swift,
-			);
-			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
-		};
 		1DC55AC1079FE4DD9987A2C2 /* Exceptions for "The Bible Widgets" folder in "The Bible (iOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -102,6 +90,18 @@
 			);
 			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
 		};
+		ACB8B8898852C32F5747E5A9 /* Exceptions for "The Bible" folder in "The Bible WidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Widgets/LastReadProvider.swift,
+				Widgets/LastReadWidget.swift,
+				Widgets/PinnedVerseProvider.swift,
+				Widgets/PinnedVerseWidget.swift,
+				Widgets/PrayerTimerActivityController.swift,
+				Widgets/PrayerTimerAttributes.swift,
+			);
+			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
+		};
 		FE7CF0676C4B9328D9E96C69 /* Exceptions for "The Bible" folder in "The Bible (iOS)Tests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -116,8 +116,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				A24E3D15C90029A944BFAB90 /* Exceptions for "The Bible" folder in "The Bible (iOS)" target */,
-				ACB8B8898852C32F5747E5A9 /* Exceptions for "The Bible" folder in "The Bible WidgetsExtension" target */,
 				FE7CF0676C4B9328D9E96C69 /* Exceptions for "The Bible" folder in "The Bible (iOS)Tests" target */,
+				ACB8B8898852C32F5747E5A9 /* Exceptions for "The Bible" folder in "The Bible WidgetsExtension" target */,
 			);
 			path = "The Bible";
 			sourceTree = "<group>";

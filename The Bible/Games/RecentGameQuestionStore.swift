@@ -9,6 +9,8 @@ struct RecentGameQuestionStore {
     private static let storageKey = AppStorageKey.gameQuestionRecency
     private static let maximumHistoryLength = 500
 
+    static let shared = RecentGameQuestionStore()
+
     let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {

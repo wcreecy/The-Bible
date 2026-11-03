@@ -538,13 +538,27 @@ final class QuizGameViewModel {
             source.prepare()
             reverseSource = source
             reverseBag = reviewQuestionIDs.isEmpty
-                ? source.buildQuestionBag()
+                ? RecentGameQuestionStore.shared.select(
+                    from: source.buildQuestionBag(),
+                    game: "quiz-reverse",
+                    count: Self.questionsPerGame,
+                    cooldown: Self.questionsPerGame * 7,
+                    id: \.reference
+                )
                 : source.reviewVerses().filter { reviewQuestionIDs.contains($0.reference) }.shuffled()
             guard !reverseBag.isEmpty else { return }
             totalQuestions = min(Self.questionsPerGame, reverseBag.count)
         } else {
             questionBag = buildQuestionBag()
-            if !reviewQuestionIDs.isEmpty {
+            if reviewQuestionIDs.isEmpty {
+                questionBag = RecentGameQuestionStore.shared.select(
+                    from: questionBag,
+                    game: "quiz-standard",
+                    count: Self.questionsPerGame,
+                    cooldown: Self.questionsPerGame * 7,
+                    id: \.reviewID
+                )
+            } else {
                 questionBag = questionBag.filter { reviewQuestionIDs.contains($0.reviewID) }
             }
             guard !questionBag.isEmpty else { return }
@@ -565,6 +579,10 @@ final class QuizGameViewModel {
             return
         }
         history.append(question)
+        RecentGameQuestionStore.shared.record(
+            [question.reviewID],
+            game: "quiz-\(mode.rawValue)"
+        )
         currentIndex = history.count - 1
         session.startQuestion()
         remainingSeconds = timeLimit ?? 0

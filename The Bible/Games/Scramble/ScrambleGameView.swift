@@ -93,6 +93,7 @@ struct ScrambleGameView: View {
     @State private var isRevealConfirmationPresented = false
     @State private var vm = ScrambleGameViewModel()
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @FocusState private var isKeyboardFocused: Bool
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -158,6 +159,14 @@ struct ScrambleGameView: View {
                     .frame(maxWidth: .infinity, alignment: timerOnLeft ? .leading : .trailing)
                 }
             }
+            .focusable()
+            .focused($isKeyboardFocused)
+            .onKeyPress(phases: .down) { keyPress in
+                handleKeyboardPress(keyPress)
+            }
+            .onChange(of: vm.phase) { _, phase in
+                isKeyboardFocused = phase == .playing
+            }
         }
         .background(AppBackgroundView(tab: .games))
         .navigationTitle("")
@@ -212,6 +221,35 @@ struct ScrambleGameView: View {
             }
             vm.session.clearStreak()
         }
+    }
+
+    private func handleKeyboardPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        guard vm.phase == .playing,
+              !vm.isPaused,
+              !vm.isCurrentWordResolved,
+              let currentWord = vm.currentWord else {
+            return .ignored
+        }
+
+        if keyPress.key == .delete || keyPress.characters == "\u{8}" {
+            vm.removeLastLetter()
+            return .handled
+        }
+
+        if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
+            guard vm.typedAnswer.count == currentWord.answer.count else { return .handled }
+            vm.checkAnswer()
+            return .handled
+        }
+
+        guard keyPress.modifiers.isEmpty,
+              let character = keyPress.characters.first,
+              character.isLetter,
+              vm.selectLetter(matching: character) else {
+            return .ignored
+        }
+
+        return .handled
     }
 
     private var startScreen: some View {

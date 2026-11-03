@@ -255,8 +255,16 @@ final class WhoAmIGameViewModel {
     func startGame() {
         guard isReady else { return }
         session.beginGame(savedStreak: persistentStreak, isTimed: difficulty.timeLimit > 0)
-        let candidates = reviewQuestionIDs.isEmpty ? eligibleEntries : reviewEntries
-        questionQueue = Array(candidates.shuffled().prefix(Self.questionsPerGame))
+        let candidates = reviewQuestionIDs.isEmpty
+            ? RecentGameQuestionStore.shared.select(
+                from: eligibleEntries.shuffled(),
+                game: "whoAmI",
+                count: Self.questionsPerGame,
+                cooldown: Self.questionsPerGame * 7,
+                id: { String($0.id) }
+            )
+            : Array(reviewEntries.shuffled().prefix(Self.questionsPerGame))
+        questionQueue = candidates
         totalQuestions = questionQueue.count
         questionNumber = 0
         isComplete = false
@@ -275,6 +283,7 @@ final class WhoAmIGameViewModel {
 
         let target = questionQueue.removeFirst()
         current = target
+        RecentGameQuestionStore.shared.record(target, game: "whoAmI", id: { String($0.id) })
         let correct = mode(for: target) == .clueToName ? target.name : target.clue
         choiceEntries = (Array(target.incorrectAnswers.shuffled().prefix(3)) + [correct]).shuffled()
         questionNumber += 1

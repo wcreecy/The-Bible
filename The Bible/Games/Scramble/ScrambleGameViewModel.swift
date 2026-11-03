@@ -111,7 +111,6 @@ final class ScrambleGameViewModel {
     var answerFeedback: AnswerFeedback?
     var timerID = UUID()
     var hintLevel = 0
-    var recentlyPlayedAnswers: [String] = []
     var isTimerDisabled = false
     /// True while the word is paused: the timer stops and the letters are hidden.
     var isPaused = false
@@ -191,10 +190,13 @@ final class ScrambleGameViewModel {
 
         guard !eligible.isEmpty else { return }
 
-        let unseen = eligible.filter { !recentlyPlayedAnswers.contains($0.answer) }
-        let pool = unseen.count >= sessionLength.rawValue ? unseen : eligible
-        deck = Array(pool.shuffled().prefix(sessionLength.rawValue))
-        recentlyPlayedAnswers = Array((recentlyPlayedAnswers + deck.map(\.answer)).suffix(40))
+        deck = RecentGameQuestionStore.shared.select(
+            from: eligible.shuffled(),
+            game: "scramble",
+            count: sessionLength.rawValue,
+            cooldown: max(sessionLength.rawValue * 7, 10),
+            id: \.answer
+        )
         currentNumber = 0
         // The session streak carries from one game to the next.
         session.beginGame(savedStreak: persistentStreak, isTimed: currentTimeLimit != nil)
@@ -224,6 +226,7 @@ final class ScrambleGameViewModel {
         }
 
         currentWord = next
+        RecentGameQuestionStore.shared.record(next, game: "scramble", id: \.answer)
         currentNumber += 1
         shuffledLetters = scrambledLetters(for: next.answer)
         selectedIndices.removeAll()
@@ -247,6 +250,21 @@ final class ScrambleGameViewModel {
         selectedIndices.append(index)
         typedAnswer.append(shuffledLetters[index])
         answerFeedback = nil
+    }
+
+    /// Selects the next unused tile matching a hardware-keyboard character.
+    @discardableResult
+    func selectLetter(matching character: Character) -> Bool {
+        guard let index = shuffledLetters.indices.first(where: {
+            !selectedIndices.contains($0)
+                && String(shuffledLetters[$0]).uppercased() == String(character).uppercased()
+        }) else {
+            return false
+        }
+
+        let previousCount = selectedIndices.count
+        selectLetter(index)
+        return selectedIndices.count > previousCount
     }
 
     func removeLastLetter() {
