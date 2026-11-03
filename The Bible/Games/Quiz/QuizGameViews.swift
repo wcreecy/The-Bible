@@ -284,15 +284,24 @@ struct QuizLargeTimerView: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(statusTitle)
             .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : outcome == nil ? "No time limit" : "")
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if isTimed, outcome == nil {
+                    onToggleTimer()
+                }
+            }
+            .accessibilityAddTraits(isTimed && outcome == nil ? .isButton : [])
+            .accessibilityHint(
+                isTimed && outcome == nil
+                    ? (isTimerDisabled ? "Tap to turn the timer on." : "Tap to turn the timer off.")
+                    : ""
+            )
 
             Spacer(minLength: 0)
 
             HStack(spacing: 12) {
                 Button("Swap card sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
 
-                if isTimed, outcome == nil {
-                    Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
-                }
 
                 Button(
                     usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",

@@ -335,7 +335,8 @@ struct ScrambleGameView: View {
                         tint: vm.isTimerDisabled ? .secondary : vm.timerTint,
                         isPulsing: false,
                         formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
-                        isDisabled: vm.isTimerDisabled
+                        isDisabled: vm.isTimerDisabled,
+                        onTap: vm.toggleTimer
                     )
                 }
 
@@ -395,12 +396,6 @@ struct ScrambleGameView: View {
                     }
                     .padding(.top, 8)
 
-                    if vm.currentTimeLimit != nil {
-                        Button(vm.isTimerDisabled ? "Timer On" : "Timer Off", systemImage: vm.isTimerDisabled ? "play.fill" : "pause.fill") {
-                            vm.toggleTimer()
-                        }
-                        .buttonStyle(.bordered)
-                    }
                 }
             }
         }
@@ -466,15 +461,24 @@ private struct ScrambleLargeTimerView: View {
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel(isTimerDisabled ? "Timer off" : (isTimed ? "\(timeRemaining) seconds remaining" : "No time limit"))
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if isTimed {
+                    onToggleTimer()
+                }
+            }
+            .accessibilityAddTraits(isTimed ? .isButton : [])
+            .accessibilityHint(
+                isTimed
+                    ? (isTimerDisabled ? "Tap to turn the timer on." : "Tap to turn the timer off.")
+                    : ""
+            )
 
             Spacer(minLength: 0)
 
             HStack(spacing: 12) {
                 Button("Swap card sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
 
-                if isTimed {
-                    Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
-                }
 
                 Button(
                     usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",

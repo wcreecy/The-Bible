@@ -48,13 +48,9 @@ struct BibleTriviaCompactBoard: View {
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
-                onChoose: onChoose
+                onChoose: onChoose,
+                onToggleTimer: onToggleTimer
             )
-
-            if !isAnswered {
-                Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
-                    .buttonStyle(.bordered)
-            }
 
             if isAnswered {
                 if let outcome {
@@ -108,7 +104,8 @@ struct BibleTriviaDashboard: View {
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
                 isViewingPrevious: isViewingPrevious,
-                onChoose: onChoose
+                onChoose: onChoose,
+                onToggleTimer: nil
             )
 
             if isAnswered {
@@ -140,6 +137,7 @@ struct BibleTriviaQuestionBoard: View {
     let isAnswered: Bool
     let isViewingPrevious: Bool
     let onChoose: (String) -> Void
+    let onToggleTimer: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -173,7 +171,8 @@ struct BibleTriviaQuestionBoard: View {
                     tint: isTimerDisabled ? .secondary : timerTint,
                     isPulsing: false,
                     formattedTime: isTimerDisabled ? "Timer off" : nil,
-                    isDisabled: isTimerDisabled
+                    isDisabled: isTimerDisabled,
+                    onTap: onToggleTimer
                 )
             }
 
@@ -368,6 +367,18 @@ struct BibleTriviaLargeTimerView: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(outcome?.title ?? "Time Remaining")
             .accessibilityValue(outcome == nil ? "\(remainingSeconds) seconds" : "")
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if outcome == nil {
+                    onToggleTimer()
+                }
+            }
+            .accessibilityAddTraits(outcome == nil ? .isButton : [])
+            .accessibilityHint(
+                outcome == nil
+                    ? (isTimerDisabled ? "Tap to turn the timer on." : "Tap to turn the timer off.")
+                    : ""
+            )
 
             Spacer(minLength: 0)
 
@@ -383,9 +394,6 @@ struct BibleTriviaLargeTimerView: View {
                     }
                 }
 
-                if outcome == nil {
-                    Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
-                }
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.glass(.clear))

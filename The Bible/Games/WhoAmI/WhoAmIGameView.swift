@@ -202,11 +202,9 @@ struct WhoAmIGameView: View {
                 tint: vm.isTimerDisabled ? .secondary : timerTint,
                 isPulsing: vm.isTimerDisabled ? false : vm.pulseOn,
                 formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
-                isDisabled: vm.isTimerDisabled
+                isDisabled: vm.isTimerDisabled,
+                onTap: vm.toggleTimer
             )
-
-            Button(vm.isTimerDisabled ? "Timer On" : "Timer Off", systemImage: vm.isTimerDisabled ? "play.fill" : "pause.fill", action: vm.toggleTimer)
-                .buttonStyle(.bordered)
         }
 
         VStack(alignment: .leading, spacing: 8) {
@@ -557,6 +555,18 @@ private struct WhoAmITimerCard: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(statusTitle)
             .accessibilityValue(isTimed && isActive ? "\(remainingSeconds) seconds" : "")
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if isTimed && resultIsCorrect == nil {
+                    onToggleTimer()
+                }
+            }
+            .accessibilityAddTraits(isTimed && resultIsCorrect == nil ? .isButton : [])
+            .accessibilityHint(
+                isTimed && resultIsCorrect == nil
+                    ? (isTimerDisabled ? "Tap to turn the timer on." : "Tap to turn the timer off.")
+                    : ""
+            )
 
             Spacer(minLength: 0)
 
@@ -568,9 +578,6 @@ private struct WhoAmITimerCard: View {
                 )
 
                 if isTimed {
-                    if resultIsCorrect == nil {
-                        Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill", action: onToggleTimer)
-                    }
 
                     Button(
                         usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",

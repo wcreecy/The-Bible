@@ -310,14 +310,10 @@ struct QuizView: View {
                         tint: vm.isTimerDisabled ? .secondary : vm.timerColor,
                         isPulsing: vm.isTimerDisabled ? false : vm.isPulsing,
                         formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
-                        isDisabled: vm.isTimerDisabled
+                        isDisabled: vm.isTimerDisabled,
+                        onTap: vm.toggleTimer
                     )
                     .padding(.horizontal)
-
-                    Button(vm.isTimerDisabled ? "Timer On" : "Timer Off", systemImage: vm.isTimerDisabled ? "play.fill" : "pause.fill") {
-                        vm.toggleTimer()
-                    }
-                    .buttonStyle(.bordered)
                 }
 
                 if !vm.isAnswered {

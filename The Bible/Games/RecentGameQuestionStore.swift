@@ -29,9 +29,9 @@ struct RecentGameQuestionStore {
     ) -> [T] {
         guard count > 0 else { return [] }
 
-        let uniqueCandidates = candidates.reduce(into: [T]()) { result, candidate in
-            guard !result.contains(where: { id($0) == id(candidate) }) else { return }
-            result.append(candidate)
+        var seenIDs = Set<String>()
+        let uniqueCandidates = candidates.filter { candidate in
+            seenIDs.insert(id(candidate)).inserted
         }
         let recentIDs = history(for: game)
         let recentSet = Set(recentIDs.suffix(max(0, cooldown)))

@@ -60,8 +60,10 @@ struct BeatTheClockGameView: View {
                         remainingSeconds: vm.remainingSeconds,
                         tint: vm.timerColor,
                         isPulsing: vm.isPulsing,
+                        isTimerDisabled: vm.isTimerDisabled,
                         outcome: vm.roundOutcome,
                         usesMutedStyle: $usesMutedTimerStyle,
+                        onToggleTimer: vm.toggleTimer,
                         onSwapSides: {
                             withAnimation(.snappy) {
                                 timerOnLeft.toggle()
@@ -102,7 +104,7 @@ struct BeatTheClockGameView: View {
             vm.onDisappear()
         }
         // Restarts with each round, and on resume, so the first second is a full second.
-        .task(id: CountdownTimerRun(roundID: vm.roundID, isPaused: vm.isPaused)) {
+        .task(id: CountdownTimerRun(roundID: vm.roundID, isPaused: vm.isPaused, isTimerDisabled: vm.isTimerDisabled)) {
             await vm.runTimer()
         }
         // The view model can't touch focus, so the field follows the round state.
@@ -274,7 +276,10 @@ struct BeatTheClockGameView: View {
             GameTimerCard(
                 remainingSeconds: vm.remainingSeconds,
                 tint: vm.timerColor,
-                isPulsing: vm.isPulsing
+                isPulsing: vm.isPulsing,
+                formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
+                isDisabled: vm.isTimerDisabled,
+                onTap: vm.toggleTimer
             )
 
             VStack(alignment: .leading, spacing: 8) {
@@ -381,4 +386,5 @@ struct BeatTheClockGameView: View {
 private struct CountdownTimerRun: Hashable {
     let roundID: Int
     let isPaused: Bool
+    let isTimerDisabled: Bool
 }

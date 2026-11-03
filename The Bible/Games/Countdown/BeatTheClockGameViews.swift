@@ -279,8 +279,10 @@ struct BeatTheClockLargeTimerView: View {
     let remainingSeconds: Int
     let tint: Color
     let isPulsing: Bool
+    let isTimerDisabled: Bool
     let outcome: BeatTheClockRoundOutcome?
     @Binding var usesMutedStyle: Bool
+    let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
 
     private var timerTextColor: Color {
@@ -290,7 +292,7 @@ struct BeatTheClockLargeTimerView: View {
     private var isActive: Bool { outcome == nil }
 
     private var displayTint: Color {
-        outcome?.tint ?? tint
+        isTimerDisabled && outcome == nil ? .secondary : outcome?.tint ?? tint
     }
 
     private var vividTextColor: Color {
@@ -302,11 +304,11 @@ struct BeatTheClockLargeTimerView: View {
             Spacer(minLength: 0)
 
             VStack(spacing: 24) {
-                Image(systemName: outcome?.systemImage ?? "timer")
+                Image(systemName: outcome?.systemImage ?? (isTimerDisabled ? "timer.slash" : "timer"))
                     .font(.system(size: 72, weight: .semibold))
                     .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text(outcome?.title ?? "Time Remaining")
+                Text(outcome?.title ?? (isTimerDisabled ? "Timer Off" : "Time Remaining"))
                     .font(.largeTitle.weight(.semibold))
                     .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
@@ -321,8 +323,20 @@ struct BeatTheClockLargeTimerView: View {
             .scaleEffect(isPulsing ? 1.04 : 1.0)
             .animation(.easeOut(duration: 0.18), value: isPulsing)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(outcome?.title ?? "Time Remaining")
+            .accessibilityLabel(outcome?.title ?? (isTimerDisabled ? "Timer off" : "Time Remaining"))
             .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : "")
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if isActive {
+                    onToggleTimer()
+                }
+            }
+            .accessibilityAddTraits(isActive ? .isButton : [])
+            .accessibilityHint(
+                isActive
+                    ? (isTimerDisabled ? "Tap to turn the timer on." : "Tap to turn the timer off.")
+                    : ""
+            )
 
             Spacer(minLength: 0)
 
