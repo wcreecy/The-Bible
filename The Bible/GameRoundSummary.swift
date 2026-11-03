@@ -23,6 +23,22 @@ struct GameRoundEntry: Identifiable {
     var reference: String?
     /// Time from the question appearing to the answer. Filled in by `GameScore`.
     var duration: Duration?
+    /// All books associated with a person; one question can contribute to several book tallies.
+    var relatedBookNames: [String] = []
+
+    var summaryBookNames: [String] {
+        var seen: Set<String> = []
+        return ((bookName.map { [$0] } ?? []) + relatedBookNames)
+            .filter { seen.insert($0).inserted }
+    }
+
+    var summaryCategories: [String] {
+        guard !relatedBookNames.isEmpty else { return category.map { [$0] } ?? [] }
+        var seen: Set<QuizVerseSection> = []
+        return summaryBookNames.compactMap { QuizVerseSection.containing($0) }
+            .filter { seen.insert($0).inserted }
+            .map { String(localized: $0.title) }
+    }
 }
 
 /// The numbers behind the end-of-round summary, worked out from a finished `GameScore`.
@@ -127,13 +143,13 @@ struct GameRoundSummary {
     /// Accuracy for each category, in the order they first appeared. Empty unless the round
     /// mixed at least two, since a single row says nothing the score doesn't.
     var categoryTallies: [Tally] {
-        let tallies = Self.tally(entries.compactMap { entry in entry.category.map { ($0, entry.outcome) } })
+        let tallies = Self.tally(entries.flatMap { entry in entry.summaryCategories.map { ($0, entry.outcome) } })
         return tallies.count >= 2 ? tallies : []
     }
 
     /// Accuracy for each book, in the order they first appeared.
     var bookTallies: [Tally] {
-        Self.tally(entries.compactMap { entry in entry.bookName.map { ($0, entry.outcome) } })
+        Self.tally(entries.flatMap { entry in entry.summaryBookNames.map { ($0, entry.outcome) } })
     }
 
     /// The best book among those asked at least twice, so one lucky answer doesn't count.
@@ -161,7 +177,7 @@ struct GameRoundSummary {
         var seen: Set<String> = []
         return entries
             .filter { $0.outcome != .correct }
-            .compactMap(\.bookName)
+            .flatMap(\.summaryBookNames)
             .filter { seen.insert($0).inserted }
     }
 
@@ -169,10 +185,15 @@ struct GameRoundSummary {
     var testamentTallies: [Tally] {
         let oldTestament = String(localized: "Old Testament")
         let newTestament = String(localized: "New Testament")
-        let pairs = entries.compactMap { entry -> (String, GameRoundEntry.Outcome)? in
-            guard let bookName = entry.bookName,
-                  let section = QuizVerseSection.containing(bookName) else { return nil }
-            return (section.isOldTestament ? oldTestament : newTestament, entry.outcome)
+        let pairs = entries.flatMap { entry -> [(String, GameRoundEntry.Outcome)] in
+            // A person appearing in several books of one Testament counts once for that Testament.
+            var seen: Set<String> = []
+            return entry.summaryBookNames.compactMap { book in
+                guard let section = QuizVerseSection.containing(book) else { return nil }
+                let name = section.isOldTestament ? oldTestament : newTestament
+                guard seen.insert(name).inserted else { return nil }
+                return (name, entry.outcome)
+            }
         }
         let tallies = Self.tally(pairs).sorted { $0.name == oldTestament && $1.name != oldTestament }
         return tallies.count == 2 ? tallies : []
