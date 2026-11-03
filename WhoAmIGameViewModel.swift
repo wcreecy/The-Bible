@@ -313,7 +313,7 @@ final class WhoAmIGameViewModel {
                     givenAnswer: wasTimedOut ? nil : selectedChoice,
                     correctAnswer: correctChoice,
                     category: String(localized: mode(for: current).title),
-                    bookName: current.books.count == 1 ? current.books.first : nil
+                    relatedBookNames: current.books
                 ),
                 savedStreak: persistentStreak
             )

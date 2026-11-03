@@ -120,6 +120,36 @@ struct GameRoundSummaryTests {
     }
 
     @Test
+    func peopleInMultipleBooksContributeWithoutInflatingTheRoundScore() {
+        var correct = entry(.correct)
+        correct.relatedBookNames = ["Genesis", "Exodus", "Genesis"]
+        var missed = entry(.wrong)
+        missed.relatedBookNames = ["Matthew", "Mark"]
+        let result = summary([correct, correct, missed, missed])
+        #expect(result.total == 4)
+        #expect(result.correctCount == 2)
+        #expect(result.accuracy == 0.5)
+        #expect(result.bookTallies.map(\.total) == [2, 2, 2, 2])
+        #expect(["Genesis", "Exodus"].contains(result.strongestBook?.name ?? ""))
+        #expect(["Matthew", "Mark"].contains(result.weakestBook?.name ?? ""))
+        #expect(result.missedBooks == ["Matthew", "Mark"])
+        #expect(result.testamentTallies.map(\.total) == [2, 2])
+        #expect(result.categoryTallies.map(\.total) == [2, 2])
+    }
+
+    @Test
+    func personSpanningTestamentsCountsOnceInEach() {
+        var answer = entry(.timedOut)
+        answer.relatedBookNames = ["Genesis", "Exodus", "Matthew", "Mark"]
+        let result = summary([answer])
+        #expect(result.total == 1)
+        #expect(result.timedOutCount == 1)
+        #expect(result.testamentTallies.map(\.total) == [1, 1])
+        #expect(result.categoryTallies.map(\.total) == [1, 1])
+        #expect(result.strongestBook == nil)
+    }
+
+    @Test
     func gameScoreKeepsEntriesStreakAndTiming() {
         let saved = PersistentGameStreak(game: "roundsummarytest\(UUID().uuidString)", variant: "normal")
         defer {

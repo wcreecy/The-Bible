@@ -38,6 +38,11 @@ struct GameRoundSummaryView: View {
 
             if hasBookResults {
                 GameRoundSummaryBooksCard(summary: summary, tint: tint)
+                if summary.entries.contains(where: { $0.relatedBookNames.count > 1 }) {
+                    Text("People can appear in several books. Each answer counts toward every related book and once per Bible section or Testament.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             if !summary.categoryTallies.isEmpty {
