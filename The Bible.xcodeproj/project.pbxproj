@@ -573,13 +573,14 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible (iOS)/The_Bible__iOS_.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				ENABLE_CODE_COVERAGE = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Bible;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the verse images you create to your photo library.";
@@ -593,7 +594,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 7.0;
+				MARKETING_VERSION = 8.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -warn-long-expression-type-checking=300 -Xfrontend -warn-long-function-bodies=500";
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible;
 				PRODUCT_NAME = Bible;
@@ -619,13 +620,14 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible (iOS)/The_Bible__iOS_.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				ENABLE_CODE_COVERAGE = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Bible;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the verse images you create to your photo library.";
@@ -639,7 +641,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 7.0;
+				MARKETING_VERSION = 8.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -warn-long-expression-type-checking=300 -Xfrontend -warn-long-function-bodies=500";
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible;
 				PRODUCT_NAME = Bible;
@@ -760,7 +762,7 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible WidgetsExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible Widgets/Info.plist";
@@ -772,7 +774,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 7.0;
+				MARKETING_VERSION = 8.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible.widgetsextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -794,7 +796,7 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible WidgetsExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible Widgets/Info.plist";
@@ -806,7 +808,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 7.0;
+				MARKETING_VERSION = 8.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible.widgetsextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
