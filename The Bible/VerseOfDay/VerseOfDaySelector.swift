@@ -9,6 +9,7 @@ nonisolated enum VerseOfDaySelector {
         case new
         case whole
         case book
+        case favorites
     }
 
     struct Selection: Sendable, Equatable {
@@ -319,6 +320,8 @@ nonisolated enum VerseOfDaySelector {
             allBooks
         case .book:
             allBooks.first(where: { $0.name == specificBook }).map { [$0] } ?? allBooks
+        case .favorites:
+            []
         }
     }
 }

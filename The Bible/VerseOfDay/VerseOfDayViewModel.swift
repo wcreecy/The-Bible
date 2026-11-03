@@ -21,6 +21,7 @@ final class VerseOfDayViewModel {
     @ObservationIgnored private var selectionPool: VerseOfDaySelector.Pool?
     @ObservationIgnored private var selectionPoolBuildKey: String?
     @ObservationIgnored private var selectionPoolTask: Task<Void, Never>?
+    @ObservationIgnored private var favoriteSelections: [VerseOfDaySelector.Selection] = []
 
     var canUndoManualRefresh: Bool {
         !manualRefreshHistory.isEmpty
@@ -78,7 +79,8 @@ final class VerseOfDayViewModel {
 
     // MARK: - Public API
 
-    func handleAppear() {
+    func handleAppear(favorites: [Favorite] = []) {
+        updateFavorites(favorites)
         if verse == nil && !paused {
             loadRandomVerse()
         }
@@ -87,7 +89,8 @@ final class VerseOfDayViewModel {
         warmSelectionPool()
     }
 
-    func handleScenePhaseChange(_ phase: ScenePhase) {
+    func handleScenePhaseChange(_ phase: ScenePhase, favorites: [Favorite] = []) {
+        updateFavorites(favorites)
         switch phase {
         case .active:
             updateNextDescription()
@@ -102,6 +105,7 @@ final class VerseOfDayViewModel {
     /// has loaded, or when the pool for this scope exists or is already being built, so it can be
     /// called whenever the Bible becomes ready, the app opens, or a refresh finds no pool.
     func warmSelectionPool() {
+        guard verseScopeRaw != VerseOfDaySelector.Scope.favorites.rawValue else { return }
         let key = VerseOfDaySelector.poolKey(scopeRaw: verseScopeRaw, specificBook: verseSpecificBook)
         guard selectionPool?.key != key, selectionPoolBuildKey != key else { return }
         let books = BibleData.books
@@ -121,7 +125,8 @@ final class VerseOfDayViewModel {
         }
     }
 
-    func refreshNow() {
+    func refreshNow(favorites: [Favorite] = []) {
+        updateFavorites(favorites)
         guard !paused else { return }
         if let lastRefreshFinishedAt, Date().timeIntervalSince(lastRefreshFinishedAt) < Self.refreshCooldown {
             return
@@ -151,6 +156,17 @@ final class VerseOfDayViewModel {
 
     func clearManualRefreshHistory() {
         manualRefreshHistory.removeAll(keepingCapacity: false)
+    }
+
+    func updateFavorites(_ favorites: [Favorite]) {
+        favoriteSelections = favorites.map {
+            VerseOfDaySelector.Selection(
+                bookName: $0.bookName,
+                chapterNumber: $0.chapterNumber,
+                verseNumber: $0.verseNumber,
+                text: $0.verseText
+            )
+        }
     }
 
     func togglePaused() {
@@ -218,6 +234,14 @@ final class VerseOfDayViewModel {
     /// this instant; until it's ready the Bible is scanned directly, as before.
     private func chooseVerse(excluding current: HomeVerseRef?) -> VerseOfDaySelector.Selection? {
         let history = VerseOfDaySelector.History.recent()
+
+        if verseScopeRaw == VerseOfDaySelector.Scope.favorites.rawValue {
+            let selections = favoriteSelections
+            let recent = Set(history.suffix(min(VerseOfDaySelector.History.capacity, selections.count / 2)))
+            return selections.filter { !$0.matches(current) && !recent.contains($0.historyKey) }.randomElement()
+                ?? selections.filter { !$0.matches(current) }.randomElement()
+        }
+
         let key = VerseOfDaySelector.poolKey(scopeRaw: verseScopeRaw, specificBook: verseSpecificBook)
 
         if let pool = selectionPool, pool.key == key {

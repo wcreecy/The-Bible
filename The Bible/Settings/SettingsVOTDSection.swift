@@ -77,6 +77,8 @@ struct SettingsVOTDSection: View {
                     segmentButton(title: "OT/NT", tag: "whole")
                     verticalSeparator()
                     segmentButton(title: "Book", tag: "book")
+                    verticalSeparator()
+                    segmentButton(title: "Favorites", tag: "favorites")
                 }
                 .frame(maxWidth: .infinity)
                 .padding(4)

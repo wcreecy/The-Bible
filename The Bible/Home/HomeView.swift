@@ -37,6 +37,7 @@ struct HomeView: View {
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     // Newest first; synced devices can briefly hold more than one bookmark.
     @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
+    @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
 
     /// The verse the reader bookmarked; the single source for Continue Reading.
     /// (The automatic last-read position only drives where the Bible tab opens.)
@@ -741,7 +742,7 @@ struct HomeView: View {
                 bibleStore.ensureLoaded()
 
                 // Verse-of-the-Day initial handling moved to VM
-                votdVM.handleAppear()
+                votdVM.handleAppear(favorites: favorites)
 
                 // Focus initial load
                 focusVM.loadFromStorage()
@@ -772,7 +773,7 @@ struct HomeView: View {
             case .active:
                 handleOpenPendingVerse()
                 bibleVM.refresh()
-                votdVM.handleScenePhaseChange(newPhase)
+                votdVM.handleScenePhaseChange(newPhase, favorites: favorites)
                 timerController.onSceneBecameActive()
             case .inactive, .background:
                 timerController.onSceneBecameInactiveOrBackground()
@@ -790,6 +791,7 @@ struct HomeView: View {
         .onChange(of: votdRefresh1Minute) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh2Hour) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh2Minute) { _, _ in votdVM.refreshScheduleChanged() }
+        .onChange(of: favorites.count) { _, _ in votdVM.updateFavorites(favorites) }
 
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
@@ -840,7 +842,7 @@ struct HomeView: View {
         }
 
         withAnimation(.easeInOut(duration: 0.25)) {
-            votdVM.refreshNow()
+            votdVM.refreshNow(favorites: favorites)
         }
     }
 

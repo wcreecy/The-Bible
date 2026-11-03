@@ -170,6 +170,7 @@ private struct SettingsReadingAndPrayerLinksSection: View {
         case "old": "Old Testament"
         case "new": "New Testament"
         case "book": "A selected book"
+        case "favorites": "Saved favorite verses"
         default: "Whole Bible"
         }
     }
@@ -186,6 +187,7 @@ private struct SettingsReadingAndPrayerLinksSection: View {
         case "old": String(localized: "Old Testament")
         case "new": String(localized: "New Testament")
         case "book": String(localized: "Selected Book")
+        case "favorites": String(localized: "Saved Favorites")
         default: String(localized: "Whole Bible")
         }
     }
