@@ -88,6 +88,28 @@ struct GamePuzzleResultTests {
     }
 
     @Test
+    func reverseQuizMissesAreKeptButNotOfferedForReview() {
+        let entries = (0..<12).map { index in
+            MissedGameQuestionStore.Entry(
+                id: UUID(),
+                game: .quizReverse,
+                bookNames: ["Book \(index)"],
+                chapterNumber: nil,
+                topic: "Verse matching",
+                questionID: "Verse \(index)",
+                date: Date()
+            )
+        }
+        let store = MissedGameQuestionStore(entries: entries)
+
+        #expect(store.containsMiss(game: .quizReverse, questionID: "Verse 3"))
+        #expect(store.reviewCount(for: .quizReverse) == 0)
+        #expect(!store.reviewableGames().contains(.quizReverse))
+        #expect(!MissedGameQuestionStore.Entry.Game.reviewableCases.contains(.quizReverse))
+        #expect(store.questionIDsForReview(game: .quizReverse).count == 10)
+    }
+
+    @Test
     func placingABookCorrectlyRetiresItsMiss() {
         let store = MissedGameQuestionStore(entries: [
             MissedGameQuestionStore.Entry(

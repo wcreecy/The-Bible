@@ -18,7 +18,8 @@ final class MissedGameQuestionStore {
             case bookOrder
 
             /// Whether misses from this game can be replayed in a review round.
-            var isReviewable: Bool { self != .bookOrder }
+            /// Reverse Quiz history remains stored for a future review mode, but is not offered yet.
+            var isReviewable: Bool { self != .bookOrder && self != .quizReverse }
 
             /// The games that offer review rounds.
             static var reviewableCases: [Game] { allCases.filter(\.isReviewable) }
