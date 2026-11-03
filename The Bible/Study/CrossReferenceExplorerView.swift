@@ -148,7 +148,9 @@ struct CrossReferenceExplorerView: View {
         }
         .task {
             let loadedEntries = await ChapterInsightsRepository.shared.allCrossReferences()
-            entries = ChapterCrossReferenceDeduplicator.deduplicated(loadedEntries)
+            entries = ChapterCrossReferenceDeduplicator.deduplicated(
+                expandedEntries(from: loadedEntries)
+            )
             recomputeSections()
             isLoading = false
         }
@@ -163,6 +165,53 @@ struct CrossReferenceExplorerView: View {
                 .presentationDetents([.medium, .large])
                 .presentationContentInteraction(.scrolls)
         }
+    }
+
+    /// Expands one database record into one explorer row per target passage.
+    /// The first target keeps the database ID so existing saved connections continue to match.
+    private func expandedEntries(from entries: [CrossReferenceExplorerEntry]) -> [CrossReferenceExplorerEntry] {
+        entries.flatMap { entry in
+            let references = PassageReferenceParser.parseList(
+                entry.relatedReference,
+                book: entry.bookName,
+                chapter: entry.chapterNumber
+            )
+
+            guard references.count > 1 else {
+                return [entry]
+            }
+
+            return references.enumerated().map { index, reference in
+                CrossReferenceExplorerEntry(
+                    id: index == 0
+                        ? entry.id
+                        : expandedEntryID(
+                            baseID: entry.id,
+                            targetIndex: index,
+                            reference: reference.displayTitle
+                        ),
+                    bookName: entry.bookName,
+                    chapterNumber: entry.chapterNumber,
+                    sourceVerse: entry.sourceVerse,
+                    relatedReference: reference.displayTitle,
+                    connectionExplanation: entry.connectionExplanation
+                )
+            }
+        }
+    }
+
+    /// Produces a repeatable ID for additional targets without changing existing IDs.
+    private func expandedEntryID(
+        baseID: Int,
+        targetIndex: Int,
+        reference: String
+    ) -> Int {
+        var value = UInt64(bitPattern: Int64(baseID))
+        for scalar in reference.unicodeScalars {
+            value = value &* 31 &+ UInt64(scalar.value)
+        }
+        value = value &* 31 &+ UInt64(targetIndex)
+        return Int(truncatingIfNeeded: value)
     }
 
     private func recomputeSections() {
