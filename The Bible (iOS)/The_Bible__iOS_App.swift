@@ -66,9 +66,7 @@ struct The_Bible__iOS_App: App {
     private let persistenceStoreMode: PersistenceStoreMode
 
     init() {
-        UserDefaults.standard.register(defaults: [
-            AppStorageKey.contextualTipsEnabled: true
-        ])
+        AppSettingsDefaults.register()
         UITestSupport.configureIfNeeded()
         // Re-bucket old GMT daily keys before any screen reads stats or iCloud sync starts
         // (sync starts in ContentView's onAppear). It runs once and is local only.

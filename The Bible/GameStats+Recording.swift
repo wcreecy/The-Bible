@@ -58,7 +58,7 @@ extension GameStats {
         addToDailyBookMap(keys.dailyAnswered, dayKey: dayKey, book: book, delta: addAnswered)
         addToDailyBookMap(keys.dailyCorrect, dayKey: dayKey, book: book, delta: addCorrect)
 
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     private func addToBookMap(_ key: String, book: String, delta: Int) {
@@ -273,7 +273,7 @@ extension GameStats {
             kvs.pushKey(key)
         }
 
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     func recordWordleRound(type: WordleType, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
@@ -293,7 +293,7 @@ extension GameStats {
             defaults.set(Self.gameDisplayName(for: .wordle), forKey: "gamesLastPlayedGameName")
         }
 
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     func recordWordleResult(type: WordleType, mode: WordMode, won: Bool, guesses: Int, currentBestStreak: Int) {
@@ -334,7 +334,7 @@ extension GameStats {
             }
         }
 
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     func recordWordleResult(type: WordleType, won: Bool, guesses: Int, currentBestStreak: Int) {
@@ -361,7 +361,7 @@ extension GameStats {
             counters.increment("wordleTimeLosses_seconds_\(modeSuf)", by: max(0, elapsedSeconds))
         }
 
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     func recordWordleTime(type: WordleType, won: Bool, elapsedSeconds: Int) {
@@ -403,6 +403,6 @@ extension GameStats {
         guard !name.isEmpty, addAnswered != 0 || addCorrect != 0 else { return }
         addToBookMap(answeredKey, book: name, delta: addAnswered)
         addToBookMap(correctKey, book: name, delta: addCorrect)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 }

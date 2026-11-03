@@ -3,11 +3,6 @@ import Observation
 import SwiftData
 import WidgetKit
 
-extension Notification.Name {
-    /// Posted when the reading position changes on this device or arrives from another.
-    static let readingPositionChanged = Notification.Name("readingPositionChanged")
-}
-
 /// The single "where I stopped" position, saved automatically while reading and synced
 /// across devices (newest wins). It drives Continue Reading, the Bible tab at launch,
 /// the Last Read widget, and Stats.
@@ -91,7 +86,6 @@ final class ReadingPositionStore {
         )
         ReadingTimeHistory.recordReading(at: position.date)
         mirrorToWidget(position)
-        NotificationCenter.default.post(name: .readingPositionChanged, object: nil)
     }
 
     /// Forgets the position, for example after reading statistics are reset.
@@ -102,7 +96,6 @@ final class ReadingPositionStore {
         current = nil
         BibleStatsStore.shared.clearLastRead()
         mirrorToWidget(nil)
-        NotificationCenter.default.post(name: .readingPositionChanged, object: nil)
     }
 
     private func reloadFromStorage() {
@@ -111,7 +104,6 @@ final class ReadingPositionStore {
         guard stored != current else { return }
         current = stored
         mirrorToWidget(stored)
-        NotificationCenter.default.post(name: .readingPositionChanged, object: nil)
     }
 
     // MARK: - Widget

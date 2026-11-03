@@ -6,10 +6,8 @@ import Observation
 final class GameStats {
     static let shared = GameStats()
 
-    /// Bumped whenever game stats change, so views reading it refresh.
-    private(set) var version: Int = 0
-
-    @ObservationIgnored private var observer: Any?
+    /// Changes whenever game stats change, so views reading it refresh.
+    var version: Int { AppDataChanges.shared.gameStats }
 
     enum GameID {
         case quiz
@@ -44,18 +42,6 @@ final class GameStats {
 
     private init() {
         GameStatsMigrations.runAll()
-
-        observer = NotificationCenter.default.addObserver(
-            forName: .gameStatsExternallyUpdated,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            // Important: mutate the existing instance; do NOT touch GameStats.shared here.
-            // Hop to the main actor explicitly to satisfy Sendable closure constraints.
-            Task { @MainActor [weak self] in
-                self?.version &+= 1
-            }
-        }
     }
 
     /// Games were once shown as "Verses", "Who?" and "WORD". Those names are still found in

@@ -85,7 +85,7 @@ extension iCloudSyncCoordinator {
                 }
                 defaults.set(remoteTimestamp, forKey: tsKey(for: key))
                 BibleStatsStore.shared.resetCaches()
-                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+                AppDataChanges.shared.bibleStatsChanged()
             } else if localTimestamp > remoteTimestamp {
                 mirrorBibleStatsKeyToKVS(key)
                 enqueueKeyForSync(key)
@@ -98,7 +98,7 @@ extension iCloudSyncCoordinator {
         if kvs.object(forKey: key) == nil {
             defaults.removeObject(forKey: key)
             BibleStatsStore.shared.resetCaches()
-            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            AppDataChanges.shared.bibleStatsChanged()
             return
         }
 
@@ -109,7 +109,7 @@ extension iCloudSyncCoordinator {
         func clearAndNotify() {
             defaults.removeObject(forKey: key)
             BibleStatsStore.shared.resetCaches()
-            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            AppDataChanges.shared.bibleStatsChanged()
         }
 
         switch key {
@@ -234,7 +234,7 @@ extension iCloudSyncCoordinator {
 
         // Invalidate caches and notify after any merge
         BibleStatsStore.shared.resetCaches()
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     // MARK: - Merge helpers (stats)

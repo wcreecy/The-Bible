@@ -1,12 +1,6 @@
 import SwiftUI
 
 struct ScrambleGameView: View {
-    private enum Phase {
-        case setup
-        case playing
-        case results
-    }
-
     enum Difficulty: String, CaseIterable, Identifiable {
         case easy
         case normal
@@ -77,42 +71,6 @@ struct ScrambleGameView: View {
         }
     }
 
-    private struct ScrambleWord: Identifiable {
-        enum Level: Int {
-            case easy
-            case normal
-            case hard
-
-            init?(difficulty: String) {
-                switch difficulty.lowercased() {
-                case "easy": self = .easy
-                case "normal", "medium": self = .normal
-                case "hard": self = .hard
-                default: return nil
-                }
-            }
-        }
-
-        let answer: String
-        let category: LocalizedStringKey
-        /// The category as plain text, for the round summary.
-        let categoryName: String
-        let reference: String?
-        let level: Level
-
-        var id: String { answer }
-
-        init?(_ entry: ScrambleWordEntry) {
-            guard let level = Level(difficulty: entry.difficulty), !entry.answer.isEmpty else { return nil }
-            let reference = entry.reference?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            self.answer = entry.answer
-            self.category = LocalizedStringKey(entry.category)
-            self.categoryName = entry.category
-            self.reference = reference.isEmpty ? nil : reference
-            self.level = level
-        }
-    }
-
     enum SessionLength: Int, CaseIterable, Identifiable {
         case short = 5
         case quick = 10
@@ -129,132 +87,34 @@ struct ScrambleGameView: View {
         }
     }
 
-    @AppStorage("scrambleDifficulty") private var difficulty: Difficulty = .normal
-    @AppStorage("scrambleSessionLength") private var sessionLength: SessionLength = .quick
-
-    @State private var phase: Phase = .setup
-    @State private var wordBank: [ScrambleWord] = []
-    /// Start waits for the word list, so a tap never has to decode it on the main thread.
-    @State private var wordBankStatus: WordBankStatus = .loading
-
-    private enum WordBankStatus {
-        case loading, ready, unavailable
-    }
-    @State private var deck: [ScrambleWord] = []
-    @State private var currentWord: ScrambleWord?
-    @State private var shuffledLetters: [Character] = []
-    @State private var selectedIndices: [Int] = []
-    @State private var typedAnswer = ""
-    @State private var currentNumber = 0
-    /// Score and streaks; see `GameScore` for the rules.
-    @State private var session = GameScore()
-    @State private var strikes = 0
-    @State private var timeRemaining = 0
-    @State private var answerFeedback: AnswerFeedback?
-    @State private var timerID = UUID()
-    @State private var hintLevel = 0
-    @State private var recentlyPlayedAnswers: [String] = []
-    @State private var isTimerDisabled = false
-    /// True while the word is paused: the timer stops and the letters are hidden.
-    @State private var isPaused = false
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
     @State private var selectedPassage: PassageReference?
     @State private var isRevealConfirmationPresented = false
+    @State private var vm = ScrambleGameViewModel()
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
-    private enum AnswerFeedback {
-        case correct
-        case incorrect
-        case timedOut
-        case revealed
-
-        var message: LocalizedStringKey {
-            switch self {
-            case .correct: "Correct!"
-            case .incorrect: "Try again."
-            case .timedOut: "Time's up."
-            case .revealed: "Answer shown."
-            }
-        }
-
-        var tint: Color {
-            switch self {
-            case .correct: .green
-            case .incorrect: .orange
-            case .timedOut: .red
-            case .revealed: .secondary
-            }
-        }
-    }
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
-            get: { difficulty.experienceLevel },
-            set: { difficulty = Difficulty(experienceLevel: $0) }
+            get: { vm.difficulty.experienceLevel },
+            set: { vm.difficulty = Difficulty(experienceLevel: $0) }
         )
-    }
-
-    private var selectedAnswer: String {
-        typedAnswer
-    }
-
-    private var isLastWord: Bool {
-        deck.isEmpty
-    }
-
-    private var isCurrentWordResolved: Bool {
-        switch answerFeedback {
-        case .correct, .timedOut, .revealed: true
-        case .incorrect, nil: false
-        }
-    }
-
-    private var currentTimeLimit: Int? {
-        difficulty.timeLimit
-    }
-
-    /// Only a word with its timer running can be paused. Hard has no timer, and
-    /// "Timer Off" already stops the clock while leaving the word on screen.
-    private var canPause: Bool {
-        phase == .playing && currentTimeLimit != nil && !isTimerDisabled
-            && currentWord != nil && !isCurrentWordResolved && !isPaused
-    }
-
-    private var hintText: String? {
-        guard hintLevel > 0, let currentWord else { return nil }
-        let prefix = currentWord.answer.prefix(min(hintLevel, currentWord.answer.count))
-        return "Starts with \(prefix)."
-    }
-
-    // MARK: - Persistent streak (per difficulty)
-    private var persistentStreak: PersistentGameStreak {
-        PersistentGameStreak(game: "scramble", variant: difficulty.rawValue)
-    }
-
-    /// Matches Quiz: green above 60%, yellow down to 30%, then red.
-    private var timerTint: Color {
-        guard let timeLimit = currentTimeLimit else { return .secondary }
-        let fractionRemaining = Double(timeRemaining) / Double(max(1, timeLimit))
-        if fractionRemaining <= 0.3 { return .red }
-        if fractionRemaining <= 0.6 { return .yellow }
-        return .green
     }
 
     var body: some View {
         GeometryReader { geometry in
-            let usesSplitLayout = phase == .playing && geometry.size.width >= 700
+            let usesSplitLayout = vm.phase == .playing && geometry.size.width >= 700
 
             ZStack {
                 ScrollView {
                     VStack(spacing: 16) {
-                        switch phase {
+                        switch vm.phase {
                         case .setup:
                             startScreen
                         case .playing:
-                            if isPaused {
-                                GamePausedView(tint: .pink, remainingSeconds: timeRemaining) {
-                                    isPaused = false
+                            if vm.isPaused {
+                                GamePausedView(tint: .pink, remainingSeconds: vm.timeRemaining) {
+                                    vm.isPaused = false
                                 }
                                 .frame(maxWidth: 620)
                             } else {
@@ -282,12 +142,12 @@ struct ScrambleGameView: View {
 
                 if usesSplitLayout {
                     ScrambleLargeTimerView(
-                        timeRemaining: timeRemaining,
-                        timeLimit: currentTimeLimit,
-                        tint: timerTint,
-                        isTimerDisabled: isTimerDisabled,
+                        timeRemaining: vm.timeRemaining,
+                        timeLimit: vm.currentTimeLimit,
+                        tint: vm.timerTint,
+                        isTimerDisabled: vm.isTimerDisabled,
                         usesMutedStyle: $usesMutedTimerStyle,
-                        onToggleTimer: toggleTimer,
+                        onToggleTimer: vm.toggleTimer,
                         onSwapSides: {
                             withAnimation(.snappy) {
                                 timerOnLeft.toggle()
@@ -304,7 +164,7 @@ struct ScrambleGameView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                if phase != .setup {
+                if vm.phase != .setup {
                     GameNavigationTitle(
                         title: "Scramble",
                         systemImage: "text.line.first.and.arrowtriangle.forward",
@@ -313,44 +173,44 @@ struct ScrambleGameView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                if canPause {
-                    GamePauseButton { isPaused = true }
+                if vm.canPause {
+                    GamePauseButton { vm.isPaused = true }
                 }
             }
         }
         // A call, another app, or locking the phone pauses the word until Resume.
         .onAppActiveChange { isActive in
-            if !isActive, canPause { isPaused = true }
+            if !isActive, vm.canPause { vm.isPaused = true }
         }
         .task {
-            await loadWordBank()
+            await vm.loadWordBank()
         }
         // Restarts with each word, and on resume, so the first second is a full second.
-        .task(id: ScrambleTimerRun(id: timerID, isPaused: isPaused)) {
-            await runTimer()
+        .task(id: ScrambleTimerRun(id: vm.timerID, isPaused: vm.isPaused)) {
+            await vm.runTimer()
         }
         .sheet(item: $selectedPassage) { reference in
             ScripturePassageSheet(reference: reference)
         }
         .confirmationDialog("Reveal answer?", isPresented: $isRevealConfirmationPresented, titleVisibility: .visible) {
             Button("Reveal & Next", role: .destructive) {
-                revealAnswer()
+                vm.revealAnswer()
             }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("The word will be marked incorrect, then the next word will begin.")
         }
         .onAppear {
-            session.syncSavedBest(from: persistentStreak)
+            vm.session.syncSavedBest(from: vm.persistentStreak)
         }
-        .onChange(of: difficulty) { _, _ in
-            session.syncSavedBest(from: persistentStreak)
+        .onChange(of: vm.difficulty) { _, _ in
+            vm.session.syncSavedBest(from: vm.persistentStreak)
         }
         .onDisappear {
-            if phase != .setup {
-                resetToSetup()
+            if vm.phase != .setup {
+                vm.resetToSetup()
             }
-            session.clearStreak()
+            vm.session.clearStreak()
         }
     }
 
@@ -373,8 +233,8 @@ struct ScrambleGameView: View {
                     standard: "A broader word list with 30 seconds per word.",
                     challenge: "Tougher words with no timer."
                 ),
-                isStartEnabled: wordBankStatus == .ready,
-                startAction: startSession
+                isStartEnabled: vm.wordBankStatus == .ready,
+                startAction: vm.startSession
             ) {
                 GameLobbyPreview(kind: .scramble)
             } configuration: {
@@ -383,13 +243,13 @@ struct ScrambleGameView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
-                    if wordBankStatus == .unavailable {
+                    if vm.wordBankStatus == .unavailable {
                         Label("The word list couldn’t be loaded. Close the game and try again.", systemImage: "exclamationmark.triangle.fill")
                             .font(.subheadline)
                             .foregroundStyle(.orange)
                     }
 
-                    Picker("Session length", selection: $sessionLength) {
+                    Picker("Session length", selection: $vm.sessionLength) {
                         ForEach(SessionLength.allCases) { length in
                             Text(length.title).tag(length)
                         }
@@ -398,10 +258,10 @@ struct ScrambleGameView: View {
                 }
             } facts: {
                 GameSplashFacts(
-                    first: ("number", "\(sessionLength.rawValue) words", "This session"),
-                    second: ("timer", difficulty.timerLabel, "Per word"),
-                    third: ("lightbulb", difficulty.hintLabel, "Available"),
-                    fourth: difficulty == .hard ? ("xmark.shield", "3 strikes", "Hard mode") : nil
+                    first: ("number", "\(vm.sessionLength.rawValue) words", "This session"),
+                    second: ("timer", vm.difficulty.timerLabel, "Per word"),
+                    third: ("lightbulb", vm.difficulty.hintLabel, "Available"),
+                    fourth: vm.difficulty == .hard ? ("xmark.shield", "3 strikes", "Hard mode") : nil
                 )
             }
 
@@ -412,75 +272,75 @@ struct ScrambleGameView: View {
     private func gameScreen(usesSplitLayout: Bool) -> some View {
         VStack(spacing: usesSplitLayout ? 18 : 20) {
             GameScoreboardCard(
-                currentCorrect: session.score,
-                currentAnswered: session.answered,
-                currentStreak: session.streak,
+                currentCorrect: vm.session.score,
+                currentAnswered: vm.session.answered,
+                currentStreak: vm.session.streak,
                 game: .scramble,
                 style: horizontalSizeClass == .regular ? .dashboard : .compact
             )
 
-            if let currentWord {
+            if let currentWord = vm.currentWord {
                 ScramblePrompt(
                     category: currentWord.category,
-                    reference: difficulty == .easy || isCurrentWordResolved ? currentWord.reference : nil,
-                    answer: typedAnswer,
+                    reference: vm.difficulty == .easy || vm.isCurrentWordResolved ? currentWord.reference : nil,
+                    answer: vm.typedAnswer,
                     answerLength: currentWord.answer.count,
-                    isResolved: isCurrentWordResolved,
-                    timerTint: currentTimeLimit == nil || isTimerDisabled ? nil : timerTint,
+                    isResolved: vm.isCurrentWordResolved,
+                    timerTint: vm.currentTimeLimit == nil || vm.isTimerDisabled ? nil : vm.timerTint,
                     onShowReference: showCurrentReference
                 )
 
-                if !usesSplitLayout, currentTimeLimit != nil {
+                if !usesSplitLayout, vm.currentTimeLimit != nil {
                     GameTimerCard(
-                        remainingSeconds: timeRemaining,
-                        tint: isTimerDisabled ? .secondary : timerTint,
+                        remainingSeconds: vm.timeRemaining,
+                        tint: vm.isTimerDisabled ? .secondary : vm.timerTint,
                         isPulsing: false,
-                        formattedTime: isTimerDisabled ? "Timer off" : nil,
-                        isDisabled: isTimerDisabled
+                        formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
+                        isDisabled: vm.isTimerDisabled
                     )
                 }
 
-                if let answerFeedback {
+                if let answerFeedback = vm.answerFeedback {
                     Text(answerFeedback.message)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(answerFeedback.tint)
                 }
 
-                if difficulty == .hard {
-                    ScrambleStrikeIndicator(strikes: strikes, limit: 3)
+                if vm.difficulty == .hard {
+                    ScrambleStrikeIndicator(strikes: vm.strikes, limit: 3)
                 }
 
                 ScrambleLetterTray(
-                    letters: shuffledLetters,
-                    selectedIndices: selectedIndices,
-                    onSelect: selectLetter
+                    letters: vm.shuffledLetters,
+                    selectedIndices: vm.selectedIndices,
+                    onSelect: vm.selectLetter
                 )
-                .disabled(isCurrentWordResolved)
+                .disabled(vm.isCurrentWordResolved)
 
-                if isCurrentWordResolved {
+                if vm.isCurrentWordResolved {
                     Button("Next Word", systemImage: "arrow.right") {
-                        loadNextWord()
+                        vm.loadNextWord()
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.pink)
                 } else {
                     HStack(spacing: 10) {
-                        ScrambleActionButton(systemImage: "trash", accessibilityLabel: "Clear answer", isEnabled: !typedAnswer.isEmpty, action: clearAnswer)
-                        ScrambleActionButton(systemImage: "delete.left", accessibilityLabel: "Remove last letter", isEnabled: !typedAnswer.isEmpty, action: removeLastLetter)
-                        ScrambleActionButton(systemImage: "shuffle", accessibilityLabel: "Shuffle available letters", isEnabled: shuffledLetters.count - selectedIndices.count >= 2, action: shuffleUnusedLetters)
-                        ScrambleActionButton(systemImage: "checkmark", accessibilityLabel: "Check answer", isEnabled: typedAnswer.count == currentWord.answer.count, isProminent: true, action: checkAnswer)
+                        ScrambleActionButton(systemImage: "trash", accessibilityLabel: "Clear answer", isEnabled: !vm.typedAnswer.isEmpty, action: vm.clearAnswer)
+                        ScrambleActionButton(systemImage: "delete.left", accessibilityLabel: "Remove last letter", isEnabled: !vm.typedAnswer.isEmpty, action: vm.removeLastLetter)
+                        ScrambleActionButton(systemImage: "shuffle", accessibilityLabel: "Shuffle available letters", isEnabled: vm.shuffledLetters.count - vm.selectedIndices.count >= 2, action: vm.shuffleUnusedLetters)
+                        ScrambleActionButton(systemImage: "checkmark", accessibilityLabel: "Check answer", isEnabled: vm.typedAnswer.count == currentWord.answer.count, isProminent: true, action: vm.checkAnswer)
                     }
                     .padding(.top, 12)
                 }
 
-                if !isCurrentWordResolved {
+                if !vm.isCurrentWordResolved {
                     HStack(spacing: 12) {
                         ScrambleGlassActionButton(
                             systemImage: "lightbulb.fill",
-                            accessibilityLabel: hintLevel == 0 ? "Show hint" : "Show another hint",
-                            isEnabled: hintLevel < min(difficulty.hintLimit, currentWord.answer.count),
+                            accessibilityLabel: vm.hintLevel == 0 ? "Show hint" : "Show another hint",
+                            isEnabled: vm.hintLevel < min(vm.difficulty.hintLimit, currentWord.answer.count),
                             tint: .yellow,
-                            action: showHint
+                            action: vm.showHint
                         )
 
                         ScrambleGlassActionButton(
@@ -493,13 +353,13 @@ struct ScrambleGameView: View {
                     }
                     .padding(.top, 8)
 
-                    if let hintText {
+                    if let hintText = vm.hintText {
                         ScrambleHintCard(text: hintText)
                     }
 
-                    if currentTimeLimit != nil {
-                        Button(isTimerDisabled ? "Timer On" : "Timer Off", systemImage: isTimerDisabled ? "play.fill" : "pause.fill") {
-                            toggleTimer()
+                    if vm.currentTimeLimit != nil {
+                        Button(vm.isTimerDisabled ? "Timer On" : "Timer Off", systemImage: vm.isTimerDisabled ? "play.fill" : "pause.fill") {
+                            vm.toggleTimer()
                         }
                         .buttonStyle(.bordered)
                     }
@@ -512,251 +372,20 @@ struct ScrambleGameView: View {
 
     private var resultsScreen: some View {
         GameRoundSummaryView(
-            summary: GameRoundSummary(score: session),
+            summary: GameRoundSummary(score: vm.session),
             tint: .pink,
             unit: .words,
-            canTimeOut: currentTimeLimit != nil,
-            onPlayAgain: startSession,
-            onChangeSettings: resetToSetup
+            canTimeOut: vm.currentTimeLimit != nil,
+            onPlayAgain: vm.startSession,
+            onChangeSettings: vm.resetToSetup
         )
-    }
-
-    private func loadWordBank() async {
-        guard wordBank.isEmpty else {
-            wordBankStatus = .ready
-            return
-        }
-        wordBank = await GameDataLoaders.loadScrambleWordsAsync().compactMap(ScrambleWord.init)
-        wordBankStatus = wordBank.isEmpty ? .unavailable : .ready
-    }
-
-    private func startSession() {
-        guard wordBankStatus == .ready else { return }
-
-        let eligible = wordBank.filter { word in
-            switch difficulty {
-            case .easy: word.level == .easy
-            case .normal: word.level == .normal
-            case .hard: word.level == .hard
-            }
-        }
-
-        guard !eligible.isEmpty else { return }
-
-        let unseen = eligible.filter { !recentlyPlayedAnswers.contains($0.answer) }
-        let pool = unseen.count >= sessionLength.rawValue ? unseen : eligible
-        deck = Array(pool.shuffled().prefix(sessionLength.rawValue))
-        recentlyPlayedAnswers = Array((recentlyPlayedAnswers + deck.map(\.answer)).suffix(40))
-        currentNumber = 0
-        // The session streak carries from one game to the next.
-        session.beginGame(savedStreak: persistentStreak, isTimed: currentTimeLimit != nil)
-        strikes = 0
-        hintLevel = 0
-        isTimerDisabled = false
-        phase = .playing
-        loadNextWord()
-    }
-
-    /// Back to the start screen. The streak is kept so the next game can continue it.
-    private func resetToSetup() {
-        phase = .setup
-        isPaused = false
-        deck = []
-        currentWord = nil
-        answerFeedback = nil
-        session.clearGame()
-    }
-
-    private func loadNextWord() {
-        guard let next = deck.popLast() else {
-            session.endGame()
-            phase = .results
-            timerID = UUID()
-            return
-        }
-
-        currentWord = next
-        currentNumber += 1
-        shuffledLetters = scrambledLetters(for: next.answer)
-        selectedIndices.removeAll()
-        typedAnswer = ""
-        answerFeedback = nil
-        hintLevel = 0
-        strikes = 0
-        timeRemaining = currentTimeLimit ?? 0
-        isPaused = false
-        timerID = UUID()
-        session.startQuestion()
-    }
-
-    private func selectLetter(_ index: Int) {
-        guard !selectedIndices.contains(index),
-              let currentWord,
-              selectedIndices.count < currentWord.answer.count else {
-            return
-        }
-
-        selectedIndices.append(index)
-        typedAnswer.append(shuffledLetters[index])
-        answerFeedback = nil
-    }
-
-    private func removeLastLetter() {
-        guard let index = selectedIndices.popLast() else { return }
-        typedAnswer.removeLast()
-        answerFeedback = nil
-        _ = index
-    }
-
-    private func clearAnswer() {
-        selectedIndices.removeAll()
-        typedAnswer = ""
-        answerFeedback = nil
-    }
-
-    private func showHint() {
-        guard let currentWord, !isCurrentWordResolved else { return }
-        hintLevel = min(hintLevel + 1, min(difficulty.hintLimit, currentWord.answer.count))
     }
 
     private func showCurrentReference() {
-        guard let reference = currentWord?.reference else { return }
+        guard let reference = vm.currentWord?.reference else { return }
         selectedPassage = PassageReferenceParser.parse(reference)
     }
 
-    private func toggleTimer() {
-        guard currentTimeLimit != nil else { return }
-        isTimerDisabled.toggle()
-        if isTimerDisabled {
-            session.noteTimerTurnedOff()
-        }
-    }
-
-    private func shuffleUnusedLetters() {
-        let selected = Set(selectedIndices)
-        let availableIndices = shuffledLetters.indices.filter { !selected.contains($0) }
-        guard availableIndices.count > 1 else { return }
-
-        let availableLetters = availableIndices.map { shuffledLetters[$0] }
-        guard Set(availableLetters).count > 1 else { return }
-
-        var rearranged = availableLetters.shuffled()
-        if rearranged == availableLetters {
-            rearranged = Array(availableLetters.dropFirst()) + [availableLetters[0]]
-        }
-
-        for (index, letter) in zip(availableIndices, rearranged) {
-            shuffledLetters[index] = letter
-        }
-    }
-
-    private func checkAnswer() {
-        guard let currentWord, !isCurrentWordResolved else { return }
-
-        guard selectedAnswer.uppercased() == currentWord.answer else {
-            if difficulty == .hard {
-                strikes += 1
-                if strikes >= 3 {
-                    revealAnswerAfterStrikeLimit(for: currentWord)
-                    return
-                }
-            }
-            answerFeedback = .incorrect
-            return
-        }
-
-        recordWordResult(.correct, givenAnswer: currentWord.answer)
-        answerFeedback = .correct
-        advanceAfterFeedback()
-    }
-
-    private func revealAnswer() {
-        guard let currentWord, !isCurrentWordResolved else { return }
-        typedAnswer = currentWord.answer
-        selectedIndices = Array(shuffledLetters.indices)
-        recordWordResult(.wrong, givenAnswer: nil)
-        answerFeedback = .revealed
-    }
-
-    private func revealAnswerAfterStrikeLimit(for word: ScrambleWord) {
-        let lastGuess = selectedAnswer.uppercased()
-        typedAnswer = word.answer
-        selectedIndices = Array(shuffledLetters.indices)
-        recordWordResult(.wrong, givenAnswer: lastGuess.isEmpty ? nil : lastGuess)
-        answerFeedback = .revealed
-    }
-
-    private func advanceAfterFeedback() {
-        Task {
-            try? await Task.sleep(for: .milliseconds(550))
-            guard !Task.isCancelled, phase == .playing, !isCurrentWordResolved else { return }
-            loadNextWord()
-        }
-    }
-
-    private func runTimer() async {
-        guard currentTimeLimit != nil, phase == .playing, !isPaused else { return }
-
-        while !Task.isCancelled, phase == .playing, !isPaused, timeRemaining > 0 {
-            try? await Task.sleep(for: .seconds(1))
-            guard !Task.isCancelled, phase == .playing, !isPaused else { return }
-            guard !isCurrentWordResolved else { return }
-            guard !isTimerDisabled else { continue }
-
-            timeRemaining -= 1
-            if timeRemaining == 0 {
-                revealTimedOutAnswer(for: currentWord)
-                return
-            }
-        }
-    }
-
-    private func revealTimedOutAnswer(for word: ScrambleWord?) {
-        guard let word else { return }
-        typedAnswer = word.answer
-        selectedIndices = Array(shuffledLetters.indices)
-        recordWordResult(.timedOut, givenAnswer: nil)
-        answerFeedback = .timedOut
-        advanceAfterFeedback()
-    }
-
-    /// Counts a resolved word. The saved streak ends on a reveal, the strike limit or a timeout.
-    private func recordWordResult(_ outcome: GameRoundEntry.Outcome, givenAnswer: String?) {
-        let correct = outcome == .correct
-        if let currentWord {
-            session.record(
-                GameRoundEntry(
-                    prompt: String(shuffledLetters),
-                    outcome: outcome,
-                    givenAnswer: givenAnswer,
-                    correctAnswer: currentWord.answer,
-                    category: currentWord.categoryName,
-                    reference: currentWord.reference
-                ),
-                savedStreak: persistentStreak
-            )
-        } else {
-            session.record(correct: correct, savedStreak: persistentStreak)
-        }
-        GameStats.shared.recordRound(
-            game: .scramble,
-            difficulty: difficulty.statsDifficulty,
-            correct: correct ? 1 : 0,
-            answered: 1,
-            currentBestStreak: session.savedBestStreak
-        )
-    }
-
-    private func scrambledLetters(for answer: String) -> [Character] {
-        let letters = Array(answer)
-        var result = letters.shuffled()
-
-        while result == letters {
-            result.shuffle()
-        }
-
-        return result
-    }
 }
 
 private struct ScrambleLargeTimerView: View {

@@ -166,7 +166,7 @@ extension BibleStatsStore {
         saveJSON(contributions, key: Defaults.keyReadingContributions)
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyReadingHistoryArchive)
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyReadingContributions)
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     /// Removes days already covered by the archive from merged contributions, and folds

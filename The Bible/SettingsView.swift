@@ -665,59 +665,18 @@ private struct SettingsDeveloperSection: View {
 
 @MainActor
 enum DeveloperSettingsReset {
-    /// What each setting is reset to. Game settings are stored as the raw value of their enum,
-    /// so each one must be a real raw value; the tests check this.
+    /// What each setting is reset to: every preference's default, plus the timer and
+    /// onboarding state that a fresh install starts without.
     static var defaultValues: [String: Any] {
+        AppSettingsDefaults.preferences.merging(runtimeStateDefaults) { preference, _ in preference }
+    }
+
+    private static var runtimeStateDefaults: [String: Any] {
         [
-            "colorSchemePreference": "system",
-            "dailyGoalMinutes": 30,
-            StreakReminderScheduler.enabledKey: false,
-            StreakReminderScheduler.hourKey: StreakReminderScheduler.defaultHour,
-            StreakReminderScheduler.minuteKey: 0,
             "streakCelebratedMilestone": 0,
-            "timerSoundSelection": TimerSound.default.rawValue,
-            "verseOfDayScope": "whole",
-            "verseOfDaySpecificBook": "",
-            "votdRefreshFrequency": VOTDRefreshFrequency.custom.rawValue,
-            "votdRefresh1Hour": 6,
-            "votdRefresh1Minute": 0,
-            "votdRefresh2Hour": 18,
-            "votdRefresh2Minute": 0,
-            "votdRefreshNotificationsEnabled": false,
-            "verseOfDayPaused": false,
-            "liveActivitiesEnabled": true,
-            "healthKitMindfulMinutesEnabled": false,
             "didRequestNotifications": false,
-            // Matches the default registered at launch, so a reset returns to a fresh install.
-            AppStorageKey.contextualTipsEnabled: true,
-            "readerFontSize": 17.0,
-            AppStorageKey.readerShowsFullReferences: true,
-            ReaderDisplaySettings.showsReadProgressKey: false,
-            ReaderDisplaySettings.showsVerseMarkersKey: true,
-            ReaderDisplaySettings.showsPinnedVerseMarkerKey: true,
-            "focusReadingEnabled": false,
-            "homeCustomizeButtonVisible": true,
-            "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,
-            HomeLayoutStore.keyBibleReaderColumn: HomeLayoutStore.defaultBibleReaderColumn.rawValue,
-            "noteEditorTextSizeStep": 0,
-            "notesTabSortField": "modified",
-            "notesTabSortAscending": false,
-            "bibleBooksSortAlphabetical": false,
             "bibleRecentSearches": "",
-            "statsSelectedMode": "Reading Stats",
-            "statsSelectedGame": "All Games",
             "debugAutoWinEnabled": false,
-            AppStorageKey.beatTheClockCategory: BeatTheClockCategory.people.rawValue,
-            AppStorageKey.beatTheClockDifficulty: BeatTheClockDifficulty.normal.rawValue,
-            AppStorageKey.hangmanDifficulty: HangmanDifficulty.normal.rawValue,
-            AppStorageKey.hangmanTheme: HangmanTheme.all.rawValue,
-            "scrambleDifficulty": "normal",
-            "crosswordDifficulty": "normal",
-            "quizDifficulty": "normal",
-            "quizScope": "whole",
-            "quizSections": "",
-            "wordleAllowDailyReplay": false,
-            "wordleHardModeEnabled": false,
             "prayerTimerRunning": false,
             "prayerTimerPaused": false,
             "prayerTimerTotalSeconds": 0,
@@ -725,9 +684,7 @@ enum DeveloperSettingsReset {
             "prayerTimerEndDate": 0.0,
             "prayerTimerStartDate": 0.0,
             PrayerTimerController.lastMinutesKey: 0,
-            PrayerTimerKind.preferenceKey: PrayerTimerKind.prayer.rawValue,
             "prayerTimerActiveKind": PrayerTimerKind.prayer.rawValue,
-            "prayerTimerVerseSource": PrayerVerseSource.verseOfDay.rawValue,
             "prayerSegmentStartDate": 0.0,
             "prayerSessionSeconds": 0,
             "mindfulSessionStartDate": 0.0

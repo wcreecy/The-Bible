@@ -291,7 +291,7 @@ struct ContentView: View {
             returnToGameSelection()
 
             // Notify listeners that game stats context changed so Home card can animate if visible
-            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            AppDataChanges.shared.gameStatsChanged()
         }
 
         if newValue == .home {

@@ -23,7 +23,7 @@ extension BibleStatsStore {
         cacheVisitedChapters = set
         saveJSON(Array(set).sorted(), key: Defaults.keyVisitedChapters)
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyVisitedChapters)
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     func markVisited(bookName: String, chapterNumber: Int) {
@@ -99,7 +99,7 @@ extension BibleStatsStore {
             iCloudSyncCoordinator.shared.pushKey(Defaults.keyChapterCompletionDates)
         }
 
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     func isChapterComplete(bookName: String, chapter: Int, totalVerses: Int) -> Bool {
@@ -130,7 +130,7 @@ extension BibleStatsStore {
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyChapterResetDates)
 
         applyChapterResets()
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     /// Clears progress for chapters marked unread after their verses were last recorded.
@@ -193,7 +193,7 @@ extension BibleStatsStore {
         saveJSON(raw, key: Defaults.keySeenVersesByChapter)
         iCloudSyncCoordinator.shared.pushKey(Defaults.keySeenVersesByChapter)
         if notify {
-            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            AppDataChanges.shared.bibleStatsChanged()
         }
     }
 }

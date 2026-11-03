@@ -216,7 +216,8 @@ struct RegressionCoverageTests {
     @Test
     func todayGameChallengesDescribeTheSelectedGame() {
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Quiz") == "Test your Bible knowledge")
-        #expect(TodayChallengeStore.gameChallengeTitle(for: "Verses") == "Match the verses")
+        // Verses became part of Quiz, so a challenge saved under the old name describes Quiz.
+        #expect(TodayChallengeStore.gameChallengeTitle(for: "Verses") == "Test your Bible knowledge")
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Word Search") == "Find hidden Bible words")
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Crossword") == "Solve a Bible crossword")
         #expect(TodayChallengeStore.gameChallengeTitle(for: "Unlisted") == "Play Unlisted")

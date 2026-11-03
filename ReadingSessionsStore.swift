@@ -210,7 +210,7 @@ final class ReadingSessionsStore {
     private func postOwnUpdate() {
         isPostingOwnUpdate = true
         defer { isPostingOwnUpdate = false }
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     private func saveAll(_ arr: [Session]) {

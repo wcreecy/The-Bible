@@ -68,6 +68,6 @@ extension BibleStatsStore {
 
         // Reset caches and notify
         resetCaches()
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 }

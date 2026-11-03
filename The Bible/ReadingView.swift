@@ -254,7 +254,7 @@ struct ReadingView: View {
                     refreshSeenVerses()
                 }
             }
-            .onNotification(.bibleStatsExternallyUpdated) {
+            .onChange(of: AppDataChanges.shared.bibleStats) {
                 refreshSeenVerses()
             }
             .onChange(of: scenePhase) { _, newPhase in

@@ -39,7 +39,7 @@ extension BibleStatsStore {
         cacheReadingContributions = contributions
         saveJSON(contributions, key: Defaults.keyReadingContributions)
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyReadingContributions)
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     func derivedDailyTotalsByBook() -> [String: [String: Int]] {

@@ -48,7 +48,7 @@ struct GamesOverviewCardView: View {
                 selectedGame = "All Games"
             }
         }
-        .onNotification(.gameStatsExternallyUpdated) {
+        .onChange(of: AppDataChanges.shared.gameStats) {
             version &+= 1
         }
         .sheet(isPresented: $showGenreDrill) {

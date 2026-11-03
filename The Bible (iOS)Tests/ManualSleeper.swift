@@ -27,6 +27,12 @@ final class ManualSleeper {
         }
     }
 
+    /// The same wait, for code that sleeps by `Duration`.
+    func sleep(for duration: Duration) async throws {
+        let (seconds, attoseconds) = duration.components
+        try await sleep(UInt64(seconds) * 1_000_000_000 + UInt64(attoseconds / 1_000_000_000))
+    }
+
     /// Moves time forward, wakes every sleeper whose deadline has passed, and lets the woken
     /// work run, including any sleeps it starts that are also due.
     func advance(by seconds: TimeInterval) async {

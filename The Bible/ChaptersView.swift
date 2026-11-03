@@ -94,7 +94,7 @@ struct ChaptersView: View {
         .navigationTitle(book.name == "Genesis" ? "" : book.name)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: refreshCompletedChapters)
-        .onNotification(.bibleStatsExternallyUpdated) {
+        .onChange(of: AppDataChanges.shared.bibleStats) {
             refreshCompletedChapters()
         }
     }

@@ -19,7 +19,7 @@ extension iCloudSyncCoordinator {
     func mergeMissedQuestionsIncoming(forKey key: String) {
         guard Self.missedQuestionKeys.contains(key) else { return }
         if reconcileMissedQuestions(forKey: key) {
-            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            AppDataChanges.shared.gameStatsChanged()
         }
     }
 

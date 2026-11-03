@@ -72,7 +72,7 @@ extension iCloudSyncCoordinator {
                     defaults.set(remoteTimestamp, forKey: tsKey(for: key))
                 }
                 BibleStatsStore.shared.resetCaches()
-                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+                AppDataChanges.shared.bibleStatsChanged()
             } else if localTimestamp > remoteTimestamp {
                 // This device's goal is newer; republish it.
                 mirrorSettingsKeyToKVS(key)
@@ -85,7 +85,7 @@ extension iCloudSyncCoordinator {
                 defaults.set(merged, forKey: key)
                 DailyGoalHistoryStore.shared.invalidateCache()
                 BibleStatsStore.shared.resetCaches()
-                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+                AppDataChanges.shared.bibleStatsChanged()
             }
             if kvs.data(forKey: key) != merged {
                 kvs.set(merged, forKey: key)

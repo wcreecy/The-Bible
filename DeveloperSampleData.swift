@@ -18,9 +18,9 @@ enum DeveloperSampleData {
             print("Unable to save developer study samples: \(error.localizedDescription)")
         }
 
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
-        NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
+        AppDataChanges.shared.gameStatsChanged()
+        AppDataChanges.shared.studyTimeChanged()
     }
 
     /// Seeds enough saved verses and notes for the study-focused screens to have useful content.

@@ -46,7 +46,7 @@ final class DailyGoalHistoryStore {
         // Push via your existing iCloud KVS coordinator so other devices receive it
         iCloudSyncCoordinator.shared.pushKey(historyKey)
         // Notify listeners that goal evaluation context changed
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     // Ensure there’s at least one baseline record so past days evaluate consistently.

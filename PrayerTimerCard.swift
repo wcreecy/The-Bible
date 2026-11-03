@@ -337,7 +337,7 @@ private struct PrayerStatsSummaryRow: View {
         content(summary)
             // Refresh on appear too, in case stats changed while Home was hidden.
             .onAppear { revision += 1 }
-            .onNotification(.prayerStatsUpdated) {
+            .onChange(of: AppDataChanges.shared.prayerStats) {
                 revision += 1
             }
     }

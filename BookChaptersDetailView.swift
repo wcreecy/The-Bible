@@ -118,7 +118,7 @@ struct BookChaptersDetailView: View {
                 visited = BibleStatsStore.shared.loadVisitedChapters()
             }
         }
-        .onNotification(.chapterProgressChanged) {
+        .onChange(of: AppDataChanges.shared.chapterProgress) {
             refreshID = UUID()
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
@@ -128,6 +128,6 @@ struct BookChaptersDetailView: View {
         // Clears verses, visited state, and the completion date on every device.
         BibleStatsStore.shared.markChapterUnread(bookName: bookName, chapter: chapterNumber)
         refreshID = UUID()
-        NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
+        AppDataChanges.shared.chapterProgressChanged()
     }
 }

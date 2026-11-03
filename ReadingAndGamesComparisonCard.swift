@@ -55,13 +55,13 @@ struct ReadingAndGamesComparisonCard: View {
             .onNotification(UIApplication.willEnterForegroundNotification) {
                 refresh()
             }
-            .onNotification(.bibleStatsExternallyUpdated) {
+            .onChange(of: AppDataChanges.shared.bibleStats) {
                 refresh()
             }
-            .onNotification(.gameStatsExternallyUpdated) {
+            .onChange(of: AppDataChanges.shared.gameStats) {
                 refresh()
             }
-            .onNotification(.studyTimeUpdated) {
+            .onChange(of: AppDataChanges.shared.studyTime) {
                 refresh()
             }
         }

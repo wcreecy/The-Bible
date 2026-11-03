@@ -97,7 +97,7 @@ extension iCloudSyncCoordinator {
         }
 
         if changedLocally {
-            NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
+            AppDataChanges.shared.prayerStatsChanged()
         }
     }
 

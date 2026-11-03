@@ -43,7 +43,7 @@ enum GameStatsMigrations {
         }
 
         defaults.set(true, forKey: Self.legacyWipeFlagKey)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     // One-time migration: combine existing per-difficulty Quiz stats into combined "_all" keys.
@@ -91,7 +91,7 @@ enum GameStatsMigrations {
         }
 
         defaults.set(true, forKey: Self.quizCombinedMigrationFlagKey)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     // One-time migration: combine existing per-difficulty Book Order stats into combined "_all" keys.
@@ -138,7 +138,7 @@ enum GameStatsMigrations {
         }
 
         defaults.set(true, forKey: Self.bookOrderCombinedMigrationFlagKey)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     // One-time migration: combine existing per-difficulty Hangman stats into combined "_all" keys.
@@ -191,7 +191,7 @@ enum GameStatsMigrations {
         }
 
         defaults.set(true, forKey: Self.hangmanCombinedMigrationFlagKey)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     // One-time migration: combine existing per-difficulty Verses stats into combined "_all" keys.
@@ -244,7 +244,7 @@ enum GameStatsMigrations {
         }
 
         defaults.set(true, forKey: Self.verseMatchCombinedMigrationFlagKey)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     // One-time migration: combine existing per-difficulty Who? stats into combined "_all" keys.
@@ -288,6 +288,6 @@ enum GameStatsMigrations {
         }
 
         defaults.set(true, forKey: Self.whoamiCombinedMigrationFlagKey)
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 }

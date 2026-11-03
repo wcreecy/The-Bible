@@ -161,7 +161,7 @@ final class GameStatsLedger {
         saveSnapshot(totals)
 
         if changed {
-            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            AppDataChanges.shared.gameStatsChanged()
         }
     }
 
@@ -189,7 +189,7 @@ final class GameStatsLedger {
             _ = apply(totals)
             saveSnapshot(totals)
         }
-        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.gameStatsChanged()
     }
 
     // MARK: - Own payload

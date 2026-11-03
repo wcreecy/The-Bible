@@ -19,7 +19,7 @@ extension BibleStatsStore {
         saveJSON(dict, key: Defaults.keyDailyTotalsByBook)
         // Push and notify
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyDailyTotalsByBook)
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
     }
 
     // MARK: - OT/NT split

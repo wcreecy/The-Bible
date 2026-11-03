@@ -235,7 +235,7 @@ final class iCloudSyncCoordinator {
         // the archive is built from every device's days.
         BibleStatsStore.shared.compactReadingHistoryIfNeeded()
         updateStoreMetrics()
-        NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
+        AppDataChanges.shared.syncStatusChanged()
     }
 
     // Call after local writes if you want to eagerly push a specific key.
@@ -331,7 +331,7 @@ final class iCloudSyncCoordinator {
 
         // 4) Refresh the UI immediately, then flush the deletion to iCloud off-main.
         BibleStatsStore.shared.resetCaches()
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        AppDataChanges.shared.bibleStatsChanged()
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
         let _ = Task.detached {
             NSUbiquitousKeyValueStore.default.synchronize()
@@ -422,7 +422,7 @@ final class iCloudSyncCoordinator {
             case NSUbiquitousKeyValueStoreQuotaViolationChange:
                 syncState = .quotaExceeded
                 lastErrorMessage = "iCloud key-value storage exceeded its quota."
-                NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
+                AppDataChanges.shared.syncStatusChanged()
                 return
             case NSUbiquitousKeyValueStoreAccountChange:
                 restartForAccountChange()
@@ -488,13 +488,13 @@ final class iCloudSyncCoordinator {
 
         // Notify UI that stats may have changed (StatsView can refresh)
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            AppDataChanges.shared.bibleStatsChanged()
         }
 
         // If any game keys merged or we repaired, notify interested views (scoreboard) as well
         if mergedGameKey {
             DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+                AppDataChanges.shared.gameStatsChanged()
             }
         }
 
@@ -761,12 +761,12 @@ final class iCloudSyncCoordinator {
                     enqueueKeysForSync(repaired)
                 }
                 DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+                    AppDataChanges.shared.gameStatsChanged()
                 }
             }
 
             DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+                AppDataChanges.shared.bibleStatsChanged()
             }
             lastMergeDate = Date()
         }
@@ -807,7 +807,7 @@ final class iCloudSyncCoordinator {
             lastErrorMessage = "iCloud key-value storage is unavailable for this build or account."
         }
         updateStoreMetrics()
-        NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
+        AppDataChanges.shared.syncStatusChanged()
     }
 
     /// Measures the iCloud store for the Settings usage line. Serializing every value is
@@ -823,7 +823,7 @@ final class iCloudSyncCoordinator {
             guard !Task.isCancelled, let self else { return }
             self.cloudKeyCount = metrics.keyCount
             self.approximateCloudBytes = metrics.bytes
-            NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
+            AppDataChanges.shared.syncStatusChanged()
         }
     }
 

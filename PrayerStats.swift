@@ -193,14 +193,14 @@ final class PrayerStatsStore {
         }
         saveContributions(contributions)
         iCloudSyncCoordinator.shared.pushKey(contributionsKey)
-        NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
+        AppDataChanges.shared.prayerStatsChanged()
     }
 
     func recordSessionEnded(seconds: Int, at date: Date = Date()) {
         guard seconds > 0 else { return }
         saveLastSession(LastSession(seconds: seconds, endedAt: date))
         iCloudSyncCoordinator.shared.pushKey(lastSessionKey)
-        NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
+        AppDataChanges.shared.prayerStatsChanged()
     }
 
     /// Clears this device's copy only. Use `iCloudSyncCoordinator.resetAllBibleStatsAndSessions()`
@@ -210,7 +210,7 @@ final class PrayerStatsStore {
         defaults.removeObject(forKey: lastSessionKey)
         defaults.removeObject(forKey: legacyDailyKey)
         defaults.removeObject(forKey: legacyLastSessionKey)
-        NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
+        AppDataChanges.shared.prayerStatsChanged()
     }
 
     // MARK: - Merging
@@ -368,7 +368,7 @@ struct PrayerStatsCard: View {
         }
         // Refresh on appear too, in case stats changed while Stats was hidden.
         .onAppear { revision += 1 }
-        .onNotification(.prayerStatsUpdated) {
+        .onChange(of: AppDataChanges.shared.prayerStats) {
             revision += 1
         }
     }

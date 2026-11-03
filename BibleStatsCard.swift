@@ -62,10 +62,10 @@ struct BibleStatsCard: View {
                     refreshActivity()
                 }
             }
-            .onNotification(.gameStatsExternallyUpdated) {
+            .onChange(of: AppDataChanges.shared.gameStats) {
                 refreshGameActivity()
             }
-            .onNotification(.studyTimeUpdated) {
+            .onChange(of: AppDataChanges.shared.studyTime) {
                 refreshStudyActivity()
             }
         }

@@ -64,7 +64,7 @@ struct VersesChecklistView: View {
             refreshSeen()
         }
         // Refresh when stats merge from iCloud on another device
-        .onNotification(.bibleStatsExternallyUpdated) {
+        .onChange(of: AppDataChanges.shared.bibleStats) {
             refreshSeen()
         }
     }

@@ -121,7 +121,7 @@ final class StudyTimeTracker {
         }
         UserDefaults.standard.removeObject(forKey: Self.contributionsKey)
         UserDefaults.standard.removeObject(forKey: Self.legacyDailyTotalsKey)
-        NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
+        AppDataChanges.shared.studyTimeChanged()
     }
 
     // MARK: - Storage
@@ -143,7 +143,7 @@ final class StudyTimeTracker {
         if let data = try? JSONEncoder().encode(contributions) {
             UserDefaults.standard.set(data, forKey: Self.contributionsKey)
         }
-        NotificationCenter.default.post(name: .studyTimeUpdated, object: nil)
+        AppDataChanges.shared.studyTimeChanged()
     }
 
     /// Seconds per day, summed across devices.
