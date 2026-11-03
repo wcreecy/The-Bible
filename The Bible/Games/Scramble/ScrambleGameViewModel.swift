@@ -111,6 +111,7 @@ final class ScrambleGameViewModel {
     var answerFeedback: AnswerFeedback?
     var timerID = UUID()
     var hintLevel = 0
+    private(set) var hintPosition: Int?
     var isTimerDisabled = false
     /// True while the word is paused: the timer stops and the letters are hidden.
     var isPaused = false
@@ -141,17 +142,51 @@ final class ScrambleGameViewModel {
         difficulty.timeLimit
     }
 
-    /// Only a word with its timer running can be paused. Hard has no timer, and
-    /// "Timer Off" already stops the clock while leaving the word on screen.
+    /// Only a word with its timer running can be paused. "Timer Off" stops the
+    /// clock while leaving the word on screen.
     var canPause: Bool {
         phase == .playing && currentTimeLimit != nil && !isTimerDisabled
             && currentWord != nil && !isCurrentWordResolved && !isPaused
     }
 
+    var maxHintLevel: Int {
+        guard let currentWord else { return 0 }
+        let wordLength = currentWord.answer.count
+
+        if difficulty == .hard {
+            return wordLength > 1 ? 2 : 1
+        }
+
+        return min(difficulty.hintLimit, wordLength)
+    }
+
     var hintText: String? {
-        guard hintLevel > 0, let currentWord else { return nil }
-        let prefix = currentWord.answer.prefix(min(hintLevel, currentWord.answer.count))
-        return "Starts with \(prefix)."
+        guard hintLevel > 0, let currentWord, let firstLetter = currentWord.answer.first else { return nil }
+
+        guard hintLevel > 1,
+              let position = hintPosition,
+              position < currentWord.answer.count else {
+            return "Starts with \(firstLetter)."
+        }
+
+        let index = currentWord.answer.index(currentWord.answer.startIndex, offsetBy: position)
+        return "Starts with \(firstLetter). Position \(position + 1) is \(currentWord.answer[index])."
+    }
+
+    var hintedLetters: [Character?] {
+        guard let currentWord else { return [] }
+
+        var hints = Array<Character?>(repeating: nil, count: currentWord.answer.count)
+        if hintLevel > 0 {
+            hints[0] = currentWord.answer.first
+        }
+        if hintLevel > 1,
+           let position = hintPosition,
+           position < currentWord.answer.count {
+            let index = currentWord.answer.index(currentWord.answer.startIndex, offsetBy: position)
+            hints[position] = currentWord.answer[index]
+        }
+        return hints
     }
 
     // MARK: - Persistent streak (per difficulty)
@@ -233,6 +268,7 @@ final class ScrambleGameViewModel {
         typedAnswer = ""
         answerFeedback = nil
         hintLevel = 0
+        hintPosition = nil
         strikes = 0
         timeRemaining = currentTimeLimit ?? 0
         isPaused = false
@@ -281,8 +317,13 @@ final class ScrambleGameViewModel {
     }
 
     func showHint() {
-        guard let currentWord, !isCurrentWordResolved else { return }
-        hintLevel = min(hintLevel + 1, min(difficulty.hintLimit, currentWord.answer.count))
+        guard !isCurrentWordResolved, maxHintLevel > 0 else { return }
+
+        let nextLevel = min(hintLevel + 1, maxHintLevel)
+        if nextLevel == 2, hintPosition == nil {
+            hintPosition = 1
+        }
+        hintLevel = nextLevel
     }
 
     func toggleTimer() {
@@ -315,7 +356,7 @@ final class ScrambleGameViewModel {
         guard let currentWord, !isCurrentWordResolved else { return }
 
         guard selectedAnswer.uppercased() == currentWord.answer else {
-            if difficulty == .hard {
+            if difficulty != .easy {
                 strikes += 1
                 if strikes >= 3 {
                     revealAnswerAfterStrikeLimit(for: currentWord)

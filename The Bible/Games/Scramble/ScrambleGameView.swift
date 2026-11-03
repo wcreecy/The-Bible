@@ -28,7 +28,7 @@ struct ScrambleGameView: View {
             switch self {
             case .easy: 45
             case .normal: 30
-            case .hard: nil
+            case .hard: 30
             }
         }
 
@@ -36,7 +36,7 @@ struct ScrambleGameView: View {
             switch self {
             case .easy: String(localized: "45 seconds")
             case .normal: String(localized: "30 seconds")
-            case .hard: String(localized: "No timer")
+            case .hard: String(localized: "30 seconds")
             }
         }
 
@@ -58,7 +58,7 @@ struct ScrambleGameView: View {
             switch self {
             case .easy: "Familiar words with 45 seconds per word."
             case .normal: "A broader word list with 30 seconds per word."
-            case .hard: "Tougher words with no timer."
+            case .hard: "Tougher words with 30 seconds per word."
             }
         }
 
@@ -269,7 +269,7 @@ struct ScrambleGameView: View {
                 experienceDetails: GameExperienceDetails(
                     learn: "Familiar words with 45 seconds per word.",
                     standard: "A broader word list with 30 seconds per word.",
-                    challenge: "Tougher words with no timer."
+                    challenge: "Tougher words with 30 seconds per word."
                 ),
                 isStartEnabled: vm.wordBankStatus == .ready,
                 startAction: vm.startSession
@@ -299,7 +299,7 @@ struct ScrambleGameView: View {
                     first: ("number", "\(vm.sessionLength.rawValue) words", "This session"),
                     second: ("timer", vm.difficulty.timerLabel, "Per word"),
                     third: ("lightbulb", vm.difficulty.hintLabel, "Available"),
-                    fourth: vm.difficulty == .hard ? ("xmark.shield", "3 strikes", "Hard mode") : nil
+                    fourth: vm.difficulty == .easy ? nil : ("xmark.shield", "3 strikes", "Limited attempts")
                 )
             }
 
@@ -323,6 +323,7 @@ struct ScrambleGameView: View {
                     reference: vm.difficulty == .easy || vm.isCurrentWordResolved ? currentWord.reference : nil,
                     answer: vm.typedAnswer,
                     answerLength: currentWord.answer.count,
+                    hintedLetters: vm.hintedLetters,
                     isResolved: vm.isCurrentWordResolved,
                     timerTint: vm.currentTimeLimit == nil || vm.isTimerDisabled ? nil : vm.timerTint,
                     onShowReference: showCurrentReference
@@ -344,7 +345,7 @@ struct ScrambleGameView: View {
                         .foregroundStyle(answerFeedback.tint)
                 }
 
-                if vm.difficulty == .hard {
+                if vm.difficulty != .easy {
                     ScrambleStrikeIndicator(strikes: vm.strikes, limit: 3)
                 }
 
@@ -379,7 +380,7 @@ struct ScrambleGameView: View {
                         ScrambleGlassActionButton(
                             systemImage: "lightbulb.fill",
                             accessibilityLabel: vm.hintLevel == 0 ? "Show hint" : "Show another hint",
-                            isEnabled: vm.hintLevel < min(vm.difficulty.hintLimit, currentWord.answer.count),
+                            isEnabled: vm.hintLevel < vm.maxHintLevel,
                             tint: .yellow,
                             action: vm.showHint
                         )
@@ -393,10 +394,6 @@ struct ScrambleGameView: View {
                         )
                     }
                     .padding(.top, 8)
-
-                    if let hintText = vm.hintText {
-                        ScrambleHintCard(text: hintText)
-                    }
 
                     if vm.currentTimeLimit != nil {
                         Button(vm.isTimerDisabled ? "Timer On" : "Timer Off", systemImage: vm.isTimerDisabled ? "play.fill" : "pause.fill") {
@@ -521,6 +518,7 @@ private struct ScramblePrompt: View {
     let reference: String?
     let answer: String
     let answerLength: Int
+    let hintedLetters: [Character?]
     let isResolved: Bool
     let timerTint: Color?
     let onShowReference: () -> Void
@@ -557,6 +555,7 @@ private struct ScramblePrompt: View {
             ScrambleAnswerTiles(
                 answer: answer,
                 answerLength: answerLength,
+                hintedLetters: hintedLetters,
                 isResolved: isResolved
             )
         }
@@ -582,22 +581,55 @@ private struct ScramblePrompt: View {
 private struct ScrambleAnswerTiles: View {
     let answer: String
     let answerLength: Int
+    let hintedLetters: [Character?]
     let isResolved: Bool
 
     var body: some View {
-        HStack(spacing: 7) {
-            ForEach(0..<answerLength, id: \.self) { index in
-                let letter = index < answer.count ? String(answer[answer.index(answer.startIndex, offsetBy: index)]) : ""
-                Text(letter)
-                    .font(.title3.weight(.bold).monospaced())
-                    .foregroundStyle(isResolved ? .secondary : .primary)
-                    .frame(width: 42, height: 48)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.primary.opacity(isResolved ? 0.08 : 0.15), lineWidth: 1)
-                    }
+        GeometryReader { proxy in
+            let tileCount = max(answerLength, 1)
+            let maximumSpacing = 7.0
+            let minimumTileWidth = 24.0
+            let spacing = min(
+                maximumSpacing,
+                max(
+                    3,
+                    (proxy.size.width - CGFloat(tileCount) * minimumTileWidth)
+                        / CGFloat(max(tileCount - 1, 1))
+                )
+            )
+            let tileWidth = max(
+                1,
+                min(
+                    42,
+                    (proxy.size.width - spacing * CGFloat(max(tileCount - 1, 0)))
+                        / CGFloat(tileCount)
+                )
+            )
+            let tileHeight = min(48, max(30, tileWidth + 6))
+
+            HStack(spacing: spacing) {
+                ForEach(0..<answerLength, id: \.self) { index in
+                    let letter = index < answer.count ? String(answer[answer.index(answer.startIndex, offsetBy: index)]) : ""
+                    let hint = index >= answer.count && index < hintedLetters.count ? hintedLetters[index].map(String.init) ?? "" : ""
+                    Text(letter.isEmpty ? hint : letter)
+                        .font(.title3.weight(.bold).monospaced())
+                        .foregroundStyle(
+                            letter.isEmpty && !hint.isEmpty
+                                ? Color.secondary.opacity(0.55)
+                                : (isResolved ? .secondary : .primary)
+                        )
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .frame(width: tileWidth, height: tileHeight)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .strokeBorder(Color.primary.opacity(isResolved ? 0.08 : 0.15), lineWidth: 1)
+                        }
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(height: 48)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Answer")
         .accessibilityValue(answer.isEmpty ? "Empty" : answer)
