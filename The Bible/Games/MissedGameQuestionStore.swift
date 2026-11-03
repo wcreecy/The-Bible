@@ -329,6 +329,9 @@ final class MissedGameQuestionStore {
         // next main-actor turn after initialization has completed.
         save(publishing: false)
         Task { @MainActor in
+            // A main-actor task may begin immediately when this initializer already runs there.
+            // Suspend first so `shared` has finished its one-time initialization before sync reads it.
+            await Task.yield()
             iCloudSyncCoordinator.shared.pushKey(Self.storageKey)
         }
         defaults.set(Self.triviaQuestionSetVersion, forKey: Self.triviaQuestionSetVersionKey)

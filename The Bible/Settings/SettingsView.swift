@@ -37,6 +37,8 @@ struct SettingsView: View {
 private struct SettingsAppLinksSection: View {
     @AppStorage(AppStorageKey.colorSchemePreference) private var colorSchemePreferenceRaw = ColorSchemePreference.system.rawValue
     @AppStorage(LaunchTabPreference.defaultsKey) private var launchTabRaw = LaunchTabPreference.home.rawValue
+    @State private var homeVisibleCardCount = 0
+    @State private var homeHiddenCardCount = 0
 
     var body: some View {
         Section("App") {
@@ -56,6 +58,7 @@ private struct SettingsAppLinksSection: View {
                 SettingsNavigationRow(
                     title: "Home Layout",
                     subtitle: "Choose what appears on Home",
+                    status: homeLayoutSummary,
                     systemImage: "rectangle.grid.1x2"
                 )
             }
@@ -71,6 +74,23 @@ private struct SettingsAppLinksSection: View {
             }
 
         }
+        .onAppear(perform: updateHomeLayoutSummary)
+        .onReceive(NotificationCenter.default.publisher(for: .homeLayoutChanged)) { _ in
+            updateHomeLayoutSummary()
+        }
+    }
+
+    private var homeLayoutSummary: String {
+        String(
+            localized: "\(homeVisibleCardCount) cards shown · \(homeHiddenCardCount) hidden",
+            comment: "Home Layout summary; the values are the number of visible and hidden Home cards."
+        )
+    }
+
+    private func updateHomeLayoutSummary() {
+        let layout = HomeLayoutStore().load()
+        homeVisibleCardCount = layout.order.count - layout.hidden.count
+        homeHiddenCardCount = layout.hidden.count
     }
 
     private var appearanceSummary: LocalizedStringResource {
@@ -374,6 +394,8 @@ private struct SettingsVerseMarkersCard: View {
 
 private struct SettingsPrivacyAndSyncLinksSection: View {
     @Environment(CloudKitManager.self) private var cloudKitManager
+    @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var verseNotificationsEnabled = false
+    @AppStorage(StreakReminderScheduler.enabledKey) private var streakNotificationsEnabled = false
     @State private var lastSyncActivity: Date?
 
     var body: some View {
@@ -384,6 +406,7 @@ private struct SettingsPrivacyAndSyncLinksSection: View {
                 SettingsNavigationRow(
                     title: "Notifications",
                     subtitle: "Verse of the Day, streak reminder, and timer alarms",
+                    status: notificationSummary,
                     systemImage: "bell.badge"
                 )
             }
@@ -417,6 +440,15 @@ private struct SettingsPrivacyAndSyncLinksSection: View {
             ) {
                 updateLastSyncActivity()
             }
+        }
+    }
+
+    private var notificationSummary: String {
+        let enabledCount = [verseNotificationsEnabled, streakNotificationsEnabled].filter { $0 }.count
+        switch enabledCount {
+        case 0: return String(localized: "No reminders enabled")
+        case 1: return String(localized: "1 reminder enabled")
+        default: return String(localized: "\(enabledCount) reminders enabled")
         }
     }
 

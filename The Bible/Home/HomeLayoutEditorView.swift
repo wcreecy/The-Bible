@@ -25,6 +25,8 @@ struct HomeLayoutEditorView: View {
 
     /// The cards listed for reordering on iPhone, in Home order.
     private var listedCards: [HomeCardID] { order }
+    private var visibleListedCards: [HomeCardID] { listedCards.filter(isVisible) }
+    private var hiddenListedCards: [HomeCardID] { listedCards.filter { !isVisible($0) } }
 
     private func isVisible(_ id: HomeCardID) -> Bool {
         !hiddenSet.contains(id)
@@ -97,15 +99,20 @@ struct HomeLayoutEditorView: View {
 
     private func moveCard(_ id: HomeCardID, by offset: Int) {
         var cards = listedCards
-        guard let index = cards.firstIndex(of: id) else { return }
-        let destination = index + offset
-        guard cards.indices.contains(destination) else { return }
+        let visibleIndices = cards.indices.filter { isVisible(cards[$0]) }
+        guard let currentIndex = visibleIndices.firstIndex(where: { cards[$0] == id }) else { return }
+        let destinationIndex = currentIndex + offset
+        guard visibleIndices.indices.contains(destinationIndex) else { return }
+
+        let source = visibleIndices[currentIndex]
+        let destination = visibleIndices[destinationIndex]
         let swappedCard = cards[destination]
-        cards.swapAt(index, destination)
+        cards.swapAt(source, destination)
+
         withAnimation(.snappy) {
             order = cards
             highlightedCards = [id, swappedCard]
-            reorderConfirmation = "\(id.title) moved to position \(destination + 1)"
+            reorderConfirmation = "\(id.title) moved to position \(destinationIndex + 1)"
         }
         onDone()
         Haptics.selection()
@@ -113,11 +120,11 @@ struct HomeLayoutEditorView: View {
     }
 
     private func canMoveUp(_ id: HomeCardID) -> Bool {
-        listedCards.firstIndex(of: id).map { $0 > 0 } == true
+        visibleListedCards.firstIndex(of: id).map { $0 > 0 } == true
     }
 
     private func canMoveDown(_ id: HomeCardID) -> Bool {
-        listedCards.firstIndex(of: id).map { $0 < listedCards.count - 1 } == true
+        visibleListedCards.firstIndex(of: id).map { $0 < visibleListedCards.count - 1 } == true
     }
 
     // MARK: - iPad columns
@@ -166,6 +173,23 @@ struct HomeLayoutEditorView: View {
         let moved = source.map { cards[$0] }
         changeColumns(highlighting: Set(moved), confirmation: nil) {
             $0.moveStacked(in: column, fromOffsets: source, toOffset: destination)
+        }
+    }
+
+    private func moveVisibleInColumn(_ column: HomeColumn, fromOffsets source: IndexSet, toOffset destination: Int) {
+        let cards = columns.stackedCards(in: column)
+        var visibleCards = cards.filter(isVisible)
+        let moved = source.compactMap { visibleCards.indices.contains($0) ? visibleCards[$0] : nil }
+        guard !moved.isEmpty else { return }
+
+        visibleCards.move(fromOffsets: source, toOffset: destination)
+        changeColumns(highlighting: Set(moved), confirmation: nil) {
+            let originalCards = $0[column]
+            var visibleIndex = 0
+            for index in originalCards.indices where isVisible(originalCards[index]) && !$0.isSpanning(originalCards[index]) {
+                $0[column][index] = visibleCards[visibleIndex]
+                visibleIndex += 1
+            }
         }
     }
 
@@ -379,14 +403,14 @@ struct HomeLayoutEditorView: View {
                         .accessibilityHint("Choose its column in Today's Reading Panel above")
                 }
 
-                ForEach(Array(columns.stackedCards(in: column).enumerated()), id: \.element) { index, id in
+                ForEach(Array(columns.stackedCards(in: column).filter(isVisible).enumerated()), id: \.element) { index, id in
                     columnRow(for: id, in: column, position: index + 1)
                 }
                 .onMove { source, destination in
-                    moveInColumn(column, fromOffsets: source, toOffset: destination)
+                    moveVisibleInColumn(column, fromOffsets: source, toOffset: destination)
                 }
 
-                if columns.stackedCards(in: column).isEmpty {
+                if columns.stackedCards(in: column).filter(isVisible).isEmpty {
                     Text("No cards. Use the arrows on a card to move it here.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -397,6 +421,18 @@ struct HomeLayoutEditorView: View {
                 if column == HomeColumn.allCases.last {
                     Text("Drag cards to reorder them within a column, and use the arrows to move a card to the next column. You can also tap Edit Home on the Home screen to arrange cards in place.")
                 }
+            }
+        }
+
+        if !hiddenListedCards.isEmpty {
+            Section {
+                ForEach(hiddenListedCards) { id in
+                    hiddenLayoutRow(for: id)
+                }
+            } header: {
+                Label("Hidden Cards", systemImage: "eye.slash")
+            } footer: {
+                Text("These cards are hidden from Home. Show a card to make it available there.")
             }
         }
     }
@@ -411,6 +447,31 @@ struct HomeLayoutEditorView: View {
                 reorderConfirmation = nil
             }
         }
+    }
+
+    private func hiddenLayoutRow(for id: HomeCardID) -> some View {
+        HStack {
+            Image(systemName: id.systemImage)
+                .foregroundStyle(.secondary)
+                .frame(width: 24)
+
+            Text(id.title)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            Button {
+                toggleVisibility(id)
+            } label: {
+                Label("Show", systemImage: "eye")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.accentColor)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Show \(id.title)")
+            .accessibilityHint("Makes this card available on Home")
+        }
+        .padding(.vertical, 4)
     }
 
     private func layoutRow(for id: HomeCardID, position: Int) -> some View {
@@ -527,7 +588,7 @@ struct HomeLayoutEditorView: View {
                             .padding(.vertical, 4)
                     }
 
-                    ForEach(Array(listedCards.enumerated()), id: \.element) { index, id in
+                    ForEach(Array(visibleListedCards.enumerated()), id: \.element) { index, id in
                         layoutRow(for: id, position: index + 1)
                     }
 
@@ -537,9 +598,21 @@ struct HomeLayoutEditorView: View {
                     }
                     .toggleStyle(StatusColorToggleStyle())
                 } header: {
-                    Label("Home Cards", systemImage: "house")
+                    Label("Visible Cards", systemImage: "eye")
                 } footer: {
-                    Text("Shown cards appear on Home. Use the arrows to choose their order.")
+                    Text("These cards appear on Home. Use the arrows to choose their order.")
+                }
+
+                if !hiddenListedCards.isEmpty {
+                    Section {
+                        ForEach(hiddenListedCards) { id in
+                            hiddenLayoutRow(for: id)
+                        }
+                    } header: {
+                        Label("Hidden Cards", systemImage: "eye.slash")
+                    } footer: {
+                        Text("These cards are hidden from Home. Show a card to make it available there.")
+                    }
                 }
             }
 
