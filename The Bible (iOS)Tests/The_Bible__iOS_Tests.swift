@@ -24,95 +24,95 @@ struct The_Bible__iOS_Tests {
         ))
     }
 
-    /// Waits for `condition` to become true, up to `timeout`. The tracker works on timers, so
-    /// a fixed sleep fails whenever the machine is busy (for example while UI tests run).
-    private func waitUntil(
-        timeout: Duration = .seconds(5),
-        _ condition: () -> Bool
-    ) async throws {
-        let deadline = ContinuousClock.now + timeout
-        while !condition(), ContinuousClock.now < deadline {
-            try await Task.sleep(for: .milliseconds(10))
-        }
-    }
-
     @Test
-    func verseRequiresContinuousVisibilityForTheFullDwell() async throws {
+    func verseRequiresContinuousVisibilityForTheFullDwell() async {
+        let clock = ManualSleeper()
         var commits: [Set<SeenVerseUpdate>] = []
-        // A long dwell leaves plenty of room for the short wait before the verse hides.
         let tracker = VerseReadingTracker(
             dwellDuration: 0.5,
-            batchDuration: 0.01
+            batchDuration: 0.01,
+            sleep: clock.sleep
         ) { commits.append($0) }
 
         tracker.setActive(true)
         tracker.visibilityChanged(firstVerse, isVisible: true)
-        try await Task.sleep(for: .milliseconds(50))
+        await clock.advance(by: 0.05)
         tracker.visibilityChanged(firstVerse, isVisible: false)
-        // Wait past the full dwell: a verse hidden early must never be committed.
-        try await Task.sleep(for: .milliseconds(700))
+        // Well past the full dwell: a verse hidden early must never be committed.
+        await clock.advance(by: 1)
 
         #expect(commits.isEmpty)
     }
 
     @Test
-    func verseCommitsAfterVisibilityDwell() async throws {
+    func verseCommitsAfterVisibilityDwell() async {
+        let clock = ManualSleeper()
         var commits: [Set<SeenVerseUpdate>] = []
         let tracker = VerseReadingTracker(
             dwellDuration: 0.02,
-            batchDuration: 0.01
+            batchDuration: 0.01,
+            sleep: clock.sleep
         ) { commits.append($0) }
 
         tracker.setActive(true)
         tracker.visibilityChanged(firstVerse, isVisible: true)
-        try await waitUntil { !commits.isEmpty }
-        // Give a stray second commit time to show up before checking there was only one.
-        try await Task.sleep(for: .milliseconds(100))
+        await clock.advance(by: 0.02)
+        #expect(commits.isEmpty, "Recognized after the dwell, but not committed until the batch ends.")
 
+        await clock.advance(by: 0.01)
+        #expect(commits == [[firstVerse]])
+
+        // No stray second commit later.
+        await clock.advance(by: 10)
         #expect(commits == [[firstVerse]])
     }
 
     @Test
-    func directEngagementIsBatchedWithoutDwell() async throws {
+    func directEngagementIsBatchedWithoutDwell() async {
         let secondVerse = SeenVerseUpdate(
             bookName: "John",
             chapter: 1,
             verse: 2,
             totalVerses: 51
         )
+        let clock = ManualSleeper()
         var commits: [Set<SeenVerseUpdate>] = []
         let tracker = VerseReadingTracker(
             dwellDuration: 1,
-            batchDuration: 0.01
+            batchDuration: 0.01,
+            sleep: clock.sleep
         ) { commits.append($0) }
 
         tracker.recordDirectEngagement(firstVerse)
         tracker.recordDirectEngagement(secondVerse)
-        try await waitUntil { !commits.isEmpty }
-        try await Task.sleep(for: .milliseconds(100))
+        await clock.advance(by: 0.01)
 
         #expect(commits.count == 1)
         #expect(commits.first == [firstVerse, secondVerse])
     }
 
     @Test
-    func inactiveReaderCancelsDwellAndRestartsWhenActive() async throws {
+    func inactiveReaderCancelsDwellAndRestartsWhenActive() async {
+        let clock = ManualSleeper()
         var commits: [Set<SeenVerseUpdate>] = []
         let tracker = VerseReadingTracker(
             dwellDuration: 0.3,
-            batchDuration: 0.01
+            batchDuration: 0.01,
+            sleep: clock.sleep
         ) { commits.append($0) }
 
         tracker.setActive(true)
         tracker.visibilityChanged(firstVerse, isVisible: true)
-        try await Task.sleep(for: .milliseconds(50))
+        await clock.advance(by: 0.05)
         tracker.setActive(false)
-        // Wait past the original dwell: going inactive must have cancelled it.
-        try await Task.sleep(for: .milliseconds(450))
+        await clock.settle()
+        // Past the original dwell: going inactive must have cancelled it.
+        await clock.advance(by: 1)
         #expect(commits.isEmpty)
 
         tracker.setActive(true)
-        try await waitUntil { !commits.isEmpty }
+        await clock.advance(by: 0.3)
+        await clock.advance(by: 0.01)
         #expect(commits == [[firstVerse]])
     }
 

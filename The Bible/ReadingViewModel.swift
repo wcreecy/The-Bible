@@ -393,6 +393,8 @@ final class VerseReadingTracker {
     private let dwellNanoseconds: UInt64
     private let batchNanoseconds: UInt64
     private let commit: (Set<SeenVerseUpdate>) -> Void
+    /// Waits the given nanoseconds. Tests pass a manual clock, so they don't depend on timing.
+    private let sleep: (UInt64) async throws -> Void
 
     private var isActive = false
     private var visibleUpdates: Set<SeenVerseUpdate> = []
@@ -404,10 +406,12 @@ final class VerseReadingTracker {
     init(
         dwellDuration: TimeInterval = 5,
         batchDuration: TimeInterval = 1,
+        sleep: @escaping (UInt64) async throws -> Void = { try await Task.sleep(nanoseconds: $0) },
         commit: @escaping (Set<SeenVerseUpdate>) -> Void
     ) {
         dwellNanoseconds = Self.nanoseconds(for: dwellDuration)
         batchNanoseconds = Self.nanoseconds(for: batchDuration)
+        self.sleep = sleep
         self.commit = commit
     }
 
@@ -460,7 +464,7 @@ final class VerseReadingTracker {
         dwellTasks[update] = Task { [weak self] in
             guard let self else { return }
             do {
-                try await Task.sleep(nanoseconds: dwellNanoseconds)
+                try await sleep(dwellNanoseconds)
             } catch {
                 return
             }
@@ -479,7 +483,7 @@ final class VerseReadingTracker {
         batchTask = Task { [weak self] in
             guard let self else { return }
             do {
-                try await Task.sleep(nanoseconds: batchNanoseconds)
+                try await sleep(batchNanoseconds)
             } catch {
                 return
             }

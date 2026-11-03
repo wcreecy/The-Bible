@@ -688,7 +688,8 @@ enum DeveloperSettingsReset {
             "liveActivitiesEnabled": true,
             "healthKitMindfulMinutesEnabled": false,
             "didRequestNotifications": false,
-            "contextualTipsEnabled": false,
+            // Matches the default registered at launch, so a reset returns to a fresh install.
+            AppStorageKey.contextualTipsEnabled: true,
             "readerFontSize": 17.0,
             AppStorageKey.readerShowsFullReferences: true,
             ReaderDisplaySettings.showsReadProgressKey: false,
