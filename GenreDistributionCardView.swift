@@ -9,6 +9,9 @@ struct GenreDistributionCardView: View {
 
     @Binding var timeScope: StatsTimeScope
     let perGenreTotals: [(genre: String, seconds: Int)]
+    /// The Old and New Testament split for the same scope.
+    let otSeconds: Int
+    let ntSeconds: Int
     @Binding var selectedGenre: StatsSeriesBuilder.Genre?
     let onSelectGenre: (StatsSeriesBuilder.Genre) -> Void
     let genreColor: (String) -> Color
@@ -37,6 +40,10 @@ struct GenreDistributionCardView: View {
                 }
                 .pickerStyle(.segmented)
                 .tint(segmentedTint)
+
+                TestamentSplitBar(otSeconds: otSeconds, ntSeconds: ntSeconds, formatSeconds: formatSeconds)
+
+                Divider()
 
                 let maxValRaw = perGenreTotals.map { max(0, $0.seconds) }.max() ?? 0
                 let maxVal = max(1, maxValRaw)

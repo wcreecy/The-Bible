@@ -3,12 +3,8 @@ import UserNotifications
 
 struct SettingsDailyGoalSection: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
-    @AppStorage(StreakReminderScheduler.enabledKey) private var reminderEnabled = false
-    @AppStorage(StreakReminderScheduler.hourKey) private var reminderHour = StreakReminderScheduler.defaultHour
-    @AppStorage(StreakReminderScheduler.minuteKey) private var reminderMinute = 0
 
     @State private var isDailyGoalSheetPresented: Bool = false
-    @State private var showsNotificationPermissionAlert = false
 
     var body: some View {
         Section(
@@ -40,25 +36,30 @@ struct SettingsDailyGoalSection: View {
                 DailyGoalEditorView()
             }
 
-            Toggle(isOn: reminderBinding) {
-                Label("Streak Reminder", systemImage: "bell.badge")
-            }
-            .accessibilityIdentifier("streakReminderToggle")
-
-            if reminderEnabled {
-                DatePicker(
-                    "Remind Me At",
-                    selection: reminderTimeBinding,
-                    displayedComponents: .hourAndMinute
-                )
-                .accessibilityIdentifier("streakReminderTimePicker")
-            }
+            StreakReminderRows()
         }
         .headerProminence(.increased)
         .onAppear {
             // Ensure there is a baseline history so older days evaluate consistently
             DailyGoalHistoryStore.shared.ensureSeededIfNeeded()
         }
+    }
+}
+
+/// The Streak Reminder toggle and its time. Shown in Daily Goal settings and on the
+/// Notifications page; both use the same saved settings.
+struct StreakReminderRows: View {
+    @AppStorage(StreakReminderScheduler.enabledKey) private var reminderEnabled = false
+    @AppStorage(StreakReminderScheduler.hourKey) private var reminderHour = StreakReminderScheduler.defaultHour
+    @AppStorage(StreakReminderScheduler.minuteKey) private var reminderMinute = 0
+
+    @State private var showsNotificationPermissionAlert = false
+
+    var body: some View {
+        Toggle(isOn: reminderBinding) {
+            Label("Streak Reminder", systemImage: "bell.badge")
+        }
+        .accessibilityIdentifier("streakReminderToggle")
         .alert("Notifications Are Off", isPresented: $showsNotificationPermissionAlert) {
             Button("Open Settings") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -68,6 +69,15 @@ struct SettingsDailyGoalSection: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Allow notifications for this app in Settings to get streak reminders.")
+        }
+
+        if reminderEnabled {
+            DatePicker(
+                "Remind Me At",
+                selection: reminderTimeBinding,
+                displayedComponents: .hourAndMinute
+            )
+            .accessibilityIdentifier("streakReminderTimePicker")
         }
     }
 

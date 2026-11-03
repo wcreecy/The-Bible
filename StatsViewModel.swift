@@ -35,8 +35,6 @@ final class StatsViewModel {
     var avgSessionSecondsLast7: Int = 0
 
     // This Month metrics
-    var monthTotalSeconds: Int = 0
-    var monthTop3Books: [(book: String, seconds: Int)] = []
 
     // Last session length (seconds)
     var lastSessionSeconds: Int = 0
@@ -48,7 +46,6 @@ final class StatsViewModel {
     // scope, or any refresh of the underlying data, recomputes that card's numbers.
 
     var timeScopeTotals: StatsTimeScope = .allTime { didSet { recomputeTotalsCard() } }
-    var timeScopeOTNT: StatsTimeScope = .allTime { didSet { recomputeOTNTCard() } }
     var timeScopeGenre: StatsTimeScope = .allTime { didSet { recomputeGenreCard() } }
 
     // Totals card
@@ -237,12 +234,6 @@ final class StatsViewModel {
 
         lastSessionSeconds = sessions.max(by: { $0.end < $1.end })
             .map(ReadingSessionsStore.duration(of:)) ?? 0
-
-        // This Month total from BibleStatsStore
-        let monthKeys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: calendar)
-        monthTotalSeconds = monthKeys.reduce(0) { total, key in
-            total + max(0, dailyTotals[key, default: 0])
-        }
     }
 
     private func refreshSessionScopedPerBook(
@@ -292,13 +283,6 @@ final class StatsViewModel {
         // This month
         let monthKeys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: calendar)
         perBookMonthTotals = sumPerBook(for: monthKeys)
-
-        // Top 3 books for this month (based on daily totals by book)
-        let sortedTop = perBookMonthTotals.sorted { lhs, rhs in
-            if lhs.value == rhs.value { return lhs.key < rhs.key }
-            return lhs.value > rhs.value
-        }
-        monthTop3Books = Array(sortedTop.prefix(3)).map { (book: $0.key, seconds: $0.value) }
     }
 
     // MARK: - Scoped cards
@@ -320,7 +304,6 @@ final class StatsViewModel {
     }
 
     private var totalsScopedPerBookTotals: [String: Int] { perBookTotals(for: timeScopeTotals) }
-    private var otntScopedPerBookTotals: [String: Int] { perBookTotals(for: timeScopeOTNT) }
     private var genreScopedPerBookTotals: [String: Int] { perBookTotals(for: timeScopeGenre) }
 
     var totalsScopedTotalSeconds: Int {
@@ -375,10 +358,9 @@ final class StatsViewModel {
         }
     }
 
-    /// Recomputes all three scoped cards, after a refresh or when the screen reappears.
+    /// Recomputes both scoped cards, after a refresh or when the screen reappears.
     func recomputeScopedCards() {
         recomputeTotalsCard()
-        recomputeOTNTCard()
         recomputeGenreCard()
     }
 
@@ -399,14 +381,13 @@ final class StatsViewModel {
         topBookInScope = StatsTotalsSeries.topBook(in: totalsScopedPerBookTotals)
     }
 
-    private func recomputeOTNTCard() {
-        let split = BibleStatsStore.shared.splitOTNT(totals: otntScopedPerBookTotals)
+    /// The Genre card also shows the Old and New Testament split, for the same scope.
+    private func recomputeGenreCard() {
+        let totals = genreScopedPerBookTotals
+        perGenreTotals = StatsSeriesBuilder.computeGenreTotals(from: totals).map { ($0.genre, $0.seconds) }
+        let split = BibleStatsStore.shared.splitOTNT(totals: totals)
         otSeconds = split.ot
         ntSeconds = split.nt
-    }
-
-    private func recomputeGenreCard() {
-        perGenreTotals = StatsSeriesBuilder.computeGenreTotals(from: genreScopedPerBookTotals).map { ($0.genre, $0.seconds) }
     }
 
     // MARK: - Compute helpers

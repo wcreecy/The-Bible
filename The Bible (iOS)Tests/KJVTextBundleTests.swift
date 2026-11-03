@@ -4,6 +4,7 @@ import Testing
 
 /// The app bundles KJVText.json, pre-cleaned from the raw kjv.json by Scripts/clean_kjv.
 /// These fail when kjv.json changes without re-running that script.
+@MainActor
 struct KJVTextBundleTests {
     /// The raw source, copied into this test bundle only (not the app).
     private var sourceURL: URL? {

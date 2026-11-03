@@ -16,7 +16,6 @@ struct SettingsVOTDSection: View {
     @AppStorage("votdRefreshNotificationsEnabled") private var notificationsEnabled: Bool = false
     @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
     @State private var notificationAuthorizationStatus: UNAuthorizationStatus = .notDetermined
-    @State private var showsNotificationPermissionAlert = false
 
     private var refresh1DateBinding: Binding<Date> {
         Binding<Date>(
@@ -135,8 +134,7 @@ struct SettingsVOTDSection: View {
                         .foregroundStyle(.secondary)
                         .accessibilityIdentifier("votdNextRefreshDescription")
 
-                    Toggle("Notify When Verse Refreshes", isOn: notificationBinding)
-                        .accessibilityIdentifier("votdRefreshNotifications")
+                    VOTDNotificationToggle()
 
                     LabeledContent("Notification Access") {
                         Text(notificationPermissionStatus)
@@ -154,6 +152,10 @@ struct SettingsVOTDSection: View {
         .onChange(of: verseOfDayPaused) { _, _ in
             updateNotificationSchedule()
         }
+        // Turning notifications on can ask for access; show the new status.
+        .onChange(of: notificationsEnabled) { _, _ in
+            Task { await updateNotificationAuthorizationStatus() }
+        }
         .task {
             await updateNotificationAuthorizationStatus()
         }
@@ -162,12 +164,6 @@ struct SettingsVOTDSection: View {
             Task {
                 await updateNotificationAuthorizationStatus()
             }
-        }
-        .alert("Notifications Are Off", isPresented: $showsNotificationPermissionAlert) {
-            Button("Open System Settings", action: openSystemSettings)
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("Allow notifications for The Bible in Settings to be notified when the verse refreshes.")
         }
     }
 
@@ -201,33 +197,6 @@ struct SettingsVOTDSection: View {
         }
     }
 
-    private var notificationBinding: Binding<Bool> {
-        Binding(
-            get: { notificationsEnabled },
-            set: { newValue in
-                if newValue {
-                    Task { await enableNotifications() }
-                } else {
-                    notificationsEnabled = false
-                    VOTDNotificationScheduler.cancel()
-                }
-            }
-        )
-    }
-
-    @MainActor
-    private func enableNotifications() async {
-        let allowed = await VOTDNotificationScheduler.requestAuthorizationIfNeeded()
-        await updateNotificationAuthorizationStatus()
-        notificationsEnabled = allowed
-
-        if allowed {
-            updateNotificationSchedule()
-        } else {
-            showsNotificationPermissionAlert = true
-        }
-    }
-
     @MainActor
     private func updateNotificationAuthorizationStatus() async {
         notificationAuthorizationStatus = await UNUserNotificationCenter.current()
@@ -236,18 +205,7 @@ struct SettingsVOTDSection: View {
     }
 
     private func updateNotificationSchedule() {
-        guard notificationsEnabled, !verseOfDayPaused else {
-            VOTDNotificationScheduler.cancel()
-            return
-        }
-
-        Task {
-            await VOTDNotificationScheduler.schedule(
-                frequency: refreshFrequency,
-                first: (votdRefresh1Hour, votdRefresh1Minute),
-                second: (votdRefresh2Hour, votdRefresh2Minute)
-            )
-        }
+        Task { await VOTDNotificationScheduler.applySavedSettings() }
     }
 
     private func openSystemSettings() {
@@ -282,7 +240,84 @@ struct SettingsVOTDSection: View {
     }
 }
 
+/// The "Notify When Verse Refreshes" toggle. Shown in Verse of the Day settings and on the
+/// Notifications page; both use the same saved setting.
+struct VOTDNotificationToggle: View {
+    /// The Notifications page shows an icon, matching its other rows.
+    var showsIcon = false
+
+    @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var notificationsEnabled = false
+    @State private var showsNotificationPermissionAlert = false
+
+    var body: some View {
+        Toggle(isOn: notificationBinding) {
+            if showsIcon {
+                Label("Notify When Verse Refreshes", systemImage: "sun.max")
+            } else {
+                Text("Notify When Verse Refreshes")
+            }
+        }
+            .accessibilityIdentifier("votdRefreshNotifications")
+            .alert("Notifications Are Off", isPresented: $showsNotificationPermissionAlert) {
+                Button("Open System Settings") {
+                    guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                    UIApplication.shared.open(url)
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Allow notifications for The Bible in Settings to be notified when the verse refreshes.")
+            }
+    }
+
+    private var notificationBinding: Binding<Bool> {
+        Binding(
+            get: { notificationsEnabled },
+            set: { newValue in
+                if newValue {
+                    Task { await enableNotifications() }
+                } else {
+                    notificationsEnabled = false
+                    VOTDNotificationScheduler.cancel()
+                }
+            }
+        )
+    }
+
+    @MainActor
+    private func enableNotifications() async {
+        let allowed = await VOTDNotificationScheduler.requestAuthorizationIfNeeded()
+        notificationsEnabled = allowed
+
+        if allowed {
+            await VOTDNotificationScheduler.applySavedSettings()
+        } else {
+            showsNotificationPermissionAlert = true
+        }
+    }
+}
+
 enum VOTDNotificationScheduler {
+    /// Schedules or cancels the notifications to match the saved Verse of the Day settings:
+    /// on, not paused, at the chosen refresh times.
+    static func applySavedSettings() async {
+        let defaults = UserDefaults.standard
+        guard defaults.bool(forKey: AppStorageKey.verseOfDayRefreshNotificationsEnabled),
+              !defaults.bool(forKey: "verseOfDayPaused") else {
+            cancel()
+            return
+        }
+
+        func storedInt(_ key: String, default fallback: Int) -> Int {
+            defaults.object(forKey: key) == nil ? fallback : defaults.integer(forKey: key)
+        }
+        let frequency = VOTDRefreshFrequency(rawValue: defaults.string(forKey: "votdRefreshFrequency") ?? "") ?? .custom
+        await schedule(
+            frequency: frequency,
+            first: (storedInt("votdRefresh1Hour", default: 6), storedInt("votdRefresh1Minute", default: 0)),
+            second: (storedInt("votdRefresh2Hour", default: 18), storedInt("votdRefresh2Minute", default: 0))
+        )
+    }
+
     private static let hourlyIdentifiers = (0..<24).map { "verse-of-day-refresh-hourly-\($0)" }
     private static let identifiers = hourlyIdentifiers + [
         "verse-of-day-refresh-first",

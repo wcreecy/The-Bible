@@ -377,6 +377,17 @@ private struct SettingsPrivacyAndSyncLinksSection: View {
     var body: some View {
         Section("Privacy & Sync") {
             NavigationLink {
+                SettingsNotificationsDetailView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Notifications",
+                    subtitle: "Verse of the Day, streak reminder, and timer alarms",
+                    systemImage: "bell.badge"
+                )
+            }
+            .accessibilityIdentifier("notificationsSettingsLink")
+
+            NavigationLink {
                 SettingsPermissionsDetailView()
             } label: {
                 SettingsNavigationRow(
@@ -853,6 +864,14 @@ private struct SettingsTimerDetailView: View {
         SettingsDetailForm(title: "Prayer & Study Timer") {
             SettingsTimerSection()
             SettingsPrayerTimerAccessSection()
+        }
+    }
+}
+
+private struct SettingsNotificationsDetailView: View {
+    var body: some View {
+        SettingsDetailForm(title: "Notifications") {
+            SettingsNotificationsSection()
         }
     }
 }

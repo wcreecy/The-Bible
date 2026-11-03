@@ -5,22 +5,9 @@ import UIKit
 import UserNotifications
 
 struct SettingsPermissionsSection: View {
-    @Environment(\.scenePhase) private var scenePhase
-
-    @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
-
     var body: some View {
         Section {
-            Button(action: handleNotificationsAction) {
-                HStack {
-                    Label("Notifications", systemImage: "bell.badge")
-                    Spacer()
-                    Text(notificationStatusText)
-                        .foregroundStyle(notificationStatusColor)
-                }
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("notificationsPermissionRow")
+            NotificationAccessRow()
 
             HStack {
                 Label("Photo Selection", systemImage: "photo.on.rectangle")
@@ -39,6 +26,27 @@ struct SettingsPermissionsSection: View {
                 .foregroundStyle(.secondary)
         }
         .headerProminence(.increased)
+    }
+}
+
+/// Whether the app may send notifications. Tapping asks for access the first time, and
+/// opens iOS Settings after that. Shown in Permissions and on the Notifications page.
+struct NotificationAccessRow: View {
+    @Environment(\.scenePhase) private var scenePhase
+
+    @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
+
+    var body: some View {
+        Button(action: handleNotificationsAction) {
+            HStack {
+                Label("Notifications", systemImage: "bell.badge")
+                Spacer()
+                Text(notificationStatusText)
+                    .foregroundStyle(notificationStatusColor)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("notificationsPermissionRow")
         .task {
             await updateStatus()
         }
@@ -98,28 +106,13 @@ struct SettingsPrayerTimerAccessSection: View {
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
     @AppStorage("healthKitMindfulMinutesEnabled") private var mindfulMinutesEnabled: Bool = false
 
-    @State private var alarmStatus: PrayerTimerAlarmScheduler.AuthorizationStatus = .unavailable
-    @State private var isRequestingAlarmAuthorization = false
-    @State private var showAlarmSettingsAlert = false
     @State private var mindfulMinutesStatus: HKAuthorizationStatus?
     @State private var areSystemLiveActivitiesEnabled = true
 
     var body: some View {
         Section {
             if #available(iOS 26.1, *) {
-                Toggle(isOn: alarmAuthorizationBinding) {
-                    Label {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Prayer & Study Timer Alarms")
-                            Text(alarmStatusText)
-                                .font(.caption)
-                                .foregroundStyle(alarmStatusColor)
-                        }
-                    } icon: {
-                        Image(systemName: "alarm")
-                    }
-                }
-                .accessibilityIdentifier("alarmKitPermissionRow")
+                PrayerTimerAlarmToggle()
             }
 
             Toggle(isOn: $liveActivitiesEnabled) {
@@ -172,38 +165,12 @@ struct SettingsPrayerTimerAccessSection: View {
                 .foregroundStyle(.secondary)
         }
         .headerProminence(.increased)
-        .alert("Alarm Access Is Managed by iOS", isPresented: $showAlarmSettingsAlert) {
-            Button("Open Settings", action: openSystemSettings)
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("The Bible can only show the AlarmKit permission prompt once. To change a previous decision, allow Prayer & Study Timer Alarms in iOS Settings.")
-        }
         .task {
             updateStatuses()
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             updateStatuses()
-        }
-    }
-
-    private var alarmStatusText: LocalizedStringKey {
-        if isRequestingAlarmAuthorization {
-            return "Requesting Access"
-        }
-        return switch alarmStatus {
-        case .authorized: "Allowed"
-        case .denied: "Denied"
-        case .notDetermined: "Not Requested"
-        case .unavailable: "Unavailable"
-        }
-    }
-
-    private var alarmStatusColor: Color {
-        switch alarmStatus {
-        case .authorized: .green
-        case .denied: .orange
-        case .notDetermined, .unavailable: .secondary
         }
     }
 
@@ -229,6 +196,97 @@ struct SettingsPrayerTimerAccessSection: View {
         case .sharingDenied: .orange
         case .notDetermined, nil: .secondary
         @unknown default: .secondary
+        }
+    }
+
+    private func handleMindfulMinutesToggle(_ enabled: Bool) {
+        guard enabled else { return }
+        guard mindfulMinutesStatus != nil else {
+            mindfulMinutesEnabled = false
+            return
+        }
+
+        if mindfulMinutesStatus == .sharingDenied {
+            mindfulMinutesEnabled = false
+            openSystemSettings()
+            return
+        }
+
+        HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+            mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
+            if mindfulMinutesStatus != .sharingAuthorized {
+                mindfulMinutesEnabled = false
+            }
+        }
+    }
+
+    @MainActor
+    private func updateStatuses() {
+        mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
+        if mindfulMinutesStatus == nil || mindfulMinutesStatus == .sharingDenied {
+            mindfulMinutesEnabled = false
+        }
+        areSystemLiveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
+    }
+}
+
+/// Asks for AlarmKit access so the Prayer & Study Timer can ring as an alarm. iOS shows its
+/// prompt once; after that the toggle points to iOS Settings. Shown with the timer's settings
+/// and on the Notifications page.
+@available(iOS 26.1, *)
+struct PrayerTimerAlarmToggle: View {
+    @Environment(\.scenePhase) private var scenePhase
+
+    @State private var alarmStatus: PrayerTimerAlarmScheduler.AuthorizationStatus = .unavailable
+    @State private var isRequestingAlarmAuthorization = false
+    @State private var showAlarmSettingsAlert = false
+
+    var body: some View {
+        Toggle(isOn: alarmAuthorizationBinding) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Prayer & Study Timer Alarms")
+                    Text(alarmStatusText)
+                        .font(.caption)
+                        .foregroundStyle(alarmStatusColor)
+                }
+            } icon: {
+                Image(systemName: "alarm")
+            }
+        }
+        .accessibilityIdentifier("alarmKitPermissionRow")
+        .alert("Alarm Access Is Managed by iOS", isPresented: $showAlarmSettingsAlert) {
+            Button("Open Settings", action: openSystemSettings)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("The Bible can only show the AlarmKit permission prompt once. To change a previous decision, allow Prayer & Study Timer Alarms in iOS Settings.")
+        }
+        .task {
+            alarmStatus = PrayerTimerAlarmScheduler.authorizationStatus()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            alarmStatus = PrayerTimerAlarmScheduler.authorizationStatus()
+        }
+    }
+
+    private var alarmStatusText: LocalizedStringKey {
+        if isRequestingAlarmAuthorization {
+            return "Requesting Access"
+        }
+        return switch alarmStatus {
+        case .authorized: "Allowed"
+        case .denied: "Denied"
+        case .notDetermined: "Not Requested"
+        case .unavailable: "Unavailable"
+        }
+    }
+
+    private var alarmStatusColor: Color {
+        switch alarmStatus {
+        case .authorized: .green
+        case .denied: .orange
+        case .notDetermined, .unavailable: .secondary
         }
     }
 
@@ -261,37 +319,6 @@ struct SettingsPrayerTimerAccessSection: View {
         case .authorized, .unavailable:
             break
         }
-    }
-
-    private func handleMindfulMinutesToggle(_ enabled: Bool) {
-        guard enabled else { return }
-        guard mindfulMinutesStatus != nil else {
-            mindfulMinutesEnabled = false
-            return
-        }
-
-        if mindfulMinutesStatus == .sharingDenied {
-            mindfulMinutesEnabled = false
-            openSystemSettings()
-            return
-        }
-
-        HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-            mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
-            if mindfulMinutesStatus != .sharingAuthorized {
-                mindfulMinutesEnabled = false
-            }
-        }
-    }
-
-    @MainActor
-    private func updateStatuses() {
-        alarmStatus = PrayerTimerAlarmScheduler.authorizationStatus()
-        mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
-        if mindfulMinutesStatus == nil || mindfulMinutesStatus == .sharingDenied {
-            mindfulMinutesEnabled = false
-        }
-        areSystemLiveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
     }
 }
 

@@ -15,7 +15,6 @@
 		2C0AB1EE308A629900DA8FD9 /* AppStorageKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB1ED308A629900DA8FD9 /* AppStorageKey.swift */; };
 		2C0DFA21306E9C5A00E114A5 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DFA20306E9C5A00E114A5 /* NotesView.swift */; };
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
-		2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */; };
 		2C1400FA2EF2BB2900A93CA9 /* StatsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */; };
 		2C1400FC2EF2BFA200A93CA9 /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */; };
 		2C1400FE2EF2C0D400A93CA9 /* StatsChartConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */; };
@@ -93,8 +92,8 @@
 		2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */; };
 		2C4A26AF2EDB3BA30055FD1B /* ReadingSessionsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4A26AE2EDB3BA30055FD1B /* ReadingSessionsStore.swift */; };
 		2C4BE6322EEDE21E0090F5A2 /* TotalsCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE6312EEDE21E0090F5A2 /* TotalsCardView.swift */; };
-		2C4BE6362EEDE2260090F5A2 /* AverageSessionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE6352EEDE2260090F5A2 /* AverageSessionCardView.swift */; };
-		2C4BE63A2EEDE22C0090F5A2 /* OTNTCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE6392EEDE22C0090F5A2 /* OTNTCardView.swift */; };
+		2C4BE6362EEDE2260090F5A2 /* AverageSessionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE6352EEDE2260090F5A2 /* AverageSessionSection.swift */; };
+		2C4BE63A2EEDE22C0090F5A2 /* TestamentSplitBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE6392EEDE22C0090F5A2 /* TestamentSplitBar.swift */; };
 		2C4BE63C2EEDE22F0090F5A2 /* GenreDistributionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE63B2EEDE22F0090F5A2 /* GenreDistributionCardView.swift */; };
 		2C4BE63E2EEDE2360090F5A2 /* ProgressCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE63D2EEDE2350090F5A2 /* ProgressCardView.swift */; };
 		2C4BE6402EEDE7AB0090F5A2 /* StatsSeriesBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BE63F2EEDE7AB0090F5A2 /* StatsSeriesBuilder.swift */; };
@@ -221,7 +220,6 @@
 		2C0AB1ED308A629900DA8FD9 /* AppStorageKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageKey.swift; sourceTree = "<group>"; };
 		2C0DFA20306E9C5A00E114A5 /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesView.swift; sourceTree = "<group>"; };
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
-		2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBooksThisMonthCardView.swift; sourceTree = "<group>"; };
 		2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsTypes.swift; sourceTree = "<group>"; };
 		2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
 		2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsChartConfig.swift; sourceTree = "<group>"; };
@@ -290,8 +288,8 @@
 		2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshVerseOfDayIntent.swift; sourceTree = "<group>"; };
 		2C4A26AE2EDB3BA30055FD1B /* ReadingSessionsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingSessionsStore.swift; sourceTree = "<group>"; };
 		2C4BE6312EEDE21E0090F5A2 /* TotalsCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalsCardView.swift; sourceTree = "<group>"; };
-		2C4BE6352EEDE2260090F5A2 /* AverageSessionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AverageSessionCardView.swift; sourceTree = "<group>"; };
-		2C4BE6392EEDE22C0090F5A2 /* OTNTCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTNTCardView.swift; sourceTree = "<group>"; };
+		2C4BE6352EEDE2260090F5A2 /* AverageSessionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AverageSessionSection.swift; sourceTree = "<group>"; };
+		2C4BE6392EEDE22C0090F5A2 /* TestamentSplitBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestamentSplitBar.swift; sourceTree = "<group>"; };
 		2C4BE63B2EEDE22F0090F5A2 /* GenreDistributionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDistributionCardView.swift; sourceTree = "<group>"; };
 		2C4BE63D2EEDE2350090F5A2 /* ProgressCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCardView.swift; sourceTree = "<group>"; };
 		2C4BE63F2EEDE7AB0090F5A2 /* StatsSeriesBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSeriesBuilder.swift; sourceTree = "<group>"; };
@@ -380,13 +378,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		FE7CF0676C4B9328D9E96C69 /* Exceptions for "The Bible" folder in "The Bible (iOS)Tests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				kjv.json,
-			);
-			target = 2C49CF0F2EBE0F6D0006FF79 /* The Bible (iOS)Tests */;
-		};
 		1DC55AC1079FE4DD9987A2C2 /* Exceptions for "The Bible Widgets" folder in "The Bible (iOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -414,6 +405,13 @@
 				kjv.json,
 			);
 			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
+		};
+		FE7CF0676C4B9328D9E96C69 /* Exceptions for "The Bible" folder in "The Bible (iOS)Tests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				kjv.json,
+			);
+			target = 2C49CF0F2EBE0F6D0006FF79 /* The Bible (iOS)Tests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -578,8 +576,8 @@
 				2C33952C2EEDCB3D00E8CA41 /* ProgressRing.swift */,
 				2C3395302EEDCB4300E8CA41 /* BookChaptersDetailView.swift */,
 				2C4BE6312EEDE21E0090F5A2 /* TotalsCardView.swift */,
-				2C4BE6352EEDE2260090F5A2 /* AverageSessionCardView.swift */,
-				2C4BE6392EEDE22C0090F5A2 /* OTNTCardView.swift */,
+				2C4BE6352EEDE2260090F5A2 /* AverageSessionSection.swift */,
+				2C4BE6392EEDE22C0090F5A2 /* TestamentSplitBar.swift */,
 				2C4BE63B2EEDE22F0090F5A2 /* GenreDistributionCardView.swift */,
 				2C4BE63D2EEDE2350090F5A2 /* ProgressCardView.swift */,
 				2C4BE63F2EEDE7AB0090F5A2 /* StatsSeriesBuilder.swift */,
@@ -608,7 +606,6 @@
 				2C6BB6562EF1FF450010D769 /* BibleStatsStore+Formatting.swift */,
 				2C6BB6582EF1FF880010D769 /* BibleStatsStore+LastRead.swift */,
 				2C6BB65A2EF20A400010D769 /* HomeCardID.swift */,
-				2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */,
 				2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */,
 				2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */,
 				2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */,
@@ -889,7 +886,7 @@
 				2C4A26AF2EDB3BA30055FD1B /* ReadingSessionsStore.swift in Sources */,
 				2CD9C6C1306AEA860077D777 /* BackgroundCustomization.swift in Sources */,
 				2C2A44EA2EEE260300FE8C2F /* iCloudSyncCoordinator+Games.swift in Sources */,
-				2C4BE63A2EEDE22C0090F5A2 /* OTNTCardView.swift in Sources */,
+				2C4BE63A2EEDE22C0090F5A2 /* TestamentSplitBar.swift in Sources */,
 				2C2A44E02EEE153300FE8C2F /* HeaderBox.swift in Sources */,
 				2C2765022EE8C91A00A321FE /* BibleStatsCard.swift in Sources */,
 				2C2765762EE8E30D00A321FE /* FocusViewModel.swift in Sources */,
@@ -904,7 +901,6 @@
 				2C1400FE2EF2C0D400A93CA9 /* StatsChartConfig.swift in Sources */,
 				2CE02E872EFAF11700F76E16 /* GamesOverviewCardView.swift in Sources */,
 				2CE1B9622EDD1FFF001779B1 /* MetricChip.swift in Sources */,
-				2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */,
 				2C6BB6592EF1FF880010D769 /* BibleStatsStore+LastRead.swift in Sources */,
 				2C1E7EE730879C2700DB8E2A /* MissedGameQuestionStore.swift in Sources */,
 				2C40D8E23079119300839A64 /* SearchHomeCard.swift in Sources */,
@@ -925,7 +921,7 @@
 				2C4F309E2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift in Sources */,
 				2CC853B12EF05DDF00753104 /* ScripturePreviewCard.swift in Sources */,
 				2C2764F82EE8C8DB00A321FE /* DailyFocusCard.swift in Sources */,
-				2C4BE6362EEDE2260090F5A2 /* AverageSessionCardView.swift in Sources */,
+				2C4BE6362EEDE2260090F5A2 /* AverageSessionSection.swift in Sources */,
 				2C2A44F02EEE261B00FE8C2F /* Notifications.swift in Sources */,
 				2C27657E2EE8ECB400A321FE /* StreaksViewModel.swift in Sources */,
 				2CC76C1E3094ED6600653A8A /* QuizGameViewModel.swift in Sources */,

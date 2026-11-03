@@ -36,12 +36,12 @@ struct StatsViewModelTests {
     }
 
     @Test
-    func testamentCardFollowsItsOwnScope() {
+    func testamentSplitFollowsTheGenreScope() {
         let model = StatsViewModel()
         model.perBookAllTimeSessionTotals = ["Genesis": 500]
         model.perBookLast7Totals = ["Genesis": 60, "Matthew": 40]
 
-        model.timeScopeOTNT = .last7
+        model.timeScopeGenre = .last7
 
         #expect(model.otSeconds == 60)
         #expect(model.ntSeconds == 40)
@@ -69,11 +69,11 @@ struct StatsViewModelTests {
         let model = StatsViewModel()
         model.perBookMonthTotals = ["Matthew": 70]
 
-        model.timeScopeOTNT = .thisMonth
+        model.timeScopeGenre = .thisMonth
 
         #expect(model.ntSeconds == 70)
-        #expect(model.timeScopeGenre == .allTime)
-        #expect(model.perGenreTotals.isEmpty)
+        #expect(model.timeScopeTotals == .allTime)
+        #expect(model.totalsScopedTotalSeconds == 0)
     }
 
     @Test

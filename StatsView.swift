@@ -6,10 +6,7 @@ private struct ReadingStatsSections<
     Progress: View,
     Insights: View,
     Totals: View,
-    Testament: View,
     Genre: View,
-    AverageSession: View,
-    TopBooks: View,
     History: View,
     Prayer: View
 >: View {
@@ -18,10 +15,7 @@ private struct ReadingStatsSections<
     let progress: Progress
     let insights: Insights
     let totals: Totals
-    let testament: Testament
     let genre: Genre
-    let averageSession: AverageSession
-    let topBooks: TopBooks
     let history: History
     let prayer: Prayer
 
@@ -35,17 +29,14 @@ private struct ReadingStatsSections<
                         readingAndGames
                         progress
                         insights
-                        topBooks
-                        genre
-                        prayer
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
 
                     VStack(spacing: 16) {
                         totals
-                        testament
-                        averageSession
+                        genre
                         history
+                        prayer
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
@@ -55,10 +46,7 @@ private struct ReadingStatsSections<
                     progress
                     insights
                     totals
-                    testament
                     genre
-                    averageSession
-                    topBooks
                     history
                     prayer
                 }
@@ -305,10 +293,7 @@ struct StatsView: View {
                 progress: progressCard,
                 insights: readingInsightsCard,
                 totals: totalsCard,
-                testament: otntCard,
                 genre: genreCard,
-                averageSession: avgSessionCard,
-                topBooks: topBooksThisMonthCard,
                 history: readingHistoryCard,
                 prayer: PrayerStatsCard()
             )
@@ -371,16 +356,8 @@ struct StatsView: View {
     private var readingInsightsCard: some View {
         ReadingInsightsCardView(
             insights: model.readingInsights,
-            formatSeconds: { BibleStatsStore.shared.format($0) }
-        )
-        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-    }
-
-    private var otntCard: some View {
-        OTNTCardView(
-            timeScope: $model.timeScopeOTNT,
-            otSeconds: model.otSeconds,
-            ntSeconds: model.ntSeconds,
+            dailyAverageSessions: model.dailyAverageSessionsLast7,
+            averageSessionSeconds: model.avgSessionSecondsLast7,
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )
         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
@@ -390,28 +367,12 @@ struct StatsView: View {
         GenreDistributionCardView(
             timeScope: $model.timeScopeGenre,
             perGenreTotals: model.perGenreTotals,
+            otSeconds: model.otSeconds,
+            ntSeconds: model.ntSeconds,
             selectedGenre: $selectedGenre,
             onSelectGenre: { _ in },
             genreColor: { genreColor($0) },
             formatSeconds: { BibleStatsStore.shared.format($0) }
-        )
-        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-    }
-
-    private var avgSessionCard: some View {
-        AverageSessionCardView(
-            dailyAverages: model.dailyAverageSessionsLast7,
-            avgSessionSeconds: model.avgSessionSecondsLast7,
-            formatSeconds: { BibleStatsStore.shared.format($0) }
-        )
-        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-    }
-
-    private var topBooksThisMonthCard: some View {
-        TopBooksThisMonthCardView(
-            top3: model.monthTop3Books,
-            totalSeconds: model.monthTotalSeconds,
-            formatSeconds: BibleStatsStore.shared.format
         )
         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
     }

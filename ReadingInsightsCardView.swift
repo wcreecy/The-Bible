@@ -2,6 +2,9 @@ import SwiftUI
 
 struct ReadingInsightsCardView: View {
     let insights: ReadingInsights
+    /// Average session length per active day over the last 7 days.
+    let dailyAverageSessions: [(date: Date, seconds: Int)]
+    let averageSessionSeconds: Int
     let formatSeconds: (Int) -> String
 
     private let heatColumns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 14)
@@ -41,6 +44,14 @@ struct ReadingInsightsCardView: View {
                     }
                     .accessibilityElement(children: .contain)
                 }
+
+                Divider()
+
+                AverageSessionSection(
+                    dailyAverages: dailyAverageSessions,
+                    avgSessionSeconds: averageSessionSeconds,
+                    formatSeconds: formatSeconds
+                )
             }
         }
     }
