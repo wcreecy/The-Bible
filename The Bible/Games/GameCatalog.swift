@@ -71,7 +71,7 @@ enum GameRoute: String, CaseIterable, Hashable, Identifiable {
 
     var subtitle: LocalizedStringResource {
         switch self {
-        case .quiz: "Test your knowledge of the Word"
+        case .quiz: "Test your knowledge"
         case .hangman: "People, places & books"
         case .beatTheClock: "Select the correct answer before time runs out"
         case .bookOrder: "Order the books of the Bible"
