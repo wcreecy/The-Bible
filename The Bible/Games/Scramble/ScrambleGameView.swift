@@ -318,7 +318,10 @@ struct ScrambleGameView: View {
                 .disabled(vm.isCurrentWordResolved)
 
                 if vm.isCurrentWordResolved {
-                    Button("Next Word", systemImage: "arrow.right") {
+                    Button(
+                        vm.isLastWord ? "See Results" : "Next Word",
+                        systemImage: vm.isLastWord ? "flag.checkered" : "arrow.right"
+                    ) {
                         vm.loadNextWord()
                     }
                     .buttonStyle(.borderedProminent)
