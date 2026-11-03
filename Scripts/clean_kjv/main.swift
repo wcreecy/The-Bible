@@ -3,7 +3,7 @@
 // Reads the raw source (`The Bible/kjv.json`, which the other scripts edit) and writes
 // `The Bible/KJVText.json`. Run from the repo root after changing kjv.json:
 //
-//   swiftc -O "The Bible/KJVTextCleaner.swift" Scripts/clean_kjv/main.swift -o /tmp/clean_kjv && /tmp/clean_kjv
+//   swiftc -O "The Bible/Bible/KJVTextCleaner.swift" Scripts/clean_kjv/main.swift -o /tmp/clean_kjv && /tmp/clean_kjv
 //
 // Output: the same books as the source, with each verse as `[text]`, or as
 // `[text, [redLetterStart, end, …], [suppliedStart, end, …]]` when it has marked words.
