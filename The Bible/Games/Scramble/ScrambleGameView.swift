@@ -93,6 +93,12 @@ struct ScrambleGameView: View {
     @State private var isRevealConfirmationPresented = false
     @State private var vm = ScrambleGameViewModel()
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    private var isIncorrectAnswer: Bool {
+        if case .incorrect = vm.answerFeedback {
+            return true
+        }
+        return false
+    }
     @FocusState private var isKeyboardFocused: Bool
 
     private var experienceLevel: Binding<GameExperienceLevel> {
@@ -325,6 +331,7 @@ struct ScrambleGameView: View {
                     answerLength: currentWord.answer.count,
                     hintedLetters: vm.hintedLetters,
                     isResolved: vm.isCurrentWordResolved,
+                    isIncorrect: isIncorrectAnswer,
                     timerTint: vm.currentTimeLimit == nil || vm.isTimerDisabled ? nil : vm.timerTint,
                     onShowReference: showCurrentReference
                 )
@@ -341,9 +348,10 @@ struct ScrambleGameView: View {
                 }
 
                 if let answerFeedback = vm.answerFeedback {
-                    Text(answerFeedback.message)
+                    Label(answerFeedback.message, systemImage: answerFeedback.systemImage)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(answerFeedback.tint)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 }
 
                 if vm.difficulty != .easy {
@@ -371,7 +379,14 @@ struct ScrambleGameView: View {
                         ScrambleActionButton(systemImage: "trash", accessibilityLabel: "Clear answer", isEnabled: !vm.typedAnswer.isEmpty, action: vm.clearAnswer)
                         ScrambleActionButton(systemImage: "delete.left", accessibilityLabel: "Remove last letter", isEnabled: !vm.typedAnswer.isEmpty, action: vm.removeLastLetter)
                         ScrambleActionButton(systemImage: "shuffle", accessibilityLabel: "Shuffle available letters", isEnabled: vm.shuffledLetters.count - vm.selectedIndices.count >= 2, action: vm.shuffleUnusedLetters)
-                        ScrambleActionButton(systemImage: "checkmark", accessibilityLabel: "Check answer", isEnabled: vm.typedAnswer.count == currentWord.answer.count, isProminent: true, action: vm.checkAnswer)
+                        ScrambleActionButton(
+                            systemImage: "checkmark.circle.fill",
+                            accessibilityLabel: "Check answer",
+                            isEnabled: vm.typedAnswer.count == currentWord.answer.count,
+                            isProminent: true,
+                            isIncorrect: isIncorrectAnswer,
+                            action: vm.checkAnswer
+                        )
                     }
                     .padding(.top, 12)
                 }
@@ -524,6 +539,7 @@ private struct ScramblePrompt: View {
     let answerLength: Int
     let hintedLetters: [Character?]
     let isResolved: Bool
+    let isIncorrect: Bool
     let timerTint: Color?
     let onShowReference: () -> Void
 
@@ -560,7 +576,8 @@ private struct ScramblePrompt: View {
                 answer: answer,
                 answerLength: answerLength,
                 hintedLetters: hintedLetters,
-                isResolved: isResolved
+                isResolved: isResolved,
+                isIncorrect: isIncorrect
             )
         }
         .frame(maxWidth: .infinity)
@@ -587,6 +604,8 @@ private struct ScrambleAnswerTiles: View {
     let answerLength: Int
     let hintedLetters: [Character?]
     let isResolved: Bool
+    let isIncorrect: Bool
+    @State private var shakeOffset: CGFloat = 0
 
     var body: some View {
         GeometryReader { proxy in
@@ -625,15 +644,41 @@ private struct ScrambleAnswerTiles: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .frame(width: tileWidth, height: tileHeight)
+                        .background(
+                            isIncorrect ? Color.orange.opacity(0.10) : Color.clear,
+                            in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        )
                         .overlay {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .strokeBorder(Color.primary.opacity(isResolved ? 0.08 : 0.15), lineWidth: 1)
+                                .strokeBorder(
+                                    isIncorrect ? Color.orange : Color.primary.opacity(isResolved ? 0.08 : 0.15),
+                                    lineWidth: isIncorrect ? 2 : 1
+                                )
                         }
+                        .offset(x: shakeOffset)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(height: 48)
+        .task(id: isIncorrect) {
+            guard isIncorrect else { return }
+
+            for _ in 0..<3 {
+                withAnimation(.easeInOut(duration: 0.08)) {
+                    shakeOffset = 8
+                }
+                try? await Task.sleep(for: .milliseconds(80))
+                withAnimation(.easeInOut(duration: 0.08)) {
+                    shakeOffset = -8
+                }
+                try? await Task.sleep(for: .milliseconds(80))
+            }
+
+            withAnimation(.easeInOut(duration: 0.08)) {
+                shakeOffset = 0
+            }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Answer")
         .accessibilityValue(answer.isEmpty ? "Empty" : answer)
@@ -783,29 +828,38 @@ private struct ScrambleActionButton: View {
     let isEnabled: Bool
     var tint: Color = .pink
     var isProminent = false
+    var isIncorrect = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemImage)
+            Image(systemName: isIncorrect ? "exclamationmark.circle.fill" : systemImage)
                 .font(.body.weight(.semibold))
                 .frame(width: 56, height: 56)
         }
         .buttonStyle(.plain)
-        .foregroundStyle(isEnabled ? (isProminent ? Color.white : tint) : Color.secondary)
+        .foregroundStyle(
+            isEnabled
+                ? (isIncorrect ? Color.white : (isProminent ? Color.white : tint))
+                : Color.secondary
+        )
         .background(
-            isEnabled ? (isProminent ? tint : tint.opacity(0.10)) : Color.secondary.opacity(0.10),
+            isEnabled
+                ? (isIncorrect ? Color.orange : (isProminent ? Color.indigo : tint.opacity(0.10)))
+                : Color.secondary.opacity(0.10),
             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
         )
         .overlay {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .strokeBorder(
-                    isEnabled ? tint.opacity(isProminent ? 0 : 0.45) : Color.secondary.opacity(0.25),
-                    lineWidth: 1
+                    isEnabled
+                        ? (isIncorrect ? Color.orange : (isProminent ? Color.indigo : tint.opacity(0.45)))
+                        : Color.secondary.opacity(0.25),
+                    lineWidth: isIncorrect ? 2 : 1
                 )
         }
         .disabled(!isEnabled)
-        .accessibilityLabel(accessibilityLabel)
+        .accessibilityLabel(isIncorrect ? "Try again" : accessibilityLabel)
     }
 }
 

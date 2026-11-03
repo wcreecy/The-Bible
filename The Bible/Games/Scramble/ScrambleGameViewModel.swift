@@ -72,6 +72,15 @@ final class ScrambleGameViewModel {
             case .revealed: .secondary
             }
         }
+
+        var systemImage: String {
+            switch self {
+            case .correct: "checkmark.circle.fill"
+            case .incorrect: "exclamationmark.circle.fill"
+            case .timedOut: "clock.badge.exclamationmark"
+            case .revealed: "eye"
+            }
+        }
     }
 
     private static let difficultyKey = "scrambleDifficulty"
