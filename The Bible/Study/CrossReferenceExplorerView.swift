@@ -15,10 +15,10 @@ struct CrossReferenceExplorerEntryCard: View {
                     .background(Color.accentColor.opacity(0.12), in: Circle())
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Cross-Reference Explorer")
+                    Text("Scripture Connections")
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    Text("Browse curated connections across Scripture")
+                    Text("Explore curated links between passages")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -34,7 +34,7 @@ struct CrossReferenceExplorerEntryCard: View {
             .heroCardSurface()
         }
         .buttonStyle(.plain)
-        .accessibilityHint("Opens the searchable index of curated Scripture connections")
+        .accessibilityHint("Opens curated Scripture connections")
     }
 }
 
@@ -101,7 +101,7 @@ struct CrossReferenceExplorerView: View {
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle("Cross References")
+        .navigationTitle("Scripture Connections")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText, prompt: "Search Genesis 1:1, John 3:16, or a topic")
         .searchScopes($searchScope) {
@@ -369,6 +369,8 @@ private struct CrossReferencePassagesPreview: View {
 private struct CrossReferencePassagePreview: View {
     let passage: CrossReferencePreview.Passage
 
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(passage.reference.displayTitle)
@@ -378,10 +380,32 @@ private struct CrossReferencePassagePreview: View {
             Text("“\(passage.text)”")
                 .font(.body)
                 .foregroundStyle(.secondary)
+
+            Button {
+                openInBible()
+            } label: {
+                Label("Open in Bible", systemImage: "book")
+                    .font(.subheadline.weight(.semibold))
+            }
+            .buttonStyle(.bordered)
+            .accessibilityHint("Opens this passage in the Bible reader")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .heroCardSurface()
+    }
+
+    private func openInBible() {
+        let destination = passage.reference
+        dismiss()
+
+        DispatchQueue.main.async {
+            AppRouter.shared.openBibleReference(
+                book: destination.bookName,
+                chapter: destination.startChapter,
+                verse: destination.startVerse ?? 1
+            )
+        }
     }
 }
 
