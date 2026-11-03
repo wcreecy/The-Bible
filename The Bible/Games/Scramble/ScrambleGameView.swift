@@ -326,6 +326,7 @@ struct ScrambleGameView: View {
             if let currentWord = vm.currentWord {
                 ScramblePrompt(
                     category: currentWord.category,
+                    categoryName: currentWord.categoryName,
                     reference: vm.difficulty == .easy || vm.isCurrentWordResolved ? currentWord.reference : nil,
                     answer: vm.typedAnswer,
                     answerLength: currentWord.answer.count,
@@ -534,6 +535,7 @@ private struct ScrambleLargeTimerView: View {
 
 private struct ScramblePrompt: View {
     let category: LocalizedStringKey
+    let categoryName: String
     let reference: String?
     let answer: String
     let answerLength: Int
@@ -543,9 +545,36 @@ private struct ScramblePrompt: View {
     let timerTint: Color?
     let onShowReference: () -> Void
 
+    private var categorySymbol: String {
+        switch categoryName {
+        case "Actions & Movement": "figure.walk"
+        case "Animals & Creatures": "pawprint.fill"
+        case "Bible book": "book.closed.fill"
+        case "Body & Health": "heart.fill"
+        case "Descriptions & Qualities": "sparkles"
+        case "Directions & Positions": "arrow.up.left.and.arrow.down.right"
+        case "Everyday word": "textformat"
+        case "Faith & Worship": "hands.sparkles.fill"
+        case "Family & Relationships": "person.2.circle.fill"
+        case "Feelings & Character": "heart.text.square.fill"
+        case "Food & Drink": "fork.knife"
+        case "Law & Conflict": "exclamationmark.shield.fill"
+        case "Nature & Weather": "cloud.sun.fill"
+        case "Objects & Materials": "shippingbox.fill"
+        case "People & Roles": "person.2.fill"
+        case "Person": "person.fill"
+        case "Place": "mappin.and.ellipse"
+        case "Places & Structures": "building.2.fill"
+        case "Plants & Farming": "leaf.fill"
+        case "Speech & Learning": "text.bubble.fill"
+        case "Time & Numbers": "clock.fill"
+        default: "tag.fill"
+        }
+    }
+
     var body: some View {
         VStack(spacing: 10) {
-            Text(category)
+            Label(category, systemImage: categorySymbol)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
 
