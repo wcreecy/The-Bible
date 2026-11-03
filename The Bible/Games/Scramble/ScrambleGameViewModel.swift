@@ -116,7 +116,7 @@ final class ScrambleGameViewModel {
     /// True while the word is paused: the timer stops and the letters are hidden.
     var isPaused = false
 
-    /// Waits between timer ticks and before moving on; tests pass a manual clock.
+    /// Waits between timer ticks; tests pass a manual clock.
     @ObservationIgnored private let sleep: (Duration) async throws -> Void
 
     init(sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) }) {
@@ -310,7 +310,6 @@ final class ScrambleGameViewModel {
 
         recordWordResult(.correct, givenAnswer: currentWord.answer)
         answerFeedback = .correct
-        advanceAfterFeedback()
     }
 
     func revealAnswer() {
@@ -327,14 +326,6 @@ final class ScrambleGameViewModel {
         selectedIndices = Array(shuffledLetters.indices)
         recordWordResult(.wrong, givenAnswer: lastGuess.isEmpty ? nil : lastGuess)
         answerFeedback = .revealed
-    }
-
-    func advanceAfterFeedback() {
-        Task {
-            try? await sleep(.milliseconds(550))
-            guard !Task.isCancelled, phase == .playing, !isCurrentWordResolved else { return }
-            loadNextWord()
-        }
     }
 
     func runTimer() async {
@@ -360,7 +351,6 @@ final class ScrambleGameViewModel {
         selectedIndices = Array(shuffledLetters.indices)
         recordWordResult(.timedOut, givenAnswer: nil)
         answerFeedback = .timedOut
-        advanceAfterFeedback()
     }
 
     /// Counts a resolved word. The saved streak ends on a reveal, the strike limit or a timeout.
