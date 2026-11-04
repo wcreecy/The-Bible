@@ -286,6 +286,7 @@ struct StatsView: View {
                 topBook: model.topBookThisWeek,
                 formatSeconds: { BibleStatsStore.shared.format($0) }
             )
+            .padding(.horizontal, 16)
 
             ReadingStatsSections(
                 usesWideLayout: usesWideStatsLayout,
@@ -307,6 +308,9 @@ struct StatsView: View {
     private var gameContent: some View {
         VStack(spacing: 16) {
             GameWeekSummaryCardView()
+                .frame(maxWidth: usesWideStatsLayout ? 1_136 : 560)
+                .padding(.horizontal, 16)
+
             GameStatsSections(usesWideLayout: usesWideStatsLayout)
         }
     }

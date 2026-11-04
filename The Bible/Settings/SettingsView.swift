@@ -257,26 +257,6 @@ private struct SettingsReadingProgressSection: View {
         Section {
             TranslationSettingsPicker()
 
-            Toggle(isOn: $focusReadingEnabled) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Focus Reading")
-                        Text("Open the reader with one verse on screen")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .accessibilityIdentifier("focusReadingToggle")
-            .listRowBackground(
-                highlightFocusReading
-                    ? Color.orange.opacity(0.16)
-                    : Color.clear
-            )
-
             SettingsVerseMarkersCard(
                 showsVerseMarkers: $showsVerseMarkers,
                 showsBookmarkMarkers: $showsBookmarkMarkers,
@@ -300,6 +280,22 @@ private struct SettingsReadingProgressSection: View {
                 }
             }
             .accessibilityIdentifier("readVerseCheckmarksToggle")
+
+            Toggle(isOn: $focusReadingEnabled) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Focus Reading")
+                        Text("Open the reader with one verse on screen")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "arrow.up.left.and.arrow.down.right")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("focusReadingToggle")
+            .listRowBackground(HeroCardListRowBackground())
 
             Toggle(isOn: $italicizesSuppliedWords) {
                 Label {
