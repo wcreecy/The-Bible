@@ -131,6 +131,15 @@ struct Book: Identifiable, Hashable, Sendable {
     let name: String
     let chapters: [Chapter]
 
+    /// The number of whitespace-delimited words in the cleaned Bible text for this book.
+    var wordCount: Int {
+        chapters.reduce(into: 0) { count, chapter in
+            count += chapter.verses.reduce(into: 0) { verseCount, verse in
+                verseCount += verse.text.split(whereSeparator: { $0.isWhitespace }).count
+            }
+        }
+    }
+
     // See `Chapter.hash(into:)`: hashing every chapter would hash the whole book's text.
     func hash(into hasher: inout Hasher) {
         hasher.combine(name)

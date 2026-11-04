@@ -270,7 +270,7 @@ private struct StudyBookTile: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("studyBookTile-\(book.name)")
-        .accessibilityLabel("\(book.name), \(chapterCountLabel), \(verseCount) verses")
+        .accessibilityLabel("\(book.name), \(chapterCountLabel), \(verseCount) verses, \(book.wordCount) words")
     }
 
     private var tile: some View {
@@ -289,6 +289,7 @@ private struct StudyBookTile: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(chapterCountLabel)
                 Text("\(verseCount) verses")
+                Text("\(book.wordCount) words")
             }
             .font(.caption2)
             .foregroundStyle(.secondary)
