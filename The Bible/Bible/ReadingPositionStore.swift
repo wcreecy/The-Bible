@@ -108,6 +108,11 @@ final class ReadingPositionStore {
 
     // MARK: - Widget
 
+    /// Copies the current position's verse text again, after the translation changes.
+    func refreshWidgetText() {
+        mirrorToWidget(current)
+    }
+
     /// The Last Read widget reads this copy from the shared app group.
     private func mirrorToWidget(_ position: BibleStatsStore.LastRead?) {
         guard let shared = Self.widgetDefaults else { return }

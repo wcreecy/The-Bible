@@ -7,9 +7,14 @@ final class Bookmark {
     var chapterNumber: Int = 0
     var verseNumber: Int = 0
     var verseText: String = ""
+    /// Raw value of the `BibleTranslation` `verseText` is in. Records saved before there
+    /// were translations are KJV.
+    var translation: String = "kjv"
     var createdAt: Date = Date()
 
-    init() {}
+    init() {
+        translation = BibleRepository.shared.activeTranslation.rawValue
+    }
 }
 
 extension Bookmark {
@@ -20,11 +25,13 @@ extension Bookmark {
         chapter: Int,
         verse: Int,
         verseText: String,
+        translation: BibleTranslation = BibleRepository.shared.activeTranslation,
         in context: ModelContext
     ) throws {
         try context.fetch(FetchDescriptor<Bookmark>()).forEach(context.delete)
 
         let bookmark = Bookmark()
+        bookmark.translation = translation.rawValue
         bookmark.bookName = bookName
         bookmark.chapterNumber = chapter
         bookmark.verseNumber = verse
@@ -35,7 +42,8 @@ extension Bookmark {
             bookName: bookName,
             chapter: chapter,
             verse: verse,
-            verseText: verseText
+            verseText: verseText,
+            translation: translation.rawValue
         )
     }
 
@@ -53,13 +61,14 @@ extension Bookmark {
             bookName: bookmark.bookName,
             chapter: bookmark.chapterNumber,
             verse: bookmark.verseNumber,
-            verseText: bookmark.verseText
+            verseText: bookmark.verseText,
+            translation: bookmark.translation
         )
     }
 
     static func clearWidget() {
         let shared = UserDefaults(suiteName: "group.bible.app") ?? .standard
-        ["bookmarkBook", "bookmarkChapter", "bookmarkVerse", "bookmarkText"].forEach {
+        ["bookmarkBook", "bookmarkChapter", "bookmarkVerse", "bookmarkText", AppStorageKey.bookmarkTranslation].forEach {
             shared.removeObject(forKey: $0)
         }
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
@@ -69,13 +78,15 @@ extension Bookmark {
         bookName: String,
         chapter: Int,
         verse: Int,
-        verseText: String
+        verseText: String,
+        translation: String
     ) {
         let shared = UserDefaults(suiteName: "group.bible.app") ?? .standard
         shared.set(bookName, forKey: AppStorageKey.bookmarkBook)
         shared.set(chapter, forKey: AppStorageKey.bookmarkChapter)
         shared.set(verse, forKey: AppStorageKey.bookmarkVerse)
         shared.set(verseText, forKey: AppStorageKey.bookmarkText)
+        shared.set(translation, forKey: AppStorageKey.bookmarkTranslation)
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 }

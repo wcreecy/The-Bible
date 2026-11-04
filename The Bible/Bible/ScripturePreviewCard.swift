@@ -46,7 +46,7 @@ struct ScripturePreviewCard: View {
                     Text(v.text)
                         .font(.body)
                     if let refContext {
-                        Text("\(refContext.bookName) \(refContext.chapter):\(v.number)")
+                        Text("\(refContext.bookName) \(refContext.chapter):\(v.number) · \(BibleRepository.shared.activeTranslation.abbreviation)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

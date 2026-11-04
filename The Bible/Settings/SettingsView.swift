@@ -255,6 +255,8 @@ private struct SettingsReadingProgressSection: View {
 
     var body: some View {
         Section {
+            TranslationSettingsPicker()
+
             Toggle(isOn: $focusReadingEnabled) {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
@@ -303,7 +305,7 @@ private struct SettingsReadingProgressSection: View {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Supplied Words in Italics")
-                        Text("Italicize words the KJV translators added for clarity")
+                        Text("Italicize words the KJV translators added for clarity (KJV only)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

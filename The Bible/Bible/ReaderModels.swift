@@ -1,15 +1,6 @@
 import Foundation
 import SwiftData
 
-@Model
-final class ReaderSettings {
-    var fontSize: Double = 17.0
-    // theme values: "system", "light", "dark", "sepia"
-    var theme: String = "system"
-
-    init() {}
-}
-
 /// Legacy manual "Continue Reading" bookmark. Kept in the CloudKit-backed schema so
 /// existing stores open unchanged; it is only read once to seed `ReadingPositionStore`.
 @Model

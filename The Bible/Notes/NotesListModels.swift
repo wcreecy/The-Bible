@@ -471,6 +471,7 @@ struct VerseNoteSnapshot {
     let verseNumber: Int
     let endVerseNumber: Int
     let verseText: String
+    let translation: String
     let content: String
     let formattedContent: Data?
     let highlightColor: String
@@ -486,6 +487,7 @@ struct VerseNoteSnapshot {
         verseNumber = note.verseNumber
         endVerseNumber = note.endVerseNumber
         verseText = note.verseText
+        translation = note.translation
         content = note.content
         formattedContent = note.formattedContent
         highlightColor = note.highlightColor
@@ -503,6 +505,7 @@ struct VerseNoteSnapshot {
         note.verseNumber = verseNumber
         note.endVerseNumber = endVerseNumber
         note.verseText = verseText
+        note.translation = translation
         note.content = content
         note.formattedContent = formattedContent
         note.highlightColor = highlightColor

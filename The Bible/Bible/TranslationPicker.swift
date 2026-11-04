@@ -11,8 +11,8 @@ struct TranslationToolbarMenu: View {
             Menu {
                 Picker("Translation", selection: TranslationSelection.binding) {
                     ForEach(translations) { translation in
-                        Text(translation.abbreviation)
-                        Text(translation.name)
+                        Text("\(translation.abbreviation) – \(translation.name)")
+                            .tag(translation)
                     }
                 }
             } label: {
@@ -24,6 +24,29 @@ struct TranslationToolbarMenu: View {
             .accessibilityLabel("Translation")
             .accessibilityValue(bibleStore.translation.name)
             .accessibilityHint("Choose the Bible translation to read")
+        }
+    }
+}
+
+/// A "Translation" submenu for a toolbar menu, such as the reader's "…" menu on iPhone.
+/// Hidden while only one translation is bundled.
+struct TranslationMenuSection: View {
+    private var bibleStore = BibleStore.shared
+    private let translations = BibleTranslation.available
+
+    var body: some View {
+        if translations.count > 1 {
+            Menu {
+                Picker("Translation", selection: TranslationSelection.binding) {
+                    ForEach(translations) { translation in
+                        Text("\(translation.abbreviation) – \(translation.name)")
+                            .tag(translation)
+                    }
+                }
+            } label: {
+                Label("Translation (\(bibleStore.translation.abbreviation))", systemImage: "character.book.closed")
+            }
+            .disabled(bibleStore.isSwitchingTranslation)
         }
     }
 }

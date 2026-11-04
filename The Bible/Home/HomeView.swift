@@ -785,6 +785,9 @@ struct HomeView: View {
         .onChange(of: bibleStore.isReady, initial: true) { _, isReady in
             if isReady { votdVM.warmSelectionPool() }
         }
+        .onChange(of: bibleStore.translation) { _, _ in
+            votdVM.translationChanged()
+        }
         // Forward VOTD schedule changes to the VM
         .onChange(of: votdRefreshFrequency) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh1Hour) { _, _ in votdVM.refreshScheduleChanged() }

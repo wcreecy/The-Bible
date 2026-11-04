@@ -250,8 +250,13 @@ struct SavedHighlightsView: View {
                     .padding(.vertical, 2)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(note.reference)
-                        .font(.headline)
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text(note.reference)
+                            .font(.headline)
+                        Text(BibleTranslation.abbreviation(for: note.translation))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                     Text(note.verseText)
                         .font(.body)
                         .foregroundStyle(.secondary)
@@ -337,7 +342,8 @@ struct SavedHighlightsView: View {
             bookName: note.bookName,
             chapterNumber: note.chapterNumber,
             verseNumber: note.verseNumber,
-            verseText: note.verseText
+            verseText: note.verseText,
+            translation: BibleTranslation(rawValue: note.translation) ?? .default
         )
     }
 

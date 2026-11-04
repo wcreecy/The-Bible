@@ -22,6 +22,9 @@ enum AppStorageKey {
     static let showsNoteMarkers = "showNoteMarkers"
     static let showsCrossReferenceMarkers = "showCrossReferenceMarkers"
     static let showsReadVerseCheckmarks = "showReadVerseCheckmarks"
+    /// The active Bible translation's `BibleTranslation` raw value, in the shared app-group
+    /// defaults so the widgets show the same translation.
+    static let bibleTranslation = "bibleTranslation"
 
     // Navigation, search, and study
     static let bibleRecentSearches = "bibleRecentSearches"
@@ -46,10 +49,12 @@ enum AppStorageKey {
     static let bookmarkChapter = "bookmarkChapter"
     static let bookmarkVerse = "bookmarkVerse"
     static let bookmarkText = "bookmarkText"
+    static let bookmarkTranslation = "bookmarkTranslation"
     static let pinnedVerseBook = "pinnedVerseBook"
     static let pinnedVerseChapter = "pinnedVerseChapter"
     static let pinnedVerseNumber = "pinnedVerseNumber"
     static let pinnedVerseText = "pinnedVerseText"
+    static let pinnedVerseTranslation = "pinnedVerseTranslation"
     static let verseOfDayBook = "verseOfDayBook"
     static let verseOfDayChapter = "verseOfDayChapter"
     static let verseOfDayNumber = "verseOfDayNumber"

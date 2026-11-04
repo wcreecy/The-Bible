@@ -166,8 +166,7 @@ struct The_Bible__iOS_App: App {
                 cloudKitDatabase: .private(containerID)
             )
             let container = try ModelContainer(
-                for: ReaderSettings.self,
-                    ReadingProgress.self,
+                for: ReadingProgress.self,
                     Favorite.self,
                     Bookmark.self,
                     SavedCrossReference.self,
@@ -191,8 +190,7 @@ struct The_Bible__iOS_App: App {
         do {
             debugLog("➡️ Creating local on-disk ModelContainer (default location)…")
             let localContainer = try ModelContainer(
-                for: ReaderSettings.self,
-                    ReadingProgress.self,
+                for: ReadingProgress.self,
                     Favorite.self,
                     Bookmark.self,
                     SavedCrossReference.self,
@@ -218,8 +216,7 @@ struct The_Bible__iOS_App: App {
             debugLog("➡️ Creating in-memory ModelContainer…")
             let memoryConfig = ModelConfiguration(isStoredInMemoryOnly: true)
             let container = try ModelContainer(
-                for: ReaderSettings.self,
-                    ReadingProgress.self,
+                for: ReadingProgress.self,
                     Favorite.self,
                     Bookmark.self,
                     SavedCrossReference.self,

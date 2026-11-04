@@ -125,6 +125,24 @@ final class VerseOfDayViewModel {
         }
     }
 
+    /// `BibleStore` has rewritten the stored text in the new translation; show it, and
+    /// score the new translation's verses for later picks.
+    func translationChanged() {
+        if let current = verse, !storedVerseText.isEmpty {
+            verse = HomeVerseRef(
+                bookName: current.bookName,
+                chapterNumber: current.chapterNumber,
+                verseNumber: current.verseNumber,
+                verseText: storedVerseText
+            )
+        }
+        manualRefreshHistory.removeAll()
+        selectionPoolTask?.cancel()
+        selectionPool = nil
+        selectionPoolBuildKey = nil
+        warmSelectionPool()
+    }
+
     func refreshNow(favorites: [Favorite] = []) {
         updateFavorites(favorites)
         guard !paused else { return }

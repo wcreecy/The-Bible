@@ -253,7 +253,7 @@ struct FavoritesView: View {
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .lineLimit(3)
-                Text("Saved \(favorite.createdAt.formatted(date: .abbreviated, time: .omitted))")
+                Text("Saved \(favorite.createdAt.formatted(date: .abbreviated, time: .omitted)) · \(favorite.translationAbbreviation)")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -356,7 +356,8 @@ struct FavoritesView: View {
             bookName: favorite.bookName,
             chapterNumber: favorite.chapterNumber,
             verseNumber: favorite.verseNumber,
-            verseText: favorite.currentVerseText
+            verseText: favorite.currentVerseText,
+            translation: BibleTranslation(rawValue: favorite.translation) ?? .default
         )
     }
 
@@ -491,6 +492,7 @@ private struct RemovedFavorite {
     let chapterNumber: Int
     let verseNumber: Int
     let verseText: String
+    let translation: String
     let createdAt: Date
 
     init(_ favorite: Favorite) {
@@ -498,17 +500,20 @@ private struct RemovedFavorite {
         chapterNumber = favorite.chapterNumber
         verseNumber = favorite.verseNumber
         verseText = favorite.verseText
+        translation = favorite.translation
         createdAt = favorite.createdAt
     }
 
     var model: Favorite {
-        Favorite(
+        let favorite = Favorite(
             bookName: bookName,
             chapterNumber: chapterNumber,
             verseNumber: verseNumber,
             verseText: verseText,
             createdAt: createdAt
         )
+        favorite.translation = translation
+        return favorite
     }
 }
 

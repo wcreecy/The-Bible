@@ -416,7 +416,7 @@ struct VerseShareArtwork: View {
                         .shadow(color: .black.opacity(0.45), radius: size.width * 0.008, y: size.width * 0.004)
 
                     if model.showsReference {
-                        Text("\(model.verse.bookName) \(model.verse.chapterNumber):\(model.verse.verseNumber)")
+                        Text("\(model.verse.bookName) \(model.verse.chapterNumber):\(model.verse.verseNumber) \(model.verse.translation.abbreviation)")
                             .font(.system(size: size.width * 0.032, weight: .bold, design: .rounded))
                             .textCase(.uppercase)
                             .tracking(size.width * 0.002)

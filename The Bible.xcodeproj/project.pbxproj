@@ -98,6 +98,7 @@
 				Widgets/PinnedVerseWidget.swift,
 				Widgets/PrayerTimerActivityController.swift,
 				Widgets/PrayerTimerAttributes.swift,
+				Widgets/WidgetTranslationTag.swift,
 			);
 			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
 		};

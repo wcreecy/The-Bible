@@ -237,6 +237,8 @@ struct VerseNoteEditorView: View {
                 note.categoryRawValue = NoteCategory.scripture.rawValue
                 note.endVerseNumber = endVerse > start.verseNumber ? endVerse : 0
                 note.verseText = rangeText
+                // The text is copied again on each save, in the translation being read.
+                note.translation = BibleRepository.shared.activeTranslation.rawValue
                 note.updatedAt = Date()
                 if existingNote == nil {
                     modelContext.insert(note)
@@ -284,7 +286,7 @@ struct VerseNoteEditorView: View {
 enum VerseRangeText {
     static func text(book: String, chapter: Int, from first: Int, through last: Int) -> String? {
         guard let verses = verses(book: book, chapter: chapter) else { return nil }
-        let selected = verses.filter { (first...max(first, last)).contains($0.number) }
+        let selected = verses.filter { (first...max(first, last)).contains($0.number) && !$0.isOmitted }
         return selected.isEmpty ? nil : selected.map(\.text).joined(separator: " ")
     }
 

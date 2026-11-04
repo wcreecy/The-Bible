@@ -3,8 +3,11 @@
 app's well-known verses (Verse Match, Word Search). The one file belongs to both targets.
 
 Verse text is copied exactly from the bundled KJV (`The Bible/kjv.json`), so nothing is
-retyped by hand. The list is shuffled once with a fixed seed; the widget shows the verses
-in this order, one per day. Re-run after editing REFERENCES:
+retyped by hand. Each other bundled translation (`The Bible/<ABBR>Text.json`, from
+build_translation.py) adds its text under "texts", keyed by its lowercased abbreviation, for
+the widget to show in the translation chosen in the app. The list is shuffled once with a
+fixed seed; the widget shows the verses in this order, one per day. Re-run after editing
+REFERENCES or adding a translation:
 
     python3 Scripts/make_lockscreen_verses.py
 """
@@ -158,6 +161,18 @@ def main() -> int:
     if len({(v["book"], v["chapter"], v["verse"]) for v in verses}) != len(verses):
         print("Duplicate references in REFERENCES.", file=sys.stderr)
         return 1
+
+    # Other translations, verse for verse with the KJV. A verse a translation leaves out
+    # keeps the KJV text.
+    for path in sorted((ROOT / "The Bible").glob("*Text.json")):
+        translation = path.name[: -len("Text.json")].lower()
+        if translation == "kjv":
+            continue
+        other = {entry["name"]: entry["chapters"] for entry in json.loads(path.read_text(encoding="utf-8"))}
+        for verse in verses:
+            text = other[verse["book"]][verse["chapter"] - 1][verse["verse"] - 1][0]
+            if text:
+                verse.setdefault("texts", {})[translation] = text
 
     random.Random(SEED).shuffle(verses)
     contents = json.dumps(verses, ensure_ascii=False, indent=1) + "\n"

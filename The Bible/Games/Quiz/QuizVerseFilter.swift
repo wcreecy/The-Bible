@@ -9,34 +9,43 @@ import Foundation
 ///   since they can't be placed (1 Chronicles 1–9, Numbers 1, "Abram; the same Abraham.").
 /// - Hard also skips verses too long to read in its time limit.
 ///
-/// Checking every verse takes a moment, so it runs once per launch, off the main thread,
-/// when the quiz opens (`prepare()`). The quiz waits for it before starting.
+/// Checking every verse takes a moment, so it runs once per launch and translation, off the
+/// main thread, when the quiz opens (`prepare()`). The quiz waits for it before starting.
 @MainActor
 enum QuizVerseFilter {
     private static var analysis: VerseAnalysis?
-    private static var preparation: Task<VerseAnalysis, Never>?
+    /// The translation `analysis` was made from; wording differs, so each needs its own.
+    private static var analysisTranslation: BibleTranslation?
+    private static var preparation: (translation: BibleTranslation, task: Task<VerseAnalysis, Never>)?
 
-    static var isReady: Bool { analysis != nil }
+    static var isReady: Bool {
+        analysis != nil && analysisTranslation == BibleRepository.shared.activeTranslation
+    }
 
     /// Analyzes the Bible in the background so the quiz never does it on the main thread.
     static func prepare() async {
+        let translation = BibleRepository.shared.activeTranslation
+        if analysisTranslation != translation { analysis = nil }
         if analysis != nil { return }
-        if let preparation {
-            _ = await preparation.value
+        if let preparation, preparation.translation == translation {
+            _ = await preparation.task.value
             return
         }
         let task = Task.detached(priority: .userInitiated) {
-            VerseAnalysis(books: await BibleRepository.shared.loadAllBooks())
+            VerseAnalysis(books: await BibleRepository.shared.loadAllBooks(for: translation))
         }
-        preparation = task
+        preparation = (translation, task)
         let result = await task.value
-        if analysis == nil { analysis = result }
-        preparation = nil
+        if BibleRepository.shared.activeTranslation == translation {
+            analysis = result
+            analysisTranslation = translation
+        }
+        if preparation?.translation == translation { preparation = nil }
     }
 
     /// `chapter` and `verse` are 1-based. Before `prepare()` finishes, every verse passes.
     static func isQuizzable(book: String, chapter: Int, verse: Int, difficulty: String) -> Bool {
-        guard let analysis else { return true }
+        guard let analysis, analysisTranslation == BibleRepository.shared.activeTranslation else { return true }
         let flags = analysis.flags(book: book, chapter: chapter, verse: verse)
         if !flags.isDisjoint(with: [.repeated, .nearDuplicate, .list, .tooShort]) { return false }
         if difficulty == "hard" && flags.contains(.tooLongForHard) { return false }

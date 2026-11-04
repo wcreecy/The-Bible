@@ -70,7 +70,7 @@ struct RandomVerseProvider: TimelineProvider {
             book: verse.book,
             chapter: verse.chapter,
             verse: verse.verse,
-            text: verse.text
+            text: verse.text(in: LockScreenVerseList.translation)
         )
     }
 }
@@ -81,7 +81,25 @@ private enum LockScreenVerseList {
         let book: String
         let chapter: Int
         let verse: Int
+        /// KJV text.
         let text: String
+        /// Other translations' text, by `BibleTranslation` raw value ("asv").
+        let texts: [String: String]?
+
+        func text(in translation: String) -> String {
+            texts?[translation] ?? text
+        }
+    }
+
+    /// The abbreviation shown beside a reference. Matches `translation`'s text, which falls back to
+    /// KJV for a verse a translation leaves out (never one of the curated verses).
+    static var translationTag: String {
+        translation.uppercased()
+    }
+
+    /// The translation chosen in the app, which saves it to the shared app group.
+    static var translation: String {
+        UserDefaults(suiteName: "group.bible.app")?.string(forKey: "bibleTranslation") ?? "kjv"
     }
 
     static let verses: [Verse] = {
@@ -125,7 +143,7 @@ struct RandomVerseLockScreenView: View {
             // 1) Reference (bold, single line)
             // 2-3) Scripture text (regular, up to 2 lines)
             VStack(alignment: .leading, spacing: 1.5) {
-                Text("\(entry.book) \(entry.chapter):\(entry.verse)")
+                Text("\(entry.book) \(entry.chapter):\(entry.verse) · \(LockScreenVerseList.translationTag)")
                     .font(.caption2.weight(.semibold))
                     .lineLimit(1)
 
@@ -138,7 +156,7 @@ struct RandomVerseLockScreenView: View {
         default:
             // Fallback for any future families
             VStack(alignment: .leading, spacing: 4) {
-                Text("\(entry.book) \(entry.chapter):\(entry.verse)")
+                Text("\(entry.book) \(entry.chapter):\(entry.verse) · \(LockScreenVerseList.translationTag)")
                     .font(.caption2.weight(.semibold))
                 Text(entry.text)
                     .font(.caption2)
@@ -167,7 +185,7 @@ struct RandomVerseLockScreenView: View {
 
     private var inlineText: String {
         guard !entry.book.isEmpty, entry.chapter > 0, entry.verse > 0 else { return "Bible verse" }
-        let ref = "\(entry.book) \(entry.chapter):\(entry.verse)"
+        let ref = "\(entry.book) \(entry.chapter):\(entry.verse) \(LockScreenVerseList.translationTag)"
         let snippet = entry.text
         return "\(ref) — \(snippet)"
     }

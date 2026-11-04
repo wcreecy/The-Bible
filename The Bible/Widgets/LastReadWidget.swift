@@ -44,7 +44,7 @@ struct LastReadWidgetEntryView: View {
                     .truncationMode(.tail)
                     .multilineTextAlignment(.leading)
                 if !entry.book.isEmpty && entry.chapter > 0 && entry.verse > 0 {
-                    Text("\(entry.book) \(entry.chapter):\(entry.verse)")
+                    Text("\(entry.book) \(entry.chapter):\(entry.verse) · \(WidgetTranslationTag.bookmark)")
                         .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : (isMedium ? .caption : .caption2)))
                         .foregroundStyle(secondaryTextColor)
                 }

@@ -225,7 +225,8 @@ private struct FocusControls: View {
             .accessibilityLabel("Chapter Insights")
             .accessibilityHint("Shows insights for \(location.bookName) \(location.chapterNumber)")
 
-            if let verse {
+            // An omitted verse has nothing to save or share.
+            if let verse, !verse.text.isEmpty {
                 VerseActionMenu(
                     verse: VerseActionReference(
                         bookName: verse.bookName,
@@ -360,10 +361,19 @@ private struct FocusVersePage: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))
-                .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17) + focusFontAdjustment))
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+            if verse.text.isEmpty {
+                Text(Verse.omittedNote(in: BibleRepository.shared.activeTranslation))
+                    .font(.body)
+                    .italic()
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))
+                    .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17) + focusFontAdjustment))
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
             Text("\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)")
                 .font(.footnote.weight(.medium))
@@ -374,7 +384,7 @@ private struct FocusVersePage: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber), \(verse.text)")
+        .accessibilityLabel("\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber), \(verse.text.isEmpty ? Verse.omittedNote(in: BibleRepository.shared.activeTranslation) : verse.text)")
     }
 }
 

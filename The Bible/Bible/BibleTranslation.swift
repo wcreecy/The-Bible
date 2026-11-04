@@ -59,14 +59,19 @@ nonisolated enum BibleTranslation: String, CaseIterable, Identifiable, Sendable 
 
     /// The app group the widgets read, so they show the same translation as the app.
     static let sharedDefaults = UserDefaults(suiteName: "group.bible.app")
+    /// Same value as `AppStorageKey.bibleTranslation`, readable off the main actor.
+    private static let storageKey = "bibleTranslation"
 
-    /// The translation the person chose, or the default when none is saved.
+    /// The translation the person chose, or the default when none is saved or its text
+    /// isn't in this build.
     static var saved: BibleTranslation {
-        sharedDefaults?.string(forKey: AppStorageKey.bibleTranslation)
-            .flatMap(BibleTranslation.init(rawValue:)) ?? .default
+        guard let translation = sharedDefaults?.string(forKey: storageKey)
+            .flatMap(BibleTranslation.init(rawValue:)),
+              available.contains(translation) else { return .default }
+        return translation
     }
 
     static func save(_ translation: BibleTranslation) {
-        sharedDefaults?.set(translation.rawValue, forKey: AppStorageKey.bibleTranslation)
+        sharedDefaults?.set(translation.rawValue, forKey: storageKey)
     }
 }

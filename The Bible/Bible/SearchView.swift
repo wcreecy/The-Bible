@@ -297,7 +297,9 @@ actor BibleSearchIndex {
     }
 
     private var index: Index?
-    private var indexBuildTask: Task<Index, Never>?
+    /// The translation `index` was built from; each translation words its verses differently.
+    private var indexTranslation: BibleTranslation?
+    private var indexBuild: (translation: BibleTranslation, task: Task<Index, Never>)?
 
     func search(
         tokens: [String],
@@ -387,22 +389,24 @@ actor BibleSearchIndex {
     }
 
     private func indexedVerses() async -> Index {
-        if let index { return index }
+        let translation = BibleRepository.shared.activeTranslation
+        if let index, indexTranslation == translation { return index }
 
         let task: Task<Index, Never>
-        if let indexBuildTask {
-            task = indexBuildTask
+        if let indexBuild, indexBuild.translation == translation {
+            task = indexBuild.task
         } else {
             // Wait for the corpus rather than reading the synchronous snapshot, which is
             // empty during launch and would otherwise be cached as an empty index.
-            let books = await BibleRepository.shared.loadAllBooks()
+            let books = await BibleRepository.shared.loadAllBooks(for: translation)
             let newTask = Task.detached(priority: .userInitiated) {
                 var entries: [Entry] = []
                 var postingsByWord: [String: [Int]] = [:]
 
                 for (bookIndex, book) in books.enumerated() {
                     for chapter in book.chapters {
-                        for verse in chapter.verses {
+                        // A verse the translation leaves out has nothing to find.
+                        for verse in chapter.verses where !verse.isOmitted {
                             let entryID = entries.count
                             entries.append(Entry(
                                 bookIndex: bookIndex,
@@ -424,13 +428,17 @@ actor BibleSearchIndex {
                     sortedWords: postingsByWord.keys.sorted()
                 )
             }
-            indexBuildTask = newTask
+            indexBuild = (translation, newTask)
             task = newTask
         }
 
         let built = await AppPerformance.measure("BibleSearchIndexBuild") { await task.value }
-        index = built
-        indexBuildTask = nil
+        // The translation may have changed during the build; this search still gets its own.
+        if BibleRepository.shared.activeTranslation == translation {
+            index = built
+            indexTranslation = translation
+        }
+        if indexBuild?.translation == translation { indexBuild = nil }
         return built
     }
 }

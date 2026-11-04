@@ -29,12 +29,19 @@ final class PinnedVerseStore {
         await applyPinned(book: book, chapter: chap, verse: verse)
     }
 
-    func set(bookName: String, chapter: Int, verse: Int, text: String) async {
+    func set(
+        bookName: String,
+        chapter: Int,
+        verse: Int,
+        text: String,
+        translation: BibleTranslation = BibleRepository.shared.activeTranslation
+    ) async {
         guard let shared = UserDefaults(suiteName: suite) else { return }
         shared.set(bookName, forKey: AppStorageKey.pinnedVerseBook)
         shared.set(chapter, forKey: AppStorageKey.pinnedVerseChapter)
         shared.set(verse, forKey: AppStorageKey.pinnedVerseNumber)
         shared.set(text, forKey: AppStorageKey.pinnedVerseText)
+        shared.set(translation.rawValue, forKey: AppStorageKey.pinnedVerseTranslation)
 
         // Apply pinned values on the next MainActor turn to avoid publishing during view updates.
         await applyPinned(book: bookName, chapter: chapter, verse: verse)
@@ -50,6 +57,7 @@ final class PinnedVerseStore {
         shared.removeObject(forKey: AppStorageKey.pinnedVerseChapter)
         shared.removeObject(forKey: AppStorageKey.pinnedVerseNumber)
         shared.removeObject(forKey: AppStorageKey.pinnedVerseText)
+        shared.removeObject(forKey: AppStorageKey.pinnedVerseTranslation)
 
         // Apply cleared values on the next MainActor turn to avoid publishing during view updates.
         await applyPinned(book: "", chapter: 0, verse: 0)

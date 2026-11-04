@@ -43,7 +43,7 @@ struct PinnedVerseWidgetEntryView: View {
                     .truncationMode(.tail)
                     .multilineTextAlignment(.leading)
 
-                Text("\(entry.book) \(entry.chapter):\(entry.verse)")
+                Text("\(entry.book) \(entry.chapter):\(entry.verse) · \(WidgetTranslationTag.pinned)")
                     .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : (isMedium ? .caption : .caption2)))
                     .foregroundStyle(secondaryTextColor)
             } else {

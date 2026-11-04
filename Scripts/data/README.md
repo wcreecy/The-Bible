@@ -11,3 +11,12 @@ credits OpenBible.info in Settings → Help → Acknowledgements.
 
 `Scripts/add_strict_cross_references.py` reads this file directly. To update it, replace the
 zip with a newer download and rebuild the cross references with `--rebuild`.
+
+## Translation sources
+
+The raw sources for translations other than the KJV live in `The Bible (iOS)Tests/TranslationSources/`,
+so the test bundle (not the app) includes them. `Scripts/build_translation.py` builds each into
+`The Bible/<ABBR>Text.json` and records hashes in `manifest.json` there.
+
+- `asv.json`: American Standard Version (1901), public domain. Added 2026-11-04. The source
+  had stray brackets and USFM markup around "Selah", which the build script removes.

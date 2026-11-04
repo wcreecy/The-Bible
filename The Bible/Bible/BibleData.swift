@@ -6,23 +6,47 @@ nonisolated private let bibleDataLogger = Logger(
     category: "BibleData"
 )
 
+/// The loaded Bible text, by translation. Readable from any thread, so `BibleData.books`
+/// can stay synchronous.
 private nonisolated final class BibleCorpusCache: @unchecked Sendable {
     private let lock = NSLock()
-    private var storage: [Book] = []
-    private var failed = false
+    private var active: BibleTranslation = BibleTranslation.saved
+    private var storage: [BibleTranslation: [Book]] = [:]
+    private var failed: Set<BibleTranslation> = []
 
+    var activeTranslation: BibleTranslation {
+        lock.withLock { active }
+    }
+
+    /// The active translation's books, or none until they load.
     var books: [Book] {
-        lock.withLock { storage }
+        lock.withLock { storage[active] ?? [] }
     }
 
     var loadFailed: Bool {
-        lock.withLock { failed }
+        lock.withLock { failed.contains(active) }
     }
 
-    func store(_ books: [Book]) {
+    func books(for translation: BibleTranslation) -> [Book] {
+        lock.withLock { storage[translation] ?? [] }
+    }
+
+    func store(_ books: [Book], for translation: BibleTranslation) {
         lock.withLock {
-            storage = books
-            failed = books.isEmpty
+            if books.isEmpty {
+                failed.insert(translation)
+            } else {
+                storage[translation] = books
+                failed.remove(translation)
+            }
+        }
+    }
+
+    /// Makes a loaded translation active and drops the others, so only one Bible stays in memory.
+    func activate(_ translation: BibleTranslation) {
+        lock.withLock {
+            active = translation
+            storage = storage.filter { $0.key == translation }
         }
     }
 }
@@ -31,10 +55,20 @@ actor BibleRepository {
     static let shared = BibleRepository()
 
     private nonisolated let cache = BibleCorpusCache()
-    private var loadTask: Task<[Book], Never>?
+    private var loadTasks: [BibleTranslation: Task<[Book], Never>] = [:]
+
+    /// The translation `loadAllBooks()` and `BibleData.books` return.
+    nonisolated var activeTranslation: BibleTranslation {
+        cache.activeTranslation
+    }
 
     nonisolated var cachedBooks: [Book] {
         cache.books
+    }
+
+    /// A translation's books if they're in memory. Only the active translation stays loaded.
+    nonisolated func cachedBooks(for translation: BibleTranslation) -> [Book] {
+        cache.books(for: translation)
     }
 
     /// Whether the last load found no usable Bible text. The next load tries again.
@@ -42,31 +76,46 @@ actor BibleRepository {
         cache.loadFailed
     }
 
+    /// The active translation's books.
     func loadAllBooks() async -> [Book] {
-        let cached = cache.books
-        if !cached.isEmpty { return cached }
-        if let loadTask { return await loadTask.value }
+        await loadAllBooks(for: cache.activeTranslation)
+    }
 
-        // Pre-cleaned by Scripts/clean_kjv from the raw kjv.json, which isn't bundled.
-        let resourceURL = Bundle.main.url(forResource: "KJVText", withExtension: "json")
+    func loadAllBooks(for translation: BibleTranslation) async -> [Book] {
+        let cached = cache.books(for: translation)
+        if !cached.isEmpty { return cached }
+        if let task = loadTasks[translation] { return await task.value }
+
+        // Pre-cleaned by Scripts/clean_kjv (KJV) or Scripts/build_translation.py (the others).
+        let resourceURL = Bundle.main.url(forResource: translation.resourceName, withExtension: "json")
         let task = Task.detached(priority: .userInitiated) {
             // No books means the load failed; screens show an error instead of placeholder text.
             guard let resourceURL else {
-                bibleDataLogger.error("The bundled Bible corpus resource is missing.")
+                bibleDataLogger.error("The bundled \(translation.abbreviation, privacy: .public) text is missing.")
                 return [Book]()
             }
             do {
                 let data = try Data(contentsOf: resourceURL, options: .mappedIfSafe)
                 return try BibleData.decodeBooks(from: data)
             } catch {
-                bibleDataLogger.error("Failed to load the bundled Bible corpus. Error: \(String(describing: error), privacy: .public)")
+                bibleDataLogger.error("Failed to load the bundled \(translation.abbreviation, privacy: .public) text. Error: \(String(describing: error), privacy: .public)")
                 return [Book]()
             }
         }
-        loadTask = task
+        loadTasks[translation] = task
         let books = await AppPerformance.measure("BibleDataLoad") { await task.value }
-        cache.store(books)
-        loadTask = nil
+        cache.store(books, for: translation)
+        loadTasks[translation] = nil
+        return books
+    }
+
+    /// Loads a translation, then makes it the active one and saves the choice.
+    /// Returns its books, or none (keeping the current translation) when it can't be read.
+    func activate(_ translation: BibleTranslation) async -> [Book] {
+        let books = await loadAllBooks(for: translation)
+        guard !books.isEmpty else { return [] }
+        cache.activate(translation)
+        BibleTranslation.save(translation)
         return books
     }
 
@@ -84,6 +133,7 @@ struct Verse: Identifiable, Hashable, Sendable {
     var id: String { "\(number)" }
     let number: Int
     /// Verse text with the source's translator markup removed (see `KJVTextCleaner`).
+    /// Empty when the translation leaves the verse out (some omit Matthew 17:21, Acts 8:37, …).
     let text: String
     /// UTF-16 ranges in `text` spoken by Jesus.
     let redLetterRanges: [Range<Int>]
@@ -107,6 +157,14 @@ struct Verse: Identifiable, Hashable, Sendable {
         self.text = text
         self.redLetterRanges = redLetterRanges
         self.suppliedWordRanges = suppliedWordRanges
+    }
+
+    /// The translation leaves this verse out; it keeps its number so later verses line up.
+    nonisolated var isOmitted: Bool { text.isEmpty }
+
+    /// Shown in place of an omitted verse.
+    nonisolated static func omittedNote(in translation: BibleTranslation) -> String {
+        "The \(translation.abbreviation) leaves out this verse, which the oldest manuscripts don’t include."
     }
 }
 
@@ -147,8 +205,8 @@ struct Book: Identifiable, Hashable, Sendable {
     }
 }
 
-// The bundled KJVText.json: [{ abbrev, name?, chapters: [[verse]] }], where each verse is
-// [text] or [text, [redLetterStart, end, …], [suppliedStart, end, …]] (UTF-16 offsets).
+// The bundled KJVText.json and other translations: [{ abbrev, name?, chapters: [[verse]] }],
+// where each verse is [text] ("" when the translation omits it) or [text, [redLetterStart, end, …], [suppliedStart, end, …]] (UTF-16 offsets).
 private struct KJVBookDTO: Decodable {
     let abbrev: String
     let chapters: [[CleanVerseDTO]]
@@ -226,7 +284,7 @@ enum BibleData {
         BibleRepository.shared.cachedBooks
     }
 
-    /// Decodes the bundled, pre-cleaned KJVText.json.
+    /// Decodes a bundled, pre-cleaned translation such as KJVText.json.
     nonisolated static func decodeBooks(from data: Data) throws -> [Book] {
         let dtoBooks = try JSONDecoder().decode([KJVBookDTO].self, from: data)
         return dtoBooks.map { dto in

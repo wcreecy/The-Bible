@@ -7,13 +7,15 @@ struct VerseActionReference: Hashable, Identifiable {
     let chapterNumber: Int
     let verseNumber: Int
     let verseText: String
+    /// The translation `verseText` is in. A saved verse passes the one it was saved in.
+    var translation: BibleTranslation = BibleRepository.shared.activeTranslation
 
     var id: String {
         "\(bookName)|\(chapterNumber)|\(verseNumber)|\(verseText)"
     }
 
     var shareText: String {
-        "\(verseText)\n\(bookName) \(chapterNumber):\(verseNumber)"
+        "\(verseText)\n\(bookName) \(chapterNumber):\(verseNumber) \(translation.abbreviation)"
     }
 }
 
@@ -525,6 +527,7 @@ struct VerseActionMenuContent: View {
                     chapterNumber: verse.chapterNumber,
                     verseNumber: verse.verseNumber,
                     verseText: verse.verseText,
+                    translation: verse.translation,
                     favorites: favorites,
                     in: modelContext
                 )
@@ -555,6 +558,7 @@ struct VerseActionMenuContent: View {
                         chapter: verse.chapterNumber,
                         verse: verse.verseNumber,
                         verseText: verse.verseText,
+                        translation: verse.translation,
                         in: modelContext
                     )
                 } else {
@@ -592,7 +596,8 @@ struct VerseActionMenuContent: View {
                     bookName: verse.bookName,
                     chapter: verse.chapterNumber,
                     verse: verse.verseNumber,
-                    text: verse.verseText
+                    text: verse.verseText,
+                    translation: verse.translation
                 )
                 sendFeedback(.pinned)
             }

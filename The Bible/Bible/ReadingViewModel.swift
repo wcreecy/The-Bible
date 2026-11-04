@@ -294,6 +294,15 @@ final class ReadingViewModel {
         markActivity()
     }
 
+    /// Shows the same passage in the newly active translation. Row IDs are by reference,
+    /// so the reader keeps its scroll position.
+    func translationChanged() {
+        guard let book = BibleData.books.first(where: { $0.name == currentBook.name }) else { return }
+        currentBook = book
+        menuVerse = nil
+        selectedVerse = nil
+    }
+
     func nextChapter() {
         guard let bookIdx = indexOfCurrentBookInCanonical() else { return }
         let chapters = currentBook.chapters

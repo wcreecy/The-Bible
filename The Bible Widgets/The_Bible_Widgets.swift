@@ -56,7 +56,7 @@ struct VerseWidgetEntryView: View {
                     .lineLimit(isExtraLarge || isLarge ? 6 : 5)
                     .truncationMode(.tail)
                 if !entry.book.isEmpty && entry.chapter > 0 && entry.verse > 0 {
-                    Text("\(entry.book) \(entry.chapter):\(entry.verse)")
+                    Text("\(entry.book) \(entry.chapter):\(entry.verse) · \(WidgetTranslationTag.active)")
                         .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : (isMedium ? .caption : .caption2)))
                         .foregroundStyle(secondaryTextColor)
                 }

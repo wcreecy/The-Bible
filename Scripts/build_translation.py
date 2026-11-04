@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Builds a bundled Bible translation from its raw source in `Scripts/data/translations/`.
+"""Builds a bundled Bible translation from its raw source in `The Bible (iOS)Tests/TranslationSources/`.
 
 The KJV has its own pipeline (`Scripts/clean_kjv`), because its source carries red-letter
 and supplied-word markup. Every other translation goes through this script:
@@ -13,25 +13,39 @@ KJV: the same 66 book names in the same order, and the same number of chapters a
 in every chapter. The app keys bookmarks, notes, highlights, and reading progress by book,
 chapter, and verse, so a translation must line up verse for verse before it can ship.
 
+Some translations leave out verses the KJV has (Matthew 17:21, Acts 8:37, …). Their source
+keeps the verse as an empty string, and so does the output, so later verses keep their
+numbers; the app shows a note in the verse's place. The script lists them.
+
+Each build records the SHA-256 of the source and of the output in
+`The Bible (iOS)Tests/TranslationSources/manifest.json`. `BibleTranslationTests` fails when the source or the
+bundled text no longer matches it, so a source edit without a rebuild (or a hand edit to the
+bundled file) is caught.
+
 Output matches `KJVText.json`, with each verse as `[text]`. To add a translation, put its
-source in `Scripts/data/translations/<id>.json`, add any fixes to FIXES, run this script,
+source in `The Bible (iOS)Tests/TranslationSources/<id>.json`, add any fixes to FIXES, run this script,
 and add a case to `BibleTranslation` in the app.
 """
+import hashlib
 import json
 import pathlib
 import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SOURCES = ROOT / "Scripts" / "data" / "translations"
+# In the tests folder so the test bundle gets them (see BibleTranslationTests); the app does not.
+SOURCES = ROOT / "The Bible (iOS)Tests" / "TranslationSources"
 KJV = ROOT / "The Bible" / "KJVText.json"
+MANIFEST = SOURCES / "manifest.json"
 OUTPUT_DIR = ROOT / "The Bible"
 
 
 def fix_asv(text):
-    # The source opens each Selah with a stray bracket ("in God. [Selah"). Printed ASVs
-    # set it as a word on its own, as the KJV text does ("in God. Selah.").
-    return re.sub(r"\[Selah\b\.?", "Selah.", text)
+    # 17 Selahs still carry USFM word markup: \+w Selah|strong="H5542"\+w*
+    text = re.sub(r'\\\+w ([^|\\]+)\|strong="[^"]*"\\\+w\*', r"\1", text)
+    # The source opens each Selah with a stray bracket ("in God. [Selah", "[Higgaion. Selah").
+    # Printed ASVs set it as a word on its own, as the KJV text does ("in God. Selah.").
+    return re.sub(r"\[((?:Higgaion\. )?Selah)\b\.?", r"\1.", text)
 
 
 # Per-translation fixes applied to every verse before validation.
@@ -59,6 +73,7 @@ def main():
     fix = FIXES.get(translation, lambda text: text)
 
     problems = []
+    omitted = []
     if len(source) != len(kjv):
         problems.append(f"{len(source)} books; the KJV has {len(kjv)}")
 
@@ -75,7 +90,7 @@ def main():
                 problems.append(f"{name} {number}: {len(verses)} verses; the KJV has {len(kjv_verses)}")
             for verse_number, text in enumerate(verses, start=1):
                 if not normalized(fix(text)):
-                    problems.append(f"{name} {number}:{verse_number} is empty")
+                    omitted.append(f"{name} {number}:{verse_number}")
         output.append({
             "abbrev": book["abbrev"],
             "chapters": [[[normalized(fix(text))] for text in verses] for verses in chapters],
@@ -91,6 +106,8 @@ def main():
         sys.exit(1)
 
     verse_count = sum(len(verses) for book in output for verses in book["chapters"])
+    if omitted:
+        print(f"{len(omitted)} verses not in the {translation.upper()} text: {', '.join(omitted)}")
     if check_only:
         print(f"{translation.upper()} lines up with the KJV ({verse_count} verses). Nothing written.")
         return
@@ -98,6 +115,12 @@ def main():
     output_path = OUTPUT_DIR / f"{translation.upper()}Text.json"
     data = json.dumps(output, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
     output_path.write_text(data, encoding="utf-8")
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8")) if MANIFEST.exists() else {}
+    manifest[translation] = {
+        "source": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+        "output": hashlib.sha256(data.encode("utf-8")).hexdigest(),
+    }
+    MANIFEST.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"Wrote {verse_count} verses to {output_path.relative_to(ROOT)} ({len(data.encode('utf-8'))} bytes).")
 
 

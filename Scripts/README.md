@@ -53,7 +53,8 @@ stories or history are ever changed directly in the database,
 
 | Command | Output |
 | --- | --- |
-| `python3 Scripts/make_lockscreen_verses.py` | `The Bible Widgets/LockScreenVerses.json`, shared by the app and the widget. Re-run after editing its verse list or `kjv.json`. |
+| `python3 Scripts/build_translation.py asv` | `The Bible/ASVText.json` from `The Bible (iOS)Tests/TranslationSources/asv.json`. Checks the translation lines up with the KJV verse for verse; `--check` validates without writing. To add a translation, see the script's header. |
+| `python3 Scripts/make_lockscreen_verses.py` | `The Bible Widgets/LockScreenVerses.json`, shared by the app and the widget. Re-run after editing its verse list or `kjv.json`, or after adding a translation (it adds each translation's text for the widget). |
 
 ## One-time and occasional tools
 

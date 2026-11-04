@@ -96,6 +96,13 @@ struct ReadingView: View {
 
     private var currentChapter: Chapter { viewModel.currentChapter }
 
+    private var displayOptions: some View {
+        ReaderDisplayOptions(
+            fontSize: $readerFontSize,
+            showsFullReferences: $showsFullReferences
+        )
+    }
+
     private var searchButton: some View {
         Button {
             if let onSearch {
@@ -148,17 +155,19 @@ struct ReadingView: View {
                         .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
                     }
 
-                    Button {
-                        isDisplayOptionsPresented = true
-                    } label: {
-                        Image(systemName: "textformat.size")
-                    }
-                    .accessibilityLabel("Text Size and Display")
-                    .popover(isPresented: $isDisplayOptionsPresented) {
-                        ReaderDisplayOptions(
-                            fontSize: $readerFontSize,
-                            showsFullReferences: $showsFullReferences
-                        )
+                    // On iPhone these two live in the "…" menu, to keep the toolbar uncrowded.
+                    if UIDevice.current.userInterfaceIdiom != .phone {
+                        TranslationToolbarMenu()
+
+                        Button {
+                            isDisplayOptionsPresented = true
+                        } label: {
+                            Image(systemName: "textformat.size")
+                        }
+                        .accessibilityLabel("Text Size and Display")
+                        .popover(isPresented: $isDisplayOptionsPresented) {
+                            displayOptions
+                        }
                     }
 
                     Menu {
@@ -169,6 +178,14 @@ struct ReadingView: View {
                         }
 
                         if UIDevice.current.userInterfaceIdiom == .phone {
+                            Button {
+                                isDisplayOptionsPresented = true
+                            } label: {
+                                Label("Text Size & Display", systemImage: "textformat.size")
+                            }
+
+                            TranslationMenuSection()
+
                             Divider()
 
                             Button {
@@ -180,8 +197,12 @@ struct ReadingView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
+                    // The iPad has its own text size button with this popover.
+                    .popover(isPresented: UIDevice.current.userInterfaceIdiom == .phone ? $isDisplayOptionsPresented : .constant(false)) {
+                        displayOptions
+                    }
                     .accessibilityLabel("Reader Options")
-                    .accessibilityHint("Enter Focus Mode or open chapter insights")
+                    .accessibilityHint("Enter Focus Mode, change text size or translation, or open chapter insights")
                 }
 
                 ToolbarItem(placement: .principal) {
@@ -190,17 +211,26 @@ struct ReadingView: View {
                         h.impactOccurred()
                         isBookPickerPresented = true
                     } label: {
-                        HStack(spacing: 4) {
-                            Text("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
-                                .font(.headline)
-                                .foregroundStyle(.primary)
-                                .lineLimit(1)
+                        VStack(spacing: 0) {
+                            HStack(spacing: 4) {
+                                Text("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+                                    .lineLimit(1)
 
-                            // Shows that the title opens the book picker.
-                            Image(systemName: "chevron.down")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(.secondary)
-                                .accessibilityHidden(true)
+                                // Shows that the title opens the book picker.
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundStyle(.secondary)
+                                    .accessibilityHidden(true)
+                            }
+
+                            // The translation picker is in the "…" menu on iPhone, so name it here.
+                            if UIDevice.current.userInterfaceIdiom == .phone {
+                                Text(BibleStore.shared.translation.abbreviation)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                         .contentShape(Rectangle())
                     }
@@ -256,6 +286,9 @@ struct ReadingView: View {
             }
             .onChange(of: AppDataChanges.shared.bibleStats) {
                 refreshSeenVerses()
+            }
+            .onChange(of: BibleStore.shared.translation) {
+                viewModel.translationChanged()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 viewModel.onScenePhaseChanged(newPhase)

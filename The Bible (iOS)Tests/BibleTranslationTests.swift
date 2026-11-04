@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import Testing
 @testable import Bible
@@ -26,6 +27,44 @@ struct BibleTranslationTests {
         // A few verses may be left out (kept empty), never whole passages.
         let omitted = books.flatMap(\.chapters).flatMap(\.verses).filter(\.isOmitted)
         #expect(omitted.count < 40)
+    }
+
+    /// Every translation except the KJV (which has `KJVTextBundleTests`) is built from a raw
+    /// source in TranslationSources by Scripts/build_translation.py, which records the SHA-256
+    /// of the source and of its output in manifest.json. This fails when either has changed
+    /// since the last build: a source edited without a rebuild, or the bundled text edited by hand.
+    @Test(arguments: BibleTranslation.allCases.filter { $0 != .kjv })
+    func bundledTextMatchesItsBuiltSource(_ translation: BibleTranslation) throws {
+        // The sources are copied into the test bundle only, never the app.
+        let testBundle = Bundle(for: TranslationSourcesToken.self)
+        let manifestURL = try #require(testBundle.url(forResource: "manifest", withExtension: "json"))
+        let sourceURL = try #require(
+            testBundle.url(forResource: translation.rawValue, withExtension: "json"),
+            "The raw \(translation.abbreviation) source should be in the test bundle."
+        )
+        let bundledURL = try #require(Bundle.main.url(forResource: translation.resourceName, withExtension: "json"))
+
+        let manifest = try JSONDecoder().decode(
+            [String: [String: String]].self,
+            from: Data(contentsOf: manifestURL)
+        )
+        let entry = try #require(
+            manifest[translation.rawValue],
+            "Run Scripts/build_translation.py \(translation.rawValue) to record it in manifest.json."
+        )
+
+        #expect(
+            Self.sha256(of: try Data(contentsOf: sourceURL)) == entry["source"],
+            "\(translation.abbreviation) source changed. Re-run Scripts/build_translation.py \(translation.rawValue)."
+        )
+        #expect(
+            Self.sha256(of: try Data(contentsOf: bundledURL)) == entry["output"],
+            "\(translation.resourceName).json doesn't match the last build. Re-run Scripts/build_translation.py \(translation.rawValue); don't edit it by hand."
+        )
+    }
+
+    private static func sha256(of data: Data) -> String {
+        SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 
     @Test
@@ -72,3 +111,6 @@ struct BibleTranslationTests {
         #expect(BibleTranslation.abbreviation(for: "web") == "WEB")
     }
 }
+
+/// Locates this test bundle.
+private final class TranslationSourcesToken {}

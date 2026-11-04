@@ -58,8 +58,19 @@ private enum QuizWellKnownVerses {
         guard let url = Bundle.main.url(forResource: "LockScreenVerses", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let entries = PersistedDecoding.decode([Entry].self, from: data, name: "LockScreenVerses.json") else { return [] }
-        return entries.map {
-            QuizVerse(bookName: $0.book, chapterNumber: $0.chapter, verseNumber: $0.verse, verseText: $0.text)
+        // The file's text is KJV; the loaded Bible has the translation being read.
+        let books = BibleData.books
+        return entries.map { entry in
+            let text = books.first { $0.name == entry.book }?
+                .chapters.first { $0.number == entry.chapter }?
+                .verses.first { $0.number == entry.verse }?
+                .text
+            return QuizVerse(
+                bookName: entry.book,
+                chapterNumber: entry.chapter,
+                verseNumber: entry.verse,
+                verseText: text.flatMap { $0.isEmpty ? nil : $0 } ?? entry.text
+            )
         }
     }
 }

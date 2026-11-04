@@ -168,6 +168,16 @@ struct HomeBibleReaderCard: View {
             guard let newTarget, !isShowingTargetChapter else { return }
             Task { await show(newTarget, scrollTo: newTarget.verse) }
         }
+        .onChange(of: BibleStore.shared.translation) { _, _ in
+            // Same chapter and scroll position, in the newly chosen translation.
+            guard let name = book?.name else { return }
+            Task {
+                if let reloaded = await BibleRepository.shared.loadBook(named: name) {
+                    book = reloaded
+                    selectedVerse = nil
+                }
+            }
+        }
         .onChange(of: visibleVerses) { _, _ in
             recordPositionIfReading()
         }
@@ -234,7 +244,7 @@ struct HomeBibleReaderCard: View {
                 showsScripturePicker = true
             } label: {
                 HStack(spacing: 6) {
-                    Text(book.map { "\($0.name) \(chapterNumber)" } ?? "Choose a Passage")
+                    Text(book.map { "\($0.name) \(chapterNumber) · \(BibleRepository.shared.activeTranslation.abbreviation)" } ?? "Choose a Passage")
                         .font(.title3.weight(.semibold))
                         .foregroundStyle(.primary)
                     Image(systemName: "chevron.down")

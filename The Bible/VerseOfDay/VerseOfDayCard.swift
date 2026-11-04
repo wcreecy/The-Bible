@@ -80,7 +80,7 @@ struct VerseOfDayCard: View {
                         .truncationMode(.tail)
                         .contentTransition(.opacity)
 
-                    Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
+                    Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber) · \(BibleRepository.shared.activeTranslation.abbreviation)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .contentTransition(.opacity)

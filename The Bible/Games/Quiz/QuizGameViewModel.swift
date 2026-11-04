@@ -451,7 +451,7 @@ final class QuizGameViewModel {
                 book.chapters.flatMap { chapter in
                     chapter.verses.indices.compactMap { index -> VerseCandidate? in
                         let verse = chapter.verses[index]
-                        guard QuizVerseFilter.isQuizzable(
+                        guard !verse.isOmitted, QuizVerseFilter.isQuizzable(
                             book: book.name,
                             chapter: chapter.number,
                             verse: verse.number,
@@ -462,7 +462,7 @@ final class QuizGameViewModel {
                             bookName: book.name,
                             chapter: chapter.number,
                             verse: verse.number,
-                            contextText: index > 0 ? chapter.verses[index - 1].text : nil
+                            contextText: index > 0 && !chapter.verses[index - 1].isOmitted ? chapter.verses[index - 1].text : nil
                         )
                     }
                 }

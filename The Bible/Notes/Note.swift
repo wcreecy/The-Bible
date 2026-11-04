@@ -35,6 +35,9 @@ final class VerseNote {
     /// The last verse of a multi-verse note; 0 (or `verseNumber`) means a single verse.
     var endVerseNumber: Int = 0
     var verseText: String = ""
+    /// Raw value of the `BibleTranslation` `verseText` is in. Records saved before there
+    /// were translations are KJV.
+    var translation: String = "kjv"
     var content: String = ""
     /// Encoded `AttributedString` data. `content` remains the searchable plain-text copy.
     var formattedContent: Data?
@@ -49,6 +52,7 @@ final class VerseNote {
     init() {
         self.createdAt = Date()
         self.updatedAt = Date()
+        self.translation = BibleRepository.shared.activeTranslation.rawValue
     }
 
     convenience init(

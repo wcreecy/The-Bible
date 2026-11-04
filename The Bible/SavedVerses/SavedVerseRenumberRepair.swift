@@ -24,27 +24,29 @@ enum SavedVerseRenumberRepair {
     /// Saved text shorter than this is too generic to place reliably.
     private static let minimumMatchLength = 12
 
-    /// Returns whether any record changed. Does nothing until the Bible text has loaded.
+    /// Returns whether any record changed. Old numbering only exists in KJV records, which are
+    /// matched against KJV text, so this does nothing while another translation is loaded.
     static func run(in context: ModelContext) -> Bool {
-        let books = BibleData.books
+        let books = BibleRepository.shared.cachedBooks(for: .kjv)
         guard !books.isEmpty else { return false }
         var changed = false
+        let kjv = BibleTranslation.kjv.rawValue
 
-        for favorite in (try? context.fetch(FetchDescriptor<Favorite>())) ?? [] {
+        for favorite in (try? context.fetch(FetchDescriptor<Favorite>())) ?? [] where favorite.translation == kjv {
             if let fix = correctedLocation(book: favorite.bookName, chapter: favorite.chapterNumber, verse: favorite.verseNumber, savedText: favorite.verseText, books: books) {
                 favorite.chapterNumber = fix.chapter
                 favorite.verseNumber = fix.verse
                 changed = true
             }
         }
-        for bookmark in (try? context.fetch(FetchDescriptor<Bookmark>())) ?? [] {
+        for bookmark in (try? context.fetch(FetchDescriptor<Bookmark>())) ?? [] where bookmark.translation == kjv {
             if let fix = correctedLocation(book: bookmark.bookName, chapter: bookmark.chapterNumber, verse: bookmark.verseNumber, savedText: bookmark.verseText, books: books) {
                 bookmark.chapterNumber = fix.chapter
                 bookmark.verseNumber = fix.verse
                 changed = true
             }
         }
-        for note in (try? context.fetch(FetchDescriptor<VerseNote>())) ?? [] {
+        for note in (try? context.fetch(FetchDescriptor<VerseNote>())) ?? [] where note.translation == kjv {
             if let fix = correctedLocation(book: note.bookName, chapter: note.chapterNumber, verse: note.verseNumber, savedText: note.verseText, books: books) {
                 note.chapterNumber = fix.chapter
                 note.verseNumber = fix.verse

@@ -99,10 +99,11 @@ final class BibleSearchModel {
     var tokens: [String] { BibleSearchTokenizer.tokens(in: query) }
 
     var statusText: String {
-        if isSearching { return "Searching…" }
-        guard canSearch else { return "Ready to search" }
-        if hasMoreResults { return "Showing the first \(Self.maxResults) results" }
-        return results.count == 1 ? "1 result" : "\(results.count) results"
+        let translation = BibleRepository.shared.activeTranslation.abbreviation
+        if isSearching { return "Searching \(translation)…" }
+        guard canSearch else { return "Ready to search \(translation)" }
+        if hasMoreResults { return "Showing the first \(Self.maxResults) \(translation) results" }
+        return results.count == 1 ? "1 \(translation) result" : "\(results.count) \(translation) results"
     }
 
     /// The single verse a reference query names, if any (e.g. "John 3:16").

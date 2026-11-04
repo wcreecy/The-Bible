@@ -134,7 +134,7 @@ struct QuizAnswerReveal: View {
                     .font(.caption.weight(.bold))
                     .foregroundStyle(outcome.tint)
 
-                Text("\(bookName) \(chapterNumber):\(verseNumber)")
+                Text("\(bookName) \(chapterNumber):\(verseNumber) \(BibleRepository.shared.activeTranslation.abbreviation)")
                     .font(.title3.weight(.bold))
                     .foregroundStyle(.primary)
             }

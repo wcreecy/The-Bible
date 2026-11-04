@@ -487,7 +487,7 @@ final class WordSearchViewModel {
             return
         }
 
-        verseRef = "\(best.choice.book) \(best.choice.chapter):\(best.choice.verse)"
+        verseRef = "\(best.choice.book) \(best.choice.chapter):\(best.choice.verse) \(BibleRepository.shared.activeTranslation.abbreviation)"
         verseText = best.choice.text
         favBookName = best.choice.book
         favChapterNumber = best.choice.chapter
@@ -518,7 +518,7 @@ final class WordSearchViewModel {
     private func randomVerse() -> VerseChoice? {
         guard let book = BibleData.books.randomElement(),
               let chapter = book.chapters.randomElement(),
-              let verse = chapter.verses.randomElement() else { return nil }
+              let verse = chapter.verses.filter({ !$0.isOmitted }).randomElement() else { return nil }
         return VerseChoice(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
     }
 
@@ -542,7 +542,7 @@ final class WordSearchViewModel {
     private func resolvePopular(_ entry: PopularVerse) -> VerseChoice {
         let text = BibleData.books.first { $0.name == entry.book }?
             .chapters.first { $0.number == entry.chapter }?
-            .verses.first { $0.number == entry.verse }?
+            .verses.first { $0.number == entry.verse && !$0.isOmitted }?
             .text ?? entry.text
         return VerseChoice(book: entry.book, chapter: entry.chapter, verse: entry.verse, text: text)
     }

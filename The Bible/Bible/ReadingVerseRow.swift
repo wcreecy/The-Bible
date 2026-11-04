@@ -53,6 +53,35 @@ struct ReadingVerseRow: View {
     let onOpenCrossReferences: () -> Void
 
     var body: some View {
+        if verse.isOmitted {
+            omittedVerseRow
+        } else {
+            verseRow
+        }
+    }
+
+    /// A verse the translation leaves out keeps its place, so the numbering reads right.
+    /// It still counts as seen, so the chapter can be completed.
+    private var omittedVerseRow: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(Verse.omittedNote(in: BibleRepository.shared.activeTranslation))
+                .font(.subheadline)
+                .italic()
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(showsFullReference ? "\(bookName) \(chapterNumber):\(verse.number)" : "Verse \(verse.number)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .onScrollVisibilityChange(threshold: 0.6, onVisibilityChange)
+    }
+
+    private var verseRow: some View {
         Group {
             VStack(alignment: .leading, spacing: 6) {
                 Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))

@@ -234,7 +234,7 @@ nonisolated enum VerseOfDaySelector {
     private static func forEachWeightedVerse(in books: [Book], _ body: (Selection, Int) -> Void) {
         for book in books {
             for chapter in book.chapters {
-                for verse in chapter.verses {
+                for verse in chapter.verses where !verse.isOmitted {
                     let weight = suitabilityWeight(
                         bookName: book.name,
                         chapter: chapter.number,
