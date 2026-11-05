@@ -61,7 +61,7 @@
     ]
   },
   "2 Chronicles": {
-    "author": "Ezra, according to Jewish tradition, who is also credited with 1 Chronicles. The book does not name its writer.",
+    "author": "1 and 2 Chronicles were one book. Jewish tradition credits Ezra as the author, though the book does not name its writer.",
     "audience": "The Jews who had come home from exile in Babylon and were rebuilding Jerusalem and its temple.",
     "purpose": "To retell the history of Judah with emphasis on temple worship, reform, repentance, and the consequences of covenant faithfulness or rebellion.",
     "theme": "Seeking God brings renewal, while persistent unfaithfulness brings judgment; restoration remains possible through repentance.",
@@ -70,9 +70,9 @@
     "movements": [
       {
         "title": "Solomon Builds the Temple",
-        "description": "The temple is constructed, dedicated, and filled with God's glory.",
+        "description": "Solomon asks for wisdom, builds and dedicates the temple, and reaches great wealth.",
         "passages": [
-          "2 Chronicles 1-7"
+          "2 Chronicles 1-9"
         ]
       },
       {
@@ -117,7 +117,7 @@
       },
       {
         "name": "Uzziah",
-        "description": "A strong king struck with a skin disease after pridefully burning incense in the temple."
+        "description": "A strong king struck with leprosy after he pridefully burned incense in the temple."
       },
       {
         "name": "Hezekiah",
@@ -138,7 +138,7 @@
     ]
   },
   "Ezra": {
-    "author": "Ezra, according to Jewish tradition. Parts of chapters 7–9 are written in his own voice, and the book also draws on family lists and royal letters.",
+    "author": "Jewish tradition credits Ezra. Ezra and Nehemiah were once one book. Parts of chapters 7–9 are written in his own voice, and the book also draws on family lists and royal letters.",
     "audience": "The Jews who had returned from Babylon to Judah and were rebuilding their life around the temple.",
     "purpose": "To recount the return from exile, rebuilding of the temple, and Ezra's efforts to restore covenant faithfulness.",
     "theme": "God restores his people, and restoration includes both rebuilt worship and renewed obedience.",

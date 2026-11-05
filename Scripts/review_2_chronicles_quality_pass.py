@@ -44,6 +44,8 @@ def apply_chapter_insights():
     data = load(path)
     for chapter, field, old, new in INSIGHT_FIXES:
         data[chapter][field] = replace_once(data[chapter][field], old, new, f"{chapter} {field}")
+    for theme in data["2 Chronicles 3"]["keyThemes"]:
+        theme["explanation"] = theme["explanation"].replace("the vail", "the curtain")
     for ref in data["2 Chronicles 18"]["explainedReferences"]:
         ref["explanation"] = ref["explanation"].replace("Ramoth-gilead", "Ramothgilead")
     save(path, data)
@@ -130,7 +132,6 @@ STORY_FIXES = [
     ("They crown him, give him a copy of the law, and anoint him,", "They crown him, give him the testimony, probably a copy of the law, and anoint him,"),
     ("Jesus later spoke of the blood of Zechariah, who", "Many readers think Jesus later spoke of the blood of this Zechariah, who"),
     ("Jesus' parable of the Good Samaritan echoes this scene.", "Many readers hear an echo of this scene in Jesus' parable of the Good Samaritan."),
-    ("he hath charged me to build him an house in Jerusalem, which is in Judah.", "he hath charged me to build him an house at Jerusalem, which is in Judah."),
 ]
 
 
