@@ -96,12 +96,6 @@ final class WordleGameViewModel {
 
     let lastPracticeWordKey = AppStorageKey.wordleLastPracticeWord
 
-    let dailyWordAssignmentKey = AppStorageKey.wordleDailyWordAssignment
-
-    let recentDailyWordsKey = AppStorageKey.wordleRecentDailyWords
-
-    let recentDailyWordLimit = 365
-
     let dailyProgressKey = AppStorageKey.wordleDailyProgress
 
     #if canImport(UIKit)
@@ -347,10 +341,7 @@ final class WordleGameViewModel {
         WordleWordPicker(
             defaults: .standard,
             practiceBagKey: practiceWordBagKey,
-            lastPracticeWordKey: lastPracticeWordKey,
-            dailyAssignmentKey: dailyWordAssignmentKey,
-            recentDailyWordsKey: recentDailyWordsKey,
-            recentDailyWordLimit: recentDailyWordLimit
+            lastPracticeWordKey: lastPracticeWordKey
         )
     }
 

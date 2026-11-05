@@ -2,6 +2,7 @@
 import SwiftData
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 /// Debug-only tools for testing the app: streaks, onboarding, notifications, sync, storage
 /// fallbacks, large content, translations, and diagnostics.
@@ -24,6 +25,8 @@ struct SettingsDeveloperToolsView: View {
     @State private var showingSettingsResetCompletion = false
     @State private var isConfirmingDeleteAll = false
     @State private var deleteAllConfirmationText = ""
+    @State private var dailyWordScheduleDocument: DailyWordScheduleDocument?
+    @State private var isShowingDailyWordScheduleRegeneration = false
 
     var body: some View {
         Form {
@@ -34,12 +37,34 @@ struct SettingsDeveloperToolsView: View {
             syncSection
             storageSection
             contentSection
+            dailyWordScheduleSection
             translationsSection
             diagnosticsSection
         }
         .navigationTitle("Developer Tools")
         .navigationBarTitleDisplayMode(.inline)
         .appToast(isPresented: $isShowingToast, symbol: "checkmark.circle.fill", text: toastText, tint: .green)
+        .fileExporter(
+            isPresented: Binding(
+                get: { dailyWordScheduleDocument != nil },
+                set: { if !$0 { dailyWordScheduleDocument = nil } }
+            ),
+            document: dailyWordScheduleDocument,
+            contentType: .json,
+            defaultFilename: "WORDDailySchedule"
+        ) { result in
+            switch result {
+            case .success:
+                show("Daily WORD schedule exported")
+            case .failure:
+                show("Couldn’t export the Daily WORD schedule")
+            }
+        }
+        .sheet(isPresented: $isShowingDailyWordScheduleRegeneration) {
+            DailyWordScheduleRegenerationSheet { startDate in
+                regenerateAndExportDailyWordSchedule(startingOn: startDate)
+            }
+        }
         .alert("Delete All Data?", isPresented: $isConfirmingDeleteAll) {
             TextField("Type delete", text: $deleteAllConfirmationText)
                 .textInputAutocapitalization(.never)
@@ -64,6 +89,29 @@ struct SettingsDeveloperToolsView: View {
     private func show(_ message: String) {
         toastText = message
         withAnimation(.snappy) { isShowingToast = true }
+    }
+
+    private var dailyWordScheduleSection: some View {
+        Section("Daily WORD") {
+            Button("Regenerate & Export Daily Schedule", systemImage: "shuffle") {
+                isShowingDailyWordScheduleRegeneration = true
+            }
+
+            Text("Creates one shuffled order from the current curated WORD list, uses it in this Debug build, and exports WORDDailySchedule.json for the next release.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if let lastUpdatedDate = WordleDailySchedule.lastUpdatedDate {
+                Text("Last schedule update: \(lastUpdatedDate, format: .dateTime.month().day().year())")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private func regenerateAndExportDailyWordSchedule(startingOn date: Date) {
+        let configuration = DeveloperTools.regenerateDailyWordSchedule(startingOn: date)
+        dailyWordScheduleDocument = DailyWordScheduleDocument(configuration: configuration)
     }
 
     // MARK: - Data and resets

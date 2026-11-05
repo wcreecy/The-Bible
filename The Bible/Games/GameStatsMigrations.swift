@@ -10,6 +10,7 @@ enum GameStatsMigrations {
         migrateHangmanCombinedIfNeeded() // backfill combined “_all” for Hangman
         migrateVerseMatchCombinedIfNeeded() // backfill combined “_all” for Verses
         migrateWhoAmICombinedIfNeeded() // backfill combined “_all” for Who?
+        removeLegacyWordleDailySelectionIfNeeded()
     }
 
     private static let legacyWipeFlagKey = "didWipeLegacyUnsuffixedGameKeys_v1"
@@ -18,6 +19,18 @@ enum GameStatsMigrations {
     private static let hangmanCombinedMigrationFlagKey = "didMigrateHangmanCombinedAll_v1"
     private static let verseMatchCombinedMigrationFlagKey = "didMigrateVerseMatchCombinedAll_v1"
     private static let whoamiCombinedMigrationFlagKey = "didMigrateWhoAmICombinedAll_v1"
+    private static let wordleDailyScheduleMigrationFlagKey = "didRemoveLegacyWordleDailySelection_v1"
+
+    /// Daily WORD is now selected from the release-bundled shared schedule. These values held
+    /// each device's old random assignment and recency history, so retaining them serves no use.
+    private static func removeLegacyWordleDailySelectionIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.wordleDailyScheduleMigrationFlagKey) else { return }
+
+        defaults.removeObject(forKey: "wordleDailyWordAssignment")
+        defaults.removeObject(forKey: "wordleRecentDailyWords")
+        defaults.set(true, forKey: Self.wordleDailyScheduleMigrationFlagKey)
+    }
 
     private static func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard

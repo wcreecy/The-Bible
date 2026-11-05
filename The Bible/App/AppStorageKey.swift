@@ -88,8 +88,6 @@ enum AppStorageKey {
     static let wordleDailyResultMap = "wordleDailyResultMap"
     static let wordlePracticeWordBag = "wordlePracticeWordBag"
     static let wordleLastPracticeWord = "wordleLastPracticeWord"
-    static let wordleDailyWordAssignment = "wordleDailyWordAssignment"
-    static let wordleRecentDailyWords = "wordleRecentDailyWords"
     static let gameQuestionRecency = "gameQuestionRecency"
     static let bookOrderDifficulty = "bookOrderDifficulty"
     static let bookOrderSource = "bookOrderSource"

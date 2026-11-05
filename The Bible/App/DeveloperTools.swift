@@ -6,6 +6,16 @@ import UserNotifications
 /// Actions behind Settings > Developer Tools. They exist only in debug builds.
 @MainActor
 enum DeveloperTools {
+    // MARK: - Daily WORD schedule
+
+    /// Makes a new shared Daily WORD schedule for release and applies it to this Debug build.
+    /// The caller exports the returned configuration as WORDDailySchedule.json for the next build.
+    static func regenerateDailyWordSchedule(startingOn date: Date) -> WordleDailyScheduleConfiguration {
+        let configuration = WordleDailySchedule.makeConfiguration(startingOn: date)
+        WordleDailySchedule.setDebugConfigurationOverride(configuration)
+        return configuration
+    }
+
     // MARK: - Streak and daily goal
 
     /// Reading time added by the streak tools sits under this source name, so it's easy to spot.

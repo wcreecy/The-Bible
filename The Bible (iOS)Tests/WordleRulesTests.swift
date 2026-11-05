@@ -170,10 +170,7 @@ struct WordleWordPickerTests {
     private let pool = ["AAAAA", "BBBBB", "CCCCC", "DDDDD", "EEEEE"]
 
     /// A picker backed by a private defaults suite, removed when the test finishes.
-    private func withPicker(
-        limit: Int = 365,
-        _ body: (WordleWordPicker, UserDefaults) throws -> Void
-    ) rethrows {
+    private func withPicker(_ body: (WordleWordPicker, UserDefaults) throws -> Void) rethrows {
         let suite = "wordle-picker-tests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite) ?? .standard
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -181,10 +178,7 @@ struct WordleWordPickerTests {
             WordleWordPicker(
                 defaults: defaults,
                 practiceBagKey: "bag",
-                lastPracticeWordKey: "last",
-                dailyAssignmentKey: "assignment",
-                recentDailyWordsKey: "recent",
-                recentDailyWordLimit: limit
+                lastPracticeWordKey: "last"
             ),
             defaults
         )
@@ -256,8 +250,8 @@ struct WordleWordPickerTests {
     }
 
     @Test
-    func eachNewDayPicksAWordNotUsedRecently() {
-        withPicker { picker, defaults in
+    func consecutiveDaysUseEveryWordBeforeRepeating() {
+        withPicker { picker, _ in
             let threeWords = ["AAAAA", "BBBBB", "CCCCC"]
             var generator = SplitMix64(seed: 5)
 
@@ -266,14 +260,12 @@ struct WordleWordPickerTests {
             let day3 = picker.wordOfDay(pool: threeWords, dayKey: "2026-10-30", using: &generator)
 
             #expect(Set([day1, day2, day3]).count == 3)
-            #expect(defaults.stringArray(forKey: "recent") == [day1, day2, day3])
         }
     }
 
     @Test
     func whenEveryWordWasUsedRecentlyTheDailyStillPicksOne() {
-        withPicker { picker, defaults in
-            defaults.set(["AAAAA", "BBBBB"], forKey: "recent")
+        withPicker { picker, _ in
             var generator = SplitMix64(seed: 2)
 
             #expect(["AAAAA", "BBBBB"].contains(picker.wordOfDay(pool: ["AAAAA", "BBBBB"], dayKey: "2026-10-30", using: &generator)))
@@ -281,54 +273,41 @@ struct WordleWordPickerTests {
     }
 
     @Test
-    func todaysWordSurvivesTheAnswerListChanging() {
-        withPicker { picker, _ in
-            var generator = SplitMix64(seed: 4)
-            let assigned = picker.wordOfDay(pool: pool, dayKey: "2026-10-30", using: &generator)
+    func theSameScheduleProducesTheSameAnswerOnEveryDevice() {
+        let configuration = WordleDailyScheduleConfiguration(
+            version: 1,
+            startDate: "2026-10-30",
+            updatedAt: "2026-10-30",
+            seed: 42,
+            wordIDs: nil,
+            previousSchedule: nil
+        )
 
-            let later = picker.wordOfDay(pool: ["ZZZZZ"], dayKey: "2026-10-30", using: &generator)
+        let first = WordleDailySchedule.word(for: "2026-11-01", pool: pool, configuration: configuration)
+        let second = WordleDailySchedule.word(for: "2026-11-01", pool: pool.reversed(), configuration: configuration)
 
-            #expect(later == assigned)
-        }
+        #expect(first == second)
     }
 
     @Test
-    func anAssignmentWithAWordOfTheWrongLengthIsReplaced() throws {
-        try withPicker { picker, defaults in
-            let bad = try JSONSerialization.data(withJSONObject: ["dayKey": "2026-10-30", "word": "ABC"])
-            defaults.set(bad, forKey: "assignment")
-            var generator = SplitMix64(seed: 6)
+    func aFutureScheduleUsesThePreviousReleaseUntilItsStartDate() {
+        let previousIDs = ["AAAAA", "BBBBB", "CCCCC", "DDDDD", "EEEEE"]
+        let configuration = WordleDailyScheduleConfiguration(
+            version: 1,
+            startDate: "2026-11-15",
+            updatedAt: "2026-11-05",
+            seed: 99,
+            wordIDs: ["EEEEE", "DDDDD", "CCCCC", "BBBBB", "AAAAA"],
+            previousSchedule: .init(startDate: "2026-10-30", seed: 42, wordIDs: previousIDs)
+        )
 
-            let word = picker.wordOfDay(pool: pool, dayKey: "2026-10-30", using: &generator)
-
-            #expect(pool.contains(word))
-        }
-    }
-
-    @Test
-    func anUnreadableAssignmentIsReplacedWithoutCrashing() {
-        withPicker { picker, defaults in
-            defaults.set(Data("not json".utf8), forKey: "assignment")
-            var generator = SplitMix64(seed: 8)
-
-            let word = picker.wordOfDay(pool: pool, dayKey: "2026-10-30", using: &generator)
-
-            #expect(pool.contains(word))
-        }
-    }
-
-    @Test
-    func theRecentListKeepsOnlyTheLatestWords() {
-        withPicker(limit: 3) { picker, defaults in
-            let sixWords = ["AAAAA", "BBBBB", "CCCCC", "DDDDD", "EEEEE", "FFFFF"]
-            var generator = SplitMix64(seed: 11)
-            var picked: [String] = []
-
-            for day in 1...5 {
-                picked.append(picker.wordOfDay(pool: sixWords, dayKey: "2026-10-0\(day)", using: &generator))
-            }
-
-            #expect(defaults.stringArray(forKey: "recent") == Array(picked.suffix(3)))
-        }
+        #expect(
+            WordleDailySchedule.word(for: "2026-11-14", pool: pool, configuration: configuration)
+                == "AAAAA"
+        )
+        #expect(
+            WordleDailySchedule.word(for: "2026-11-15", pool: pool, configuration: configuration)
+                == "EEEEE"
+        )
     }
 }

@@ -160,14 +160,6 @@ struct WordleWordPicker {
     let defaults: UserDefaults
     let practiceBagKey: String
     let lastPracticeWordKey: String
-    let dailyAssignmentKey: String
-    let recentDailyWordsKey: String
-    let recentDailyWordLimit: Int
-
-    private struct DailyWordAssignment: Codable {
-        let dayKey: String
-        let word: String
-    }
 
     /// Practice answers come out of a shuffled bag, so every word is used before any repeats. A
     /// new bag never starts with the word that ended the last one.
@@ -194,31 +186,11 @@ struct WordleWordPicker {
         return nextWord
     }
 
-    /// Today's Daily word: picked at random the first time Daily is played each day and
-    /// kept for the rest of that day. Recent Daily answers are skipped so words don't repeat.
+    /// Today's Daily WORD comes from the release-bundled shared schedule. The schedule is a
+    /// seeded full shuffle of the curated answer IDs, so every device gets the same answer and
+    /// each answer appears once before the cycle repeats.
     func wordOfDay<G: RandomNumberGenerator>(pool: [String], dayKey: String, using generator: inout G) -> String {
         guard !pool.isEmpty else { return "JESUS" }
-
-        // Today's word stays put even if it's no longer in the pool (e.g. it was assigned
-        // before the answer list changed), so an in-progress Daily isn't swapped out.
-        if let data = defaults.data(forKey: dailyAssignmentKey),
-           let assignment = PersistedDecoding.decode(DailyWordAssignment.self, from: data, key: dailyAssignmentKey, keepingUnreadableIn: defaults),
-           assignment.dayKey == dayKey,
-           assignment.word.count == 5 {
-            return assignment.word
-        }
-
-        var recent = defaults.stringArray(forKey: recentDailyWordsKey) ?? []
-        let recentSet = Set(recent)
-        let word = pool.filter { !recentSet.contains($0) }.randomElement(using: &generator)
-            ?? pool.randomElement(using: &generator)
-            ?? "JESUS"
-
-        recent.append(word)
-        defaults.set(Array(recent.suffix(recentDailyWordLimit)), forKey: recentDailyWordsKey)
-        if let data = try? JSONEncoder().encode(DailyWordAssignment(dayKey: dayKey, word: word)) {
-            defaults.set(data, forKey: dailyAssignmentKey)
-        }
-        return word
+        return WordleDailySchedule.word(for: dayKey, pool: pool) ?? pool.randomElement(using: &generator) ?? "JESUS"
     }
 }
