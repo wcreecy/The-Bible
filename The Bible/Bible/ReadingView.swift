@@ -53,6 +53,7 @@ struct ReadingView: View {
     @State private var isDisplayOptionsPresented = false
     @AppStorage(AppStorageKey.readerShowsFullReferences) private var showsFullReferences = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     /// False until the reader has scrolled to the verse it was opened at, so the chapter's first
     /// verses aren't shown for a moment before it jumps there.
@@ -103,6 +104,13 @@ struct ReadingView: View {
         )
     }
 
+    /// Whether the window is wide enough for every reader control to sit in the toolbar.
+    /// Narrower windows (iPhone, and iPad in Split View or a small Stage Manager window)
+    /// keep the title uncrowded by putting most controls in the "…" menu.
+    private var usesFullToolbar: Bool {
+        horizontalSizeClass == .regular
+    }
+
     private var searchButton: some View {
         Button {
             if let onSearch {
@@ -125,6 +133,7 @@ struct ReadingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(onNavigateBack != nil)
             .toolbar {
+                // Left of the title: getting back, and how the text looks.
                 ToolbarItemGroup(placement: .topBarLeading) {
                     if let onNavigateBack {
                         Button {
@@ -135,28 +144,19 @@ struct ReadingView: View {
                         .accessibilityLabel("Back to chapters")
                     }
 
-                    if UIDevice.current.userInterfaceIdiom == .phone {
+                    // In the full toolbar, Search joins the other actions on the right.
+                    if !usesFullToolbar {
                         searchButton
                     }
                 }
 
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    if UIDevice.current.userInterfaceIdiom != .phone {
-                        searchButton
+                if usesFullToolbar {
+                    // Sets Back apart from the display controls; with no Back button there's nothing to separate.
+                    if onNavigateBack != nil {
+                        ToolbarSpacer(.fixed, placement: .topBarLeading)
                     }
 
-                    if UIDevice.current.userInterfaceIdiom != .phone {
-                        Button {
-                            chapterInsightsDismissal.isPresented = true
-                        } label: {
-                            Image(systemName: "lightbulb")
-                        }
-                        .accessibilityLabel("Study this chapter")
-                        .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
-                    }
-
-                    // On iPhone these two live in the "…" menu, to keep the toolbar uncrowded.
-                    if UIDevice.current.userInterfaceIdiom != .phone {
+                    ToolbarItemGroup(placement: .topBarLeading) {
                         TranslationToolbarMenu()
 
                         Button {
@@ -169,9 +169,30 @@ struct ReadingView: View {
                             displayOptions
                         }
                     }
+                }
 
-                    Menu {
-                        if UIDevice.current.userInterfaceIdiom == .phone {
+                // Right of the title: actions, with Focus Mode outermost.
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    if usesFullToolbar {
+                        searchButton
+
+                        Button {
+                            chapterInsightsDismissal.isPresented = true
+                        } label: {
+                            Image(systemName: "lightbulb")
+                        }
+                        .accessibilityLabel("Study this chapter")
+                        .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
+
+                        Button {
+                            presentFocusMode()
+                        } label: {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                        }
+                        .accessibilityLabel("Enter Focus Mode")
+                        .accessibilityHint("Hides the toolbar and shows only the text")
+                    } else {
+                        Menu {
                             Button {
                                 isDisplayOptionsPresented = true
                             } label: {
@@ -187,22 +208,21 @@ struct ReadingView: View {
                             } label: {
                                 Label("Chapter Insights", systemImage: "lightbulb")
                             }
-                        }
 
-                        Button {
-                            presentFocusMode()
+                            Button {
+                                presentFocusMode()
+                            } label: {
+                                Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
+                            }
                         } label: {
-                            Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
+                            Image(systemName: "ellipsis.circle")
                         }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                        .popover(isPresented: $isDisplayOptionsPresented) {
+                            displayOptions
+                        }
+                        .accessibilityLabel("Reader Options")
+                        .accessibilityHint("Enter Focus Mode, change text size or translation, or open chapter insights")
                     }
-                    // The iPad has its own text size button with this popover.
-                    .popover(isPresented: UIDevice.current.userInterfaceIdiom == .phone ? $isDisplayOptionsPresented : .constant(false)) {
-                        displayOptions
-                    }
-                    .accessibilityLabel("Reader Options")
-                    .accessibilityHint("Enter Focus Mode, change text size or translation, or open chapter insights")
                 }
 
                 ToolbarItem(placement: .principal) {
@@ -225,8 +245,8 @@ struct ReadingView: View {
                                     .accessibilityHidden(true)
                             }
 
-                            // The translation picker is in the "…" menu on iPhone, so name it here.
-                            if UIDevice.current.userInterfaceIdiom == .phone {
+                            // The translation picker is in the "…" menu in narrow windows, so name it here.
+                            if !usesFullToolbar {
                                 Text(BibleStore.shared.translation.abbreviation)
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
@@ -427,9 +447,9 @@ struct ReadingView: View {
                             ContextualTipView(
                                 id: "reader.translations",
                                 title: "Choose a translation",
-                                message: UIDevice.current.userInterfaceIdiom == .phone
-                                    ? "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in."
-                                    : "Tap the translation button at the top right to read another version. Your saved verses keep the translation they were saved in.",
+                                message: usesFullToolbar
+                                    ? "Tap the translation button at the top left to read another version. Your saved verses keep the translation they were saved in."
+                                    : "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in.",
                                 systemImage: "character.book.closed"
                             )
                             .padding(.bottom, 12)
