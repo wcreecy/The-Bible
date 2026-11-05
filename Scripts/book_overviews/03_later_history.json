@@ -1,8 +1,8 @@
 {
   "1 Chronicles": {
-    "author": "Ezra is the traditional author, though 1 Chronicles does not name its writer.",
-    "audience": "Post-exile Israel, learning its identity through David’s line, worship, and shared history.",
-    "purpose": "To retell Israel’s history around David’s kingdom, temple worship, and the LORD’s covenant purposes.",
+    "author": "1 and 2 Chronicles were one book. Jewish tradition credits Ezra as the author, though the book does not name its writer.",
+    "audience": "The Jews who returned from exile in Babylon, who needed to know who they were and that the LORD's promises to David still stood.",
+    "purpose": "To retell Israel's history around David's kingdom, temple worship, and the LORD's covenant purposes.",
     "theme": "God's people find identity and hope through covenant continuity, faithful worship, and the Davidic promise.",
     "summary": "After extensive genealogies, 1 Chronicles focuses on David's reign, especially his preparation for the temple and organization of worship.",
     "keyVerse": "1 Chronicles 16:11",
@@ -16,9 +16,9 @@
       },
       {
         "title": "David's Reign",
-        "description": "David unites Israel, brings the ark to Jerusalem, and receives covenant promises.",
+        "description": "David unites Israel, brings the ark to Jerusalem, receives God's promise, wins his wars, and buys the threshing floor after the census.",
         "passages": [
-          "1 Chronicles 10-17"
+          "1 Chronicles 10-21"
         ]
       },
       {

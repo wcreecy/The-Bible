@@ -180,7 +180,7 @@ CH[25] = dict(
     summary="David and the captains of the host set apart some of the sons of Asaph, Heman, and Jeduthun for the service of song, who should prophesy with harps, with psalteries, and with cymbals (1 Chronicles 25:1–3). Their sons and brethren are named, and all who were instructed in the songs of the LORD number two hundred eighty and eight (1 Chronicles 25:4–7). They cast lots for their turns in twenty-four courses, small and great, teacher and pupil together (1 Chronicles 25:8–31). The chapter shows music as skilled work, learned and shared, for the LORD.",
     wwa="Chapter 24 divided the priests by lot. This chapter sets apart the singers and musicians from three Levite families and divides them into twenty-four courses too. Chapter 26 tells of the gatekeepers and treasurers.",
     people=[("David", "Sets apart the musicians with the captains of the host."), ("Asaph", "A head of one family of singers."), ("Heman", "A head of another family, called the king's seer."), ("Jeduthun", "A head of the third family."), ("The sons and brethren of the three", "Trained musicians who serve in ordered groups.")],
-    themes=[("Music as service", "The singers \"prophesy with harps, with psalteries, and with cymbals.\""), ("Skill that is taught", "Two hundred eighty-eight were instructed in the songs of the LORD."), ("Shared turns", "They cast lots \"as well the small as the great, the teacher as the scholar.\"")],
+    themes=[("Music as service", "The singers \"prophesy with harps, with psalteries, and with cymbals.\""), ("Skill that is taught", "Two hundred eighty-eight were instructed in the songs of the LORD."), ("Shared turns", "They cast lots for their turns, the same way for the small and the great, and for teachers and students alike.")],
 )
 CH[26] = dict(
     summary="The chapter names the divisions of the porters, from the Korhites and the sons of Merari, including the sons of Obededom, whom God blessed (1 Chronicles 26:1–11). They cast lots for their gates, each family by its gate, and the guards watch in turn (1 Chronicles 26:12–19). Other Levites are over the treasures of the house of God and the treasures of the dedicated things, which David and the captains and others had dedicated (1 Chronicles 26:20–28). Chenaniah and his sons, Hashabiah and his brethren, and others are officers and judges over Israel on both sides of the Jordan (1 Chronicles 26:29–32).",
@@ -289,7 +289,7 @@ def apply_chapter_context():
         if len(hits) != 1:
             raise SystemExit(f"1 Chronicles {number}: {len(hits)} notes titled {title!r}")
         hits[0]["text"] = replace_once(hits[0]["text"], old, new, f"1 Chronicles {number} {title}")
-    spellings = [("Kirjath-jearim", "Kirjathjearim"), ("Beth-horon", "Bethhoron"), ("Jabesh-gilead", "Jabeshgilead"), ("Kiriath-jearim", "Kirjathjearim")]
+    spellings = [("Kirjath-jearim", "Kirjathjearim"), ("Beth-horon", "Bethhoron"), ("Jabesh-gilead", "Jabeshgilead"), ("Kiriath-jearim", "Kirjathjearim"), ("Benjaminites", "Benjamites"), ("Benjaminite", "Benjamite")]
     for key, entry in data.items():
         if not key.startswith("1 Chronicles"):
             continue

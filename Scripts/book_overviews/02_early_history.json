@@ -61,7 +61,7 @@
     ]
   },
   "Judges": {
-    "author": "Jewish tradition names Samuel as the author. Judges does not name its writer, but its repeated words, \"In those days there was no king in Israel,\" show that it was written after kings ruled Israel.",
+    "author": "Jewish tradition names Samuel as the author. Judges does not name its writer, but its repeated words, \"In those days there was no king in Israel,\" suggest it was written after Israel had a king.",
     "audience": "Israel after the time of the judges, when its people knew both the tribal stories and life under kings.",
     "purpose": "To show Israel's repeating turn from the LORD, the oppression that follows, and the LORD's mercy in raising deliverers, while revealing the need for faithful leadership.",
     "theme": "When Israel abandons covenant faithfulness, disorder deepens. The LORD repeatedly shows mercy through deliverers, yet the book ends with a nation doing what is right in its own eyes.",
@@ -77,7 +77,7 @@
       },
       {
         "title": "Gideon and Jephthah",
-        "description": "Later judges show both God's deliverance and the growing flaws of Israel's leaders.",
+        "description": "Gideon, Abimelech, Jephthah, and the smaller judges show both God's rescue and the growing flaws of Israel's leaders.",
         "passages": [
           "Judges 6-12"
         ]
@@ -93,11 +93,11 @@
     "keyFigures": [
       {
         "name": "Othniel",
-        "description": "Caleb's nephew and the first judge, who delivers Israel from a Mesopotamian king."
+        "description": "Caleb's younger relative and the first judge, who delivers Israel from a Mesopotamian king."
       },
       {
         "name": "Ehud",
-        "description": "A left-handed Benjaminite who assassinates Eglon, king of Moab."
+        "description": "A left-handed Benjamite who kills Eglon, king of Moab."
       },
       {
         "name": "Deborah",
@@ -130,8 +130,8 @@
     ]
   },
   "Ruth": {
-    "author": "Samuel is the traditional author. Ruth does not name its writer, but Jewish tradition connects the book with Samuel.",
-    "audience": "Israel, especially hearers who knew David's family line and the faithfulness God calls for among his people.",
+    "author": "Jewish tradition credits Samuel as the author, though the book does not name its writer. Because it ends with David's family line, it may have been written down in David's time or later.",
+    "audience": "Israelites in David's time or later, who knew the stories of the judges and David's family line.",
     "purpose": "To show the LORD's care through Ruth's loyalty, Boaz's faithfulness, and the restoration of Naomi's family line.",
     "theme": "The LORD works through ordinary faithfulness and kindness to bring care, redemption, and hope.",
     "summary": "Ruth follows Naomi from Moab to Bethlehem after both women lose their husbands. Boaz protects Ruth, redeems the family property, and marries her; their son Obed becomes David's grandfather.",
@@ -170,7 +170,7 @@
       },
       {
         "name": "Boaz",
-        "description": "A worthy relative of Naomi's family who acts as kinsman-redeemer and marries Ruth."
+        "description": "A wealthy relative of Naomi's husband who acts as kinsman-redeemer and marries Ruth."
       },
       {
         "name": "Elimelech",
@@ -187,8 +187,8 @@
     ]
   },
   "1 Samuel": {
-    "author": "Samuel is the traditional author, with later material commonly linked to Nathan and Gad. The book itself does not name its writer.",
-    "audience": "Israel during the transition from judges to monarchy.",
+    "author": "Jewish tradition credits Samuel with the first part of the book, and Nathan and Gad with the rest (1 Chronicles 29:29). The book itself does not name its writer.",
+    "audience": "Israelites in the early kingdom, who wanted to know how their first kings came to the throne.",
     "purpose": "To recount the rise of the monarchy, the failure of Saul, and the emergence of David as God's chosen king.",
     "theme": "God looks at the heart, resists proud leadership, and advances his purposes through faithful obedience.",
     "summary": "1 Samuel moves from Samuel's birth and prophetic ministry to Saul's rise and fall, then to David's anointing and long conflict with Saul.",
@@ -252,8 +252,8 @@
     ]
   },
   "2 Samuel": {
-    "author": "Nathan and Gad are the traditional sources named for David's reign, though 2 Samuel does not name a single writer.",
-    "audience": "Israel and later readers reflecting on David's monarchy and the LORD's covenant with his house.",
+    "author": "1 and 2 Samuel were one book. Jewish tradition credits Samuel for the early part and Nathan and Gad for the story of David's reign (1 Chronicles 29:29), though 2 Samuel does not name its writer.",
+    "audience": "Israelites in the days of the kings, who lived under David's family line and wanted to know how it began.",
     "purpose": "To tell of David's reign, the LORD's covenant promise, and the grave cost of David's sin.",
     "theme": "God establishes David's dynasty, yet even the chosen king is accountable for sin and its consequences.",
     "summary": "David becomes king over all Israel, captures Jerusalem, receives God's covenant promise, and experiences both great victories and deep family turmoil after his sin with Bathsheba.",
@@ -294,7 +294,7 @@
         "description": "Becomes king over Judah and then all Israel, receives God's covenant promise, but sins grievously with Bathsheba."
       },
       {
-        "name": "Ish-bosheth",
+        "name": "Ishbosheth",
         "description": "Saul's son, set up as a rival king over Israel before his assassination."
       },
       {
@@ -303,7 +303,7 @@
       },
       {
         "name": "Mephibosheth",
-        "description": "Jonathan's disabled son, to whom David shows covenant kindness."
+        "description": "Jonathan's son, lame in both feet, to whom David shows covenant kindness."
       },
       {
         "name": "Bathsheba",
@@ -324,9 +324,9 @@
     ]
   },
   "1 Kings": {
-    "author": "Jeremiah is the traditional author, though 1 Kings does not name its writer.",
-    "audience": "Israel and later readers learning why the united kingdom divided and how its kings answered the LORD.",
-    "purpose": "To trace Solomon’s reign, the division of the kingdom, and the LORD’s word through prophets such as Elijah.",
+    "author": "1 and 2 Kings were one book. Jewish tradition credits Jeremiah as the author, though 1 Kings does not name its writer.",
+    "audience": "Israelites in exile and later readers, who wanted to know why the united kingdom divided and how its kings answered the LORD.",
+    "purpose": "To trace Solomon's reign, the division of the kingdom, and the LORD’s word through prophets such as Elijah.",
     "theme": "The health of the kingdom is measured by loyalty to the LORD; idolatry and disobedience lead toward judgment.",
     "summary": "Solomon builds the temple but later compromises through idolatry. After his death the kingdom divides, and prophetic voices such as Elijah confront royal unfaithfulness.",
     "keyVerse": "1 Kings 18:39",
@@ -389,8 +389,8 @@
     ]
   },
   "2 Kings": {
-    "author": "Jeremiah is the traditional author, though 2 Kings does not name its writer.",
-    "audience": "Israel and later readers reflecting on the fall of Israel and Judah.",
+    "author": "1 and 2 Kings were one book. Jewish tradition credits Jeremiah as the author, though 2 Kings does not name its writer.",
+    "audience": "Israelites in exile, who needed to understand why Israel and Judah fell and whether the LORD's promise to David still stood.",
     "purpose": "To explain the fall of both kingdoms through the faithfulness and failure of their kings.",
     "theme": "Persistent idolatry and injustice bring covenant judgment, yet God's word continues to prove reliable.",
     "summary": "2 Kings records prophetic ministries, royal reforms, repeated rebellion, the fall of Samaria, and finally the fall of Jerusalem and exile to Babylon.",
@@ -436,7 +436,7 @@
       },
       {
         "name": "Naaman",
-        "description": "An Aramean army commander healed of a skin disease after washing in the Jordan."
+        "description": "A Syrian army commander healed of leprosy after washing in the Jordan."
       },
       {
         "name": "Jehu",

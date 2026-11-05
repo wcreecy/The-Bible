@@ -184,6 +184,8 @@ def apply_chapter_insights():
         if len(fields["themes"]) != len(refs):
             raise SystemExit(f"1 Kings {number}: {len(fields['themes'])} themes but {len(refs)} reference lists")
         entry["keyThemes"] = [{"theme": t, "explanation": e, "references": r} for (t, e), r in zip(fields["themes"], refs)]
+    for ref in data["1 Kings 22"]["explainedReferences"]:
+        ref["explanation"] = ref["explanation"].replace("Ramoth-gilead", "Ramothgilead")
     save(path, data)
     print(f"Updated {path.relative_to(ROOT)}")
 
