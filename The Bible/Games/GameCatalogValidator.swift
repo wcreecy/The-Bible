@@ -44,6 +44,9 @@ enum GameCatalogValidator {
             if question.correctAnswer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 issues.append(.init(identifier: identifier, message: "Correct answer must not be empty."))
             }
+            if question.incorrectAnswers.count < 3 {
+                issues.append(.init(identifier: identifier, message: "Needs at least three incorrect answers."))
+            }
             if incorrectAnswers.count != question.incorrectAnswers.count || incorrectAnswers.count != Set(incorrectAnswers).count {
                 issues.append(.init(identifier: identifier, message: "Incorrect answers must be nonempty and unique."))
             }

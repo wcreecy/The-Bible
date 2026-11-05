@@ -245,7 +245,7 @@ enum DeveloperTools {
     // MARK: - Delete all data
 
     /// Erases everything the app keeps: the whole library, reading and game stats, the reading
-    /// position and pinned verse, note drafts, an imported Trivia catalog, and every setting.
+    /// position and pinned verse, note drafts, and every setting.
     /// Library deletions sync to CloudKit, and the stats resets are broadcast through iCloud,
     /// so other devices on the account are cleared too.
     static func deleteAllData(in context: ModelContext) async throws {
@@ -266,7 +266,6 @@ enum DeveloperTools {
         let fileManager = FileManager.default
         let support = URL.applicationSupportDirectory
         try? fileManager.removeItem(at: support.appending(path: "NoteDrafts", directoryHint: .isDirectory))
-        try? fileManager.removeItem(at: support.appending(path: "BibleTriviaQuestions.json"))
 
         DeveloperSettingsReset.perform()
 

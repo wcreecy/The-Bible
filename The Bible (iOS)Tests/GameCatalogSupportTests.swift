@@ -310,6 +310,47 @@ struct GameCatalogSupportTests {
     }
 
     @Test
+    func triviaValidationRequiresThreeIncorrectAnswersAndTextForEveryField() {
+        let questions = [
+            BibleTriviaQuestion(
+                id: 1,
+                question: "Question one",
+                correctAnswer: "Noah",
+                incorrectAnswers: ["Moses", "Abraham"],
+                reference: "Genesis 6:14",
+                difficulty: "easy"
+            ),
+            BibleTriviaQuestion(
+                id: 2,
+                question: "  ",
+                correctAnswer: "",
+                incorrectAnswers: ["Isaac", "Jacob", "Joseph"],
+                reference: "Genesis 6:14",
+                difficulty: "easy"
+            ),
+            BibleTriviaQuestion(
+                id: 3,
+                question: "A complete question",
+                correctAnswer: "Abraham",
+                incorrectAnswers: ["Isaac", "Jacob", "Joseph"],
+                reference: "Genesis 12:1",
+                difficulty: "easy"
+            )
+        ]
+
+        let issues = GameCatalogValidator.validateTrivia(
+            questions,
+            books: [],
+            minimumQuestionsPerDifficulty: 1
+        )
+
+        #expect(issues.contains { $0.identifier == "trivia.1" && $0.message == "Needs at least three incorrect answers." })
+        #expect(issues.contains { $0.identifier == "trivia.2" && $0.message == "Question must not be empty." })
+        #expect(issues.contains { $0.identifier == "trivia.2" && $0.message == "Correct answer must not be empty." })
+        #expect(!issues.contains { $0.identifier == "trivia.3" })
+    }
+
+    @Test
     func whoValidationDetectsUnknownSourcesAndInsufficientModePools() {
         let question = WhoGameQuestion(
             id: "who-1",

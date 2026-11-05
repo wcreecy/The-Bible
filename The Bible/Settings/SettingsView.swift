@@ -471,16 +471,6 @@ private struct SettingsDataManagementLinksSection: View {
                 )
             }
 
-            NavigationLink {
-                SettingsTriviaQuestionCatalogView()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Trivia Questions",
-                    subtitle: "Import an editable question and answer catalog",
-                    systemImage: "questionmark.circle"
-                )
-            }
-
             // Last, and neutral: the destructive buttons (and their typed confirmation) are on the detail page.
             NavigationLink {
                 SettingsResetDataDetailView()

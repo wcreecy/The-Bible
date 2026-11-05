@@ -17,23 +17,9 @@ final class BibleTriviaGameModel {
     private static let bestScoreKeyPrefix = "bibleTriviaBestScore"
 
     private let reviewQuestionIDs: Set<String>
-    @ObservationIgnored private var catalogObserver: NSObjectProtocol?
 
     init(reviewQuestionIDs: Set<String> = []) {
         self.reviewQuestionIDs = reviewQuestionIDs
-        catalogObserver = NotificationCenter.default.addObserver(
-            forName: BibleTriviaCatalogStore.didImportNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                self.questions = []
-                self.round = []
-                self.phase = .loading
-                await self.load()
-            }
-        }
     }
 
     private struct RoundQuestion: Identifiable {
