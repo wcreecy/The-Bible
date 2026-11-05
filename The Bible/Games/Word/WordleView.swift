@@ -170,7 +170,7 @@ struct WordleView: View {
             } inputControls: { wideKeyHeight in
               VStack(spacing: usesCompactPhoneLayout ? 6 : 10) {
                 if vm.roundOver {
-                  endOfRoundActionArea(pinsNextWord: horizontalSizeClass == .compact)
+                  endOfRoundActionArea(pinsNextWord: horizontalSizeClass != nil)
                 } else {
                   keyboardView(
                     keyHeight: wideKeyHeight ?? (usesCompactPhoneLayout ? compactSizes.key : 52)
@@ -195,7 +195,7 @@ struct WordleView: View {
     }
     .tabBarContentClearance()
     .pinnedGameActionButton(
-      isShown: horizontalSizeClass == .compact && vm.roundOver && vm.mode == .practice
+      isShown: horizontalSizeClass != nil && vm.roundOver && vm.mode == .practice
     ) {
       Button("Next Word", systemImage: "arrow.right") {
         vm.startNewRound(practice: true)

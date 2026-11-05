@@ -10,6 +10,7 @@ struct WordSearchControlsBar: View {
     let onShowWordList: () -> Void
     let onNewPuzzle: () -> Void
     let onChangeSettings: () -> Void
+    let showsNextPuzzle: Bool
 
     var body: some View {
         HStack(spacing: 12) {
@@ -31,8 +32,10 @@ struct WordSearchControlsBar: View {
                 Button("Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
                     .buttonStyle(GameProminentButtonStyle(tint: .gray))
 
-                Button("Next Puzzle", systemImage: "arrow.right", action: onNewPuzzle)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                if showsNextPuzzle {
+                    Button("Next Puzzle", systemImage: "arrow.right", action: onNewPuzzle)
+                        .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                }
             }
         }
     }

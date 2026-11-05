@@ -50,6 +50,10 @@ struct CrosswordGameView: View {
             }
         }
         .tabBarContentClearance()
+        .pinnedGameActionButton(isShown: isPad && vm.phase == .finished) {
+            Button("New Puzzle", systemImage: "arrow.clockwise", action: startPuzzle)
+                .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -153,7 +157,7 @@ struct CrosswordGameView: View {
 
                 VStack(spacing: 16) {
                     if vm.phase == .finished {
-                        resultCard(puzzle)
+                        resultCard(puzzle, pinsNewPuzzle: true)
                     } else {
                         clueList(puzzle)
                     }
@@ -169,7 +173,7 @@ struct CrosswordGameView: View {
                     keyboard
                     clueList(puzzle)
                 } else {
-                    resultCard(puzzle)
+                    resultCard(puzzle, pinsNewPuzzle: false)
                 }
             }
         }
@@ -354,7 +358,7 @@ struct CrosswordGameView: View {
 
     // MARK: - Results
 
-    private func resultCard(_ puzzle: CrosswordPuzzle) -> some View {
+    private func resultCard(_ puzzle: CrosswordPuzzle, pinsNewPuzzle: Bool) -> some View {
         let solved = vm.outcome == .solved
         let hints = vm.letterHintsUsed + vm.wordHintsUsed
         return VStack(spacing: 12) {
@@ -380,8 +384,10 @@ struct CrosswordGameView: View {
                 }
             }
 
-            Button("New Puzzle", systemImage: "arrow.clockwise", action: startPuzzle)
-                .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
+            if !pinsNewPuzzle {
+                Button("New Puzzle", systemImage: "arrow.clockwise", action: startPuzzle)
+                    .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
+            }
             Button("Change Settings") { vm.changeSettings() }
                 .buttonStyle(.bordered)
         }

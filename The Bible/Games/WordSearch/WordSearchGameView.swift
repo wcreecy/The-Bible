@@ -157,6 +157,14 @@ struct WordSearchGameView: View {
                 phoneControlsBar
             }
         }
+        .pinnedGameActionButton(
+            isShown: vm.started && isPad && !vm.isPaused && vm.roundOver
+        ) {
+            Button("Next Puzzle", systemImage: "arrow.right") {
+                vm.newPuzzle()
+            }
+            .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+        }
         .confirmationDialog("Reveal all words?", isPresented: $confirmReveal, titleVisibility: .visible) {
             Button("Reveal", role: .destructive) { vm.reveal() }
             Button("Cancel", role: .cancel) { }
@@ -247,7 +255,8 @@ struct WordSearchGameView: View {
             onReveal: { confirmReveal = true },
             onShowWordList: { vm.showWordList() },
             onNewPuzzle: { vm.newPuzzle() },
-            onChangeSettings: { vm.changeSettings() }
+            onChangeSettings: { vm.changeSettings() },
+            showsNextPuzzle: true
         )
         .frame(maxWidth: .infinity)
         .padding(.horizontal)

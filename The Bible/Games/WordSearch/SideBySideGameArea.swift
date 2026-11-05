@@ -88,7 +88,8 @@ struct SideBySideGameArea<Summary: View>: View {
                 onReveal: onReveal,
                 onShowWordList: onShowWordList,
                 onNewPuzzle: onNewPuzzle,
-                onChangeSettings: onChangeSettings
+                onChangeSettings: onChangeSettings,
+                showsNextPuzzle: !roundOver
             )
         }
         .padding(AppDesignMetrics.cardPadding)
