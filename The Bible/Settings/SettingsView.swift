@@ -623,86 +623,16 @@ private struct AcknowledgementsView: View {
 
 #if DEBUG
 private struct SettingsDeveloperSection: View {
-    @Environment(\.modelContext) private var modelContext
-    @State private var showingConfirmation = false
-    @State private var showingCompletion = false
-    @State private var showingResetConfirmation = false
-    @State private var showingResetCompletion = false
-
     var body: some View {
         Section {
-            Button {
-                showingConfirmation = true
+            NavigationLink {
+                SettingsDeveloperToolsView()
             } label: {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Generate Sample Data")
-                        Text("Fill charts, favorites, and notes with sample data")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "wand.and.stars")
-                        .foregroundStyle(.purple)
-                }
-            }
-            .accessibilityIdentifier("generateDeveloperSampleStatsButton")
-            .confirmationDialog(
-                "Generate Sample Data?",
-                isPresented: $showingConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Generate Data") {
-                    Task {
-                        await DeveloperSampleData.generate(in: modelContext)
-                        showingCompletion = true
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This adds about 90 days of randomized reading and game activity, 30 days of study, game, and prayer & study timer time, at least 10 favorite verses, and sample notes. Reading, study, and game data can be removed later from Reset Data.")
-            }
-            .alert("Sample Data Created", isPresented: $showingCompletion) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text("The Home, Stats, Favorites, and Notes views now have sample data to display.")
-            }
-
-            Button(role: .destructive) {
-                showingResetConfirmation = true
-            } label: {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Reset Permissions & Settings")
-                        Text("Restore app defaults and cancel permission-based features")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "arrow.counterclockwise.circle")
-                }
-            }
-            .accessibilityIdentifier("resetDeveloperPermissionsAndSettingsButton")
-            .confirmationDialog(
-                "Reset Permissions and Settings?",
-                isPresented: $showingResetConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Reset", role: .destructive) {
-                    DeveloperSettingsReset.perform()
-                    showingResetCompletion = true
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This restores every app preference to its default, cancels pending notifications and prayer alarms, and ends Live Activities. iOS authorization decisions must still be changed in System Settings.")
-            }
-            .alert("App Settings Reset", isPresented: $showingResetCompletion) {
-                Button("Open System Settings") {
-                    DeveloperSettingsReset.openSystemSettings()
-                }
-                Button("Done", role: .cancel) {}
-            } message: {
-                Text("App settings are back to their defaults. To make Notifications, Prayer & Study Timer Alarms, Mindful Minutes, or Live Activities appear not requested again, reset them in iOS Settings or reset privacy on the simulator. Photo Selection uses the system picker and has no persistent library permission.")
+                SettingsNavigationRow(
+                    title: "Developer Tools",
+                    subtitle: "Sample data, resets, streaks, notifications, sync, and diagnostics",
+                    systemImage: "wrench.and.screwdriver"
+                )
             }
         } header: {
             Label("Developer", systemImage: "hammer")
@@ -726,6 +656,7 @@ enum DeveloperSettingsReset {
             "didRequestNotifications": false,
             "bibleRecentSearches": "",
             "debugAutoWinEnabled": false,
+            "debugForcedStoreMode": "",
             "prayerTimerRunning": false,
             "prayerTimerPaused": false,
             "prayerTimerTotalSeconds": 0,

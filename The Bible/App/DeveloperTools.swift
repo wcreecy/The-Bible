@@ -183,5 +183,98 @@ enum DeveloperTools {
         try context.save()
         return removed
     }
+
+    /// Picks verses at random from the active translation that aren't in `taken` ("Book|chapter|verse").
+    private static func randomVerses(count: Int, avoiding taken: Set<String>) async -> [(book: String, chapter: Int, verse: Verse)] {
+        let books = await BibleRepository.shared.loadAllBooks()
+        var taken = taken
+        var picked: [(book: String, chapter: Int, verse: Verse)] = []
+        var attempts = 0
+        while picked.count < count && attempts < count * 50 {
+            attempts += 1
+            guard let book = books.randomElement(),
+                  let chapter = book.chapters.randomElement(),
+                  let verse = chapter.verses.randomElement(),
+                  !verse.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                  taken.insert("\(book.name)|\(chapter.number)|\(verse.number)").inserted else { continue }
+            picked.append((book.name, chapter.number, verse))
+        }
+        return picked
+    }
+
+    /// Saves random verses as favorites. They aren't tagged, so Reset Data or Delete All Data clears them.
+    @discardableResult
+    static func seedRandomFavorites(count: Int = 10, in context: ModelContext) async throws -> Int {
+        let existing = try context.fetch(FetchDescriptor<Favorite>())
+        let taken = Set(existing.map { "\($0.bookName)|\($0.chapterNumber)|\($0.verseNumber)" })
+        let verses = await randomVerses(count: count, avoiding: taken)
+        for item in verses {
+            context.insert(Favorite(
+                bookName: item.book,
+                chapterNumber: item.chapter,
+                verseNumber: item.verse.number,
+                verseText: item.verse.text
+            ))
+        }
+        try context.save()
+        return verses.count
+    }
+
+    /// Highlights random verses in random colors. Titled like the sample highlights, so
+    /// Remove Seeded Notes clears them.
+    @discardableResult
+    static func seedRandomHighlights(count: Int = 10, in context: ModelContext) async throws -> Int {
+        let existing = try context.fetch(FetchDescriptor<VerseNote>()).filter { !$0.highlightColor.isEmpty }
+        let taken = Set(existing.map { "\($0.bookName)|\($0.chapterNumber)|\($0.verseNumber)" })
+        let verses = await randomVerses(count: count, avoiding: taken)
+        for item in verses {
+            let note = VerseNote(
+                bookName: item.book,
+                chapterNumber: item.chapter,
+                verseNumber: item.verse.number,
+                verseText: item.verse.text,
+                highlightColor: (VerseHighlightColor.allCases.randomElement() ?? .yellow).rawValue
+            )
+            note.title = "\(sampleHighlightPrefix)\(item.book) \(item.chapter):\(item.verse.number)"
+            context.insert(note)
+        }
+        try context.save()
+        return verses.count
+    }
+
+    // MARK: - Delete all data
+
+    /// Erases everything the app keeps: the whole library, reading and game stats, the reading
+    /// position and pinned verse, note drafts, an imported Trivia catalog, and every setting.
+    /// Library deletions sync to CloudKit, and the stats resets are broadcast through iCloud,
+    /// so other devices on the account are cleared too.
+    static func deleteAllData(in context: ModelContext) async throws {
+        try context.delete(model: Favorite.self)
+        try context.delete(model: VerseNote.self)
+        try context.delete(model: UserNote.self)
+        try context.delete(model: Bookmark.self)
+        try context.delete(model: SavedCrossReference.self)
+        try context.delete(model: ReadingProgress.self)
+        try context.save()
+
+        iCloudSyncCoordinator.shared.resetAllGameDataToZero()
+        iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
+
+        await PinnedVerseStore.shared.clear()
+        ReadingPositionStore.shared.clear()
+
+        let fileManager = FileManager.default
+        let support = URL.applicationSupportDirectory
+        try? fileManager.removeItem(at: support.appending(path: "NoteDrafts", directoryHint: .isDirectory))
+        try? fileManager.removeItem(at: support.appending(path: "BibleTriviaQuestions.json"))
+
+        DeveloperSettingsReset.perform()
+
+        AppDataChanges.shared.bibleStatsChanged()
+        AppDataChanges.shared.gameStatsChanged()
+        AppDataChanges.shared.prayerStatsChanged()
+        AppDataChanges.shared.studyTimeChanged()
+        AppDataChanges.shared.chapterProgressChanged()
+    }
 }
 #endif

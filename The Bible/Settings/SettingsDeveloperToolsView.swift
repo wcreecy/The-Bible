@@ -18,9 +18,16 @@ struct SettingsDeveloperToolsView: View {
     @State private var toastText = ""
     @State private var isShowingToast = false
     @State private var isConfirmingRemoveSeededNotes = false
+    @State private var showingSampleDataConfirmation = false
+    @State private var showingSampleDataCompletion = false
+    @State private var showingSettingsResetConfirmation = false
+    @State private var showingSettingsResetCompletion = false
+    @State private var isConfirmingDeleteAll = false
+    @State private var deleteAllConfirmationText = ""
 
     var body: some View {
         Form {
+            dataSection
             streakSection
             onboardingSection
             notificationsSection
@@ -33,6 +40,21 @@ struct SettingsDeveloperToolsView: View {
         .navigationTitle("Developer Tools")
         .navigationBarTitleDisplayMode(.inline)
         .appToast(isPresented: $isShowingToast, symbol: "checkmark.circle.fill", text: toastText, tint: .green)
+        .alert("Delete All Data?", isPresented: $isConfirmingDeleteAll) {
+            TextField("Type delete", text: $deleteAllConfirmationText)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            Button("Cancel", role: .cancel) {
+                deleteAllConfirmationText = ""
+            }
+            Button("Delete Everything", role: .destructive) {
+                deleteAllConfirmationText = ""
+                deleteAllData()
+            }
+            .disabled(deleteAllConfirmationText != "delete")
+        } message: {
+            Text("This permanently deletes all notes, favorites, highlights, bookmarks, saved cross references, reading progress, and reading and game stats, and resets every setting. Because iCloud sync is on, the deletions also reach your other devices. Type delete to continue.")
+        }
         .task {
             refreshLibraryCounts()
             await loadTranslationReports()
@@ -42,6 +64,122 @@ struct SettingsDeveloperToolsView: View {
     private func show(_ message: String) {
         toastText = message
         withAnimation(.snappy) { isShowingToast = true }
+    }
+
+    // MARK: - Data and resets
+
+    private var dataSection: some View {
+        Section {
+            Button {
+                showingSampleDataConfirmation = true
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Generate Sample Data")
+                        Text("Fill charts, favorites, and notes with sample data")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "wand.and.stars")
+                        .foregroundStyle(.purple)
+                }
+            }
+            .accessibilityIdentifier("generateDeveloperSampleStatsButton")
+            .confirmationDialog(
+                "Generate Sample Data?",
+                isPresented: $showingSampleDataConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Generate Data") {
+                    Task {
+                        await DeveloperSampleData.generate(in: modelContext)
+                        refreshLibraryCounts()
+                        streak = StreakTracker.summary()
+                        showingSampleDataCompletion = true
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This adds about 90 days of randomized reading and game activity, 30 days of study, game, and prayer & study timer time, at least 10 favorite verses, and sample notes. Reading, study, and game data can be removed later from Reset Data.")
+            }
+            .alert("Sample Data Created", isPresented: $showingSampleDataCompletion) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("The Home, Stats, Favorites, and Notes views now have sample data to display.")
+            }
+
+            Button(role: .destructive) {
+                showingSettingsResetConfirmation = true
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Reset Permissions & Settings")
+                        Text("Restore app defaults and cancel permission-based features")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "arrow.counterclockwise.circle")
+                }
+            }
+            .accessibilityIdentifier("resetDeveloperPermissionsAndSettingsButton")
+            .confirmationDialog(
+                "Reset Permissions and Settings?",
+                isPresented: $showingSettingsResetConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Reset", role: .destructive) {
+                    DeveloperSettingsReset.perform()
+                    showingSettingsResetCompletion = true
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This restores every app preference to its default, cancels pending notifications and prayer alarms, and ends Live Activities. iOS authorization decisions must still be changed in System Settings.")
+            }
+            .alert("App Settings Reset", isPresented: $showingSettingsResetCompletion) {
+                Button("Open System Settings") {
+                    DeveloperSettingsReset.openSystemSettings()
+                }
+                Button("Done", role: .cancel) {}
+            } message: {
+                Text("App settings are back to their defaults. To make Notifications, Prayer & Study Timer Alarms, Mindful Minutes, or Live Activities appear not requested again, reset them in iOS Settings or reset privacy on the simulator. Photo Selection uses the system picker and has no persistent library permission.")
+            }
+
+            Button(role: .destructive) {
+                deleteAllConfirmationText = ""
+                isConfirmingDeleteAll = true
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Delete All Data")
+                        Text("Erase the library, stats, and settings for a fresh start")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "trash")
+                }
+            }
+            .accessibilityIdentifier("deleteAllDeveloperDataButton")
+        } header: {
+            Label("Data & Resets", systemImage: "externaldrive")
+        } footer: {
+            Text("Delete All Data also deletes the iCloud copies, so other devices signed in to this account lose their data too.")
+        }
+    }
+
+    private func deleteAllData() {
+        Task {
+            do {
+                try await DeveloperTools.deleteAllData(in: modelContext)
+                refreshLibraryCounts()
+                streak = StreakTracker.summary()
+                show("All data deleted")
+            } catch {
+                show("Failed: \(error.localizedDescription)")
+            }
+        }
     }
 
     // MARK: - Streak and goal
@@ -202,6 +340,31 @@ struct SettingsDeveloperToolsView: View {
                 LabeledContent(item.title, value: item.count.formatted())
             }
 
+            Button("Add 10 Notes", systemImage: "note.text.badge.plus") {
+                run("10 notes added") { try DeveloperTools.seedStressNotes(count: 10, in: modelContext) }
+            }
+            Button("Add 10 Random Favorites", systemImage: "heart") {
+                Task {
+                    do {
+                        let added = try await DeveloperTools.seedRandomFavorites(in: modelContext)
+                        show("\(added) favorites added")
+                    } catch {
+                        show("Failed: \(error.localizedDescription)")
+                    }
+                    refreshLibraryCounts()
+                }
+            }
+            Button("Add 10 Random Highlights", systemImage: "highlighter") {
+                Task {
+                    do {
+                        let added = try await DeveloperTools.seedRandomHighlights(in: modelContext)
+                        show("\(added) highlights added")
+                    } catch {
+                        show("Failed: \(error.localizedDescription)")
+                    }
+                    refreshLibraryCounts()
+                }
+            }
             Button("Add 500 Notes", systemImage: "note.text.badge.plus") {
                 run("500 notes added") { try DeveloperTools.seedStressNotes(in: modelContext) }
             }
@@ -213,9 +376,13 @@ struct SettingsDeveloperToolsView: View {
             }
             .confirmationDialog("Remove Seeded Notes?", isPresented: $isConfirmingRemoveSeededNotes, titleVisibility: .visible) {
                 Button("Remove", role: .destructive) {
-                    var removed = 0
-                    run("Removed \(removed) notes") { removed = try DeveloperTools.removeSeededNotes(in: modelContext) }
-                    show("Removed \(removed) notes")
+                    do {
+                        let removed = try DeveloperTools.removeSeededNotes(in: modelContext)
+                        show("Removed \(removed) notes")
+                    } catch {
+                        show("Failed: \(error.localizedDescription)")
+                    }
+                    refreshLibraryCounts()
                 }
             } message: {
                 Text("Removes the notes and highlights made by Generate Sample Data and the buttons above. Anything you wrote with the same titles goes too. Stats and saved verses aren't tagged; clear them with Reset Data.")

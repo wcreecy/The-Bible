@@ -64,6 +64,22 @@ struct The_Bible__iOS_App: App {
     private let sharedModelContainer: ModelContainer
     /// Shown in Settings so a fallback store is never mistaken for working sync.
     private let persistenceStoreMode: PersistenceStoreMode
+    #if DEBUG
+    /// Set from Settings > Developer Tools to preview the store fallback banner.
+    @AppStorage("debugForcedStoreMode") private var debugForcedStoreMode = ""
+    #endif
+
+    /// The launch store, or a fallback being simulated in debug builds.
+    private var displayedStoreMode: PersistenceStoreMode {
+        #if DEBUG
+        switch debugForcedStoreMode {
+        case "localOnly": return .localOnly
+        case "inMemory": return .inMemory
+        default: break
+        }
+        #endif
+        return persistenceStoreMode
+    }
 
     init() {
         AppSettingsDefaults.register()
@@ -239,7 +255,7 @@ struct The_Bible__iOS_App: App {
         WindowGroup {
             ContentView()
                 .environment(cloudKitManager)
-                .environment(\.persistenceStoreMode, persistenceStoreMode)
+                .environment(\.persistenceStoreMode, displayedStoreMode)
                 .task {
                     // Drafts used to live in UserDefaults; move them to files and drop stale ones.
                     NoteDraftStore.migrateLegacyDrafts()
