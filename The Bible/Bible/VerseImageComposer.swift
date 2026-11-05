@@ -135,50 +135,84 @@ enum VerseImageTextAlignment: String, CaseIterable, Identifiable {
 @MainActor
 @Observable
 final class VerseImageComposerModel {
+    private struct Snapshot {
+        let format: VerseImageFormat
+        let background: VerseImageBackground
+        let gradient: VerseImageGradient
+        let solidColor: Color
+        let photo: UIImage?
+        let photoScale: CGFloat
+        let photoOffset: CGSize
+        let photoDimming: Double
+        let photoBlur: Double
+        let photoLuminance: Double
+        let fontStyle: VerseImageFontStyle
+        let textScale: CGFloat
+        let textOffset: CGSize
+        let textColor: Color
+        let textAlignment: VerseImageTextAlignment
+        let showsReference: Bool
+        let showsBranding: Bool
+    }
+
     let verse: VerseActionReference
 
-    var format: VerseImageFormat = .portrait
-    var background: VerseImageBackground = .gradient
-    var gradient: VerseImageGradient = .sunrise
-    var solidColor = Color.indigo
-    var photo: UIImage?
-    var photoScale: CGFloat = 1
-    var photoOffset = CGSize.zero
-    var photoDimming: Double = 0.28
-    var photoBlur: Double = 0
+    var format: VerseImageFormat = .portrait { willSet { recordUndoSnapshot() } }
+    var background: VerseImageBackground = .gradient { willSet { recordUndoSnapshot() } }
+    var gradient: VerseImageGradient = .sunrise { willSet { recordUndoSnapshot() } }
+    var solidColor = Color.indigo { willSet { recordUndoSnapshot() } }
+    var photo: UIImage? { willSet { recordUndoSnapshot() } }
+    var photoScale: CGFloat = 1 { willSet { recordUndoSnapshot() } }
+    var photoOffset = CGSize.zero { willSet { recordUndoSnapshot() } }
+    var photoDimming: Double = 0.28 { willSet { recordUndoSnapshot() } }
+    var photoBlur: Double = 0 { willSet { recordUndoSnapshot() } }
     /// Average brightness of the chosen photo, used to warn about unreadable text.
-    private var photoLuminance = 0.5
+    private var photoLuminance = 0.5 { willSet { recordUndoSnapshot() } }
 
-    var fontStyle: VerseImageFontStyle = .serif
-    var textScale: CGFloat = 1
-    var textOffset = CGSize.zero
-    var textColor = Color.white
-    var textAlignment: VerseImageTextAlignment = .center
-    var showsReference = true
-    var showsBranding = true
+    var fontStyle: VerseImageFontStyle = .serif { willSet { recordUndoSnapshot() } }
+    var textScale: CGFloat = 1 { willSet { recordUndoSnapshot() } }
+    var textOffset = CGSize.zero { willSet { recordUndoSnapshot() } }
+    var textColor = Color.white { willSet { recordUndoSnapshot() } }
+    var textAlignment: VerseImageTextAlignment = .center { willSet { recordUndoSnapshot() } }
+    var showsReference = true { willSet { recordUndoSnapshot() } }
+    var showsBranding = true { willSet { recordUndoSnapshot() } }
+
+    private var undoHistory: [Snapshot] = []
+    private var isRestoringSnapshot = false
+
+    var canUndo: Bool { !undoHistory.isEmpty }
 
     init(verse: VerseActionReference) {
         self.verse = verse
         loadPreferences()
     }
 
-    /// Restores the look; the chosen canvas format stays.
-    func reset() {
-        background = .gradient
-        gradient = .sunrise
-        solidColor = .indigo
-        photo = nil
-        photoScale = 1
-        photoOffset = .zero
-        photoDimming = 0.28
-        photoBlur = 0
-        fontStyle = .serif
-        textScale = 1
-        textOffset = .zero
-        textColor = .white
-        textAlignment = .center
-        showsReference = true
-        showsBranding = true
+    func undo() {
+        guard let snapshot = undoHistory.popLast() else { return }
+        isRestoringSnapshot = true
+        defer { isRestoringSnapshot = false }
+
+        format = snapshot.format
+        background = snapshot.background
+        gradient = snapshot.gradient
+        solidColor = snapshot.solidColor
+        photo = snapshot.photo
+        photoScale = snapshot.photoScale
+        photoOffset = snapshot.photoOffset
+        photoDimming = snapshot.photoDimming
+        photoBlur = snapshot.photoBlur
+        photoLuminance = snapshot.photoLuminance
+        fontStyle = snapshot.fontStyle
+        textScale = snapshot.textScale
+        textOffset = snapshot.textOffset
+        textColor = snapshot.textColor
+        textAlignment = snapshot.textAlignment
+        showsReference = snapshot.showsReference
+        showsBranding = snapshot.showsBranding
+    }
+
+    func clearUndoHistory() {
+        undoHistory.removeAll()
     }
 
     /// Loads the picked photo at a size that suits the canvas. Returns false if it can't be read.
@@ -189,12 +223,40 @@ final class VerseImageComposerModel {
               let decoded = await Task.detached(priority: .userInitiated, operation: {
                   VerseImageComposerModel.decodePhoto(data)
               }).value else { return false }
+        recordUndoSnapshot()
+        isRestoringSnapshot = true
+        defer { isRestoringSnapshot = false }
         photo = decoded.image
         photoLuminance = decoded.luminance
         background = .photo
         photoScale = 1
         photoOffset = .zero
         return true
+    }
+
+    private func recordUndoSnapshot() {
+        guard !isRestoringSnapshot else { return }
+        undoHistory.append(
+            Snapshot(
+                format: format,
+                background: background,
+                gradient: gradient,
+                solidColor: solidColor,
+                photo: photo,
+                photoScale: photoScale,
+                photoOffset: photoOffset,
+                photoDimming: photoDimming,
+                photoBlur: photoBlur,
+                photoLuminance: photoLuminance,
+                fontStyle: fontStyle,
+                textScale: textScale,
+                textOffset: textOffset,
+                textColor: textColor,
+                textAlignment: textAlignment,
+                showsReference: showsReference,
+                showsBranding: showsBranding
+            )
+        )
     }
 
     /// Photos are decoded at no more than the largest canvas side so a 48MP photo doesn't fill memory.
@@ -265,7 +327,11 @@ final class VerseImageComposerModel {
 
     /// Zooming out or changing the format can leave the photo offset past its new limit.
     func clampPhotoOffset() {
-        photoOffset = clampedPhotoOffset(photoOffset)
+        let clampedOffset = clampedPhotoOffset(photoOffset)
+        guard clampedOffset != photoOffset else { return }
+        isRestoringSnapshot = true
+        photoOffset = clampedOffset
+        isRestoringSnapshot = false
     }
 
     func movePhoto(by fraction: CGSize) {
@@ -539,7 +605,10 @@ struct VerseImageComposerView: View {
                 }
             }
             .background(Color(.systemGroupedBackground))
-            .onDisappear { model.savePreferences() }
+            .onDisappear {
+                model.savePreferences()
+                model.clearUndoHistory()
+            }
             .onChange(of: model.photoScale) { model.clampPhotoOffset() }
             .onChange(of: model.format) { model.clampPhotoOffset() }
             .navigationTitle("Share as Image")
@@ -549,7 +618,8 @@ struct VerseImageComposerView: View {
                     Button("Close", action: dismiss.callAsFunction)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Reset", systemImage: "arrow.counterclockwise", action: model.reset)
+                    Button("Undo", systemImage: "arrow.uturn.backward", action: model.undo)
+                        .disabled(!model.canUndo)
                 }
             }
             .onChange(of: selectedPhoto) { _, item in

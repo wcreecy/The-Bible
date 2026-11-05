@@ -171,12 +171,6 @@ struct ReadingView: View {
                     }
 
                     Menu {
-                        Button {
-                            presentFocusMode()
-                        } label: {
-                            Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
-                        }
-
                         if UIDevice.current.userInterfaceIdiom == .phone {
                             Button {
                                 isDisplayOptionsPresented = true
@@ -193,6 +187,12 @@ struct ReadingView: View {
                             } label: {
                                 Label("Chapter Insights", systemImage: "lightbulb")
                             }
+                        }
+
+                        Button {
+                            presentFocusMode()
+                        } label: {
+                            Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
@@ -289,6 +289,10 @@ struct ReadingView: View {
             }
             .onChange(of: BibleStore.shared.translation) {
                 viewModel.translationChanged()
+                favoriteToastSymbol = "character.book.closed"
+                favoriteToastTint = .accentColor
+                favoriteToastText = "Now reading \(BibleStore.shared.translation.abbreviation)"
+                withAnimation(.spring()) { showFavoriteToast = true }
             }
             .onChange(of: scenePhase) { _, newPhase in
                 viewModel.onScenePhaseChanged(newPhase)
@@ -419,6 +423,18 @@ struct ReadingView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     if contextualTipsEnabled {
+                        if BibleTranslation.available.count > 1 {
+                            ContextualTipView(
+                                id: "reader.translations",
+                                title: "Choose a translation",
+                                message: UIDevice.current.userInterfaceIdiom == .phone
+                                    ? "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in."
+                                    : "Tap the translation button at the top right to read another version. Your saved verses keep the translation they were saved in.",
+                                systemImage: "character.book.closed"
+                            )
+                            .padding(.bottom, 12)
+                        }
+
                         ContextualTipView(
                             id: "reader.shortcuts",
                             title: "Reader shortcuts",

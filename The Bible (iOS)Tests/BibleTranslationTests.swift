@@ -67,6 +67,64 @@ struct BibleTranslationTests {
         SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 
+    /// The search index is built from one translation's wording, so it must follow the
+    /// translation. ASV renders the divine name "Jehovah" throughout; the KJV almost never does.
+    @Test
+    func searchFindsEachTranslationsOwnWording() async {
+        let tokens = BibleSearchTokenizer.tokens(in: "Jehovah")
+        let asv = await BibleSearchIndex.shared.search(
+            tokens: tokens, allowedBookIndices: nil, maxResults: 200, translation: .asv
+        )
+        let kjv = await BibleSearchIndex.shared.search(
+            tokens: tokens, allowedBookIndices: nil, maxResults: 200, translation: .kjv
+        )
+        #expect(asv.count == 200)
+        #expect(kjv.count < 20)
+        // Switching back must not return a stale index.
+        let asvAgain = await BibleSearchIndex.shared.search(
+            tokens: tokens, allowedBookIndices: nil, maxResults: 200, translation: .asv
+        )
+        #expect(asvAgain.count == 200)
+    }
+
+    /// Beat the Clock's place catalog uses the KJV's spellings, and other translations hyphenate
+    /// names the KJV doesn't ("Beer-sheba"). That is why the game matches places against the
+    /// KJV text whichever translation is being read.
+    @Test
+    func placeNamesAreMatchedAgainstTheKJVSpellings() async {
+        let places = [(id: 1, name: "Beersheba")]
+        let kjv = await BibleRepository.shared.loadBooksWithoutCaching(for: .kjv)
+        let asv = await BibleRepository.shared.loadBooksWithoutCaching(for: .asv)
+
+        let kjvBooks = BeatTheClockAnswerIndex.booksMentioning(places, in: kjv)[1] ?? []
+        let asvBooks = BeatTheClockAnswerIndex.booksMentioning(places, in: asv)[1] ?? []
+        #expect(kjvBooks.contains("Genesis"))
+        #expect(kjvBooks.count > asvBooks.count)
+    }
+
+    @Test
+    func loadingWithoutCachingReturnsTheSameBible() async throws {
+        let loaded = await BibleRepository.shared.loadBooksWithoutCaching(for: .asv)
+        let cached = await BibleRepository.shared.loadAllBooks(for: .asv)
+        #expect(loaded.count == 66)
+        #expect(loaded == cached)
+    }
+
+    @Test
+    func aLeftOutVerseAskedForByNameIsAnswered() async throws {
+        let books = await BibleRepository.shared.loadAllBooks(for: .asv)
+
+        let verse = try #require(BibleReferenceParser.results(for: "Acts 8:37", in: books))
+        #expect(verse.count == 1)
+        #expect(verse.first?.isOmitted == true)
+
+        // A whole chapter lists only the verses the translation has.
+        let chapter = try #require(BibleReferenceParser.results(for: "Acts 8", in: books))
+        #expect(!chapter.isEmpty)
+        #expect(chapter.allSatisfy { !$0.isOmitted })
+        #expect(chapter.count == (books.first { $0.name == "Acts" }?.chapters.first { $0.number == 8 }?.verses.count ?? 0) - 1)
+    }
+
     @Test
     func asvLeavesOutVersesTheOldestManuscriptsLack() async throws {
         let books = await BibleRepository.shared.loadAllBooks(for: .asv)

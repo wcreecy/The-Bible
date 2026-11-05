@@ -354,6 +354,12 @@ private struct KeyScriptureView: View {
             Text("“\(keyScripture.text)”")
                 .font(.body.italic())
                 .frame(maxWidth: .infinity, alignment: .leading)
+
+            // The text is copied from the KJV when the study database is built, whatever
+            // translation is being read.
+            Text("King James Version")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 }

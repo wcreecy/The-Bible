@@ -598,6 +598,24 @@ private struct AcknowledgementsView: View {
             } header: {
                 Text("Cross References")
             }
+
+            Section {
+                ForEach(BibleTranslation.available) { translation in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("\(translation.name) (\(translation.abbreviation))")
+                            .font(.headline)
+                        Text(translation.notice)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 2)
+                    .accessibilityElement(children: .combine)
+                }
+            } header: {
+                Text("Bible Translations")
+            } footer: {
+                Text("Study content, such as key verses and quotations in chapter insights, quotes the King James Version.")
+            }
         }
         .navigationTitle("Acknowledgements")
         .navigationBarTitleDisplayMode(.inline)

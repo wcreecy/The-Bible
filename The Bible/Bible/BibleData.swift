@@ -86,27 +86,42 @@ actor BibleRepository {
         if !cached.isEmpty { return cached }
         if let task = loadTasks[translation] { return await task.value }
 
-        // Pre-cleaned by Scripts/clean_kjv (KJV) or Scripts/build_translation.py (the others).
-        let resourceURL = Bundle.main.url(forResource: translation.resourceName, withExtension: "json")
         let task = Task.detached(priority: .userInitiated) {
-            // No books means the load failed; screens show an error instead of placeholder text.
-            guard let resourceURL else {
-                bibleDataLogger.error("The bundled \(translation.abbreviation, privacy: .public) text is missing.")
-                return [Book]()
-            }
-            do {
-                let data = try Data(contentsOf: resourceURL, options: .mappedIfSafe)
-                return try BibleData.decodeBooks(from: data)
-            } catch {
-                bibleDataLogger.error("Failed to load the bundled \(translation.abbreviation, privacy: .public) text. Error: \(String(describing: error), privacy: .public)")
-                return [Book]()
-            }
+            Self.decodeBundledBooks(for: translation)
         }
         loadTasks[translation] = task
         let books = await AppPerformance.measure("BibleDataLoad") { await task.value }
         cache.store(books, for: translation)
         loadTasks[translation] = nil
         return books
+    }
+
+    /// A translation's books for a one-time job, such as checking a catalog written against the
+    /// KJV's spellings. Unlike `loadAllBooks(for:)` it keeps nothing in memory afterward, so a
+    /// second whole Bible doesn't stay loaded.
+    func loadBooksWithoutCaching(for translation: BibleTranslation) async -> [Book] {
+        let cached = cache.books(for: translation)
+        if !cached.isEmpty { return cached }
+        return await Task.detached(priority: .userInitiated) {
+            Self.decodeBundledBooks(for: translation)
+        }.value
+    }
+
+    /// Reads a bundled translation, pre-cleaned by Scripts/clean_kjv (KJV) or
+    /// Scripts/build_translation.py (the others). No books means the load failed; screens
+    /// show an error instead of placeholder text.
+    private nonisolated static func decodeBundledBooks(for translation: BibleTranslation) -> [Book] {
+        guard let resourceURL = Bundle.main.url(forResource: translation.resourceName, withExtension: "json") else {
+            bibleDataLogger.error("The bundled \(translation.abbreviation, privacy: .public) text is missing.")
+            return []
+        }
+        do {
+            let data = try Data(contentsOf: resourceURL, options: .mappedIfSafe)
+            return try BibleData.decodeBooks(from: data)
+        } catch {
+            bibleDataLogger.error("Failed to load the bundled \(translation.abbreviation, privacy: .public) text. Error: \(String(describing: error), privacy: .public)")
+            return []
+        }
     }
 
     /// Loads a translation, then makes it the active one and saves the choice.

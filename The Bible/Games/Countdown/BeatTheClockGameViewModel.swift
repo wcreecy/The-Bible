@@ -295,7 +295,10 @@ final class BeatTheClockGameViewModel {
         }
         if placeBooks == nil {
             let places = loadedPlaces.map { (id: $0.id, name: $0.locationName) }
-            let books = await BibleRepository.shared.loadAllBooks()
+            // The catalog's place names are the KJV's spellings ("Beersheba", "Bethel"), which
+            // other translations write differently ("Beer-sheba", "Beth-el"). Matching against
+            // the active translation would mark right answers wrong, so it always uses the KJV.
+            let books = await BibleRepository.shared.loadBooksWithoutCaching(for: .kjv)
             placeBooks = await Task.detached(priority: .userInitiated) {
                 BeatTheClockAnswerIndex.booksMentioning(places, in: books)
             }.value

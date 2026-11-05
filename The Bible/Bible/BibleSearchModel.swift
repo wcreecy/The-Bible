@@ -362,10 +362,16 @@ struct BibleSearchResultRow: View {
                             .background(Color.accentColor.opacity(0.12), in: Capsule())
                     }
 
-                    Text(highlightedText)
-                        .font(.body)
-                        .foregroundStyle(.primary)
-                        .lineLimit(3)
+                    if item.isOmitted {
+                        Text(Verse.omittedNote(in: BibleRepository.shared.activeTranslation))
+                            .font(.subheadline.italic())
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(highlightedText)
+                            .font(.body)
+                            .foregroundStyle(.primary)
+                            .lineLimit(3)
+                    }
 
                     Text("\(item.bookName) \(item.chapterNumber):\(item.verseNumber)")
                         .font(.caption)
@@ -375,15 +381,18 @@ struct BibleSearchResultRow: View {
             }
             .buttonStyle(.plain)
 
-            VerseActionMenuContent(
-                verse: VerseActionReference(
-                    bookName: item.bookName,
-                    chapterNumber: item.chapterNumber,
-                    verseNumber: item.verseNumber,
-                    verseText: item.verseText
-                ),
-                saved: saved
-            )
+            // An omitted verse has nothing to save or share.
+            if !item.isOmitted {
+                VerseActionMenuContent(
+                    verse: VerseActionReference(
+                        bookName: item.bookName,
+                        chapterNumber: item.chapterNumber,
+                        verseNumber: item.verseNumber,
+                        verseText: item.verseText
+                    ),
+                    saved: saved
+                )
+            }
         }
         .listRowBackground(
             item.isReferenceMatch

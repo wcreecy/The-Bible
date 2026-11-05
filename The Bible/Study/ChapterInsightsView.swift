@@ -125,6 +125,12 @@ struct ChapterInsightsView: View {
                     )
                 }
 
+                // Quotations in the study text were written against the KJV, whatever
+                // translation is being read.
+                Text("Verses quoted in these notes are from the King James Version.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
                 ChapterNavigationSection(
                     location: location,
                     previous: previous,

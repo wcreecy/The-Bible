@@ -257,7 +257,9 @@ struct SearchHomeCard: View {
             let verse = reference.verse ?? reference.chapter.verses.first
             return ReferenceMatch(
                 title: reference.title,
-                previewText: verse?.text ?? "",
+                previewText: verse.map {
+                    $0.isOmitted ? Verse.omittedNote(in: BibleRepository.shared.activeTranslation) : $0.text
+                } ?? "",
                 destination: SearchResult(
                     bookIndex: reference.bookIndex,
                     bookName: reference.book.name,

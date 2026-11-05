@@ -27,14 +27,17 @@ enum QuizVerseFilter {
         let translation = BibleRepository.shared.activeTranslation
         if analysisTranslation != translation { analysis = nil }
         if analysis != nil { return }
+
+        // Everyone waiting on the same analysis stores it, so none returns before it's ready.
+        let task: Task<VerseAnalysis, Never>
         if let preparation, preparation.translation == translation {
-            _ = await preparation.task.value
-            return
+            task = preparation.task
+        } else {
+            task = Task.detached(priority: .userInitiated) {
+                VerseAnalysis(books: await BibleRepository.shared.loadAllBooks(for: translation))
+            }
+            preparation = (translation, task)
         }
-        let task = Task.detached(priority: .userInitiated) {
-            VerseAnalysis(books: await BibleRepository.shared.loadAllBooks(for: translation))
-        }
-        preparation = (translation, task)
         let result = await task.value
         if BibleRepository.shared.activeTranslation == translation {
             analysis = result

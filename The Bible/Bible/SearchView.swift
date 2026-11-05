@@ -241,6 +241,9 @@ struct SearchResult: Identifiable, Hashable, Sendable {
     var id: String {
         "\(bookIndex):\(chapterNumber):\(verseNumber)"
     }
+
+    /// The translation leaves this verse out, so there is no text to show or save.
+    var isOmitted: Bool { verseText.isEmpty }
 }
 
 /// A fixed-size set of verse positions. Combining sets is a bitwise AND and walking one
@@ -304,9 +307,10 @@ actor BibleSearchIndex {
     func search(
         tokens: [String],
         allowedBookIndices: Range<Int>?,
-        maxResults: Int
+        maxResults: Int,
+        translation: BibleTranslation = BibleRepository.shared.activeTranslation
     ) async -> [SearchResult] {
-        let index = await indexedVerses()
+        let index = await indexedVerses(for: translation)
         let searchTokens = Array(Set(tokens)).sorted { $0.count > $1.count }
         guard let matches = matchingEntries(for: searchTokens, in: index) else { return [] }
         var results: [SearchResult] = []
@@ -388,8 +392,8 @@ actor BibleSearchIndex {
         return lower
     }
 
-    private func indexedVerses() async -> Index {
-        let translation = BibleRepository.shared.activeTranslation
+    /// Keeps only the last translation's index, so switching translations rebuilds it once.
+    private func indexedVerses(for translation: BibleTranslation) async -> Index {
         if let index, indexTranslation == translation { return index }
 
         let task: Task<Index, Never>
@@ -433,11 +437,8 @@ actor BibleSearchIndex {
         }
 
         let built = await AppPerformance.measure("BibleSearchIndexBuild") { await task.value }
-        // The translation may have changed during the build; this search still gets its own.
-        if BibleRepository.shared.activeTranslation == translation {
-            index = built
-            indexTranslation = translation
-        }
+        index = built
+        indexTranslation = translation
         if indexBuild?.translation == translation { indexBuild = nil }
         return built
     }

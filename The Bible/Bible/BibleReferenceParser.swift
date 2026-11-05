@@ -46,7 +46,9 @@ nonisolated enum BibleReferenceParser {
         guard isReferenceShaped(query) else { return nil }
         guard let reference = reference(for: query, in: books) else { return [] }
 
-        let verses = reference.verse.map { [$0] } ?? reference.chapter.verses
+        // A chapter lists the verses the translation has; a verse asked for by name is always
+        // answered, so a left-out verse explains itself instead of seeming not to exist.
+        let verses = reference.verse.map { [$0] } ?? reference.chapter.verses.filter { !$0.isOmitted }
         return verses.map { verse in
             SearchResult(
                 bookIndex: reference.bookIndex,
