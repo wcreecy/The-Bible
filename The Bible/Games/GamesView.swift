@@ -135,7 +135,7 @@ struct GamesView: View {
            let route = leastPlayedRoute(in: breakdown.entries) {
             return GameRecommendation(
                 title: "Try something new",
-                detail: "You haven’t played \(route.displayName) yet.",
+                detail: "You haven’t played \(route.visibleName) yet.",
                 systemImage: "sparkles",
                 destination: .game(route)
             )
@@ -146,7 +146,7 @@ struct GamesView: View {
            let route = GameRoute.allCases.first(where: { $0.displayName == name }),
            !isPrompted(route) {
             return GameRecommendation(
-                title: "Play \(route.displayName) again",
+                title: "Play \(route.visibleName) again",
                 detail: "Continue with the game you played most recently.",
                 systemImage: "arrow.clockwise",
                 destination: .game(route)
@@ -167,7 +167,7 @@ struct GamesView: View {
         }) ?? .trivia
         return GameRecommendation(
             title: "Keep playing",
-            detail: "Try \(fallbackRoute.displayName) next.",
+            detail: "Try \(fallbackRoute.visibleName) next.",
             systemImage: fallbackRoute.systemImage,
             destination: .game(fallbackRoute)
         )

@@ -45,7 +45,7 @@ final class WordleGameViewModel {
 
     nonisolated static let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-    // Pinned letters stay fixed in the active row until cleared with the × button.
+    // Pinned letters stay fixed in the active row until their tile is tapped again.
     var pinned: [[Character?]] = Array(repeating: Array(repeating: nil, count: 5), count: 6)
 
     // Session stats (for the scoreboard’s Current section)

@@ -47,7 +47,7 @@ enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .scramble: "Scramble"
         case .crossword: "Crossword"
         case .whoAmI: "Who?"
-        case .wordle: "Word"
+        case .wordle: "WORD"
         case .trivia: "Trivia"
         case .reviewRound: "Review Round"
         }
@@ -67,6 +67,12 @@ enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .trivia: "Trivia"
         case .reviewRound: "Review Round"
         }
+    }
+
+    /// The name shown in the interface. `displayName` remains the stable value used by
+    /// persisted game statistics and launch requests.
+    var visibleName: String {
+        self == .wordle ? "WORD" : displayName
     }
 
     var subtitle: LocalizedStringResource {
@@ -191,7 +197,7 @@ enum GameRecommendationDestination {
     var accessibilityHint: String {
         switch self {
         case .game(let route):
-            "Opens \(route.displayName)"
+            "Opens \(route.visibleName)"
         }
     }
 }

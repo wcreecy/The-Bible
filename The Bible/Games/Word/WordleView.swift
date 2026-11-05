@@ -49,6 +49,7 @@ struct WordleView: View {
     @State private var showsOnScreenKeyboard: Bool = true
     @State private var showsBoardCardSecond: Bool = false
     @State private var hardwareKeyboardConnected: Bool = false
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     /// Height of the tip banner above the game (0 once dismissed), so the iPad layout
     /// leaves room for it.
     @State private var tipHeight: CGFloat = 0
@@ -169,7 +170,7 @@ struct WordleView: View {
             } inputControls: { wideKeyHeight in
               VStack(spacing: usesCompactPhoneLayout ? 6 : 10) {
                 if vm.roundOver {
-                  endOfRoundActionArea()
+                  endOfRoundActionArea(pinsNextWord: horizontalSizeClass == .compact)
                 } else {
                   keyboardView(
                     keyHeight: wideKeyHeight ?? (usesCompactPhoneLayout ? compactSizes.key : 52)
@@ -193,12 +194,20 @@ struct WordleView: View {
       }
     }
     .tabBarContentClearance()
+    .pinnedGameActionButton(
+      isShown: horizontalSizeClass == .compact && vm.roundOver && vm.mode == .practice
+    ) {
+      Button("Next Word", systemImage: "arrow.right") {
+        vm.startNewRound(practice: true)
+      }
+      .buttonStyle(GameProminentButtonStyle(tint: .mint))
+    }
     .navigationTitle("")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .principal) {
         if vm.started {
-          GameNavigationTitle(title: "Word", systemImage: "textformat.abc", tint: .mint)
+          GameNavigationTitle(title: "WORD", systemImage: "textformat.abc", tint: .mint)
         }
       }
       ToolbarItem(placement: .topBarTrailing) {
@@ -320,7 +329,7 @@ struct WordleView: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
-                .gameStartDescriptionStyle(title: "Word", systemImage: "textformat.abc", tint: .mint)
+                .gameStartDescriptionStyle(title: "WORD", systemImage: "textformat.abc", tint: .mint)
 
             GameSplashLaunchLayout(
                 tint: .mint,
@@ -520,7 +529,7 @@ struct WordleView: View {
 
     // MARK: - End-of-round action area (replaces keyboard)
     @ViewBuilder
-    private func endOfRoundActionArea() -> some View {
+    private func endOfRoundActionArea(pinsNextWord: Bool) -> some View {
         VStack(spacing: 12) {
             resultCard()
 
@@ -530,14 +539,14 @@ struct WordleView: View {
                 }
                 .buttonStyle(ModernPillButtonStyle(tint: .mint))
 
-                if vm.mode == .practice {
+                if vm.mode == .practice && !pinsNextWord {
                     Button("Next Word", systemImage: "arrow.right") {
                         vm.startNewRound(practice: true)
                     }
                     .buttonStyle(GameProminentButtonStyle(tint: .mint))
                 } else if vm.dailyCompletedToday {
                     Label {
-                        Text("Next word in \(Text(nextDailyDate, style: .relative))")
+                        Text("Next daily WORD \(Text(nextDailyDate, style: .relative))")
                             .monospacedDigit()
                     } icon: {
                         Image(systemName: "calendar.badge.clock")
@@ -557,7 +566,7 @@ struct WordleView: View {
 
     /// Spoiler-free result summary with an emoji grid of the guesses.
     private var shareText: String {
-        let title = vm.mode == .daily ? "Word Daily \(vm.todayKey)" : "Word Practice"
+        let title = vm.mode == .daily ? "WORD Daily \(vm.todayKey)" : "WORD Practice"
         let scoreText = vm.didWin ? "\(vm.rowIndex)/6" : "X/6"
         let difficulty = vm.roundHardMode ? " (Hard)" : ""
         let grid = vm.evaluations.prefix(vm.rowIndex).map { row in

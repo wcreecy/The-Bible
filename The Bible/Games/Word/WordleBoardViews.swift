@@ -94,6 +94,11 @@ extension WordleView {
         }
 
         private func reuseCorrectLetter(fromRow row: Int, column: Int) {
+            if row == rowIndex, !isRoundOver, pinned[row][column] != nil {
+                pinned[row][column] = nil
+                return
+            }
+
             guard !isRoundOver,
                   row < rowIndex,
                   evaluations[row][column] == .correct,
@@ -111,30 +116,21 @@ extension WordleView {
             let isPinned = pinned[row][column] != nil
             let isNextInput = row == rowIndex && column == nextInputColumn && !isRoundOver
 
-            return ZStack(alignment: .topTrailing) {
-                WordleTile(
-                    letter: letter,
-                    state: state,
-                    tileSize: tileSize,
-                    isNextInput: isNextInput
-                )
-
-                if row == rowIndex, !isRoundOver, isPinned {
-                    Button {
-                        pinned[row][column] = nil
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(.secondary)
-                            .padding(4)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Clear pinned letter")
-                }
-            }
+            return WordleTile(
+                letter: letter,
+                state: isPinned ? .correct : state,
+                tileSize: tileSize,
+                isNextInput: isNextInput
+            )
             .monospaced()
             .accessibilityLabel(accessibilityLabel(letter: letter, row: row, column: column, isPinned: isPinned, isNextInput: isNextInput))
-            .accessibilityHint(state == .correct && row < rowIndex && !isRoundOver ? "Tap to place and lock this letter in the current guess." : "")
+            .accessibilityHint(
+                isPinned
+                    ? "Tap to remove this locked letter."
+                    : (state == .correct && row < rowIndex && !isRoundOver
+                        ? "Tap to place and lock this letter in the current guess."
+                        : "")
+            )
         }
 
         private func accessibilityLabel(

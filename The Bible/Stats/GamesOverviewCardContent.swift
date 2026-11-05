@@ -30,6 +30,10 @@ struct GamesOverviewCardContent: View {
         }
     }
 
+    private func visibleGameName(_ name: String) -> String {
+        name == "Word" ? "WORD" : name
+    }
+
     private func sortKey(for name: String) -> String {
         let key = (name == "Word") ? "Who?" : name
         return key.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .autoupdatingCurrent)
@@ -71,7 +75,7 @@ struct GamesOverviewCardContent: View {
                     Button {
                         selectedGame = name
                     } label: {
-                        Label(name, systemImage: gameIcon(for: name))
+                        Label(visibleGameName(name), systemImage: gameIcon(for: name))
                     }
                 }
             } label: {
@@ -80,7 +84,7 @@ struct GamesOverviewCardContent: View {
                     Text(
                         dynamicTypeSize.isAccessibilitySize && selectedGame == "All Games"
                             ? "All"
-                            : selectedGame
+                            : visibleGameName(selectedGame)
                     )
                         .lineLimit(1)
                     Image(systemName: "chevron.down")
@@ -93,7 +97,7 @@ struct GamesOverviewCardContent: View {
                 .contentShape(Capsule())
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("Select Game")
-                .accessibilityValue(selectedGame)
+                .accessibilityValue(visibleGameName(selectedGame))
             }
             .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, alignment: .leading)
             .animation(.easeInOut(duration: 0.2), value: selectedGame)
