@@ -487,11 +487,11 @@ struct GameStatsAccountingTests {
     }
 
     @Test
-    func quizIncludesLegacyVersesWithoutDuplicatingOverallTotals() async throws {
+    func quizHistoryAndTriviaContributeToBookMasteryWithoutDuplicatingOverallTotals() async throws {
         _ = await BibleRepository.shared.loadAllBooks()
         let stats = GameStats.shared
         let day = GameStats.localDayKey(for: Date())
-        let prefixes = ["quiz", "versematch"]
+        let prefixes = ["quiz", "versematch", "trivia"]
         let keys = prefixes.flatMap { prefix in
             ["\(prefix)AllTimeAnswered_all", "\(prefix)AllTimeCorrect_all", "\(prefix)AllTimeBestStreak_all",
              "gamesDailyAnswered_\(prefix)", "gamesDailyCorrect_\(prefix)",
@@ -502,7 +502,7 @@ struct GameStatsAccountingTests {
         clear(keys)
         defer { restore(saved, for: keys) }
 
-        for (prefix, answered, correct, best) in [("quiz", 10, 7, 4), ("versematch", 5, 2, 6)] {
+        for (prefix, answered, correct, best) in [("quiz", 10, 7, 4), ("versematch", 5, 2, 6), ("trivia", 5, 4, 3)] {
             defaults.set(answered, forKey: "\(prefix)AllTimeAnswered_all")
             defaults.set(correct, forKey: "\(prefix)AllTimeCorrect_all")
             defaults.set(best, forKey: "\(prefix)AllTimeBestStreak_all")
@@ -528,7 +528,10 @@ struct GameStatsAccountingTests {
             let john = try #require(stats.quizAccuracyByBook(inGenre: "Gospels").first { $0.book == "John" })
             #expect(john.answered == 15 && john.correct == 9 && john.pct == 60)
             #expect(stats.quizStrongBooks(lastNDays: 1, minAttempts: 1).first?.answered == 15)
-            #expect(stats.bookMastery().first { $0.book == "John" }?.answered == 15)
+            let johnMastery = try #require(stats.bookMastery().first { $0.book == "John" })
+            #expect(johnMastery.answered == 20)
+            #expect(johnMastery.correct == 13)
+            #expect(johnMastery.pct == 65)
         }
 
         // Late-arriving legacy history is reflected without rewriting either store.

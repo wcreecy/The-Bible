@@ -120,7 +120,7 @@ struct GameInsightsCardView: View {
             Text("Book Mastery")
                 .font(.subheadline.weight(.semibold))
             if mastery.isEmpty {
-                Text("Answer at least 5 Quiz or Verses questions for a book to see mastery.")
+                Text("Answer at least 5 Quiz or Trivia questions for a book to see mastery.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
