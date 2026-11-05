@@ -13,6 +13,7 @@ struct HomeLayoutStore {
     private static let keyFavOrder = "homeCardFavoriteOrder"
     private static let keyFavHidden = "homeCardFavoriteHidden"
     private static let keyFavBibleReaderVisible = "homeCardFavoriteBibleReaderVisible"
+    private static let keyFavSavedAt = "homeCardFavoriteSavedAt"
     private static let keyTodayVisibilityMigrated = "homeTodayVisibilityMigratedV1"
     private static let keyFavoriteTodayVisibilityMigrated = "homeFavoriteTodayVisibilityMigratedV1"
     static let keyColumns = "homeDashboardColumns"
@@ -31,6 +32,8 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavOrder) private var favOrderRaw: String = ""
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
     @AppStorage(Self.keyFavBibleReaderVisible) private var favBibleReaderVisible: Bool = Self.defaultBibleReaderVisible
+    // Seconds since 1970 when "My Layout" was last saved; 0 for layouts saved before dates were kept.
+    @AppStorage(Self.keyFavSavedAt) private var favSavedAt: Double = 0
     @AppStorage(Self.keyTodayVisibilityMigrated) private var todayVisibilityMigrated = false
     @AppStorage(Self.keyFavoriteTodayVisibilityMigrated) private var favoriteTodayVisibilityMigrated = false
     @AppStorage(Self.keyColumns) private var columnsRaw: String = ""
@@ -203,6 +206,11 @@ struct HomeLayoutStore {
         !favOrderRaw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    /// When "My Layout" was last saved, if known.
+    var favoriteSavedAt: Date? {
+        favSavedAt > 0 ? Date(timeIntervalSince1970: favSavedAt) : nil
+    }
+
     func saveFavorite(
         order: [HomeCardID],
         hidden: Set<HomeCardID>,
@@ -228,6 +236,7 @@ struct HomeLayoutStore {
         }
 
         favBibleReaderVisible = bibleReaderVisible
+        favSavedAt = Date().timeIntervalSince1970
         favoriteTodayVisibilityMigrated = true
         if Self.storesColumns {
             favColumnsRaw = columns.storageString

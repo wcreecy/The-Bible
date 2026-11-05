@@ -10,8 +10,6 @@ struct SettingsHomeLayoutSection: View {
 
     private let layoutStore = HomeLayoutStore()
 
-    private var hasFavoriteLayout: Bool { layoutStore.hasFavorite }
-
     private func loadHomeLayout() {
         let loaded = layoutStore.load()
         layoutOrder = loaded.order
@@ -45,8 +43,7 @@ struct SettingsHomeLayoutSection: View {
             usesDashboard: UIDevice.current.userInterfaceIdiom == .pad,
             onDone: saveHomeLayout,
             onSaveFavorite: saveFavoriteLayout,
-            onResetToFavorite: applyFavoriteLayout,
-            hasFavorite: hasFavoriteLayout
+            onResetToFavorite: applyFavoriteLayout
         )
         .onAppear(perform: loadHomeLayout)
     }

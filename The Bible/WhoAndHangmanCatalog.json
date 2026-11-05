@@ -4500,7 +4500,7 @@
       "id": 1,
       "name": "Abel-meholah",
       "scripture_mentioned": "1 Kings 19:16",
-      "short_description": "Hometown of the prophet who succeeded Elijah",
+      "short_description": "Town where Elisha lived when Elijah was told to appoint him as his successor",
       "difficulty": "Hard",
       "scripture_references": "1 Kings 19:16; Judges 7:22"
     },
@@ -4509,7 +4509,7 @@
       "id": 2,
       "name": "Ai",
       "scripture_mentioned": "Joshua 7:2",
-      "short_description": "Canaanite city where Israel suffered defeat before winning after confronting hidden sin",
+      "short_description": "City where Israel was defeated after Achan kept forbidden goods, then won a later battle",
       "difficulty": "Normal",
       "scripture_references": "Joshua 7:2; Joshua 7:3–5; 8:1–29"
     },
@@ -4518,7 +4518,7 @@
       "id": 3,
       "name": "Alexandria",
       "scripture_mentioned": "Acts 18:24",
-      "short_description": "Egyptian city from which an eloquent teacher of Scripture came",
+      "short_description": "Egyptian city where Apollos, an eloquent teacher of Scripture, was born",
       "difficulty": "Hard",
       "scripture_references": "Acts 18:24; Acts 6:9; 27:6"
     },
@@ -4527,7 +4527,7 @@
       "id": 4,
       "name": "Antioch (Pisidia)",
       "scripture_mentioned": "Acts 13:14",
-      "short_description": "City where Paul preached in a synagogue during his first missionary journey",
+      "short_description": "City in Pisidia where Paul preached about Jesus in a synagogue on his first missionary journey",
       "difficulty": "Hard",
       "scripture_references": "Acts 13:14; Acts 13:42–52"
     },
@@ -4545,7 +4545,7 @@
       "id": 6,
       "name": "Arabia",
       "scripture_mentioned": "Galatians 1:17",
-      "short_description": "Region to which Paul traveled after his conversion",
+      "short_description": "Region Paul visited after his conversion, before returning to Damascus",
       "difficulty": "Hard",
       "scripture_references": "Galatians 1:17; Galatians 4:25"
     },
@@ -4563,7 +4563,7 @@
       "id": 8,
       "name": "Arimathaea",
       "scripture_mentioned": "Matthew 27:57",
-      "short_description": "Home town of the council member who provided a tomb for Jesus",
+      "short_description": "Hometown of Joseph, the wealthy council member who buried Jesus in his own tomb",
       "difficulty": "Normal",
       "scripture_references": "Matthew 27:57; Mark 15:43; John 19:38"
     },
@@ -4572,7 +4572,7 @@
       "id": 9,
       "name": "Ashdod",
       "scripture_mentioned": "1 Samuel 5:1",
-      "short_description": "Philistine city where the captured ark was placed beside an idol",
+      "short_description": "Philistine city where the captured ark was brought into the temple of Dagon",
       "difficulty": "Normal",
       "scripture_references": "1 Samuel 5:1; 1 Samuel 5:2–7"
     },
@@ -4581,7 +4581,7 @@
       "id": 10,
       "name": "Ashkelon",
       "scripture_mentioned": "Judges 14:19",
-      "short_description": "Philistine city whose inhabitants were struck by Samson",
+      "short_description": "Philistine city where Samson killed thirty men to obtain garments for a wager",
       "difficulty": "Hard",
       "scripture_references": "Judges 14:19; 1 Samuel 6:17; 2 Samuel 1:20"
     },
@@ -4599,7 +4599,7 @@
       "id": 12,
       "name": "Athens",
       "scripture_mentioned": "Acts 17:16",
-      "short_description": "Greek city where Paul spoke about the unknown God",
+      "short_description": "Greek city where Paul addressed the Areopagus and spoke of an altar to an unknown god",
       "difficulty": "Easy",
       "scripture_references": "Acts 17:16; Acts 17:22–34"
     },
@@ -4617,7 +4617,7 @@
       "id": 14,
       "name": "Babylon",
       "scripture_mentioned": "Daniel 1:1",
-      "short_description": "Imperial city associated with the captivity of Judah and Daniel's service",
+      "short_description": "City where Daniel served in the royal court after Judah was conquered",
       "difficulty": "Easy",
       "scripture_references": "Daniel 1:1; 2 Kings 25:8–12; Psalm 137:1"
     },
@@ -4635,7 +4635,7 @@
       "id": 16,
       "name": "Bethabara",
       "scripture_mentioned": "John 1:28",
-      "short_description": "Place beyond the Jordan connected with the baptizing ministry of John",
+      "short_description": "Place beyond the Jordan where John was baptizing, as named in the KJV",
       "difficulty": "Hard",
       "scripture_references": "John 1:28"
     },
@@ -4653,7 +4653,7 @@
       "id": 18,
       "name": "Bethel",
       "scripture_mentioned": "Genesis 28:19",
-      "short_description": "Town where Jacob dreamed of a ladder reaching heaven",
+      "short_description": "Place Jacob named after dreaming of a ladder reaching to heaven",
       "difficulty": "Easy",
       "scripture_references": "Genesis 28:19; Genesis 35:1–7; 1 Kings 12:28–33"
     },
@@ -4662,7 +4662,7 @@
       "id": 19,
       "name": "Bethesda (pool)",
       "scripture_mentioned": "John 5:2",
-      "short_description": "Pool with five porches where Jesus healed a man long disabled",
+      "short_description": "Pool in Jerusalem with five porches where Jesus healed a man who had been disabled for thirty-eight years",
       "difficulty": "Normal",
       "scripture_references": "John 5:2; John 5:2–9"
     },
@@ -4680,7 +4680,7 @@
       "id": 21,
       "name": "Bethlehem (Zebulun)",
       "scripture_mentioned": "Joshua 19:15",
-      "short_description": "Northern town sharing its name with the birthplace of Jesus",
+      "short_description": "Town allotted to the tribe of Zebulun that shares its name with the town of Jesus' birth",
       "difficulty": "Hard",
       "scripture_references": "Joshua 19:15"
     },
@@ -4689,7 +4689,7 @@
       "id": 22,
       "name": "Bethphage",
       "scripture_mentioned": "Matthew 21:1",
-      "short_description": "Village near the Mount of Olives approached before Jesus entered Jerusalem",
+      "short_description": "Village near the Mount of Olives where Jesus sent disciples to obtain a donkey before entering Jerusalem",
       "difficulty": "Hard",
       "scripture_references": "Matthew 21:1; Mark 11:1; Luke 19:29"
     },
@@ -4698,7 +4698,7 @@
       "id": 23,
       "name": "Bethsaida",
       "scripture_mentioned": "John 1:44",
-      "short_description": "Hometown of Andrew and Peter, also connected with a miraculous feeding",
+      "short_description": "Galilean town identified as the hometown of Philip, Andrew, and Peter",
       "difficulty": "Normal",
       "scripture_references": "John 1:44; Mark 8:22–26; Luke 9:10–17"
     },
@@ -4707,7 +4707,7 @@
       "id": 24,
       "name": "Caesarea (Maritima)",
       "scripture_mentioned": "Acts 10:1",
-      "short_description": "Coastal city where a Roman centurion received Peter's message",
+      "short_description": "Coastal city where Peter visited the Roman centurion Cornelius",
       "difficulty": "Normal",
       "scripture_references": "Acts 10:1; Acts 10:24–48; 21:8–16"
     },
@@ -4716,7 +4716,7 @@
       "id": 25,
       "name": "Caesarea Philippi",
       "scripture_mentioned": "Matthew 16:13",
-      "short_description": "District where Peter confessed Jesus as the Christ",
+      "short_description": "Region where Peter declared that Jesus was the Christ, the Son of the living God",
       "difficulty": "Normal",
       "scripture_references": "Matthew 16:13; Mark 8:27–30"
     },
@@ -4725,7 +4725,7 @@
       "id": 26,
       "name": "Calvary",
       "scripture_mentioned": "Luke 23:33",
-      "short_description": "Place called the skull where Jesus was crucified",
+      "short_description": "Latin-derived name for the place called the Skull, where Jesus was crucified",
       "difficulty": "Easy",
       "scripture_references": "Luke 23:33; Luke 23:33–43"
     },
@@ -4752,7 +4752,7 @@
       "id": 29,
       "name": "Capernaum",
       "scripture_mentioned": "Matthew 4:13",
-      "short_description": "Galilean town that became a base for Jesus' ministry",
+      "short_description": "Town by the Sea of Galilee where Jesus lived and taught in the synagogue",
       "difficulty": "Easy",
       "scripture_references": "Matthew 4:13; Mark 1:21–28; Matthew 8:5–13"
     },
@@ -4770,7 +4770,7 @@
       "id": 31,
       "name": "Carmel (town in Judah)",
       "scripture_mentioned": "1 Samuel 25:2",
-      "short_description": "Place connected with the wealthy husband of Abigail",
+      "short_description": "Town in Judah where Nabal, Abigail's first husband, had business interests",
       "difficulty": "Hard",
       "scripture_references": "1 Samuel 25:2; 1 Samuel 25:5–7"
     },
@@ -4779,7 +4779,7 @@
       "id": 32,
       "name": "Chorazin",
       "scripture_mentioned": "Matthew 11:21",
-      "short_description": "Town rebuked despite witnessing mighty works",
+      "short_description": "Galilean town Jesus warned for failing to repent despite his mighty works",
       "difficulty": "Hard",
       "scripture_references": "Matthew 11:21; Luke 10:13"
     },
@@ -4788,7 +4788,7 @@
       "id": 33,
       "name": "Colosse",
       "scripture_mentioned": "Colossians 1:2",
-      "short_description": "City of believers addressed in Paul’s letter to the Colossians",
+      "short_description": "City associated with the church addressed in Paul's letter to the Colossians",
       "difficulty": "Normal",
       "scripture_references": "Colossians 1:2; Colossians 1:1–8; 4:9"
     },
@@ -4797,7 +4797,7 @@
       "id": 34,
       "name": "Corinth",
       "scripture_mentioned": "Acts 18:1",
-      "short_description": "Greek city where Paul worked with tentmakers and established a church",
+      "short_description": "Greek city where Paul met the tentmakers Aquila and Priscilla and stayed to teach",
       "difficulty": "Easy",
       "scripture_references": "Acts 18:1; Acts 18:1–18; 1 Corinthians 1:2"
     },
@@ -4815,7 +4815,7 @@
       "id": 36,
       "name": "Cyprus",
       "scripture_mentioned": "Acts 13:4",
-      "short_description": "Mediterranean island visited by Paul and Barnabas early in their mission",
+      "short_description": "Mediterranean island where Paul and Barnabas met the sorcerer Elymas",
       "difficulty": "Normal",
       "scripture_references": "Acts 13:4; Acts 13:4–12; 4:36"
     },
@@ -4833,7 +4833,7 @@
       "id": 38,
       "name": "Decapolis",
       "scripture_mentioned": "Mark 5:20",
-      "short_description": "Region of ten cities where a restored man proclaimed what Jesus had done",
+      "short_description": "Region east of the Sea of Galilee where a man freed from demons told people what Jesus had done",
       "difficulty": "Normal",
       "scripture_references": "Mark 5:20; Mark 7:31"
     },
@@ -4842,7 +4842,7 @@
       "id": 39,
       "name": "Derbe",
       "scripture_mentioned": "Acts 14:20",
-      "short_description": "City reached by Paul and Barnabas after leaving Lystra",
+      "short_description": "City where Paul and Barnabas preached after their departure from Lystra",
       "difficulty": "Hard",
       "scripture_references": "Acts 14:20; Acts 14:20–21; 16:1"
     },
@@ -4851,7 +4851,7 @@
       "id": 40,
       "name": "Dothan",
       "scripture_mentioned": "Genesis 37:17",
-      "short_description": "Place where Joseph's brothers were tending flocks before selling him",
+      "short_description": "Place where Joseph found his brothers before they sold him to traders",
       "difficulty": "Normal",
       "scripture_references": "Genesis 37:17; 2 Kings 6:13–17"
     },
@@ -4878,7 +4878,7 @@
       "id": 43,
       "name": "Egypt",
       "scripture_mentioned": "Exodus 1:8",
-      "short_description": "Land of Israelite bondage from which Moses led the exodus",
+      "short_description": "Land where the Israelites lived in bondage before God led them out through Moses",
       "difficulty": "Easy",
       "scripture_references": "Exodus 1:8; Genesis 41:41–46; Exodus 12:31–42"
     },
@@ -4905,7 +4905,7 @@
       "id": 46,
       "name": "En-gedi",
       "scripture_mentioned": "1 Samuel 24:1",
-      "short_description": "Wilderness area where David spared Saul in a cave",
+      "short_description": "Wilderness stronghold where David spared King Saul's life in a cave",
       "difficulty": "Normal",
       "scripture_references": "1 Samuel 24:1; 1 Samuel 24:1–7"
     },
@@ -4914,7 +4914,7 @@
       "id": 47,
       "name": "Endor",
       "scripture_mentioned": "1 Samuel 28:7",
-      "short_description": "Town where Saul consulted a woman who practiced divination",
+      "short_description": "Town where Saul consulted a medium before his final battle with the Philistines",
       "difficulty": "Normal",
       "scripture_references": "1 Samuel 28:7; 1 Samuel 28:7–20"
     },
@@ -4923,7 +4923,7 @@
       "id": 48,
       "name": "Ephesus",
       "scripture_mentioned": "Acts 19:1",
-      "short_description": "City where Paul taught and a riot arose over the worship of Artemis",
+      "short_description": "City where a riot broke out over the worship of Artemis during Paul's ministry",
       "difficulty": "Easy",
       "scripture_references": "Acts 19:1; Acts 19:8–20; Ephesians 1:1"
     },
@@ -4932,7 +4932,7 @@
       "id": 49,
       "name": "Euphrates (river)",
       "scripture_mentioned": "Genesis 2:14",
-      "short_description": "Great river named among the waterways in the garden account",
+      "short_description": "One of four rivers named in the description of Eden, later marking part of Israel's promised boundary",
       "difficulty": "Normal",
       "scripture_references": "Genesis 2:14; Genesis 15:18; Revelation 9:14"
     },
@@ -4950,7 +4950,7 @@
       "id": 51,
       "name": "Galatia",
       "scripture_mentioned": "Galatians 1:2",
-      "short_description": "Region whose churches received a letter defending salvation by faith",
+      "short_description": "Region whose churches received Paul's letter opposing the requirement that Gentile believers be circumcised",
       "difficulty": "Normal",
       "scripture_references": "Galatians 1:2; Acts 16:6; Galatians 1:1–2"
     },
@@ -4977,7 +4977,7 @@
       "id": 54,
       "name": "Gaza",
       "scripture_mentioned": "Judges 16:1",
-      "short_description": "Philistine city whose gates Samson carried away",
+      "short_description": "Philistine city whose gates Samson carried away and where he was later imprisoned",
       "difficulty": "Normal",
       "scripture_references": "Judges 16:1; Judges 16:1–3; Acts 8:26"
     },
@@ -4995,7 +4995,7 @@
       "id": 56,
       "name": "Gibeah",
       "scripture_mentioned": "1 Samuel 10:26",
-      "short_description": "Home town and royal base associated with Israel's first king",
+      "short_description": "Town associated with Saul's home after he was chosen as Israel's first king",
       "difficulty": "Hard",
       "scripture_references": "1 Samuel 10:26; 1 Samuel 11:4; Judges 19:14–15"
     },
@@ -5013,7 +5013,7 @@
       "id": 58,
       "name": "Gilead",
       "scripture_mentioned": "Genesis 31:21",
-      "short_description": "Region east of the Jordan, known for its balm and associated with Jacob and Laban",
+      "short_description": "Region east of the Jordan where Jacob and Laban made a covenant and set up a stone heap",
       "difficulty": "Normal",
       "scripture_references": "Genesis 31:21; Numbers 32:1–5; Judges 11:1"
     },
@@ -5040,7 +5040,7 @@
       "id": 61,
       "name": "Gomorrah",
       "scripture_mentioned": "Genesis 19:24",
-      "short_description": "City destroyed by fire and brimstone along with its neighbor",
+      "short_description": "City destroyed with Sodom when the LORD rained brimstone and fire on the cities",
       "difficulty": "Easy",
       "scripture_references": "Genesis 19:24; Genesis 18:20; 19:24–29"
     },
@@ -5049,7 +5049,7 @@
       "id": 62,
       "name": "Goshen",
       "scripture_mentioned": "Genesis 47:27",
-      "short_description": "District where Jacob's family lived in Egypt",
+      "short_description": "Region of Egypt where Joseph settled his father Jacob and his brothers",
       "difficulty": "Normal",
       "scripture_references": "Genesis 47:27; Genesis 45:10; Exodus 8:22"
     },
@@ -5058,7 +5058,7 @@
       "id": 63,
       "name": "Haran",
       "scripture_mentioned": "Genesis 11:31",
-      "short_description": "Place where Abraham's family settled before his journey to the promised land",
+      "short_description": "Town where Abram lived with his father Terah before leaving for Canaan",
       "difficulty": "Normal",
       "scripture_references": "Genesis 11:31; Genesis 12:4–5; 27:43"
     },
@@ -5067,7 +5067,7 @@
       "id": 64,
       "name": "Hebron",
       "scripture_mentioned": "Genesis 23:2",
-      "short_description": "City where Abraham bought a burial cave for Sarah",
+      "short_description": "City where Abraham purchased the cave of Machpelah as a burial place for Sarah",
       "difficulty": "Easy",
       "scripture_references": "Genesis 23:2; Genesis 13:18; 2 Samuel 2:1–4"
     },
@@ -5076,7 +5076,7 @@
       "id": 65,
       "name": "Hermon (mountain)",
       "scripture_mentioned": "Deuteronomy 3:8",
-      "short_description": "Mountain marking part of the northern limit of conquered lands",
+      "short_description": "Mountain in the north of the land east of the Jordan, named with the boundary of Israel's conquests",
       "difficulty": "Hard",
       "scripture_references": "Deuteronomy 3:8; Psalm 133:3; Deuteronomy 4:48"
     },
@@ -5085,7 +5085,7 @@
       "id": 66,
       "name": "Hiddekel (Tigris river)",
       "scripture_mentioned": "Genesis 2:14",
-      "short_description": "River also known as the Tigris, listed among the rivers associated with Eden",
+      "short_description": "River also called the Tigris, named among the four rivers in the account of Eden",
       "difficulty": "Hard",
       "scripture_references": "Genesis 2:14; Daniel 10:4"
     },
@@ -5103,7 +5103,7 @@
       "id": 68,
       "name": "Iconium",
       "scripture_mentioned": "Acts 14:1",
-      "short_description": "City where Paul and Barnabas preached before facing persecution",
+      "short_description": "City where Paul and Barnabas spoke in the synagogue before opposition forced them to flee",
       "difficulty": "Hard",
       "scripture_references": "Acts 14:1; Acts 14:1–7; 2 Timothy 3:11"
     },
@@ -5121,7 +5121,7 @@
       "id": 70,
       "name": "Jerusalem",
       "scripture_mentioned": "2 Samuel 5:6",
-      "short_description": "City of David, site of the temple and Jesus' crucifixion and resurrection",
+      "short_description": "City where David established his capital and Solomon built the temple, and where Jesus was crucified",
       "difficulty": "Easy",
       "scripture_references": "2 Samuel 5:6; 1 Kings 8:1–11; Luke 19:41–44"
     },
@@ -5130,7 +5130,7 @@
       "id": 71,
       "name": "Jezreel (city)",
       "scripture_mentioned": "1 Kings 21:1",
-      "short_description": "City beside the vineyard coveted by King Ahab",
+      "short_description": "Town where Naboth owned a vineyard coveted by King Ahab",
       "difficulty": "Normal",
       "scripture_references": "1 Kings 21:1; 1 Kings 21:17–23; 2 Kings 9:30–37"
     },
@@ -5148,7 +5148,7 @@
       "id": 73,
       "name": "Jordan (river)",
       "scripture_mentioned": "Joshua 3:17",
-      "short_description": "River crossed by Israel entering the promised land and where Jesus was baptized",
+      "short_description": "River Israel crossed on dry ground under Joshua, and in which Jesus was baptized",
       "difficulty": "Easy",
       "scripture_references": "Joshua 3:17; Joshua 3:14–17; Matthew 3:13–17"
     },
@@ -5157,7 +5157,7 @@
       "id": 74,
       "name": "Judea",
       "scripture_mentioned": "Matthew 2:1",
-      "short_description": "Southern region where Jesus was born and Jerusalem is located",
+      "short_description": "Region containing Jerusalem and Bethlehem, ruled by Herod when Jesus was born",
       "difficulty": "Easy",
       "scripture_references": "Matthew 2:1; Luke 1:5; Acts 1:8"
     },
@@ -5175,7 +5175,7 @@
       "id": 76,
       "name": "Kidron (brook)",
       "scripture_mentioned": "John 18:1",
-      "short_description": "Valley stream crossed by Jesus before his arrest",
+      "short_description": "Brook Jesus crossed with his disciples on the way to a garden before his arrest",
       "difficulty": "Normal",
       "scripture_references": "John 18:1; 2 Samuel 15:23; 1 Kings 15:13"
     },
@@ -5193,7 +5193,7 @@
       "id": 78,
       "name": "Lebanon",
       "scripture_mentioned": "1 Kings 5:6",
-      "short_description": "Mountainous land famed for cedars used in Solomon's construction",
+      "short_description": "Land famous for its cedar trees, which supplied timber for Solomon's temple",
       "difficulty": "Normal",
       "scripture_references": "1 Kings 5:6; 1 Kings 5:6–10; Psalm 92:12"
     },
@@ -5220,7 +5220,7 @@
       "id": 81,
       "name": "Magdala",
       "scripture_mentioned": "Matthew 15:39",
-      "short_description": "Place named as the destination after Jesus fed the four thousand; traditionally associated with Mary Magdalene",
+      "short_description": "Region named in the KJV as Jesus' destination by boat after feeding four thousand people",
       "difficulty": "Hard",
       "scripture_references": "Matthew 15:39"
     },
@@ -5238,7 +5238,7 @@
       "id": 83,
       "name": "Melita (Malta)",
       "scripture_mentioned": "Acts 28:1",
-      "short_description": "Island where Paul survived a shipwreck and a viper bite",
+      "short_description": "Island where Paul's ship was wrecked and where a viper fastened on his hand",
       "difficulty": "Normal",
       "scripture_references": "Acts 28:1; Acts 28:1–10"
     },
@@ -5247,7 +5247,7 @@
       "id": 84,
       "name": "Mesha (place)",
       "scripture_mentioned": "Genesis 10:30",
-      "short_description": "Place named as a boundary of the territory of Joktan’s descendants",
+      "short_description": "Place named as one end of the territory occupied by Joktan's descendants",
       "difficulty": "Hard",
       "scripture_references": "Genesis 10:30"
     },
@@ -5265,7 +5265,7 @@
       "id": 86,
       "name": "Mizpah (Benjamin)",
       "scripture_mentioned": "1 Samuel 7:5",
-      "short_description": "Gathering place where Samuel prayed and judged Israel",
+      "short_description": "Town where Samuel gathered Israel for prayer and where the LORD helped them defeat the Philistines",
       "difficulty": "Normal",
       "scripture_references": "1 Samuel 7:5; 1 Samuel 7:5–12; 10:17–24"
     },
@@ -5283,7 +5283,7 @@
       "id": 88,
       "name": "Moriah (mount)",
       "scripture_mentioned": "Genesis 22:2",
-      "short_description": "Land of Moriah where Abraham was commanded to offer Isaac; Mount Moriah is later named as the temple site",
+      "short_description": "Land where Abraham was told to offer Isaac; the name later appears for the mountain on which Solomon built the temple",
       "difficulty": "Easy",
       "scripture_references": "Genesis 22:2; 2 Chronicles 3:1"
     },
@@ -5292,7 +5292,7 @@
       "id": 89,
       "name": "Mount of Olives",
       "scripture_mentioned": "Matthew 21:1",
-      "short_description": "Hill east of Jerusalem where Jesus taught and prayed before his arrest",
+      "short_description": "Hill near Jerusalem where Jesus spoke about coming events and from which he later ascended",
       "difficulty": "Easy",
       "scripture_references": "Matthew 21:1; Zechariah 14:4; Luke 22:39–46"
     },
@@ -5319,7 +5319,7 @@
       "id": 92,
       "name": "Nazareth",
       "scripture_mentioned": "Matthew 2:23",
-      "short_description": "Town where Jesus grew up",
+      "short_description": "Galilean town where Jesus grew up after Joseph and Mary returned from Egypt",
       "difficulty": "Easy",
       "scripture_references": "Matthew 2:23; Luke 4:16–30; John 1:45–46"
     },
@@ -5337,7 +5337,7 @@
       "id": 94,
       "name": "Ophir",
       "scripture_mentioned": "1 Kings 9:28",
-      "short_description": "Place known for gold brought to Solomon by ship",
+      "short_description": "Distant place from which Solomon's ships brought gold",
       "difficulty": "Hard",
       "scripture_references": "1 Kings 9:28; 2 Chronicles 8:18; 1 Kings 10:11"
     },
@@ -5355,7 +5355,7 @@
       "id": 96,
       "name": "Pergamos",
       "scripture_mentioned": "Revelation 2:12",
-      "short_description": "City whose church was warned about compromise amid persecution",
+      "short_description": "City whose church Jesus warned about teachings associated with Balaam and the Nicolaitans",
       "difficulty": "Normal",
       "scripture_references": "Revelation 2:12; Revelation 2:12–17"
     },
@@ -5364,7 +5364,7 @@
       "id": 97,
       "name": "Philadelphia (Asia Minor)",
       "scripture_mentioned": "Revelation 3:7",
-      "short_description": "City of a church promised an open door that no one could shut",
+      "short_description": "City in Asia Minor whose church was promised an open door and praised for keeping Christ's word",
       "difficulty": "Normal",
       "scripture_references": "Revelation 3:7; Revelation 3:7–13"
     },
@@ -5382,7 +5382,7 @@
       "id": 99,
       "name": "Pisgah (mount)",
       "scripture_mentioned": "Deuteronomy 34:1",
-      "short_description": "Mountain summit from which Moses viewed the promised land",
+      "short_description": "Mountain ridge near Nebo from which Moses looked across the promised land",
       "difficulty": "Normal",
       "scripture_references": "Deuteronomy 34:1; Numbers 21:20; Deuteronomy 3:27"
     },
@@ -5391,7 +5391,7 @@
       "id": 100,
       "name": "Puteoli",
       "scripture_mentioned": "Acts 28:13",
-      "short_description": "Italian port where Paul found fellow believers before reaching Rome",
+      "short_description": "Italian port where Paul stayed with fellow believers for seven days on his journey to Rome",
       "difficulty": "Hard",
       "scripture_references": "Acts 28:13; Acts 28:13–14"
     },
@@ -5409,7 +5409,7 @@
       "id": 102,
       "name": "Red Sea",
       "scripture_mentioned": "Exodus 14:21",
-      "short_description": "Body of water divided when Israelites escaped Pharaoh's army",
+      "short_description": "Sea whose waters were divided as the Israelites escaped the Egyptian army",
       "difficulty": "Easy",
       "scripture_references": "Exodus 14:21; Exodus 14:21–31; 15:1–21"
     },
@@ -5427,7 +5427,7 @@
       "id": 104,
       "name": "Rhodes",
       "scripture_mentioned": "Acts 21:1",
-      "short_description": "Island stop on Paul's voyage toward Jerusalem",
+      "short_description": "Island Paul passed on the journey from Miletus to Jerusalem",
       "difficulty": "Hard",
       "scripture_references": "Acts 21:1"
     },
@@ -5436,7 +5436,7 @@
       "id": 105,
       "name": "Rome",
       "scripture_mentioned": "Romans 1:7",
-      "short_description": "Capital of the empire and destination of Paul's imprisonment",
+      "short_description": "Imperial city to which Paul was taken as a prisoner and where he lived under guard",
       "difficulty": "Easy",
       "scripture_references": "Romans 1:7; Acts 28:14–31"
     },
@@ -5454,7 +5454,7 @@
       "id": 107,
       "name": "Salt Sea (Dead Sea)",
       "scripture_mentioned": "Joshua 3:16",
-      "short_description": "Salt lake at the southern end of the Jordan Valley",
+      "short_description": "Body of salt water also called the Dead Sea, near the mouth of the Jordan River",
       "difficulty": "Normal",
       "scripture_references": "Joshua 3:16; Numbers 34:12; Deuteronomy 3:17"
     },
@@ -5472,7 +5472,7 @@
       "id": 109,
       "name": "Samaria (region)",
       "scripture_mentioned": "John 4:4",
-      "short_description": "Region Jesus traveled through when he spoke with a woman at a well",
+      "short_description": "Region between Judea and Galilee where Jesus spoke with a woman at Jacob's well",
       "difficulty": "Easy",
       "scripture_references": "John 4:4; Luke 17:11; Acts 8:5–8"
     },
@@ -5508,7 +5508,7 @@
       "id": 113,
       "name": "Shechem",
       "scripture_mentioned": "Genesis 33:18",
-      "short_description": "City where Jacob settled and Joshua later renewed the covenant",
+      "short_description": "City where Joshua assembled Israel to renew the covenant before his death",
       "difficulty": "Normal",
       "scripture_references": "Genesis 33:18; Joshua 24:1–27; Genesis 34:1–2"
     },
@@ -5517,7 +5517,7 @@
       "id": 114,
       "name": "Shiloh",
       "scripture_mentioned": "1 Samuel 1:3",
-      "short_description": "Location of the tabernacle where Hannah prayed for a son",
+      "short_description": "City where the tabernacle stood and Hannah prayed before Samuel's birth",
       "difficulty": "Easy",
       "scripture_references": "1 Samuel 1:3; Joshua 18:1; 1 Samuel 1:9–11"
     },
@@ -5526,7 +5526,7 @@
       "id": 115,
       "name": "Shinar",
       "scripture_mentioned": "Genesis 11:2",
-      "short_description": "Plain where people settled and built a tower reaching skyward",
+      "short_description": "Plain where people settled before building the tower of Babel",
       "difficulty": "Normal",
       "scripture_references": "Genesis 11:2; Daniel 1:2; Genesis 11:1–9"
     },
@@ -5544,7 +5544,7 @@
       "id": 117,
       "name": "Sidon",
       "scripture_mentioned": "Mark 7:24",
-      "short_description": "Phoenician coastal city near the area Jesus visited",
+      "short_description": "Phoenician coastal city mentioned alongside Tyre that Jesus visited in the region nearby",
       "difficulty": "Normal",
       "scripture_references": "Mark 7:24; 1 Kings 17:8–10; Matthew 15:21"
     },
@@ -5562,7 +5562,7 @@
       "id": 119,
       "name": "Smyrna",
       "scripture_mentioned": "Revelation 2:8",
-      "short_description": "City whose church was urged to be faithful despite suffering",
+      "short_description": "City whose church was told not to fear persecution and to remain faithful unto death",
       "difficulty": "Normal",
       "scripture_references": "Revelation 2:8; Revelation 2:8–11"
     },
@@ -5580,7 +5580,7 @@
       "id": 121,
       "name": "Succoth (east of Jordan)",
       "scripture_mentioned": "Genesis 33:17",
-      "short_description": "Place where Jacob built shelters after meeting Esau",
+      "short_description": "Place east of the Jordan where Jacob built a house and shelters for his cattle",
       "difficulty": "Normal",
       "scripture_references": "Genesis 33:17"
     },
@@ -5598,7 +5598,7 @@
       "id": 123,
       "name": "Syria",
       "scripture_mentioned": "1 Kings 20:1",
-      "short_description": "Kingdom north of Israel frequently involved in conflicts with its kings",
+      "short_description": "Kingdom whose ruler Ben-hadad fought against King Ahab of Israel",
       "difficulty": "Normal",
       "scripture_references": "1 Kings 20:1; 1 Kings 20:1–21; Acts 15:23"
     },
@@ -5616,7 +5616,7 @@
       "id": 125,
       "name": "Tekoa",
       "scripture_mentioned": "Amos 1:1",
-      "short_description": "Town associated with a shepherd called to prophesy",
+      "short_description": "Town of Amos, a shepherd and prophet who spoke against injustice",
       "difficulty": "Normal",
       "scripture_references": "Amos 1:1; 2 Samuel 14:2"
     },
@@ -5625,7 +5625,7 @@
       "id": 126,
       "name": "Thessalonica",
       "scripture_mentioned": "Acts 17:1",
-      "short_description": "City where Paul reasoned from Scripture about the Messiah",
+      "short_description": "Macedonian city where Paul taught in the synagogue for three Sabbaths",
       "difficulty": "Normal",
       "scripture_references": "Acts 17:1; Acts 17:1–9; 1 Thessalonians 1:1"
     },
@@ -5634,7 +5634,7 @@
       "id": 127,
       "name": "Thyatira",
       "scripture_mentioned": "Revelation 2:18",
-      "short_description": "City of a church warned about a false prophetess; also home of a purple seller",
+      "short_description": "City associated with Lydia, a seller of purple cloth, and a church addressed in Revelation",
       "difficulty": "Normal",
       "scripture_references": "Revelation 2:18; Acts 16:14; Revelation 2:18–29"
     },
@@ -5643,7 +5643,7 @@
       "id": 128,
       "name": "Tiberias",
       "scripture_mentioned": "John 6:23",
-      "short_description": "Galilean town whose name appears in connection with the lake and nearby boats",
+      "short_description": "Town on the Sea of Galilee mentioned when boats arrived after Jesus fed the five thousand",
       "difficulty": "Hard",
       "scripture_references": "John 6:23; 21:1"
     },
@@ -5661,7 +5661,7 @@
       "id": 130,
       "name": "Tyre",
       "scripture_mentioned": "Ezekiel 26:2",
-      "short_description": "Trading city by the sea whose pride was condemned by a prophet",
+      "short_description": "Phoenician seaport condemned in Ezekiel's prophecy, famed for trade and wealth",
       "difficulty": "Normal",
       "scripture_references": "Ezekiel 26:2; Ezekiel 27:1–36; Acts 21:3–6"
     },
@@ -5679,7 +5679,7 @@
       "id": 132,
       "name": "Uz (land)",
       "scripture_mentioned": "Job 1:1",
-      "short_description": "Land where a righteous sufferer lived before severe trials",
+      "short_description": "Land where Job lived before his wealth, children, and health were taken from him",
       "difficulty": "Normal",
       "scripture_references": "Job 1:1; Lamentations 4:21"
     },
@@ -5688,7 +5688,7 @@
       "id": 133,
       "name": "Valley of Elah",
       "scripture_mentioned": "1 Samuel 17:2",
-      "short_description": "Valley where an Israelite shepherd fought a Philistine champion",
+      "short_description": "Valley where David faced the Philistine warrior Goliath",
       "difficulty": "Easy",
       "scripture_references": "1 Samuel 17:2; 1 Samuel 17:2–3; 17:19"
     },
@@ -5697,7 +5697,7 @@
       "id": 134,
       "name": "Zarephath",
       "scripture_mentioned": "1 Kings 17:9",
-      "short_description": "Phoenician town where a widow's flour and oil did not run out",
+      "short_description": "Town where Elijah stayed with a widow whose flour and oil did not run out",
       "difficulty": "Normal",
       "scripture_references": "1 Kings 17:9; 1 Kings 17:8–24; Luke 4:26"
     },
@@ -5706,7 +5706,7 @@
       "id": 135,
       "name": "Zion (hill)",
       "scripture_mentioned": "2 Samuel 5:7",
-      "short_description": "Stronghold captured by David and closely associated with the holy city",
+      "short_description": "Stronghold called the City of David after he captured it from the Jebusites",
       "difficulty": "Normal",
       "scripture_references": "2 Samuel 5:7; Psalm 48:1–2"
     },
@@ -5733,7 +5733,7 @@
       "id": 138,
       "name": "Paphos",
       "scripture_mentioned": "Acts 13:6–12",
-      "short_description": "City on Cyprus where Paul confronted Elymas",
+      "short_description": "City in Cyprus where Paul confronted Elymas, who tried to turn a Roman official from the faith",
       "difficulty": "Hard",
       "scripture_references": "Acts 13:6–12"
     },
@@ -5742,7 +5742,7 @@
       "id": 139,
       "name": "Megiddo",
       "scripture_mentioned": "Judges 5:19; 2 Kings 23:29",
-      "short_description": "Ancient city near the site where King Josiah died in battle",
+      "short_description": "City near which King Josiah was killed while confronting Pharaoh Necho",
       "difficulty": "Normal",
       "scripture_references": "Judges 5:19; 2 Kings 23:29"
     },
@@ -5751,7 +5751,7 @@
       "id": 140,
       "name": "Valley of Hinnom",
       "scripture_mentioned": "Joshua 15:8; Jeremiah 7:31–32",
-      "short_description": "Valley near Jerusalem associated with condemned child-sacrifice rituals",
+      "short_description": "Valley outside Jerusalem associated with child sacrifice and later warnings of judgment",
       "difficulty": "Hard",
       "scripture_references": "Joshua 15:8; Jeremiah 7:31–32"
     },
@@ -5760,7 +5760,7 @@
       "id": 141,
       "name": "Beth-horon",
       "scripture_mentioned": "Joshua 10:10–11",
-      "short_description": "Site of a route where Israel pursued fleeing Amorite kings",
+      "short_description": "Route of two neighboring towns where the Amorites fled as Joshua pursued them",
       "difficulty": "Hard",
       "scripture_references": "Joshua 10:10–11"
     },
@@ -5769,7 +5769,7 @@
       "id": 142,
       "name": "Beth-shean",
       "scripture_mentioned": "1 Samuel 31:10–12",
-      "short_description": "City where the Philistines displayed the body of Saul",
+      "short_description": "Philistine-held city where Saul's body was displayed after his defeat",
       "difficulty": "Hard",
       "scripture_references": "1 Samuel 31:10–12"
     },
@@ -5778,7 +5778,7 @@
       "id": 143,
       "name": "Bozrah",
       "scripture_mentioned": "Isaiah 34:6; Jeremiah 49:13",
-      "short_description": "City of Edom associated with prophetic judgment",
+      "short_description": "Edomite city named in prophetic judgments against Edom",
       "difficulty": "Hard",
       "scripture_references": "Isaiah 34:6; Jeremiah 49:13"
     },
@@ -5787,7 +5787,7 @@
       "id": 144,
       "name": "Cilicia",
       "scripture_mentioned": "Acts 6:9; 15:23",
-      "short_description": "Roman region that included Tarsus, Paul’s hometown",
+      "short_description": "Region containing Paul's hometown of Tarsus and mentioned among early church communities",
       "difficulty": "Normal",
       "scripture_references": "Acts 6:9; 15:23"
     },
@@ -5796,7 +5796,7 @@
       "id": 145,
       "name": "Cyrene",
       "scripture_mentioned": "Mark 15:21; Acts 2:10",
-      "short_description": "North African city linked to Simon, who carried Jesus’ cross",
+      "short_description": "North African city that was home to Simon, who was compelled to carry Jesus' cross",
       "difficulty": "Normal",
       "scripture_references": "Mark 15:21; Acts 2:10"
     },
@@ -5805,7 +5805,7 @@
       "id": 146,
       "name": "Dalmanutha",
       "scripture_mentioned": "Mark 8:10",
-      "short_description": "Region Jesus visited by boat after feeding four thousand",
+      "short_description": "Region Jesus entered by boat after feeding four thousand people, as recorded in Mark",
       "difficulty": "Hard",
       "scripture_references": "Mark 8:10"
     },
@@ -5814,7 +5814,7 @@
       "id": 147,
       "name": "Dan (city)",
       "scripture_mentioned": "Judges 18:29–30; 1 Kings 12:29",
-      "short_description": "Northern city where Jeroboam established a golden calf",
+      "short_description": "Northern city where Jeroboam set up one of two golden calves to be worshiped",
       "difficulty": "Normal",
       "scripture_references": "Judges 18:29–30; 1 Kings 12:29"
     },
@@ -5823,7 +5823,7 @@
       "id": 148,
       "name": "Ebal (mountain)",
       "scripture_mentioned": "Deuteronomy 27:4–13; Joshua 8:30–35",
-      "short_description": "Mountain where Joshua built an altar and read the law",
+      "short_description": "Mountain where Joshua built an altar and where covenant curses were proclaimed",
       "difficulty": "Hard",
       "scripture_references": "Deuteronomy 27:4–13; Joshua 8:30–35"
     },
@@ -5832,7 +5832,7 @@
       "id": 149,
       "name": "En-rogel",
       "scripture_mentioned": "Joshua 15:7; 1 Kings 1:9",
-      "short_description": "Spring near Jerusalem where Adonijah held a feast",
+      "short_description": "Spring near Jerusalem where Adonijah held a feast while trying to become king",
       "difficulty": "Hard",
       "scripture_references": "Joshua 15:7; 1 Kings 1:9"
     },
@@ -5841,7 +5841,7 @@
       "id": 150,
       "name": "Gerar",
       "scripture_mentioned": "Genesis 20:1–2; 26:1",
-      "short_description": "Place where Abraham and later Isaac encountered Abimelech",
+      "short_description": "Region where both Abraham and Isaac lived during encounters with a ruler named Abimelech",
       "difficulty": "Normal",
       "scripture_references": "Genesis 20:1–2; 26:1"
     },
@@ -5850,7 +5850,7 @@
       "id": 151,
       "name": "Gerizim (mountain)",
       "scripture_mentioned": "Deuteronomy 11:29; Joshua 8:33",
-      "short_description": "Mountain associated with blessings spoken over Israel",
+      "short_description": "Mountain designated for blessings when Israel renewed the covenant after entering Canaan",
       "difficulty": "Normal",
       "scripture_references": "Deuteronomy 11:29; Joshua 8:33"
     },
@@ -5859,7 +5859,7 @@
       "id": 152,
       "name": "Hazor",
       "scripture_mentioned": "Joshua 11:10–13; Judges 4:2",
-      "short_description": "Canaanite royal city conquered by Joshua and linked with Jabin",
+      "short_description": "Canaanite royal city destroyed by Joshua, later ruled by a king named Jabin in Deborah's day",
       "difficulty": "Normal",
       "scripture_references": "Joshua 11:10–13; Judges 4:2"
     },
@@ -5868,7 +5868,7 @@
       "id": 153,
       "name": "Heshbon",
       "scripture_mentioned": "Numbers 21:25–30",
-      "short_description": "Former city of King Sihon conquered by Israel",
+      "short_description": "Capital city of the Amorite king Sihon, captured by Israel under Moses",
       "difficulty": "Hard",
       "scripture_references": "Numbers 21:25–30"
     },
@@ -5886,7 +5886,7 @@
       "id": 155,
       "name": "Jezreel (valley)",
       "scripture_mentioned": "Hosea 1:5; Judges 6:33",
-      "short_description": "Broad northern valley associated with armies and battles",
+      "short_description": "Valley where Midianite armies gathered in the days of Gideon",
       "difficulty": "Normal",
       "scripture_references": "Hosea 1:5; Judges 6:33"
     },
@@ -5895,7 +5895,7 @@
       "id": 156,
       "name": "Kirjath-jearim",
       "scripture_mentioned": "1 Samuel 7:1–2; 2 Samuel 6:2",
-      "short_description": "Town where the ark remained before David brought it toward Jerusalem",
+      "short_description": "Town where the ark stayed in Abinadab's house before David moved it toward Jerusalem",
       "difficulty": "Normal",
       "scripture_references": "1 Samuel 7:1–2; 2 Samuel 6:2"
     },
@@ -5913,7 +5913,7 @@
       "id": 158,
       "name": "Mahanaim",
       "scripture_mentioned": "Genesis 32:2; 2 Samuel 17:24",
-      "short_description": "Place east of the Jordan where David stayed during Absalom’s revolt",
+      "short_description": "Place east of the Jordan where David took refuge during Absalom's rebellion",
       "difficulty": "Hard",
       "scripture_references": "Genesis 32:2; 2 Samuel 17:24"
     },
@@ -5922,7 +5922,7 @@
       "id": 159,
       "name": "Makkedah",
       "scripture_mentioned": "Joshua 10:16–27",
-      "short_description": "Canaanite town with a cave where five kings hid",
+      "short_description": "Canaanite town near the cave in which five Amorite kings hid from Joshua",
       "difficulty": "Hard",
       "scripture_references": "Joshua 10:16–27"
     },
@@ -5931,7 +5931,7 @@
       "id": 160,
       "name": "Miletus",
       "scripture_mentioned": "Acts 20:15–38",
-      "short_description": "Port where Paul addressed elders from Ephesus",
+      "short_description": "Coastal city where Paul met with the elders of the church in Ephesus",
       "difficulty": "Normal",
       "scripture_references": "Acts 20:15–38"
     },
@@ -5958,7 +5958,7 @@
       "id": 163,
       "name": "Ophrah (Gideon’s town)",
       "scripture_mentioned": "Judges 6:11–24",
-      "short_description": "Town where the angel of the LORD called Gideon",
+      "short_description": "Gideon's hometown, where an angel of the LORD appeared to him while he threshed wheat",
       "difficulty": "Normal",
       "scripture_references": "Judges 6:11–24"
     },
@@ -5967,7 +5967,7 @@
       "id": 164,
       "name": "Rabbah (Ammon)",
       "scripture_mentioned": "2 Samuel 11:1; 12:26–29",
-      "short_description": "Capital of the Ammonites besieged by David’s army",
+      "short_description": "Ammonite capital besieged by Joab and later visited by King David after its capture",
       "difficulty": "Hard",
       "scripture_references": "2 Samuel 11:1; 12:26–29"
     },
@@ -5985,7 +5985,7 @@
       "id": 166,
       "name": "Susa (Shushan)",
       "scripture_mentioned": "Esther 1:2; Nehemiah 1:1",
-      "short_description": "Persian royal city associated with Esther and Nehemiah",
+      "short_description": "Persian royal city where Queen Esther lived and where Nehemiah served the king",
       "difficulty": "Normal",
       "scripture_references": "Esther 1:2; Nehemiah 1:1"
     },
@@ -5994,7 +5994,7 @@
       "id": 167,
       "name": "Tarshish (destination)",
       "scripture_mentioned": "Jonah 1:3",
-      "short_description": "Distant destination Jonah sought while fleeing God’s command",
+      "short_description": "Distant destination Jonah tried to sail to instead of going to Nineveh",
       "difficulty": "Normal",
       "scripture_references": "Jonah 1:3"
     },
@@ -6012,7 +6012,7 @@
       "id": 169,
       "name": "Tophet",
       "scripture_mentioned": "2 Kings 23:10; Jeremiah 7:31–32",
-      "short_description": "Place in the Valley of Hinnom defiled by Josiah to stop child sacrifice",
+      "short_description": "Site in the Valley of Hinnom that Josiah defiled to prevent child sacrifice",
       "difficulty": "Hard",
       "scripture_references": "2 Kings 23:10; Jeremiah 7:31–32"
     },
@@ -6021,7 +6021,7 @@
       "id": 170,
       "name": "Ziklag",
       "scripture_mentioned": "1 Samuel 27:6; 30:1–6",
-      "short_description": "Town given to David where Amalekites later raided his camp",
+      "short_description": "Town assigned to David where Amalekite raiders captured the families of his men",
       "difficulty": "Normal",
       "scripture_references": "1 Samuel 27:6; 30:1–6"
     },
@@ -8228,7 +8228,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Abednego",
-        "correct_answer": "Friend of Daniel who survived the fiery furnace",
+        "correct_answer": "One of three Hebrew captives thrown into a blazing furnace for refusing to worship a golden image",
         "incorrect_answers": [
           "Blind man healed by Jesus",
           "Young man revived after falling from a window",
@@ -8244,7 +8244,7 @@
         "id": "who-fact-002",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Friend of Daniel who survived the fiery furnace",
+        "question": "One of three Hebrew captives thrown into a blazing furnace for refusing to worship a golden image",
         "correct_answer": "Abednego",
         "incorrect_answers": [
           "Bartimaeus",
@@ -8296,7 +8296,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Abigail",
-        "correct_answer": "Wise woman who became David's wife",
+        "correct_answer": "Prevented David from taking revenge on her household and later became his wife",
         "incorrect_answers": [
           "Rachel's handmaid and mother of Dan and Naphtali",
           "Mother of Samuel who prayed for a child",
@@ -8312,7 +8312,7 @@
         "id": "who-fact-004",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Wise woman who became David's wife",
+        "question": "Prevented David from taking revenge on her household and later became his wife",
         "correct_answer": "Abigail",
         "incorrect_answers": [
           "Bilhah",
@@ -8398,7 +8398,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Abraham",
-        "correct_answer": "Patriarch and father of Isaac",
+        "correct_answer": "Left his homeland when God called him and received a promise of many descendants",
         "incorrect_answers": [
           "Son of Adam and Eve murdered by Cain",
           "Youngest son of Jacob and Rachel",
@@ -8414,7 +8414,7 @@
         "id": "who-fact-007",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Patriarch and father of Isaac",
+        "question": "Left his homeland when God called him and received a promise of many descendants",
         "correct_answer": "Abraham",
         "incorrect_answers": [
           "Abel",
@@ -8466,7 +8466,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Adam",
-        "correct_answer": "First man",
+        "correct_answer": "First human formed from the dust of the ground",
         "incorrect_answers": [
           "Patriarch and father of Isaac",
           "Youngest son of Jacob and Rachel",
@@ -8482,7 +8482,7 @@
         "id": "who-fact-009",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "First man",
+        "question": "First human formed from the dust of the ground",
         "correct_answer": "Adam",
         "incorrect_answers": [
           "Abraham",
@@ -8534,7 +8534,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Agabus",
-        "correct_answer": "Prophet who warned Paul",
+        "correct_answer": "Predicted a famine and later warned that Paul would be bound in Jerusalem",
         "incorrect_answers": [
           "Teacher and prophet in the church at Antioch",
           "Prophet in Judah",
@@ -8550,7 +8550,7 @@
         "id": "who-fact-011",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Prophet who warned Paul",
+        "question": "Predicted a famine and later warned that Paul would be bound in Jerusalem",
         "correct_answer": "Agabus",
         "incorrect_answers": [
           "Lucius",
@@ -8602,7 +8602,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Ahasuerus",
-        "correct_answer": "Persian king in the book of Esther",
+        "correct_answer": "Persian ruler who chose Esther as queen after removing Vashti",
         "incorrect_answers": [
           "King of Babylon at the time of Daniel",
           "King of Judah who repented after captivity",
@@ -8618,7 +8618,7 @@
         "id": "who-fact-013",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Persian king in the book of Esther",
+        "question": "Persian ruler who chose Esther as queen after removing Vashti",
         "correct_answer": "Ahasuerus",
         "incorrect_answers": [
           "Nebuchadnezzar",
@@ -8636,7 +8636,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Ahaz",
-        "correct_answer": "King of Judah in the days of Isaiah",
+        "correct_answer": "King of Judah who refused to ask God for a sign when Isaiah invited him to do so",
         "incorrect_answers": [
           "King of Israel and husband of Jezebel",
           "Shepherd who became king of Israel",
@@ -8652,7 +8652,7 @@
         "id": "who-fact-014",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "King of Judah in the days of Isaiah",
+        "question": "King of Judah who refused to ask God for a sign when Isaiah invited him to do so",
         "correct_answer": "Ahaz",
         "incorrect_answers": [
           "Ahab",
@@ -8704,7 +8704,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Ahimaaz",
-        "correct_answer": "Priest's son who carried news to David",
+        "correct_answer": "Son of Zadok who ran to tell David news after Absalom’s defeat",
         "incorrect_answers": [
           "Brother of Moses and first high priest",
           "Levite and worship leader",
@@ -8720,7 +8720,7 @@
         "id": "who-fact-016",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Priest's son who carried news to David",
+        "question": "Son of Zadok who ran to tell David news after Absalom’s defeat",
         "correct_answer": "Ahimaaz",
         "incorrect_answers": [
           "Aaron",
@@ -8806,7 +8806,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Amasa",
-        "correct_answer": "Commander who joined Absalom's rebellion",
+        "correct_answer": "Led Absalom’s army and was later killed by Joab",
         "incorrect_answers": [
           "Warrior who served David and Solomon",
           "Hittite soldier whose wife was taken by Israel’s king",
@@ -8822,7 +8822,7 @@
         "id": "who-fact-019",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Commander who joined Absalom's rebellion",
+        "question": "Led Absalom’s army and was later killed by Joab",
         "correct_answer": "Amasa",
         "incorrect_answers": [
           "Benaiah",
@@ -8874,7 +8874,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Amos",
-        "correct_answer": "Prophet who called Israel to justice",
+        "correct_answer": "Shepherd called to prophesy against injustice and empty worship in Israel",
         "incorrect_answers": [
           "Prophet who foretold the division of Solomon's kingdom",
           "Prophet who warned Paul",
@@ -8890,7 +8890,7 @@
         "id": "who-fact-021",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet who called Israel to justice",
+        "question": "Shepherd called to prophesy against injustice and empty worship in Israel",
         "correct_answer": "Amos",
         "incorrect_answers": [
           "Ahijah",
@@ -8908,7 +8908,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Anak",
-        "correct_answer": "Ancestor of the Anakim encountered in Canaan",
+        "correct_answer": "Ancestor of the giants whose descendants frightened the spies sent into Canaan",
         "incorrect_answers": [
           "Patriarch and father of Isaac",
           "Youngest son of Jacob and Rachel",
@@ -8924,7 +8924,7 @@
         "id": "who-fact-022",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Ancestor of the Anakim encountered in Canaan",
+        "question": "Ancestor of the giants whose descendants frightened the spies sent into Canaan",
         "correct_answer": "Anak",
         "incorrect_answers": [
           "Abraham",
@@ -9010,7 +9010,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Andrew",
-        "correct_answer": "Apostle and brother of Simon Peter",
+        "correct_answer": "Fisherman who introduced his brother Simon to Jesus",
         "incorrect_answers": [
           "One of the twelve apostles, identified by his father",
           "Apostle, son of Zebedee and brother of James",
@@ -9026,7 +9026,7 @@
         "id": "who-fact-025",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Apostle and brother of Simon Peter",
+        "question": "Fisherman who introduced his brother Simon to Jesus",
         "correct_answer": "Andrew",
         "incorrect_answers": [
           "James (son of Alphaeus)",
@@ -9044,7 +9044,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Anna",
-        "correct_answer": "Prophetess who recognized the infant Jesus",
+        "correct_answer": "Elderly prophetess who gave thanks to God when the infant Jesus was brought to the temple",
         "incorrect_answers": [
           "Prophetess and judge of Israel",
           "Prophetess consulted during Josiah's reign",
@@ -9060,7 +9060,7 @@
         "id": "who-fact-026",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophetess who recognized the infant Jesus",
+        "question": "Elderly prophetess who gave thanks to God when the infant Jesus was brought to the temple",
         "correct_answer": "Anna",
         "incorrect_answers": [
           "Deborah",
@@ -9078,7 +9078,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Antipas",
-        "correct_answer": "Faithful witness killed in Pergamos, mentioned in Christ’s message to its church",
+        "correct_answer": "Faithful witness killed in Pergamos and commended in a message to its church",
         "incorrect_answers": [
           "Sorcerer who opposed Paul in Cyprus",
           "Man who lied about an offering to the church",
@@ -9094,7 +9094,7 @@
         "id": "who-fact-027",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Faithful witness killed in Pergamos, mentioned in Christ’s message to its church",
+        "question": "Faithful witness killed in Pergamos and commended in a message to its church",
         "correct_answer": "Antipas",
         "incorrect_answers": [
           "Elymas",
@@ -9112,7 +9112,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Apollos",
-        "correct_answer": "Eloquent Christian teacher",
+        "correct_answer": "Jewish teacher from Alexandria who spoke boldly and was instructed more accurately by Priscilla and Aquila",
         "incorrect_answers": [
           "Leader of the Jerusalem church who spoke at its council",
           "Brother named alongside Paul in the Corinthian letter",
@@ -9128,7 +9128,7 @@
         "id": "who-fact-028",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Eloquent Christian teacher",
+        "question": "Jewish teacher from Alexandria who spoke boldly and was instructed more accurately by Priscilla and Aquila",
         "correct_answer": "Apollos",
         "incorrect_answers": [
           "James (brother of Jesus)",
@@ -9146,7 +9146,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Aquila",
-        "correct_answer": "Early Christian missionary and tentmaker",
+        "correct_answer": "Tentmaker who worked with Paul and helped instruct Apollos alongside his wife",
         "incorrect_answers": [
           "Coworker of Paul and city official",
           "Messenger and companion of Paul",
@@ -9162,7 +9162,7 @@
         "id": "who-fact-029",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Early Christian missionary and tentmaker",
+        "question": "Tentmaker who worked with Paul and helped instruct Apollos alongside his wife",
         "correct_answer": "Aquila",
         "incorrect_answers": [
           "Erastus",
@@ -9180,7 +9180,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Aristarchus",
-        "correct_answer": "Companion of Paul during missionary journeys",
+        "correct_answer": "Macedonian companion who traveled with Paul by ship toward Rome",
         "incorrect_answers": [
           "Believer who ministered among the Colossians",
           "Eloquent Christian teacher",
@@ -9196,7 +9196,7 @@
         "id": "who-fact-030",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Companion of Paul during missionary journeys",
+        "question": "Macedonian companion who traveled with Paul by ship toward Rome",
         "correct_answer": "Aristarchus",
         "incorrect_answers": [
           "Epaphras",
@@ -9214,7 +9214,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Artemas",
-        "correct_answer": "Coworker Paul considered sending to Titus",
+        "correct_answer": "Man Paul considered sending to Crete to relieve Titus",
         "incorrect_answers": [
           "Eloquent Christian teacher",
           "Early Christian missionary and tentmaker",
@@ -9230,7 +9230,7 @@
         "id": "who-fact-031",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Coworker Paul considered sending to Titus",
+        "question": "Man Paul considered sending to Crete to relieve Titus",
         "correct_answer": "Artemas",
         "incorrect_answers": [
           "Apollos",
@@ -9282,7 +9282,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Asaph",
-        "correct_answer": "Levite and worship leader",
+        "correct_answer": "Levite appointed to lead music and thanksgiving before the ark of the covenant",
         "incorrect_answers": [
           "Brother of Moses and first high priest",
           "Priest and grandson of Aaron",
@@ -9298,7 +9298,7 @@
         "id": "who-fact-033",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Levite and worship leader",
+        "question": "Levite appointed to lead music and thanksgiving before the ark of the covenant",
         "correct_answer": "Asaph",
         "incorrect_answers": [
           "Aaron",
@@ -9452,7 +9452,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Barak",
-        "correct_answer": "Military leader who worked with Deborah",
+        "correct_answer": "Commander who fought Sisera’s army with the encouragement of Deborah",
         "incorrect_answers": [
           "Judge who defeated Midian",
           "Moabite king defeated by Ehud",
@@ -9468,7 +9468,7 @@
         "id": "who-fact-038",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Military leader who worked with Deborah",
+        "question": "Commander who fought Sisera’s army with the encouragement of Deborah",
         "correct_answer": "Barak",
         "incorrect_answers": [
           "Gideon",
@@ -9486,7 +9486,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Barnabas",
-        "correct_answer": "Early Christian missionary who traveled with Paul and encouraged believers",
+        "correct_answer": "Believer nicknamed “son of consolation” who helped bring Saul to the apostles",
         "incorrect_answers": [
           "Leader of the Jerusalem church who spoke at its council",
           "Man who lied about an offering to the church",
@@ -9502,7 +9502,7 @@
         "id": "who-fact-039",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Early Christian missionary who traveled with Paul and encouraged believers",
+        "question": "Believer nicknamed “son of consolation” who helped bring Saul to the apostles",
         "correct_answer": "Barnabas",
         "incorrect_answers": [
           "James (brother of Jesus)",
@@ -9520,7 +9520,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Bartholomew",
-        "correct_answer": "One of the twelve apostles",
+        "correct_answer": "Apostle named in the Gospel lists between Philip and Thomas",
         "incorrect_answers": [
           "Apostle and brother of Simon Peter",
           "Apostle, brother of John, and son of Zebedee, killed by Herod Agrippa I",
@@ -9536,7 +9536,7 @@
         "id": "who-fact-040",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "One of the twelve apostles",
+        "question": "Apostle named in the Gospel lists between Philip and Thomas",
         "correct_answer": "Bartholomew",
         "incorrect_answers": [
           "Andrew",
@@ -9690,7 +9690,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Benaiah",
-        "correct_answer": "Warrior who served David and Solomon",
+        "correct_answer": "Warrior who killed a lion in a pit and later commanded Solomon’s army",
         "incorrect_answers": [
           "Commander who joined Absalom's rebellion",
           "Commander of Saul's army",
@@ -9706,7 +9706,7 @@
         "id": "who-fact-045",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Warrior who served David and Solomon",
+        "question": "Warrior who killed a lion in a pit and later commanded Solomon’s army",
         "correct_answer": "Benaiah",
         "incorrect_answers": [
           "Amasa",
@@ -9758,7 +9758,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Berechiah",
-        "correct_answer": "Father of the prophet Zechariah",
+        "correct_answer": "Father of the prophet who began his ministry during the reign of Darius",
         "incorrect_answers": [
           "Prophet associated with restoration after exile",
           "Prophet and Judean exile in Babylon",
@@ -9774,7 +9774,7 @@
         "id": "who-fact-047",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Father of the prophet Zechariah",
+        "question": "Father of the prophet who began his ministry during the reign of Darius",
         "correct_answer": "Berechiah",
         "incorrect_answers": [
           "Zechariah",
@@ -9792,7 +9792,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Berenice",
-        "correct_answer": "Royal woman present at Paul's hearing",
+        "correct_answer": "Sister of King Agrippa who attended a hearing where Paul defended himself",
         "incorrect_answers": [
           "Egyptian princess who adopted the infant Moses",
           "Jewish queen who interceded for her people",
@@ -9808,7 +9808,7 @@
         "id": "who-fact-048",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Royal woman present at Paul's hearing",
+        "question": "Sister of King Agrippa who attended a hearing where Paul defended himself",
         "correct_answer": "Berenice",
         "incorrect_answers": [
           "Pharaoh’s daughter (rescuer of Moses)",
@@ -9860,7 +9860,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Bildad",
-        "correct_answer": "One of Job's three friends",
+        "correct_answer": "Friend from Shuah who told Job that God would not reject a blameless person",
         "incorrect_answers": [
           "First man",
           "Righteous man tested through suffering",
@@ -9876,7 +9876,7 @@
         "id": "who-fact-050",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "One of Job's three friends",
+        "question": "Friend from Shuah who told Job that God would not reject a blameless person",
         "correct_answer": "Bildad",
         "incorrect_answers": [
           "Adam",
@@ -9928,7 +9928,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Blastus",
-        "correct_answer": "Herod's chamberlain approached by Tyre and Sidon",
+        "correct_answer": "Royal chamberlain whose support was sought by people from Tyre and Sidon",
         "incorrect_answers": [
           "Youngest son of Jacob and Rachel",
           "Roman centurion who received Peter's message",
@@ -9944,7 +9944,7 @@
         "id": "who-fact-052",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Herod's chamberlain approached by Tyre and Sidon",
+        "question": "Royal chamberlain whose support was sought by people from Tyre and Sidon",
         "correct_answer": "Blastus",
         "incorrect_answers": [
           "Benjamin",
@@ -10030,7 +10030,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Cain",
-        "correct_answer": "First son of Adam and Eve",
+        "correct_answer": "Farmer who killed his brother after God accepted the brother’s offering",
         "incorrect_answers": [
           "Twin brother of Jacob",
           "Patriarch and father of Isaac",
@@ -10046,7 +10046,7 @@
         "id": "who-fact-055",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "First son of Adam and Eve",
+        "question": "Farmer who killed his brother after God accepted the brother’s offering",
         "correct_answer": "Cain",
         "incorrect_answers": [
           "Esau",
@@ -10098,7 +10098,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Chloe",
-        "correct_answer": "Woman whose household reported divisions at Corinth",
+        "correct_answer": "Woman whose household informed Paul about quarrels in the Corinthian church",
         "incorrect_answers": [
           "Missionary and wife of Aquila",
           "Athenian woman who believed Paul's teaching",
@@ -10114,7 +10114,7 @@
         "id": "who-fact-057",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Woman whose household reported divisions at Corinth",
+        "question": "Woman whose household informed Paul about quarrels in the Corinthian church",
         "correct_answer": "Chloe",
         "incorrect_answers": [
           "Priscilla",
@@ -10200,7 +10200,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Crispus",
-        "correct_answer": "Synagogue ruler who believed in Jesus",
+        "correct_answer": "Ruler of the synagogue in Corinth who believed in the Lord with his household",
         "incorrect_answers": [
           "Shepherd who became king of Israel",
           "King Agrippa who heard Paul’s defense before Festus",
@@ -10216,7 +10216,7 @@
         "id": "who-fact-060",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Synagogue ruler who believed in Jesus",
+        "question": "Ruler of the synagogue in Corinth who believed in the Lord with his household",
         "correct_answer": "Crispus",
         "incorrect_answers": [
           "David",
@@ -10268,7 +10268,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Damaris",
-        "correct_answer": "Athenian woman who believed Paul's teaching",
+        "correct_answer": "Woman in Athens who believed after Paul spoke at the Areopagus",
         "incorrect_answers": [
           "Seller of purple who became a believer",
           "Missionary and wife of Aquila",
@@ -10284,7 +10284,7 @@
         "id": "who-fact-062",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Athenian woman who believed Paul's teaching",
+        "question": "Woman in Athens who believed after Paul spoke at the Areopagus",
         "correct_answer": "Damaris",
         "incorrect_answers": [
           "Lydia",
@@ -10336,7 +10336,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Dathan",
-        "correct_answer": "Rebel who opposed Moses in the wilderness",
+        "correct_answer": "Man who rebelled with Abiram against the leadership of Moses",
         "incorrect_answers": [
           "Faithful witness killed in Pergamos, mentioned in Christ’s message to its church",
           "Man who lied about an offering to the church",
@@ -10352,7 +10352,7 @@
         "id": "who-fact-064",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Rebel who opposed Moses in the wilderness",
+        "question": "Man who rebelled with Abiram against the leadership of Moses",
         "correct_answer": "Dathan",
         "incorrect_answers": [
           "Antipas",
@@ -10472,7 +10472,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Demas",
-        "correct_answer": "Former coworker who deserted Paul",
+        "correct_answer": "Former coworker who abandoned Paul because he loved the present world",
         "incorrect_answers": [
           "Believer who ministered among the Colossians",
           "Early Christian missionary and tentmaker",
@@ -10488,7 +10488,7 @@
         "id": "who-fact-068",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Former coworker who deserted Paul",
+        "question": "Former coworker who abandoned Paul because he loved the present world",
         "correct_answer": "Demas",
         "incorrect_answers": [
           "Epaphras",
@@ -10506,7 +10506,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Demetrius (commended believer)",
-        "correct_answer": "Believer praised in John's third letter",
+        "correct_answer": "Believer in the third letter of John who received a good report from everyone",
         "incorrect_answers": [
           "Former coworker who deserted Paul",
           "Sorcerer who opposed Paul in Cyprus",
@@ -10522,7 +10522,7 @@
         "id": "who-fact-069",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Believer praised in John's third letter",
+        "question": "Believer in the third letter of John who received a good report from everyone",
         "correct_answer": "Demetrius (commended believer)",
         "incorrect_answers": [
           "Demas",
@@ -10540,7 +10540,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Demetrius (silversmith)",
-        "correct_answer": "Ephesian artisan who stirred opposition to Paul",
+        "correct_answer": "Silversmith who stirred up a riot over the trade in silver shrines of Diana",
         "incorrect_answers": [
           "Early Christian missionary and tentmaker",
           "Preacher who explained Isaiah to an Ethiopian official and baptized him",
@@ -10556,7 +10556,7 @@
         "id": "who-fact-070",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Ephesian artisan who stirred opposition to Paul",
+        "question": "Silversmith who stirred up a riot over the trade in silver shrines of Diana",
         "correct_answer": "Demetrius (silversmith)",
         "incorrect_answers": [
           "Aquila",
@@ -10574,7 +10574,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Dinah",
-        "correct_answer": "Daughter of Jacob and Leah",
+        "correct_answer": "Daughter of Jacob whose mistreatment led her brothers to attack Shechem",
         "incorrect_answers": [
           "Wife of Abraham and mother of Isaac",
           "Woman Abraham married after Sarah’s death",
@@ -10590,7 +10590,7 @@
         "id": "who-fact-071",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Daughter of Jacob and Leah",
+        "question": "Daughter of Jacob whose mistreatment led her brothers to attack Shechem",
         "correct_answer": "Dinah",
         "incorrect_answers": [
           "Sarah",
@@ -10608,7 +10608,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Diotrephes",
-        "correct_answer": "Church leader who resisted John's messengers",
+        "correct_answer": "Man rebuked in the third letter of John for refusing to welcome traveling believers",
         "incorrect_answers": [
           "Ephesian artisan who stirred opposition to Paul",
           "Former coworker who deserted Paul",
@@ -10624,7 +10624,7 @@
         "id": "who-fact-072",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Church leader who resisted John's messengers",
+        "question": "Man rebuked in the third letter of John for refusing to welcome traveling believers",
         "correct_answer": "Diotrephes",
         "incorrect_answers": [
           "Demetrius (silversmith)",
@@ -10812,7 +10812,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Elihu",
-        "correct_answer": "Younger speaker who responded to Job and his friends",
+        "correct_answer": "Younger man who spoke after Job’s three older friends had finished",
         "incorrect_answers": [
           "Righteous man tested through suffering",
           "First man",
@@ -10828,7 +10828,7 @@
         "id": "who-fact-078",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Younger speaker who responded to Job and his friends",
+        "question": "Younger man who spoke after Job’s three older friends had finished",
         "correct_answer": "Elihu",
         "incorrect_answers": [
           "Job",
@@ -10982,7 +10982,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Elymas",
-        "correct_answer": "Sorcerer who opposed Paul in Cyprus",
+        "correct_answer": "Magician on Cyprus struck temporarily blind after opposing Paul",
         "incorrect_answers": [
           "Man who lied about an offering to the church",
           "Faithful witness killed in Pergamos, mentioned in Christ’s message to its church",
@@ -10998,7 +10998,7 @@
         "id": "who-fact-083",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Sorcerer who opposed Paul in Cyprus",
+        "question": "Magician on Cyprus struck temporarily blind after opposing Paul",
         "correct_answer": "Elymas",
         "incorrect_answers": [
           "Ananias (husband of Sapphira)",
@@ -11016,7 +11016,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Enoch",
-        "correct_answer": "Patriarch who walked with God",
+        "correct_answer": "Man who walked with God and was taken without experiencing death",
         "incorrect_answers": [
           "Son of Seth and ancestor of Noah",
           "Twin brother of Jacob",
@@ -11032,7 +11032,7 @@
         "id": "who-fact-084",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Patriarch who walked with God",
+        "question": "Man who walked with God and was taken without experiencing death",
         "correct_answer": "Enoch",
         "incorrect_answers": [
           "Enos",
@@ -11050,7 +11050,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Enos",
-        "correct_answer": "Son of Seth and ancestor of Noah",
+        "correct_answer": "Son of Seth whose birth is associated with people beginning to call on the name of the LORD",
         "incorrect_answers": [
           "Son of Abraham and Sarah",
           "Son of Jacob and Leah",
@@ -11066,7 +11066,7 @@
         "id": "who-fact-085",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Seth and ancestor of Noah",
+        "question": "Son of Seth whose birth is associated with people beginning to call on the name of the LORD",
         "correct_answer": "Enos",
         "incorrect_answers": [
           "Isaac",
@@ -11084,7 +11084,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Epaphras",
-        "correct_answer": "Believer who ministered among the Colossians",
+        "correct_answer": "Coworker of Paul who prayed earnestly for believers in Colossae",
         "incorrect_answers": [
           "Former coworker who deserted Paul",
           "Companion of Paul during missionary journeys",
@@ -11100,7 +11100,7 @@
         "id": "who-fact-086",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Believer who ministered among the Colossians",
+        "question": "Coworker of Paul who prayed earnestly for believers in Colossae",
         "correct_answer": "Epaphras",
         "incorrect_answers": [
           "Demas",
@@ -11118,7 +11118,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Epaphroditus",
-        "correct_answer": "Messenger of the Philippian church",
+        "correct_answer": "Messenger sent by the Philippian church to assist Paul who nearly died from illness",
         "incorrect_answers": [
           "Coworker of Paul and city official",
           "Ephesian artisan who stirred opposition to Paul",
@@ -11134,7 +11134,7 @@
         "id": "who-fact-087",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Messenger of the Philippian church",
+        "question": "Messenger sent by the Philippian church to assist Paul who nearly died from illness",
         "correct_answer": "Epaphroditus",
         "incorrect_answers": [
           "Erastus",
@@ -11152,7 +11152,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Erastus",
-        "correct_answer": "Coworker of Paul and city official",
+        "correct_answer": "Man Paul identified as a city treasurer in his greetings to Rome",
         "incorrect_answers": [
           "Early Christian missionary and tentmaker",
           "Messenger of the Philippian church",
@@ -11168,7 +11168,7 @@
         "id": "who-fact-088",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Coworker of Paul and city official",
+        "question": "Man Paul identified as a city treasurer in his greetings to Rome",
         "correct_answer": "Erastus",
         "incorrect_answers": [
           "Aquila",
@@ -11356,7 +11356,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Ezekiel",
-        "correct_answer": "Prophet among the Babylonian exiles",
+        "correct_answer": "Exiled priest who saw a vision of a valley filled with dry bones",
         "incorrect_answers": [
           "Prophet and Judean exile in Babylon",
           "Prophet and counselor to King David",
@@ -11372,7 +11372,7 @@
         "id": "who-fact-094",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet among the Babylonian exiles",
+        "question": "Exiled priest who saw a vision of a valley filled with dry bones",
         "correct_answer": "Ezekiel",
         "incorrect_answers": [
           "Daniel",
@@ -11424,7 +11424,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Felix",
-        "correct_answer": "Roman governor who heard Paul's defense",
+        "correct_answer": "Roman governor who kept Paul in custody and hoped to receive a bribe",
         "incorrect_answers": [
           "Ruler who persecuted the early church",
           "Leader of the Jerusalem church who spoke at its council",
@@ -11440,7 +11440,7 @@
         "id": "who-fact-096",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Roman governor who heard Paul's defense",
+        "question": "Roman governor who kept Paul in custody and hoped to receive a bribe",
         "correct_answer": "Felix",
         "incorrect_answers": [
           "Herod Agrippa I",
@@ -11458,7 +11458,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Festus",
-        "correct_answer": "Roman governor who heard Paul's case",
+        "correct_answer": "Roman governor before whom Paul appealed to Caesar",
         "incorrect_answers": [
           "Ruler who persecuted the early church",
           "Leader of the Jerusalem church who spoke at its council",
@@ -11474,7 +11474,7 @@
         "id": "who-fact-097",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Roman governor who heard Paul's case",
+        "question": "Roman governor before whom Paul appealed to Caesar",
         "correct_answer": "Festus",
         "incorrect_answers": [
           "Herod Agrippa I",
@@ -11492,7 +11492,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Gad",
-        "correct_answer": "Prophet and counselor to King David",
+        "correct_answer": "Prophet who told David to choose among three judgments after the census",
         "incorrect_answers": [
           "Prophet who confronted King David",
           "Prophet who led the Israelites from Egypt",
@@ -11508,7 +11508,7 @@
         "id": "who-fact-098",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet and counselor to King David",
+        "question": "Prophet who told David to choose among three judgments after the census",
         "correct_answer": "Gad",
         "incorrect_answers": [
           "Nathan",
@@ -11526,7 +11526,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Gaius (host of Paul)",
-        "correct_answer": "Believer who hosted Paul and the church",
+        "correct_answer": "Host of Paul who also welcomed a whole church into his home",
         "incorrect_answers": [
           "Early Christian missionary and tentmaker",
           "Preacher who explained Isaiah to an Ethiopian official and baptized him",
@@ -11542,7 +11542,7 @@
         "id": "who-fact-099",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Believer who hosted Paul and the church",
+        "question": "Host of Paul who also welcomed a whole church into his home",
         "correct_answer": "Gaius (host of Paul)",
         "incorrect_answers": [
           "Aquila",
@@ -11560,7 +11560,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Gamaliel",
-        "correct_answer": "Pharisee and teacher of the law in Acts",
+        "correct_answer": "Pharisee who advised the council to leave the apostles alone, warning against opposing God",
         "incorrect_answers": [
           "Roman governor who heard Paul's case",
           "Young man revived after falling from a window",
@@ -11576,7 +11576,7 @@
         "id": "who-fact-100",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Pharisee and teacher of the law in Acts",
+        "question": "Pharisee who advised the council to leave the apostles alone, warning against opposing God",
         "correct_answer": "Gamaliel",
         "incorrect_answers": [
           "Festus",
@@ -11594,7 +11594,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Gehazi",
-        "correct_answer": "Servant of the prophet Elisha",
+        "correct_answer": "Servant of Elisha who took gifts from Naaman and was afflicted with leprosy",
         "incorrect_answers": [
           "Prophet who succeeded Elijah",
           "Prophet in Judah",
@@ -11610,7 +11610,7 @@
         "id": "who-fact-101",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Servant of the prophet Elisha",
+        "question": "Servant of Elisha who took gifts from Naaman and was afflicted with leprosy",
         "correct_answer": "Gehazi",
         "incorrect_answers": [
           "Elisha",
@@ -11696,7 +11696,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Habakkuk",
-        "correct_answer": "Prophet who questioned injustice",
+        "correct_answer": "Prophet who asked why God permitted violence and received a vision about living by faith",
         "incorrect_answers": [
           "Servant of the prophet Elisha",
           "Prophet and counselor to King David",
@@ -11712,7 +11712,7 @@
         "id": "who-fact-104",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet who questioned injustice",
+        "question": "Prophet who asked why God permitted violence and received a vision about living by faith",
         "correct_answer": "Habakkuk",
         "incorrect_answers": [
           "Gehazi",
@@ -11832,7 +11832,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Herod Agrippa I",
-        "correct_answer": "Ruler who persecuted the early church",
+        "correct_answer": "King who killed the apostle James and imprisoned Peter",
         "incorrect_answers": [
           "King Agrippa who heard Paul’s defense before Festus",
           "Tetrarch who executed John the Baptist",
@@ -11848,7 +11848,7 @@
         "id": "who-fact-108",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Ruler who persecuted the early church",
+        "question": "King who killed the apostle James and imprisoned Peter",
         "correct_answer": "Herod Agrippa I",
         "incorrect_answers": [
           "Herod Agrippa II",
@@ -11866,7 +11866,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Herod Agrippa II",
-        "correct_answer": "King Agrippa who heard Paul’s defense before Festus",
+        "correct_answer": "King who listened to Paul’s defense and said Paul might have been freed if he had not appealed to Caesar",
         "incorrect_answers": [
           "Ruler who persecuted the early church",
           "Tetrarch who executed John the Baptist",
@@ -11882,7 +11882,7 @@
         "id": "who-fact-109",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "King Agrippa who heard Paul’s defense before Festus",
+        "question": "King who listened to Paul’s defense and said Paul might have been freed if he had not appealed to Caesar",
         "correct_answer": "Herod Agrippa II",
         "incorrect_answers": [
           "Herod Agrippa I",
@@ -11968,7 +11968,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Hezekiah",
-        "correct_answer": "King of Judah who trusted the LORD",
+        "correct_answer": "King of Judah who prayed when Jerusalem was threatened by Sennacherib",
         "incorrect_answers": [
           "Father of King David",
           "Shepherd who became king of Israel",
@@ -11984,7 +11984,7 @@
         "id": "who-fact-112",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "King of Judah who trusted the LORD",
+        "question": "King of Judah who prayed when Jerusalem was threatened by Sennacherib",
         "correct_answer": "Hezekiah",
         "incorrect_answers": [
           "Jesse",
@@ -12036,7 +12036,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Hophni",
-        "correct_answer": "Corrupt son of Eli the priest",
+        "correct_answer": "Son of Eli who abused his priestly office and died when the ark was captured",
         "incorrect_answers": [
           "Priest who opposed and imprisoned Jeremiah",
           "Brother of Moses and first high priest",
@@ -12052,7 +12052,7 @@
         "id": "who-fact-114",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Corrupt son of Eli the priest",
+        "question": "Son of Eli who abused his priestly office and died when the ark was captured",
         "correct_answer": "Hophni",
         "incorrect_answers": [
           "Pashur",
@@ -12172,7 +12172,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Ibzan",
-        "correct_answer": "Judge of Israel after Jephthah",
+        "correct_answer": "Judge from Bethlehem who had thirty sons and thirty daughters",
         "incorrect_answers": [
           "Judge who fought the Ammonites",
           "Judge who defeated Midian",
@@ -12188,7 +12188,7 @@
         "id": "who-fact-118",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Judge of Israel after Jephthah",
+        "question": "Judge from Bethlehem who had thirty sons and thirty daughters",
         "correct_answer": "Ibzan",
         "incorrect_answers": [
           "Jephthah",
@@ -12206,7 +12206,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Ichabod",
-        "correct_answer": "Son born to Phinehas after the ark was captured",
+        "correct_answer": "Child whose name expressed that glory had departed after the ark was captured",
         "incorrect_answers": [
           "Patriarch who wrestled with God and was given a new name",
           "Father of King David",
@@ -12222,7 +12222,7 @@
         "id": "who-fact-119",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son born to Phinehas after the ark was captured",
+        "question": "Child whose name expressed that glory had departed after the ark was captured",
         "correct_answer": "Ichabod",
         "incorrect_answers": [
           "Jacob (son of Isaac)",
@@ -12274,7 +12274,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Isaiah",
-        "correct_answer": "Prophet in Judah",
+        "correct_answer": "Prophet who saw the LORD on a throne and answered, “Here am I; send me”",
         "incorrect_answers": [
           "Prophet sent to Nineveh",
           "Prophet who confronted Ahab and Baal worship",
@@ -12290,7 +12290,7 @@
         "id": "who-fact-121",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Prophet in Judah",
+        "question": "Prophet who saw the LORD on a throne and answered, “Here am I; send me”",
         "correct_answer": "Isaiah",
         "incorrect_answers": [
           "Jonah",
@@ -12410,7 +12410,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Jacob (son of Isaac)",
-        "correct_answer": "Patriarch who wrestled with God and was given a new name",
+        "correct_answer": "Son of Isaac whose name was changed to Israel after wrestling through the night",
         "incorrect_answers": [
           "Son of Abraham and Sarah",
           "Father of King David",
@@ -12426,7 +12426,7 @@
         "id": "who-fact-125",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Patriarch who wrestled with God and was given a new name",
+        "question": "Son of Isaac whose name was changed to Israel after wrestling through the night",
         "correct_answer": "Jacob (son of Isaac)",
         "incorrect_answers": [
           "Isaac",
@@ -12444,7 +12444,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Jacob (son of Matthan)",
-        "correct_answer": "Named in Jesus' genealogy as the father of Mary's husband",
+        "correct_answer": "Man in Matthew’s genealogy identified as the father of Joseph, the husband of Mary",
         "incorrect_answers": [
           "Father of the apostles James and John",
           "Hittite soldier whose wife was taken by Israel’s king",
@@ -12460,7 +12460,7 @@
         "id": "who-fact-285",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Named in Jesus' genealogy as the father of Mary's husband",
+        "question": "Man in Matthew’s genealogy identified as the father of Joseph, the husband of Mary",
         "correct_answer": "Jacob (son of Matthan)",
         "incorrect_answers": [
           "Zebedee",
@@ -12478,7 +12478,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Jael",
-        "correct_answer": "Woman who defeated Sisera",
+        "correct_answer": "Woman who killed Sisera with a tent peg",
         "incorrect_answers": [
           "Woman of Jericho who protected the spies",
           "Woman who supported Jesus' ministry",
@@ -12494,7 +12494,7 @@
         "id": "who-fact-126",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Woman who defeated Sisera",
+        "question": "Woman who killed Sisera with a tent peg",
         "correct_answer": "Jael",
         "incorrect_answers": [
           "Rahab",
@@ -12580,7 +12580,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "James (brother of Jesus)",
-        "correct_answer": "Leader of the Jerusalem church who spoke at its council",
+        "correct_answer": "Brother of Jesus who addressed the Jerusalem council about Gentile believers",
         "incorrect_answers": [
           "Wilderness preacher who baptized in the Jordan River and prepared the way for the Messiah",
           "Early Christian missionary who traveled with Paul and encouraged believers",
@@ -12596,7 +12596,7 @@
         "id": "who-fact-129",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Leader of the Jerusalem church who spoke at its council",
+        "question": "Brother of Jesus who addressed the Jerusalem council about Gentile believers",
         "correct_answer": "James (brother of Jesus)",
         "incorrect_answers": [
           "John the Baptist",
@@ -12614,7 +12614,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "James (son of Alphaeus)",
-        "correct_answer": "One of the twelve apostles, identified by his father",
+        "correct_answer": "Apostle listed among the Twelve as the son of Alphaeus",
         "incorrect_answers": [
           "Apostle, son of Zebedee and brother of James",
           "Apostle and brother of Simon Peter",
@@ -12630,7 +12630,7 @@
         "id": "who-fact-130",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "One of the twelve apostles, identified by his father",
+        "question": "Apostle listed among the Twelve as the son of Alphaeus",
         "correct_answer": "James (son of Alphaeus)",
         "incorrect_answers": [
           "John (son of Zebedee)",
@@ -12648,7 +12648,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "James (son of Zebedee)",
-        "correct_answer": "Apostle, brother of John, and son of Zebedee, killed by Herod Agrippa I",
+        "correct_answer": "Brother of John and one of the Twelve who was killed by Herod with the sword",
         "incorrect_answers": [
           "One of the twelve apostles who betrayed his teacher for thirty pieces of silver",
           "Apostle and brother of Simon Peter",
@@ -12664,7 +12664,7 @@
         "id": "who-fact-131",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Apostle, brother of John, and son of Zebedee, killed by Herod Agrippa I",
+        "question": "Brother of John and one of the Twelve who was killed by Herod with the sword",
         "correct_answer": "James (son of Zebedee)",
         "incorrect_answers": [
           "Judas Iscariot",
@@ -12784,7 +12784,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Jesus Christ",
-        "correct_answer": "Born in Bethlehem, performed miracles, was crucified, and rose from the dead",
+        "correct_answer": "Born in Bethlehem, crucified under Roman authority, and raised on the third day",
         "incorrect_answers": [
           "Father of King David",
           "Leader of the Jerusalem church who spoke at its council",
@@ -12800,7 +12800,7 @@
         "id": "who-fact-135",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Born in Bethlehem, performed miracles, was crucified, and rose from the dead",
+        "question": "Born in Bethlehem, crucified under Roman authority, and raised on the third day",
         "correct_answer": "Jesus Christ",
         "incorrect_answers": [
           "Jesse",
@@ -12920,7 +12920,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Joanna",
-        "correct_answer": "Woman who supported Jesus' ministry",
+        "correct_answer": "Woman connected with Herod’s steward who helped support Jesus and his disciples",
         "incorrect_answers": [
           "Sister of Mary and Lazarus",
           "Young woman visited by Gabriel who gave birth in Bethlehem",
@@ -12936,7 +12936,7 @@
         "id": "who-fact-139",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Woman who supported Jesus' ministry",
+        "question": "Woman connected with Herod’s steward who helped support Jesus and his disciples",
         "correct_answer": "Joanna",
         "incorrect_answers": [
           "Martha",
@@ -13056,7 +13056,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Job",
-        "correct_answer": "Righteous man tested through suffering",
+        "correct_answer": "Man who lost his children, wealth, and health yet continued to wrestle with questions of suffering",
         "incorrect_answers": [
           "Patriarch and father of Isaac",
           "Patriarch who wrestled with God and was given a new name",
@@ -13072,7 +13072,7 @@
         "id": "who-fact-143",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Righteous man tested through suffering",
+        "question": "Man who lost his children, wealth, and health yet continued to wrestle with questions of suffering",
         "correct_answer": "Job",
         "incorrect_answers": [
           "Abraham",
@@ -13124,7 +13124,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Joel",
-        "correct_answer": "Prophet who proclaimed the day of the LORD",
+        "correct_answer": "Prophet who described an outpouring of God’s Spirit later quoted by Peter at Pentecost",
         "incorrect_answers": [
           "Prophet in Judah",
           "Teacher and prophet in the church at Antioch",
@@ -13140,7 +13140,7 @@
         "id": "who-fact-145",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet who proclaimed the day of the LORD",
+        "question": "Prophet who described an outpouring of God’s Spirit later quoted by Peter at Pentecost",
         "correct_answer": "Joel",
         "incorrect_answers": [
           "Isaiah",
@@ -13158,7 +13158,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "John (son of Zebedee)",
-        "correct_answer": "Apostle, son of Zebedee and brother of James",
+        "correct_answer": "Brother of James and fisherman who was among Jesus’ closest disciples",
         "incorrect_answers": [
           "One of the twelve apostles, identified by his father",
           "Apostle and brother of Simon Peter",
@@ -13174,7 +13174,7 @@
         "id": "who-fact-146",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Apostle, son of Zebedee and brother of James",
+        "question": "Brother of James and fisherman who was among Jesus’ closest disciples",
         "correct_answer": "John (son of Zebedee)",
         "incorrect_answers": [
           "James (son of Alphaeus)",
@@ -13192,7 +13192,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "John Mark",
-        "correct_answer": "Missionary coworker who accompanied Barnabas and Paul",
+        "correct_answer": "Missionary who left Paul and Barnabas in Pamphylia but later became useful to Paul",
         "incorrect_answers": [
           "Believer who ministered among the Colossians",
           "Wilderness preacher who baptized in the Jordan River and prepared the way for the Messiah",
@@ -13208,7 +13208,7 @@
         "id": "who-fact-147",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Missionary coworker who accompanied Barnabas and Paul",
+        "question": "Missionary who left Paul and Barnabas in Pamphylia but later became useful to Paul",
         "correct_answer": "John Mark",
         "incorrect_answers": [
           "Epaphras",
@@ -13260,7 +13260,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Jonadab (son of Rechab)",
-        "correct_answer": "Ancestor of the Rechabites who commanded abstinence",
+        "correct_answer": "Ancestor of a family that refused to drink wine in obedience to his command",
         "incorrect_answers": [
           "Son of Jacob and Leah",
           "Patriarch who wrestled with God and was given a new name",
@@ -13276,7 +13276,7 @@
         "id": "who-fact-149",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Ancestor of the Rechabites who commanded abstinence",
+        "question": "Ancestor of a family that refused to drink wine in obedience to his command",
         "correct_answer": "Jonadab (son of Rechab)",
         "incorrect_answers": [
           "Judah",
@@ -13464,7 +13464,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Joses (brother of Jesus)",
-        "correct_answer": "Named among Jesus' brothers",
+        "correct_answer": "Brother of Jesus named alongside James, Simon, and Judas",
         "incorrect_answers": [
           "Council member who provided a new tomb for the crucified Messiah",
           "Wilderness preacher who baptized in the Jordan River and prepared the way for the Messiah",
@@ -13480,7 +13480,7 @@
         "id": "who-fact-155",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Named among Jesus' brothers",
+        "question": "Brother of Jesus named alongside James, Simon, and Judas",
         "correct_answer": "Joses (brother of Jesus)",
         "incorrect_answers": [
           "Joseph (of Arimathaea)",
@@ -13566,7 +13566,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Jotham (king of Judah)",
-        "correct_answer": "King of Judah and father of Ahaz",
+        "correct_answer": "King of Judah who built the upper gate of the house of the LORD",
         "incorrect_answers": [
           "Father of King David",
           "Son of David and king of Israel",
@@ -13582,7 +13582,7 @@
         "id": "who-fact-158",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "King of Judah and father of Ahaz",
+        "question": "King of Judah who built the upper gate of the house of the LORD",
         "correct_answer": "Jotham (king of Judah)",
         "incorrect_answers": [
           "Jesse",
@@ -13634,7 +13634,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Judah",
-        "correct_answer": "Son of Jacob and Leah",
+        "correct_answer": "Fourth son of Jacob and Leah from whose tribe Israel’s kingship descended",
         "incorrect_answers": [
           "Father of Noah in the genealogy of Seth",
           "Son of Abraham and Sarah",
@@ -13650,7 +13650,7 @@
         "id": "who-fact-160",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Jacob and Leah",
+        "question": "Fourth son of Jacob and Leah from whose tribe Israel’s kingship descended",
         "correct_answer": "Judah",
         "incorrect_answers": [
           "Lamech (father of Noah)",
@@ -13736,7 +13736,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Laban",
-        "correct_answer": "Brother of Rebekah and father-in-law of Jacob",
+        "correct_answer": "Uncle and father-in-law of Jacob who gave him Leah and Rachel as wives",
         "incorrect_answers": [
           "Father of Noah in the genealogy of Seth",
           "Son of Abraham and Hagar",
@@ -13752,7 +13752,7 @@
         "id": "who-fact-163",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Brother of Rebekah and father-in-law of Jacob",
+        "question": "Uncle and father-in-law of Jacob who gave him Leah and Rachel as wives",
         "correct_answer": "Laban",
         "incorrect_answers": [
           "Lamech (father of Noah)",
@@ -13770,7 +13770,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Lamech (father of Noah)",
-        "correct_answer": "Father of Noah in the genealogy of Seth",
+        "correct_answer": "Descendant of Seth who became the father of Noah",
         "incorrect_answers": [
           "Son of Jacob and Leah",
           "Son of Abraham and Sarah",
@@ -13786,7 +13786,7 @@
         "id": "who-fact-164",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Father of Noah in the genealogy of Seth",
+        "question": "Descendant of Seth who became the father of Noah",
         "correct_answer": "Lamech (father of Noah)",
         "incorrect_answers": [
           "Judah",
@@ -13804,7 +13804,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Lazarus (in Jesus’ parable)",
-        "correct_answer": "Poor man in Jesus' parable",
+        "correct_answer": "Poor beggar in a parable who was carried to Abraham’s bosom after death",
         "incorrect_answers": [
           "Father of Noah in the genealogy of Seth",
           "Son of Jacob and Leah",
@@ -13820,7 +13820,7 @@
         "id": "who-fact-165",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Poor man in Jesus' parable",
+        "question": "Poor beggar in a parable who was carried to Abraham’s bosom after death",
         "correct_answer": "Lazarus (in Jesus’ parable)",
         "incorrect_answers": [
           "Lamech (father of Noah)",
@@ -13906,7 +13906,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Lemuel",
-        "correct_answer": "King addressed in a mother's teachings in Proverbs",
+        "correct_answer": "King whose mother taught him to defend the needy and choose a virtuous wife",
         "incorrect_answers": [
           "Son of David and king of Israel",
           "King of Judah and father of Ahaz",
@@ -13922,7 +13922,7 @@
         "id": "who-fact-168",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "King addressed in a mother's teachings in Proverbs",
+        "question": "King whose mother taught him to defend the needy and choose a virtuous wife",
         "correct_answer": "Lemuel",
         "incorrect_answers": [
           "Solomon",
@@ -13940,7 +13940,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Levi",
-        "correct_answer": "Son of Jacob and Leah",
+        "correct_answer": "Third son of Jacob and Leah, ancestor of Israel’s priestly tribe",
         "incorrect_answers": [
           "Son of Abraham and Sarah",
           "Son of Noah and brother of Shem and Japheth",
@@ -13956,7 +13956,7 @@
         "id": "who-fact-169",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Jacob and Leah",
+        "question": "Third son of Jacob and Leah, ancestor of Israel’s priestly tribe",
         "correct_answer": "Levi",
         "incorrect_answers": [
           "Isaac",
@@ -14042,7 +14042,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Lucius",
-        "correct_answer": "Teacher and prophet in the church at Antioch",
+        "correct_answer": "One of the prophets and teachers at Antioch named when Barnabas and Saul were sent out",
         "incorrect_answers": [
           "Prophet who warned Paul",
           "Prophet who led the Israelites from Egypt",
@@ -14058,7 +14058,7 @@
         "id": "who-fact-172",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Teacher and prophet in the church at Antioch",
+        "question": "One of the prophets and teachers at Antioch named when Barnabas and Saul were sent out",
         "correct_answer": "Lucius",
         "incorrect_answers": [
           "Agabus",
@@ -14076,7 +14076,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Luke",
-        "correct_answer": "Companion of Paul and Gospel author",
+        "correct_answer": "Traveling companion of Paul identified as a beloved physician",
         "incorrect_answers": [
           "Believer who ministered among the Colossians",
           "Early Christian missionary and tentmaker",
@@ -14092,7 +14092,7 @@
         "id": "who-fact-173",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Companion of Paul and Gospel author",
+        "question": "Traveling companion of Paul identified as a beloved physician",
         "correct_answer": "Luke",
         "incorrect_answers": [
           "Epaphras",
@@ -14178,7 +14178,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Malachi",
-        "correct_answer": "Prophet who addressed postexilic worship",
+        "correct_answer": "Prophet who rebuked the people for withholding tithes and described a coming messenger",
         "incorrect_answers": [
           "Prophet who led the Israelites from Egypt",
           "Teacher and prophet in the church at Antioch",
@@ -14194,7 +14194,7 @@
         "id": "who-fact-176",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet who addressed postexilic worship",
+        "question": "Prophet who rebuked the people for withholding tithes and described a coming messenger",
         "correct_answer": "Malachi",
         "incorrect_answers": [
           "Moses",
@@ -14280,7 +14280,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Martha",
-        "correct_answer": "Sister of Mary and Lazarus",
+        "correct_answer": "Sister of Lazarus who was busy serving while her sister listened to Jesus",
         "incorrect_answers": [
           "Synagogue leader whose daughter Jesus raised",
           "Mother of John the Baptist",
@@ -14296,7 +14296,7 @@
         "id": "who-fact-179",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Sister of Mary and Lazarus",
+        "question": "Sister of Lazarus who was busy serving while her sister listened to Jesus",
         "correct_answer": "Martha",
         "incorrect_answers": [
           "Jairus",
@@ -14382,7 +14382,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Mary (of Bethany)",
-        "correct_answer": "Sister of Martha and Lazarus who sat listening at the Lord’s feet",
+        "correct_answer": "Woman who sat at Jesus’ feet while her sister was busy serving",
         "incorrect_answers": [
           "Synagogue leader whose daughter Jesus raised",
           "Mother of John the Baptist",
@@ -14398,7 +14398,7 @@
         "id": "who-fact-182",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Sister of Martha and Lazarus who sat listening at the Lord’s feet",
+        "question": "Woman who sat at Jesus’ feet while her sister was busy serving",
         "correct_answer": "Mary (of Bethany)",
         "incorrect_answers": [
           "Jairus",
@@ -14450,7 +14450,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Matthew",
-        "correct_answer": "Tax collector and apostle",
+        "correct_answer": "Tax collector called from his booth to follow Jesus",
         "incorrect_answers": [
           "One of the twelve apostles who betrayed his teacher for thirty pieces of silver",
           "One of the Twelve who brought Nathanael to meet the Messiah",
@@ -14466,7 +14466,7 @@
         "id": "who-fact-184",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Tax collector and apostle",
+        "question": "Tax collector called from his booth to follow Jesus",
         "correct_answer": "Matthew",
         "incorrect_answers": [
           "Judas Iscariot",
@@ -14518,7 +14518,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Melchisedec",
-        "correct_answer": "King of Salem and priest of God",
+        "correct_answer": "Priest and king of Salem who blessed Abraham and received a tenth of the spoils",
         "incorrect_answers": [
           "Boy king of Judah who repaired the temple",
           "Persian king during whose reign the Jerusalem temple was completed",
@@ -14534,7 +14534,7 @@
         "id": "who-fact-186",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "King of Salem and priest of God",
+        "question": "Priest and king of Salem who blessed Abraham and received a tenth of the spoils",
         "correct_answer": "Melchisedec",
         "incorrect_answers": [
           "Joash (king of Judah)",
@@ -14586,7 +14586,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Micah",
-        "correct_answer": "Prophet who denounced injustice",
+        "correct_answer": "Prophet who foretold that a ruler would come from Bethlehem",
         "incorrect_answers": [
           "Prophet who led the Israelites from Egypt",
           "Prophet and judge who anointed kings",
@@ -14602,7 +14602,7 @@
         "id": "who-fact-188",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet who denounced injustice",
+        "question": "Prophet who foretold that a ruler would come from Bethlehem",
         "correct_answer": "Micah",
         "incorrect_answers": [
           "Moses",
@@ -14688,7 +14688,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Miriam",
-        "correct_answer": "Sister of Moses and Aaron",
+        "correct_answer": "Sister of Moses who led women in song after Israel crossed the sea",
         "incorrect_answers": [
           "Daughter of Asher named among Jacob’s descendants",
           "Wife of Jacob and mother of six sons",
@@ -14704,7 +14704,7 @@
         "id": "who-fact-191",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Sister of Moses and Aaron",
+        "question": "Sister of Moses who led women in song after Israel crossed the sea",
         "correct_answer": "Miriam",
         "incorrect_answers": [
           "Serah (daughter of Asher)",
@@ -14756,7 +14756,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Mordecai",
-        "correct_answer": "Jewish leader and cousin of Esther",
+        "correct_answer": "Relative and guardian of Esther who uncovered a plot against the king",
         "incorrect_answers": [
           "King of Babylon at the time of Daniel",
           "Royal official who plotted against the Jews",
@@ -14772,7 +14772,7 @@
         "id": "who-fact-193",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Jewish leader and cousin of Esther",
+        "question": "Relative and guardian of Esther who uncovered a plot against the king",
         "correct_answer": "Mordecai",
         "incorrect_answers": [
           "Nebuchadnezzar",
@@ -15096,7 +15096,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Nicanor",
-        "correct_answer": "One of seven men chosen to serve the Jerusalem church",
+        "correct_answer": "One of seven men selected in Jerusalem to oversee the daily distribution",
         "incorrect_answers": [
           "Preacher who explained Isaiah to an Ethiopian official and baptized him",
           "Chief official of Malta who welcomed Paul",
@@ -15112,7 +15112,7 @@
         "id": "who-fact-203",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "One of seven men chosen to serve the Jerusalem church",
+        "question": "One of seven men selected in Jerusalem to oversee the daily distribution",
         "correct_answer": "Nicanor",
         "incorrect_answers": [
           "Philip (evangelist)",
@@ -15232,7 +15232,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Obadiah",
-        "correct_answer": "Prophet whose brief book announces judgment on Edom",
+        "correct_answer": "Prophet who foretold judgment on Edom for violence against its brother Jacob",
         "incorrect_answers": [
           "Prophet who confronted King David",
           "Prophet who led the Israelites from Egypt",
@@ -15248,7 +15248,7 @@
         "id": "who-fact-207",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet whose brief book announces judgment on Edom",
+        "question": "Prophet who foretold judgment on Edom for violence against its brother Jacob",
         "correct_answer": "Obadiah",
         "incorrect_answers": [
           "Nathan",
@@ -15334,7 +15334,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Onesimus",
-        "correct_answer": "Enslaved man on whose behalf Paul wrote",
+        "correct_answer": "Runaway enslaved man whom Paul sent back with a letter appealing for him to be received as a brother",
         "incorrect_answers": [
           "Believer who ministered among the Colossians",
           "One of seven men chosen to serve the Jerusalem church",
@@ -15350,7 +15350,7 @@
         "id": "who-fact-210",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Enslaved man on whose behalf Paul wrote",
+        "question": "Runaway enslaved man whom Paul sent back with a letter appealing for him to be received as a brother",
         "correct_answer": "Onesimus",
         "incorrect_answers": [
           "Epaphras",
@@ -15470,7 +15470,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Pashur",
-        "correct_answer": "Priest who opposed and imprisoned Jeremiah",
+        "correct_answer": "Priest who struck Jeremiah and put him in the stocks",
         "incorrect_answers": [
           "Corrupt priest who died when the ark was captured",
           "Corrupt son of Eli the priest",
@@ -15486,7 +15486,7 @@
         "id": "who-fact-214",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Priest who opposed and imprisoned Jeremiah",
+        "question": "Priest who struck Jeremiah and put him in the stocks",
         "correct_answer": "Pashur",
         "incorrect_answers": [
           "Phinehas (son of Eli)",
@@ -15538,7 +15538,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Perez",
-        "correct_answer": "Son of Judah and Tamar, ancestor of David",
+        "correct_answer": "Twin son of Judah and Tamar who became an ancestor of David",
         "incorrect_answers": [
           "Firstborn son of Jacob",
           "Son of Adam and Eve",
@@ -15554,7 +15554,7 @@
         "id": "who-fact-216",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Judah and Tamar, ancestor of David",
+        "question": "Twin son of Judah and Tamar who became an ancestor of David",
         "correct_answer": "Perez",
         "incorrect_answers": [
           "Reuben",
@@ -15606,7 +15606,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Philip (apostle)",
-        "correct_answer": "One of the Twelve who brought Nathanael to meet the Messiah",
+        "correct_answer": "Apostle who told Nathanael, “Come and see,” after finding Jesus",
         "incorrect_answers": [
           "Tax collector and apostle",
           "Fisherman who denied his teacher three times and later preached at Pentecost",
@@ -15622,7 +15622,7 @@
         "id": "who-fact-218",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "One of the Twelve who brought Nathanael to meet the Messiah",
+        "question": "Apostle who told Nathanael, “Come and see,” after finding Jesus",
         "correct_answer": "Philip (apostle)",
         "incorrect_answers": [
           "Matthew",
@@ -15674,7 +15674,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Phinehas",
-        "correct_answer": "Priest and grandson of Aaron",
+        "correct_answer": "Grandson of Aaron who stopped a plague through his zeal in the wilderness",
         "incorrect_answers": [
           "Levite who led a rebellion against Moses",
           "Levite and worship leader",
@@ -15690,7 +15690,7 @@
         "id": "who-fact-220",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Priest and grandson of Aaron",
+        "question": "Grandson of Aaron who stopped a plague through his zeal in the wilderness",
         "correct_answer": "Phinehas",
         "incorrect_answers": [
           "Korah",
@@ -15742,7 +15742,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Phoebe",
-        "correct_answer": "Church servant commended by Paul",
+        "correct_answer": "Woman from Cenchrea whom Paul commended to the believers in Rome",
         "incorrect_answers": [
           "Christian worker greeted by Paul",
           "Missionary and wife of Aquila",
@@ -15758,7 +15758,7 @@
         "id": "who-fact-222",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Church servant commended by Paul",
+        "question": "Woman from Cenchrea whom Paul commended to the believers in Rome",
         "correct_answer": "Phoebe",
         "incorrect_answers": [
           "Tryphena",
@@ -15844,7 +15844,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Priscilla",
-        "correct_answer": "Missionary and wife of Aquila",
+        "correct_answer": "Woman who, with her husband, explained God’s way more accurately to Apollos",
         "incorrect_answers": [
           "Church servant commended by Paul",
           "Woman who deceived the early church with Ananias",
@@ -15860,7 +15860,7 @@
         "id": "who-fact-225",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Missionary and wife of Aquila",
+        "question": "Woman who, with her husband, explained God’s way more accurately to Apollos",
         "correct_answer": "Priscilla",
         "incorrect_answers": [
           "Phoebe",
@@ -15878,7 +15878,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Prochorus",
-        "correct_answer": "One of seven men appointed to serve the church",
+        "correct_answer": "One of seven men chosen to help address the distribution of food in Jerusalem",
         "incorrect_answers": [
           "Chief official of Malta who welcomed Paul",
           "Preacher who explained Isaiah to an Ethiopian official and baptized him",
@@ -15894,7 +15894,7 @@
         "id": "who-fact-226",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "One of seven men appointed to serve the church",
+        "question": "One of seven men chosen to help address the distribution of food in Jerusalem",
         "correct_answer": "Prochorus",
         "incorrect_answers": [
           "Publius",
@@ -16116,7 +16116,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Rhoda",
-        "correct_answer": "Servant girl who recognized Peter's voice",
+        "correct_answer": "Servant girl so excited to hear Peter at the gate that she forgot to open it",
         "incorrect_answers": [
           "Christian worker greeted by Paul",
           "Hebrew midwife who refused Pharaoh’s order to kill baby boys",
@@ -16132,7 +16132,7 @@
         "id": "who-fact-233",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Servant girl who recognized Peter's voice",
+        "question": "Servant girl so excited to hear Peter at the gate that she forgot to open it",
         "correct_answer": "Rhoda",
         "incorrect_answers": [
           "Tryphena",
@@ -16184,7 +16184,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Salome",
-        "correct_answer": "Woman who witnessed Jesus’ crucifixion and brought spices to his tomb",
+        "correct_answer": "Follower who brought spices to Jesus’ tomb with Mary Magdalene and Mary the mother of James",
         "incorrect_answers": [
           "Young woman visited by Gabriel who gave birth in Bethlehem",
           "Moabite woman and ancestor of David",
@@ -16200,7 +16200,7 @@
         "id": "who-fact-235",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Woman who witnessed Jesus’ crucifixion and brought spices to his tomb",
+        "question": "Follower who brought spices to Jesus’ tomb with Mary Magdalene and Mary the mother of James",
         "correct_answer": "Salome",
         "incorrect_answers": [
           "Mary (mother of Jesus)",
@@ -16388,7 +16388,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Seraiah",
-        "correct_answer": "Officer sent by Jeremiah with a prophetic scroll",
+        "correct_answer": "Officer instructed to read Jeremiah’s prophecy against Babylon and then throw the scroll into the Euphrates",
         "incorrect_answers": [
           "Son of David and king of Israel",
           "Last king of Judah before Jerusalem's fall",
@@ -16404,7 +16404,7 @@
         "id": "who-fact-241",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Officer sent by Jeremiah with a prophetic scroll",
+        "question": "Officer instructed to read Jeremiah’s prophecy against Babylon and then throw the scroll into the Euphrates",
         "correct_answer": "Seraiah",
         "incorrect_answers": [
           "Solomon",
@@ -16422,7 +16422,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Seth",
-        "correct_answer": "Son of Adam and Eve",
+        "correct_answer": "Son born to Adam and Eve after Abel’s death",
         "incorrect_answers": [
           "Son of Noah",
           "Father of Noah in the genealogy of Seth",
@@ -16438,7 +16438,7 @@
         "id": "who-fact-242",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Adam and Eve",
+        "question": "Son born to Adam and Eve after Abel’s death",
         "correct_answer": "Seth",
         "incorrect_answers": [
           "Shem",
@@ -16456,7 +16456,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Shadrach",
-        "correct_answer": "Daniel's companion in Babylon",
+        "correct_answer": "Hebrew exile who refused the golden image and survived a fiery furnace with two companions",
         "incorrect_answers": [
           "Persian king who authorized return from exile",
           "Last king of Judah before Jerusalem's fall",
@@ -16472,7 +16472,7 @@
         "id": "who-fact-243",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Daniel's companion in Babylon",
+        "question": "Hebrew exile who refused the golden image and survived a fiery furnace with two companions",
         "correct_answer": "Shadrach",
         "incorrect_answers": [
           "Cyrus",
@@ -16592,7 +16592,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Shem",
-        "correct_answer": "Son of Noah",
+        "correct_answer": "Son of Noah whose descendants included Abraham’s ancestors",
         "incorrect_answers": [
           "Son of Adam and Eve",
           "Son of Jacob and Leah",
@@ -16608,7 +16608,7 @@
         "id": "who-fact-247",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Noah",
+        "question": "Son of Noah whose descendants included Abraham’s ancestors",
         "correct_answer": "Shem",
         "incorrect_answers": [
           "Seth",
@@ -16694,7 +16694,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Simeon",
-        "correct_answer": "Righteous man who met the infant Jesus",
+        "correct_answer": "Devout man in Jerusalem who praised God when he saw the infant Messiah in the temple",
         "incorrect_answers": [
           "Son of Noah",
           "Son of David and king of Israel",
@@ -16710,7 +16710,7 @@
         "id": "who-fact-250",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Righteous man who met the infant Jesus",
+        "question": "Devout man in Jerusalem who praised God when he saw the infant Messiah in the temple",
         "correct_answer": "Simeon",
         "incorrect_answers": [
           "Shem",
@@ -16864,7 +16864,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Sosthenes",
-        "correct_answer": "Brother named alongside Paul in the Corinthian letter",
+        "correct_answer": "Believer named alongside Paul at the beginning of the first letter to Corinth",
         "incorrect_answers": [
           "Leader of the Jerusalem church who spoke at its council",
           "Early Christian missionary and tentmaker",
@@ -16880,7 +16880,7 @@
         "id": "who-fact-255",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Brother named alongside Paul in the Corinthian letter",
+        "question": "Believer named alongside Paul at the beginning of the first letter to Corinth",
         "correct_answer": "Sosthenes",
         "incorrect_answers": [
           "James (brother of Jesus)",
@@ -16932,7 +16932,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Susanna",
-        "correct_answer": "Woman who supported Jesus' ministry",
+        "correct_answer": "Follower named in Luke alongside Mary Magdalene and Joanna as a supporter of Jesus’ ministry",
         "incorrect_answers": [
           "Woman who looked back toward Sodom and became a pillar of salt",
           "Queen who traveled to test Solomon’s wisdom",
@@ -16948,7 +16948,7 @@
         "id": "who-fact-257",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Woman who supported Jesus' ministry",
+        "question": "Follower named in Luke alongside Mary Magdalene and Joanna as a supporter of Jesus’ ministry",
         "correct_answer": "Susanna",
         "incorrect_answers": [
           "Lot’s wife",
@@ -16966,7 +16966,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Tamar (daughter of David)",
-        "correct_answer": "Daughter of David and sister of Absalom",
+        "correct_answer": "Daughter of David who was assaulted by her half brother Amnon",
         "incorrect_answers": [
           "Daughter of Caleb who asked her father for springs of water",
           "Daughter of Pharaoh mentioned among the family of Mered",
@@ -16982,7 +16982,7 @@
         "id": "who-fact-258",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Daughter of David and sister of Absalom",
+        "question": "Daughter of David who was assaulted by her half brother Amnon",
         "correct_answer": "Tamar (daughter of David)",
         "incorrect_answers": [
           "Achsah",
@@ -17000,7 +17000,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Tamar (daughter-in-law of Judah)",
-        "correct_answer": "Daughter-in-law of Judah",
+        "correct_answer": "Widow who disguised herself to secure offspring from Judah",
         "incorrect_answers": [
           "Wife of Jacob and mother of Joseph",
           "Moabite woman and ancestor of David",
@@ -17016,7 +17016,7 @@
         "id": "who-fact-259",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Daughter-in-law of Judah",
+        "question": "Widow who disguised herself to secure offspring from Judah",
         "correct_answer": "Tamar (daughter-in-law of Judah)",
         "incorrect_answers": [
           "Rachel",
@@ -17136,7 +17136,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Thomas",
-        "correct_answer": "One of the twelve apostles",
+        "correct_answer": "Apostle who wanted to see and touch the wounds of the risen Jesus",
         "incorrect_answers": [
           "Fisherman who denied his teacher three times and later preached at Pentecost",
           "Tax collector and apostle",
@@ -17152,7 +17152,7 @@
         "id": "who-fact-263",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "One of the twelve apostles",
+        "question": "Apostle who wanted to see and touch the wounds of the risen Jesus",
         "correct_answer": "Thomas",
         "incorrect_answers": [
           "Simon Peter",
@@ -17170,7 +17170,7 @@
         "mode": "person_to_fact",
         "difficulty": "easy",
         "question": "Timotheus",
-        "correct_answer": "Companion of Paul also called Timothy",
+        "correct_answer": "Young coworker of Paul whose mother and grandmother were commended for their faith",
         "incorrect_answers": [
           "Early Christian missionary and tentmaker",
           "Leader of the Jerusalem church who spoke at its council",
@@ -17186,7 +17186,7 @@
         "id": "who-fact-264",
         "mode": "fact_to_person",
         "difficulty": "easy",
-        "question": "Companion of Paul also called Timothy",
+        "question": "Young coworker of Paul whose mother and grandmother were commended for their faith",
         "correct_answer": "Timotheus",
         "incorrect_answers": [
           "Aquila",
@@ -17204,7 +17204,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Titus",
-        "correct_answer": "Companion and delegate of Paul",
+        "correct_answer": "Gentile coworker of Paul left in Crete to appoint elders",
         "incorrect_answers": [
           "Leader of the Jerusalem church who spoke at its council",
           "Early Christian missionary and tentmaker",
@@ -17220,7 +17220,7 @@
         "id": "who-fact-265",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Companion and delegate of Paul",
+        "question": "Gentile coworker of Paul left in Crete to appoint elders",
         "correct_answer": "Titus",
         "incorrect_answers": [
           "James (brother of Jesus)",
@@ -17272,7 +17272,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Tryphena",
-        "correct_answer": "Christian worker greeted by Paul",
+        "correct_answer": "Woman greeted first in a paired greeting with Tryphosa as workers in the Lord",
         "incorrect_answers": [
           "Church servant commended by Paul",
           "Missionary and wife of Aquila",
@@ -17288,7 +17288,7 @@
         "id": "who-fact-267",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Christian worker greeted by Paul",
+        "question": "Woman greeted first in a paired greeting with Tryphosa as workers in the Lord",
         "correct_answer": "Tryphena",
         "incorrect_answers": [
           "Phoebe",
@@ -17306,7 +17306,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Tryphosa",
-        "correct_answer": "Christian worker greeted by Paul",
+        "correct_answer": "Woman greeted second in a paired greeting with Tryphena as workers in the Lord",
         "incorrect_answers": [
           "Church servant commended by Paul",
           "Missionary and wife of Aquila",
@@ -17322,7 +17322,7 @@
         "id": "who-fact-268",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Christian worker greeted by Paul",
+        "question": "Woman greeted second in a paired greeting with Tryphena as workers in the Lord",
         "correct_answer": "Tryphosa",
         "incorrect_answers": [
           "Phoebe",
@@ -17340,7 +17340,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Tychicus",
-        "correct_answer": "Messenger and companion of Paul",
+        "correct_answer": "Messenger sent to churches to report Paul’s circumstances and encourage believers",
         "incorrect_answers": [
           "Early Christian missionary and tentmaker",
           "Preacher who explained Isaiah to an Ethiopian official and baptized him",
@@ -17356,7 +17356,7 @@
         "id": "who-fact-269",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Messenger and companion of Paul",
+        "question": "Messenger sent to churches to report Paul’s circumstances and encourage believers",
         "correct_answer": "Tychicus",
         "incorrect_answers": [
           "Aquila",
@@ -17578,7 +17578,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Zebedee",
-        "correct_answer": "Father of the apostles James and John",
+        "correct_answer": "Fisherman whose two sons, James and John, became apostles",
         "incorrect_answers": [
           "Son of David and king of Israel",
           "Patriarch who wrestled with God and was given a new name",
@@ -17594,7 +17594,7 @@
         "id": "who-fact-276",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Father of the apostles James and John",
+        "question": "Fisherman whose two sons, James and John, became apostles",
         "correct_answer": "Zebedee",
         "incorrect_answers": [
           "Solomon",
@@ -17612,7 +17612,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Zebulun",
-        "correct_answer": "Son of Jacob and Leah",
+        "correct_answer": "Sixth son of Jacob and Leah, whose tribe settled near the Sea of Galilee",
         "incorrect_answers": [
           "Son of Abraham and Sarah",
           "Patriarch and father of Isaac",
@@ -17628,7 +17628,7 @@
         "id": "who-fact-277",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Jacob and Leah",
+        "question": "Sixth son of Jacob and Leah, whose tribe settled near the Sea of Galilee",
         "correct_answer": "Zebulun",
         "incorrect_answers": [
           "Isaac",
@@ -17646,7 +17646,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Zechariah",
-        "correct_answer": "Prophet associated with restoration after exile",
+        "correct_answer": "Prophet who urged the people to return to the LORD and saw a vision of a flying scroll",
         "incorrect_answers": [
           "Prophet who urged the returned exiles to rebuild the temple",
           "Prophet and Judean exile in Babylon",
@@ -17662,7 +17662,7 @@
         "id": "who-fact-278",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet associated with restoration after exile",
+        "question": "Prophet who urged the people to return to the LORD and saw a vision of a flying scroll",
         "correct_answer": "Zechariah",
         "incorrect_answers": [
           "Haggai",
@@ -17714,7 +17714,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Zelophehad",
-        "correct_answer": "Man whose daughters appealed for inheritance rights",
+        "correct_answer": "Father whose five daughters sought the right to inherit his land",
         "incorrect_answers": [
           "Son of Jacob and Leah",
           "Firstborn son of Jacob",
@@ -17730,7 +17730,7 @@
         "id": "who-fact-280",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Man whose daughters appealed for inheritance rights",
+        "question": "Father whose five daughters sought the right to inherit his land",
         "correct_answer": "Zelophehad",
         "incorrect_answers": [
           "Zebulun",
@@ -17748,7 +17748,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Zephaniah",
-        "correct_answer": "Prophet who warned of the day of the LORD",
+        "correct_answer": "Prophet who warned of the day of the LORD and called the humble to seek righteousness",
         "incorrect_answers": [
           "Prophet associated with restoration after exile",
           "Prophet and judge who anointed kings",
@@ -17764,7 +17764,7 @@
         "id": "who-fact-281",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Prophet who warned of the day of the LORD",
+        "question": "Prophet who warned of the day of the LORD and called the humble to seek righteousness",
         "correct_answer": "Zephaniah",
         "incorrect_answers": [
           "Zechariah",
@@ -17816,7 +17816,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Zipporah",
-        "correct_answer": "Wife of Moses who accompanied him from Midian",
+        "correct_answer": "Midianite wife of Moses who circumcised their son during a journey",
         "incorrect_answers": [
           "Woman Abraham married after Sarah’s death",
           "Wife of Abraham and mother of Isaac",
@@ -17832,7 +17832,7 @@
         "id": "who-fact-283",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Wife of Moses who accompanied him from Midian",
+        "question": "Midianite wife of Moses who circumcised their son during a journey",
         "correct_answer": "Zipporah",
         "incorrect_answers": [
           "Keturah",
@@ -17850,7 +17850,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Zophar",
-        "correct_answer": "One of Job's three friends",
+        "correct_answer": "Friend from Naamah who told Job that his guilt deserved even greater punishment",
         "incorrect_answers": [
           "Righteous man tested through suffering",
           "First man",
@@ -17866,7 +17866,7 @@
         "id": "who-fact-284",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "One of Job's three friends",
+        "question": "Friend from Naamah who told Job that his guilt deserved even greater punishment",
         "correct_answer": "Zophar",
         "incorrect_answers": [
           "Job",
@@ -17986,7 +17986,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Adah (wife of Lamech)",
-        "correct_answer": "Wife of Lamech and mother of Jabal and Jubal",
+        "correct_answer": "Wife of the descendant of Cain who gave birth to Jabal and Jubal",
         "incorrect_answers": [
           "Egyptian wife of Joseph and mother of Ephraim and Manasseh",
           "Woman Abraham married after Sarah’s death",
@@ -18002,7 +18002,7 @@
         "id": "who-fact-289",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Wife of Lamech and mother of Jabal and Jubal",
+        "question": "Wife of the descendant of Cain who gave birth to Jabal and Jubal",
         "correct_answer": "Adah (wife of Lamech)",
         "incorrect_answers": [
           "Asenath",
@@ -18190,7 +18190,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Bithiah",
-        "correct_answer": "Daughter of Pharaoh mentioned among the family of Mered",
+        "correct_answer": "Daughter of Pharaoh listed in a Judahite genealogy as a wife of Mered",
         "incorrect_answers": [
           "Ammonite mother of King Rehoboam",
           "Queen of Israel and wife of Ahab",
@@ -18206,7 +18206,7 @@
         "id": "who-fact-295",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Daughter of Pharaoh mentioned among the family of Mered",
+        "question": "Daughter of Pharaoh listed in a Judahite genealogy as a wife of Mered",
         "correct_answer": "Bithiah",
         "incorrect_answers": [
           "Naamah (wife of Solomon)",
@@ -18258,7 +18258,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Darius the Mede",
-        "correct_answer": "Ruler who appointed Daniel and ordered him put into the lions’ den",
+        "correct_answer": "Ruler called “the Mede” during whose reign Daniel was thrown into the lions’ den",
         "incorrect_answers": [
           "Persian king who authorized return from exile",
           "King of Elam defeated by Abram after capturing Lot",
@@ -18274,7 +18274,7 @@
         "id": "who-fact-297",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Ruler who appointed Daniel and ordered him put into the lions’ den",
+        "question": "Ruler called “the Mede” during whose reign Daniel was thrown into the lions’ den",
         "correct_answer": "Darius the Mede",
         "incorrect_answers": [
           "Cyrus",
@@ -18326,7 +18326,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Eliezer (servant of Abraham)",
-        "correct_answer": "Trusted servant of Abraham associated with Damascus",
+        "correct_answer": "Servant Abraham once named as heir of his household before Isaac was born",
         "incorrect_answers": [
           "Craftsman appointed to help construct the tabernacle",
           "Samaritan official who opposed rebuilding Jerusalem’s wall",
@@ -18342,7 +18342,7 @@
         "id": "who-fact-299",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Trusted servant of Abraham associated with Damascus",
+        "question": "Servant Abraham once named as heir of his household before Isaac was born",
         "correct_answer": "Eliezer (servant of Abraham)",
         "incorrect_answers": [
           "Aholiab",
@@ -18360,7 +18360,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Eliezer (son of Moses)",
-        "correct_answer": "Son of Moses named in remembrance of God’s help",
+        "correct_answer": "Son of Moses whose name recalled God delivering his father from Pharaoh’s sword",
         "incorrect_answers": [
           "Son of Jacob and Leah",
           "Firstborn son of Jacob",
@@ -18376,7 +18376,7 @@
         "id": "who-fact-300",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Son of Moses named in remembrance of God’s help",
+        "question": "Son of Moses whose name recalled God delivering his father from Pharaoh’s sword",
         "correct_answer": "Eliezer (son of Moses)",
         "incorrect_answers": [
           "Zebulun",
@@ -18428,7 +18428,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Gomer (wife of Hosea)",
-        "correct_answer": "Woman whom Hosea married as part of a prophetic sign",
+        "correct_answer": "Woman commanded by God to be taken as a wife by a prophet as a sign to Israel",
         "incorrect_answers": [
           "Daughter of Pharaoh mentioned among the family of Mered",
           "Egyptian wife of Joseph and mother of Ephraim and Manasseh",
@@ -18444,7 +18444,7 @@
         "id": "who-fact-302",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Woman whom Hosea married as part of a prophetic sign",
+        "question": "Woman commanded by God to be taken as a wife by a prophet as a sign to Israel",
         "correct_answer": "Gomer (wife of Hosea)",
         "incorrect_answers": [
           "Bithiah",
@@ -18496,7 +18496,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Ham",
-        "correct_answer": "Son of Noah and brother of Shem and Japheth",
+        "correct_answer": "Son of Noah who saw his father’s nakedness after the flood",
         "incorrect_answers": [
           "Son of Jacob and Leah",
           "Son of Abraham and Sarah",
@@ -18512,7 +18512,7 @@
         "id": "who-fact-304",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Noah and brother of Shem and Japheth",
+        "question": "Son of Noah who saw his father’s nakedness after the flood",
         "correct_answer": "Ham",
         "incorrect_answers": [
           "Levi",
@@ -18530,7 +18530,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Japheth",
-        "correct_answer": "Son of Noah whose family is listed after the flood",
+        "correct_answer": "Son of Noah whose descendants are listed in the table of nations",
         "incorrect_answers": [
           "Younger son of Joseph who received Jacob’s greater blessing",
           "Son of Jacob and Leah",
@@ -18546,7 +18546,7 @@
         "id": "who-fact-305",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Son of Noah whose family is listed after the flood",
+        "question": "Son of Noah whose descendants are listed in the table of nations",
         "correct_answer": "Japheth",
         "incorrect_answers": [
           "Ephraim (son of Joseph)",
@@ -18734,7 +18734,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Keturah",
-        "correct_answer": "Woman Abraham married after Sarah’s death",
+        "correct_answer": "Woman who bore Abraham six sons after Sarah’s death",
         "incorrect_answers": [
           "Daughter of Asher named among Jacob’s descendants",
           "Wife of Isaac and mother of Jacob",
@@ -18750,7 +18750,7 @@
         "id": "who-fact-311",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Woman Abraham married after Sarah’s death",
+        "question": "Woman who bore Abraham six sons after Sarah’s death",
         "correct_answer": "Keturah",
         "incorrect_answers": [
           "Serah (daughter of Asher)",
@@ -18768,7 +18768,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Lamech (descendant of Cain)",
-        "correct_answer": "Man who took two wives and boasted of killing a man",
+        "correct_answer": "Descendant of Cain who took two wives and spoke of killing a man",
         "incorrect_answers": [
           "Patriarch whose lifespan is recorded as 969 years",
           "Son of Noah whose family is listed after the flood",
@@ -18784,7 +18784,7 @@
         "id": "who-fact-312",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Man who took two wives and boasted of killing a man",
+        "question": "Descendant of Cain who took two wives and spoke of killing a man",
         "correct_answer": "Lamech (descendant of Cain)",
         "incorrect_answers": [
           "Methuselah",
@@ -18836,7 +18836,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Maacah (mother of Abijah)",
-        "correct_answer": "Royal woman associated with idolatry who was removed from high position by Asa",
+        "correct_answer": "Royal woman whom Asa removed from her position because she made an idol",
         "incorrect_answers": [
           "Ammonite mother of King Rehoboam",
           "Queen who traveled to test Solomon’s wisdom",
@@ -18852,7 +18852,7 @@
         "id": "who-fact-314",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Royal woman associated with idolatry who was removed from high position by Asa",
+        "question": "Royal woman whom Asa removed from her position because she made an idol",
         "correct_answer": "Maacah (mother of Abijah)",
         "incorrect_answers": [
           "Naamah (wife of Solomon)",
@@ -18870,7 +18870,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Mahlah (daughter of Zelophehad)",
-        "correct_answer": "One of five sisters who requested an inheritance in Israel",
+        "correct_answer": "One of five daughters who received a land inheritance in the absence of sons",
         "incorrect_answers": [
           "Daughter of Asher named among Jacob’s descendants",
           "Daughter of Caleb who asked her father for springs of water",
@@ -18886,7 +18886,7 @@
         "id": "who-fact-315",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "One of five sisters who requested an inheritance in Israel",
+        "question": "One of five daughters who received a land inheritance in the absence of sons",
         "correct_answer": "Mahlah (daughter of Zelophehad)",
         "incorrect_answers": [
           "Serah (daughter of Asher)",
@@ -18938,7 +18938,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Naamah (wife of Solomon)",
-        "correct_answer": "Ammonite mother of King Rehoboam",
+        "correct_answer": "Ammonite woman who was the mother of Rehoboam, king of Judah",
         "incorrect_answers": [
           "Queen of Israel and wife of Ahab",
           "Daughter of Pharaoh mentioned among the family of Mered",
@@ -18954,7 +18954,7 @@
         "id": "who-fact-317",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Ammonite mother of King Rehoboam",
+        "question": "Ammonite woman who was the mother of Rehoboam, king of Judah",
         "correct_answer": "Naamah (wife of Solomon)",
         "incorrect_answers": [
           "Jezebel",
@@ -19006,7 +19006,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Neri",
-        "correct_answer": "Ancestor of Jesus named in Luke’s genealogy",
+        "correct_answer": "Man listed in Luke’s genealogy as the father of Shealtiel",
         "incorrect_answers": [
           "Patriarch whose lifespan is recorded as 969 years",
           "Father of the apostles James and John",
@@ -19022,7 +19022,7 @@
         "id": "who-fact-319",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Ancestor of Jesus named in Luke’s genealogy",
+        "question": "Man listed in Luke’s genealogy as the father of Shealtiel",
         "correct_answer": "Neri",
         "incorrect_answers": [
           "Methuselah",
@@ -19040,7 +19040,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Noadiah",
-        "correct_answer": "Prophetess whom Nehemiah names among those trying to intimidate him",
+        "correct_answer": "Prophetess accused of trying to frighten Nehemiah during the rebuilding of the wall",
         "incorrect_answers": [
           "Prophetess consulted during Josiah's reign",
           "Prophetess and judge of Israel",
@@ -19056,7 +19056,7 @@
         "id": "who-fact-320",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Prophetess whom Nehemiah names among those trying to intimidate him",
+        "question": "Prophetess accused of trying to frighten Nehemiah during the rebuilding of the wall",
         "correct_answer": "Noadiah",
         "incorrect_answers": [
           "Huldah",
@@ -19108,7 +19108,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Onesiphorus",
-        "correct_answer": "Believer who refreshed Paul and was not ashamed of his imprisonment",
+        "correct_answer": "Believer who repeatedly refreshed Paul and searched for him in Rome",
         "incorrect_answers": [
           "Early Christian missionary and tentmaker",
           "First recorded Christian martyr",
@@ -19124,7 +19124,7 @@
         "id": "who-fact-322",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Believer who refreshed Paul and was not ashamed of his imprisonment",
+        "question": "Believer who repeatedly refreshed Paul and searched for him in Rome",
         "correct_answer": "Onesiphorus",
         "incorrect_answers": [
           "Aquila",
@@ -19346,7 +19346,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Serah (daughter of Asher)",
-        "correct_answer": "Daughter of Asher named among Jacob’s descendants",
+        "correct_answer": "Daughter of Asher named among the descendants who went down to Egypt",
         "incorrect_answers": [
           "Woman Abraham married after Sarah’s death",
           "Wife of Abraham and mother of Isaac",
@@ -19362,7 +19362,7 @@
         "id": "who-fact-329",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Daughter of Asher named among Jacob’s descendants",
+        "question": "Daughter of Asher named among the descendants who went down to Egypt",
         "correct_answer": "Serah (daughter of Asher)",
         "incorrect_answers": [
           "Keturah",
@@ -19380,7 +19380,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Shiphrah",
-        "correct_answer": "Hebrew midwife who refused Pharaoh’s order to kill baby boys",
+        "correct_answer": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Puah",
         "incorrect_answers": [
           "Egyptian princess who adopted the infant Moses",
           "Queen who traveled to test Solomon’s wisdom",
@@ -19396,7 +19396,7 @@
         "id": "who-fact-330",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Hebrew midwife who refused Pharaoh’s order to kill baby boys",
+        "question": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Puah",
         "correct_answer": "Shiphrah",
         "incorrect_answers": [
           "Pharaoh’s daughter (rescuer of Moses)",
@@ -19414,7 +19414,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Puah",
-        "correct_answer": "Hebrew midwife who feared God and protected Hebrew sons",
+        "correct_answer": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Shiphrah",
         "incorrect_answers": [
           "Leah’s servant who bore Gad and Asher to Jacob",
           "Christian worker greeted by Paul",
@@ -19430,7 +19430,7 @@
         "id": "who-fact-331",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Hebrew midwife who feared God and protected Hebrew sons",
+        "question": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Shiphrah",
         "correct_answer": "Puah",
         "incorrect_answers": [
           "Zilpah",
@@ -19516,7 +19516,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Uzziel (son of Kohath)",
-        "correct_answer": "Levite and uncle of Moses and Aaron",
+        "correct_answer": "Son of Kohath and uncle of Moses and Aaron",
         "incorrect_answers": [
           "Brother of Moses and first high priest",
           "Father-in-law of Moses and priest of Midian",
@@ -19532,7 +19532,7 @@
         "id": "who-fact-334",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Levite and uncle of Moses and Aaron",
+        "question": "Son of Kohath and uncle of Moses and Aaron",
         "correct_answer": "Uzziel (son of Kohath)",
         "incorrect_answers": [
           "Aaron",
@@ -19550,7 +19550,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Zilpah",
-        "correct_answer": "Leah’s servant who bore Gad and Asher to Jacob",
+        "correct_answer": "Servant of Leah who bore Gad and Asher to Jacob",
         "incorrect_answers": [
           "Rachel's handmaid and mother of Dan and Naphtali",
           "Hebrew midwife who feared God and protected Hebrew sons",
@@ -19566,7 +19566,7 @@
         "id": "who-fact-335",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Leah’s servant who bore Gad and Asher to Jacob",
+        "question": "Servant of Leah who bore Gad and Asher to Jacob",
         "correct_answer": "Zilpah",
         "incorrect_answers": [
           "Bilhah",

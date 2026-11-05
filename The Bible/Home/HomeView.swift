@@ -110,7 +110,6 @@ struct HomeView: View {
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var columns: HomeColumnLayout = HomeLayoutStore.baselineColumns
-    @State private var hasFavoriteLayout: Bool = false
     /// Edit Home mode on the iPad dashboard: cards are arranged in place.
     @State private var isEditingLayout = false
     /// Whether the two-column dashboard (rather than the single column) is on screen.
@@ -134,7 +133,6 @@ struct HomeView: View {
         layoutOrder = loaded.order
         hiddenCards = loaded.hidden
         columns = loaded.columns
-        hasFavoriteLayout = store.hasFavorite
     }
 
     private func saveHomeLayout() {
@@ -211,7 +209,6 @@ struct HomeView: View {
             columns: columns,
             bibleReaderVisible: bibleReaderVisible
         )
-        hasFavoriteLayout = true
     }
 
     private func applyFavoriteLayout() {
@@ -630,8 +627,7 @@ struct HomeView: View {
             usesDashboard: usesDashboard,
             onDone: saveHomeLayout,
             onSaveFavorite: saveFavoriteLayout,
-            onResetToFavorite: applyFavoriteLayout,
-            hasFavorite: hasFavoriteLayout
+            onResetToFavorite: applyFavoriteLayout
         )
     }
 

@@ -9,9 +9,10 @@ struct HomeLayoutEditorView: View {
     let usesDashboard: Bool
     var onDone: () -> Void
 
+    /// Saves the current arrangement as "My Layout".
     var onSaveFavorite: () -> Void
+    /// Replaces the current arrangement with "My Layout".
     var onResetToFavorite: () -> Void
-    var hasFavorite: Bool
 
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
@@ -19,9 +20,12 @@ struct HomeLayoutEditorView: View {
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
     @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
     @State private var highlightedCards: Set<HomeCardID> = []
-    @State private var reorderConfirmation: String?
+    @State private var confirmation: String?
     @State private var reorderFeedbackTask: Task<Void, Never>?
     @State private var isShowingReplaceSavedLayoutConfirmation = false
+    @State private var isShowingRevertConfirmation = false
+    @State private var hasFavorite = false
+    @State private var favoriteSavedAt: Date?
 
     /// The cards listed for reordering on iPhone, in Home order.
     private var listedCards: [HomeCardID] { order }
@@ -50,18 +54,57 @@ struct HomeLayoutEditorView: View {
         bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
         bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
         onDone()
+        confirm("Default layout restored")
     }
 
     private func showAll() {
         hiddenSet.removeAll()
         bibleReaderVisible = true
         onDone()
+        confirm("All cards shown")
     }
 
     private func hideAllCards() {
         hiddenSet = Set(HomeCardID.allCases)
         bibleReaderVisible = false
         onDone()
+        confirm("All cards hidden")
+    }
+
+    // MARK: - My Layout
+
+    private func refreshFavorite() {
+        let store = HomeLayoutStore()
+        hasFavorite = store.hasFavorite
+        favoriteSavedAt = store.favoriteSavedAt
+    }
+
+    private func saveMyLayout() {
+        onSaveFavorite()
+        refreshFavorite()
+        confirm("Saved as My Layout")
+    }
+
+    private func revertToMyLayout() {
+        onResetToFavorite()
+        refreshFavorite()
+        confirm("Reverted to My Layout")
+    }
+
+    private var myLayoutStatus: String {
+        guard hasFavorite else { return "No saved layout yet" }
+        guard let favoriteSavedAt else { return "My Layout is saved" }
+        return "My Layout saved \(favoriteSavedAt.formatted(.dateTime.month(.abbreviated).day()))"
+    }
+
+    /// Shows the floating confirmation, with a haptic and a VoiceOver announcement.
+    private func confirm(_ message: String) {
+        withAnimation(.snappy) {
+            confirmation = message
+        }
+        Haptics.success()
+        AccessibilityNotification.Announcement(message).post()
+        scheduleReorderFeedbackReset()
     }
 
     private var isMinimalHome: Bool {
@@ -88,13 +131,10 @@ struct HomeLayoutEditorView: View {
                     readerColumn: readerColumn
                 )
             highlightedCards = visibleCards
-            reorderConfirmation = "\(preset.title) layout applied"
         }
 
         onDone()
-        Haptics.success()
-        AccessibilityNotification.Announcement("\(preset.title) layout applied. You can customize it below.").post()
-        scheduleReorderFeedbackReset()
+        confirm("\(preset.title) layout applied")
     }
 
     private func moveCard(_ id: HomeCardID, by offset: Int) {
@@ -112,7 +152,7 @@ struct HomeLayoutEditorView: View {
         withAnimation(.snappy) {
             order = cards
             highlightedCards = [id, swappedCard]
-            reorderConfirmation = "\(id.title) moved to position \(destinationIndex + 1)"
+            confirmation = "\(id.title) moved to position \(destinationIndex + 1)"
         }
         onDone()
         Haptics.selection()
@@ -130,19 +170,18 @@ struct HomeLayoutEditorView: View {
     // MARK: - iPad columns
 
     /// Applies a column change, keeps the narrow-width order in step, and confirms it.
-    /// Drag moves pass no confirmation: showing it adds a section while the List is still
-    /// finishing the row move, which the List can't reconcile.
-    private func changeColumns(highlighting ids: Set<HomeCardID>, confirmation: String?, _ change: (inout HomeColumnLayout) -> Void) {
+    /// Drag moves pass no confirmation, so a toast doesn't appear on every drop.
+    private func changeColumns(highlighting ids: Set<HomeCardID>, confirmation message: String?, _ change: (inout HomeColumnLayout) -> Void) {
         withAnimation(.snappy) {
             change(&columns)
             order = columns.flatOrder
             highlightedCards = ids
-            if let confirmation {
-                reorderConfirmation = confirmation
+            if let message {
+                confirmation = message
             }
         }
-        if let confirmation {
-            AccessibilityNotification.Announcement(confirmation).post()
+        if let message {
+            AccessibilityNotification.Announcement(message).post()
         }
         onDone()
         Haptics.selection()
@@ -363,8 +402,9 @@ struct HomeLayoutEditorView: View {
         }
     }
 
+    /// iPad-only panel and width settings, shown after the cards they affect.
     @ViewBuilder
-    private var dashboardSections: some View {
+    private var dashboardOptionSections: some View {
         Section {
             Toggle(
                 "Today's Reading",
@@ -387,7 +427,10 @@ struct HomeLayoutEditorView: View {
         }
 
         verseOfDaySection
+    }
 
+    @ViewBuilder
+    private var dashboardSections: some View {
         ForEach(HomeColumn.allCases, id: \.self) { column in
             Section {
                 // A wide Verse of the Day heads the columns it covers, the reader panel included.
@@ -440,11 +483,11 @@ struct HomeLayoutEditorView: View {
     private func scheduleReorderFeedbackReset() {
         reorderFeedbackTask?.cancel()
         reorderFeedbackTask = Task {
-            try? await Task.sleep(for: .seconds(1.4))
+            try? await Task.sleep(for: .seconds(1.8))
             guard !Task.isCancelled else { return }
             withAnimation(.easeOut(duration: 0.2)) {
                 highlightedCards.removeAll()
-                reorderConfirmation = nil
+                confirmation = nil
             }
         }
     }
@@ -533,17 +576,103 @@ struct HomeLayoutEditorView: View {
         .accessibilityValue("Position \(position) of \(listedCards.count)")
     }
 
-    @ViewBuilder
-    private func footerButton(title: String, systemImage: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Label(title, systemImage: systemImage)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .lineLimit(2)
+    private var homeOptionsSection: some View {
+        Section {
+            Toggle(isOn: $quickSearchVisible) {
+                Label("Show Quick Search on Home", systemImage: "magnifyingglass")
+            }
+            .toggleStyle(StatusColorToggleStyle())
+
+            // iPad keeps Customize Home in the toolbar; iPhone shows it below the cards.
+            if !usesDashboard {
+                Toggle(isOn: $customizeButtonVisible) {
+                    Label("Show ‘Customize Home’ on Home", systemImage: customizeButtonVisible ? "eye" : "eye.slash")
+                }
+                .toggleStyle(StatusColorToggleStyle())
+            }
+        } header: {
+            Label("Home Options", systemImage: "slider.horizontal.3")
+        } footer: {
+            Text("Quick Search lets you find words, phrases, and Bible references directly from Home.")
         }
-        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-        .controlSize(.large)
-        .font(.subheadline)
-        .disabled(disabled)
+    }
+
+    /// One place for every "change many cards at once" action.
+    private var startFromSection: some View {
+        Section {
+            Menu {
+                Section("Layouts") {
+                    ForEach(HomeLayoutPreset.allCases) { preset in
+                        Button(preset.title, systemImage: preset.systemImage) {
+                            apply(preset)
+                        }
+                    }
+                }
+                Section("Visibility") {
+                    Button("Show All Cards", systemImage: "eye", action: showAll)
+                    Button("Hide All Cards", systemImage: "eye.slash", action: hideAllCards)
+                        .disabled(isMinimalHome)
+                }
+                Section {
+                    Button("Restore Default Layout", systemImage: "arrow.counterclockwise", action: resetToDefault)
+                }
+            } label: {
+                HStack {
+                    Label("Start from…", systemImage: "rectangle.3.group")
+                    Spacer()
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .contentShape(.rect)
+            }
+        } header: {
+            Label("Quick Setups", systemImage: "wand.and.stars")
+        } footer: {
+            Text("Replaces your card order and visibility in one step. You can still adjust any card above.")
+        }
+    }
+
+    private var myLayoutSection: some View {
+        Section {
+            Button(
+                "Save as My Layout",
+                systemImage: hasFavorite ? "arrow.triangle.2.circlepath" : "square.and.arrow.down"
+            ) {
+                if hasFavorite {
+                    isShowingReplaceSavedLayoutConfirmation = true
+                } else {
+                    saveMyLayout()
+                }
+            }
+            .confirmationDialog(
+                "Replace My Layout?",
+                isPresented: $isShowingReplaceSavedLayoutConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Replace My Layout", role: .destructive, action: saveMyLayout)
+            } message: {
+                Text("Your previous saved layout will be replaced with the current arrangement.")
+            }
+
+            Button("Revert to My Layout", systemImage: "arrow.uturn.backward") {
+                isShowingRevertConfirmation = true
+            }
+            .disabled(!hasFavorite)
+            .confirmationDialog(
+                "Revert to My Layout?",
+                isPresented: $isShowingRevertConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Revert to My Layout", role: .destructive, action: revertToMyLayout)
+            } message: {
+                Text("Home will switch back to the layout you saved. Your current arrangement will be lost.")
+            }
+        } header: {
+            Label("My Layout", systemImage: "bookmark")
+        } footer: {
+            Text("\(myLayoutStatus). Changes you make here apply to Home right away; save a copy to come back to it later.")
+        }
     }
 
     var body: some View {
@@ -560,43 +689,13 @@ struct HomeLayoutEditorView: View {
                 .listRowSeparator(.hidden)
             }
 
-            HomeLayoutPresetSection(
-                usesDashboard: usesDashboard,
-                onApply: apply,
-                onRestoreDefault: resetToDefault
-            )
-
-            Section {
-                Toggle(isOn: $quickSearchVisible) {
-                    Label("Show Quick Search on Home", systemImage: "magnifyingglass")
-                }
-                .toggleStyle(StatusColorToggleStyle())
-            } header: {
-                Label("Home Shortcuts", systemImage: "bolt")
-            } footer: {
-                Text("Quick Search lets you find words, phrases, and Bible references directly from Home.")
-            }
-
             if usesDashboard {
                 dashboardSections
             } else {
                 Section {
-                    if let reorderConfirmation {
-                        Label(reorderConfirmation, systemImage: "checkmark.circle.fill")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.green)
-                            .padding(.vertical, 4)
-                    }
-
                     ForEach(Array(visibleListedCards.enumerated()), id: \.element) { index, id in
                         layoutRow(for: id, position: index + 1)
                     }
-
-                    // iPad keeps Customize Home in the toolbar; iPhone shows it below the cards.
-                    Toggle(isOn: $customizeButtonVisible) {
-                        Label("Show ‘Customize Home’ on Home", systemImage: customizeButtonVisible ? "eye" : "eye.slash")
-                    }
-                    .toggleStyle(StatusColorToggleStyle())
                 } header: {
                     Label("Visible Cards", systemImage: "eye")
                 } footer: {
@@ -616,55 +715,19 @@ struct HomeLayoutEditorView: View {
                 }
             }
 
-            Section {
-                VStack(alignment: .leading, spacing: 10) {
-                    footerButton(title: "Show All Cards", systemImage: "eye") {
-                        showAll()
-                    }
-                    footerButton(title: "Hide All Cards", systemImage: "eye.slash", disabled: isMinimalHome) {
-                        hideAllCards()
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            } header: {
-                Label("Card Visibility", systemImage: "eye")
-            } footer: {
-                Text("Show or hide every Home card at once. You can still adjust individual cards above.")
+            homeOptionsSection
+
+            if usesDashboard {
+                dashboardOptionSections
             }
 
-            Section {
-                VStack(alignment: .leading, spacing: 10) {
-                    footerButton(
-                        title: "Save Layout",
-                        systemImage: hasFavorite ? "arrow.triangle.2.circlepath" : "square.and.arrow.down"
-                    ) {
-                        if hasFavorite {
-                            isShowingReplaceSavedLayoutConfirmation = true
-                        } else {
-                            onSaveFavorite()
-                        }
-                    }
-                    footerButton(title: "Apply Saved Layout", systemImage: "arrow.clockwise", disabled: !hasFavorite) {
-                        onResetToFavorite()
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            } header: {
-                Label("Saved Layout", systemImage: "bookmark")
-            } footer: {
-                Text("Save this arrangement to restore it later.")
-            }
-
+            startFromSection
+            myLayoutSection
         }
-        // On iPad the confirmation floats over the list so rows don't shift under the next tap.
+        // The confirmation floats over the list so rows don't shift under the next tap.
         .overlay(alignment: .bottom) {
-            if usesDashboard, let reorderConfirmation {
-                Label(reorderConfirmation, systemImage: "checkmark.circle.fill")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.green)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .glassEffect(.regular, in: .capsule)
+            if let confirmation {
+                AppToast(symbol: "checkmark.circle.fill", text: confirmation, tint: .green)
                     .padding(.bottom, 20)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
@@ -673,70 +736,7 @@ struct HomeLayoutEditorView: View {
         }
         .navigationTitle("Home Layout")
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog(
-            "Replace Saved Layout?",
-            isPresented: $isShowingReplaceSavedLayoutConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("Replace Saved Layout", role: .destructive, action: onSaveFavorite)
-        } message: {
-            Text("Your previous saved layout will be replaced with the current arrangement.")
-        }
-    }
-}
-
-private struct HomeLayoutPresetSection: View {
-    let usesDashboard: Bool
-    let onApply: (HomeLayoutPreset) -> Void
-    let onRestoreDefault: () -> Void
-
-    var body: some View {
-        Section {
-            ForEach(HomeLayoutPreset.allCases) { preset in
-                Button {
-                    onApply(preset)
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: preset.systemImage)
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(.tint)
-                            .frame(width: 28)
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(preset.title)
-                                .font(.body.weight(.semibold))
-
-                            Text(detail(for: preset))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.leading)
-                        }
-
-                        Spacer()
-
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .buttonStyle(.plain)
-                .accessibilityHint("Applies this layout. You can customize it below.")
-            }
-
-            Button("Restore Default Layout", systemImage: "arrow.counterclockwise", action: onRestoreDefault)
-        } header: {
-            Label("Home Layout Presets", systemImage: "rectangle.3.group")
-        } footer: {
-            Text("A preset changes your card visibility and order. You can customize any layout below.")
-        }
-    }
-
-    private func detail(for preset: HomeLayoutPreset) -> String {
-        if preset == .minimal && !usesDashboard {
-            return "Continue Reading and Search Scripture only."
-        }
-
-        return preset.detail
+        .onAppear(perform: refreshFavorite)
     }
 }
 
