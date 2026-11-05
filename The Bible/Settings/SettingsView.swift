@@ -12,11 +12,11 @@ struct SettingsView: View {
                 .listRowBackground(HeroCardListRowBackground())
             SettingsReadingAndPrayerLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsPrivacyAndSyncLinksSection()
-                .listRowBackground(HeroCardListRowBackground())
-            SettingsHelpSection()
+            SettingsNotificationsAndPermissionsSection()
                 .listRowBackground(HeroCardListRowBackground())
             SettingsDataManagementLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
+            SettingsAboutSection()
                 .listRowBackground(HeroCardListRowBackground())
 
             #if DEBUG
@@ -37,11 +37,13 @@ struct SettingsView: View {
 private struct SettingsAppLinksSection: View {
     @AppStorage(AppStorageKey.colorSchemePreference) private var colorSchemePreferenceRaw = ColorSchemePreference.system.rawValue
     @AppStorage(LaunchTabPreference.defaultsKey) private var launchTabRaw = LaunchTabPreference.home.rawValue
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsResetGeneration) private var contextualTipsResetGeneration = 0
     @State private var homeVisibleCardCount = 0
     @State private var homeHiddenCardCount = 0
 
     var body: some View {
-        Section("App") {
+        Section {
             NavigationLink {
                 SettingsAppearanceDetailView()
             } label: {
@@ -73,6 +75,29 @@ private struct SettingsAppLinksSection: View {
                 )
             }
 
+            Toggle(isOn: $contextualTipsEnabled) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Contextual Tips")
+                        Text("Show helpful hints while exploring features")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "lightbulb")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("contextualTipsToggle")
+            .onChange(of: contextualTipsEnabled) { wasEnabled, isEnabled in
+                if !wasEnabled && isEnabled {
+                    contextualTipsResetGeneration &+= 1
+                }
+            }
+        } header: {
+            Text("App")
+        } footer: {
+            Text("Tips appear near features such as favorites, reader gestures, verse actions, stats, widgets, timers, Health, and Home customization.")
         }
         .onAppear(perform: updateHomeLayoutSummary)
         .onReceive(NotificationCenter.default.publisher(for: .homeLayoutChanged)) { _ in
@@ -390,14 +415,12 @@ private struct SettingsVerseMarkersCard: View {
     }
 }
 
-private struct SettingsPrivacyAndSyncLinksSection: View {
-    @Environment(CloudKitManager.self) private var cloudKitManager
+private struct SettingsNotificationsAndPermissionsSection: View {
     @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var verseNotificationsEnabled = false
     @AppStorage(StreakReminderScheduler.enabledKey) private var streakNotificationsEnabled = false
-    @State private var lastSyncActivity: Date?
 
     var body: some View {
-        Section("Privacy & Sync") {
+        Section("Notifications & Permissions") {
             NavigationLink {
                 SettingsNotificationsDetailView()
             } label: {
@@ -419,7 +442,25 @@ private struct SettingsPrivacyAndSyncLinksSection: View {
                     systemImage: "hand.raised"
                 )
             }
+        }
+    }
 
+    private var notificationSummary: String {
+        let enabledCount = [verseNotificationsEnabled, streakNotificationsEnabled].filter { $0 }.count
+        switch enabledCount {
+        case 0: return String(localized: "No reminders enabled")
+        case 1: return String(localized: "1 reminder enabled")
+        default: return String(localized: "\(enabledCount) reminders enabled")
+        }
+    }
+}
+
+private struct SettingsDataManagementLinksSection: View {
+    @Environment(CloudKitManager.self) private var cloudKitManager
+    @State private var lastSyncActivity: Date?
+
+    var body: some View {
+        Section("Data") {
             NavigationLink {
                 SettingsiCloudDetailView()
             } label: {
@@ -430,6 +471,26 @@ private struct SettingsPrivacyAndSyncLinksSection: View {
                 )
             }
 
+            NavigationLink {
+                SettingsTriviaQuestionCatalogView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Trivia Questions",
+                    subtitle: "Import an editable question and answer catalog",
+                    systemImage: "questionmark.circle"
+                )
+            }
+
+            // Last, and neutral: the destructive buttons (and their typed confirmation) are on the detail page.
+            NavigationLink {
+                SettingsResetDataDetailView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Reset Data",
+                    subtitle: "Permanently reset game or reading statistics",
+                    systemImage: "trash"
+                )
+            }
         }
         .task {
             updateLastSyncActivity()
@@ -438,15 +499,6 @@ private struct SettingsPrivacyAndSyncLinksSection: View {
             ) {
                 updateLastSyncActivity()
             }
-        }
-    }
-
-    private var notificationSummary: String {
-        let enabledCount = [verseNotificationsEnabled, streakNotificationsEnabled].filter { $0 }.count
-        switch enabledCount {
-        case 0: return String(localized: "No reminders enabled")
-        case 1: return String(localized: "1 reminder enabled")
-        default: return String(localized: "\(enabledCount) reminders enabled")
         }
     }
 
@@ -475,58 +527,9 @@ private struct SettingsPrivacyAndSyncLinksSection: View {
     }
 }
 
-private struct SettingsDataManagementLinksSection: View {
+private struct SettingsAboutSection: View {
     var body: some View {
-        Section {
-            NavigationLink {
-                SettingsTriviaQuestionCatalogView()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Trivia Questions",
-                    subtitle: "Import an editable question and answer catalog",
-                    systemImage: "questionmark.circle"
-                )
-            }
-
-            NavigationLink {
-                SettingsResetDataDetailView()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Reset Data",
-                    subtitle: "Permanently reset game or reading statistics",
-                    systemImage: "trash"
-                )
-            }
-        }
-    }
-}
-
-private struct SettingsHelpSection: View {
-    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
-    @AppStorage(AppStorageKey.contextualTipsResetGeneration) private var contextualTipsResetGeneration = 0
-
-    var body: some View {
-        Section {
-            Toggle(isOn: $contextualTipsEnabled) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Contextual Tips")
-                        Text("Show helpful hints while exploring features")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "lightbulb")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .accessibilityIdentifier("contextualTipsToggle")
-            .onChange(of: contextualTipsEnabled) { wasEnabled, isEnabled in
-                if !wasEnabled && isEnabled {
-                    contextualTipsResetGeneration &+= 1
-                }
-            }
-
+        Section("About") {
             NavigationLink {
                 FeedbackView()
             } label: {
@@ -560,10 +563,6 @@ private struct SettingsHelpSection: View {
                 }
             }
             .accessibilityIdentifier("appVersionRow")
-        } header: {
-            Text("Support")
-        } footer: {
-            Text("Tips appear near features such as favorites, reader gestures, verse actions, stats, widgets, timers, Health, and Home customization.")
         }
     }
 
