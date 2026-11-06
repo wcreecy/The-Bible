@@ -121,6 +121,9 @@ struct HomeLayoutEditorView: View {
         withAnimation(.snappy) {
             order = orderedCards
             hiddenSet = hiddenCards
+            if preset == .minimal {
+                quickSearchVisible = false
+            }
             bibleReaderVisible = readerVisible
             bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
             columns = usesDashboard
@@ -204,6 +207,13 @@ struct HomeLayoutEditorView: View {
         let swappedCard = cards[row + offset]
         changeColumns(highlighting: [id, swappedCard], confirmation: "\(id.title) moved to position \(row + offset + 1)") {
             $0.move(id, by: offset)
+        }
+    }
+
+    private func move(_ id: HomeCardID, to destination: HomeColumn) {
+        guard columns.column(of: id) != destination else { return }
+        changeColumns(highlighting: [id], confirmation: "\(id.title) moved to \(destination.title.lowercased())") {
+            $0.move(id, to: destination)
         }
     }
 
@@ -315,9 +325,11 @@ struct HomeLayoutEditorView: View {
         .accessibilityHint("Changes whether this card is available on Home")
     }
 
+    private func destinationColumns(excluding column: HomeColumn) -> [HomeColumn] {
+        HomeColumn.allCases.filter { $0 != column }
+    }
+
     private func columnRow(for id: HomeCardID, in column: HomeColumn, position: Int) -> some View {
-        let leftColumn = column.neighbor(by: -1)
-        let rightColumn = column.neighbor(by: 1)
         return HStack {
             Image(systemName: id.systemImage)
                 .foregroundStyle(.secondary)
@@ -330,26 +342,41 @@ struct HomeLayoutEditorView: View {
 
             visibilityButton(for: id)
 
+            Menu {
+                ForEach(destinationColumns(excluding: column), id: \.self) { destination in
+                    Button("Move to \(destination.shortTitle)", systemImage: columnSymbol(destination)) {
+                        move(id, to: destination)
+                    }
+                }
+            } label: {
+                Image(systemName: "arrow.left.and.right.circle")
+                    .font(.title3)
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.tint)
+            .accessibilityLabel("Move \(id.title) to another column")
+
             HStack(spacing: 2) {
                 Button {
-                    moveAcross(id, by: -1)
+                    moveInColumn(id, by: -1)
                 } label: {
-                    Image(systemName: "arrow.left.circle")
+                    Image(systemName: "arrow.up.circle")
                         .font(.title3)
                         .frame(width: 32, height: 32)
                 }
-                .disabled(leftColumn == nil)
-                .accessibilityLabel("Move \(id.title) left")
+                .disabled(!columns.canMove(id, by: -1))
+                .accessibilityLabel("Move \(id.title) up")
 
                 Button {
-                    moveAcross(id, by: 1)
+                    moveInColumn(id, by: 1)
                 } label: {
-                    Image(systemName: "arrow.right.circle")
+                    Image(systemName: "arrow.down.circle")
                         .font(.title3)
                         .frame(width: 32, height: 32)
                 }
-                .disabled(rightColumn == nil)
-                .accessibilityLabel("Move \(id.title) right")
+                .disabled(!columns.canMove(id, by: 1))
+                .accessibilityLabel("Move \(id.title) down")
             }
             .buttonStyle(.plain)
             .foregroundStyle(.tint)
@@ -359,22 +386,6 @@ struct HomeLayoutEditorView: View {
             highlightedCards.contains(id) ? Color.accentColor.opacity(0.14) : Color.clear,
             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
         )
-        .swipeActions(edge: .leading) {
-            if let leftColumn {
-                Button("Move to \(leftColumn.title)", systemImage: "arrow.left") {
-                    moveAcross(id, by: -1)
-                }
-                .tint(.accentColor)
-            }
-        }
-        .swipeActions(edge: .trailing) {
-            if let rightColumn {
-                Button("Move to \(rightColumn.title)", systemImage: "arrow.right") {
-                    moveAcross(id, by: 1)
-                }
-                .tint(.accentColor)
-            }
-        }
         .accessibilityElement(children: .combine)
         .accessibilityValue("\(column.title), position \(position) of \(columns.stackedCards(in: column).count), \(isVisible(id) ? "shown" : "hidden")")
         .accessibilityActions {
@@ -383,12 +394,6 @@ struct HomeLayoutEditorView: View {
             }
             if columns.canMove(id, by: 1) {
                 Button("Move down") { moveInColumn(id, by: 1) }
-            }
-            if let leftColumn {
-                Button("Move to \(leftColumn.title)") { moveAcross(id, by: -1) }
-            }
-            if let rightColumn {
-                Button("Move to \(rightColumn.title)") { moveAcross(id, by: 1) }
             }
             Button(isVisible(id) ? "Hide" : "Show") { toggleVisibility(id) }
         }
@@ -402,7 +407,7 @@ struct HomeLayoutEditorView: View {
         }
     }
 
-    /// iPad-only panel and width settings, shown after the cards they affect.
+    /// iPad-only panel settings, shown after the card arrangement controls.
     @ViewBuilder
     private var dashboardOptionSections: some View {
         Section {
@@ -425,8 +430,6 @@ struct HomeLayoutEditorView: View {
         } footer: {
             Text("A full-height reading panel at the top of its column; any cards in that column appear below it. It shows your bookmark, or the Verse of the Day in its chapter.")
         }
-
-        verseOfDaySection
     }
 
     @ViewBuilder
@@ -454,7 +457,7 @@ struct HomeLayoutEditorView: View {
                 }
 
                 if columns.stackedCards(in: column).filter(isVisible).isEmpty {
-                    Text("No cards. Use the arrows on a card to move it here.")
+                    Text("No cards in this column.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -462,7 +465,7 @@ struct HomeLayoutEditorView: View {
                 Label(column.title, systemImage: columnSymbol(column))
             } footer: {
                 if column == HomeColumn.allCases.last {
-                    Text("Drag cards to reorder them within a column, and use the arrows to move a card to the next column. You can also tap Edit Home on the Home screen to arrange cards in place.")
+                    Text("Drag cards or use the arrows to reorder them within a column. Use the move menu to send a card to another column.")
                 }
             }
         }
@@ -576,14 +579,22 @@ struct HomeLayoutEditorView: View {
         .accessibilityValue("Position \(position) of \(listedCards.count)")
     }
 
-    private var homeOptionsSection: some View {
+    private var quickSearchSection: some View {
         Section {
             Toggle(isOn: $quickSearchVisible) {
                 Label("Show Quick Search on Home", systemImage: "magnifyingglass")
             }
             .toggleStyle(StatusColorToggleStyle())
 
-            // iPad keeps Customize Home in the toolbar; iPhone shows it below the cards.
+        } header: {
+            Label("Quick Search", systemImage: "magnifyingglass")
+        } footer: {
+            Text("Quick Search lets you find words, phrases, and Bible references directly from Home.")
+        }
+    }
+
+    private var homeOptionsSection: some View {
+        Section {
             if !usesDashboard {
                 Toggle(isOn: $customizeButtonVisible) {
                     Label("Show ‘Customize Home’ on Home", systemImage: customizeButtonVisible ? "eye" : "eye.slash")
@@ -682,7 +693,7 @@ struct HomeLayoutEditorView: View {
                     id: "home.layoutEditor",
                     title: "Make Home yours",
                     message: usesDashboard
-                        ? "Use the eye buttons to show or hide cards, drag to reorder, and the arrows to move cards between the three columns."
+                        ? "Use the eye buttons to show or hide cards, drag or use the arrows to reorder, and use the move menu to choose a column."
                         : "Use the eye buttons to show or hide cards, and the arrows to reorder them.",
                     systemImage: "rectangle.grid.1x2"
                 )
@@ -690,8 +701,12 @@ struct HomeLayoutEditorView: View {
             }
 
             if usesDashboard {
+                quickSearchSection
+                verseOfDaySection
                 dashboardSections
             } else {
+                quickSearchSection
+
                 Section {
                     ForEach(Array(visibleListedCards.enumerated()), id: \.element) { index, id in
                         layoutRow(for: id, position: index + 1)
@@ -713,9 +728,9 @@ struct HomeLayoutEditorView: View {
                         Text("These cards are hidden from Home. Show a card to make it available there.")
                     }
                 }
-            }
 
-            homeOptionsSection
+                homeOptionsSection
+            }
 
             if usesDashboard {
                 dashboardOptionSections

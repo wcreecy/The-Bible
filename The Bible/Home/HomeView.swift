@@ -712,16 +712,6 @@ struct HomeView: View {
                     }
                 }
             }
-            if isPad && !isEditingLayout {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        layoutEditor(usesDashboard: true)
-                    } label: {
-                        Image(systemName: "slider.horizontal.3")
-                    }
-                    .accessibilityLabel("Customize Home")
-                }
-            }
         }
         .navigationDestination(isPresented: $showsSetupLayoutEditor) {
             layoutEditor(usesDashboard: isPad)

@@ -213,6 +213,15 @@ struct HomeColumnLayout: Equatable {
         return column(of: id)?.neighbor(by: offset) != nil
     }
 
+    /// Moves a non-spanning card directly to a named column, keeping its row when possible.
+    mutating func move(_ id: HomeCardID, to destination: HomeColumn) {
+        guard !isSpanning(id),
+              let source = column(of: id), source != destination,
+              let row = self[source].firstIndex(of: id) else { return }
+        self[source].remove(at: row)
+        self[destination].insert(id, at: min(row, self[destination].count))
+    }
+
     /// Moves a card up (negative offset) or down (positive offset) among the cards stacked
     /// in its column. A spanning card stays at the top.
     mutating func move(_ id: HomeCardID, by offset: Int) {

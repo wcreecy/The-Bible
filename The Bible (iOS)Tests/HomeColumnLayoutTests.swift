@@ -65,6 +65,11 @@ struct HomeColumnLayoutTests {
         #expect(layout.right.prefix(2) == [.today, .timer])
         #expect(!layout.canMove(.today, by: -1))
 
+        // The Settings column menu can send a card directly to any named column.
+        layout.move(.today, to: .left)
+        #expect(layout.left.prefix(3) == [.today, .verseOfDay, .streaks])
+        #expect(layout.column(of: .today) == .left)
+
         // A move past either edge changes nothing.
         let before = layout
         layout.moveAcross(.today, by: 1)
