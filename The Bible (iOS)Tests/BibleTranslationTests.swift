@@ -154,6 +154,83 @@ struct BibleTranslationTests {
         #expect(fourteen.contains("widows"))
     }
 
+    /// Some translations print neighboring verses in the opposite order (Matthew 23:13-14 in the
+    /// WEB, Philippians 1:16-17 in the ASV). The verse counts still match, so only the wording
+    /// shows it. `build_translation.py` swaps each known case back; this catches any it missed.
+    @Test(arguments: BibleTranslation.allCases.filter { $0 != .kjv })
+    func noNeighboringVersesAreInADifferentOrderThanTheKJV(_ translation: BibleTranslation) async {
+        let kjv = await BibleRepository.shared.loadAllBooks(for: .kjv)
+        let books = await BibleRepository.shared.loadAllBooks(for: translation)
+
+        var swapped: [String] = []
+        for (book, kjvBook) in zip(books, kjv) {
+            for (chapter, kjvChapter) in zip(book.chapters, kjvBook.chapters) {
+                for index in Self.transposedPairs(
+                    in: chapter.verses.map(\.text),
+                    comparedWith: kjvChapter.verses.map(\.text)
+                ) {
+                    swapped.append("\(book.name) \(chapter.number):\(index + 1)-\(index + 2)")
+                }
+            }
+        }
+        #expect(
+            swapped.isEmpty,
+            "\(translation.abbreviation) prints these verses in a different order than the KJV: \(swapped.joined(separator: ", ")). Swap them back in Scripts/build_translation.py."
+        )
+    }
+
+    @Test
+    func versesMovedToTheKJVOrderCarryAFootnote() throws {
+        #expect(BibleTranslation.web.printedVerseNumber(book: "Matthew", chapter: 23, verse: 13) == 14)
+        #expect(BibleTranslation.asv.printedVerseNumber(book: "Philippians", chapter: 1, verse: 16) == 17)
+        let note = try #require(BibleTranslation.asv.reorderNote(book: "Philippians", chapter: 1, verse: 17))
+        #expect(note.contains("ASV prints this verse as Philippians 1:16"))
+        // Other translations, and other verses, have no footnote.
+        #expect(BibleTranslation.kjv.reorderNote(book: "Matthew", chapter: 23, verse: 13) == nil)
+        #expect(BibleTranslation.web.reorderNote(book: "Philippians", chapter: 1, verse: 16) == nil)
+        #expect(BibleTranslation.web.reorderNote(book: "Matthew", chapter: 23, verse: 15) == nil)
+    }
+
+    @Test
+    func theTranspositionCheckSpotsSwappedVerses() {
+        let kjv = [
+            "The one preach Christ of contention, not sincerely, supposing to add affliction to my bonds:",
+            "But the other of love, knowing that I am set for the defence of the gospel.",
+            "What then? notwithstanding, every way, Christ is preached.",
+        ]
+        #expect(Self.transposedPairs(in: kjv, comparedWith: kjv).isEmpty)
+        #expect(Self.transposedPairs(in: [kjv[1], kjv[0], kjv[2]], comparedWith: kjv) == [0])
+        // A left-out (empty) verse is never a swap.
+        #expect(Self.transposedPairs(in: [kjv[0], "", kjv[2]], comparedWith: kjv).isEmpty)
+    }
+
+    /// The indexes of verses that trade places with the next one: the two read more like each
+    /// other's KJV verse than their own, by a wide margin. Translations word verses differently
+    /// (names, archaic forms), but that doesn't make a neighbor the better match for both.
+    private static func transposedPairs(in verses: [String], comparedWith kjv: [String]) -> [Int] {
+        let margin = 0.2
+        let count = min(verses.count, kjv.count)
+        guard count > 1 else { return [] }
+        let words = verses.prefix(count).map(wordSet)
+        let kjvWords = kjv.prefix(count).map(wordSet)
+
+        return (0..<(count - 1)).filter { index in
+            guard !words[index].isEmpty, !words[index + 1].isEmpty else { return false }
+            let straight = similarity(words[index], kjvWords[index]) + similarity(words[index + 1], kjvWords[index + 1])
+            let crossed = similarity(words[index], kjvWords[index + 1]) + similarity(words[index + 1], kjvWords[index])
+            return crossed > straight + margin
+        }
+    }
+
+    private static func wordSet(_ text: String) -> Set<String> {
+        Set(text.lowercased().split { !$0.isLetter }.map(String.init))
+    }
+
+    private static func similarity(_ lhs: Set<String>, _ rhs: Set<String>) -> Double {
+        let union = lhs.union(rhs).count
+        return union == 0 ? 0 : Double(lhs.intersection(rhs).count) / Double(union)
+    }
+
     @Test
     func theLeftOutNoteGivesEachTranslationsOwnReason() {
         let asv = Verse.omittedNote(in: .asv)

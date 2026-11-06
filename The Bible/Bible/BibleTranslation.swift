@@ -50,6 +50,25 @@ nonisolated enum BibleTranslation: String, CaseIterable, Identifiable, Sendable 
         }
     }
 
+    /// Where this translation prints a verse that the app moves to match the KJV's numbering,
+    /// or nil when the verse is where the translation prints it. These are the swaps made in
+    /// `Scripts/build_translation.py` (`reorder_web`, `reorder_asv`); keep the two in step.
+    func printedVerseNumber(book: String, chapter: Int, verse: Int) -> Int? {
+        switch (self, book, chapter, verse) {
+        case (.web, "Matthew", 23, 13): 14
+        case (.web, "Matthew", 23, 14): 13
+        case (.asv, "Philippians", 1, 16): 17
+        case (.asv, "Philippians", 1, 17): 16
+        default: nil
+        }
+    }
+
+    /// A footnote for a verse shown in a different place than this translation prints it.
+    func reorderNote(book: String, chapter: Int, verse: Int) -> String? {
+        guard let printed = printedVerseNumber(book: book, chapter: chapter, verse: verse) else { return nil }
+        return "The \(abbreviation) prints this verse as \(book) \(chapter):\(printed). It’s shown here as verse \(verse), in the KJV’s order, so verse numbers match across translations."
+    }
+
     /// The bundled text, in the shape `BibleData.decodeBooks(from:)` reads.
     var resourceName: String {
         "\(abbreviation)Text"

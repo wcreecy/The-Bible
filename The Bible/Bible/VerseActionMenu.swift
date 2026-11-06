@@ -231,6 +231,7 @@ struct VerseActionMenuContent: View {
     @State private var isShowingNoteEditor = false
     @State private var isShowingMentions = false
     @State private var imageComposerVerse: VerseActionReference?
+    @State private var isShowingCompare = false
 
     let verse: VerseActionReference
     let saved: SavedVerseCollections
@@ -309,6 +310,15 @@ struct VerseActionMenuContent: View {
                     NoteMentionsView(verse: verse)
                 }
             }
+            .sheet(isPresented: $isShowingCompare) {
+                NavigationStack {
+                    VerseCompareView(
+                        bookName: verse.bookName,
+                        chapter: verse.chapterNumber,
+                        verse: verse.verseNumber
+                    )
+                }
+            }
             .fullScreenCover(item: $imageComposerVerse) { verse in
                 VerseImageComposerView(verse: verse)
             }
@@ -353,6 +363,13 @@ struct VerseActionMenuContent: View {
                 }
                 .accessibilityLabel(pinActionTitle)
 
+                if BibleTranslation.available.count > 1 {
+                    Button { isShowingCompare = true } label: {
+                        Image(systemName: "rectangle.split.3x1")
+                    }
+                    .accessibilityLabel("Compare Translations")
+                }
+
                 Button(action: copy) {
                     Image(systemName: "doc.on.doc")
                 }
@@ -383,6 +400,8 @@ struct VerseActionMenuContent: View {
                     noteMenuButton(notifiesPresentation: true)
                     mentionsButton
                     bookmarkMenuButton
+
+                    compareMenuButton
 
                     Divider()
 
@@ -417,6 +436,7 @@ struct VerseActionMenuContent: View {
                     mentionsButton
                     bookmarkMenuButton
                     pinMenuButton
+                    compareMenuButton
                     copyMenuButton
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -435,6 +455,7 @@ struct VerseActionMenuContent: View {
                 favoriteMenuButton
                 bookmarkMenuButton
                 pinMenuButton
+                compareMenuButton
                 copyMenuButton
                 shareMenuButton
             } label: {
@@ -488,6 +509,16 @@ struct VerseActionMenuContent: View {
     private var pinMenuButton: some View {
         Button(action: togglePin) {
             Label(pinActionTitle, systemImage: isPinned ? "pin.fill" : "pin")
+        }
+    }
+
+    /// Only offered when there is more than one translation to compare.
+    @ViewBuilder
+    private var compareMenuButton: some View {
+        if BibleTranslation.available.count > 1 {
+            Button { isShowingCompare = true } label: {
+                Label("Compare Translations", systemImage: "rectangle.split.3x1")
+            }
         }
     }
 

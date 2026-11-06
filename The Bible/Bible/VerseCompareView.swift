@@ -165,24 +165,28 @@ struct VerseCompareView: View {
     private var comparison: some View {
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .top, spacing: 12) {
-                cards.map { $0.frame(minWidth: minimumColumnWidth, maxWidth: .infinity, alignment: .topLeading) }
+                ForEach(model.translations) { translation in
+                    card(for: translation)
+                        .frame(minWidth: minimumColumnWidth, maxWidth: .infinity, alignment: .topLeading)
+                }
             }
             VStack(spacing: 12) {
-                cards.map { $0.frame(maxWidth: .infinity, alignment: .leading) }
+                ForEach(model.translations) { translation in
+                    card(for: translation)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
         }
     }
 
-    private var cards: [VerseCompareCard] {
-        model.translations.map { translation in
-            VerseCompareCard(
-                translation: translation,
-                bookName: model.bookName,
-                chapter: model.chapter,
-                number: model.verse,
-                verse: model.verse(in: translation)
-            )
-        }
+    private func card(for translation: BibleTranslation) -> VerseCompareCard {
+        VerseCompareCard(
+            translation: translation,
+            bookName: model.bookName,
+            chapter: model.chapter,
+            number: model.verse,
+            verse: model.verse(in: translation)
+        )
     }
 }
 
@@ -223,6 +227,12 @@ private struct VerseCompareCard: View {
             }
 
             content
+
+            if let note = translation.reorderNote(book: bookName, chapter: chapter, verse: number) {
+                Text(note)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 14))

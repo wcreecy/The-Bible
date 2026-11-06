@@ -100,6 +100,14 @@ struct ReadingVerseRow: View {
                     }
                 }
                 .font(.caption)
+
+                if let note = BibleRepository.shared.activeTranslation
+                    .reorderNote(book: bookName, chapter: chapterNumber, verse: verse.number) {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .padding(.horizontal)
         }

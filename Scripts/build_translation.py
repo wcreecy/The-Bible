@@ -67,8 +67,22 @@ def reorder_web(books):
     return books
 
 
+def reorder_asv(books):
+    """The ASV follows the critical-text order of Philippians 1:16-17: the verse about love comes
+    first. The KJV (and so the app's numbering) has 1:16 as "the one preach Christ of contention"
+    and 1:17 as "the other of love", so the two are swapped back. Each verse keeps its own
+    wording and punctuation."""
+    for book in books:
+        if book["name"] == "Philippians":
+            chapter = book["chapters"][0]
+            assert "of love" in chapter[15] and "faction" in chapter[16], "Philippians 1:16-17 are not as expected"
+            chapter[15], chapter[16] = chapter[16], chapter[15]
+    return books
+
+
 # Per-translation fixes that need whole books rather than one verse at a time.
 BOOK_FIXES = {
+    "asv": reorder_asv,
     "web": reorder_web,
 }
 
