@@ -71,6 +71,9 @@ public struct WordSearchEngine {
         "WHETHER", "WHILE", "WITHIN", "WITHOUT", "WHATSOEVER", "WHOSOEVER", "HIMSELF", "THEMSELVES",
         "THYSELF", "MYSELF", "OURSELVES", "YOURSELVES", "HERSELF", "ITSELF", "THEREOF", "THEREIN",
         "HEREIN", "WHEREIN", "THITHER", "HITHER", "WHENCE", "THENCE", "HENCE", "LEST", "SHOULDEST",
+        // Contractions split at the apostrophe ("doesn’t" → "DOESN", "T"), which the WEB uses freely.
+        "DOESN", "DIDN", "DON", "ISN", "WASN", "WEREN", "AREN", "HASN", "HAVEN", "HADN", "WON",
+        "WOULDN", "COULDN", "SHOULDN", "AIN", "MUSTN", "NEEDN",
     ]
 
     /// The verse's longest distinct words that fit the grid, skipping filler words.

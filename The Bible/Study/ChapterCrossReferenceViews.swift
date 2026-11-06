@@ -104,7 +104,7 @@ private struct CrossReferenceGroup: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(source.reference.displayTitle)
+            Text("\(source.reference.displayTitle) · \(BibleRepository.shared.activeTranslation.abbreviation)")
                 .font(.headline)
 
             Text("“\(source.excerpt)”")
@@ -216,7 +216,7 @@ private struct ScriptureConnectionPassage: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(reference.displayTitle)
+            Text("\(reference.displayTitle) · \(BibleRepository.shared.activeTranslation.abbreviation)")
                 .font(.headline)
                 .foregroundStyle(.tint)
 
@@ -250,7 +250,7 @@ private struct ScriptureExcerpt: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(reference.displayTitle)
+            Text("\(reference.displayTitle) · \(BibleRepository.shared.activeTranslation.abbreviation)")
                 .font(.subheadline.weight(.semibold))
 
             Text("“\(excerpt)”")
@@ -360,6 +360,7 @@ private enum ScriptureCrossReferenceLoader {
             .filter { $0.number >= reference.startChapter && $0.number <= reference.endChapter }
             .flatMap { chapter in
                 chapter.verses.filter { verse in
+                    if verse.isOmitted { return false }
                     guard let startVerse = reference.startVerse else { return true }
                     if chapter.number == reference.startChapter, verse.number < startVerse { return false }
                     if let endVerse = reference.endVerse,

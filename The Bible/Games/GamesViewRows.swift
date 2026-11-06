@@ -200,19 +200,23 @@ struct GameNavigationRow: View {
 
     var body: some View {
         Button(action: onSelect) {
-            if dynamicTypeSize.isAccessibilitySize {
-                GameAccessibilityRow(route: route, progress: progress)
-            } else {
-                GameStandardRow(
-                    route: route,
-                    progress: progress,
-                    usesExpandedLayout: usesExpandedLayout
-                )
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    GameAccessibilityRow(route: route, progress: progress)
+                } else {
+                    GameStandardRow(
+                        route: route,
+                        progress: progress,
+                        usesExpandedLayout: usesExpandedLayout
+                    )
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : (usesExpandedLayout ? 9 : 4))
+            // The shape belongs on the label: a plain button only responds where its label
+            // draws, so on a wide iPad row the empty middle ignored taps.
+            .contentShape(Rectangle())
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : (usesExpandedLayout ? 9 : 4))
-        .contentShape(Rectangle())
         .foregroundStyle(.primary)
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)

@@ -389,7 +389,7 @@ private struct StudyVersePreview: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(reference)
+            Text("\(reference) · \(BibleRepository.shared.activeTranslation.abbreviation)")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.teal)
         }

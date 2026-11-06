@@ -54,6 +54,25 @@ FIXES = {
 }
 
 
+def reorder_web(books):
+    """The WEB follows the Byzantine order of Matthew 23:13-14: the widows' houses verse comes
+    first. The app keys saved verses, notes, study content, and cross references by the KJV's
+    numbering, where 23:13 is "ye shut up the kingdom" and 23:14 is the widows, so the two are
+    swapped back. Each verse keeps its own wording and punctuation."""
+    for book in books:
+        if book["name"] == "Matthew":
+            chapter = book["chapters"][22]
+            assert "widows" in chapter[12] and "shut up" in chapter[13], "Matthew 23:13-14 are not as expected"
+            chapter[12], chapter[13] = chapter[13], chapter[12]
+    return books
+
+
+# Per-translation fixes that need whole books rather than one verse at a time.
+BOOK_FIXES = {
+    "web": reorder_web,
+}
+
+
 def normalized(text):
     return re.sub(r"\s+", " ", text).strip()
 
@@ -71,6 +90,7 @@ def main():
     source = json.loads(source_path.read_text(encoding="utf-8"))
     kjv = json.loads(KJV.read_text(encoding="utf-8"))
     fix = FIXES.get(translation, lambda text: text)
+    source = BOOK_FIXES.get(translation, lambda books: books)(source)
 
     problems = []
     omitted = []

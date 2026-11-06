@@ -7,6 +7,7 @@ import Foundation
 nonisolated enum BibleTranslation: String, CaseIterable, Identifiable, Sendable {
     case kjv
     case asv
+    case web
 
     static let `default`: BibleTranslation = .kjv
 
@@ -17,6 +18,7 @@ nonisolated enum BibleTranslation: String, CaseIterable, Identifiable, Sendable 
         switch self {
         case .kjv: "KJV"
         case .asv: "ASV"
+        case .web: "WEB"
         }
     }
 
@@ -24,6 +26,7 @@ nonisolated enum BibleTranslation: String, CaseIterable, Identifiable, Sendable 
         switch self {
         case .kjv: "King James Version"
         case .asv: "American Standard Version"
+        case .web: "World English Bible"
         }
     }
 
@@ -32,6 +35,18 @@ nonisolated enum BibleTranslation: String, CaseIterable, Identifiable, Sendable 
         switch self {
         case .kjv: "Public domain."
         case .asv: "1901. Public domain."
+        case .web: "Public domain. The name “World English Bible” is reserved for faithful copies of this translation."
+        }
+    }
+
+    /// Why this translation leaves out the verses it omits (shown where the verse would be).
+    /// It's each translation's own reason: the WEB follows the majority of Greek manuscripts,
+    /// the ASV the oldest.
+    var omissionReason: String {
+        switch self {
+        case .kjv: "it is part of the text"
+        case .asv: "the oldest manuscripts don’t include it"
+        case .web: "most Greek manuscripts don’t include it"
         }
     }
 

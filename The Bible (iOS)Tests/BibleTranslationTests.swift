@@ -126,6 +126,60 @@ struct BibleTranslationTests {
     }
 
     @Test
+    func webLeavesOutFourVersesAndKeepsTheRest() async throws {
+        let books = await BibleRepository.shared.loadAllBooks(for: .web)
+        func verse(_ book: String, _ chapter: Int, _ number: Int) throws -> Verse {
+            let found = books.first { $0.name == book }?
+                .chapters.first { $0.number == chapter }?
+                .verses.first { $0.number == number }
+            return try #require(found)
+        }
+        for (book, chapter, number) in [("Luke", 17, 36), ("Acts", 8, 37), ("Acts", 15, 34), ("Acts", 24, 7)] {
+            #expect(try verse(book, chapter, number).isOmitted, "\(book) \(chapter):\(number) should be left out")
+        }
+        // The WEB's Byzantine basis keeps verses the ASV leaves out.
+        #expect(try !verse("Matthew", 17, 21).isOmitted)
+        #expect(books.flatMap(\.chapters).flatMap(\.verses).filter(\.isOmitted).count == 4)
+    }
+
+    /// The WEB prints the widows' houses verse first; the build puts it back in the KJV's order,
+    /// so a verse number means the same thing in every translation.
+    @Test
+    func webMatthew23FollowsTheKJVOrder() async throws {
+        let books = await BibleRepository.shared.loadAllBooks(for: .web)
+        let chapter = try #require(books.first { $0.name == "Matthew" }?.chapters.first { $0.number == 23 })
+        let thirteen = try #require(chapter.verses.first { $0.number == 13 }).text
+        let fourteen = try #require(chapter.verses.first { $0.number == 14 }).text
+        #expect(thirteen.contains("shut up"))
+        #expect(fourteen.contains("widows"))
+    }
+
+    @Test
+    func theLeftOutNoteGivesEachTranslationsOwnReason() {
+        let asv = Verse.omittedNote(in: .asv)
+        let web = Verse.omittedNote(in: .web)
+        #expect(asv.contains("oldest manuscripts"))
+        #expect(web.contains("most Greek manuscripts"))
+        #expect(asv != web)
+    }
+
+    /// The WEB uses contractions freely; splitting "doesn’t" at the apostrophe must not leave
+    /// "DOESN" as a puzzle answer.
+    @Test
+    func wordSearchIgnoresContractionFragments() {
+        let engine = WordSearchEngine(size: 14, difficulty: .hard)
+        let words = engine.extractKeywords(
+            from: "He doesn’t know why it isn’t true, and they wouldn’t believe righteousness",
+            minLen: 4,
+            countRange: 1...10
+        )
+        #expect(words.contains("RIGHTEOUSNESS"))
+        #expect(!words.contains("DOESN"))
+        #expect(!words.contains("ISN"))
+        #expect(!words.contains("WOULDN"))
+    }
+
+    @Test
     func asvLeavesOutVersesTheOldestManuscriptsLack() async throws {
         let books = await BibleRepository.shared.loadAllBooks(for: .asv)
         let matthew = try #require(books.first { $0.name == "Matthew" })

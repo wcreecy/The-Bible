@@ -515,7 +515,9 @@ struct ScripturePassageSheet: View {
     @State private var persistenceFailure: PersistenceFailure?
 
     private var favoriteTarget: VerseActionReference? {
-        guard let section = sections.first, let verse = section.verses.first else { return nil }
+        // A verse the translation leaves out has nothing to save.
+        guard let section = sections.first,
+              let verse = section.verses.first(where: { !$0.isOmitted }) else { return nil }
         return VerseActionReference(
             bookName: reference.bookName,
             chapterNumber: section.chapter,
@@ -560,14 +562,25 @@ struct ScripturePassageSheet: View {
                                             .font(.caption.bold())
                                             .foregroundStyle(.secondary)
                                             .frame(minWidth: 24, alignment: .trailing)
-                                        Text(verse.text)
-                                            .font(.body)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        if verse.isOmitted {
+                                            Text(Verse.omittedNote(in: BibleRepository.shared.activeTranslation))
+                                                .font(.subheadline.italic())
+                                                .foregroundStyle(.secondary)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                        } else {
+                                            Text(verse.text)
+                                                .font(.body)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
                                     }
                                 }
                             }
                         }
                         .textSelection(.enabled)
+
+                        Text(BibleRepository.shared.activeTranslation.name)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
 
                         if isTruncated {
                             Text("Showing \(reference.bookName) \(reference.startChapter). Open in Bible to keep reading.")
@@ -639,10 +652,10 @@ struct ScripturePassageSheet: View {
 
     private var shareText: String {
         let body = sections.map { section in
-            section.verses.map { "\(section.chapter):\($0.number) \($0.text)" }.joined(separator: "\n")
+            section.verses.filter { !$0.isOmitted }.map { "\(section.chapter):\($0.number) \($0.text)" }.joined(separator: "\n")
         }
         .joined(separator: "\n\n")
-        return "\(reference.displayTitle)\n\n\(body)"
+        return "\(reference.displayTitle) \(BibleRepository.shared.activeTranslation.abbreviation)\n\n\(body)"
     }
 
     private func toggleFavorite() {

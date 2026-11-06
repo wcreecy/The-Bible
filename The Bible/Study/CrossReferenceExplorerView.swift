@@ -422,7 +422,7 @@ private struct CrossReferencePassagePreview: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(passage.reference.displayTitle)
+            Text("\(passage.reference.displayTitle) · \(BibleRepository.shared.activeTranslation.abbreviation)")
                 .font(.headline)
                 .foregroundStyle(.tint)
 
@@ -527,6 +527,7 @@ private enum CrossReferencePreviewLoader {
             .filter { $0.number >= reference.startChapter && $0.number <= reference.endChapter }
             .flatMap { chapter in
                 chapter.verses.filter { verse in
+                    if verse.isOmitted { return false }
                     guard let startVerse = reference.startVerse else { return true }
                     if chapter.number == reference.startChapter, verse.number < startVerse { return false }
                     if let endVerse = reference.endVerse,

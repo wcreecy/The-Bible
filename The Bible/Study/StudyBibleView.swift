@@ -119,6 +119,13 @@ struct StudyBibleView: View {
                             StudyBookTile(book: book, onSelect: onSelectBook)
                         }
                     }
+
+                    // Each translation has its own wording, so its own word counts.
+                    Text("Word counts are for the \(BibleRepository.shared.activeTranslation.name).")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 4)
                 }
                 .padding()
             }

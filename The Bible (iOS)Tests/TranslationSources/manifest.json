@@ -2,5 +2,9 @@
   "asv": {
     "output": "9c3ed0d6000fd7175c8149dbb3839e9c1436241bac80c9ada598b90cd2dde275",
     "source": "c65997e0b27e08762edd804f7202ed595c69d65151e9ff7877bbfa65bd3d0fdb"
+  },
+  "web": {
+    "output": "a5c7e16e883ae603765b699acd65c7e19ac12207a1289adb7e03b6f6364a81fc",
+    "source": "aa7180f3e80d55faa400200e86684f0cf6f30ad7cdd0a35e5f291226616eb6d7"
   }
 }

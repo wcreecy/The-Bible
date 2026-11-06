@@ -179,7 +179,7 @@ struct Verse: Identifiable, Hashable, Sendable {
 
     /// Shown in place of an omitted verse.
     nonisolated static func omittedNote(in translation: BibleTranslation) -> String {
-        "The \(translation.abbreviation) leaves out this verse, which the oldest manuscripts don’t include."
+        "The \(translation.abbreviation) leaves out this verse, because \(translation.omissionReason)."
     }
 }
 
