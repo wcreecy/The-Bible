@@ -9,8 +9,9 @@ import CoreData
 import SwiftData
 import SwiftUI
 import UIKit
-import ObjectiveC
 
+// Tab reselection lives in TabReselection.swift, game time in GamePlayTimeSession.swift,
+// and widget/custom URL parsing in AppDeepLink.swift.
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
@@ -40,9 +41,7 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     // Game time is counted only while a game screen is open in the foreground.
-    // Reading time comes from ReadingTimeTracker, the single source for reading stats.
-    @State private var gameTimeStart: Date?
-    @State private var gameTimeFlushTimer: Timer?
+    @State private var gameTime = GamePlayTimeSession()
 
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
     private var usesWideLayout: Bool { horizontalSizeClass == .regular }
@@ -306,27 +305,14 @@ struct ContentView: View {
 
     private func handleOpenURL(_ url: URL) {
         // Handle taps from widgets and other custom links.
-        guard url.scheme?.lowercased() == "thebible" else { return }
-        let host = url.host?.lowercased() ?? ""
-
-        // thebible://home -> switch to Home tab
-        if host == "home" {
+        switch AppDeepLink(url: url) {
+        case .home:
             selectedTab = .home
-            return
+        case let .open(book, chapter, verse):
+            router.openBibleReference(book: book, chapter: chapter, verse: verse)
+        case nil:
+            break
         }
-
-        // Supported deep link: thebible://open?book=Name&chapter=Int&verse=Int
-        guard host == "open" else { return }
-        guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
-        var params: [String: String] = [:]
-        comps.queryItems?.forEach { params[$0.name.lowercased()] = $0.value ?? "" }
-        guard
-            let book = params["book"], !book.isEmpty,
-            let chapStr = params["chapter"], let chapter = Int(chapStr),
-            let verseStr = params["verse"], let verse = Int(verseStr)
-        else { return }
-
-        router.openBibleReference(book: book, chapter: chapter, verse: verse)
     }
 
     private func openBibleReference(_ location: BibleReaderLocation) {
@@ -537,37 +523,9 @@ struct ContentView: View {
         }
     }
 
-    /// Starts or stops counting game time to match whether a game screen is open.
     /// Call after any change to the scene phase, selected tab, or Games navigation.
     private func updateGameTimeTracking() {
-        if isPlayingGame {
-            guard gameTimeStart == nil else { return }
-            gameTimeStart = Date()
-            // Persist periodically so a crash or force quit loses at most a few seconds.
-            let timer = Timer(timeInterval: 15, repeats: true) { _ in
-                MainActor.assumeIsolated { flushGameTime() }
-            }
-            RunLoop.main.add(timer, forMode: .common)
-            gameTimeFlushTimer = timer
-        } else {
-            flushGameTime()
-            gameTimeStart = nil
-            gameTimeFlushTimer?.invalidate()
-            gameTimeFlushTimer = nil
-        }
-    }
-
-    private func flushGameTime() {
-        guard let start = gameTimeStart else { return }
-        // A game left open and untouched stops counting after the idle limit.
-        let now = Date()
-        let span = UserActivityMonitor.shared.countedSpan(since: start, now: now)
-        gameTimeStart = span.nextCheckpoint
-        guard span.seconds > 0 else { return }
-        GameStats.shared.recordPlayTime(
-            seconds: span.seconds,
-            endingAt: span.start.addingTimeInterval(TimeInterval(span.seconds))
-        )
+        gameTime.update(isPlaying: isPlayingGame)
     }
 
     // MARK: - Tab reselection
@@ -602,25 +560,8 @@ struct ContentView: View {
         guard !returnedToRoot else { return }
 
         DispatchQueue.main.async {
-            scrollSelectedTabToTop()
+            TabBarScrollToTop.scrollSelectedTab()
         }
-    }
-
-    private func scrollSelectedTabToTop() {
-        let tabController = UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap(\.windows)
-            .compactMap(\.rootViewController)
-            .compactMap { $0.findTabBarController() }
-            .first
-
-        guard
-            let rootView = tabController?.selectedViewController?.view,
-            let scrollView = rootView.firstScrollableDescendant()
-        else { return }
-
-        let topOffset = CGPoint(x: scrollView.contentOffset.x, y: -scrollView.adjustedContentInset.top)
-        scrollView.setContentOffset(topOffset, animated: true)
     }
 
     // MARK: - Helpers
@@ -650,148 +591,6 @@ private struct HomeTabView: View {
                 .appDestinations(coordinator: coordinator)
         }
         .environment(coordinator)
-    }
-}
-
-private struct TabReselectionObserver: UIViewControllerRepresentable {
-    let onReselect: (Int) -> Void
-
-    func makeUIViewController(context: Context) -> TabReselectionInstallerViewController {
-        TabReselectionInstallerViewController(onReselect: onReselect)
-    }
-
-    func updateUIViewController(
-        _ uiViewController: TabReselectionInstallerViewController,
-        context: Context
-    ) {
-        uiViewController.onReselect = onReselect
-        uiViewController.installIfNeeded()
-    }
-}
-
-private final class TabReselectionInstallerViewController: UIViewController {
-    var onReselect: (Int) -> Void
-    private var proxy: TabBarDelegateProxy?
-
-    init(onReselect: @escaping (Int) -> Void) {
-        self.onReselect = onReselect
-        super.init(nibName: nil, bundle: nil)
-        view.isUserInteractionEnabled = false
-        view.backgroundColor = .clear
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        installIfNeeded()
-    }
-
-    func installIfNeeded() {
-        DispatchQueue.main.async { [weak self] in
-            guard
-                let self,
-                let tabBarController = self.tabBarController
-            else { return }
-
-            if let proxy = self.proxy, tabBarController.delegate === proxy {
-                return
-            }
-
-            let proxy = TabBarDelegateProxy(
-                original: tabBarController.delegate,
-                onReselect: { [weak self] index in
-                    self?.onReselect(index)
-                }
-            )
-            self.proxy = proxy
-            tabBarController.delegate = proxy
-        }
-    }
-}
-
-private final class TabBarDelegateProxy: NSObject, UITabBarControllerDelegate {
-    weak var original: UITabBarControllerDelegate?
-    let onReselect: (Int) -> Void
-
-    init(
-        original: UITabBarControllerDelegate?,
-        onReselect: @escaping (Int) -> Void
-    ) {
-        self.original = original
-        self.onReselect = onReselect
-        super.init()
-    }
-
-    func tabBarController(
-        _ tabBarController: UITabBarController,
-        shouldSelect viewController: UIViewController
-    ) -> Bool {
-        let shouldSelect = original?.tabBarController?(
-            tabBarController,
-            shouldSelect: viewController
-        ) ?? true
-
-        if shouldSelect,
-           viewController === tabBarController.selectedViewController,
-           let index = tabBarController.viewControllers?.firstIndex(of: viewController) {
-            DispatchQueue.main.async { [onReselect] in
-                onReselect(index)
-            }
-        }
-
-        return shouldSelect
-    }
-
-    override func responds(to aSelector: Selector!) -> Bool {
-        super.responds(to: aSelector) || (original?.responds(to: aSelector) ?? false)
-    }
-
-    override func forwardingTarget(for aSelector: Selector!) -> Any? {
-        if let original, original.responds(to: aSelector) {
-            return original
-        }
-        return super.forwardingTarget(for: aSelector)
-    }
-}
-
-private extension UIView {
-    func firstScrollableDescendant() -> UIScrollView? {
-        if let scrollView = self as? UIScrollView,
-           scrollView.isScrollEnabled,
-           !scrollView.isHidden,
-           scrollView.alpha > 0 {
-            return scrollView
-        }
-
-        for subview in subviews {
-            if let scrollView = subview.firstScrollableDescendant() {
-                return scrollView
-            }
-        }
-
-        return nil
-    }
-}
-
-private extension UIViewController {
-    func findTabBarController() -> UITabBarController? {
-        if let t = self as? UITabBarController { return t }
-        if let nav = self as? UINavigationController {
-            for vc in nav.viewControllers {
-                if let t = vc.findTabBarController() { return t }
-            }
-        }
-        for child in children {
-            if let t = child.findTabBarController() { return t }
-        }
-        if let presented = presentedViewController {
-            return presented.findTabBarController()
-        }
-        return nil
     }
 }
 
