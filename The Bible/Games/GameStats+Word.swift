@@ -92,8 +92,10 @@ extension GameStats {
     /// Consecutive calendar days with a solved Daily WORD, ending today (or yesterday if
     /// today's Daily has not been played yet). A missed day or a loss ends the streak.
     /// - Parameter treatingTodayAsSolved: Counts today as solved before the result is recorded.
+    /// - Parameter treatingDayKeyAsSolved: Counts the supplied local day as solved before its result is recorded.
     func wordleDailyWinStreak(
         treatingTodayAsSolved: Bool = false,
+        treatingDayKeyAsSolved: String? = nil,
         now: Date = Date(),
         calendar: Calendar = .autoupdatingCurrent
     ) -> Int {
@@ -101,15 +103,19 @@ extension GameStats {
         cal.timeZone = .autoupdatingCurrent
         let solved: [String: Int] = loadJSONMap(forKey: "wordleDailySolvedDays")
         let todayKey = Self.localDayKey(for: now, calendar: cal)
+        let anchorKey = treatingDayKeyAsSolved ?? todayKey
+        let anchorDay = Self.date(forLocalDayKey: anchorKey, calendar: cal) ?? cal.startOfDay(for: now)
 
         func isSolved(_ key: String) -> Bool {
-            solved[key] == 1 || (treatingTodayAsSolved && key == todayKey)
+            solved[key] == 1
+                || (treatingTodayAsSolved && key == todayKey)
+                || (treatingDayKeyAsSolved != nil && key == anchorKey)
         }
 
-        var day = cal.startOfDay(for: now)
-        if !isSolved(todayKey) {
-            // A Daily loss today ends the streak immediately.
-            if playedDailyWithoutWinning(on: todayKey) { return 0 }
+        var day = anchorDay
+        if !isSolved(anchorKey) {
+            // A Daily loss on the anchor day ends the streak immediately.
+            if playedDailyWithoutWinning(on: anchorKey) { return 0 }
             guard let yesterday = cal.date(byAdding: .day, value: -1, to: day) else { return 0 }
             day = yesterday
         }
@@ -121,6 +127,12 @@ extension GameStats {
             day = previous
         }
         return streak
+    }
+
+    private static func date(forLocalDayKey key: String, calendar: Calendar) -> Date? {
+        let parts = key.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        return calendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2]))
     }
 
     private func playedDailyWithoutWinning(on dayKey: String) -> Bool {

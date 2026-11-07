@@ -68,6 +68,9 @@ final class WordleGameViewModel {
     /// Daily results are stored by day and read back by `GameStats`, so both use its day key.
     var todayKey: String { GameStats.localDayKey(for: Date()) }
 
+    /// The local calendar day for the active Daily round. It stays fixed if the round crosses midnight.
+    var roundDayKey: String?
+
     var dailyCompletedToday: Bool {
         UserDefaults.standard.string(forKey: AppStorageKey.wordleDailyCompletedDay) == todayKey
     }
@@ -350,10 +353,10 @@ final class WordleGameViewModel {
         return wordPicker.nextPracticeWord(pool: Self.filteredAnswerWords, using: &generator)
     }
 
-    /// Today's Daily word: picked at random the first time Daily is played each day and kept for the rest of that day.
-    func wordOfDay() -> String {
+    /// Returns the Daily word for a captured local calendar day.
+    func wordOfDay(for dayKey: String) -> String {
         var generator = SystemRandomNumberGenerator()
-        return wordPicker.wordOfDay(pool: Self.filteredAnswerWords, dayKey: todayKey, using: &generator)
+        return wordPicker.wordOfDay(pool: Self.filteredAnswerWords, dayKey: dayKey, using: &generator)
     }
 
     // MARK: - Daily progress
@@ -368,9 +371,10 @@ final class WordleGameViewModel {
     }
 
     func saveDailyProgress() {
+        guard let roundDayKey else { return }
         let elapsed = roundClock.elapsedSeconds()
         let progress = DailyProgress(
-            dayKey: todayKey,
+            dayKey: roundDayKey,
             word: target,
             hardMode: roundHardMode,
             guesses: Array(guesses.prefix(rowIndex)),
@@ -386,7 +390,7 @@ final class WordleGameViewModel {
     func restoreDailyProgress() -> Bool {
         guard let data = UserDefaults.standard.data(forKey: dailyProgressKey),
               let progress = PersistedDecoding.decode(DailyProgress.self, from: data, key: dailyProgressKey, keepingUnreadableIn: .standard),
-              progress.dayKey == todayKey,
+              progress.dayKey == roundDayKey,
               progress.word == target else {
             UserDefaults.standard.removeObject(forKey: dailyProgressKey)
             return false
@@ -409,6 +413,7 @@ final class WordleGameViewModel {
     // MARK: - Rounds
     func startNewRound(practice: Bool) {
         roundHardMode = hardModeEnabled
+        roundDayKey = practice ? nil : GameStats.localDayKey(for: Date())
 
         guesses = Array(repeating: "", count: 6)
         evaluations = Array(repeating: Array(repeating: .unknown, count: 5), count: 6)
@@ -430,8 +435,8 @@ final class WordleGameViewModel {
 
         if practice {
             target = nextPracticeWord()
-        } else {
-            target = wordOfDay()
+        } else if let roundDayKey {
+            target = wordOfDay(for: roundDayKey)
             restoreDailyProgress()
         }
 
@@ -459,7 +464,7 @@ final class WordleGameViewModel {
             message = rowIndex < 6 ? "Word revealed." : "Out of guesses."
         }
 
-        if mode == .daily {
+        if mode == .daily, let roundDayKey {
             UserDefaults.standard.removeObject(forKey: dailyProgressKey)
             answered += 1
 
@@ -469,7 +474,7 @@ final class WordleGameViewModel {
                 // Counts today plus the run of solved days immediately before it.
                 let bestBefore = persistentStreak.best
                 let streak = persistentStreak.recordWin(
-                    reaching: GameStats.shared.wordleDailyWinStreak(treatingTodayAsSolved: true)
+                    reaching: GameStats.shared.wordleDailyWinStreak(treatingDayKeyAsSolved: roundDayKey)
                 )
                 currentStreak = streak.current
                 currentBestStreak = max(currentBestStreak, streak.best)
@@ -485,7 +490,8 @@ final class WordleGameViewModel {
                 mode: roundHardMode ? .hard : .normal,
                 won: win,
                 guesses: rowIndex,
-                currentBestStreak: currentBestStreak
+                currentBestStreak: currentBestStreak,
+                dayKey: roundDayKey
             )
             GameStats.shared.recordWordleTime(
                 type: .daily,
@@ -527,8 +533,8 @@ final class WordleGameViewModel {
         roundRef = Self.verseIndex[target]
         guessDistribution = GameStats.shared.wordleWinGuessStats(type: mode == .daily ? .daily : .free).winsByGuess
 
-        if mode == .daily {
-            UserDefaults.standard.set(todayKey, forKey: AppStorageKey.wordleDailyCompletedDay)
+        if mode == .daily, let roundDayKey {
+            UserDefaults.standard.set(roundDayKey, forKey: AppStorageKey.wordleDailyCompletedDay)
             UserDefaults.standard.set(target, forKey: AppStorageKey.wordleDailyTarget)
             // Push daily flags to iCloud KVS so other devices see completion/target
             iCloudSyncCoordinator.shared.pushKey("wordleDailyCompletedDay")
@@ -543,7 +549,7 @@ final class WordleGameViewModel {
                let decoded = PersistedDecoding.decode([String: DailyResult].self, from: data, key: key, keepingUnreadableIn: defaults) {
                 map = decoded
             }
-            map[todayKey] = DailyResult(won: win, guesses: rowIndex, elapsed: elapsedSeconds, word: target)
+            map[roundDayKey] = DailyResult(won: win, guesses: rowIndex, elapsed: elapsedSeconds, word: target)
             if let data = try? JSONEncoder().encode(map) {
                 defaults.set(data, forKey: key)
                 // Mirror to iCloud KVS so other devices see the same-day result

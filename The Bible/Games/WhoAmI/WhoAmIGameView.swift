@@ -571,6 +571,14 @@ private struct WhoAmITimerCard: View {
             Spacer(minLength: 0)
 
             HStack(spacing: 12) {
+                if isTimed, resultIsCorrect == nil {
+                    Button(
+                        isTimerDisabled ? "Turn timer on" : "Turn timer off",
+                        systemImage: isTimerDisabled ? "timer" : "timer.slash",
+                        action: onToggleTimer
+                    )
+                }
+
                 Button(
                     "Swap card sides",
                     systemImage: "arrow.left.arrow.right",

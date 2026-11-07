@@ -296,7 +296,7 @@ extension GameStats {
         AppDataChanges.shared.gameStatsChanged()
     }
 
-    func recordWordleResult(type: WordleType, mode: WordMode, won: Bool, guesses: Int, currentBestStreak: Int) {
+    func recordWordleResult(type: WordleType, mode: WordMode, won: Bool, guesses: Int, currentBestStreak: Int, dayKey: String? = nil) {
         recordWordleRound(
             type: type,
             correct: won ? 1 : 0,
@@ -325,10 +325,10 @@ extension GameStats {
         }
 
         if type == .daily && won {
-            let dayKey = Self.localDayKey(for: Date())
+            let solvedDayKey = dayKey ?? Self.localDayKey(for: Date())
             var solved: [String: Int] = loadJSONMap(forKey: "wordleDailySolvedDays")
-            if solved[dayKey] != 1 {
-                solved[dayKey] = 1
+            if solved[solvedDayKey] != 1 {
+                solved[solvedDayKey] = 1
                 saveJSONMap(solved, forKey: "wordleDailySolvedDays")
                 iCloudSyncCoordinator.shared.pushKey("wordleDailySolvedDays")
             }

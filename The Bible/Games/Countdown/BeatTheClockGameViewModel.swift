@@ -183,6 +183,8 @@ final class BeatTheClockGameViewModel {
     /// Every book whose text mentions each place, keyed by place ID. Nil until indexed.
     private var placeBooks: [Int: Set<String>]?
     private var questionDeck: [BeatTheClockQuestion] = []
+    private var roundClock = GameActiveClock()
+    private var hintPenaltySeconds = 0
 
     // MARK: - Game state
 
@@ -305,13 +307,25 @@ final class BeatTheClockGameViewModel {
         }
     }
 
-    /// Counts down the current round. Run from a task keyed on `roundID` so each
-    /// round restarts it and the first second is a full second.
+    /// Updates the current round from active elapsed time. The short polling interval keeps
+    /// the display responsive while the clock itself is authoritative, so scheduling delays do
+    /// not add extra time to a round.
     func runTimer() async {
         while !Task.isCancelled, phase == .playing, roundOutcome == nil, !isPaused, !isTimerDisabled, remainingSeconds > 0 {
-            try? await Task.sleep(for: .seconds(1))
+            try? await Task.sleep(for: .milliseconds(100))
             guard !Task.isCancelled, phase == .playing, roundOutcome == nil, !isPaused, !isTimerDisabled else { return }
-            tick()
+            updateRemainingTime()
+        }
+    }
+
+    private func updateRemainingTime() {
+        let elapsedSeconds = Int(roundClock.elapsed())
+        let updatedRemaining = max(0, difficulty.roundTime - hintPenaltySeconds - elapsedSeconds)
+        guard updatedRemaining != remainingSeconds else { return }
+
+        remainingSeconds = updatedRemaining
+        if remainingSeconds == 0 {
+            finishRound(.timedOut)
         }
     }
 
@@ -321,17 +335,25 @@ final class BeatTheClockGameViewModel {
     /// app stops being active (a call, switching apps, locking the phone).
     func pause() {
         guard canPause else { return }
+        roundClock.pause()
         isPaused = true
     }
 
-    /// Restarts the clock. The view restarts the timer task, so the next second is a full one.
+    /// Restarts the clock without resetting the time already played.
     func resume() {
+        guard phase == .playing, roundOutcome == nil, isPaused else { return }
+        roundClock.resume()
         isPaused = false
     }
 
     func toggleTimer() {
-        guard phase == .playing, roundOutcome == nil else { return }
+        guard phase == .playing, roundOutcome == nil, !isPaused else { return }
         isTimerDisabled.toggle()
+        if isTimerDisabled {
+            roundClock.pause()
+        } else {
+            roundClock.resume()
+        }
     }
 
     // MARK: - Questions
@@ -370,11 +392,7 @@ final class BeatTheClockGameViewModel {
             )
         }
         let places = sourcePlaces.map { entry in
-            // The reference book always counts, even when the KJV spells the name differently.
-            var books = placeBooks?[entry.id] ?? []
-            if let referenceBook = parseBookName(from: entry.scriptureMentioned) {
-                books.insert(referenceBook)
-            }
+            let books = Self.acceptableBooks(for: entry, indexedBooks: placeBooks?[entry.id] ?? [])
             return BeatTheClockQuestion(
                 id: "place-\(entry.id)",
                 subject: .place,
@@ -395,12 +413,22 @@ final class BeatTheClockGameViewModel {
         }
     }
 
-    private func parseBookName(from reference: String?) -> String? {
+    static func acceptableBooks(
+        for entry: BibleLocationChallenge,
+        indexedBooks: Set<String>
+    ) -> Set<String> {
+        var books = indexedBooks
+        if let referenceBook = parseBookName(from: entry.scriptureMentioned) {
+            books.insert(referenceBook)
+        }
+        return books
+    }
+
+    private static func parseBookName(from reference: String?) -> String? {
         guard let ref = reference, !ref.isEmpty else { return nil }
         let parts = ref.split { $0.isWhitespace }
         guard parts.count >= 2 else { return nil }
-        let book = parts.dropLast().joined(separator: " ")
-        return book
+        return parts.dropLast().joined(separator: " ")
     }
 
     // MARK: - Game flow
@@ -441,6 +469,8 @@ final class BeatTheClockGameViewModel {
         searchText = ""
         inputMessage = nil
         remainingSeconds = difficulty.roundTime
+        hintPenaltySeconds = 0
+        roundClock.start()
         isPulsing = false
         isPaused = false
         isTimerDisabled = false
@@ -449,12 +479,14 @@ final class BeatTheClockGameViewModel {
     }
 
     private func showResults() {
+        roundClock.pause()
         session.finishGame(bestScoreKey: bestGameScoreKey)
         currentQuestion = nil
         phase = .results
     }
 
     func resetToSetup() {
+        roundClock.pause()
         phase = .setup
         isPaused = false
         isTimerDisabled = false
@@ -467,7 +499,7 @@ final class BeatTheClockGameViewModel {
         session.clearGame()
     }
 
-    /// Counts down one second. Called by `runTimer()`; internal so tests can tick without waiting.
+    /// Advances the timer by one deterministic second for tests without waiting on the real clock.
     func tick() {
         guard remainingSeconds > 0, !isPaused, !isTimerDisabled else { return }
         isPulsing = true
@@ -489,7 +521,8 @@ final class BeatTheClockGameViewModel {
     func revealHint() {
         guard canRequestHint else { return }
         hintRevealed = true
-        remainingSeconds -= BeatTheClockDifficulty.hintCost
+        hintPenaltySeconds += BeatTheClockDifficulty.hintCost
+        updateRemainingTime()
     }
 
     // MARK: - Answers
@@ -530,6 +563,7 @@ final class BeatTheClockGameViewModel {
     /// Records the answer (or timeout) on the current question, so it can't be answered again.
     private func finishRound(_ outcome: BeatTheClockRoundOutcome, submittedBook: String? = nil) {
         guard !selectionLocked, let currentQuestion else { return }
+        roundClock.pause()
         roundOutcome = outcome
         self.submittedBook = submittedBook
 

@@ -4,6 +4,7 @@ struct BookOrderGameView: View {
     @State private var vm = BookOrderGameViewModel()
     @State private var elapsedSeconds: Int = 0
     /// The solve clock only runs while the app is in front, so time away doesn't count.
+    @State private var roundClock = GameActiveClock()
     @State private var isAppActive = true
     @State private var isTimerHidden: Bool = false
     /// Height of the result card, so the iPhone layout can cap it and scroll the rest.
@@ -105,11 +106,20 @@ struct BookOrderGameView: View {
                 }
 
                 guard !Task.isCancelled, vm.started, !vm.showResult, isAppActive else { return }
-                elapsedSeconds += 1
+                elapsedSeconds = roundClock.elapsedSeconds()
             }
         }
-        .onAppActiveChange { isAppActive = $0 }
+        .onAppActiveChange { active in
+            isAppActive = active
+            if active {
+                roundClock.resume()
+            } else {
+                roundClock.pause()
+            }
+            elapsedSeconds = roundClock.elapsedSeconds()
+        }
         .onDisappear {
+            roundClock.pause()
             vm.onDisappear()
         }
     }
@@ -462,20 +472,31 @@ struct BookOrderGameView: View {
     }
 
     private func startGame() {
-        elapsedSeconds = 0
+        roundClock.start()
+        if !isAppActive {
+            roundClock.pause()
+        }
+        elapsedSeconds = roundClock.elapsedSeconds()
         vm.startGame()
     }
 
     private func checkOrder() {
+        roundClock.pause()
+        elapsedSeconds = roundClock.elapsedSeconds()
         vm.checkOrder(elapsedSeconds: elapsedSeconds)
     }
 
     private func advanceToNextRound() {
-        elapsedSeconds = 0
+        roundClock.start()
+        if !isAppActive {
+            roundClock.pause()
+        }
+        elapsedSeconds = roundClock.elapsedSeconds()
         vm.nextRound()
     }
 
     private func endGame() {
+        roundClock.pause()
         elapsedSeconds = 0
         vm.endGame()
     }

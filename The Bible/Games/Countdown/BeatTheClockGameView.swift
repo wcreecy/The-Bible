@@ -103,7 +103,7 @@ struct BeatTheClockGameView: View {
         .onDisappear {
             vm.onDisappear()
         }
-        // Restarts with each round, and on resume, so the first second is a full second.
+        // Restarts with each round or resume; elapsed time remains authoritative between updates.
         .task(id: CountdownTimerRun(roundID: vm.roundID, isPaused: vm.isPaused, isTimerDisabled: vm.isTimerDisabled)) {
             await vm.runTimer()
         }
@@ -181,7 +181,13 @@ struct BeatTheClockGameView: View {
             }
         } facts: {
             GameSplashFacts(
-                first: ("number", "\(BeatTheClockGameViewModel.questionsPerGame) questions", String(localized: "This session")),
+                first: (
+                    "number",
+                    vm.reviewQuestionIDs.isEmpty
+                        ? "\(BeatTheClockGameViewModel.questionsPerGame) questions"
+                        : "Up to \(BeatTheClockGameViewModel.questionsPerGame) questions",
+                    String(localized: "This session")
+                ),
                 second: ("timer", "\(vm.difficulty.roundTime) sec", String(localized: "Per question")),
                 third: (
                     "lightbulb",

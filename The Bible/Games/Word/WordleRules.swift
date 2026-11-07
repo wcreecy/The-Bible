@@ -191,6 +191,19 @@ struct WordleWordPicker {
     /// each answer appears once before the cycle repeats.
     func wordOfDay<G: RandomNumberGenerator>(pool: [String], dayKey: String, using generator: inout G) -> String {
         guard !pool.isEmpty else { return "JESUS" }
-        return WordleDailySchedule.word(for: dayKey, pool: pool) ?? pool.randomElement(using: &generator) ?? "JESUS"
+
+        let eligibleWords = Set(pool.map { $0.uppercased() })
+        let dailyWordKey = "\(practiceBagKey).daily.\(dayKey)"
+
+        if let savedWord = defaults.string(forKey: dailyWordKey),
+           eligibleWords.contains(savedWord.uppercased()) {
+            return savedWord
+        }
+
+        let selectedWord = WordleDailySchedule.word(for: dayKey, pool: pool)
+            ?? pool.randomElement(using: &generator)
+            ?? "JESUS"
+        defaults.set(selectedWord, forKey: dailyWordKey)
+        return selectedWord
     }
 }

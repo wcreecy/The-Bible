@@ -90,17 +90,21 @@ nonisolated enum BeatTheClockAnswerIndex {
 
         var result: [Int: Set<String>] = [:]
         for book in books {
-            let bookWords = book.chapters.flatMap { chapter in
-                chapter.verses.flatMap { words(in: $0.text) }
+            // Keep each verse separate so a multi-word place cannot match across a
+            // verse or chapter boundary.
+            let verseWordLists = book.chapters.flatMap { chapter in
+                chapter.verses.map { words(in: $0.text) }
             }
 
             var bookPhrases: Set<String> = []
-            for start in bookWords.indices where firstWords.contains(bookWords[start]) {
-                var phrase = bookWords[start]
-                bookPhrases.insert(phrase)
-                for offset in 1..<maxLength where start + offset < bookWords.count {
-                    phrase += " " + bookWords[start + offset]
+            for verseWords in verseWordLists {
+                for start in verseWords.indices where firstWords.contains(verseWords[start]) {
+                    var phrase = verseWords[start]
                     bookPhrases.insert(phrase)
+                    for offset in 1..<maxLength where start + offset < verseWords.count {
+                        phrase += " " + verseWords[start + offset]
+                        bookPhrases.insert(phrase)
+                    }
                 }
             }
 
