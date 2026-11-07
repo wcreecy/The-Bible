@@ -6,11 +6,13 @@ struct CrosswordGameView: View {
     static let tint = Color.orange.mix(with: .red, by: 0.35)
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var vm = CrosswordGameViewModel()
     @State private var confirmReveal = false
     @State private var checkMessage: String?
     @State private var previewRef: ScriptureRef?
     @FocusState private var isBoardFocused: Bool
+    @State private var showsClueList = true
 
     private static let scrollTopID = "crosswordTop"
 
@@ -60,6 +62,21 @@ struct CrosswordGameView: View {
             ToolbarItem(placement: .principal) {
                 if vm.phase != .setup {
                     GameNavigationTitle(title: Self.title, systemImage: Self.systemImage, tint: Self.tint)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                if vm.phase == .playing {
+                    Menu {
+                        Button(showsClueList ? "Focus Clue" : "Show Clue List", systemImage: "list.bullet") {
+                            showsClueList.toggle()
+                        }
+                        Button("Reveal Puzzle", systemImage: "eye", role: .destructive) {
+                            confirmReveal = true
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                    .accessibilityLabel("Crossword options")
                 }
             }
         }
@@ -166,12 +183,12 @@ struct CrosswordGameView: View {
             }
         } else {
             VStack(spacing: 12) {
-                if vm.phase == .playing { clueBar }
                 board(puzzle)
                 if vm.phase == .playing {
                     hintBar
+                    clueBar
                     keyboard
-                    clueList(puzzle)
+                    if showsClueList { clueList(puzzle) }
                 } else {
                     resultCard(puzzle, pinsNewPuzzle: false)
                 }
@@ -180,18 +197,35 @@ struct CrosswordGameView: View {
     }
 
     private func board(_ puzzle: CrosswordPuzzle) -> some View {
-        CrosswordBoardView(
-            puzzle: puzzle,
-            guesses: vm.guesses,
-            revealedCells: vm.revealedCells,
-            selectedCell: vm.selectedCell,
-            selectedDirection: vm.direction,
-            wrongCells: vm.wrongCells,
-            onTapCell: { cell in
-                vm.select(cell)
-                isBoardFocused = true
+        Group {
+            if dynamicTypeSize.isAccessibilitySize, let entry = vm.currentEntry {
+                CrosswordAccessibleEntryView(
+                    entry: entry,
+                    guesses: vm.guesses,
+                    revealedCells: vm.revealedCells,
+                    selectedCell: vm.selectedCell,
+                    tint: Self.tint,
+                    onTapCell: { cell in
+                        vm.select(cell)
+                        isBoardFocused = true
+                    }
+                )
+            } else {
+                CrosswordBoardView(
+                    puzzle: puzzle,
+                    guesses: vm.guesses,
+                    revealedCells: vm.revealedCells,
+                    selectedCell: vm.selectedCell,
+                    selectedDirection: vm.direction,
+                    wrongCells: vm.wrongCells,
+                    tint: Self.tint,
+                    onTapCell: { cell in
+                        vm.select(cell)
+                        isBoardFocused = true
+                    }
+                )
             }
-        )
+        }
         // A hardware keyboard types straight into the board.
         .focusable(vm.phase == .playing)
         .focused($isBoardFocused)
@@ -220,6 +254,15 @@ struct CrosswordGameView: View {
             HStack(spacing: 8) {
                 clueArrow("Previous clue", systemImage: "chevron.left", offset: -1)
                 clueText
+                Button(vm.direction == .across ? "Across" : "Down", systemImage: "arrow.left.and.right") {
+                    vm.toggleDirection()
+                }
+                .labelStyle(.iconOnly)
+                .font(.body.weight(.semibold))
+                .frame(width: 32, height: 32)
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .accessibilityLabel(vm.direction == .across ? "Across. Switch to Down" : "Down. Switch to Across")
                 clueArrow("Next clue", systemImage: "chevron.right", offset: 1)
             }
         }
@@ -272,13 +315,14 @@ struct CrosswordGameView: View {
                         .disabled(!vm.canUseLetterHint)
                     Button("Word", systemImage: "text.cursor") { vm.revealWord() }
                         .disabled(!vm.canUseWordHint)
-                    Button("Check", systemImage: "checkmark.circle") {
+                    Button(checkButtonTitle, systemImage: "checkmark.circle.fill") {
                         let wrong = vm.checkPuzzle()
                         checkMessage = wrong == 0
                             ? String(localized: "No mistakes so far.")
                             : String(localized: "\(wrong) letters to fix.")
                     }
-                    Button("Reveal", systemImage: "eye") { confirmReveal = true }
+                    .buttonStyle(.borderedProminent)
+                    .tint(vm.isFilledWithMistakes ? .orange : Self.tint)
                 }
                 .font(.subheadline.weight(.semibold))
                 .labelStyle(CrosswordHintLabelStyle())
@@ -298,6 +342,14 @@ struct CrosswordGameView: View {
             }
         }
         .onChange(of: vm.guesses) { checkMessage = nil }
+    }
+
+    private var checkButtonTitle: LocalizedStringKey {
+        if vm.isFilledWithMistakes, !vm.wrongCells.isEmpty {
+            "Check \(vm.wrongCells.count) mistakes"
+        } else {
+            "Check"
+        }
     }
 
     private var keyboard: some View {
@@ -335,6 +387,12 @@ struct CrosswordGameView: View {
                             .font(.subheadline)
                             .strikethrough(isFilled, color: .secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        if isFilled {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(Self.tint)
+                                .transition(.scale.combined(with: .opacity))
+                                .accessibilityLabel("Entry filled")
+                        }
                     }
                     .foregroundStyle(isFilled ? .secondary : .primary)
                     .padding(.vertical, 4)
@@ -360,11 +418,11 @@ struct CrosswordGameView: View {
 
     private func resultCard(_ puzzle: CrosswordPuzzle, pinsNewPuzzle: Bool) -> some View {
         let solved = vm.outcome == .solved
-        let hints = vm.letterHintsUsed + vm.wordHintsUsed
+        let unassistedAnswers = puzzle.entries.filter(vm.wasSolvedWithoutHints).count
         return VStack(spacing: 12) {
             GamePuzzleResultCard(
                 title: solved ? String(localized: "Puzzle solved!") : String(localized: "Puzzle revealed"),
-                subtitle: solved && hints == 0 ? String(localized: "No hints needed.") : nil,
+                subtitle: solved ? String(localized: "Solved without hints: \(unassistedAnswers) of \(puzzle.entries.count) answers") : nil,
                 systemImage: solved ? "checkmark.seal.fill" : "eye.fill",
                 tint: solved ? .green : Self.tint,
                 facts: [

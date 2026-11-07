@@ -12,6 +12,7 @@ struct CrosswordBoardView: View {
     let selectedDirection: CrosswordPuzzle.Direction
     /// Wrong letters found by Check, marked with a red slash.
     var wrongCells: Set<CrosswordPuzzle.Cell> = []
+    var tint: Color = .accentColor
     let onTapCell: (CrosswordPuzzle.Cell) -> Void
 
     /// The cells of the word the selected cell belongs to, in the selected direction.
@@ -94,8 +95,8 @@ struct CrosswordBoardView: View {
     })
 
     private func fillColor(for cell: CrosswordPuzzle.Cell, highlighted: Set<CrosswordPuzzle.Cell>) -> Color {
-        if cell == selectedCell { return Color.accentColor.opacity(0.45) }
-        if highlighted.contains(cell) { return Color.accentColor.opacity(0.18) }
+        if cell == selectedCell { return tint.opacity(0.45) }
+        if highlighted.contains(cell) { return tint.opacity(0.18) }
         return Self.letterCellColor
     }
 
@@ -113,6 +114,61 @@ struct CrosswordBoardView: View {
         parts.append(String(localized: "Row \(cell.row + 1), column \(cell.col + 1)"))
         parts.append(guess.map { String($0) } ?? String(localized: "Empty"))
         return parts.joined(separator: ", ")
+    }
+}
+
+/// Large answer-entry strip used automatically at accessibility text sizes.
+struct CrosswordAccessibleEntryView: View {
+    let entry: CrosswordPuzzle.Entry
+    let guesses: [CrosswordPuzzle.Cell: Character]
+    let revealedCells: Set<CrosswordPuzzle.Cell>
+    let selectedCell: CrosswordPuzzle.Cell?
+    let tint: Color
+    let onTapCell: (CrosswordPuzzle.Cell) -> Void
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(entry.cells, id: \.self) { cell in
+                    let position = (entry.cells.firstIndex(of: cell) ?? 0) + 1
+                    CrosswordAccessibleCell(
+                        letter: guesses[cell].map(String.init) ?? "",
+                        isSelected: cell == selectedCell,
+                        isRevealed: revealedCells.contains(cell),
+                        tint: tint,
+                        position: position,
+                        action: { onTapCell(cell) }
+                    )
+                }
+            }
+            .padding(.horizontal, 4)
+        }
+        .frame(height: 64)
+        .accessibilityLabel("Large answer entry for \(entry.number)")
+    }
+}
+
+private struct CrosswordAccessibleCell: View {
+    let letter: String
+    let isSelected: Bool
+    let isRevealed: Bool
+    let tint: Color
+    let position: Int
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(letter)
+                .font(.title2.weight(.bold).monospaced())
+                .frame(width: 52, height: 56)
+                .background(isSelected ? tint.opacity(0.28) : Color.secondary.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(isRevealed ? Color.blue : tint.opacity(0.5), lineWidth: isSelected ? 2 : 1)
+                }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Letter \(position)")
     }
 }
 
