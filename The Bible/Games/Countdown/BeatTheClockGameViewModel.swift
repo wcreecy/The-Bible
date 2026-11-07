@@ -473,7 +473,6 @@ final class BeatTheClockGameViewModel {
         roundClock.start()
         isPulsing = false
         isPaused = false
-        isTimerDisabled = false
         roundID += 1
         session.startQuestion()
     }

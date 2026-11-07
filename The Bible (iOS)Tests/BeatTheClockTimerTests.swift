@@ -134,6 +134,26 @@ struct BeatTheClockTimerTests {
     }
 
     @Test
+    func disablingTheTimerPersistsForTheRestOfTheGame() async {
+        let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+
+        await withRestoredDefaults {
+            game.difficulty = .hard
+            game.startGame()
+            game.toggleTimer()
+            #expect(game.isTimerDisabled)
+
+            game.debugWin()
+            game.nextRound()
+            #expect(game.isTimerDisabled)
+
+            let secondsLeft = game.remainingSeconds
+            game.tick()
+            #expect(game.remainingSeconds == secondsLeft)
+        }
+    }
+
+    @Test
     func leavingAfterAnsweringResetsTheGameAndStopsTheTimer() async {
         let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
 
