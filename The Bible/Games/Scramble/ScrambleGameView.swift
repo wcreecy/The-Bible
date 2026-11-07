@@ -5,7 +5,11 @@ struct ScrambleGameView: View {
     @State private var usesMutedTimerStyle = false
     @State private var selectedPassage: PassageReference?
     @State private var isRevealConfirmationPresented = false
-    @State private var vm = ScrambleGameViewModel()
+    @State private var vm: ScrambleGameViewModel
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        _vm = State(initialValue: ScrambleGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
+    }
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     private var isIncorrectAnswer: Bool {
         if case .incorrect = vm.answerFeedback {
@@ -252,10 +256,10 @@ struct ScrambleGameView: View {
                 style: horizontalSizeClass == .regular ? .dashboard : .compact
             )
 
-            Text("Word \(vm.currentNumber) of \(vm.sessionLength.rawValue)")
+            Text("Word \(vm.currentNumber) of \(vm.totalWords)")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
-                .accessibilityLabel("Word \(vm.currentNumber) of \(vm.sessionLength.rawValue)")
+                .accessibilityLabel("Word \(vm.currentNumber) of \(vm.totalWords)")
 
             if let currentWord = vm.currentWord {
                 ScramblePrompt(

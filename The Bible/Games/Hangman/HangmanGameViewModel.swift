@@ -140,6 +140,7 @@ final class HangmanGameViewModel {
     }
 
     static let wordsPerGame = 10
+    private let reviewQuestionIDs: Set<String>
 
     private static let themeKey = AppStorageKey.hangmanTheme
     private static let difficultyKey = AppStorageKey.hangmanDifficulty
@@ -186,6 +187,7 @@ final class HangmanGameViewModel {
     private(set) var clueRevealed = false
     private(set) var roundOver = false
     private(set) var didWin = false
+    private(set) var lastCorrectGuess: Character?
 
     /// Score, streaks and best game; see `GameScore` for the rules.
     private(set) var session = GameScore()
@@ -212,6 +214,12 @@ final class HangmanGameViewModel {
     var wrongLetters: Set<Character> { guessedLetters.subtracting(answerLetters) }
 
     var isLastWord: Bool { deck.isEmpty }
+
+    var isReviewRound: Bool { !reviewQuestionIDs.isEmpty }
+
+    var isOneGuessRemaining: Bool {
+        !roundOver && wrongGuesses == maxWrong - 1
+    }
 
     var canRevealClue: Bool {
         difficulty == .normal && !clueRevealed && !roundOver && wrongGuesses < maxWrong - 1
@@ -274,7 +282,7 @@ final class HangmanGameViewModel {
 
     private func peopleWords() -> [HangmanWord] {
         loadedPeople
-            .filter { difficulty.includes($0.difficulty) }
+            .filter { isReviewRound || difficulty.includes($0.difficulty) }
             .map { entry in
                 let parts = Self.split(entry.name)
                 return HangmanWord(answer: parts.answer, category: .people, clue: entry.shortDescription,
@@ -284,7 +292,7 @@ final class HangmanGameViewModel {
 
     private func placeWords() -> [HangmanWord] {
         loadedPlaces
-            .filter { difficulty.includes($0.difficulty) }
+            .filter { isReviewRound || difficulty.includes($0.difficulty) }
             .map { entry in
                 let parts = Self.split(entry.locationName)
                 return HangmanWord(answer: parts.answer, category: .places, clue: entry.shortDescription,
@@ -295,7 +303,7 @@ final class HangmanGameViewModel {
 
     private func bibleWords() -> [HangmanWord] {
         loadedBibleWords
-            .filter { difficulty.includes($0.difficulty) }
+            .filter { isReviewRound || difficulty.includes($0.difficulty) }
             .map { entry in
                 HangmanWord(
                     answer: entry.name,
@@ -319,8 +327,12 @@ final class HangmanGameViewModel {
     }
 
     /// Draws the game's words without repeats, including words used in recent rounds.
+    init(reviewQuestionIDs: Set<String> = []) {
+        self.reviewQuestionIDs = reviewQuestionIDs
+    }
+
     private func makeDeck() -> [HangmanWord] {
-        let themes: [HangmanTheme] = theme == .all ? [.people, .places, .bibleWords, .books] : [theme]
+        let themes: [HangmanTheme] = isReviewRound || theme == .all ? [.people, .places, .bibleWords, .books] : [theme]
         let allWords = themes.flatMap { item -> [HangmanWord] in
             switch item {
             case .people: peopleWords()
@@ -337,8 +349,11 @@ final class HangmanGameViewModel {
             uniqueWords.append(word)
         }
 
+        let eligible = isReviewRound
+            ? uniqueWords.filter { reviewQuestionIDs.contains($0.answer.uppercased()) }
+            : uniqueWords
         return RecentGameQuestionStore.shared.select(
-            from: uniqueWords.shuffled(),
+            from: eligible.shuffled(),
             game: "hangman",
             count: Self.wordsPerGame,
             cooldown: Self.wordsPerGame * 7,
@@ -371,6 +386,7 @@ final class HangmanGameViewModel {
         clueRevealed = false
         roundOver = false
         didWin = false
+        lastCorrectGuess = nil
         session.startQuestion()
     }
 
@@ -390,6 +406,7 @@ final class HangmanGameViewModel {
         clueRevealed = false
         roundOver = false
         didWin = false
+        lastCorrectGuess = nil
         session.clearGame()
     }
 
@@ -399,28 +416,36 @@ final class HangmanGameViewModel {
         wrongGuesses += 1
     }
 
-    func guess(_ ch: Character) {
-        guard !roundOver else { return }
+    @discardableResult
+    func guess(_ ch: Character) -> Bool {
+        guard !roundOver else { return false }
         let upper = Character(String(ch).uppercased())
-        guard upper.isLetter, !guessedLetters.contains(upper) else { return }
+        guard upper.isLetter else { return false }
+        guard !guessedLetters.contains(upper) else {
+            Haptics.selection()
+            return true
+        }
         guessedLetters.insert(upper)
 
         if answerLetters.contains(upper) {
-            #if canImport(UIKit)
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            #endif
+            lastCorrectGuess = upper
+            Haptics.selection()
             if answerLetters.isSubset(of: guessedLetters) {
                 endRound(win: true)
             }
         } else {
-            #if canImport(UIKit)
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            #endif
+            Haptics.warning()
             wrongGuesses += 1
             if wrongGuesses >= maxWrong {
                 endRound(win: false)
             }
         }
+        return false
+    }
+
+    func giveUp() {
+        guard !roundOver else { return }
+        endRound(win: false)
     }
 
     /// Debug-only shortcut that solves the current word.
@@ -446,9 +471,7 @@ final class HangmanGameViewModel {
             savedStreak: persistentStreak
         )
 
-        #if canImport(UIKit)
-        UINotificationFeedbackGenerator().notificationOccurred(win ? .success : .error)
-        #endif
+        if win { Haptics.success() } else { Haptics.error() }
 
         GameStats.shared.recordRound(
             game: .hangman,
@@ -463,6 +486,17 @@ final class HangmanGameViewModel {
             answered: 1,
             correct: win ? 1 : 0
         )
+        let questionID = current.answer.uppercased()
+        if win, isReviewRound {
+            MissedGameQuestionStore.shared.resolveReviewQuestion(game: .hangman, questionID: questionID)
+        } else if !win {
+            MissedGameQuestionStore.shared.record(
+                game: .hangman,
+                bookNames: [],
+                topic: String(localized: current.category.title),
+                questionID: questionID
+            )
+        }
     }
 
     // MARK: - References

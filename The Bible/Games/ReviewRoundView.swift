@@ -65,6 +65,10 @@ struct ReviewRoundView: View {
             QuizView(reviewQuestionIDs: questionIDs, mode: .reverse)
         case .whoAmI:
             WhoAmIGameView(reviewQuestionIDs: questionIDs)
+        case .hangman:
+            HangmanGameView(reviewQuestionIDs: questionIDs)
+        case .scramble:
+            ScrambleGameView(reviewQuestionIDs: questionIDs)
         case .bookOrder:
             // Book Order misses are study history only and never offered for review.
             EmptyView()
@@ -140,6 +144,8 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .bibleTrivia: "Trivia"
         case .quizReverse: "Quiz — Reverse"
         case .whoAmI: "Who?"
+        case .hangman: "Hangman"
+        case .scramble: "Scramble"
         case .bookOrder: "Book Order"
         }
     }
@@ -151,6 +157,8 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .bibleTrivia: "questionmark.text.page.fill"
         case .quizReverse: "text.quote"
         case .whoAmI: "person.text.rectangle"
+        case .hangman: "text.word.spacing"
+        case .scramble: "text.line.first.and.arrowtriangle.forward"
         case .bookOrder: "list.number"
         }
     }
@@ -162,6 +170,8 @@ private extension MissedGameQuestionStore.Entry.Game {
         case .bibleTrivia: .cyan
         case .quizReverse: .orange
         case .whoAmI: .brown
+        case .hangman: .teal
+        case .scramble: .pink
         case .bookOrder: .purple
         }
     }

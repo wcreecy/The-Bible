@@ -113,6 +113,7 @@ final class ScrambleGameViewModel {
     var selectedIndices: [Int] = []
     var typedAnswer = ""
     var currentNumber = 0
+    var totalWords = 0
     /// Score and streaks; see `GameScore` for the rules.
     var session = GameScore()
     var strikes = 0
@@ -126,11 +127,16 @@ final class ScrambleGameViewModel {
     var isTimerDisabled = false
     /// True while the word is paused: the timer stops and the letters are hidden.
     var isPaused = false
+    private let reviewQuestionIDs: Set<String>
 
     /// Waits between timer ticks; tests pass a manual clock.
     @ObservationIgnored private let sleep: (Duration) async throws -> Void
 
-    init(sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) }) {
+    init(
+        reviewQuestionIDs: Set<String> = [],
+        sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) }
+    ) {
+        self.reviewQuestionIDs = reviewQuestionIDs
         self.sleep = sleep
     }
 
@@ -141,6 +147,8 @@ final class ScrambleGameViewModel {
     var isLastWord: Bool {
         deck.isEmpty
     }
+
+    var isReviewRound: Bool { !reviewQuestionIDs.isEmpty }
 
     var isCurrentWordResolved: Bool {
         switch answerFeedback {
@@ -232,7 +240,8 @@ final class ScrambleGameViewModel {
         guard wordBankStatus == .ready else { return }
 
         let eligible = wordBank.filter { word in
-            switch difficulty {
+            if isReviewRound { return reviewQuestionIDs.contains(word.answer.uppercased()) }
+            return switch difficulty {
             case .easy: word.level == .easy
             case .normal: word.level == .normal
             case .hard: word.level == .hard
@@ -241,14 +250,16 @@ final class ScrambleGameViewModel {
 
         guard !eligible.isEmpty else { return }
 
+        let wordCount = isReviewRound ? min(10, eligible.count) : sessionLength.rawValue
         deck = RecentGameQuestionStore.shared.select(
             from: eligible.shuffled(),
             game: "scramble",
-            count: sessionLength.rawValue,
-            cooldown: max(sessionLength.rawValue * 7, 10),
+            count: wordCount,
+            cooldown: max(wordCount * 7, 10),
             id: \.answer
         )
         currentNumber = 0
+        totalWords = deck.count
         // The session streak carries from one game to the next.
         session.beginGame(savedStreak: persistentStreak, isTimed: currentTimeLimit != nil)
         strikes = 0
@@ -264,6 +275,7 @@ final class ScrambleGameViewModel {
         isPaused = false
         deck = []
         currentWord = nil
+        totalWords = 0
         answerFeedback = nil
         session.clearGame()
     }
@@ -469,6 +481,19 @@ final class ScrambleGameViewModel {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
+        if let currentWord {
+            let questionID = currentWord.answer.uppercased()
+            if correct, isReviewRound {
+                MissedGameQuestionStore.shared.resolveReviewQuestion(game: .scramble, questionID: questionID)
+            } else if !correct {
+                MissedGameQuestionStore.shared.record(
+                    game: .scramble,
+                    bookNames: [],
+                    topic: currentWord.categoryName,
+                    questionID: questionID
+                )
+            }
+        }
     }
 
     func scrambledLetters(for answer: String) -> [Character] {

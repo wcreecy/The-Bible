@@ -2,7 +2,16 @@ import SwiftUI
 import UIKit
 
 struct HangmanGameView: View {
-    @State private var vm = HangmanGameViewModel()
+    @State private var vm: HangmanGameViewModel
+    private let isReviewRound: Bool
+    @State private var isGiveUpConfirmationPresented = false
+    @State private var repeatedGuessMessageID = UUID()
+    @State private var showsRepeatedGuessMessage = false
+
+    init(reviewQuestionIDs: Set<String> = []) {
+        isReviewRound = !reviewQuestionIDs.isEmpty
+        _vm = State(initialValue: HangmanGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
+    }
 
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
@@ -31,7 +40,7 @@ struct HangmanGameView: View {
                         HangmanKeyCapture(
                             onKey: { ch in
                                 if !vm.roundOver {
-                                    vm.guess(ch)
+                                    showRepeatedGuessMessageIfNeeded(vm.guess(ch))
                                 }
                             },
                             onBackspace: {},
@@ -82,6 +91,26 @@ struct HangmanGameView: View {
                     GameNavigationTitle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                if vm.phase == .playing, !vm.roundOver {
+                    Menu {
+                        Button(role: .destructive) {
+                            isGiveUpConfirmationPresented = true
+                        } label: {
+                            Label("Give Up", systemImage: "flag.fill")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                    .accessibilityLabel("Hangman options")
+                }
+            }
+        }
+        .confirmationDialog("Give up this word?", isPresented: $isGiveUpConfirmationPresented, titleVisibility: .visible) {
+            Button("Give Up", role: .destructive, action: vm.giveUp)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("The word will be marked incorrect and you can continue to the next word.")
         }
         .task {
             await vm.loadData()
@@ -179,15 +208,27 @@ struct HangmanGameView: View {
                 .padding(.horizontal, 4)
         } word: {
             VStack(spacing: 12) {
-                Text(vm.spacedDisplayWord)
-                    .font(.title.weight(.semibold).monospaced())
-                    .multilineTextAlignment(.center)
-                    .accessibilityLabel("Word to guess")
-                    .accessibilityValue(vm.spokenDisplayWord)
+                HangmanWordDisplay(
+                    word: vm.spacedDisplayWord,
+                    spokenWord: vm.spokenDisplayWord,
+                    lastCorrectGuess: vm.lastCorrectGuess,
+                    didWin: vm.roundOver && vm.didWin
+                )
 
                 Text("Mistakes: \(vm.wrongGuesses)/\(vm.maxWrong)")
                     .font(.subheadline)
                     .foregroundStyle(vm.wrongGuesses >= vm.maxWrong - 1 ? .red : .secondary)
+
+                Text(vm.isOneGuessRemaining ? "One guess left" : "\(vm.maxWrong - vm.wrongGuesses) guesses left")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(vm.isOneGuessRemaining ? .red : .secondary)
+
+                if showsRepeatedGuessMessage {
+                    Label("Already guessed", systemImage: "arrow.uturn.backward.circle")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .id(repeatedGuessMessageID)
+                }
 
                 if vm.roundOver, let current = vm.current {
                     HangmanRevealCard(
@@ -196,6 +237,7 @@ struct HangmanGameView: View {
                         qualifier: current.qualifier,
                         clue: current.clue,
                         reference: current.reference,
+                        guessesLeft: vm.maxWrong - vm.wrongGuesses,
                         onShowReference: presentReferencePreview
                     )
                 } else {
@@ -212,7 +254,9 @@ struct HangmanGameView: View {
                     progress: Double(vm.wrongGuesses) / Double(max(1, vm.maxWrong)),
                     maximumCharacterHeight: drawingMaximumCharacterHeight(
                         usesWideLayout: usesWideLayout
-                    )
+                    ),
+                    isFinalMistake: vm.isOneGuessRemaining,
+                    celebratesWin: vm.roundOver && vm.didWin
                 )
                 .frame(
                     height: usesWideLayout
@@ -256,6 +300,17 @@ struct HangmanGameView: View {
                     .padding(.horizontal, 6)
                     .padding(.top, 8)
             }
+        }
+    }
+
+    private func showRepeatedGuessMessageIfNeeded(_ wasRepeated: Bool) {
+        guard wasRepeated else { return }
+        repeatedGuessMessageID = UUID()
+        showsRepeatedGuessMessage = true
+        Task {
+            try? await Task.sleep(for: .seconds(1.2))
+            guard !Task.isCancelled else { return }
+            showsRepeatedGuessMessage = false
         }
     }
 
@@ -433,7 +488,9 @@ struct HangmanGameView: View {
             wrongLetters: vm.wrongLetters,
             isRoundOver: vm.roundOver,
             keyHeight: keyHeight,
-            onGuess: vm.guess
+            onGuess: { letter in
+                showRepeatedGuessMessageIfNeeded(vm.guess(letter))
+            }
         )
     }
 }

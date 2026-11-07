@@ -14,6 +14,8 @@ final class MissedGameQuestionStore {
             // Keep the stored name so synced misses and resolution tombstones retain their identity.
             case quizReverse = "verseMatch"
             case whoAmI
+            case hangman
+            case scramble
             /// Books placed out of order. Kept as study history only; never offered as a review round.
             case bookOrder
 

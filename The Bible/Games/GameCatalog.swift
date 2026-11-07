@@ -186,6 +186,8 @@ struct ReviewRoundProgress: Identifiable {
         case .bibleTrivia: "Trivia"
         case .quizReverse: "Quiz — Reverse"
         case .whoAmI: "Who?"
+        case .hangman: "Hangman"
+        case .scramble: "Scramble"
         case .bookOrder: "Book Order"
         }
     }

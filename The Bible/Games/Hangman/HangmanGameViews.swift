@@ -24,6 +24,7 @@ struct HangmanRevealCard: View {
     let qualifier: String?
     let clue: String
     let reference: String?
+    let guessesLeft: Int
     let onShowReference: (String) -> Void
 
     var body: some View {
@@ -34,6 +35,12 @@ struct HangmanRevealCard: View {
             )
             .font(.headline)
             .foregroundStyle(didWin ? Color.green : Color.red)
+
+            if didWin {
+                Text("Solved with \(guessesLeft) guesses left")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.green)
+            }
 
             if let qualifier {
                 Text("\(answer) (\(qualifier))")
@@ -70,6 +77,32 @@ struct HangmanRevealCard: View {
     }
 }
 
+struct HangmanWordDisplay: View {
+    let word: String
+    let spokenWord: String
+    let lastCorrectGuess: Character?
+    let didWin: Bool
+    @State private var showsNewLetterHighlight = false
+
+    var body: some View {
+        Text(word)
+            .font(.title.weight(.semibold).monospaced())
+            .foregroundStyle(didWin || showsNewLetterHighlight ? .green : .primary)
+            .multilineTextAlignment(.center)
+            .scaleEffect(showsNewLetterHighlight ? 1.06 : 1)
+            .animation(.spring(duration: 0.25), value: showsNewLetterHighlight)
+            .accessibilityLabel("Word to guess")
+            .accessibilityValue(spokenWord)
+            .task(id: lastCorrectGuess) {
+                guard lastCorrectGuess != nil else { return }
+                showsNewLetterHighlight = true
+                try? await Task.sleep(for: .milliseconds(550))
+                guard !Task.isCancelled else { return }
+                showsNewLetterHighlight = false
+            }
+    }
+}
+
 struct HangmanKeyboardView: View {
     @Binding var usesAlphabeticalLayout: Bool
     let guessedLetters: Set<Character>
@@ -101,8 +134,8 @@ struct HangmanKeyboardView: View {
                                 .accessibilityLabel("Letter \(String(character))")
                         }
                         .buttonStyle(GameKeyButtonStyle(tint: tint(for: upper)))
-                        // Not .disabled: that would grey out the green and red played keys.
-                        .allowsHitTesting(!guessedLetters.contains(upper) && !isRoundOver)
+                        // Played keys remain tappable so the player receives repeat-guess feedback.
+                        .allowsHitTesting(!isRoundOver)
                         .opacity(isRoundOver ? 0.6 : 1)
                         .accessibilityValue(keyState(for: upper))
 
@@ -325,12 +358,16 @@ struct HangmanResponsiveLayout<
 struct HangmanDrawing: View {
     let progress: Double
     let maximumCharacterHeight: CGFloat
+    let isFinalMistake: Bool
+    let celebratesWin: Bool
+    @State private var showsFinalMistakePulse = false
 
     private var clampedProgress: Double {
         min(max(progress, 0), 1)
     }
 
     private var fillColor: Color {
+        if celebratesWin { return .green }
         if clampedProgress >= 0.75 { return .red }
         if clampedProgress >= 0.4 { return .orange }
         return .teal
@@ -358,11 +395,32 @@ struct HangmanDrawing: View {
             }
             .frame(width: characterWidth, height: characterHeight)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .scaleEffect(showsFinalMistakePulse ? 1.04 : 1)
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(
+                        isFinalMistake
+                            ? Color.red.opacity(showsFinalMistakePulse ? 0.85 : 0.25)
+                            : (celebratesWin ? Color.green.opacity(0.65) : .clear),
+                        lineWidth: 2
+                    )
+            }
             .animation(.easeInOut(duration: 0.35), value: clampedProgress)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Mistake meter")
         .accessibilityValue("\(Int((clampedProgress * 100).rounded())) percent filled")
+        .task(id: isFinalMistake) {
+            guard isFinalMistake else {
+                showsFinalMistakePulse = false
+                return
+            }
+            withAnimation(.easeInOut(duration: 0.5).repeatCount(2, autoreverses: true)) {
+                showsFinalMistakePulse = true
+            }
+            try? await Task.sleep(for: .seconds(1))
+            showsFinalMistakePulse = false
+        }
     }
 }
 
