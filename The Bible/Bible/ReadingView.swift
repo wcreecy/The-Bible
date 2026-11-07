@@ -3,6 +3,8 @@ import SwiftData
 import UIKit
 import WidgetKit
 
+// The verse rows live in ReadingChapterVerseList.swift, the book picker in
+// ReaderBookPickerSheet.swift, and the arrows/display popover in ReaderChrome.swift.
 @MainActor
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
@@ -39,8 +41,6 @@ struct ReadingView: View {
     @State private var crossReferenceVerse: Verse?
     @State private var seenVerseNumbers: Set<Int> = []
     @State private var seenVerseLocation: String = ""
-
-    // Observe app-group "last read" to render bookmark icon state live
 
     // Toast state
     @State private var showFavoriteToast: Bool = false
@@ -124,142 +124,10 @@ struct ReadingView: View {
         .accessibilityLabel("Search Bible")
     }
 
+    // The body is built in stages (toolbar, presentations, lifecycle) so each stage is
+    // type-checked on its own instead of as one long modifier chain.
     var body: some View {
-        @Bindable var chapterInsightsDismissal = chapterInsightsDismissal
-
-        content
-            .environment(\.font, nil)
-            .navigationTitle("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(onNavigateBack != nil)
-            .toolbar {
-                // Left of the title: getting back, and how the text looks.
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    if let onNavigateBack {
-                        Button {
-                            onNavigateBack(viewModel.currentBook)
-                        } label: {
-                            Image(systemName: "chevron.backward")
-                        }
-                        .accessibilityLabel("Back to chapters")
-                    }
-
-                    // In the full toolbar, Search joins the other actions on the right.
-                    if !usesFullToolbar {
-                        searchButton
-                    }
-                }
-
-                if usesFullToolbar {
-                    // Sets Back apart from the display controls; with no Back button there's nothing to separate.
-                    if onNavigateBack != nil {
-                        ToolbarSpacer(.fixed, placement: .topBarLeading)
-                    }
-
-                    ToolbarItemGroup(placement: .topBarLeading) {
-                        TranslationToolbarMenu()
-
-                        Button {
-                            isDisplayOptionsPresented = true
-                        } label: {
-                            Image(systemName: "textformat.size")
-                        }
-                        .accessibilityLabel("Text Size and Display")
-                        .popover(isPresented: $isDisplayOptionsPresented) {
-                            displayOptions
-                        }
-                    }
-                }
-
-                // Right of the title: actions, with Focus Mode outermost.
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    if usesFullToolbar {
-                        searchButton
-
-                        Button {
-                            chapterInsightsDismissal.isPresented = true
-                        } label: {
-                            Image(systemName: "lightbulb")
-                        }
-                        .accessibilityLabel("Study this chapter")
-                        .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
-
-                        Button {
-                            presentFocusMode()
-                        } label: {
-                            Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        }
-                        .accessibilityLabel("Enter Focus Mode")
-                        .accessibilityHint("Hides the toolbar and shows only the text")
-                    } else {
-                        Menu {
-                            Button {
-                                isDisplayOptionsPresented = true
-                            } label: {
-                                Label("Text Size & Display", systemImage: "textformat.size")
-                            }
-
-                            TranslationMenuSection()
-
-                            Divider()
-
-                            Button {
-                                chapterInsightsDismissal.isPresented = true
-                            } label: {
-                                Label("Chapter Insights", systemImage: "lightbulb")
-                            }
-
-                            Button {
-                                presentFocusMode()
-                            } label: {
-                                Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
-                            }
-                        } label: {
-                            Image(systemName: "ellipsis.circle")
-                        }
-                        .popover(isPresented: $isDisplayOptionsPresented) {
-                            displayOptions
-                        }
-                        .accessibilityLabel("Reader Options")
-                        .accessibilityHint("Enter Focus Mode, change text size or translation, or open chapter insights")
-                    }
-                }
-
-                ToolbarItem(placement: .principal) {
-                    Button {
-                        let h = UIImpactFeedbackGenerator(style: .light)
-                        h.impactOccurred()
-                        isBookPickerPresented = true
-                    } label: {
-                        VStack(spacing: 0) {
-                            HStack(spacing: 4) {
-                                Text("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
-                                    .font(.headline)
-                                    .foregroundStyle(.primary)
-                                    .lineLimit(1)
-
-                                // Shows that the title opens the book picker.
-                                Image(systemName: "chevron.down")
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(.secondary)
-                                    .accessibilityHidden(true)
-                            }
-
-                            // The translation picker is in the "…" menu in narrow windows, so name it here.
-                            if !usesFullToolbar {
-                                Text(BibleStore.shared.translation.abbreviation)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Choose a book")
-                    .accessibilityHint("Shows the list of Bible books")
-                }
-            }
-            .sheet(isPresented: $isBookPickerPresented) { bookPickerSheet }
+        readerWithPresentations
             .onAppear {
                 viewModel.onAppear()
                 if focusReadingEnabled && !didAutoPresentFocusMode {
@@ -335,6 +203,180 @@ struct ReadingView: View {
                     viewModel.onTabChanged(tab.rawValue)
                 }
             }
+            .onChange(of: isFocusModePresented) { _, isPresented in
+                viewModel.setFocusModeActive(isPresented)
+            }
+            .task(id: "\(viewModel.currentBook.name)-\(viewModel.currentChapter.number)") {
+                chapterRelatedVerses = []
+                let insights = await ChapterInsightsRepository.shared.insights(
+                    forBookNamed: viewModel.currentBook.name,
+                    chapterNumber: viewModel.currentChapter.number
+                )
+                guard !Task.isCancelled else { return }
+                chapterRelatedVerses = insights?.relatedVerses ?? []
+            }
+    }
+
+    // MARK: - Toolbar
+
+    private var readerWithToolbar: some View {
+        content
+            .environment(\.font, nil)
+            .navigationTitle("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(onNavigateBack != nil)
+            .toolbar { readerToolbar }
+    }
+
+    @ToolbarContentBuilder
+    private var readerToolbar: some ToolbarContent {
+        // Left of the title: getting back, and how the text looks.
+        ToolbarItemGroup(placement: .topBarLeading) {
+            if let onNavigateBack {
+                Button {
+                    onNavigateBack(viewModel.currentBook)
+                } label: {
+                    Image(systemName: "chevron.backward")
+                }
+                .accessibilityLabel("Back to chapters")
+            }
+
+            // In the full toolbar, Search joins the other actions on the right.
+            if !usesFullToolbar {
+                searchButton
+            }
+        }
+
+        if usesFullToolbar {
+            // Sets Back apart from the display controls; with no Back button there's nothing to separate.
+            if onNavigateBack != nil {
+                ToolbarSpacer(.fixed, placement: .topBarLeading)
+            }
+
+            ToolbarItemGroup(placement: .topBarLeading) {
+                TranslationToolbarMenu()
+
+                Button {
+                    isDisplayOptionsPresented = true
+                } label: {
+                    Image(systemName: "textformat.size")
+                }
+                .accessibilityLabel("Text Size and Display")
+                .popover(isPresented: $isDisplayOptionsPresented) {
+                    displayOptions
+                }
+            }
+        }
+
+        // Right of the title: actions, with Focus Mode outermost.
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if usesFullToolbar {
+                fullToolbarActions
+            } else {
+                readerOptionsMenu
+            }
+        }
+
+        ToolbarItem(placement: .principal) {
+            titleButton
+        }
+    }
+
+    @ViewBuilder
+    private var fullToolbarActions: some View {
+        searchButton
+
+        Button {
+            chapterInsightsDismissal.isPresented = true
+        } label: {
+            Image(systemName: "lightbulb")
+        }
+        .accessibilityLabel("Study this chapter")
+        .accessibilityHint("Opens insights for \(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
+
+        Button {
+            presentFocusMode()
+        } label: {
+            Image(systemName: "arrow.up.left.and.arrow.down.right")
+        }
+        .accessibilityLabel("Enter Focus Mode")
+        .accessibilityHint("Hides the toolbar and shows only the text")
+    }
+
+    private var readerOptionsMenu: some View {
+        Menu {
+            Button {
+                isDisplayOptionsPresented = true
+            } label: {
+                Label("Text Size & Display", systemImage: "textformat.size")
+            }
+
+            TranslationMenuSection()
+
+            Divider()
+
+            Button {
+                chapterInsightsDismissal.isPresented = true
+            } label: {
+                Label("Chapter Insights", systemImage: "lightbulb")
+            }
+
+            Button {
+                presentFocusMode()
+            } label: {
+                Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+        }
+        .popover(isPresented: $isDisplayOptionsPresented) {
+            displayOptions
+        }
+        .accessibilityLabel("Reader Options")
+        .accessibilityHint("Enter Focus Mode, change text size or translation, or open chapter insights")
+    }
+
+    private var titleButton: some View {
+        Button {
+            let h = UIImpactFeedbackGenerator(style: .light)
+            h.impactOccurred()
+            isBookPickerPresented = true
+        } label: {
+            VStack(spacing: 0) {
+                HStack(spacing: 4) {
+                    Text("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+
+                    // Shows that the title opens the book picker.
+                    Image(systemName: "chevron.down")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                }
+
+                // The translation picker is in the "…" menu in narrow windows, so name it here.
+                if !usesFullToolbar {
+                    Text(BibleStore.shared.translation.abbreviation)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Choose a book")
+        .accessibilityHint("Shows the list of Bible books")
+    }
+
+    // MARK: - Presentations
+
+    private var readerWithPresentations: some View {
+        @Bindable var chapterInsightsDismissal = chapterInsightsDismissal
+
+        return readerWithToolbar
+            .sheet(isPresented: $isBookPickerPresented) { bookPickerSheet }
             .appToast(
                 isPresented: $showFavoriteToast,
                 symbol: favoriteToastSymbol,
@@ -342,32 +384,8 @@ struct ReadingView: View {
                 tint: favoriteToastTint
             )
             .persistenceFailureAlert(failure: $persistenceFailure)
-            .onChange(of: isFocusModePresented) { _, isPresented in
-                viewModel.setFocusModeActive(isPresented)
-            }
             .fullScreenCover(isPresented: $isFocusModePresented) {
-                FocusReadingView(
-                    initialLocation: FocusVerseLocation(
-                        bookName: viewModel.currentBook.name,
-                        chapterNumber: viewModel.currentChapter.number,
-                        verseNumber: viewModel.currentVerse
-                    ),
-                    readerFontSize: readerFontSize,
-                    onLocationChange: { location in
-                        viewModel.noteFocusLocation(location)
-                        ReadingPositionStore.shared.record(
-                            bookName: location.bookName,
-                            chapter: location.chapterNumber,
-                            verse: location.verseNumber
-                        )
-                    },
-                    onVisibleVerseChange: { location in
-                        viewModel.focusVisibleVerseChanged(location)
-                    },
-                    onExit: {
-                        isFocusModePresented = false
-                    }
-                )
+                focusReadingCover
             }
             .sheet(item: $noteEditorVerse) { verse in
                 // Opened from a verse's note marker; same editor as the verse menu.
@@ -384,58 +402,93 @@ struct ReadingView: View {
                 }
             }
             .sheet(isPresented: $chapterInsightsDismissal.isPresented) {
-                NavigationStack {
-                    ChapterInsightsView(
-                        bookName: viewModel.currentBook.name,
-                        chapterNumber: viewModel.currentChapter.number,
-                        openedFromReader: true
-                    )
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Done") {
-                            chapterInsightsDismissal.dismiss()
-                            }
-                        }
-                    }
-                }
-                .environment(\.studySheetDismissal, chapterInsightsDismissal)
+                chapterInsightsSheet
             }
             .sheet(item: $crossReferenceVerse) { verse in
-                NavigationStack {
-                    ChapterCrossReferencesView(
-                        bookName: viewModel.currentBook.name,
-                        chapterNumber: viewModel.currentChapter.number,
-                        relatedVerses: chapterRelatedVerses.filter { $0.sourceVerse == verse.number }
-                    )
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Done") {
-                                crossReferenceVerse = nil
-                            }
-                        }
+                crossReferencesSheet(for: verse)
+            }
+    }
 
-                        ToolbarItem(placement: .primaryAction) {
-                            NavigationLink("All") {
-                                ChapterCrossReferencesView(
-                                    bookName: viewModel.currentBook.name,
-                                    chapterNumber: viewModel.currentChapter.number,
-                                    relatedVerses: chapterRelatedVerses
-                                )
-                            }
-                        }
+    private var focusReadingCover: some View {
+        FocusReadingView(
+            initialLocation: FocusVerseLocation(
+                bookName: viewModel.currentBook.name,
+                chapterNumber: viewModel.currentChapter.number,
+                verseNumber: viewModel.currentVerse
+            ),
+            readerFontSize: readerFontSize,
+            onLocationChange: { location in
+                viewModel.noteFocusLocation(location)
+                ReadingPositionStore.shared.record(
+                    bookName: location.bookName,
+                    chapter: location.chapterNumber,
+                    verse: location.verseNumber
+                )
+            },
+            onVisibleVerseChange: { location in
+                viewModel.focusVisibleVerseChanged(location)
+            },
+            onExit: {
+                isFocusModePresented = false
+            }
+        )
+    }
+
+    private var chapterInsightsSheet: some View {
+        NavigationStack {
+            ChapterInsightsView(
+                bookName: viewModel.currentBook.name,
+                chapterNumber: viewModel.currentChapter.number,
+                openedFromReader: true
+            )
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        chapterInsightsDismissal.dismiss()
                     }
                 }
             }
-            .task(id: "\(viewModel.currentBook.name)-\(viewModel.currentChapter.number)") {
-                chapterRelatedVerses = []
-                let insights = await ChapterInsightsRepository.shared.insights(
-                    forBookNamed: viewModel.currentBook.name,
-                    chapterNumber: viewModel.currentChapter.number
-                )
-                guard !Task.isCancelled else { return }
-                chapterRelatedVerses = insights?.relatedVerses ?? []
-            }
+        }
+        .environment(\.studySheetDismissal, chapterInsightsDismissal)
     }
+
+    private func crossReferencesSheet(for verse: Verse) -> some View {
+        NavigationStack {
+            ChapterCrossReferencesView(
+                bookName: viewModel.currentBook.name,
+                chapterNumber: viewModel.currentChapter.number,
+                relatedVerses: chapterRelatedVerses.filter { $0.sourceVerse == verse.number }
+            )
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        crossReferenceVerse = nil
+                    }
+                }
+
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink("All") {
+                        ChapterCrossReferencesView(
+                            bookName: viewModel.currentBook.name,
+                            chapterNumber: viewModel.currentChapter.number,
+                            relatedVerses: chapterRelatedVerses
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private var bookPickerSheet: some View {
+        ReaderBookPickerSheet(
+            searchText: $bookPickerSearchText,
+            onSelectBook: { book in open(book: book) },
+            onSelectReference: { reference in open(reference: reference) },
+            onCancel: { isBookPickerPresented = false }
+        )
+    }
+
+    // MARK: - Content
 
     @ViewBuilder
     private var content: some View {
@@ -443,35 +496,7 @@ struct ReadingView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     if contextualTipsEnabled {
-                        if BibleTranslation.available.count > 1 {
-                            ContextualTipView(
-                                id: "reader.translations",
-                                title: "Choose a translation",
-                                message: usesFullToolbar
-                                    ? "Tap the translation button at the top left to read another version. Your saved verses keep the translation they were saved in."
-                                    : "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in.",
-                                systemImage: "character.book.closed"
-                            )
-                            .padding(.bottom, 12)
-                        }
-
-                        ContextualTipView(
-                            id: "reader.shortcuts",
-                            title: "Reader shortcuts",
-                            message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
-                            systemImage: "hand.draw"
-                        )
-                        .padding(.bottom, 12)
-
-                        ContextualTipView(
-                            id: "reader.statusIcons",
-                            title: "Understand verse icons",
-                            message: "Icons beside a verse's reference show your bookmark, favorites, notes, and cross-references. Tap a note or cross-reference icon to open it. Change this in Settings › Bible Reader.",
-                            systemImage: "info.circle"
-                        )
-                        .padding(.bottom, 12)
-
-                        Divider()
+                        readerTips
                     }
 
                     ReadingChapterVerseList(
@@ -494,24 +519,7 @@ struct ReadingView: View {
                     // The way forward at the end of a chapter, without a swipe or the small arrows.
                     if let nextTitle = viewModel.nextChapterTitle {
                         Divider()
-
-                        Button {
-                            changeChapter(forward: true)
-                        } label: {
-                            HStack {
-                                Text("Continue to \(nextTitle)")
-                                    .font(.headline)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.horizontal)
-                            .frame(minHeight: 52)
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityHint("Opens the next chapter")
+                        continueButton(nextTitle: nextTitle)
                     }
                 }
                 // Lets an opening verse menu push the text below it down smoothly.
@@ -593,58 +601,60 @@ struct ReadingView: View {
         )
     }
 
-    private var bookPickerSheet: some View {
-        NavigationStack {
-            List {
-                if let reference = bookPickerReference {
-                    Section {
-                        Button {
-                            open(reference: reference)
-                        } label: {
-                            Label("Go to \(reference.reference.formattedReference)", systemImage: "arrow.right.circle.fill")
-                        }
-                    }
-                }
-
-                Section {
-                    ForEach(filteredBooksForPicker) { book in
-                        Button(book.name) {
-                            open(book: book)
-                        }
-                        .foregroundStyle(.primary)
-                    }
-                }
-            }
-            .searchable(text: $bookPickerSearchText, prompt: "Book or reference")
-            .onSubmit(of: .search) {
-                if let reference = bookPickerReference {
-                    open(reference: reference)
-                }
-            }
-            .navigationTitle("Choose a Book")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        isBookPickerPresented = false
-                    }
-                }
-            }
+    @ViewBuilder
+    private var readerTips: some View {
+        if BibleTranslation.available.count > 1 {
+            ContextualTipView(
+                id: "reader.translations",
+                title: "Choose a translation",
+                message: usesFullToolbar
+                    ? "Tap the translation button at the top left to read another version. Your saved verses keep the translation they were saved in."
+                    : "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in.",
+                systemImage: "character.book.closed"
+            )
+            .padding(.bottom, 12)
         }
+
+        ContextualTipView(
+            id: "reader.shortcuts",
+            title: "Reader shortcuts",
+            message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
+            systemImage: "hand.draw"
+        )
+        .padding(.bottom, 12)
+
+        ContextualTipView(
+            id: "reader.statusIcons",
+            title: "Understand verse icons",
+            message: "Icons beside a verse's reference show your bookmark, favorites, notes, and cross-references. Tap a note or cross-reference icon to open it. Change this in Settings › Bible Reader.",
+            systemImage: "info.circle"
+        )
+        .padding(.bottom, 12)
+
+        Divider()
     }
 
-    private var bookPickerReference: (reference: ScriptureRef, book: Book, chapter: Chapter)? {
-        BibleNavigationReference.resolve(bookPickerSearchText, in: BibleData.books)
+    private func continueButton(nextTitle: String) -> some View {
+        Button {
+            changeChapter(forward: true)
+        } label: {
+            HStack {
+                Text("Continue to \(nextTitle)")
+                    .font(.headline)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal)
+            .frame(minHeight: 52)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens the next chapter")
     }
 
-    private var filteredBooksForPicker: [Book] {
-        let query = bookPickerSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return BibleData.books }
-        if let reference = bookPickerReference { return [reference.book] }
-
-        let names = BibleBookNameMatcher.suggestions(for: query, in: BibleData.books.map(\.name))
-        return names.compactMap { name in BibleData.books.first(where: { $0.name == name }) }
-    }
+    // MARK: - Actions
 
     private func open(book: Book) {
         isBookPickerPresented = false
@@ -652,7 +662,7 @@ struct ReadingView: View {
         onBookSelected?(book)
     }
 
-    private func open(reference: (reference: ScriptureRef, book: Book, chapter: Chapter)) {
+    private func open(reference: ReaderBookPickerSheet.ResolvedReference) {
         isBookPickerPresented = false
         bookPickerSearchText = ""
         onReferenceSelected?(reference.book, reference.chapter, reference.reference.startVerse)
@@ -736,335 +746,5 @@ struct ReadingView: View {
             viewModel.menuVerse = nil
         }
         viewModel.markActivity()
-    }
-
-}
-
-/// The values a new chapter animates from as it slides in.
-private struct ChapterSlide {
-    var offset: CGFloat = 0
-    var opacity: Double = 1
-}
-
-/// Text size and display choices. A popover stays open while the slider moves, which the
-/// toolbar menu it replaces couldn't do.
-private struct ReaderDisplayOptions: View {
-    @Binding var fontSize: Double
-    @Binding var showsFullReferences: Bool
-
-    private static let defaultFontSize = 17.0
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 12) {
-                Image(systemName: "textformat.size.smaller")
-                    .accessibilityHidden(true)
-                Slider(value: $fontSize, in: 12...30, step: 1) {
-                    Text("Text Size")
-                }
-                .accessibilityValue(Text("\(Int(fontSize)) points"))
-                Image(systemName: "textformat.size.larger")
-                    .accessibilityHidden(true)
-            }
-
-            if fontSize != Self.defaultFontSize {
-                Button("Reset Text Size") {
-                    fontSize = Self.defaultFontSize
-                }
-            }
-
-            Divider()
-
-            Toggle("Full reference on each verse", isOn: $showsFullReferences)
-        }
-        .padding()
-        .frame(minWidth: 300)
-        .presentationCompactAdaptation(.popover)
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func readerCardWidth() -> some View {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            containerRelativeFrame(.horizontal)
-        } else {
-            self
-        }
-    }
-}
-
-/// Chapter-local saved-data index for the reader. It replaces repeated whole-collection
-/// searches while keeping the existing marker and note precedence rules intact.
-/// The reader's verse rows for one chapter. The saved-item queries live here, filtered to that
-/// chapter, so the reader indexes only this chapter's favorites, notes, and bookmarks rather
-/// than every one saved.
-private struct ReadingChapterVerseList: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var favorites: [Favorite]
-    @Query private var verseNotes: [VerseNote]
-    @Query private var bookmarks: [Bookmark]
-
-    @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers: Bool = true
-
-    let bookName: String
-    let chapterNumber: Int
-    let viewModel: ReadingViewModel
-    let pinnedStore: PinnedVerseStore
-    let crossReferences: [ChapterRelatedVerse]
-    /// Verses already read in this chapter; empty while read progress is off.
-    let readVerseNumbers: Set<Int>
-    let showsReadProgress: Bool
-    let readerFontSize: Double
-    let showsFullReferences: Bool
-    let onOpenNote: (Verse) -> Void
-    let onOpenCrossReferences: (Verse) -> Void
-    let onVerseActionFeedback: (VerseActionFeedback) -> Void
-
-    init(
-        bookName: String,
-        chapterNumber: Int,
-        viewModel: ReadingViewModel,
-        pinnedStore: PinnedVerseStore,
-        crossReferences: [ChapterRelatedVerse],
-        readVerseNumbers: Set<Int>,
-        showsReadProgress: Bool,
-        readerFontSize: Double,
-        showsFullReferences: Bool,
-        onOpenNote: @escaping (Verse) -> Void,
-        onOpenCrossReferences: @escaping (Verse) -> Void,
-        onVerseActionFeedback: @escaping (VerseActionFeedback) -> Void
-    ) {
-        self.bookName = bookName
-        self.chapterNumber = chapterNumber
-        self.viewModel = viewModel
-        self.pinnedStore = pinnedStore
-        self.crossReferences = crossReferences
-        self.readVerseNumbers = readVerseNumbers
-        self.showsReadProgress = showsReadProgress
-        self.readerFontSize = readerFontSize
-        self.showsFullReferences = showsFullReferences
-        self.onOpenNote = onOpenNote
-        self.onOpenCrossReferences = onOpenCrossReferences
-        self.onVerseActionFeedback = onVerseActionFeedback
-
-        // Rebuilt whenever the reader moves to another chapter, which re-creates this view.
-        _favorites = Query(filter: #Predicate<Favorite> {
-            $0.bookName == bookName && $0.chapterNumber == chapterNumber
-        })
-        _verseNotes = Query(filter: #Predicate<VerseNote> {
-            $0.bookName == bookName && $0.chapterNumber == chapterNumber
-        })
-        _bookmarks = Query(filter: #Predicate<Bookmark> {
-            $0.bookName == bookName && $0.chapterNumber == chapterNumber
-        })
-    }
-
-    var body: some View {
-        let verses = viewModel.currentChapter.verses
-        // Build this once per update instead of scanning the saved items for every verse.
-        let chapterStatus = ReadingChapterStatusIndex(
-            favorites: favorites,
-            notes: verseNotes,
-            bookmarks: bookmarks,
-            crossReferences: crossReferences,
-            bookName: bookName,
-            chapterNumber: chapterNumber
-        )
-
-        ForEach(verses) { verse in
-            let readUpdate = SeenVerseUpdate(
-                bookName: bookName,
-                chapter: chapterNumber,
-                verse: verse.number,
-                totalVerses: verses.count
-            )
-
-            ReadingVerseRow(
-                verse: verse,
-                bookName: bookName,
-                chapterNumber: chapterNumber,
-                isHighlighted: viewModel.highlightedVerse == verse.number,
-                isSelected: viewModel.selectedVerse == verse.number,
-                isFavorite: chapterStatus.favoriteVerseNumbers.contains(verse.number),
-                hasNote: chapterStatus.hasNote(verse.number),
-                isPinned: chapterStatus.bookmarkedVerseNumbers.contains(verse.number),
-                isCurrentlyPinned: pinnedStore.isPinned(
-                    bookName: bookName,
-                    chapter: chapterNumber,
-                    verse: verse.number
-                ),
-                hasCrossReferences: chapterStatus.crossReferenceVerseNumbers.contains(verse.number),
-                isRead: readVerseNumbers.contains(verse.number),
-                showsMarkers: showsVerseMarkers,
-                showsBookmarkMarker: showsBookmarkMarkers,
-                showsPinnedVerseMarker: showsPinnedVerseMarker,
-                showsFavoriteMarker: showsFavoriteMarkers,
-                showsNoteMarker: showsNoteMarkers,
-                showsCrossReferenceMarker: showsCrossReferenceMarkers,
-                showsReadProgress: showsReadProgress,
-                savedHighlightColor: chapterStatus.highlightColor(for: verse.number),
-                readerFontSize: readerFontSize,
-                showsFullReference: showsFullReferences,
-                onVisibilityChange: { isVisible in
-                    viewModel.verseVisibilityChanged(readUpdate, isVisible: isVisible)
-                },
-                onTap: { v in
-                    let generator = UISelectionFeedbackGenerator()
-                    generator.selectionChanged()
-                    // Tapping a verse that is already selected opens its actions,
-                    // the same as a long press; a third tap closes them.
-                    let opensActions = viewModel.selectedVerse == v.number
-                        && viewModel.menuVerse != v.number
-                    viewModel.clearMenuIfNeeded()
-                    // Tap otherwise only highlights/selects (no bookmarking)
-                    viewModel.handleVerseTap(context: modelContext, verse: v)
-                    if opensActions {
-                        viewModel.handleVerseLongPress(verseNumber: v.number)
-                    }
-                },
-                onLongPress: { number in
-                    let generator = UIImpactFeedbackGenerator(style: .heavy)
-                    generator.impactOccurred()
-                    viewModel.handleVerseLongPress(verseNumber: number)
-                },
-                onOpenNote: {
-                    onOpenNote(verse)
-                },
-                onOpenCrossReferences: {
-                    onOpenCrossReferences(verse)
-                }
-            )
-            .id(viewModel.rowID(for: verse.number))
-            .animation(.easeInOut(duration: 0.6), value: viewModel.highlightedVerse)
-            .animation(.easeInOut(duration: 0.2), value: viewModel.selectedVerse)
-
-            if viewModel.menuVerse == verse.number {
-                VerseActionMenu(
-                    verse: VerseActionReference(
-                        bookName: bookName,
-                        chapterNumber: chapterNumber,
-                        verseNumber: verse.number,
-                        verseText: verse.text
-                    ),
-                    presentation: .buttons,
-                    onFeedback: onVerseActionFeedback
-                )
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal)
-                .padding(.bottom, 6)
-                .transition(.opacity)
-            }
-
-            if verse.number != verses.count {
-                Divider()
-            }
-        }
-    }
-}
-
-/// Whether the reader's text is moving. A reference type, so writing it from the scroll
-/// view doesn't invalidate the reader; only views that read it redraw.
-@MainActor
-@Observable
-private final class ReaderScrollActivity {
-    var isScrolling = false
-}
-
-/// Small, semi-transparent chapter arrows in the bottom corners, hidden while scrolling.
-private struct ReaderChapterArrows: View {
-    let scrollActivity: ReaderScrollActivity
-    let onPrevious: () -> Void
-    let onNext: () -> Void
-
-    var body: some View {
-        let isScrolling = scrollActivity.isScrolling
-
-        VStack {
-            Spacer()
-            HStack {
-                arrow("chevron.left", label: "Previous chapter", action: onPrevious)
-                    .padding(.leading, 12)
-
-                Spacer()
-
-                arrow("chevron.right", label: "Next chapter", action: onNext)
-                    .padding(.trailing, 12)
-            }
-            .padding(.bottom, 10)
-        }
-        .opacity(isScrolling ? 0 : 1)
-        .allowsHitTesting(!isScrolling)
-        .animation(.easeInOut(duration: 0.2), value: isScrolling)
-    }
-
-    private func arrow(_ systemImage: String, label: LocalizedStringResource, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.headline.weight(.bold))
-                .foregroundStyle(.primary)
-                .frame(width: 44, height: 44) // hit target
-                .background(.ultraThinMaterial, in: Circle())
-                .opacity(0.7)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text(label))
-    }
-}
-
-private struct ReadingChapterStatusIndex {
-    let favoriteVerseNumbers: Set<Int>
-    let bookmarkedVerseNumbers: Set<Int>
-    let crossReferenceVerseNumbers: Set<Int>
-    private let notesByVerse: [Int: [VerseNote]]
-
-    init(
-        favorites: [Favorite],
-        notes: [VerseNote],
-        bookmarks: [Bookmark],
-        crossReferences: [ChapterRelatedVerse],
-        bookName: String,
-        chapterNumber: Int
-    ) {
-        favoriteVerseNumbers = Set(favorites.compactMap {
-            $0.bookName == bookName && $0.chapterNumber == chapterNumber ? $0.verseNumber : nil
-        })
-        bookmarkedVerseNumbers = Set(bookmarks.compactMap {
-            $0.bookName == bookName && $0.chapterNumber == chapterNumber ? $0.verseNumber : nil
-        })
-        crossReferenceVerseNumbers = Set(crossReferences.map(\.sourceVerse))
-
-        var indexedNotes: [Int: [VerseNote]] = [:]
-        for note in notes where note.bookName == bookName && note.chapterNumber == chapterNumber {
-            for verseNumber in note.verseNumber...note.lastVerseNumber {
-                indexedNotes[verseNumber, default: []].append(note)
-            }
-        }
-        for (verseNumber, coveringNotes) in indexedNotes {
-            indexedNotes[verseNumber] = coveringNotes.sorted {
-                ($0.verseNumber == verseNumber ? 0 : 1, $0.lastVerseNumber - $0.verseNumber) <
-                    ($1.verseNumber == verseNumber ? 0 : 1, $1.lastVerseNumber - $1.verseNumber)
-            }
-        }
-        notesByVerse = indexedNotes
-    }
-
-    func hasNote(_ verseNumber: Int) -> Bool {
-        notesByVerse[verseNumber, default: []].contains {
-            let title = $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
-            let content = $0.content.trimmingCharacters(in: .whitespacesAndNewlines)
-            return !title.isEmpty || (!content.isEmpty && content != $0.reference)
-        }
-    }
-
-    func highlightColor(for verseNumber: Int) -> Color? {
-        notesByVerse[verseNumber, default: []]
-            .first { !$0.highlightColor.isEmpty }
-            .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
     }
 }
