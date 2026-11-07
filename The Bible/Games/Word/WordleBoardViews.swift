@@ -56,8 +56,13 @@ extension WordleView {
         let tileSize: CGFloat
         let onReuseCorrectLetter: (Character, Int) -> Void
 
-        private var spacing: CGFloat {
+        /// The gap between tiles; larger tiles get a wider gap.
+        static func spacing(forTileSize tileSize: CGFloat) -> CGFloat {
             tileSize > 48 ? 9 : 6
+        }
+
+        private var spacing: CGFloat {
+            Self.spacing(forTileSize: tileSize)
         }
 
         var body: some View {

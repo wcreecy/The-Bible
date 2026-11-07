@@ -75,7 +75,8 @@ struct WordleView: View {
       let usesCompactPhoneLayout = vm.started && geometry.size.width < 600
       let compactSizes = compactGameSizes(
         availableHeight: geometry.size.height
-          - (contextualTipsEnabled && tipHeight > 0 ? tipHeight + 12 : 0)
+          - (contextualTipsEnabled && tipHeight > 0 ? tipHeight + 12 : 0),
+        availableWidth: geometry.size.width
       )
       let lettersInWord = WordleGameViewModel.alphabet.filter {
         vm.keyboardStates[$0] == .correct || vm.keyboardStates[$0] == .present
@@ -396,33 +397,54 @@ struct WordleView: View {
     // MARK: - Phone sizing
 
     /// Tile and key sizes that fit the scoreboard, board, and whole keyboard (including the
-    /// Enter row) above the tab bar on a phone. Phones with room keep the full sizes; shorter
-    /// ones shrink tiles and keys together, but keys never get too small to tap reliably.
+    /// Enter row) above the tab bar on a phone. Taller phones grow tiles and keys together to
+    /// use the extra height; shorter ones shrink them, but keys never get too small to tap.
     /// Height of the one-line message slot between the board and the keyboard on phones.
     private static let compactMessageHeight: CGFloat = 20
 
-    /// How far the keyboard may extend into the space kept clear above the tab bar. That
-    /// space is 80 points, but the tab bar itself only reaches about 31 points into it, so
-    /// this still leaves a gap above the tab bar.
-    private static let compactTabBarAllowance: CGFloat = 20
+    /// How far the keyboard may extend into the 80 points `tabBarContentClearance()` keeps
+    /// clear. The system safe area already ends at the top of the tab bar, so that space is
+    /// empty here; this uses most of it and leaves a 16-point gap above the tab bar.
+    private static let compactTabBarAllowance: CGFloat = 64
 
-    private func compactGameSizes(availableHeight: CGFloat) -> (tile: CGFloat, key: CGFloat) {
+    /// Taller phones (such as the Pro Max) grow tiles and keys from the full sizes so the
+    /// game fills the screen down to the tab bar, up to these limits.
+    private static let compactMaxTile: CGFloat = 60
+    private static let compactMaxKey: CGFloat = 50
+
+    private func compactGameSizes(availableHeight: CGFloat, availableWidth: CGFloat) -> (tile: CGFloat, key: CGFloat) {
         let fullTile: CGFloat = 42
         let fullKey: CGFloat = 40
-        // Top padding (8), the three gaps between scoreboard, board, message and keyboard
-        // (3 × 12), and the message slot. The allowance gives back part of the tab bar space.
-        let reserved = 8 + compactScoreboardHeight + 36 + Self.compactMessageHeight
-            - Self.compactTabBarAllowance
-        // Board: 6 tiles + 5 gaps of 6. Keyboard: 4 rows of (key + 16 padding), 3 gaps of 8,
-        // and 6 of top padding.
-        let fixed: CGFloat = 30 + 4 * 16 + 3 * 8 + 6
-        let budget = availableHeight - reserved - fixed
-        let fullSize = 6 * fullTile + 4 * fullKey
-        guard compactScoreboardHeight > 0, budget < fullSize else { return (fullTile, fullKey) }
+        guard compactScoreboardHeight > 0 else { return (fullTile, fullKey) }
 
-        // Shrink both by the same proportion so the board and keyboard stay balanced.
-        let scale = max(0, budget) / fullSize
-        return (max(32, (fullTile * scale).rounded(.down)), max(33, (fullKey * scale).rounded(.down)))
+        // Top padding (8), the three gaps between scoreboard, board, message and keyboard
+        // (3 × 12), the message slot, and the gap after the hidden key-capture view when a
+        // hardware keyboard is connected. The allowance gives back the tab bar clearance.
+        let reserved = 8 + compactScoreboardHeight + 36 + Self.compactMessageHeight
+            + (hardwareKeyboardConnected ? 12 : 0)
+            - Self.compactTabBarAllowance
+        // Keyboard: 4 rows of (key + 16 padding), 3 gaps of 8, and 6 of top padding.
+        let keyboardFixed: CGFloat = 4 * 16 + 3 * 8 + 6
+        let fullSize = 6 * fullTile + 4 * fullKey
+
+        // Scales both by the same proportion so the board and keyboard stay balanced: down on
+        // short phones (keys never too small to tap), up on tall ones.
+        func sizes(boardGap: CGFloat) -> (tile: CGFloat, key: CGFloat) {
+            // Board: 6 tiles and 5 gaps.
+            let budget = availableHeight - reserved - keyboardFixed - 5 * boardGap
+            let scale = max(0, budget) / fullSize
+            // Five tiles and four gaps must also fit between the 16-point side margins.
+            let widthLimit = ((availableWidth - 32 - 4 * boardGap) / 5).rounded(.down)
+            let tile = min(Self.compactMaxTile, widthLimit, max(32, (fullTile * scale).rounded(.down)))
+            let key = min(Self.compactMaxKey, max(33, (fullKey * scale).rounded(.down)))
+            return (tile, key)
+        }
+
+        // The board's gaps widen once tiles pass a size, so recheck with the wider gaps.
+        let narrowGap = WordleBoardView.spacing(forTileSize: fullTile)
+        let result = sizes(boardGap: narrowGap)
+        let gap = WordleBoardView.spacing(forTileSize: result.tile)
+        return gap == narrowGap ? result : sizes(boardGap: gap)
     }
 
     // MARK: - On-screen keyboard
