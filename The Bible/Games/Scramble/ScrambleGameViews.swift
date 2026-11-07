@@ -108,7 +108,9 @@ struct ScramblePrompt: View {
     let hintedLetters: [Character?]
     let isResolved: Bool
     let isIncorrect: Bool
+    let isCorrect: Bool
     let timerTint: Color?
+    let onRemoveLetters: (Int) -> Void
     let onShowReference: () -> Void
 
     private var categorySymbol: String {
@@ -172,7 +174,9 @@ struct ScramblePrompt: View {
                 answerLength: answerLength,
                 hintedLetters: hintedLetters,
                 isResolved: isResolved,
-                isIncorrect: isIncorrect
+                isIncorrect: isIncorrect,
+                isCorrect: isCorrect,
+                onRemoveLetters: onRemoveLetters
             )
         }
         .frame(maxWidth: .infinity)
@@ -200,13 +204,16 @@ struct ScrambleAnswerTiles: View {
     let hintedLetters: [Character?]
     let isResolved: Bool
     let isIncorrect: Bool
+    let isCorrect: Bool
+    let onRemoveLetters: (Int) -> Void
     @State private var shakeOffset: CGFloat = 0
+    @State private var showsCorrectHighlight = false
 
     var body: some View {
         GeometryReader { proxy in
             let tileCount = max(answerLength, 1)
             let maximumSpacing = 7.0
-            let minimumTileWidth = 24.0
+            let minimumTileWidth = 28.0
             let spacing = min(
                 maximumSpacing,
                 max(
@@ -218,44 +225,57 @@ struct ScrambleAnswerTiles: View {
             let tileWidth = max(
                 1,
                 min(
-                    42,
+                    48,
                     (proxy.size.width - spacing * CGFloat(max(tileCount - 1, 0)))
                         / CGFloat(tileCount)
                 )
             )
-            let tileHeight = min(48, max(30, tileWidth + 6))
+            let tileHeight = min(56, max(36, tileWidth + 8))
 
             HStack(spacing: spacing) {
                 ForEach(0..<answerLength, id: \.self) { index in
                     let letter = index < answer.count ? String(answer[answer.index(answer.startIndex, offsetBy: index)]) : ""
                     let hint = index >= answer.count && index < hintedLetters.count ? hintedLetters[index].map(String.init) ?? "" : ""
-                    Text(letter.isEmpty ? hint : letter)
+                    let tile = Text(letter.isEmpty ? hint : letter)
                         .font(.title3.weight(.bold).monospaced())
                         .foregroundStyle(
-                            letter.isEmpty && !hint.isEmpty
+                            showsCorrectHighlight ? Color.green
+                                : (letter.isEmpty && !hint.isEmpty
                                 ? Color.secondary.opacity(0.55)
-                                : (isResolved ? .secondary : .primary)
+                                : (isResolved ? .secondary : .primary))
                         )
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .frame(width: tileWidth, height: tileHeight)
                         .background(
-                            isIncorrect ? Color.orange.opacity(0.10) : Color.clear,
+                            isIncorrect ? Color.orange.opacity(0.10) : (showsCorrectHighlight ? Color.green.opacity(0.18) : Color.clear),
                             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
                         )
                         .overlay {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .strokeBorder(
-                                    isIncorrect ? Color.orange : Color.primary.opacity(isResolved ? 0.08 : 0.15),
-                                    lineWidth: isIncorrect ? 2 : 1
+                                    isIncorrect ? Color.orange : (showsCorrectHighlight ? Color.green : Color.primary.opacity(isResolved ? 0.08 : 0.15)),
+                                    lineWidth: isIncorrect || showsCorrectHighlight ? 2 : 1
                                 )
                         }
                         .offset(x: shakeOffset)
+
+                    if letter.isEmpty || isResolved {
+                        tile
+                    } else {
+                        Button {
+                            onRemoveLetters(index)
+                        } label: {
+                            tile
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Remove letters from position \(index + 1)")
+                    }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(height: 48)
+        .frame(height: 56)
         .task(id: isIncorrect) {
             guard isIncorrect else { return }
 
@@ -272,6 +292,21 @@ struct ScrambleAnswerTiles: View {
 
             withAnimation(.easeInOut(duration: 0.08)) {
                 shakeOffset = 0
+            }
+        }
+        .task(id: isCorrect) {
+            guard isCorrect else {
+                showsCorrectHighlight = false
+                return
+            }
+
+            withAnimation(.easeInOut(duration: 0.18)) {
+                showsCorrectHighlight = true
+            }
+            try? await Task.sleep(for: .milliseconds(800))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.25)) {
+                showsCorrectHighlight = false
             }
         }
         .accessibilityElement(children: .ignore)
@@ -403,7 +438,7 @@ struct ScrambleActionButton: View {
         Button(action: action) {
             Image(systemName: isIncorrect ? "exclamationmark.circle.fill" : systemImage)
                 .font(.body.weight(.semibold))
-                .frame(width: 56, height: 56)
+                .frame(width: 48, height: 48)
         }
         .buttonStyle(.plain)
         .foregroundStyle(
@@ -431,23 +466,30 @@ struct ScrambleActionButton: View {
     }
 }
 
-struct ScrambleGlassActionButton: View {
-    let systemImage: String
-    let accessibilityLabel: LocalizedStringKey
+struct ScrambleCheckAnswerButton: View {
     let isEnabled: Bool
-    let tint: Color
+    let requiresAnswerEdit: Bool
     let action: () -> Void
+
+    private var title: LocalizedStringKey {
+        requiresAnswerEdit ? "Edit answer to try again" : "Check Answer"
+    }
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.title3.weight(.semibold))
-                .frame(width: 50, height: 50)
+            Label(title, systemImage: requiresAnswerEdit ? "pencil" : "checkmark.circle.fill")
+                .font(.headline.weight(.bold))
+                .frame(maxWidth: .infinity, minHeight: 54)
+                .contentShape(Rectangle())
         }
-        .buttonStyle(.glass(.clear))
-        .buttonBorderShape(.roundedRectangle(radius: 10))
-        .foregroundStyle(isEnabled ? tint : .secondary)
+        .buttonStyle(.plain)
+        .foregroundStyle(isEnabled ? Color.white : Color.secondary)
+        .background(isEnabled ? Color.purple : Color.secondary.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(isEnabled ? Color.purple : Color.secondary.opacity(0.25), lineWidth: 1)
+        }
         .disabled(!isEnabled)
-        .accessibilityLabel(accessibilityLabel)
+        .accessibilityLabel(title)
     }
 }

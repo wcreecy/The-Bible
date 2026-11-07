@@ -118,6 +118,8 @@ final class ScrambleGameViewModel {
     var strikes = 0
     var timeRemaining = 0
     var answerFeedback: AnswerFeedback?
+    /// An incorrect answer must be edited before it can consume another strike.
+    private(set) var requiresAnswerEdit = false
     var timerID = UUID()
     var hintLevel = 0
     private(set) var hintPosition: Int?
@@ -145,6 +147,11 @@ final class ScrambleGameViewModel {
         case .correct, .timedOut, .revealed: true
         case .incorrect, nil: false
         }
+    }
+
+    var canCheckAnswer: Bool {
+        guard let currentWord else { return false }
+        return typedAnswer.count == currentWord.answer.count && !requiresAnswerEdit
     }
 
     var currentTimeLimit: Int? {
@@ -276,6 +283,7 @@ final class ScrambleGameViewModel {
         selectedIndices.removeAll()
         typedAnswer = ""
         answerFeedback = nil
+        requiresAnswerEdit = false
         hintLevel = 0
         hintPosition = nil
         strikes = 0
@@ -295,6 +303,7 @@ final class ScrambleGameViewModel {
         selectedIndices.append(index)
         typedAnswer.append(shuffledLetters[index])
         answerFeedback = nil
+        requiresAnswerEdit = false
     }
 
     /// Selects the next unused tile matching a hardware-keyboard character.
@@ -316,6 +325,7 @@ final class ScrambleGameViewModel {
         guard let index = selectedIndices.popLast() else { return }
         typedAnswer.removeLast()
         answerFeedback = nil
+        requiresAnswerEdit = false
         _ = index
     }
 
@@ -323,6 +333,18 @@ final class ScrambleGameViewModel {
         selectedIndices.removeAll()
         typedAnswer = ""
         answerFeedback = nil
+        requiresAnswerEdit = false
+    }
+
+    /// Removes the tapped letter and every letter after it, so an answer can be
+    /// corrected directly from its answer slots.
+    func removeLetters(startingAt position: Int) {
+        guard position >= 0, position < selectedIndices.count else { return }
+
+        selectedIndices.removeSubrange(position...)
+        typedAnswer.removeLast(typedAnswer.count - position)
+        answerFeedback = nil
+        requiresAnswerEdit = false
     }
 
     func showHint() {
@@ -362,7 +384,7 @@ final class ScrambleGameViewModel {
     }
 
     func checkAnswer() {
-        guard let currentWord, !isCurrentWordResolved else { return }
+        guard let currentWord, !isCurrentWordResolved, canCheckAnswer else { return }
 
         guard selectedAnswer.uppercased() == currentWord.answer else {
             if difficulty != .easy {
@@ -373,6 +395,7 @@ final class ScrambleGameViewModel {
                 }
             }
             answerFeedback = .incorrect
+            requiresAnswerEdit = true
             return
         }
 
@@ -450,11 +473,12 @@ final class ScrambleGameViewModel {
 
     func scrambledLetters(for answer: String) -> [Character] {
         let letters = Array(answer)
-        var result = letters.shuffled()
+        guard letters.count > 1, Set(letters).count > 1 else { return letters }
 
-        while result == letters {
+        var result = letters
+        repeat {
             result.shuffle()
-        }
+        } while result == letters
 
         return result
     }

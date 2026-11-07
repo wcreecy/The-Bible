@@ -106,6 +106,21 @@ struct ScrambleGameView: View {
                     GamePauseButton { vm.isPaused = true }
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                if vm.phase == .playing, !vm.isCurrentWordResolved {
+                    Menu {
+                        Button(role: .destructive) {
+                            isRevealConfirmationPresented = true
+                        } label: {
+                            Label("Reveal Answer", systemImage: "eye")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                    .accessibilityLabel("Scramble options")
+                    .accessibilityHint("Includes an option to reveal the answer")
+                }
+            }
         }
         // A call, another app, or locking the phone pauses the word until Resume.
         .onAppActiveChange { isActive in
@@ -237,6 +252,11 @@ struct ScrambleGameView: View {
                 style: horizontalSizeClass == .regular ? .dashboard : .compact
             )
 
+            Text("Word \(vm.currentNumber) of \(vm.sessionLength.rawValue)")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("Word \(vm.currentNumber) of \(vm.sessionLength.rawValue)")
+
             if let currentWord = vm.currentWord {
                 ScramblePrompt(
                     category: currentWord.category,
@@ -247,7 +267,9 @@ struct ScrambleGameView: View {
                     hintedLetters: vm.hintedLetters,
                     isResolved: vm.isCurrentWordResolved,
                     isIncorrect: isIncorrectAnswer,
+                    isCorrect: vm.answerFeedback == .correct,
                     timerTint: vm.currentTimeLimit == nil || vm.isTimerDisabled ? nil : vm.timerTint,
+                    onRemoveLetters: vm.removeLetters,
                     onShowReference: showCurrentReference
                 )
 
@@ -283,11 +305,8 @@ struct ScrambleGameView: View {
                 if vm.isCurrentWordResolved {
                     nextWordButton
                 } else {
-                    answerControls(answerLength: currentWord.answer.count)
+                    answerControls
                         .padding(.top, 12)
-
-                    helpControls
-                        .padding(.top, 8)
                 }
             }
         }
@@ -306,40 +325,42 @@ struct ScrambleGameView: View {
         .tint(.pink)
     }
 
-    /// Clear, delete, shuffle, and check, below the letter tray.
-    private func answerControls(answerLength: Int) -> some View {
-        HStack(spacing: 10) {
-            ScrambleActionButton(systemImage: "trash", accessibilityLabel: "Clear answer", isEnabled: !vm.typedAnswer.isEmpty, action: vm.clearAnswer)
-            ScrambleActionButton(systemImage: "delete.left", accessibilityLabel: "Remove last letter", isEnabled: !vm.typedAnswer.isEmpty, action: vm.removeLastLetter)
-            ScrambleActionButton(systemImage: "shuffle", accessibilityLabel: "Shuffle available letters", isEnabled: vm.shuffledLetters.count - vm.selectedIndices.count >= 2, action: vm.shuffleUnusedLetters)
-            ScrambleActionButton(
-                systemImage: "checkmark.circle.fill",
-                accessibilityLabel: "Check answer",
-                isEnabled: vm.typedAnswer.count == answerLength,
-                isProminent: true,
-                isIncorrect: isIncorrectAnswer,
+    /// Secondary editing controls and a deliberately prominent primary action.
+    private var answerControls: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
+                ScrambleActionButton(
+                    systemImage: "delete.left",
+                    accessibilityLabel: "Remove last letter",
+                    isEnabled: !vm.typedAnswer.isEmpty,
+                    isProminent: true,
+                    action: vm.removeLastLetter
+                )
+                ScrambleActionButton(
+                    systemImage: "shuffle",
+                    accessibilityLabel: "Shuffle available letters",
+                    isEnabled: vm.shuffledLetters.count - vm.selectedIndices.count >= 2,
+                    action: vm.shuffleUnusedLetters
+                )
+                ScrambleActionButton(
+                    systemImage: "lightbulb.fill",
+                    accessibilityLabel: vm.hintLevel == 0 ? "Show hint" : "Show another hint",
+                    isEnabled: vm.hintLevel < vm.maxHintLevel,
+                    tint: .yellow,
+                    action: vm.showHint
+                )
+                ScrambleActionButton(
+                    systemImage: "trash",
+                    accessibilityLabel: "Clear answer",
+                    isEnabled: !vm.typedAnswer.isEmpty,
+                    action: vm.clearAnswer
+                )
+            }
+
+            ScrambleCheckAnswerButton(
+                isEnabled: vm.canCheckAnswer,
+                requiresAnswerEdit: vm.requiresAnswerEdit,
                 action: vm.checkAnswer
-            )
-        }
-    }
-
-    /// Hint and reveal.
-    private var helpControls: some View {
-        HStack(spacing: 12) {
-            ScrambleGlassActionButton(
-                systemImage: "lightbulb.fill",
-                accessibilityLabel: vm.hintLevel == 0 ? "Show hint" : "Show another hint",
-                isEnabled: vm.hintLevel < vm.maxHintLevel,
-                tint: .yellow,
-                action: vm.showHint
-            )
-
-            ScrambleGlassActionButton(
-                systemImage: "eye",
-                accessibilityLabel: "Show answer",
-                isEnabled: true,
-                tint: .blue,
-                action: { isRevealConfirmationPresented = true }
             )
         }
     }
