@@ -174,6 +174,9 @@ final class WhoAmIGameViewModel {
 
     var roundOver: Bool = false
     var wasTimedOut: Bool = false
+    private(set) var hintUsed = false
+    private(set) var timeoutCount = 0
+    private(set) var correctTimeRemaining: [Int] = []
 
     // MARK: - Persistent streak (per difficulty)
     private var persistentStreak: PersistentGameStreak {
@@ -240,6 +243,20 @@ final class WhoAmIGameViewModel {
         }
     }
 
+    private func rankedDistractors(for target: Entry) -> [String] {
+        guard difficulty == .hard, mode(for: target) == .clueToName else {
+            return target.incorrectAnswers.shuffled()
+        }
+
+        return target.incorrectAnswers.shuffled().sorted { lhs, rhs in
+            let lhsBooks = entries.first { $0.name.caseInsensitiveCompare(lhs) == .orderedSame }?.books ?? []
+            let rhsBooks = entries.first { $0.name.caseInsensitiveCompare(rhs) == .orderedSame }?.books ?? []
+            let lhsScore = Set(lhsBooks).intersection(target.books).count
+            let rhsScore = Set(rhsBooks).intersection(target.books).count
+            return lhsScore > rhsScore
+        }
+    }
+
     /// Removes a trailing description in parentheses: "Joseph (son of Jacob)" → ("Joseph", "son of Jacob").
     private static func split(_ name: String) -> (name: String, qualifier: String?) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -267,6 +284,8 @@ final class WhoAmIGameViewModel {
         questionQueue = candidates
         totalQuestions = questionQueue.count
         questionNumber = 0
+        timeoutCount = 0
+        correctTimeRemaining = []
         isComplete = false
         isTimerDisabled = false
         started = true
@@ -285,11 +304,12 @@ final class WhoAmIGameViewModel {
         current = target
         RecentGameQuestionStore.shared.record(target, game: "whoAmI", id: { String($0.id) })
         let correct = mode(for: target) == .clueToName ? target.name : target.clue
-        choiceEntries = (Array(target.incorrectAnswers.shuffled().prefix(3)) + [correct]).shuffled()
+        choiceEntries = (Array(rankedDistractors(for: target).prefix(3)) + [correct]).shuffled()
         questionNumber += 1
         selectedChoice = nil
         roundOver = false
         wasTimedOut = false
+        hintUsed = false
         isPaused = false
         session.startQuestion()
 
@@ -308,12 +328,16 @@ final class WhoAmIGameViewModel {
     private func timeOut() {
         guard !roundOver else { return }
         wasTimedOut = true
+        timeoutCount += 1
         finishRound(correct: false)
     }
 
     private func finishRound(correct: Bool) {
         stopTimer()
         roundOver = true
+        if correct, difficulty.timeLimit > 0, !isTimerDisabled {
+            correctTimeRemaining.append(remainingSeconds)
+        }
         if let current {
             session.record(
                 GameRoundEntry(
@@ -388,6 +412,26 @@ final class WhoAmIGameViewModel {
     var canPause: Bool {
         started && !isComplete && current != nil && !roundOver
             && difficulty.timeLimit > 0 && !isTimerDisabled && !isPaused
+    }
+
+    var canUseHint: Bool {
+        difficulty != .easy && !hintUsed && !roundOver && !isPaused
+    }
+
+    var hintText: String? {
+        guard let current else { return nil }
+        if !current.books.isEmpty {
+            return String(localized: "Appears in \(current.books.prefix(2).formatted())")
+        }
+        return current.qualifier
+    }
+
+    func useHint() {
+        guard canUseHint else { return }
+        hintUsed = true
+        if !isTimerDisabled, remainingSeconds > 0 {
+            remainingSeconds = max(1, remainingSeconds - 5)
+        }
     }
 
     /// Stops the clock and hides the question until `resume()`.

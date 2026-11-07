@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WhoAmIGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var vm: WhoAmIGameViewModel
 
     init(reviewQuestionIDs: Set<String> = []) {
@@ -50,13 +51,18 @@ struct WhoAmIGameView: View {
                 if !vm.started {
                     setupContent
                 } else if vm.isComplete {
-                    GameRoundSummaryView(
-                        summary: GameRoundSummary(score: vm.session),
-                        tint: .brown,
-                        canTimeOut: vm.difficulty.timeLimit > 0,
-                        onPlayAgain: vm.startGame,
-                        onChangeSettings: vm.returnToSetup
-                    )
+                    VStack(spacing: 12) {
+                        GameRoundSummaryView(
+                            summary: GameRoundSummary(score: vm.session),
+                            tint: .brown,
+                            canTimeOut: vm.difficulty.timeLimit > 0,
+                            onPlayAgain: vm.startGame,
+                            onChangeSettings: vm.returnToSetup
+                        )
+                        if vm.difficulty.timeLimit > 0 {
+                            WhoAmITimingSummary(timeouts: vm.timeoutCount, remainingTimes: vm.correctTimeRemaining)
+                        }
+                    }
                 } else if vm.isPaused {
                     GamePausedView(tint: .brown, remainingSeconds: vm.remainingSeconds) {
                         vm.resume()
@@ -138,7 +144,8 @@ struct WhoAmIGameView: View {
             WhoAmIRevealCard(
                 wasCorrect: vm.selectedChoice == vm.correctChoice,
                 wasTimedOut: vm.wasTimedOut,
-                person: person
+                person: person,
+                secondsRemaining: vm.remainingSeconds
             )
         }
     }
@@ -151,7 +158,7 @@ struct WhoAmIGameView: View {
                     .buttonStyle(GameProminentButtonStyle(tint: .brown))
             } else {
                 Button("Next Question", systemImage: "arrow.right", action: vm.nextRound)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    .buttonStyle(GameProminentButtonStyle(tint: .brown))
             }
         } else if debugAutoWinEnabled {
             Button("WIN") {
@@ -176,7 +183,7 @@ struct WhoAmIGameView: View {
         GroupBox {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text(promptIsName ? "Name" : "Clue")
+                    Label(promptIsName ? "NAME → CLUE" : "CLUE → NAME", systemImage: promptIsName ? "person.fill" : "text.quote")
                     Spacer()
                     Text(progressText)
                         .monospacedDigit()
@@ -210,7 +217,7 @@ struct WhoAmIGameView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(promptIsName ? "Which clue describes them?" : "Who am I?")
                 .font(.headline)
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+            LazyVGrid(columns: compactChoiceColumns, spacing: 12) {
                 ForEach(vm.choices, id: \.self) { choice in
                     Button {
                         vm.select(choice)
@@ -256,6 +263,8 @@ struct WhoAmIGameView: View {
             }
         }
 
+        hintAction
+
         reveal
 
         roundActions
@@ -289,7 +298,7 @@ struct WhoAmIGameView: View {
         VStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text(promptIsName ? "Name" : "Clue")
+                Label(promptIsName ? "NAME → CLUE" : "CLUE → NAME", systemImage: promptIsName ? "person.fill" : "text.quote")
                     Spacer()
                     Text(progressText)
                         .monospacedDigit()
@@ -301,6 +310,8 @@ struct WhoAmIGameView: View {
                     .font(promptIsName ? .title.weight(.semibold) : .title3.weight(.medium))
                     .fixedSize(horizontal: false, vertical: true)
             }
+
+            hintAction
             .frame(maxWidth: .infinity, alignment: .leading)
 
             LazyVGrid(
@@ -398,6 +409,23 @@ struct WhoAmIGameView: View {
         isTimedQuestion && !vm.isTimerDisabled
     }
 
+    private var compactChoiceColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: 12), count: promptIsName || dynamicTypeSize.isAccessibilitySize ? 1 : 2)
+    }
+
+    @ViewBuilder
+    private var hintAction: some View {
+        if vm.canUseHint {
+            Button("Hint — costs 5 seconds", systemImage: "lightbulb") { vm.useHint() }
+                .buttonStyle(.bordered)
+                .tint(.brown)
+        } else if vm.hintUsed, let hint = vm.hintText {
+            Label(hint, systemImage: "lightbulb.fill")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+    }
+
     private var isTimedQuestion: Bool {
         vm.difficulty.timeLimit > 0 && !vm.roundOver
     }
@@ -412,6 +440,32 @@ struct WhoAmIGameView: View {
         if fraction <= 0.3 { return .red }
         if fraction <= 0.6 { return .yellow }
         return .green
+    }
+}
+
+private struct WhoAmITimingSummary: View {
+    let timeouts: Int
+    let remainingTimes: [Int]
+
+    private var averageRemaining: Int {
+        guard !remainingTimes.isEmpty else { return 0 }
+        return remainingTimes.reduce(0, +) / remainingTimes.count
+    }
+
+    var body: some View {
+        HStack {
+            Label("\(timeouts) timeouts", systemImage: "clock.badge.exclamationmark")
+            Spacer()
+            Label("\(averageRemaining)s avg left", systemImage: "timer")
+            if let fastest = remainingTimes.max() {
+                Spacer()
+                Label("\(fastest)s fastest", systemImage: "bolt.fill")
+            }
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .padding(12)
+        .background(Color.brown.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
@@ -438,6 +492,7 @@ private struct WhoAmIRevealCard: View {
     let wasCorrect: Bool
     let wasTimedOut: Bool
     let person: WhoAmIGameViewModel.Entry
+    let secondsRemaining: Int
 
     private static let shownBookCount = 6
 
@@ -456,7 +511,13 @@ private struct WhoAmIRevealCard: View {
         VStack(alignment: .leading, spacing: 8) {
             Label(title, systemImage: wasCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .font(.headline)
-                .foregroundStyle(wasCorrect ? Color.green : Color.red)
+            .foregroundStyle(wasCorrect ? Color.green : Color.red)
+
+            if wasCorrect, secondsRemaining > 0 {
+                Text("Correct — \(secondsRemaining) seconds remaining")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.green)
+            }
 
             if let qualifier = person.qualifier {
                 Text("\(person.name) (\(qualifier))")
@@ -466,19 +527,15 @@ private struct WhoAmIRevealCard: View {
                     .font(.title3.weight(.bold))
             }
 
-            Text(person.clue)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            if !person.books.isEmpty {
-                Label {
-                    Text("Appears in \(booksText)")
-                        .fixedSize(horizontal: false, vertical: true)
-                } icon: {
-                    Image(systemName: "books.vertical")
+            DisclosureGroup("Why this answer?") {
+                Text(person.clue)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if !person.books.isEmpty {
+                    Label("Appears in \(booksText)", systemImage: "books.vertical")
+                        .font(.subheadline)
                 }
-                .font(.subheadline)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
