@@ -6,6 +6,41 @@ import UserNotifications
 /// Actions behind Settings > Developer Tools. They exist only in debug builds.
 @MainActor
 enum DeveloperTools {
+    // MARK: - Resume Reading previews
+
+    static let resumeReadingPreviewKey = "debugResumeReadingPreview"
+
+    enum ResumeReadingPreview: String, CaseIterable, Identifiable {
+        case actual
+        case today
+        case yesterday
+        case threeWeeksAgo
+
+        var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .actual: "Actual bookmark"
+            case .today: "Saved today"
+            case .yesterday: "Saved yesterday"
+            case .threeWeeksAgo: "Saved three weeks ago"
+            }
+        }
+
+        var date: Date? {
+            switch self {
+            case .actual:
+                nil
+            case .today:
+                .now
+            case .yesterday:
+                Calendar.current.date(byAdding: .day, value: -1, to: .now)
+            case .threeWeeksAgo:
+                Calendar.current.date(byAdding: .day, value: -21, to: .now)
+            }
+        }
+    }
+
     // MARK: - Daily WORD schedule
 
     /// Makes a new shared Daily WORD schedule for release and applies it to this Debug build.

@@ -41,10 +41,30 @@ struct HomeView: View {
     @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
     @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
 
+    #if DEBUG
+    @AppStorage(DeveloperTools.resumeReadingPreviewKey) private var resumeReadingPreview = DeveloperTools.ResumeReadingPreview.actual.rawValue
+    #endif
+
     /// The verse the reader bookmarked; the single source for Continue Reading.
     /// (The automatic last-read position only drives where the Bible tab opens.)
     private var bookmark: Bookmark? {
         bookmarks.first
+    }
+
+    @MainActor private var resumeReadingPoint: ResumeReadingCard.ReadingPoint? {
+        #if DEBUG
+        if let preview = DeveloperTools.ResumeReadingPreview(rawValue: resumeReadingPreview),
+           let previewDate = preview.date {
+            return ResumeReadingCard.ReadingPoint(
+                bookName: "Matthew",
+                chapterNumber: 6,
+                verseNumber: 9,
+                verseText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
+                savedAt: previewDate
+            )
+        }
+        #endif
+        return bookmark.map(ResumeReadingCard.ReadingPoint.init)
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
@@ -376,11 +396,20 @@ struct HomeView: View {
             )
         case .resumeReading:
             ResumeReadingCard(
-                bookmark: bookmark,
+                readingPoint: resumeReadingPoint,
                 usesCompactLayout: !isPad,
-                onOpenReference: { _ in openContinueReading() },
+                onOpenReference: { readingPoint in
+                    openBibleReference(
+                        book: readingPoint.bookName,
+                        chapter: readingPoint.chapterNumber,
+                        verse: readingPoint.verseNumber
+                    )
+                },
                 onStartReading: {
                     openBibleReference(book: "Genesis", chapter: 1, verse: 1)
+                },
+                onChoosePassage: { bookName, chapterNumber, verseNumber in
+                    openBibleReference(book: bookName, chapter: chapterNumber, verse: verseNumber)
                 }
             )
         case .savedVerses:

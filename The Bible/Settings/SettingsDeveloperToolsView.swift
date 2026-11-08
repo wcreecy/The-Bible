@@ -11,6 +11,7 @@ struct SettingsDeveloperToolsView: View {
     @Environment(\.persistenceStoreMode) private var persistenceStoreMode
     @Environment(CloudKitManager.self) private var cloudKitManager
     @AppStorage("debugForcedStoreMode") private var forcedStoreMode = ""
+    @AppStorage(DeveloperTools.resumeReadingPreviewKey) private var resumeReadingPreview = DeveloperTools.ResumeReadingPreview.actual.rawValue
 
     @State private var streak = StreakTracker.summary()
     @State private var translationReports: [TranslationReport] = []
@@ -156,6 +157,17 @@ struct SettingsDeveloperToolsView: View {
             } message: {
                 Text("The Home, Stats, Favorites, and Notes views now have sample data to display.")
             }
+
+            Picker("Resume Reading Preview", selection: $resumeReadingPreview) {
+                ForEach(DeveloperTools.ResumeReadingPreview.allCases) { preview in
+                    Text(preview.title).tag(preview.rawValue)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Text("Changes only the Debug card preview; it never edits your real bookmark.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             Button(role: .destructive) {
                 showingSettingsResetConfirmation = true
