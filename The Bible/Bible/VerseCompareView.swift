@@ -192,6 +192,7 @@ struct VerseCompareView: View {
 
 private struct VerseCompareCard: View {
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
+    @State private var imageComposerVerse: VerseActionReference?
 
     let translation: BibleTranslation
     let bookName: String
@@ -218,7 +219,9 @@ private struct VerseCompareCard: View {
                 Spacer(minLength: 0)
 
                 if let verse, !verse.isOmitted {
-                    ShareLink(item: shareText(for: verse)) {
+                    VerseShareMenu(verse: actionReference(for: verse), onCreateImage: {
+                        imageComposerVerse = actionReference(for: verse)
+                    }) {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .font(.subheadline)
@@ -237,6 +240,9 @@ private struct VerseCompareCard: View {
         .padding()
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 14))
         .accessibilityElement(children: .combine)
+        .fullScreenCover(item: $imageComposerVerse) { verse in
+            VerseImageComposerView(verse: verse)
+        }
     }
 
     @ViewBuilder
@@ -260,13 +266,13 @@ private struct VerseCompareCard: View {
         }
     }
 
-    private func shareText(for verse: Verse) -> String {
+    private func actionReference(for verse: Verse) -> VerseActionReference {
         VerseActionReference(
             bookName: bookName,
             chapterNumber: chapter,
             verseNumber: number,
             verseText: verse.text,
             translation: translation
-        ).shareText
+        )
     }
 }
