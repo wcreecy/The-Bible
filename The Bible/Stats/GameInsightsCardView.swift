@@ -89,7 +89,10 @@ struct GameInsightsCardView: View {
                 }
 
                 activityHeatMap
-                masterySection
+                BookMasterySection(
+                    strongestBooks: stats.bookMastery(),
+                    weakestBooks: stats.weakBookMastery()
+                )
                 difficultySection
             }
         }
@@ -111,23 +114,6 @@ struct GameInsightsCardView: View {
             Text("Darker squares mean more attempts.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-        }
-    }
-
-    private var masterySection: some View {
-        let mastery = stats.bookMastery()
-        return VStack(alignment: .leading, spacing: 6) {
-            Text("Book Mastery")
-                .font(.subheadline.weight(.semibold))
-            if mastery.isEmpty {
-                Text("Answer at least 5 Quiz or Trivia questions for a book to see mastery.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            } else {
-                ForEach(Array(mastery.prefix(3)), id: \.book) { item in
-                    insightRow(icon: "book.closed.fill", title: item.book, detail: "\(Int(item.pct.rounded()))% · \(item.answered) attempts")
-                }
-            }
         }
     }
 
@@ -171,5 +157,66 @@ struct GameInsightsCardView: View {
         case 6...9: return Color.purple.opacity(0.75)
         default: return .purple
         }
+    }
+}
+
+private struct BookMasterySection: View {
+    let strongestBooks: [(book: String, answered: Int, correct: Int, pct: Double)]
+    let weakestBooks: [(book: String, answered: Int, correct: Int, pct: Double)]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Book Mastery")
+                .font(.subheadline.weight(.semibold))
+
+            if strongestBooks.isEmpty {
+                Text("Answer at least 5 book-based questions to see your strongest and weakest books.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                BookMasteryRanking(
+                    title: "Strongest Books",
+                    icon: "trophy.fill",
+                    tint: .green,
+                    books: Array(strongestBooks.prefix(3))
+                )
+                BookMasteryRanking(
+                    title: "Keep Practicing",
+                    icon: "arrow.down.circle.fill",
+                    tint: .orange,
+                    books: Array(weakestBooks.prefix(3))
+                )
+            }
+        }
+    }
+}
+
+private struct BookMasteryRanking: View {
+    let title: LocalizedStringKey
+    let icon: String
+    let tint: Color
+    let books: [(book: String, answered: Int, correct: Int, pct: Double)]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Label(title, systemImage: icon)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(tint)
+
+            ForEach(books, id: \.book) { book in
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(book.book)
+                        .font(.caption.weight(.semibold))
+
+                    Spacer(minLength: 8)
+
+                    Text("\(Int(book.pct.rounded()))% · \(book.answered) attempts")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 }

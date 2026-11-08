@@ -126,8 +126,39 @@ enum DeveloperSampleData {
             context.insert(note)
         }
 
+        let existingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        var didSeedBookmark = false
+        if existingBookmarks.isEmpty {
+            for _ in 0..<50 {
+                guard let book = books.randomElement(),
+                      let chapter = book.chapters.randomElement(),
+                      let verse = chapter.verses.randomElement(),
+                      !verse.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    continue
+                }
+
+                let bookmark = Bookmark()
+                bookmark.bookName = book.name
+                bookmark.chapterNumber = chapter.number
+                bookmark.verseNumber = verse.number
+                bookmark.verseText = verse.text
+                bookmark.createdAt = Calendar.autoupdatingCurrent.date(
+                    byAdding: .day,
+                    value: -Int.random(in: 1...90),
+                    to: Date()
+                ) ?? Date()
+                context.insert(bookmark)
+                didSeedBookmark = true
+                break
+            }
+        }
+
         if context.hasChanges {
             try context.save()
+        }
+
+        if didSeedBookmark {
+            Bookmark.mirrorToWidget(in: context)
         }
     }
 
@@ -327,6 +358,9 @@ enum DeveloperSampleData {
             )
         }
 
+        generateBookMasteryStats()
+        generateDifficultyStats()
+
         let lastGame = games.randomElement()?.dailyKey ?? "quiz"
         let displayNames = [
             "quiz": "Quiz",
@@ -345,6 +379,64 @@ enum DeveloperSampleData {
             Date().addingTimeInterval(-Double.random(in: 300...10_800)).timeIntervalSince1970,
             forKey: "gamesLastPlayedAt"
         )
+    }
+
+    /// Seeds deterministic per-book results so the Game Insights card can demonstrate
+    /// strongest and weakest book rankings. These are separate from aggregate game totals.
+    private static func generateBookMasteryStats() {
+        let sampleResults: [(book: String, quiz: (answered: Int, correct: Int), trivia: (answered: Int, correct: Int))] = [
+            ("John", (18, 17), (10, 10)),
+            ("Romans", (15, 13), (11, 10)),
+            ("Psalms", (14, 10), (9, 6)),
+            ("Genesis", (16, 6), (8, 3)),
+            ("Leviticus", (12, 4), (9, 3)),
+            ("Jonah", (10, 3), (7, 2))
+        ]
+
+        var quizAnswered = loadMap("quizPerBookAnsweredMap")
+        var quizCorrect = loadMap("quizPerBookCorrectMap")
+        var triviaAnswered = loadMap("triviaPerBookAnsweredMap")
+        var triviaCorrect = loadMap("triviaPerBookCorrectMap")
+
+        for result in sampleResults {
+            quizAnswered[result.book, default: 0] += result.quiz.answered
+            quizCorrect[result.book, default: 0] += result.quiz.correct
+            triviaAnswered[result.book, default: 0] += result.trivia.answered
+            triviaCorrect[result.book, default: 0] += result.trivia.correct
+        }
+
+        saveMap(quizAnswered, key: "quizPerBookAnsweredMap")
+        saveMap(quizCorrect, key: "quizPerBookCorrectMap")
+        saveMap(triviaAnswered, key: "triviaPerBookAnsweredMap")
+        saveMap(triviaCorrect, key: "triviaPerBookCorrectMap")
+    }
+
+    /// Seeds per-difficulty counters for the games included in the difficulty insight.
+    private static func generateDifficultyStats() {
+        let results: [(difficulty: String, values: [(prefix: String, answered: Int, correct: Int)])] = [
+            ("easy", [
+                ("quiz", 28, 25), ("hangman", 20, 18), ("beatclock", 24, 21),
+                ("bookorder", 12, 11), ("whoami", 18, 16)
+            ]),
+            ("normal", [
+                ("quiz", 36, 29), ("hangman", 26, 20), ("beatclock", 30, 23),
+                ("bookorder", 18, 14), ("whoami", 22, 17)
+            ]),
+            ("hard", [
+                ("quiz", 30, 20), ("hangman", 22, 14), ("beatclock", 26, 15),
+                ("bookorder", 16, 9), ("whoami", 20, 11)
+            ])
+        ]
+
+        let defaults = UserDefaults.standard
+        for result in results {
+            for value in result.values {
+                let answeredKey = "\(value.prefix)AllTimeAnswered_\(result.difficulty)"
+                let correctKey = "\(value.prefix)AllTimeCorrect_\(result.difficulty)"
+                defaults.set(defaults.integer(forKey: answeredKey) + value.answered, forKey: answeredKey)
+                defaults.set(defaults.integer(forKey: correctKey) + value.correct, forKey: correctKey)
+            }
+        }
     }
 
     private static func generateMissedQuestions() {

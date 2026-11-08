@@ -436,6 +436,10 @@ struct GameStatsAccountingTests {
             #expect(rows.map(\.book) == ["John", "Psalms"]) // Matthew's 9 answers are outside 3 days
         }
 
+        // Book mastery combines every book-based game record, then ranks both directions.
+        #expect(stats.bookMastery().prefix(3).map(\.book) == ["Matthew", "John", "Psalms"])
+        #expect(stats.weakBookMastery().prefix(3).map(\.book) == ["Genesis", "Psalms", "John"])
+
         let gospels = StatsSeriesBuilder.Genre.Gospels.rawValue
         let byBook = [stats.quizAccuracyByBook(inGenre: gospels), stats.triviaAccuracyByBook(inGenre: gospels)]
         for rows in byBook {
@@ -619,13 +623,22 @@ struct DeveloperSampleGameStatsTests {
     private let defaults = UserDefaults.standard
 
     @Test
-    func generatedSampleDataIncludesCrosswordWithRealisticPlayCounts() throws {
+    func generatedSampleDataIncludesCrosswordWithRealisticPlayCounts() async throws {
         let prefixes = ["quiz", "trivia", "hangman", "beatclock", "versematch", "bookorder",
                         "whoami", "wordsearch", "scramble", "crossword", "word", "wordle"]
-        var keys = ["gamesDailyAnswered", "gamesDailyCorrect", "gamesLastPlayedAt", "gamesLastPlayedGameName"]
+        var keys = [
+            "gamesDailyAnswered", "gamesDailyCorrect", "gamesLastPlayedAt", "gamesLastPlayedGameName",
+            "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+            "triviaPerBookAnsweredMap", "triviaPerBookCorrectMap"
+        ]
         for prefix in prefixes {
-            keys += ["gamesDailyAnswered_\(prefix)", "gamesDailyCorrect_\(prefix)",
-                     "\(prefix)AllTimeAnswered_all", "\(prefix)AllTimeCorrect_all", "\(prefix)AllTimeBestStreak_all"]
+            keys += [
+                "gamesDailyAnswered_\(prefix)", "gamesDailyCorrect_\(prefix)",
+                "\(prefix)AllTimeAnswered_all", "\(prefix)AllTimeCorrect_all", "\(prefix)AllTimeBestStreak_all",
+                "\(prefix)AllTimeAnswered_easy", "\(prefix)AllTimeCorrect_easy",
+                "\(prefix)AllTimeAnswered_normal", "\(prefix)AllTimeCorrect_normal",
+                "\(prefix)AllTimeAnswered_hard", "\(prefix)AllTimeCorrect_hard"
+            ]
         }
         let saved = Dictionary(uniqueKeysWithValues: keys.compactMap { key in defaults.object(forKey: key).map { (key, $0) } })
         keys.forEach { defaults.removeObject(forKey: $0) }
@@ -635,6 +648,16 @@ struct DeveloperSampleGameStatsTests {
         }
 
         DeveloperSampleData.generateGameStats()
+
+        let quizByBook = try #require(defaults.data(forKey: "quizPerBookAnsweredMap"))
+        let triviaByBook = try #require(defaults.data(forKey: "triviaPerBookAnsweredMap"))
+        #expect(try JSONDecoder().decode([String: Int].self, from: quizByBook).count >= 6)
+        #expect(try JSONDecoder().decode([String: Int].self, from: triviaByBook).count >= 6)
+
+        _ = await BibleRepository.shared.loadAllBooks()
+        #expect(GameStats.shared.bookMastery().prefix(3).count == 3)
+        #expect(GameStats.shared.weakBookMastery().prefix(3).count == 3)
+        #expect(GameStats.shared.accuracyByDifficulty().allSatisfy { $0.answered > 0 })
 
         let answered = defaults.integer(forKey: "crosswordAllTimeAnswered_all")
         #expect(answered > 0)

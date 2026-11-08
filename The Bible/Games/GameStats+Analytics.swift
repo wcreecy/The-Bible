@@ -208,20 +208,35 @@ extension GameStats {
         }
     }
 
-    /// Book mastery combines Quiz (including the former Verses game's history) and Trivia.
+    /// Book mastery combines every game that records answers against a Bible book:
+    /// Quiz (including the former Verses game's history) and Trivia.
     func bookMastery(minAttempts: Int = 5) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        rankedBookMastery(minAttempts: minAttempts, strongestFirst: true)
+    }
+
+    /// Books with the lowest combined accuracy across games that record book-level answers.
+    func weakBookMastery(minAttempts: Int = 5) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        rankedBookMastery(minAttempts: minAttempts, strongestFirst: false)
+    }
+
+    private func rankedBookMastery(
+        minAttempts: Int,
+        strongestFirst: Bool
+    ) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let quizMaps = perBookMaps(.quiz)
         let triviaMaps = perBookMaps(.trivia)
+
         return BibleData.books.compactMap { book in
             let name = book.name
             let answered = max(0, quizMaps.answered[name] ?? 0) + max(0, triviaMaps.answered[name] ?? 0)
             guard answered >= minAttempts else { return nil }
+
             let correct = max(0, quizMaps.correct[name] ?? 0) + max(0, triviaMaps.correct[name] ?? 0)
             return (name, answered, correct, min(100, max(0, Double(correct) / Double(answered) * 100)))
         }
         .sorted { lhs, rhs in
             if lhs.pct == rhs.pct { return lhs.book < rhs.book }
-            return lhs.pct > rhs.pct
+            return strongestFirst ? lhs.pct > rhs.pct : lhs.pct < rhs.pct
         }
     }
 }
