@@ -21,6 +21,8 @@ struct GameRoundEntry: Identifiable {
     var bookName: String?
     /// A passage to open from the answer review, such as "Genesis 6:13-22".
     var reference: String?
+    /// Hints used to solve this question or word. Zero when the game has no hints.
+    var hintCount: Int = 0
     /// Time from the question appearing to the answer. Filled in by `GameScore`.
     var duration: Duration?
     /// All books associated with a person; one question can contribute to several book tallies.

@@ -117,4 +117,41 @@ struct ScrambleGameViewModelTests {
             #expect(game.timeRemaining == 30)
         }
     }
+
+    @Test
+    func hardHintsRevealTheOpeningThenTwoDifferentInteriorLetters() {
+        let savedDifficulty = UserDefaults.standard.object(forKey: "scrambleDifficulty")
+        defer { UserDefaults.standard.set(savedDifficulty, forKey: "scrambleDifficulty") }
+
+        let game = ScrambleGameViewModel()
+        game.difficulty = .hard
+        let word = ScrambleWordEntry(
+            word: "Shepherd",
+            category: "Roles",
+            difficulty: "hard",
+            reference: nil
+        )
+        game.currentWord = ScrambleGameViewModel.ScrambleWord(word)
+
+        game.showHint()
+
+        #expect(game.hintLevel == 1)
+        #expect(game.hintPositions.isEmpty)
+        #expect(game.hintedLetters.first! == game.currentWord?.answer.first)
+
+        game.showHint()
+        game.showHint()
+
+        let answer = try! #require(game.currentWord?.answer)
+        #expect(game.hintLevel == 3)
+        #expect(game.hintPositions.count == 2)
+        for position in game.hintPositions {
+            #expect(position > 0)
+            #expect(position < answer.count - 1)
+            #expect(game.hintedLetters[position] != nil)
+        }
+
+        game.recordWordResult(.correct, givenAnswer: answer)
+        #expect(game.session.entries.last?.hintCount == 3)
+    }
 }

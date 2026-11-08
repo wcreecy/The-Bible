@@ -123,7 +123,7 @@ final class ScrambleGameViewModel {
     private(set) var requiresAnswerEdit = false
     var timerID = UUID()
     var hintLevel = 0
-    private(set) var hintPosition: Int?
+    private(set) var hintPositions: Set<Int> = []
     var isTimerDisabled = false
     /// True while the word is paused: the timer stops and the letters are hidden.
     var isPaused = false
@@ -178,7 +178,9 @@ final class ScrambleGameViewModel {
         let wordLength = currentWord.answer.count
 
         if difficulty == .hard {
-            return wordLength > 1 ? 2 : 1
+            // The first Hard hint reveals the opening letter; later hints
+            // reveal up to two different interior letters.
+            return min(3, max(1, wordLength - 1))
         }
 
         return min(difficulty.hintLimit, wordLength)
@@ -187,14 +189,15 @@ final class ScrambleGameViewModel {
     var hintText: String? {
         guard hintLevel > 0, let currentWord, let firstLetter = currentWord.answer.first else { return nil }
 
-        guard hintLevel > 1,
-              let position = hintPosition,
-              position < currentWord.answer.count else {
+        guard !hintPositions.isEmpty else {
             return "Starts with \(firstLetter)."
         }
 
-        let index = currentWord.answer.index(currentWord.answer.startIndex, offsetBy: position)
-        return "Starts with \(firstLetter). Position \(position + 1) is \(currentWord.answer[index])."
+        let details = hintPositions.sorted().map { position in
+            let index = currentWord.answer.index(currentWord.answer.startIndex, offsetBy: position)
+            return "Position \(position + 1) is \(currentWord.answer[index])."
+        }
+        return (["Starts with \(firstLetter)."] + details).joined(separator: " ")
     }
 
     var hintedLetters: [Character?] {
@@ -204,9 +207,7 @@ final class ScrambleGameViewModel {
         if hintLevel > 0 {
             hints[0] = currentWord.answer.first
         }
-        if hintLevel > 1,
-           let position = hintPosition,
-           position < currentWord.answer.count {
+        for position in hintPositions where position < currentWord.answer.count {
             let index = currentWord.answer.index(currentWord.answer.startIndex, offsetBy: position)
             hints[position] = currentWord.answer[index]
         }
@@ -297,7 +298,7 @@ final class ScrambleGameViewModel {
         answerFeedback = nil
         requiresAnswerEdit = false
         hintLevel = 0
-        hintPosition = nil
+        hintPositions.removeAll()
         strikes = 0
         timeRemaining = currentTimeLimit ?? 0
         isPaused = false
@@ -363,8 +364,18 @@ final class ScrambleGameViewModel {
         guard !isCurrentWordResolved, maxHintLevel > 0 else { return }
 
         let nextLevel = min(hintLevel + 1, maxHintLevel)
-        if nextLevel == 2, hintPosition == nil {
-            hintPosition = 1
+        if nextLevel > 1, let currentWord {
+            let wordLength = currentWord.answer.count
+            if difficulty == .hard {
+                // Keep the first and last letters out of later Hard hints,
+                // and never reveal an interior letter twice.
+                let candidates = (1..<(wordLength - 1)).filter { !hintPositions.contains($0) }
+                if let position = candidates.randomElement() {
+                    hintPositions.insert(position)
+                }
+            } else {
+                hintPositions.insert(1)
+            }
         }
         hintLevel = nextLevel
     }
@@ -467,7 +478,8 @@ final class ScrambleGameViewModel {
                     givenAnswer: givenAnswer,
                     correctAnswer: currentWord.answer,
                     category: currentWord.categoryName,
-                    reference: currentWord.reference
+                    reference: currentWord.reference,
+                    hintCount: hintLevel
                 ),
                 savedStreak: persistentStreak
             )

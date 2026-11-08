@@ -45,7 +45,7 @@ extension ScrambleGameView {
         var hintLimit: Int {
             switch self {
             case .easy, .normal: 1
-            case .hard: 2
+            case .hard: 3
             }
         }
 

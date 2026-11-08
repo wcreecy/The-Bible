@@ -468,6 +468,16 @@ private struct GameRoundSummaryReviewRow: View {
                         .foregroundStyle(.green)
                 }
 
+                if entry.hintCount > 0 {
+                    Label {
+                        Text(hintText)
+                    } icon: {
+                        Image(systemName: "lightbulb.fill")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                }
+
                 if let reference = entry.reference {
                     Button(reference, systemImage: "book") {
                         onOpenReference(reference)
@@ -493,6 +503,13 @@ private struct GameRoundSummaryReviewRow: View {
         case .correct: Text("Correct")
         case .wrong: Text("Wrong")
         case .timedOut: Text("Out of time")
+        }
+    }
+
+    private var hintText: LocalizedStringKey {
+        switch entry.hintCount {
+        case 1: "1 hint used"
+        default: "\(entry.hintCount) hints used"
         }
     }
 }
