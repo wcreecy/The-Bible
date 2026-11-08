@@ -8230,12 +8230,12 @@
         "question": "Abednego",
         "correct_answer": "One of three Hebrew captives thrown into a blazing furnace for refusing to worship a golden image",
         "incorrect_answers": [
-          "Blind man healed by Jesus",
-          "Young man revived after falling from a window",
-          "Brother of Mary and Martha raised by Jesus",
-          "Righteous man who built the ark at God’s command and survived the flood",
-          "Believer praised in John's third letter",
-          "Synagogue leader whose daughter Jesus raised"
+          "Prophet and Judean exile in Babylon",
+          "Dream interpreter sold into slavery by his brothers who later governed in Egypt",
+          "Exiled priest who saw a vision of a valley filled with dry bones",
+          "Prophet who warned Judah of judgment",
+          "Governor who rebuilt Jerusalem's walls",
+          "Scribe and priest who taught the law"
         ],
         "reference": "Daniel 3:12–27",
         "source_person_id": 2
@@ -8247,12 +8247,12 @@
         "question": "One of three Hebrew captives thrown into a blazing furnace for refusing to worship a golden image",
         "correct_answer": "Abednego",
         "incorrect_answers": [
-          "Bartimaeus",
-          "Eutychus",
-          "Lazarus (of Bethany)",
-          "Noah",
-          "Demetrius (commended believer)",
-          "Jairus"
+          "Daniel",
+          "Joseph (son of Jacob)",
+          "Ezekiel",
+          "Jeremiah",
+          "Nehemiah",
+          "Ezra"
         ],
         "reference": "Daniel 3:12–27",
         "source_person_id": 2
@@ -8264,12 +8264,12 @@
         "question": "Abel",
         "correct_answer": "Son of Adam and Eve murdered by Cain",
         "incorrect_answers": [
-          "Patriarch and father of Isaac",
+          "Son born to Adam and Eve after Abel’s death",
+          "Farmer who killed his brother after God accepted the brother’s offering",
+          "Son of Seth whose birth is associated with people beginning to call on the name of the LORD",
           "Son of Abraham and Sarah",
-          "Son of Jacob and Leah",
-          "Son of Adam and Eve",
-          "First son of Adam and Eve",
-          "Patriarch who walked with God"
+          "Son of Abraham and Hagar",
+          "Youngest son of Jacob and Rachel"
         ],
         "reference": "Genesis 4:2–10",
         "source_person_id": 3
@@ -8281,12 +8281,12 @@
         "question": "Son of Adam and Eve murdered by Cain",
         "correct_answer": "Abel",
         "incorrect_answers": [
-          "Abraham",
-          "Isaac",
-          "Judah",
           "Seth",
           "Cain",
-          "Enoch"
+          "Enos",
+          "Isaac",
+          "Ishmael",
+          "Benjamin"
         ],
         "reference": "Genesis 4:2–10",
         "source_person_id": 3
@@ -8846,7 +8846,7 @@
           "Patriarch who wrestled with God and was given a new name",
           "Son of Jacob and Leah",
           "Son of Saul and friend of David",
-          "Son of Jonathan befriended by David",
+          "Son of Jonathan whom David welcomed and provided for",
           "Priest's son who carried news to David"
         ],
         "reference": "2 Samuel 13:1–29",
@@ -8908,7 +8908,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Anak",
-        "correct_answer": "Ancestor of the giants whose descendants frightened the spies sent into Canaan",
+        "correct_answer": "Ancestor of the Anakim, whose descendants frightened the spies sent into Canaan",
         "incorrect_answers": [
           "Patriarch and father of Isaac",
           "Youngest son of Jacob and Rachel",
@@ -8924,7 +8924,7 @@
         "id": "who-fact-022",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Ancestor of the giants whose descendants frightened the spies sent into Canaan",
+        "question": "Ancestor of the Anakim, whose descendants frightened the spies sent into Canaan",
         "correct_answer": "Anak",
         "incorrect_answers": [
           "Abraham",
@@ -8944,12 +8944,12 @@
         "question": "Ananias (disciple of Damascus)",
         "correct_answer": "Disciple who restored Saul's sight",
         "incorrect_answers": [
-          "Apostle and brother of Simon Peter",
-          "One of the twelve apostles",
-          "One of the twelve apostles, identified by his father",
-          "First recorded Christian martyr",
           "Man who lied about an offering to the church",
-          "Ruler who persecuted the early church"
+          "Believer nicknamed “son of consolation” who helped bring Saul to the apostles",
+          "Missionary who left Paul and Barnabas in Pamphylia but later became useful to Paul",
+          "Preacher who explained Isaiah to an Ethiopian official and baptized him",
+          "First recorded Christian martyr",
+          "Missionary companion of Paul"
         ],
         "reference": "Acts 9:10–18",
         "source_person_id": 23
@@ -8961,12 +8961,12 @@
         "question": "Disciple who restored Saul's sight",
         "correct_answer": "Ananias (disciple of Damascus)",
         "incorrect_answers": [
-          "Andrew",
-          "Bartholomew",
-          "James (son of Alphaeus)",
-          "Stephen",
           "Ananias (husband of Sapphira)",
-          "Herod Agrippa I"
+          "Barnabas",
+          "John Mark",
+          "Philip (evangelist)",
+          "Stephen",
+          "Silas"
         ],
         "reference": "Acts 9:10–18",
         "source_person_id": 23
@@ -9522,12 +9522,12 @@
         "question": "Bartholomew",
         "correct_answer": "Apostle named in the Gospel lists between Philip and Thomas",
         "incorrect_answers": [
-          "Apostle and brother of Simon Peter",
-          "Apostle, brother of John, and son of Zebedee, killed by Herod Agrippa I",
-          "Apostle, son of Zebedee and brother of James",
-          "One of the twelve apostles, identified by his father",
-          "Tax collector and apostle",
-          "One of the twelve apostles who betrayed his teacher for thirty pieces of silver"
+          "Fisherman who introduced his brother Simon to Jesus",
+          "Brother of John and one of the Twelve who was killed by Herod with the sword",
+          "Brother of James and fisherman who was among Jesus’ closest disciples",
+          "Apostle who wanted to see and touch the wounds of the risen Jesus",
+          "Apostle who told Nathanael, “Come and see,” after finding Jesus",
+          "Tax collector called from his booth to follow Jesus"
         ],
         "reference": "Matthew 10:2–4",
         "source_person_id": 40
@@ -9542,9 +9542,9 @@
           "Andrew",
           "James (son of Zebedee)",
           "John (son of Zebedee)",
-          "James (son of Alphaeus)",
-          "Matthew",
-          "Judas Iscariot"
+          "Thomas",
+          "Philip (apostle)",
+          "Matthew"
         ],
         "reference": "Matthew 10:2–4",
         "source_person_id": 40
@@ -9930,12 +9930,12 @@
         "question": "Blastus",
         "correct_answer": "Royal chamberlain whose support was sought by people from Tyre and Sidon",
         "incorrect_answers": [
-          "Youngest son of Jacob and Rachel",
+          "Chief official of Malta who welcomed Paul",
+          "Roman governor who kept Paul in custody and hoped to receive a bribe",
+          "Roman governor before whom Paul appealed to Caesar",
+          "Man Paul identified as a city treasurer in his greetings to Rome",
           "Roman centurion who received Peter's message",
-          "Synagogue ruler who believed in Jesus",
-          "Apostle, brother of John, and son of Zebedee, killed by Herod Agrippa I",
-          "Pharisee and teacher of the law in Acts",
-          "Recipient addressed in Luke and Acts"
+          "Ruler of the synagogue in Corinth who believed in the Lord with his household"
         ],
         "reference": "Acts 12:20",
         "source_person_id": 52
@@ -9947,12 +9947,12 @@
         "question": "Royal chamberlain whose support was sought by people from Tyre and Sidon",
         "correct_answer": "Blastus",
         "incorrect_answers": [
-          "Benjamin",
+          "Publius",
+          "Felix",
+          "Festus",
+          "Erastus",
           "Cornelius",
-          "Crispus",
-          "James (son of Zebedee)",
-          "Gamaliel",
-          "Theophilus"
+          "Crispus"
         ],
         "reference": "Acts 12:20",
         "source_person_id": 52
@@ -10100,12 +10100,12 @@
         "question": "Chloe",
         "correct_answer": "Woman whose household informed Paul about quarrels in the Corinthian church",
         "incorrect_answers": [
-          "Missionary and wife of Aquila",
-          "Athenian woman who believed Paul's teaching",
-          "Royal woman present at Paul's hearing",
-          "Mother of Timothy",
-          "Grandmother of Timothy",
-          "Church servant commended by Paul"
+          "Woman from Cenchrea whom Paul commended to the believers in Rome",
+          "Woman who, with her husband, explained God’s way more accurately to Apollos",
+          "Seller of purple who became a believer",
+          "Woman in Athens who believed after Paul spoke at the Areopagus",
+          "Woman greeted first in a paired greeting with Tryphosa as workers in the Lord",
+          "Woman whose Jerusalem home hosted believers praying for an imprisoned apostle"
         ],
         "reference": "1 Corinthians 1:11",
         "source_person_id": 57
@@ -10117,12 +10117,12 @@
         "question": "Woman whose household informed Paul about quarrels in the Corinthian church",
         "correct_answer": "Chloe",
         "incorrect_answers": [
+          "Phoebe",
           "Priscilla",
+          "Lydia",
           "Damaris",
-          "Berenice",
-          "Eunice",
-          "Lois",
-          "Phoebe"
+          "Tryphena",
+          "Mary (mother of John Mark)"
         ],
         "reference": "1 Corinthians 1:11",
         "source_person_id": 57
@@ -10440,12 +10440,12 @@
         "question": "Delilah",
         "correct_answer": "Woman who betrayed Samson",
         "incorrect_answers": [
+          "Woman who killed Sisera with a tent peg",
+          "Queen of Israel and wife of Ahab",
+          "Daughter of Saul and wife of David",
+          "Wife of Uriah who later married David",
           "Woman who deceived the early church with Ananias",
-          "Royal woman associated with idolatry who was removed from high position by Asa",
-          "First woman",
-          "Woman who defeated Sisera",
-          "Prophetess and judge of Israel",
-          "Daughter of Caleb who asked her father for springs of water"
+          "Queen who seized Judah’s throne before being overthrown"
         ],
         "reference": "Judges 16:4–21",
         "source_person_id": 67
@@ -10457,12 +10457,12 @@
         "question": "Woman who betrayed Samson",
         "correct_answer": "Delilah",
         "incorrect_answers": [
-          "Sapphira",
-          "Maacah (mother of Abijah)",
-          "Eve",
           "Jael",
-          "Deborah",
-          "Achsah"
+          "Jezebel",
+          "Michal",
+          "Bathsheba",
+          "Sapphira",
+          "Athaliah"
         ],
         "reference": "Judges 16:4–21",
         "source_person_id": 67
@@ -10746,12 +10746,12 @@
         "question": "Ehud",
         "correct_answer": "Left-handed judge who delivered Israel from Moab",
         "incorrect_answers": [
+          "Judge who delivered Israel from oppression",
+          "Judge who delivered Israel with an ox goad",
           "Judge who defeated Midian",
           "Judge who fought the Ammonites",
           "Judge known for extraordinary strength",
-          "Judge who delivered Israel with an ox goad",
-          "Judge who delivered Israel from oppression",
-          "Judge of Israel after Jephthah"
+          "Commander who fought Sisera’s army with the encouragement of Deborah"
         ],
         "reference": "Judges 3:15–30",
         "source_person_id": 76
@@ -10763,12 +10763,12 @@
         "question": "Left-handed judge who delivered Israel from Moab",
         "correct_answer": "Ehud",
         "incorrect_answers": [
+          "Othniel",
+          "Shamgar",
           "Gideon",
           "Jephthah",
           "Samson",
-          "Shamgar",
-          "Othniel",
-          "Ibzan"
+          "Barak"
         ],
         "reference": "Judges 3:15–30",
         "source_person_id": 76
@@ -11188,12 +11188,12 @@
         "question": "Esau",
         "correct_answer": "Twin brother of Jacob",
         "incorrect_answers": [
+          "Son of Isaac whose name was changed to Israel after wrestling through the night",
           "Son of Abraham and Sarah",
-          "Patriarch and father of Isaac",
-          "Son of Seth and ancestor of Noah",
+          "Son of Abraham and Hagar",
+          "Dream interpreter sold into slavery by his brothers who later governed in Egypt",
           "Firstborn son of Jacob",
-          "Son of Jacob and Leah",
-          "Youngest son of Jacob and Rachel"
+          "Fourth son of Jacob and Leah from whose tribe Israel’s kingship descended"
         ],
         "reference": "Genesis 25:24–34; 27:1–41",
         "source_person_id": 89
@@ -11205,12 +11205,12 @@
         "question": "Twin brother of Jacob",
         "correct_answer": "Esau",
         "incorrect_answers": [
+          "Jacob (son of Isaac)",
           "Isaac",
-          "Abraham",
-          "Enos",
+          "Ishmael",
+          "Joseph (son of Jacob)",
           "Reuben",
-          "Judah",
-          "Benjamin"
+          "Judah"
         ],
         "reference": "Genesis 25:24–34; 27:1–41",
         "source_person_id": 89
@@ -12038,12 +12038,12 @@
         "question": "Hophni",
         "correct_answer": "Son of Eli who abused his priestly office and died when the ark was captured",
         "incorrect_answers": [
-          "Priest who opposed and imprisoned Jeremiah",
-          "Brother of Moses and first high priest",
-          "Father-in-law of Moses and priest of Midian",
-          "Priest's son who carried news to David",
           "Corrupt priest who died when the ark was captured",
-          "Priest who mentored Samuel"
+          "Priest who died after offering unauthorized fire",
+          "Priest who mentored Samuel",
+          "High priest involved in Jesus' trial",
+          "Priest who aided David at Nob",
+          "Priest who resisted King Uzziah's unlawful offering"
         ],
         "reference": "1 Samuel 2:12–17; 4:11",
         "source_person_id": 114
@@ -12055,12 +12055,12 @@
         "question": "Son of Eli who abused his priestly office and died when the ark was captured",
         "correct_answer": "Hophni",
         "incorrect_answers": [
-          "Pashur",
-          "Aaron",
-          "Jethro",
-          "Ahimaaz",
           "Phinehas (son of Eli)",
-          "Eli"
+          "Nadab (son of Aaron)",
+          "Eli",
+          "Caiaphas",
+          "Ahimelech",
+          "Azariah"
         ],
         "reference": "1 Samuel 2:12–17; 4:11",
         "source_person_id": 114
@@ -12310,12 +12310,12 @@
         "question": "Ishmael",
         "correct_answer": "Son of Abraham and Hagar",
         "incorrect_answers": [
-          "Twin brother of Jacob",
-          "Son of Seth and ancestor of Noah",
-          "Son of Jacob and Leah",
           "Son of Abraham and Sarah",
-          "Son of Noah",
-          "Son of Adam and Eve"
+          "Son of Isaac whose name was changed to Israel after wrestling through the night",
+          "Twin brother of Jacob",
+          "Firstborn son of Jacob",
+          "Fourth son of Jacob and Leah from whose tribe Israel’s kingship descended",
+          "Dream interpreter sold into slavery by his brothers who later governed in Egypt"
         ],
         "reference": "Genesis 16:11–16; 21:8–21",
         "source_person_id": 122
@@ -12327,12 +12327,12 @@
         "question": "Son of Abraham and Hagar",
         "correct_answer": "Ishmael",
         "incorrect_answers": [
-          "Esau",
-          "Enos",
-          "Judah",
           "Isaac",
-          "Shem",
-          "Seth"
+          "Jacob (son of Isaac)",
+          "Esau",
+          "Reuben",
+          "Judah",
+          "Joseph (son of Jacob)"
         ],
         "reference": "Genesis 16:11–16; 21:8–21",
         "source_person_id": 122
@@ -13228,12 +13228,12 @@
         "question": "John the Baptist",
         "correct_answer": "Wilderness preacher who baptized in the Jordan River and prepared the way for the Messiah",
         "incorrect_answers": [
-          "Leader of the Jerusalem church who spoke at its council",
-          "Missionary coworker who accompanied Barnabas and Paul",
-          "King Agrippa who heard Paul’s defense before Festus",
-          "Early Christian missionary and tentmaker",
-          "Early Christian missionary who traveled with Paul and encouraged believers",
-          "Companion of Paul and Gospel author"
+          "Preacher who explained Isaiah to an Ethiopian official and baptized him",
+          "Fisherman who denied his teacher three times and later preached at Pentecost",
+          "Fisherman who introduced his brother Simon to Jesus",
+          "Apostle to the Gentiles",
+          "Jewish teacher from Alexandria who spoke boldly and was instructed more accurately by Priscilla and Aquila",
+          "First recorded Christian martyr"
         ],
         "reference": "Matthew 3:1–17; Mark 1:2–11",
         "source_person_id": 148
@@ -13245,12 +13245,12 @@
         "question": "Wilderness preacher who baptized in the Jordan River and prepared the way for the Messiah",
         "correct_answer": "John the Baptist",
         "incorrect_answers": [
-          "James (brother of Jesus)",
-          "John Mark",
-          "Herod Agrippa II",
-          "Aquila",
-          "Barnabas",
-          "Luke"
+          "Philip (evangelist)",
+          "Simon Peter",
+          "Andrew",
+          "Paul",
+          "Apollos",
+          "Stephen"
         ],
         "reference": "Matthew 3:1–17; Mark 1:2–11",
         "source_person_id": 148
@@ -13334,7 +13334,7 @@
           "Patriarch who wrestled with God and was given a new name",
           "Youngest son of Jacob and Rachel",
           "Father of King David",
-          "Son of Jonathan befriended by David",
+          "Son of Jonathan whom David welcomed and provided for",
           "Priest's son who carried news to David"
         ],
         "reference": "1 Samuel 18:1–4; 20:1–42",
@@ -13670,12 +13670,12 @@
         "question": "Judas Iscariot",
         "correct_answer": "One of the twelve apostles who betrayed his teacher for thirty pieces of silver",
         "incorrect_answers": [
-          "Apostle, brother of John, and son of Zebedee, killed by Herod Agrippa I",
-          "Apostle, son of Zebedee and brother of James",
-          "Tax collector and apostle",
-          "One of the twelve apostles",
-          "Apostle and brother of Simon Peter",
-          "One of the Twelve who brought Nathanael to meet the Messiah"
+          "Apostle who wanted to see and touch the wounds of the risen Jesus",
+          "Apostle listed among the Twelve as the son of Alphaeus",
+          "Apostle named in the Gospel lists between Philip and Thomas",
+          "Fisherman who introduced his brother Simon to Jesus",
+          "Tax collector called from his booth to follow Jesus",
+          "Apostle who told Nathanael, “Come and see,” after finding Jesus"
         ],
         "reference": "Matthew 26:14–16; 26:47–50; 27:3–5",
         "source_person_id": 161
@@ -13687,11 +13687,11 @@
         "question": "One of the twelve apostles who betrayed his teacher for thirty pieces of silver",
         "correct_answer": "Judas Iscariot",
         "incorrect_answers": [
-          "James (son of Zebedee)",
-          "John (son of Zebedee)",
-          "Matthew",
           "Thomas",
+          "James (son of Alphaeus)",
+          "Bartholomew",
           "Andrew",
+          "Matthew",
           "Philip (apostle)"
         ],
         "reference": "Matthew 26:14–16; 26:47–50; 27:3–5",
@@ -13804,14 +13804,14 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Lazarus (in Jesus’ parable)",
-        "correct_answer": "Poor beggar in a parable who was carried to Abraham’s bosom after death",
+        "correct_answer": "Poor beggar who was carried to Abraham’s bosom after death",
         "incorrect_answers": [
-          "Father of Noah in the genealogy of Seth",
-          "Son of Jacob and Leah",
-          "Nephew of Abraham",
-          "Righteous man who met the infant Jesus",
-          "Ancestor of Jesus named in Luke’s genealogy",
-          "Tax collector who welcomed Jesus"
+          "Blind man healed by Jesus",
+          "Tax collector who welcomed Jesus",
+          "Synagogue leader whose daughter Jesus raised",
+          "Pharisee who visited Jesus by night",
+          "Devout man in Jerusalem who praised God when he saw the infant Messiah in the temple",
+          "Council member who provided a new tomb for the crucified Messiah"
         ],
         "reference": "Luke 16:19–31",
         "source_person_id": 165
@@ -13820,15 +13820,15 @@
         "id": "who-fact-165",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Poor beggar in a parable who was carried to Abraham’s bosom after death",
+        "question": "Poor beggar who was carried to Abraham’s bosom after death",
         "correct_answer": "Lazarus (in Jesus’ parable)",
         "incorrect_answers": [
-          "Lamech (father of Noah)",
-          "Judah",
-          "Lot",
+          "Bartimaeus",
+          "Zacchaeus",
+          "Jairus",
+          "Nicodemus",
           "Simeon",
-          "Neri",
-          "Zacchaeus"
+          "Joseph (of Arimathaea)"
         ],
         "reference": "Luke 16:19–31",
         "source_person_id": 165
@@ -14552,7 +14552,7 @@
         "mode": "person_to_fact",
         "difficulty": "hard",
         "question": "Mephibosheth",
-        "correct_answer": "Son of Jonathan befriended by David",
+        "correct_answer": "Son of Jonathan whom David welcomed and provided for",
         "incorrect_answers": [
           "Son of Jacob and Leah",
           "Patriarch who wrestled with God and was given a new name",
@@ -14568,7 +14568,7 @@
         "id": "who-fact-187",
         "mode": "fact_to_person",
         "difficulty": "hard",
-        "question": "Son of Jonathan befriended by David",
+        "question": "Son of Jonathan whom David welcomed and provided for",
         "correct_answer": "Mephibosheth",
         "incorrect_answers": [
           "Judah",
@@ -14962,12 +14962,12 @@
         "question": "Nathan",
         "correct_answer": "Prophet who confronted King David",
         "incorrect_answers": [
-          "Prophet and counselor to King David",
-          "Prophet who led the Israelites from Egypt",
+          "Prophet who told David to choose among three judgments after the census",
           "Prophet and judge who anointed kings",
-          "Commander of King David's army",
-          "Father of King David",
-          "King who supplied materials for David and Solomon"
+          "Prophet who confronted Ahab and Baal worship",
+          "Prophet who succeeded Elijah",
+          "Prophet who foretold the division of Solomon's kingdom",
+          "Prophet who foretold Ahab's defeat"
         ],
         "reference": "2 Samuel 7:1–17; 12:1–15",
         "source_person_id": 199
@@ -14980,11 +14980,11 @@
         "correct_answer": "Nathan",
         "incorrect_answers": [
           "Gad",
-          "Moses",
           "Samuel",
-          "Joab",
-          "Jesse",
-          "Hiram (king of Tyre)"
+          "Elijah",
+          "Elisha",
+          "Ahijah",
+          "Micaiah"
         ],
         "reference": "2 Samuel 7:1–17; 12:1–15",
         "source_person_id": 199
@@ -15096,7 +15096,7 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Nicanor",
-        "correct_answer": "One of seven men selected in Jerusalem to oversee the daily distribution",
+        "correct_answer": "One of seven men chosen to oversee the daily food distribution in Jerusalem",
         "incorrect_answers": [
           "Preacher who explained Isaiah to an Ethiopian official and baptized him",
           "Chief official of Malta who welcomed Paul",
@@ -15112,7 +15112,7 @@
         "id": "who-fact-203",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "One of seven men selected in Jerusalem to oversee the daily distribution",
+        "question": "One of seven men chosen to oversee the daily food distribution in Jerusalem",
         "correct_answer": "Nicanor",
         "incorrect_answers": [
           "Philip (evangelist)",
@@ -15880,12 +15880,12 @@
         "question": "Prochorus",
         "correct_answer": "One of seven men chosen to help address the distribution of food in Jerusalem",
         "incorrect_answers": [
-          "Chief official of Malta who welcomed Paul",
+          "One of seven men chosen to oversee the daily food distribution in Jerusalem",
+          "First recorded Christian martyr",
           "Preacher who explained Isaiah to an Ethiopian official and baptized him",
+          "Believer nicknamed “son of consolation” who helped bring Saul to the apostles",
           "Missionary companion of Paul",
-          "One of seven men chosen to serve the Jerusalem church",
-          "Man who lied about an offering to the church",
-          "Ruler who persecuted the early church"
+          "Missionary who left Paul and Barnabas in Pamphylia but later became useful to Paul"
         ],
         "reference": "Acts 6:5",
         "source_person_id": 226
@@ -15897,12 +15897,12 @@
         "question": "One of seven men chosen to help address the distribution of food in Jerusalem",
         "correct_answer": "Prochorus",
         "incorrect_answers": [
-          "Publius",
-          "Philip (evangelist)",
-          "Silas",
           "Nicanor",
-          "Ananias (husband of Sapphira)",
-          "Herod Agrippa I"
+          "Stephen",
+          "Philip (evangelist)",
+          "Barnabas",
+          "Silas",
+          "John Mark"
         ],
         "reference": "Acts 6:5",
         "source_person_id": 226
@@ -16184,14 +16184,14 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Salome",
-        "correct_answer": "Follower who brought spices to Jesus’ tomb with Mary Magdalene and Mary the mother of James",
+        "correct_answer": "Woman named with Mary Magdalene and Mary the mother of James who brought spices to Jesus’ tomb",
         "incorrect_answers": [
-          "Young woman visited by Gabriel who gave birth in Bethlehem",
-          "Moabite woman and ancestor of David",
-          "Servant girl who recognized Peter's voice",
-          "Woman who supported Jesus' ministry",
-          "Prophetess who recognized the infant Jesus",
-          "Christian worker greeted by Paul"
+          "Woman connected with Herod’s steward who helped support Jesus and his disciples",
+          "Follower named in Luke alongside Mary Magdalene and Joanna as a supporter of Jesus’ ministry",
+          "Woman who sat at Jesus’ feet while her sister was busy serving",
+          "Sister of Lazarus who was busy serving while her sister listened to Jesus",
+          "Disciple raised to life through Peter",
+          "Woman who, with her husband, explained God’s way more accurately to Apollos"
         ],
         "reference": "Mark 15:40; 16:1",
         "source_person_id": 235
@@ -16200,15 +16200,15 @@
         "id": "who-fact-235",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Follower who brought spices to Jesus’ tomb with Mary Magdalene and Mary the mother of James",
+        "question": "Woman named with Mary Magdalene and Mary the mother of James who brought spices to Jesus’ tomb",
         "correct_answer": "Salome",
         "incorrect_answers": [
-          "Mary (mother of Jesus)",
-          "Ruth",
-          "Rhoda",
           "Joanna",
-          "Anna",
-          "Tryphena"
+          "Susanna",
+          "Mary (of Bethany)",
+          "Martha",
+          "Dorcas",
+          "Priscilla"
         ],
         "reference": "Mark 15:40; 16:1",
         "source_person_id": 235
@@ -16696,12 +16696,12 @@
         "question": "Simeon",
         "correct_answer": "Devout man in Jerusalem who praised God when he saw the infant Messiah in the temple",
         "incorrect_answers": [
-          "Son of Noah",
-          "Son of David and king of Israel",
-          "Son of Adam and Eve",
-          "Tax collector who welcomed Jesus",
+          "Father of John the Baptist",
+          "Carpenter entrusted with raising the child born in Bethlehem",
+          "Pharisee who visited Jesus by night",
           "Disciple who met the risen Jesus on the road to Emmaus",
-          "Poor man in Jesus' parable"
+          "Roman centurion who received Peter's message",
+          "Pharisee who advised the council to leave the apostles alone, warning against opposing God"
         ],
         "reference": "Luke 2:25–35",
         "source_person_id": 250
@@ -16713,12 +16713,12 @@
         "question": "Devout man in Jerusalem who praised God when he saw the infant Messiah in the temple",
         "correct_answer": "Simeon",
         "incorrect_answers": [
-          "Shem",
-          "Solomon",
-          "Seth",
-          "Zacchaeus",
+          "Zacharias",
+          "Joseph (husband of Mary)",
+          "Nicodemus",
           "Cleopas",
-          "Lazarus (in Jesus’ parable)"
+          "Cornelius",
+          "Gamaliel"
         ],
         "reference": "Luke 2:25–35",
         "source_person_id": 250
@@ -16900,12 +16900,12 @@
         "question": "Stephen",
         "correct_answer": "First recorded Christian martyr",
         "incorrect_answers": [
-          "Brother named alongside Paul in the Corinthian letter",
-          "Orator who prosecuted Paul before Felix",
+          "One of seven men chosen to help address the distribution of food in Jerusalem",
+          "One of seven men chosen to oversee the daily food distribution in Jerusalem",
+          "Preacher who explained Isaiah to an Ethiopian official and baptized him",
+          "Believer nicknamed “son of consolation” who helped bring Saul to the apostles",
           "Missionary companion of Paul",
-          "Eloquent Christian teacher",
-          "Early Christian missionary and tentmaker",
-          "Early Christian missionary who traveled with Paul and encouraged believers"
+          "Jewish teacher from Alexandria who spoke boldly and was instructed more accurately by Priscilla and Aquila"
         ],
         "reference": "Acts 6:5–15; 7:1–60",
         "source_person_id": 256
@@ -16917,12 +16917,12 @@
         "question": "First recorded Christian martyr",
         "correct_answer": "Stephen",
         "incorrect_answers": [
-          "Sosthenes",
-          "Tertullus",
+          "Prochorus",
+          "Nicanor",
+          "Philip (evangelist)",
+          "Barnabas",
           "Silas",
-          "Apollos",
-          "Aquila",
-          "Barnabas"
+          "Apollos"
         ],
         "reference": "Acts 6:5–15; 7:1–60",
         "source_person_id": 256
@@ -17274,12 +17274,12 @@
         "question": "Tryphena",
         "correct_answer": "Woman greeted first in a paired greeting with Tryphosa as workers in the Lord",
         "incorrect_answers": [
-          "Church servant commended by Paul",
-          "Missionary and wife of Aquila",
-          "Woman who deceived the early church with Ananias",
-          "Disciple raised to life through Peter",
+          "Woman from Cenchrea whom Paul commended to the believers in Rome",
+          "Woman who, with her husband, explained God’s way more accurately to Apollos",
           "Seller of purple who became a believer",
-          "Woman whose Jerusalem home hosted believers praying for an imprisoned apostle"
+          "Follower named in Luke alongside Mary Magdalene and Joanna as a supporter of Jesus’ ministry",
+          "Woman in Athens who believed after Paul spoke at the Areopagus",
+          "Disciple raised to life through Peter"
         ],
         "reference": "Romans 16:12",
         "source_person_id": 267
@@ -17293,10 +17293,10 @@
         "incorrect_answers": [
           "Phoebe",
           "Priscilla",
-          "Sapphira",
-          "Dorcas",
           "Lydia",
-          "Mary (mother of John Mark)"
+          "Susanna",
+          "Damaris",
+          "Dorcas"
         ],
         "reference": "Romans 16:12",
         "source_person_id": 267
@@ -17308,12 +17308,12 @@
         "question": "Tryphosa",
         "correct_answer": "Woman greeted second in a paired greeting with Tryphena as workers in the Lord",
         "incorrect_answers": [
-          "Church servant commended by Paul",
-          "Missionary and wife of Aquila",
-          "Woman who deceived the early church with Ananias",
-          "Disciple raised to life through Peter",
+          "Woman from Cenchrea whom Paul commended to the believers in Rome",
+          "Woman who, with her husband, explained God’s way more accurately to Apollos",
           "Seller of purple who became a believer",
-          "Woman whose Jerusalem home hosted believers praying for an imprisoned apostle"
+          "Follower named in Luke alongside Mary Magdalene and Joanna as a supporter of Jesus’ ministry",
+          "Woman in Athens who believed after Paul spoke at the Areopagus",
+          "Disciple raised to life through Peter"
         ],
         "reference": "Romans 16:12",
         "source_person_id": 268
@@ -17327,10 +17327,10 @@
         "incorrect_answers": [
           "Phoebe",
           "Priscilla",
-          "Sapphira",
-          "Dorcas",
           "Lydia",
-          "Mary (mother of John Mark)"
+          "Susanna",
+          "Damaris",
+          "Dorcas"
         ],
         "reference": "Romans 16:12",
         "source_person_id": 268
@@ -17512,12 +17512,12 @@
         "question": "Zacchaeus",
         "correct_answer": "Tax collector who welcomed Jesus",
         "incorrect_answers": [
-          "Father of John the Baptist",
-          "Father of the apostles James and John",
-          "Judean governor who led the return from exile",
-          "Righteous man who met the infant Jesus",
-          "Ancestor of Jesus named in Luke’s genealogy",
-          "Poor man in Jesus' parable"
+          "Tax collector called from his booth to follow Jesus",
+          "Pharisee who visited Jesus by night",
+          "Blind man healed by Jesus",
+          "Synagogue leader whose daughter Jesus raised",
+          "Council member who provided a new tomb for the crucified Messiah",
+          "Poor beggar who was carried to Abraham’s bosom after death"
         ],
         "reference": "Luke 19:1–10",
         "source_person_id": 274
@@ -17529,11 +17529,11 @@
         "question": "Tax collector who welcomed Jesus",
         "correct_answer": "Zacchaeus",
         "incorrect_answers": [
-          "Zacharias",
-          "Zebedee",
-          "Zerubbabel",
-          "Simeon",
-          "Neri",
+          "Matthew",
+          "Nicodemus",
+          "Bartimaeus",
+          "Jairus",
+          "Joseph (of Arimathaea)",
           "Lazarus (in Jesus’ parable)"
         ],
         "reference": "Luke 19:1–10",
@@ -18498,12 +18498,12 @@
         "question": "Ham",
         "correct_answer": "Son of Noah who saw his father’s nakedness after the flood",
         "incorrect_answers": [
-          "Son of Jacob and Leah",
-          "Son of Abraham and Sarah",
-          "Youngest son of Jacob and Rachel",
-          "Son of Noah",
-          "Son of Noah whose family is listed after the flood",
-          "Son of Seth and ancestor of Noah"
+          "Son of Noah whose descendants included Abraham’s ancestors",
+          "Son of Noah whose descendants are listed in the table of nations",
+          "Farmer who killed his brother after God accepted the brother’s offering",
+          "Twin brother of Jacob",
+          "Nephew of Abraham",
+          "Son of Abraham and Hagar"
         ],
         "reference": "Genesis 5:32; 9:18–27",
         "source_person_id": 304
@@ -18515,12 +18515,12 @@
         "question": "Son of Noah who saw his father’s nakedness after the flood",
         "correct_answer": "Ham",
         "incorrect_answers": [
-          "Levi",
-          "Isaac",
-          "Benjamin",
           "Shem",
           "Japheth",
-          "Enos"
+          "Cain",
+          "Esau",
+          "Lot",
+          "Ishmael"
         ],
         "reference": "Genesis 5:32; 9:18–27",
         "source_person_id": 304
@@ -18532,12 +18532,12 @@
         "question": "Japheth",
         "correct_answer": "Son of Noah whose descendants are listed in the table of nations",
         "incorrect_answers": [
-          "Younger son of Joseph who received Jacob’s greater blessing",
-          "Son of Jacob and Leah",
-          "Son of Adam and Eve",
-          "Son of Noah",
-          "Son of Noah and brother of Shem and Japheth",
-          "Son of Seth and ancestor of Noah"
+          "Son of Noah whose descendants included Abraham’s ancestors",
+          "Son of Noah who saw his father’s nakedness after the flood",
+          "Farmer who killed his brother after God accepted the brother’s offering",
+          "Twin brother of Jacob",
+          "Nephew of Abraham",
+          "Son of Abraham and Hagar"
         ],
         "reference": "Genesis 5:32; 9:18–27",
         "source_person_id": 305
@@ -18549,12 +18549,12 @@
         "question": "Son of Noah whose descendants are listed in the table of nations",
         "correct_answer": "Japheth",
         "incorrect_answers": [
-          "Ephraim (son of Joseph)",
-          "Zebulun",
-          "Seth",
           "Shem",
           "Ham",
-          "Enos"
+          "Cain",
+          "Esau",
+          "Lot",
+          "Ishmael"
         ],
         "reference": "Genesis 5:32; 9:18–27",
         "source_person_id": 305
@@ -19380,14 +19380,14 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Shiphrah",
-        "correct_answer": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Puah",
+        "correct_answer": "Hebrew midwife who refused Pharaoh’s order to kill baby boys, together with Puah",
         "incorrect_answers": [
-          "Egyptian princess who adopted the infant Moses",
-          "Queen who traveled to test Solomon’s wisdom",
-          "Ammonite mother of King Rehoboam",
-          "Wife of Moses who accompanied him from Midian",
+          "Hebrew midwife who refused Pharaoh’s order to kill baby boys, together with Shiphrah",
           "Mother of Moses, Aaron, and Miriam",
-          "Sister of Moses and Aaron"
+          "Midianite wife of Moses who circumcised their son during a journey",
+          "Sister of Moses who led women in song after Israel crossed the sea",
+          "Mother of Samuel who prayed for a child",
+          "Egyptian princess who adopted the infant Moses"
         ],
         "reference": "Exodus 1:15–21",
         "source_person_id": 330
@@ -19396,15 +19396,15 @@
         "id": "who-fact-330",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Puah",
+        "question": "Hebrew midwife who refused Pharaoh’s order to kill baby boys, together with Puah",
         "correct_answer": "Shiphrah",
         "incorrect_answers": [
-          "Pharaoh’s daughter (rescuer of Moses)",
-          "Queen of Sheba",
-          "Naamah (wife of Solomon)",
-          "Zipporah",
+          "Puah",
           "Jochebed",
-          "Miriam"
+          "Zipporah",
+          "Miriam",
+          "Hannah",
+          "Pharaoh’s daughter (rescuer of Moses)"
         ],
         "reference": "Exodus 1:15–21",
         "source_person_id": 330
@@ -19414,14 +19414,14 @@
         "mode": "person_to_fact",
         "difficulty": "medium",
         "question": "Puah",
-        "correct_answer": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Shiphrah",
+        "correct_answer": "Hebrew midwife who refused Pharaoh’s order to kill baby boys, together with Shiphrah",
         "incorrect_answers": [
-          "Leah’s servant who bore Gad and Asher to Jacob",
-          "Christian worker greeted by Paul",
-          "Servant girl who recognized Peter's voice",
-          "Hebrew midwife who refused Pharaoh’s order to kill baby boys",
-          "Wife of Moses who accompanied him from Midian",
-          "Mother of Moses, Aaron, and Miriam"
+          "Hebrew midwife who refused Pharaoh’s order to kill baby boys, together with Puah",
+          "Mother of Moses, Aaron, and Miriam",
+          "Midianite wife of Moses who circumcised their son during a journey",
+          "Sister of Moses who led women in song after Israel crossed the sea",
+          "Mother of Samuel who prayed for a child",
+          "Egyptian princess who adopted the infant Moses"
         ],
         "reference": "Exodus 1:15–21",
         "source_person_id": 331
@@ -19430,15 +19430,15 @@
         "id": "who-fact-331",
         "mode": "fact_to_person",
         "difficulty": "medium",
-        "question": "Midwife who feared God and refused Pharaoh’s order against Hebrew boys, alongside Shiphrah",
+        "question": "Hebrew midwife who refused Pharaoh’s order to kill baby boys, together with Shiphrah",
         "correct_answer": "Puah",
         "incorrect_answers": [
-          "Zilpah",
-          "Tryphosa",
-          "Rhoda",
           "Shiphrah",
+          "Jochebed",
           "Zipporah",
-          "Jochebed"
+          "Miriam",
+          "Hannah",
+          "Pharaoh’s daughter (rescuer of Moses)"
         ],
         "reference": "Exodus 1:15–21",
         "source_person_id": 331

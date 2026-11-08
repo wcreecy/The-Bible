@@ -462,21 +462,42 @@ struct ScrambleActionButton: View {
                     lineWidth: isIncorrect ? 2 : 1
                 )
         }
-        .overlay(alignment: .topTrailing) {
+        .overlay(alignment: .bottomTrailing) {
             if let badgeText {
-                Text(badgeText)
-                    .font(.caption2.weight(.bold))
-                    .monospacedDigit()
-                    .foregroundStyle(isEnabled ? Color.white : Color.secondary)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 2)
-                    .background(isEnabled ? tint : Color.secondary.opacity(0.15), in: Capsule())
-                    .offset(x: 4, y: -4)
-                    .accessibilityHidden(true)
+                ScrambleActionBadge(text: badgeText, tint: tint, isEnabled: isEnabled)
+                    .offset(x: 8, y: 8)
             }
         }
         .disabled(!isEnabled)
         .accessibilityLabel(isIncorrect ? "Try again" : accessibilityLabel)
+    }
+}
+
+private struct ScrambleActionBadge: View {
+    let text: String
+    let tint: Color
+    let isEnabled: Bool
+
+    var body: some View {
+        Text(text)
+            .font(.caption2.weight(.heavy))
+            .monospacedDigit()
+            .foregroundStyle(isEnabled ? Color.black.opacity(0.82) : Color.secondary)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(
+                isEnabled ? tint : Color.secondary.opacity(0.18),
+                in: Capsule()
+            )
+            .overlay {
+                Capsule()
+                    .strokeBorder(
+                        isEnabled ? Color.black.opacity(0.28) : Color.secondary.opacity(0.35),
+                        lineWidth: 1
+                    )
+            }
+            .shadow(color: .black.opacity(isEnabled ? 0.25 : 0.1), radius: 3, y: 1)
+            .accessibilityHidden(true)
     }
 }
 
