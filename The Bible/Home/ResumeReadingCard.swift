@@ -158,19 +158,10 @@ struct ResumeReadingCard: View {
         }
     }
 
-    @ViewBuilder
     private func readingRecency(for date: Date) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(recencyText(for: date))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            if ResumeReadingRecency.isOld(date) {
-                Text("Pick up where you left off.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
+        Text(recencyText(for: date))
+            .font(.caption)
+            .foregroundStyle(.secondary)
     }
 
     private func recencyText(for date: Date) -> String {
@@ -181,7 +172,7 @@ struct ResumeReadingCard: View {
 enum ResumeReadingRecency {
     static func text(for date: Date, now: Date = .now, calendar: Calendar = .current) -> String {
         if calendar.isDate(date, inSameDayAs: now) {
-            return String(localized: "Saved today")
+            return String(localized: "Saved today at \(date.formatted(date: .omitted, time: .shortened))")
         }
         if let yesterday = calendar.date(byAdding: .day, value: -1, to: now),
            calendar.isDate(date, inSameDayAs: yesterday) {
@@ -190,10 +181,6 @@ enum ResumeReadingRecency {
         return String(localized: "Saved \(date.formatted(date: .abbreviated, time: .omitted))")
     }
 
-    static func isOld(_ date: Date, now: Date = .now, calendar: Calendar = .current) -> Bool {
-        guard let cutoff = calendar.date(byAdding: .day, value: -14, to: now) else { return false }
-        return date < cutoff
-    }
 }
 
 #Preview("Saved today") {
