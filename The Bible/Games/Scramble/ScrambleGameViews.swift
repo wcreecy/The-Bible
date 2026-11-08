@@ -241,21 +241,21 @@ struct ScrambleAnswerTiles: View {
                         .foregroundStyle(
                             showsCorrectHighlight ? Color.green
                                 : (letter.isEmpty && !hint.isEmpty
-                                ? Color.secondary.opacity(0.55)
+                                ? Color.yellow
                                 : (isResolved ? .secondary : .primary))
                         )
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .frame(width: tileWidth, height: tileHeight)
                         .background(
-                            isIncorrect ? Color.orange.opacity(0.10) : (showsCorrectHighlight ? Color.green.opacity(0.18) : Color.clear),
+                            isIncorrect ? Color.orange.opacity(0.10) : (showsCorrectHighlight ? Color.green.opacity(0.18) : (letter.isEmpty && !hint.isEmpty ? Color.yellow.opacity(0.12) : Color.clear)),
                             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
                         )
                         .overlay {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .strokeBorder(
-                                    isIncorrect ? Color.orange : (showsCorrectHighlight ? Color.green : Color.primary.opacity(isResolved ? 0.08 : 0.15)),
-                                    lineWidth: isIncorrect || showsCorrectHighlight ? 2 : 1
+                                    isIncorrect ? Color.orange : (showsCorrectHighlight ? Color.green : (letter.isEmpty && !hint.isEmpty ? Color.yellow.opacity(0.8) : Color.primary.opacity(isResolved ? 0.08 : 0.15))),
+                                    lineWidth: isIncorrect || showsCorrectHighlight || (letter.isEmpty && !hint.isEmpty) ? 2 : 1
                                 )
                         }
                         .offset(x: shakeOffset)
@@ -432,6 +432,7 @@ struct ScrambleActionButton: View {
     var tint: Color = .pink
     var isProminent = false
     var isIncorrect = false
+    var badgeText: String?
     let action: () -> Void
 
     var body: some View {
@@ -460,6 +461,19 @@ struct ScrambleActionButton: View {
                         : Color.secondary.opacity(0.25),
                     lineWidth: isIncorrect ? 2 : 1
                 )
+        }
+        .overlay(alignment: .topTrailing) {
+            if let badgeText {
+                Text(badgeText)
+                    .font(.caption2.weight(.bold))
+                    .monospacedDigit()
+                    .foregroundStyle(isEnabled ? Color.white : Color.secondary)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(isEnabled ? tint : Color.secondary.opacity(0.15), in: Capsule())
+                    .offset(x: 4, y: -4)
+                    .accessibilityHidden(true)
+            }
         }
         .disabled(!isEnabled)
         .accessibilityLabel(isIncorrect ? "Try again" : accessibilityLabel)

@@ -232,11 +232,15 @@ struct ScrambleGameView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+
+                    @Bindable var bindableVM = vm
+                    Toggle("Practice mode (no timer)", isOn: $bindableVM.isPracticeMode)
+                        .font(.subheadline.weight(.medium))
                 }
             } facts: {
                 GameSplashFacts(
                     first: ("number", "\(vm.sessionLength.rawValue) words", "This session"),
-                    second: ("timer", vm.difficulty.timerLabel, "Per word"),
+                    second: ("timer", vm.isPracticeMode ? "Untimed" : vm.difficulty.timerLabel, "Per word"),
                     third: ("lightbulb", vm.difficulty.hintLabel, "Available"),
                     fourth: vm.difficulty == .easy ? nil : ("xmark.shield", "3 strikes", "Limited attempts")
                 )
@@ -299,6 +303,12 @@ struct ScrambleGameView: View {
                     ScrambleStrikeIndicator(strikes: vm.strikes, limit: 3)
                 }
 
+                if vm.strikes == 1, isIncorrectAnswer {
+                    Label("Tip: Shuffle the remaining letters.", systemImage: "shuffle")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+
                 ScrambleLetterTray(
                     letters: vm.shuffledLetters,
                     selectedIndices: vm.selectedIndices,
@@ -307,7 +317,13 @@ struct ScrambleGameView: View {
                 .disabled(vm.isCurrentWordResolved)
 
                 if vm.isCurrentWordResolved {
-                    nextWordButton
+                    if vm.answerFeedback == .correct, !vm.isNextWordReady {
+                        Label("Correct — take a moment to review.", systemImage: "book.closed.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.green)
+                    } else {
+                        nextWordButton
+                    }
                 } else {
                     answerControls
                         .padding(.top, 12)
@@ -351,6 +367,7 @@ struct ScrambleGameView: View {
                     accessibilityLabel: vm.hintLevel == 0 ? "Show hint" : "Show another hint",
                     isEnabled: vm.hintLevel < vm.maxHintLevel,
                     tint: .yellow,
+                    badgeText: vm.hintBadgeText,
                     action: vm.showHint
                 )
                 ScrambleActionButton(
@@ -375,6 +392,7 @@ struct ScrambleGameView: View {
             tint: .pink,
             unit: .words,
             canTimeOut: vm.currentTimeLimit != nil,
+            resultNote: vm.hardModeResultNote,
             onPlayAgain: vm.startSession,
             onChangeSettings: vm.resetToSetup
         )

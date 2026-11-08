@@ -23,6 +23,7 @@ struct GameRoundSummaryView: View {
     /// Shown only when the round had a timer, since untimed games can't run out of time.
     var canTimeOut = true
     var poolProgress: PoolProgress?
+    var resultNote: String?
     let onPlayAgain: () -> Void
     let onChangeSettings: () -> Void
 
@@ -31,6 +32,12 @@ struct GameRoundSummaryView: View {
     var body: some View {
         VStack(spacing: 16) {
             GameRoundSummaryHeader(summary: summary, tint: tint, unit: unit)
+
+            if let resultNote {
+                Label(resultNote, systemImage: "lightbulb.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
 
             GameRoundSummaryBreakdown(summary: summary, unit: unit, showsTimedOut: canTimeOut || summary.timedOutCount > 0)
 

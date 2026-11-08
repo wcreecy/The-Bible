@@ -85,6 +85,7 @@ final class ScrambleGameViewModel {
 
     private static let difficultyKey = "scrambleDifficulty"
     private static let sessionLengthKey = "scrambleSessionLength"
+    private static let practiceModeKey = "scramblePracticeMode"
 
     /// Saved under the keys the game has always used, so existing choices carry over.
     var difficulty: Difficulty = Difficulty(
@@ -97,6 +98,11 @@ final class ScrambleGameViewModel {
         rawValue: UserDefaults.standard.integer(forKey: ScrambleGameViewModel.sessionLengthKey)
     ) ?? .quick {
         didSet { UserDefaults.standard.set(sessionLength.rawValue, forKey: Self.sessionLengthKey) }
+    } 
+
+    /// Practice keeps the same word deck and scoring, without a per-word timer.
+    var isPracticeMode = UserDefaults.standard.bool(forKey: ScrambleGameViewModel.practiceModeKey) {
+        didSet { UserDefaults.standard.set(isPracticeMode, forKey: Self.practiceModeKey) }
     }
 
     var phase: Phase = .setup
@@ -121,6 +127,7 @@ final class ScrambleGameViewModel {
     var answerFeedback: AnswerFeedback?
     /// An incorrect answer must be edited before it can consume another strike.
     private(set) var requiresAnswerEdit = false
+    private(set) var isNextWordReady = false
     var timerID = UUID()
     var hintLevel = 0
     private(set) var hintPositions: Set<Int> = []
@@ -163,7 +170,21 @@ final class ScrambleGameViewModel {
     }
 
     var currentTimeLimit: Int? {
-        difficulty.timeLimit
+        isPracticeMode ? nil : difficulty.timeLimit
+    }
+
+    var hintBadgeText: String? {
+        guard difficulty != .easy, maxHintLevel > 0 else { return nil }
+        return "\(hintLevel)/\(maxHintLevel)"
+    }
+
+    var hintFreeSolvedCount: Int {
+        session.entries.count { $0.outcome == .correct && $0.hintCount == 0 }
+    }
+
+    var hardModeResultNote: String? {
+        guard difficulty == .hard else { return nil }
+        return String(localized: "Solved \(session.score) of \(session.answered), \(hintFreeSolvedCount) without hints.")
     }
 
     /// Only a word with its timer running can be paused. "Timer Off" stops the
@@ -297,6 +318,7 @@ final class ScrambleGameViewModel {
         typedAnswer = ""
         answerFeedback = nil
         requiresAnswerEdit = false
+        isNextWordReady = false
         hintLevel = 0
         hintPositions.removeAll()
         strikes = 0
@@ -424,6 +446,12 @@ final class ScrambleGameViewModel {
 
         recordWordResult(.correct, givenAnswer: currentWord.answer)
         answerFeedback = .correct
+        let wordID = currentWord.id
+        Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled, self?.currentWord?.id == wordID, self?.answerFeedback == .correct else { return }
+            self?.isNextWordReady = true
+        }
     }
 
     func revealAnswer() {

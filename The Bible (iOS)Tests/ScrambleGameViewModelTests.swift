@@ -4,7 +4,7 @@ import Testing
 
 @MainActor
 struct ScrambleGameViewModelTests {
-    private let settingKeys = ["scrambleDifficulty", "scrambleSessionLength"]
+    private let settingKeys = ["scrambleDifficulty", "scrambleSessionLength", "scramblePracticeMode"]
 
     /// Runs `body` with a Normal, 5-word game, then restores the saved Scramble settings.
     private func withNormalGame(_ body: (ScrambleGameViewModel, ManualSleeper) async -> Void) async {
@@ -19,6 +19,7 @@ struct ScrambleGameViewModelTests {
         let game = ScrambleGameViewModel(sleep: clock.sleep(for:))
         game.difficulty = .normal
         game.sessionLength = .short
+        game.isPracticeMode = false
         game.wordBank = [
             ScrambleWordEntry(word: "Moses", category: "People", difficulty: "normal", reference: "Exodus 2:10"),
             ScrambleWordEntry(word: "Bethel", category: "Places", difficulty: "normal", reference: nil),
@@ -153,5 +154,14 @@ struct ScrambleGameViewModelTests {
 
         game.recordWordResult(.correct, givenAnswer: answer)
         #expect(game.session.entries.last?.hintCount == 3)
+    }
+
+    @Test
+    func practiceModeRemovesThePerWordTimer() {
+        let game = ScrambleGameViewModel()
+        game.difficulty = .hard
+        game.isPracticeMode = true
+
+        #expect(game.currentTimeLimit == nil)
     }
 }
