@@ -360,7 +360,7 @@ enum VOTDNotificationScheduler {
         case .authorized, .provisional, .ephemeral:
             return true
         case .notDetermined:
-            return (try? await center.requestAuthorization(options: [.alert, .sound])) == true
+            return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) == true
         case .denied:
             return false
         @unknown default:
@@ -401,6 +401,7 @@ enum VOTDNotificationScheduler {
             content.title = notificationTitles(forHour: time.hour).randomElement() ?? "Verse of the Day"
             content.body = String(localized: "Verse of the Day")
             content.sound = .default
+            content.badge = 1
             content.userInfo = ["destination": "verseOfDay"]
 
             var components = DateComponents()

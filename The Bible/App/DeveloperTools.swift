@@ -146,6 +146,7 @@ enum DeveloperTools {
             let hour = Calendar.autoupdatingCurrent.component(.hour, from: Date())
             content.title = VOTDNotificationScheduler.notificationTitles(forHour: hour).first ?? "Verse of the Day"
             content.body = "Verse of the Day"
+            content.badge = 1
             content.userInfo = ["destination": "verseOfDay"]
         case .streakReminder:
             content.title = "Keep your 5-day streak going"

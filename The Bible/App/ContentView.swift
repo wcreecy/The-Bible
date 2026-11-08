@@ -9,6 +9,7 @@ import CoreData
 import SwiftData
 import SwiftUI
 import UIKit
+import UserNotifications
 
 // Tab reselection lives in TabReselection.swift, game time in GamePlayTimeSession.swift,
 // and widget/custom URL parsing in AppDeepLink.swift.
@@ -166,6 +167,7 @@ struct ContentView: View {
     private func handleAppear() {
         // The only place iCloud key-value sync starts; stats pull and merge on launch.
         iCloudSyncCoordinator.shared.start()
+        clearAppIconBadge()
         ReadingSessionsStore.shared.prewarm()
 
         // One-time cleanup of deprecated keys
@@ -367,6 +369,8 @@ struct ContentView: View {
     private func handleScenePhaseChange(_ newValue: ScenePhase) {
         switch newValue {
         case .active:
+            // A Verse of the Day badge represents a notification received while away.
+            clearAppIconBadge()
             // Returning to the app counts as activity, so time counts before the first touch.
             UserActivityMonitor.shared.recordInteraction()
             // Pull and merge stats changed on other devices while the app was away.
@@ -565,6 +569,13 @@ struct ContentView: View {
     }
 
     // MARK: - Helpers
+
+    /// A Verse of the Day badge only indicates that the app has not been opened since it arrived.
+    private func clearAppIconBadge() {
+        Task {
+            try? await UNUserNotificationCenter.current().setBadgeCount(0)
+        }
+    }
 
     @MainActor
     private func ensureSavedFocusLiveActivityIfNeeded() {
