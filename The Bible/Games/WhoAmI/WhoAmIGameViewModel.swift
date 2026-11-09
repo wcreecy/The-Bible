@@ -184,6 +184,8 @@ final class WhoAmIGameViewModel {
     }
 
     private var bestGameScoreKey: String { "whoamiBestGameScore_\(difficulty.rawValue)" }
+    /// Each mode and difficulty has its own pool, so each keeps its own pass through the questions.
+    private var recencyGameKey: String { "whoAmI.\(mode.rawValue).\(difficulty.rawValue)" }
 
     // Load data
     func onAppear() {
@@ -273,11 +275,10 @@ final class WhoAmIGameViewModel {
         guard isReady else { return }
         session.beginGame(savedStreak: persistentStreak, isTimed: difficulty.timeLimit > 0)
         let candidates = reviewQuestionIDs.isEmpty
-            ? RecentGameQuestionStore.shared.select(
-                from: eligibleEntries.shuffled(),
-                game: "whoAmI",
+            ? RecentGameQuestionStore.shared.selectCycling(
+                from: eligibleEntries,
+                game: recencyGameKey,
                 count: Self.questionsPerGame,
-                cooldown: Self.questionsPerGame * 7,
                 id: { String($0.id) }
             )
             : Array(reviewEntries.shuffled().prefix(Self.questionsPerGame))
@@ -302,7 +303,7 @@ final class WhoAmIGameViewModel {
 
         let target = questionQueue.removeFirst()
         current = target
-        RecentGameQuestionStore.shared.record(target, game: "whoAmI", id: { String($0.id) })
+        RecentGameQuestionStore.shared.record(target, game: recencyGameKey, id: { String($0.id) })
         let correct = mode(for: target) == .clueToName ? target.name : target.clue
         choiceEntries = (Array(rankedDistractors(for: target).prefix(3)) + [correct]).shuffled()
         questionNumber += 1
