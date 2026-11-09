@@ -89,6 +89,8 @@ final class WordSearchViewModel {
     var foundCells: Set<String> = []
     var foundWords: Set<String> = []
     var revealedWords: Set<String> = []
+    private(set) var selectionCellKeys: Set<String> = []
+    private(set) var revealedCellKeys: Set<String> = []
     /// In Blind mode, true once the person chose to show the word list (it stays shown).
     var showBlindWordList: Bool = false
     var tapStart: (row: Int, col: Int)? = nil
@@ -243,16 +245,16 @@ final class WordSearchViewModel {
             tapStart = (row, col)
             selectionStart = tapStart
             selectionEnd = tapStart
+            rebuildSelectionCellKeys()
             return
         }
         if let start = tapStart {
             let constrained = engine.constrainToAllowedLine(from: start, to: (row, col))
             selectionStart = start
             selectionEnd = constrained
+            rebuildSelectionCellKeys()
             validateSelection()
-            selectionStart = nil
-            selectionEnd = nil
-            tapStart = nil
+            clearSelection()
         }
     }
 
@@ -264,14 +266,13 @@ final class WordSearchViewModel {
         } else if let start = selectionStart {
             selectionEnd = engine.constrainToAllowedLine(from: start, to: cell)
         }
+        rebuildSelectionCellKeys()
     }
 
     func dragEnded() {
         guard !roundOver else { return }
         validateSelection()
-        selectionStart = nil
-        selectionEnd = nil
-        tapStart = nil
+        clearSelection()
     }
 
     // MARK: - Timer
@@ -428,9 +429,7 @@ final class WordSearchViewModel {
         timeUp = result == .timeUp
         didWin = result == .won
         roundOver = true
-        selectionStart = nil
-        selectionEnd = nil
-        tapStart = nil
+        clearSelection()
         hintClearTask?.cancel()
         hintCell = nil
         recordCompletedRound(won: result == .won)
@@ -445,11 +444,10 @@ final class WordSearchViewModel {
         foundCells.removeAll()
         foundWords.removeAll()
         revealedWords.removeAll()
+        revealedCellKeys.removeAll()
         colorIndexForWord.removeAll()
         colorIndexForCell.removeAll()
-        selectionStart = nil
-        selectionEnd = nil
-        tapStart = nil
+        clearSelection()
         showBlindWordList = false
         hintClearTask?.cancel()
         hintCell = nil
@@ -551,6 +549,23 @@ final class WordSearchViewModel {
 
     private func keyFor(row: Int, col: Int) -> String { "\(row),\(col)" }
 
+    private func rebuildSelectionCellKeys() {
+        guard let start = selectionStart, let end = selectionEnd else {
+            selectionCellKeys.removeAll()
+            return
+        }
+        selectionCellKeys = Set(engine.selectionCells(from: start, to: end).map {
+            keyFor(row: $0.row, col: $0.col)
+        })
+    }
+
+    private func clearSelection() {
+        selectionStart = nil
+        selectionEnd = nil
+        tapStart = nil
+        selectionCellKeys.removeAll()
+    }
+
     private func validateSelection() {
         guard let start = selectionStart, let end = selectionEnd else { return }
         let result = engine.validateSelection(grid: grid, placed: placed, start: start, end: end)
@@ -610,6 +625,10 @@ final class WordSearchViewModel {
             }
         }
         revealedWords = newRevealed
+        revealedCellKeys = Set(placed.lazy
+            .filter { newRevealed.contains($0.originalWord) }
+            .flatMap { self.engine.cellsForPlacedWord($0) }
+            .map { self.keyFor(row: $0.row, col: $0.col) })
     }
 
     // MARK: - Favorites

@@ -257,11 +257,15 @@ struct The_Bible__iOS_App: App {
                 .environment(cloudKitManager)
                 .environment(\.persistenceStoreMode, displayedStoreMode)
                 .task {
-                    // Drafts used to live in UserDefaults; move them to files and drop stale ones.
-                    NoteDraftStore.migrateLegacyDrafts()
-                    NoteDraftStore.pruneOldDrafts()
+                    AppPerformance.measure("AppStartupMaintenance") {
+                        // Drafts used to live in UserDefaults; move them to files and drop stale ones.
+                        NoteDraftStore.migrateLegacyDrafts()
+                        NoteDraftStore.pruneOldDrafts()
+                    }
 
-                    await cloudKitManager.prepare()
+                    await AppPerformance.measure("CloudKitPrepare") {
+                        await cloudKitManager.prepare()
+                    }
                     // iCloud key-value sync is started by ContentView.
 
                     // Removed StoreKit environment hint to avoid Simulator auth logs when not using StoreKit.

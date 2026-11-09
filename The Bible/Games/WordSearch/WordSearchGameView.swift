@@ -77,11 +77,9 @@ struct WordSearchGameView: View {
                             SideBySideGameArea(
                                 size: vm.size,
                                 grid: vm.grid,
-                                selectionStart: vm.selectionStart,
-                                selectionEnd: vm.selectionEnd,
+                                selectionCells: vm.selectionCellKeys,
                                 foundCells: vm.foundCells,
                                 revealedWords: vm.revealedWords,
-                                placed: vm.placed,
                                 backgroundColorForCell: backgroundColorForCell,
                                 onTapCell: { r, c in vm.handleTap(row: r, col: c) },
                                 onDragChanged: { cell in vm.dragChanged(to: cell) },
@@ -176,11 +174,8 @@ struct WordSearchGameView: View {
             GridBoard(
                 size: vm.size,
                 grid: vm.grid,
-                selectionStart: vm.selectionStart,
-                selectionEnd: vm.selectionEnd,
+                selectionCells: vm.selectionCellKeys,
                 foundCells: vm.foundCells,
-                revealedWords: vm.revealedWords,
-                placed: vm.placed,
                 backgroundColorForCell: backgroundColorForCell,
                 onTapCell: { r, c in vm.handleTap(row: r, col: c) },
                 onDragChanged: { cell in vm.dragChanged(to: cell) },
@@ -307,18 +302,11 @@ struct WordSearchGameView: View {
         if vm.foundCells.contains(key) {
             return WordSearchPalette.color(for: vm.colorIndexForCell[key]).opacity(0.45)
         }
-        // Revealed cells (red)
-        let engine = WordSearchEngine(size: vm.size, difficulty: vm.difficulty)
-        if vm.placed.contains(where: { pw in
-            vm.revealedWords.contains(pw.originalWord) && engine.cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
-        }) {
+        if vm.revealedCellKeys.contains(key) {
             return Color.red.opacity(0.35)
         }
-        if let start = vm.selectionStart, let end = vm.selectionEnd {
-            let path = engine.selectionCells(from: start, to: end)
-            if path.contains(where: { $0.row == row && $0.col == col }) {
-                return Color.blue.opacity(0.35)
-            }
+        if vm.selectionCellKeys.contains(key) {
+            return Color.blue.opacity(0.35)
         }
         return Color(.secondarySystemBackground)
     }

@@ -157,6 +157,12 @@ final class iCloudSyncCoordinator {
     }
 
     private func completeInitialDownload() {
+        AppPerformance.measure("SyncInitialDownloadCompletion") {
+            completeInitialDownloadImpl()
+        }
+    }
+
+    private func completeInitialDownloadImpl() {
         guard !hasCompletedInitialDownload else { return }
         initialSyncTask?.cancel()
         initialSyncTask = nil
@@ -231,9 +237,11 @@ final class iCloudSyncCoordinator {
             completion?()
             return
         }
-        GameStatsLedger.shared.reconcile()
-        for key in allKnownKeys {
-            mirrorLocalKeyToKVS(key)
+        AppPerformance.measure("SyncPushPreparation") {
+            GameStatsLedger.shared.reconcile()
+            for key in allKnownKeys {
+                mirrorLocalKeyToKVS(key)
+            }
         }
         // Perform a single immediate synchronize off-main and stamp lastPushDate.
         let _ = Task.detached {

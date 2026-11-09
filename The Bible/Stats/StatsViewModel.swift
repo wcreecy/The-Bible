@@ -132,6 +132,12 @@ final class StatsViewModel {
     // MARK: - Public refresh entry point
 
     func refreshAll() {
+        AppPerformance.measure("StatsRefresh") {
+            refreshAllImpl()
+        }
+    }
+
+    private func refreshAllImpl() {
         isStale = false
         var calendar = Calendar.autoupdatingCurrent
         calendar.timeZone = TimeZone.autoupdatingCurrent

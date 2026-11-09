@@ -134,7 +134,9 @@ struct HomeView: View {
                     // aggregation out of this appearance pass makes Home immediately tappable.
                     Task { @MainActor in
                         await Task.yield()
-                        bibleVM.refresh()
+                        AppPerformance.measure("HomeStatsRefresh") {
+                            bibleVM.refresh()
+                        }
                     }
                 }
             }
@@ -149,7 +151,9 @@ struct HomeView: View {
                 switch newPhase {
                 case .active:
                     handleOpenPendingVerse()
-                    bibleVM.refresh()
+                    AppPerformance.measure("HomeStatsRefresh") {
+                        bibleVM.refresh()
+                    }
                     votdVM.handleScenePhaseChange(newPhase, favorites: favorites)
                     timerController.onSceneBecameActive()
                 case .inactive, .background:

@@ -13,38 +13,38 @@ enum PerformanceBudget {
 /// Development-only intervals for measuring key user-facing work in Instruments.
 enum AppPerformance {
     #if DEBUG
-    private static let signposter = OSSignposter(
+    nonisolated private static let signposter = OSSignposter(
         subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
         category: "Performance"
     )
-    private static let logger = Logger(
+    nonisolated private static let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
         category: "Performance"
     )
     #endif
 
-    static func measure<T>(_ name: StaticString, operation: () -> T) -> T {
+    nonisolated static func measure<T>(_ name: StaticString, operation: () throws -> T) rethrows -> T {
         #if DEBUG
         let state = signposter.beginInterval(name)
         defer { signposter.endInterval(name, state) }
         #endif
-        return operation()
+        return try operation()
     }
 
-    static func measure<T>(_ name: StaticString, operation: () async -> T) async -> T {
+    nonisolated static func measure<T>(_ name: StaticString, operation: () async throws -> T) async rethrows -> T {
         #if DEBUG
         let state = signposter.beginInterval(name)
         defer { signposter.endInterval(name, state) }
         #endif
-        return await operation()
+        return try await operation()
     }
 
     /// Emits a development warning when a measured operation exceeds its agreed budget.
-    static func measure<T>(
+    nonisolated static func measure<T>(
         _ name: StaticString,
         budget: Duration,
-        operation: () async -> T
-    ) async -> T {
+        operation: () async throws -> T
+    ) async rethrows -> T {
         #if DEBUG
         let clock = ContinuousClock()
         let start = clock.now
@@ -56,6 +56,6 @@ enum AppPerformance {
             }
         }
         #endif
-        return await operation()
+        return try await operation()
     }
 }

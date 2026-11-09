@@ -3,11 +3,9 @@ import SwiftUI
 struct SideBySideGameArea<Summary: View>: View {
     let size: Int
     let grid: [[Character]]
-    let selectionStart: (row: Int, col: Int)?
-    let selectionEnd: (row: Int, col: Int)?
+    let selectionCells: Set<String>
     let foundCells: Set<String>
     let revealedWords: Set<String>
-    let placed: [WordSearchEngine.PlacedWord]
     let backgroundColorForCell: (_ row: Int, _ col: Int) -> Color
     let onTapCell: (_ row: Int, _ col: Int) -> Void
     let onDragChanged: (_ cell: (row: Int, col: Int)) -> Void
@@ -49,11 +47,8 @@ struct SideBySideGameArea<Summary: View>: View {
             GridBoard(
                 size: size,
                 grid: grid,
-                selectionStart: selectionStart,
-                selectionEnd: selectionEnd,
+                selectionCells: selectionCells,
                 foundCells: foundCells,
-                revealedWords: revealedWords,
-                placed: placed,
                 backgroundColorForCell: backgroundColorForCell,
                 onTapCell: onTapCell,
                 onDragChanged: onDragChanged,

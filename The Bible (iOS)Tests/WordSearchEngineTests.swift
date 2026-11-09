@@ -120,3 +120,39 @@ struct WordSearchEngineTests {
         #expect(elapsed < .seconds(5))
     }
 }
+
+@MainActor
+struct WordSearchCellCacheTests {
+    @Test
+    func selectionCellsAreCachedAndClearedWithTheGesture() {
+        let viewModel = WordSearchViewModel()
+
+        viewModel.dragChanged(to: (row: 1, col: 1))
+        viewModel.dragChanged(to: (row: 1, col: 4))
+
+        #expect(viewModel.selectionCellKeys == ["1,1", "1,2", "1,3", "1,4"])
+
+        viewModel.dragEnded()
+
+        #expect(viewModel.selectionCellKeys.isEmpty)
+    }
+
+    @Test
+    func revealCachesOnlyUnsolvedWordCells() {
+        let viewModel = WordSearchViewModel()
+        viewModel.placed = [
+            WordSearchEngine.PlacedWord(
+                word: "FAITH",
+                startRow: 2,
+                startCol: 3,
+                dr: 1,
+                dc: 0
+            )
+        ]
+        viewModel.targetWords = ["FAITH"]
+
+        viewModel.reveal()
+
+        #expect(viewModel.revealedCellKeys == ["2,3", "3,3", "4,3", "5,3", "6,3"])
+    }
+}

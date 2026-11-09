@@ -116,8 +116,12 @@ actor BibleRepository {
             return []
         }
         do {
-            let data = try Data(contentsOf: resourceURL, options: .mappedIfSafe)
-            return try BibleData.decodeBooks(from: data)
+            let data = try AppPerformance.measure("BibleJSONRead") {
+                try Data(contentsOf: resourceURL, options: .mappedIfSafe)
+            }
+            return try AppPerformance.measure("BibleJSONDecode") {
+                try BibleData.decodeBooks(from: data)
+            }
         } catch {
             bibleDataLogger.error("Failed to load the bundled \(translation.abbreviation, privacy: .public) text. Error: \(String(describing: error), privacy: .public)")
             return []

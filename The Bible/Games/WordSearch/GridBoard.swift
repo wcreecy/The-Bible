@@ -4,11 +4,8 @@ struct GridBoard: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     let size: Int
     let grid: [[Character]]
-    let selectionStart: (row: Int, col: Int)?
-    let selectionEnd: (row: Int, col: Int)?
+    let selectionCells: Set<String>
     let foundCells: Set<String>
-    let revealedWords: Set<String>
-    let placed: [WordSearchEngine.PlacedWord]
     let backgroundColorForCell: (_ row: Int, _ col: Int) -> Color
     let onTapCell: (_ row: Int, _ col: Int) -> Void
     let onDragChanged: (_ cell: (row: Int, col: Int)) -> Void
@@ -19,25 +16,7 @@ struct GridBoard: View {
         let key = "\(row),\(col)"
         // Found cells are filled with their word's color; a neutral outline keeps every color readable.
         if foundCells.contains(key) { return Color.primary.opacity(0.35) }
-        if let start = selectionStart, let end = selectionEnd {
-            func sign(_ x: Int) -> Int { x == 0 ? 0 : (x > 0 ? 1 : -1) }
-            let dRow = end.row - start.row
-            let dCol = end.col - start.col
-            let dr = sign(dRow)
-            let dc = sign(dCol)
-            if dRow == 0 && dCol == 0 {
-                if start.row == row && start.col == col { return Color.blue.opacity(0.9) }
-            } else {
-                var r = start.row
-                var c = start.col
-                while true {
-                    if r == row && c == col { return Color.blue.opacity(0.9) }
-                    if r == end.row && c == end.col { break }
-                    r += dr; c += dc
-                    if r < 0 || r >= size || c < 0 || c >= size { break }
-                }
-            }
-        }
+        if selectionCells.contains(key) { return Color.blue.opacity(0.9) }
         return Color.black.opacity(0.1)
     }
 
