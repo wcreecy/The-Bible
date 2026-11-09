@@ -78,6 +78,10 @@ final class CrosswordGameViewModel {
     /// How many recent puzzles' answers are kept out of the next board.
     static let rememberedPuzzleCount = 6
     static let currentStreakKey = "crosswordCurrentStreak"
+    /// Unfinished boards, one per difficulty, so leaving doesn't lose a half-solved puzzle.
+    static let savedRoundsKey = "crosswordSavedRounds"
+    /// Fastest solved time for a difficulty. Revealed puzzles don't count.
+    static func bestTimeKey(for difficulty: Difficulty) -> String { "crosswordBestTime_\(difficulty.rawValue)" }
 
     var difficulty: Difficulty {
         didSet { defaults.set(difficulty.rawValue, forKey: Self.difficultyKey) }
@@ -98,6 +102,8 @@ final class CrosswordGameViewModel {
     private(set) var checksUsed = 0
     private(set) var elapsedSeconds = 0
     private(set) var currentStreak = 0
+    /// The finished puzzle's time against the best saved before it.
+    private(set) var bestTimeComparison: GameBestTimeComparison?
 
     /// Solve time. It only runs while the app is in front, so time away doesn't count.
     private var clock = GameActiveClock()
@@ -120,8 +126,13 @@ final class CrosswordGameViewModel {
 
     // MARK: - Starting
 
-    /// Loads the clues (once), builds a fresh random board, and starts the round.
+    /// Resumes the saved board for this difficulty, or loads the clues (once), builds a fresh
+    /// random board, and starts the round.
     func start() async {
+        if let saved = savedRound(for: difficulty) {
+            resume(saved)
+            return
+        }
         phase = .loading
         if clues == nil {
             clues = await loadClues()
@@ -166,6 +177,7 @@ final class CrosswordGameViewModel {
         wordHintsUsed = 0
         checksUsed = 0
         elapsedSeconds = 0
+        bestTimeComparison = nil
         clock.start()
         if let first = puzzle.entries.first {
             direction = first.direction
@@ -180,6 +192,94 @@ final class CrosswordGameViewModel {
         selectedCell = nil
     }
 
+    // MARK: - Saved boards
+
+    /// An unfinished board: the puzzle, the letters so far, and what the player has used.
+    struct SavedRound: Codable, Equatable {
+        struct Letter: Codable, Equatable {
+            let cell: Cell
+            let letter: String
+        }
+
+        let puzzle: CrosswordPuzzle
+        let letters: [Letter]
+        let revealedCells: [Cell]
+        let letterHintsUsed: Int
+        let wordHintsUsed: Int
+        let checksUsed: Int
+        let elapsedSeconds: Int
+        let selectedCell: Cell?
+        let direction: Direction
+    }
+
+    /// True when Start would resume an unfinished board at this difficulty.
+    var hasSavedRound: Bool { savedRound(for: difficulty) != nil }
+
+    /// Saves the board in play. Called when the player leaves and when the app goes to the background.
+    func saveProgress(at now: Date = Date()) {
+        guard phase == .playing, let puzzle else { return }
+        let round = SavedRound(
+            puzzle: puzzle,
+            letters: guesses.map { SavedRound.Letter(cell: $0.key, letter: String($0.value)) },
+            revealedCells: Array(revealedCells),
+            letterHintsUsed: letterHintsUsed,
+            wordHintsUsed: wordHintsUsed,
+            checksUsed: checksUsed,
+            elapsedSeconds: clock.elapsedSeconds(at: now),
+            selectedCell: selectedCell,
+            direction: direction
+        )
+        var rounds = savedRounds
+        rounds[difficulty.rawValue] = round
+        storeSavedRounds(rounds)
+    }
+
+    private var savedRounds: [String: SavedRound] {
+        guard let data = defaults.data(forKey: Self.savedRoundsKey) else { return [:] }
+        return PersistedDecoding.decode(
+            [String: SavedRound].self, from: data, key: Self.savedRoundsKey, keepingUnreadableIn: defaults
+        ) ?? [:]
+    }
+
+    private func storeSavedRounds(_ rounds: [String: SavedRound]) {
+        guard let data = try? JSONEncoder().encode(rounds) else { return }
+        defaults.set(data, forKey: Self.savedRoundsKey)
+    }
+
+    private func savedRound(for difficulty: Difficulty) -> SavedRound? {
+        guard let round = savedRounds[difficulty.rawValue], !round.puzzle.entries.isEmpty else { return nil }
+        return round
+    }
+
+    private func clearSavedRound() {
+        var rounds = savedRounds
+        guard rounds.removeValue(forKey: difficulty.rawValue) != nil else { return }
+        storeSavedRounds(rounds)
+    }
+
+    /// Puts a saved board back exactly as it was left, with the clock carrying on from its time.
+    private func resume(_ round: SavedRound) {
+        begin(with: round.puzzle)
+        let validCells = Set(allLetterCells(in: round.puzzle))
+        guesses = Dictionary(
+            round.letters.compactMap { item in
+                guard validCells.contains(item.cell), let letter = item.letter.first else { return nil }
+                return (item.cell, letter)
+            },
+            uniquingKeysWith: { first, _ in first }
+        )
+        revealedCells = Set(round.revealedCells).intersection(validCells)
+        letterHintsUsed = round.letterHintsUsed
+        wordHintsUsed = round.wordHintsUsed
+        checksUsed = round.checksUsed
+        clock.start(alreadyElapsed: TimeInterval(round.elapsedSeconds))
+        if let cell = round.selectedCell, validCells.contains(cell) {
+            selectedCell = cell
+            direction = round.direction
+            if currentEntry == nil { direction = direction.other }
+        }
+    }
+
     // MARK: - App activity
 
     /// Stops the solve clock while the app isn't in front and starts it again on return.
@@ -190,6 +290,8 @@ final class CrosswordGameViewModel {
             clock.resume(at: now)
         } else {
             clock.pause(at: now)
+            // Kept in case the app is closed from the background.
+            saveProgress(at: now)
         }
     }
 
@@ -406,6 +508,8 @@ final class CrosswordGameViewModel {
         wrongCells = []
         clock.pause()
         elapsedSeconds = max(1, clock.elapsedSeconds())
+        clearSavedRound()
+        recordBestTime(solved: result == .solved)
 
         // One board is one game: a solve counts as a win (hints are allowed), revealing
         // the puzzle counts as a loss and resets the streak, the same as Word Search.
@@ -421,6 +525,22 @@ final class CrosswordGameViewModel {
             answered: 1,
             currentBestStreak: currentStreak
         )
+    }
+
+    /// Fastest solved time at the current difficulty, if there is one.
+    var savedBestTime: Int? {
+        let value = defaults.integer(forKey: Self.bestTimeKey(for: difficulty))
+        return value > 0 ? value : nil
+    }
+
+    /// Compares this puzzle's time with the best so far, and saves it if it's a new best.
+    /// Only solved puzzles count, the same as Book Order.
+    private func recordBestTime(solved: Bool) {
+        let previousBest = savedBestTime
+        bestTimeComparison = GameBestTimeComparison(seconds: elapsedSeconds, previousBest: previousBest, isSolved: solved)
+        if solved, previousBest.map({ elapsedSeconds < $0 }) ?? true {
+            defaults.set(elapsedSeconds, forKey: Self.bestTimeKey(for: difficulty))
+        }
     }
 
     /// Answers the player filled in entirely without hints, for the results screen.

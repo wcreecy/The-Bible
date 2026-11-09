@@ -187,4 +187,55 @@ struct CrosswordGameViewModelTests {
             defaults.removePersistentDomain(forName: suite)
         }
     }
+
+    // MARK: - Saved boards and best times
+
+    @Test func leavingSavesTheBoardAndStartResumesIt() async {
+        let (vm, defaults) = makeViewModel()
+        for letter in "NO" { vm.type(letter) }
+        vm.revealLetter()
+        vm.checkPuzzle()
+        vm.saveProgress()
+
+        // A new screen (as after leaving and coming back) offers Resume and restores the board.
+        let returning = CrosswordGameViewModel(defaults: defaults, recordsStats: false, loadClues: { [] })
+        #expect(returning.hasSavedRound)
+        await returning.start()
+        #expect(returning.phase == .playing)
+        #expect(returning.puzzle == Self.puzzle)
+        #expect(returning.guesses == vm.guesses)
+        #expect(returning.revealedCells == vm.revealedCells)
+        #expect(returning.letterHintsUsed == 1)
+        #expect(returning.checksUsed == 1)
+        #expect(returning.selectedCell == vm.selectedCell)
+    }
+
+    @Test func finishingClearsTheSavedBoard() {
+        let (vm, defaults) = makeViewModel()
+        vm.type("N")
+        vm.saveProgress()
+        vm.revealPuzzle()
+
+        let returning = CrosswordGameViewModel(defaults: defaults, recordsStats: false, loadClues: { [] })
+        #expect(!returning.hasSavedRound)
+    }
+
+    @Test func aFasterSolveIsANewBestTime() {
+        let (vm, defaults) = makeViewModel()
+        let key = CrosswordGameViewModel.bestTimeKey(for: vm.difficulty)
+        defaults.set(600, forKey: key)
+
+        for letter in "NOAHKINR" { vm.type(letter) }
+        #expect(vm.outcome == .solved)
+        #expect(vm.bestTimeComparison?.isNewBest == true)
+        #expect(defaults.integer(forKey: key) == vm.elapsedSeconds)
+        #expect(vm.savedBestTime == vm.elapsedSeconds)
+    }
+
+    @Test func aRevealedPuzzleNeverSetsABestTime() {
+        let (vm, defaults) = makeViewModel()
+        vm.revealPuzzle()
+        #expect(vm.bestTimeComparison?.isNewBest == false)
+        #expect(defaults.object(forKey: CrosswordGameViewModel.bestTimeKey(for: vm.difficulty)) == nil)
+    }
 }

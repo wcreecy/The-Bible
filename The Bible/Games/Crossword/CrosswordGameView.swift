@@ -91,6 +91,8 @@ struct CrosswordGameView: View {
         }
         // Time away from the app doesn't count toward the solve time.
         .onAppActiveChange { vm.appActiveChanged($0) }
+        // Leaving keeps the board, so it comes back with Resume.
+        .onDisappear { vm.saveProgress() }
     }
 
     // MARK: - Start
@@ -113,6 +115,8 @@ struct CrosswordGameView: View {
                     standard: "An 11×11 board with a broader mix of clues.",
                     challenge: "A 13×13 board with the toughest clues."
                 ),
+                startTitle: vm.hasSavedRound ? "Resume" : "Start Game",
+                startSubtitle: vm.hasSavedRound ? "Pick up where you left off." : "Begin your challenge.",
                 startAction: startPuzzle
             ) {
                 GameLobbyPreview(kind: .crossword)
@@ -123,7 +127,7 @@ struct CrosswordGameView: View {
                     .fixedSize(horizontal: false, vertical: true)
             } facts: {
                 GameSplashFacts(
-                    first: ("puzzlepiece.extension", String(localized: "1 puzzle"), String(localized: "This session")),
+                    first: ("stopwatch", vm.savedBestTime.map { GameTimeFormat.short(seconds: $0) } ?? "—", String(localized: "Best time")),
                     second: ("square.grid.3x3", "\(vm.difficulty.boardSize)×\(vm.difficulty.boardSize)", String(localized: "Board")),
                     third: ("lightbulb", String(localized: "Unlimited"), String(localized: "Letter & word hints")),
                     fourth: ("flame", "\(vm.currentStreak)", String(localized: "Current streak"))
@@ -427,10 +431,11 @@ struct CrosswordGameView: View {
                 tint: solved ? .green : Self.tint,
                 facts: [
                     ("timer", GameTimeFormat.short(seconds: vm.elapsedSeconds), String(localized: "Time")),
-                    ("text.word.spacing", "\(puzzle.entries.count)", String(localized: "Answers")),
                     ("character.cursor.ibeam", "\(vm.letterHintsUsed)", String(localized: "Letter hints")),
                     ("text.cursor", "\(vm.wordHintsUsed)", String(localized: "Word hints")),
+                    ("checkmark.circle", "\(vm.checksUsed)", String(localized: "Checks")),
                 ],
+                bestTime: vm.bestTimeComparison,
                 streak: GamePuzzleStreak(current: vm.currentStreak)
             ) {
                 GamePuzzleResultSection(title: "Answers", systemImage: "book.closed", tint: Self.tint) {
