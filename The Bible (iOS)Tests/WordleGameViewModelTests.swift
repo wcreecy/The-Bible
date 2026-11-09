@@ -8,7 +8,8 @@ struct WordleGameViewModelTests {
         "wordleMode",
         AppStorageKey.wordleHardModeEnabled,
         AppStorageKey.wordlePracticeWordBag,
-        AppStorageKey.wordleLastPracticeWord
+        AppStorageKey.wordleLastPracticeWord,
+        AppStorageKey.wordlePracticeProgress
     ]
 
     /// Runs `body` with a Practice round whose answer is GRACE, then restores the saved settings.
@@ -20,11 +21,14 @@ struct WordleGameViewModelTests {
             }
         }
 
+        UserDefaults.standard.removeObject(forKey: AppStorageKey.wordlePracticeProgress)
         let game = WordleGameViewModel()
         game.mode = .practice
         game.hardModeEnabled = false
         game.startNewRound(practice: true)
         game.target = "GRACE"
+        // The round saved its drawn word on start; save again so a resumed round finds GRACE.
+        game.saveProgress()
         body(game)
     }
 
@@ -75,6 +79,51 @@ struct WordleGameViewModelTests {
             #expect(game.roundOver)
             #expect(!game.didWin)
             #expect(game.message == "Out of guesses.")
+        }
+    }
+
+    @Test
+    func leavingAPracticeRoundResumesTheSameBoard() {
+        withPracticeRound { game in
+            guess("FAITH", in: game)
+
+            // A new screen (as after leaving and coming back) picks the round back up.
+            let returning = WordleGameViewModel()
+            #expect(returning.hasRoundToResume(practice: true))
+            returning.startNewRound(practice: true)
+            #expect(returning.target == "GRACE")
+            #expect(returning.rowIndex == 1)
+            #expect(returning.guesses[0] == "FAITH")
+        }
+    }
+
+    @Test
+    func aPracticeRoundIsSavedBeforeTheFirstGuess() {
+        withPracticeRound { game in
+            let returning = WordleGameViewModel()
+            #expect(returning.hasRoundToResume(practice: true))
+            returning.startNewRound(practice: true)
+            #expect(returning.target == game.target)
+            #expect(returning.rowIndex == 0)
+        }
+    }
+
+    @Test
+    func finishingAPracticeRoundClearsItsSavedBoard() {
+        withPracticeRound { game in
+            guess("GRACE", in: game)
+            #expect(game.roundOver)
+            #expect(!WordleGameViewModel().hasRoundToResume(practice: true))
+        }
+    }
+
+    @Test
+    func changeSettingsReturnsToTheStartScreen() {
+        withPracticeRound { game in
+            guess("GRACE", in: game)
+            game.returnToSetup()
+            #expect(!game.started)
+            #expect(!game.roundOver)
         }
     }
 }

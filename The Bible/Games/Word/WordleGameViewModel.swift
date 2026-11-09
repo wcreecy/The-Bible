@@ -71,10 +71,6 @@ final class WordleGameViewModel {
     /// The local calendar day for the active Daily round. It stays fixed if the round crosses midnight.
     var roundDayKey: String?
 
-    var dailyCompletedToday: Bool {
-        UserDefaults.standard.string(forKey: AppStorageKey.wordleDailyCompletedDay) == todayKey
-    }
-
     // timing for each round
     /// Solve time. It only runs while the app is in front, so time away doesn't count.
     var roundClock = GameActiveClock()
@@ -100,6 +96,8 @@ final class WordleGameViewModel {
     let lastPracticeWordKey = AppStorageKey.wordleLastPracticeWord
 
     let dailyProgressKey = AppStorageKey.wordleDailyProgress
+
+    let practiceProgressKey = AppStorageKey.wordlePracticeProgress
 
     #if canImport(UIKit)
     static var spellCheckLanguage: String {
@@ -312,9 +310,7 @@ final class WordleGameViewModel {
         }
         message = nil
 
-        if mode == .daily {
-            saveDailyProgress()
-        }
+        saveProgress()
     }
 
     /// Records a guess on the board, updates the keyboard colors, and advances to the next row.
@@ -359,44 +355,67 @@ final class WordleGameViewModel {
         return wordPicker.wordOfDay(pool: Self.filteredAnswerWords, dayKey: dayKey, using: &generator)
     }
 
-    // MARK: - Daily progress
-    // An unfinished Daily is saved after every guess, so leaving and returning resumes
-    // the same board instead of granting a fresh set of guesses.
-    struct DailyProgress: Codable {
-        let dayKey: String
+    // MARK: - Round progress
+    // An unfinished round is saved after every guess, so leaving and returning resumes the
+    // same board instead of granting a fresh word or a fresh set of guesses. Daily and
+    // Practice each keep their own saved round.
+    struct RoundProgress: Codable {
+        /// The Daily's local calendar day; nil for a Practice round.
+        let dayKey: String?
         let word: String
         let hardMode: Bool
         let guesses: [String]
         let elapsedSeconds: Int
     }
 
-    func saveDailyProgress() {
-        guard let roundDayKey else { return }
-        let elapsed = roundClock.elapsedSeconds()
-        let progress = DailyProgress(
+    /// Practice rounds have no day key, so that's what tells the two apart.
+    private var isPracticeRound: Bool { roundDayKey == nil }
+
+    private func progressKey(practice: Bool) -> String {
+        practice ? practiceProgressKey : dailyProgressKey
+    }
+
+    func saveProgress() {
+        guard started, !roundOver, !target.isEmpty else { return }
+        let progress = RoundProgress(
             dayKey: roundDayKey,
             word: target,
             hardMode: roundHardMode,
             guesses: Array(guesses.prefix(rowIndex)),
-            elapsedSeconds: elapsed
+            elapsedSeconds: roundClock.elapsedSeconds()
         )
         if let data = try? JSONEncoder().encode(progress) {
-            UserDefaults.standard.set(data, forKey: dailyProgressKey)
+            UserDefaults.standard.set(data, forKey: progressKey(practice: isPracticeRound))
         }
     }
 
-    /// Restores today's unfinished Daily, if any. Returns true when guesses were restored.
-    @discardableResult
-    func restoreDailyProgress() -> Bool {
-        guard let data = UserDefaults.standard.data(forKey: dailyProgressKey),
-              let progress = PersistedDecoding.decode(DailyProgress.self, from: data, key: dailyProgressKey, keepingUnreadableIn: .standard),
-              progress.dayKey == roundDayKey,
-              progress.word == target else {
-            UserDefaults.standard.removeObject(forKey: dailyProgressKey)
-            return false
-        }
+    private func savedProgress(practice: Bool) -> RoundProgress? {
+        let key = progressKey(practice: practice)
+        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
+        return PersistedDecoding.decode(RoundProgress.self, from: data, key: key, keepingUnreadableIn: .standard)
+    }
 
-        // The round keeps the difficulty it was started with.
+    /// The saved Practice round, if its word is still in the answer list.
+    private var resumablePracticeProgress: RoundProgress? {
+        guard let progress = savedProgress(practice: true),
+              progress.dayKey == nil,
+              Self.curatedWordSet.contains(progress.word) else {
+            return nil
+        }
+        return progress
+    }
+
+    /// True when starting this mode would pick up an unfinished round rather than a new one.
+    func hasRoundToResume(practice: Bool) -> Bool {
+        if practice {
+            return resumablePracticeProgress != nil
+        }
+        guard let progress = savedProgress(practice: false) else { return false }
+        return progress.dayKey == todayKey && !progress.guesses.isEmpty
+    }
+
+    /// Puts a saved round back on the board. The round keeps the difficulty it was started with.
+    private func restore(_ progress: RoundProgress) {
         roundHardMode = progress.hardMode
         roundClock.start(alreadyElapsed: Double(progress.elapsedSeconds))
         for guess in progress.guesses.prefix(6) where guess.count == 5 {
@@ -407,7 +426,6 @@ final class WordleGameViewModel {
         if guesses.prefix(rowIndex).contains(target) || rowIndex >= 6 {
             endRound(win: guesses.prefix(rowIndex).contains(target))
         }
-        return !progress.guesses.isEmpty
     }
 
     // MARK: - Rounds
@@ -432,15 +450,35 @@ final class WordleGameViewModel {
         // Start timing
         roundClock.start()
         lastRoundElapsedSeconds = nil
+        started = true
 
         if practice {
-            target = nextPracticeWord()
+            if let progress = resumablePracticeProgress {
+                target = progress.word
+                restore(progress)
+            } else {
+                target = nextPracticeWord()
+                // Saved before the first guess, so leaving can't be used to skip a hard word
+                // and keep the Practice streak.
+                saveProgress()
+            }
         } else if let roundDayKey {
             target = wordOfDay(for: roundDayKey)
-            restoreDailyProgress()
+            if let progress = savedProgress(practice: false),
+               progress.dayKey == roundDayKey,
+               progress.word == target {
+                restore(progress)
+            } else {
+                UserDefaults.standard.removeObject(forKey: dailyProgressKey)
+            }
         }
+    }
 
-        started = true
+    /// Leaves the result and goes back to the start screen to change the mode or difficulty.
+    func returnToSetup() {
+        roundOver = false
+        started = false
+        message = nil
     }
 
     func endRound(win: Bool) {
@@ -453,6 +491,7 @@ final class WordleGameViewModel {
         let elapsedSeconds = roundClock.elapsedSeconds()
 
         lastRoundElapsedSeconds = elapsedSeconds
+        UserDefaults.standard.removeObject(forKey: progressKey(practice: isPracticeRound))
 
         if win {
             let tries = rowIndex == 1 ? "1 guess" : "\(rowIndex) guesses"
@@ -465,7 +504,6 @@ final class WordleGameViewModel {
         }
 
         if mode == .daily, let roundDayKey {
-            UserDefaults.standard.removeObject(forKey: dailyProgressKey)
             answered += 1
 
             if win {

@@ -19,13 +19,6 @@ struct WordleView: View {
             }
         }
 
-        var detail: LocalizedStringResource {
-            switch self {
-            case .daily: "One puzzle on this device each day. Completion locks it until tomorrow and affects your Daily streak."
-            case .practice: "Unlimited new puzzles with a separate Practice streak."
-            }
-        }
-
         var icon: String {
             switch self {
             case .daily: "calendar"
@@ -43,6 +36,13 @@ struct WordleView: View {
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
     @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
+    /// Watched so the Daily lock updates when another device finishes the puzzle through iCloud.
+    @AppStorage(AppStorageKey.wordleDailyCompletedDay) private var dailyCompletedDay = ""
+    /// Today's local day key, refreshed at midnight and when the app returns, so the Daily
+    /// unlocks without leaving the screen.
+    @State private var todayKey = GameStats.localDayKey(for: Date())
+
+    private var dailyCompletedToday: Bool { dailyCompletedDay == todayKey }
 
     // Toggle for keyboard layout
     @State private var useABCLayout: Bool = false
@@ -236,6 +236,11 @@ struct WordleView: View {
       vm.isAnswerBankPrepared = true
     }
     .task {
+      for await _ in NotificationCenter.default.notifications(named: .NSCalendarDayChanged) {
+        todayKey = GameStats.localDayKey(for: Date())
+      }
+    }
+    .task {
       for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidConnect) {
         hardwareKeyboardConnected = true
         showsOnScreenKeyboard = false
@@ -249,12 +254,21 @@ struct WordleView: View {
     }
     // Time away from the app doesn't count toward the solve time.
     .onAppActiveChange { isActive in
+      if isActive {
+        todayKey = GameStats.localDayKey(for: Date())
+      }
       guard vm.started, !vm.roundOver else { return }
       if isActive {
         vm.roundClock.resume()
       } else {
         vm.roundClock.pause()
+        // Keeps the solve time so far if the app is closed from the background.
+        vm.saveProgress()
       }
+    }
+    // Leaving mid-round keeps the board and the time so far for next time.
+    .onDisappear {
+      vm.saveProgress()
     }
     .sheet(
       isPresented: $showRefSheet,
@@ -332,10 +346,15 @@ struct WordleView: View {
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
                 .gameStartDescriptionStyle(title: "WORD", systemImage: "textformat.abc", tint: .mint)
 
+            let resumesRound = vm.isAnswerBankPrepared
+                && vm.hasRoundToResume(practice: vm.mode == .practice)
+                && (vm.mode == .practice || !dailyCompletedToday)
             GameSplashLaunchLayout(
                 tint: .mint,
                 isStartEnabled: vm.isAnswerBankPrepared
-                    && (vm.mode != .daily || !vm.dailyCompletedToday),
+                    && (vm.mode != .daily || !dailyCompletedToday),
+                startTitle: resumesRound ? "Resume" : "Start Game",
+                startSubtitle: resumesRound ? "Pick up where you left off." : "Begin your challenge.",
                 startAction: { vm.startNewRound(practice: vm.mode == .practice) }
             ) {
                 GameLobbyPreview(kind: .wordle)
@@ -345,7 +364,7 @@ struct WordleView: View {
                     hardModeEnabled: $vm.hardModeEnabled
                 )
 
-                if vm.mode == .daily && vm.dailyCompletedToday {
+                if vm.mode == .daily && dailyCompletedToday {
                     Label(
                         "Daily completed. Come back tomorrow.",
                         systemImage: "exclamationmark.triangle.fill"
@@ -561,12 +580,16 @@ struct WordleView: View {
                 }
                 .buttonStyle(ModernPillButtonStyle(tint: .mint))
 
-                if vm.mode == .practice && !pinsNextWord {
-                    Button("Next Word", systemImage: "arrow.right") {
-                        vm.startNewRound(practice: true)
+                if vm.mode == .practice {
+                    // On iPhone and iPad, Next Word is pinned above the tab bar instead.
+                    if !pinsNextWord {
+                        Button("Next Word", systemImage: "arrow.right") {
+                            vm.startNewRound(practice: true)
+                        }
+                        .buttonStyle(GameProminentButtonStyle(tint: .mint))
                     }
-                    .buttonStyle(GameProminentButtonStyle(tint: .mint))
-                } else if vm.dailyCompletedToday {
+                } else if dailyCompletedToday {
+                    // Once midnight passes, `todayKey` changes and this becomes the Play button below.
                     Label {
                         Text("Next daily WORD \(Text(nextDailyDate, style: .relative))")
                             .monospacedDigit()
@@ -577,18 +600,24 @@ struct WordleView: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity)
                 } else {
-                    Button("Play Again", systemImage: "arrow.clockwise") {
+                    // The round finished was an earlier day's Daily, so today's is open.
+                    Button("Play Today's WORD", systemImage: "calendar") {
                         vm.startNewRound(practice: false)
                     }
                     .buttonStyle(GameProminentButtonStyle(tint: .mint))
                 }
             }
+
+            Button("Change Settings", systemImage: "slider.horizontal.3") {
+                vm.returnToSetup()
+            }
+            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
         }
     }
 
     /// Spoiler-free result summary with an emoji grid of the guesses.
     private var shareText: String {
-        let title = vm.mode == .daily ? "WORD Daily \(vm.todayKey)" : "WORD Practice"
+        let title = vm.mode == .daily ? "WORD Daily \(vm.roundDayKey ?? todayKey)" : "WORD Practice"
         let scoreText = vm.didWin ? "\(vm.rowIndex)/6" : "X/6"
         let difficulty = vm.roundHardMode ? " (Hard)" : ""
         let grid = vm.evaluations.prefix(vm.rowIndex).map { row in

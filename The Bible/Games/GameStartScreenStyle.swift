@@ -301,6 +301,9 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
     let experienceTitle: LocalizedStringKey
     let isConfigurationEnabled: Bool
     let isStartEnabled: Bool
+    /// The start button's label, e.g. "Resume" when an unfinished round is waiting.
+    let startTitle: LocalizedStringKey
+    let startSubtitle: LocalizedStringKey
     let startAction: () -> Void
     @ViewBuilder let preview: Preview
     @ViewBuilder let configuration: Configuration
@@ -313,6 +316,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         experienceTitle: LocalizedStringKey = "How you’ll play",
         isConfigurationEnabled: Bool = true,
         isStartEnabled: Bool = true,
+        startTitle: LocalizedStringKey = "Start Game",
+        startSubtitle: LocalizedStringKey = "Begin your challenge.",
         startAction: @escaping () -> Void,
         @ViewBuilder preview: () -> Preview,
         @ViewBuilder configuration: () -> Configuration,
@@ -324,6 +329,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         self.experienceTitle = experienceTitle
         self.isConfigurationEnabled = isConfigurationEnabled
         self.isStartEnabled = isStartEnabled
+        self.startTitle = startTitle
+        self.startSubtitle = startSubtitle
         self.startAction = startAction
         self.preview = preview()
         self.configuration = configuration()
@@ -354,6 +361,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                     GameSplashStartButton(
                         tint: tint,
                         isEnabled: isStartEnabled,
+                        title: startTitle,
+                        subtitle: startSubtitle,
                         action: startAction
                     )
                     .frame(maxWidth: .infinity)
@@ -377,7 +386,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                     configuration
                         .disabled(!isConfigurationEnabled)
 
-                    GameStartActionBar(tint: tint, isEnabled: isStartEnabled, action: startAction)
+                    GameStartActionBar(startTitle, tint: tint, isEnabled: isStartEnabled, action: startAction)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -453,6 +462,8 @@ struct GameSplashConfigurationCard<Content: View>: View {
 struct GameSplashStartButton: View {
     let tint: Color
     let isEnabled: Bool
+    var title: LocalizedStringKey = "Start Game"
+    var subtitle: LocalizedStringKey = "Begin your challenge."
     let action: () -> Void
 
     var body: some View {
@@ -460,9 +471,9 @@ struct GameSplashStartButton: View {
             VStack(spacing: 12) {
                 Image(systemName: "play.fill")
                     .font(.largeTitle)
-                Text("Start Game")
+                Text(title)
                     .font(.title2.weight(.semibold))
-                Text("Begin your challenge.")
+                Text(subtitle)
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.82))
             }
@@ -473,7 +484,7 @@ struct GameSplashStartButton: View {
         .foregroundStyle(.white)
         .background(tint.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .disabled(!isEnabled)
-        .accessibilityLabel("Start Game")
+        .accessibilityLabel(Text(title))
     }
 }
 
