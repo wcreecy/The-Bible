@@ -26,32 +26,28 @@ struct LastReadWidgetEntryView: View {
         VStack(alignment: .leading, spacing: isExtraLarge ? 18 : (isLarge ? 12 : 6)) {
             // Self-identifying header so users know which widget this is
             HStack(spacing: 6) {
-                Image(systemName: "bookmark.fill")
+                Image(systemName: entry.isBookmark ? "bookmark.fill" : "book.fill")
                     .font(isExtraLarge ? .title2 : (isLarge ? .headline : (isMedium ? .subheadline : .caption2)))
                     .symbolRenderingMode(.monochrome)
                     .foregroundStyle(Color.blue)
-                Text("Bookmark")
-                    .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : (isMedium ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))))
-                    .foregroundStyle(secondaryTextColor)
-                    .lineLimit(1)
+                // The small widget has room for only the shorter title.
+                ViewThatFits(in: .horizontal) {
+                    Text("Continue Reading")
+                    Text("Continue")
+                }
+                .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : (isMedium ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))))
+                .foregroundStyle(secondaryTextColor)
+                .lineLimit(1)
             }
 
-            if !entry.text.isEmpty {
-                Text("“\(entry.text)”")
+            if entry.book.isEmpty || entry.chapter <= 0 {
+                Text("Start reading to see your place here.")
                     .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
                     .foregroundStyle(primaryTextColor)
-                    .lineLimit(isExtraLarge || isLarge ? 6 : 5)
-                    .truncationMode(.tail)
-                    .multilineTextAlignment(.leading)
-                if !entry.book.isEmpty && entry.chapter > 0 && entry.verse > 0 {
-                    Text("\(entry.book) \(entry.chapter):\(entry.verse) · \(WidgetTranslationTag.bookmark)")
-                        .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : (isMedium ? .caption : .caption2)))
-                        .foregroundStyle(secondaryTextColor)
-                }
+            } else if entry.isBookmark {
+                bookmarkContent
             } else {
-                Text("No verse yet")
-                    .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
-                    .foregroundStyle(primaryTextColor)
+                readingContent
             }
         }
         .padding(isExtraLarge ? 28 : (isLarge ? 22 : 16))
@@ -59,7 +55,69 @@ struct LastReadWidgetEntryView: View {
         .widgetURL(deepLinkURL(book: entry.book, chapter: entry.chapter, verse: entry.verse))
         .applyWidgetBackground(style: backgroundStyle)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Bookmark widget")
+        .accessibilityLabel("Continue Reading widget")
+    }
+
+    /// The bookmark leads: its exact verse, as the Bookmark widget used to show it.
+    @ViewBuilder
+    private var bookmarkContent: some View {
+        if !entry.text.isEmpty {
+            Text("“\(entry.text)”")
+                .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
+                .foregroundStyle(primaryTextColor)
+                .lineLimit(isExtraLarge || isLarge ? 6 : 5)
+                .truncationMode(.tail)
+                .multilineTextAlignment(.leading)
+        }
+        // The small widget keeps the reference on one line by leaving out the translation.
+        Text(widgetFamily == .systemSmall
+             ? "\(entry.book) \(entry.chapter):\(entry.verse)"
+             : "\(entry.book) \(entry.chapter):\(entry.verse) · \(WidgetTranslationTag.tag(for: entry.translation))")
+            .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : (isMedium ? .caption : .caption2)))
+            .foregroundStyle(secondaryTextColor)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+    }
+
+    /// The reader has moved on from the bookmark: the chapter leads, since its verse is only
+    /// approximate. Medium and larger add the bookmark row, as the Home card does.
+    @ViewBuilder
+    private var readingContent: some View {
+        // Only the chapter is named; tapping still opens near where reading stopped.
+        Text("\(entry.book) \(entry.chapter)")
+            .font(isExtraLarge ? .largeTitle.weight(.bold) : (isLarge ? .title.weight(.bold) : (isMedium ? .title3.weight(.bold) : .headline)))
+            .foregroundStyle(primaryTextColor)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+
+        if !entry.text.isEmpty {
+            Text("“\(entry.text)”")
+                .font(isExtraLarge ? .title2 : (isLarge ? .title3 : (isMedium ? .subheadline : .footnote)))
+                .foregroundStyle(primaryTextColor.opacity(0.9))
+                .lineLimit(isExtraLarge || isLarge ? 4 : (isMedium ? 2 : 3))
+                .truncationMode(.tail)
+                .multilineTextAlignment(.leading)
+        }
+
+        if widgetFamily != .systemSmall, let reference = entry.bookmarkReference {
+            Spacer(minLength: 0)
+            HStack(spacing: 6) {
+                Image(systemName: "bookmark.fill")
+                    .foregroundStyle(Color.blue)
+                Text(reference)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(primaryTextColor)
+                    .lineLimit(1)
+                    .layoutPriority(1)
+                if let text = entry.bookmarkText, !text.isEmpty {
+                    Text("“\(text)”")
+                        .foregroundStyle(secondaryTextColor)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+            }
+            .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : .caption))
+        }
     }
 
     private func deepLinkURL(book: String, chapter: Int, verse: Int) -> URL? {

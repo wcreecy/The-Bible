@@ -53,10 +53,17 @@ struct LastReadWidgetAppearanceIntent: WidgetConfigurationIntent {
 
 struct LastReadEntry: TimelineEntry {
     let date: Date
+    /// True when the entry is the bookmark (an exact verse); false for the reading position.
+    var isBookmark = false
     let text: String
     let book: String
     let chapter: Int
     let verse: Int
+    /// The translation the text is in, such as "kjv".
+    var translation = "kjv"
+    /// The bookmark, shown as a row beside a reading position, such as "Psalms 23:1".
+    var bookmarkReference: String?
+    var bookmarkText: String?
     let backgroundStyleRaw: String
     /// Tells Smart Rotate when this widget belongs at the top of a stack.
     var relevance: TimelineEntryRelevance? = nil
@@ -114,6 +121,7 @@ struct LastReadProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> Entry {
         Entry(
             date: Date(),
+            isBookmark: true,
             text: "The LORD is my shepherd; I shall not want.",
             book: "Psalms",
             chapter: 23,
@@ -178,14 +186,31 @@ struct LastReadProvider: AppIntentTimelineProvider {
 
     private func loadEntry(configuration: Intent, date: Date = Date()) -> Entry {
         let backgroundStyleRaw = configuration.background.resolvedRawValue
-        // The app mirrors its synced reading position into the app group.
+        // The app works out Continue Reading, by the same rule as its Home card, and writes the
+        // result here: the bookmark, or the chapter last read with the bookmark beside it.
         let shared = UserDefaults(suiteName: "group.bible.app")
+        guard let kind = shared?.string(forKey: "continueReadingKind") else {
+            // Before the app has written a result (just after updating), show the reading position.
+            return Entry(
+                date: date,
+                text: shared?.string(forKey: "lastReadText") ?? "",
+                book: shared?.string(forKey: "lastReadBook") ?? "",
+                chapter: shared?.integer(forKey: "lastReadChapter") ?? 0,
+                verse: shared?.integer(forKey: "lastReadVerse") ?? 0,
+                translation: shared?.string(forKey: "bibleTranslation") ?? "kjv",
+                backgroundStyleRaw: backgroundStyleRaw
+            )
+        }
         return Entry(
             date: date,
-            text: shared?.string(forKey: "bookmarkText") ?? "",
-            book: shared?.string(forKey: "bookmarkBook") ?? "",
-            chapter: shared?.integer(forKey: "bookmarkChapter") ?? 0,
-            verse: shared?.integer(forKey: "bookmarkVerse") ?? 0,
+            isBookmark: kind == "bookmark",
+            text: shared?.string(forKey: "continueReadingText") ?? "",
+            book: shared?.string(forKey: "continueReadingBook") ?? "",
+            chapter: shared?.integer(forKey: "continueReadingChapter") ?? 0,
+            verse: shared?.integer(forKey: "continueReadingVerse") ?? 0,
+            translation: shared?.string(forKey: "continueReadingTranslation") ?? "kjv",
+            bookmarkReference: shared?.string(forKey: "continueReadingBookmarkReference"),
+            bookmarkText: shared?.string(forKey: "continueReadingBookmarkText"),
             backgroundStyleRaw: backgroundStyleRaw
         )
     }
@@ -195,10 +220,14 @@ private extension LastReadEntry {
     func with(date: Date, relevance: TimelineEntryRelevance) -> LastReadEntry {
         LastReadEntry(
             date: date,
+            isBookmark: isBookmark,
             text: text,
             book: book,
             chapter: chapter,
             verse: verse,
+            translation: translation,
+            bookmarkReference: bookmarkReference,
+            bookmarkText: bookmarkText,
             backgroundStyleRaw: backgroundStyleRaw,
             relevance: relevance
         )

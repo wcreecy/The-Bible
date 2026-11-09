@@ -35,13 +35,23 @@ struct ContinueReadingTargetTests {
         #expect(target?.destination.verseNumber == 12)
     }
 
-    @Test func readingInTheBookmarkedChapterKeepsTheBookmarkInFront() {
+    @Test func scrollingNearTheBookmarkKeepsItInFront() {
         // Opening the bookmark, or scrolling a little, updates the reading position. That
         // shouldn't push aside the exact verse the reader marked.
         let mark = bookmark("John", 3, 16, at: earlier)
-        let target = ContinueReadingTarget.resolve(bookmark: mark, reading: reading("John", 3, near: 20, at: later))
-        #expect(target?.primary == .bookmark(mark))
-        #expect(target?.otherBookmark == nil)
+        for verse in [16, 13, 20] {
+            let target = ContinueReadingTarget.resolve(bookmark: mark, reading: reading("John", 3, near: verse, at: later))
+            #expect(target?.primary == .bookmark(mark))
+            #expect(target?.otherBookmark == nil)
+        }
+    }
+
+    @Test func readingOnWithinTheBookmarkedChapterCountsAsMovingOn() {
+        let mark = bookmark("John", 3, 16, at: earlier)
+        let place = reading("John", 3, near: 16 + ContinueReadingTarget.versesToMoveOn, at: later)
+        let target = ContinueReadingTarget.resolve(bookmark: mark, reading: place)
+        #expect(target?.primary == .reading(place))
+        #expect(target?.otherBookmark == mark)
     }
 
     @Test func movingOnToAnotherChapterLeadsWithItAndKeepsTheBookmarkBeside() {

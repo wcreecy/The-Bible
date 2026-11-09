@@ -45,26 +45,36 @@ struct HomeView: View {
     @AppStorage(DeveloperTools.resumeReadingPreviewKey) private var resumeReadingPreview = DeveloperTools.ResumeReadingPreview.actual.rawValue
     #endif
 
-    /// The verse the reader bookmarked; the single source for Continue Reading.
-    /// (The automatic last-read position only drives where the Bible tab opens.)
+    /// The verse the reader bookmarked.
     private var bookmark: Bookmark? {
         bookmarks.first
     }
 
-    @MainActor private var resumeReadingPoint: ResumeReadingCard.ReadingPoint? {
+    /// Watched so Continue Reading follows the reading position as it changes.
+    @State private var readingPosition = ReadingPositionStore.shared
+
+    /// Where Continue Reading goes: the bookmark, or the chapter last read once the reader has
+    /// moved on from it. The Bible tab opens by the same rule.
+    @MainActor private var continueReadingTarget: ContinueReadingTarget? {
         #if DEBUG
         if let preview = DeveloperTools.ResumeReadingPreview(rawValue: resumeReadingPreview),
            let previewDate = preview.date {
-            return ResumeReadingCard.ReadingPoint(
-                bookName: "Matthew",
-                chapterNumber: 6,
-                verseNumber: 9,
-                verseText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
-                savedAt: previewDate
+            return .resolve(
+                bookmark: .init(
+                    bookName: "Matthew",
+                    chapterNumber: 6,
+                    verseNumber: 9,
+                    verseText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
+                    savedAt: previewDate
+                ),
+                reading: nil
             )
         }
         #endif
-        return bookmark.map(ResumeReadingCard.ReadingPoint.init)
+        return .resolve(
+            bookmark: bookmark.map(ContinueReadingTarget.BookmarkPoint.init),
+            reading: readingPosition.current.map(ContinueReadingTarget.ReadingPoint.init)
+        )
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
@@ -312,7 +322,7 @@ struct HomeView: View {
         // While editing, the columns stay up even if every card is hidden, so cards can be shown again.
         if showsMinimalHome && !isEditingLayout {
             HomeMinimalQuickActions(
-                bookmark: bookmark,
+                target: continueReadingTarget,
                 onOpenBooks: { switchTo(.bible) },
                 onContinueReading: openContinueReading,
                 onSearch: { coordinator.push(.search) }
@@ -400,14 +410,10 @@ struct HomeView: View {
             )
         case .resumeReading:
             ResumeReadingCard(
-                readingPoint: resumeReadingPoint,
+                target: continueReadingTarget,
                 usesCompactLayout: !isPad,
-                onOpenReference: { readingPoint in
-                    openBibleReference(
-                        book: readingPoint.bookName,
-                        chapter: readingPoint.chapterNumber,
-                        verse: readingPoint.verseNumber
-                    )
+                onOpen: { book, chapter, verse in
+                    openBibleReference(book: book, chapter: chapter, verse: verse)
                 },
                 onStartReading: {
                     openBibleReference(book: "Genesis", chapter: 1, verse: 1)
@@ -693,8 +699,8 @@ struct HomeView: View {
     }
 
     private func openContinueReading() {
-        if let bookmark {
-            openBibleReference(book: bookmark.bookName, chapter: bookmark.chapterNumber, verse: bookmark.verseNumber)
+        if let destination = continueReadingTarget?.destination {
+            openBibleReference(book: destination.bookName, chapter: destination.chapterNumber, verse: destination.verseNumber)
         } else {
             openBibleReference(book: "Genesis", chapter: 1, verse: 1)
         }

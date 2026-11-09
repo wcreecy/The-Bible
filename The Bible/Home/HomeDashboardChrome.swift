@@ -64,7 +64,26 @@ struct HomeBibleReaderEditControls: View {
 
 /// The three large actions shown on iPad when every card and the reader are hidden.
 struct HomeMinimalQuickActions: View {
-    let bookmark: Bookmark?
+    /// The bookmarked verse, or the chapter last read (approximate, so no verse).
+    private var continueMessage: String {
+        guard let target else { return String(localized: "Start at Genesis 1") }
+        switch target.primary {
+        case .bookmark(let point): return "\(point.bookName) \(point.chapterNumber):\(point.verseNumber)"
+        case .reading(let point): return "\(point.bookName) \(point.chapterNumber)"
+        }
+    }
+
+    private var bookmarkText: String? {
+        if case .bookmark(let point) = target?.primary { return point.verseText }
+        return nil
+    }
+
+    private var isBookmark: Bool {
+        if case .bookmark = target?.primary { return true }
+        return false
+    }
+
+    let target: ContinueReadingTarget?
     let onOpenBooks: () -> Void
     let onContinueReading: () -> Void
     let onSearch: () -> Void
@@ -81,9 +100,9 @@ struct HomeMinimalQuickActions: View {
 
             actionCard(
                 title: "Continue Reading",
-                message: bookmark.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)" } ?? "Start at Genesis 1",
-                verseText: bookmark?.verseText,
-                icon: "bookmark.fill",
+                message: continueMessage,
+                verseText: bookmarkText,
+                icon: isBookmark ? "bookmark.fill" : "book.fill",
                 tint: .indigo,
                 action: onContinueReading
             )

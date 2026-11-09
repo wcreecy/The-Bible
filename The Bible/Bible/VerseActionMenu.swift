@@ -19,14 +19,23 @@ struct VerseActionReference: Hashable, Identifiable {
     }
 }
 
-/// A single entry point for sharing a verse as text or as a designed image.
+/// A single entry point for sharing a verse as text or as a designed image, and optionally
+/// for copying it.
 struct VerseShareMenu<MenuLabel: View>: View {
     let verse: VerseActionReference
+    /// Adds Copy Text to the menu when set, for rows that have no separate Copy button.
+    var onCopy: (() -> Void)? = nil
     let onCreateImage: () -> Void
     @ViewBuilder let label: () -> MenuLabel
 
     var body: some View {
         Menu {
+            if let onCopy {
+                Button(action: onCopy) {
+                    Label("Copy Text", systemImage: "doc.on.doc")
+                }
+            }
+
             ShareLink(item: verse.shareText) {
                 Label("Share Verse", systemImage: "text.quote")
             }
@@ -328,62 +337,52 @@ struct VerseActionMenuContent: View {
     private var actionPresentation: some View {
         switch presentation {
         case .buttons:
+            // The most-used actions: the three ways to keep a verse, then Share. The rest are in
+            // More, with text labels.
             HStack(spacing: 0) {
                 Button(action: { isShowingNoteEditor = true }) {
                     Image(systemName: "highlighter")
                         .foregroundStyle(existingNote == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
                 }
                 .accessibilityLabel(noteActionTitle)
-
-                let mentions = mentionCount
-                if mentions > 0 {
-                    Button(action: { isShowingMentions = true }) {
-                        Image(systemName: "link")
-                            .foregroundStyle(Color.accentColor)
-                    }
-                    .accessibilityLabel("Notes Mentioning This Verse")
-                    .accessibilityValue(Text("\(mentions)"))
-                }
+                .frame(maxWidth: .infinity)
 
                 Button(action: toggleFavorite) {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
                 }
                 .accessibilityLabel(favoriteActionTitle)
+                .frame(maxWidth: .infinity)
 
+                // The one bookmark: where the reader stopped, shown first by Continue Reading.
                 Button(action: bookmark) {
                     Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                         .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
                 }
                 .accessibilityLabel(bookmarkActionTitle)
+                .frame(maxWidth: .infinity)
 
-                Button(action: togglePin) {
-                    Image(systemName: isPinned ? "pin.fill" : "pin")
-                        .foregroundStyle(isPinned ? AnyShapeStyle(.orange) : AnyShapeStyle(.primary))
-                }
-                .accessibilityLabel(pinActionTitle)
-
-                if BibleTranslation.available.count > 1 {
-                    Button { isShowingCompare = true } label: {
-                        Image(systemName: "rectangle.split.3x1")
-                    }
-                    .accessibilityLabel("Compare Translations")
-                }
-
-                Button(action: copy) {
-                    Image(systemName: "doc.on.doc")
-                }
-                .foregroundStyle(Color.accentColor)
-                .accessibilityLabel("Copy")
-
-                VerseShareMenu(verse: verse, onCreateImage: showImageComposer) {
+                VerseShareMenu(verse: verse, onCopy: copy, onCreateImage: showImageComposer) {
                     Image(systemName: "square.and.arrow.up")
                         .frame(minWidth: 40, minHeight: 44)
                         .contentShape(Rectangle())
                 }
                 .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Share")
+                .frame(maxWidth: .infinity)
 
+                Menu {
+                    compareMenuButton
+                    mentionsButton
+                    pinMenuButton
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .frame(minWidth: 40, minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .foregroundStyle(Color.accentColor)
+                .accessibilityLabel("More verse actions")
+                .frame(maxWidth: .infinity)
             }
             .font(.title3)
             .buttonStyle(VerseActionButtonStyle())
@@ -642,3 +641,19 @@ struct VerseActionMenuContent: View {
         sendFeedback(.copied)
     }
 }
+
+#if DEBUG
+#Preview("Reader row") {
+    VerseActionMenu(
+        verse: VerseActionReference(
+            bookName: "John",
+            chapterNumber: 3,
+            verseNumber: 16,
+            verseText: "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
+        ),
+        presentation: .buttons
+    )
+    .padding()
+    .modelContainer(for: [Favorite.self, VerseNote.self, UserNote.self, Bookmark.self], inMemory: true)
+}
+#endif

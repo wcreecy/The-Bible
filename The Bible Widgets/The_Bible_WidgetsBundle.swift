@@ -36,8 +36,8 @@ struct LastReadWidget: Widget {
         ) { (entry: LastReadEntry) in
             LastReadWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Bookmark")
-        .description("Shows your bookmarked verse.")
+        .configurationDisplayName("Continue Reading")
+        .description("Shows the chapter you were last reading.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
@@ -52,3 +52,42 @@ struct The_Bible_WidgetsBundle: WidgetBundle {
         PrayerTimerLiveActivity()
     }
 }
+
+#if DEBUG
+private extension LastReadEntry {
+    static let bookmarkLeads = LastReadEntry(
+        date: .now,
+        isBookmark: true,
+        text: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
+        book: "Matthew",
+        chapter: 6,
+        verse: 9,
+        backgroundStyleRaw: "black"
+    )
+
+    static let movedOn = LastReadEntry(
+        date: .now,
+        text: "Jesus answered and said unto her, Whosoever drinketh of this water shall thirst again:",
+        book: "John",
+        chapter: 4,
+        verse: 13,
+        bookmarkReference: "Matthew 6:9",
+        bookmarkText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
+        backgroundStyleRaw: "black"
+    )
+}
+
+#Preview("Continue Reading – medium", as: .systemMedium) {
+    LastReadWidget()
+} timeline: {
+    LastReadEntry.bookmarkLeads
+    LastReadEntry.movedOn
+}
+
+#Preview("Continue Reading – small", as: .systemSmall) {
+    LastReadWidget()
+} timeline: {
+    LastReadEntry.bookmarkLeads
+    LastReadEntry.movedOn
+}
+#endif

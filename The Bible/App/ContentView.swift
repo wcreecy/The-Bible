@@ -186,6 +186,7 @@ struct ContentView: View {
         bibleStore.ensureLoaded()
         // Seeds the single reading position from the records it replaced (runs once).
         ReadingPositionStore.shared.migrateIfNeeded(modelContext: modelContext)
+        // Brings a bookmark that arrived through iCloud to the Continue Reading widget.
         Bookmark.mirrorToWidget(in: modelContext)
         openBibleReaderAtLaunchIfNeeded()
         scheduleInitialDataMaintenance()
@@ -411,7 +412,15 @@ struct ContentView: View {
                   let genesisOne = genesis.chapters.first(where: { $0.number == 1 }) ?? genesis.chapters.first
             else { return }
 
-            let savedLocation = ReadingPositionStore.shared.current
+            // The same place Continue Reading on Home goes: the bookmark, or the chapter last
+            // read once the reader has moved on from it.
+            var newestBookmark = FetchDescriptor<Bookmark>(sortBy: [SortDescriptor(\Bookmark.createdAt, order: .reverse)])
+            newestBookmark.fetchLimit = 1
+            let bookmark = (try? modelContext.fetch(newestBookmark))?.first
+            let savedLocation = ContinueReadingTarget.resolve(
+                bookmark: bookmark.map(ContinueReadingTarget.BookmarkPoint.init),
+                reading: ReadingPositionStore.shared.current.map(ContinueReadingTarget.ReadingPoint.init)
+            )?.destination
             let savedBook = savedLocation.flatMap { location in
                 books.first(where: { $0.name == location.bookName })
             }
@@ -419,7 +428,7 @@ struct ContentView: View {
                 savedBook?.chapters.first(where: { $0.number == location.chapterNumber })
             }
             let savedVerse = savedLocation.flatMap { location in
-                savedChapter?.verses.first(where: { $0.number == (location.verseNumber ?? 1) })?.number
+                savedChapter?.verses.first(where: { $0.number == location.verseNumber })?.number
             }
 
             let book: Book

@@ -1,34 +1,12 @@
 import SwiftUI
 
 struct ResumeReadingCard: View {
-    struct ReadingPoint: Equatable {
-        let bookName: String
-        let chapterNumber: Int
-        let verseNumber: Int
-        let verseText: String
-        let savedAt: Date
-
-        init(bookmark: Bookmark) {
-            bookName = bookmark.bookName
-            chapterNumber = bookmark.chapterNumber
-            verseNumber = bookmark.verseNumber
-            verseText = bookmark.verseText
-            savedAt = bookmark.createdAt
-        }
-
-        init(bookName: String, chapterNumber: Int, verseNumber: Int, verseText: String, savedAt: Date) {
-            self.bookName = bookName
-            self.chapterNumber = chapterNumber
-            self.verseNumber = verseNumber
-            self.verseText = verseText
-            self.savedAt = savedAt
-        }
-    }
-
-    /// The saved passage to return to. Debug previews provide an in-memory value here.
-    let readingPoint: ReadingPoint?
+    /// Where Continue Reading goes, from the bookmark and the reading position. Debug previews
+    /// provide an in-memory value here.
+    let target: ContinueReadingTarget?
     let usesCompactLayout: Bool
-    let onOpenReference: (ReadingPoint) -> Void
+    /// Opens a book, chapter and verse.
+    let onOpen: (String, Int, Int) -> Void
     let onStartReading: () -> Void
     let onChoosePassage: (String, Int, Int) -> Void
 
@@ -36,76 +14,29 @@ struct ResumeReadingCard: View {
 
     var body: some View {
         Group {
-            if let readingPoint {
-            let verseText = readingPoint.verseText
-            Button(action: { onOpenReference(readingPoint) }) {
+            if let target {
                 HeroCard(
                     title: "",
                     subtitle: nil,
                     icon: nil,
                     tint: .blue
                 ) {
-                    HStack(alignment: .center, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "bookmark.fill")
-                                .font(.title3)
-                                .foregroundStyle(Color.accentColor)
-                            Text("Resume Reading")
-                                .font(.headline)
-                                .bold()
+                    VStack(alignment: .leading, spacing: usesCompactLayout ? 10 : 12) {
+                        Button {
+                            let destination = target.destination
+                            onOpen(destination.bookName, destination.chapterNumber, destination.verseNumber)
+                        } label: {
+                            primaryContent(target.primary)
+                                .contentShape(Rectangle())
                         }
-                        Spacer()
-                        Label("Resume", systemImage: "chevron.right")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Color.accentColor)
-                            .labelStyle(.titleAndIcon)
-                            .accessibilityHidden(true)
-                    }
+                        .buttonStyle(.plain)
 
-                    if usesCompactLayout {
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(spacing: 0) {
-                                Text("\(readingPoint.bookName) \(readingPoint.chapterNumber):\(readingPoint.verseNumber)")
-                                    .font(.title3.weight(.bold))
-                                    .foregroundStyle(.primary)
-                                    .lineLimit(1)
-                                    .layoutPriority(1)
-
-                                if !verseText.isEmpty {
-                                    Text(" “\(verseText)”")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .lineLimit(1)
-                                        .truncationMode(.tail)
-                                }
-                            }
-
-                            readingRecency(for: readingPoint.savedAt)
-                        }
-                    } else {
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack(spacing: 0) {
-                                Text("\(readingPoint.bookName) \(readingPoint.chapterNumber):\(readingPoint.verseNumber)")
-                                    .font(.title3.weight(.bold))
-                                    .foregroundStyle(.primary)
-                                    .lineLimit(1)
-                                    .layoutPriority(1)
-
-                                if !verseText.isEmpty {
-                                    Text(" “\(verseText)”")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .lineLimit(1)
-                                        .truncationMode(.tail)
-                                }
-                            }
-
-                            readingRecency(for: readingPoint.savedAt)
+                        if let bookmark = target.otherBookmark {
+                            Divider()
+                            bookmarkRow(bookmark)
                         }
                     }
                 }
-            }
-            .buttonStyle(.plain)
             } else {
                 HeroCard(
                     title: "",
@@ -158,76 +89,193 @@ struct ResumeReadingCard: View {
         }
     }
 
-    private func readingRecency(for date: Date) -> some View {
-        Text(recencyText(for: date))
-            .font(.caption)
-            .foregroundStyle(.secondary)
+    // MARK: - Primary place
+
+    @ViewBuilder
+    private func primaryContent(_ primary: ContinueReadingTarget.Primary) -> some View {
+        // The chevron sits beside the whole block, centered like the bookmark row's, so the two
+        // line up. It stays blue as the card's main action; the bookmark row's is gray.
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: usesCompactLayout ? 4 : 6) {
+                HStack(spacing: 8) {
+                    Image(systemName: primary.isBookmark ? "bookmark.fill" : "book.fill")
+                        .font(.title3)
+                        .foregroundStyle(Color.accentColor)
+                    Text("Continue Reading")
+                        .font(.headline)
+                        .bold()
+                }
+
+                switch primary {
+                case .bookmark(let point):
+                    // The bookmark is exact, so it shows its verse and text.
+                    HStack(spacing: 0) {
+                        Text("\(point.bookName) \(point.chapterNumber):\(point.verseNumber)")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                            .layoutPriority(1)
+
+                        if !point.verseText.isEmpty {
+                            Text(" “\(point.verseText)”")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                        }
+                    }
+                    Text(ResumeReadingRecency.text(for: point.savedAt, kind: .bookmarked))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                case .reading(let point):
+                    // The reading position is approximate, so it names only the chapter. The verse
+                    // text is an unnumbered preview, so the passage is recognizable without
+                    // claiming an exact verse. Opening it still scrolls near where reading stopped.
+                    HStack(spacing: 0) {
+                        Text("\(point.bookName) \(point.chapterNumber)")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                            .layoutPriority(1)
+
+                        if !point.verseText.isEmpty {
+                            Text(" “\(point.verseText)”")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                        }
+                    }
+                    Text(ResumeReadingRecency.text(for: point.readAt, kind: .read))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            Image(systemName: "chevron.right")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+        }
     }
 
-    private func recencyText(for date: Date) -> String {
-        ResumeReadingRecency.text(for: date)
+    /// The bookmark, offered under the reading position when the reader has moved on from it.
+    private func bookmarkRow(_ bookmark: ContinueReadingTarget.BookmarkPoint) -> some View {
+        Button {
+            onOpen(bookmark.bookName, bookmark.chapterNumber, bookmark.verseNumber)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "bookmark.fill")
+                    .foregroundStyle(Color.accentColor)
+                // The reference always shows in full; the verse text fills the rest of the line.
+                Text("\(bookmark.bookName) \(bookmark.chapterNumber):\(bookmark.verseNumber)")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .layoutPriority(1)
+                if !bookmark.verseText.isEmpty {
+                    Text("“\(bookmark.verseText)”")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+            }
+            .font(.subheadline)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Open bookmark, \(bookmark.bookName) \(bookmark.chapterNumber):\(bookmark.verseNumber)")
+    }
+}
+
+private extension ContinueReadingTarget.Primary {
+    var isBookmark: Bool {
+        if case .bookmark = self { return true }
+        return false
     }
 }
 
 enum ResumeReadingRecency {
-    static func text(for date: Date, now: Date = .now, calendar: Calendar = .current) -> String {
-        if calendar.isDate(date, inSameDayAs: now) {
-            return String(localized: "Saved today at \(date.formatted(date: .omitted, time: .shortened))")
-        }
-        if let yesterday = calendar.date(byAdding: .day, value: -1, to: now),
-           calendar.isDate(date, inSameDayAs: yesterday) {
-            return String(localized: "Saved yesterday")
-        }
-        return String(localized: "Saved \(date.formatted(date: .abbreviated, time: .omitted))")
+    enum Kind {
+        /// When the bookmark was set.
+        case bookmarked
+        /// When the reader was last in the chapter.
+        case read
     }
 
+    static func text(for date: Date, kind: Kind = .bookmarked, now: Date = .now, calendar: Calendar = .current) -> String {
+        let time = date.formatted(date: .omitted, time: .shortened)
+        let day = date.formatted(date: .abbreviated, time: .omitted)
+        let isToday = calendar.isDate(date, inSameDayAs: now)
+        let isYesterday = calendar.date(byAdding: .day, value: -1, to: now)
+            .map { calendar.isDate(date, inSameDayAs: $0) } ?? false
+
+        switch kind {
+        case .bookmarked:
+            if isToday { return String(localized: "Saved today at \(time)") }
+            if isYesterday { return String(localized: "Saved yesterday") }
+            return String(localized: "Saved \(day)")
+        case .read:
+            if isToday { return String(localized: "Read today at \(time)") }
+            if isYesterday { return String(localized: "Read yesterday") }
+            return String(localized: "Read \(day)")
+        }
+    }
 }
 
-#Preview("Saved today") {
+#Preview("Bookmark") {
     ResumeReadingCard(
-        readingPoint: .init(
-            bookName: "Matthew",
-            chapterNumber: 6,
-            verseNumber: 9,
-            verseText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
-            savedAt: .now
+        target: .resolve(
+            bookmark: .init(
+                bookName: "Matthew", chapterNumber: 6, verseNumber: 9,
+                verseText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
+                savedAt: .now
+            ),
+            reading: nil
         ),
         usesCompactLayout: true,
-        onOpenReference: { _ in },
+        onOpen: { _, _, _ in },
         onStartReading: {},
         onChoosePassage: { _, _, _ in }
     )
     .padding()
 }
 
-#Preview("Saved yesterday") {
+#Preview("Read on past the bookmark") {
     ResumeReadingCard(
-        readingPoint: .init(
-            bookName: "Matthew",
-            chapterNumber: 6,
-            verseNumber: 9,
-            verseText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
-            savedAt: Calendar.current.date(byAdding: .day, value: -1, to: .now) ?? .now
+        target: .resolve(
+            bookmark: .init(
+                bookName: "Psalms", chapterNumber: 23, verseNumber: 1,
+                verseText: "The LORD is my shepherd; I shall not want.",
+                savedAt: Calendar.current.date(byAdding: .day, value: -21, to: .now) ?? .now
+            ),
+            reading: .init(
+                bookName: "John", chapterNumber: 4, approximateVerse: 13,
+                verseText: "Jesus answered and said unto her, Whosoever drinketh of this water shall thirst again:",
+                readAt: .now
+            )
         ),
-        usesCompactLayout: false,
-        onOpenReference: { _ in },
+        usesCompactLayout: true,
+        onOpen: { _, _, _ in },
         onStartReading: {},
         onChoosePassage: { _, _, _ in }
     )
     .padding()
 }
 
-#Preview("Saved three weeks ago") {
+#Preview("Nothing yet") {
     ResumeReadingCard(
-        readingPoint: .init(
-            bookName: "Matthew",
-            chapterNumber: 6,
-            verseNumber: 9,
-            verseText: "After this manner therefore pray ye: Our Father which art in heaven, Hallowed be thy name.",
-            savedAt: Calendar.current.date(byAdding: .day, value: -21, to: .now) ?? .now
-        ),
-        usesCompactLayout: false,
-        onOpenReference: { _ in },
+        target: nil,
+        usesCompactLayout: true,
+        onOpen: { _, _, _ in },
         onStartReading: {},
         onChoosePassage: { _, _, _ in }
     )

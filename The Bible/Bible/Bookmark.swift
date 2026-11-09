@@ -18,8 +18,10 @@ final class Bookmark {
 }
 
 extension Bookmark {
-    /// There is a single bookmark (the Continue Reading point), so setting one replaces any others.
-    /// The caller saves the context.
+    /// There is a single bookmark, like a bookmark in a book: one exact place the reader marks.
+    /// Setting it replaces any other. Continue Reading shows it until the reader moves on to
+    /// another chapter (see `ContinueReadingTarget`). The caller saves the context.
+    @MainActor
     static func move(
         to bookName: String,
         chapter: Int,
@@ -43,15 +45,23 @@ extension Bookmark {
             chapter: chapter,
             verse: verse,
             verseText: verseText,
-            translation: translation.rawValue
+            translation: translation.rawValue,
+            savedAt: bookmark.createdAt
         )
     }
 
-    /// Keeps the Bookmark widget independent from the reader's automatic last-read position.
+    // MARK: - Widget copy
+    // The Continue Reading widget can't read SwiftData, so the bookmark is copied into the app
+    // group. `ContinueReadingWidgetMirror` combines it with the reading position.
+
+    /// Copies the newest bookmark, or clears the copy when there is none. Run at launch so a
+    /// bookmark that arrived through iCloud reaches the widget.
+    @MainActor
     static func mirrorToWidget(in context: ModelContext) {
-        let descriptor = FetchDescriptor<Bookmark>(
+        var descriptor = FetchDescriptor<Bookmark>(
             sortBy: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]
         )
+        descriptor.fetchLimit = 1
         guard let bookmark = try? context.fetch(descriptor).first else {
             clearWidget()
             return
@@ -62,24 +72,29 @@ extension Bookmark {
             chapter: bookmark.chapterNumber,
             verse: bookmark.verseNumber,
             verseText: bookmark.verseText,
-            translation: bookmark.translation
+            translation: bookmark.translation,
+            savedAt: bookmark.createdAt
         )
     }
 
+    @MainActor
     static func clearWidget() {
         let shared = UserDefaults(suiteName: "group.bible.app") ?? .standard
-        ["bookmarkBook", "bookmarkChapter", "bookmarkVerse", "bookmarkText", AppStorageKey.bookmarkTranslation].forEach {
-            shared.removeObject(forKey: $0)
-        }
-        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+        [
+            AppStorageKey.bookmarkBook, AppStorageKey.bookmarkChapter, AppStorageKey.bookmarkVerse,
+            AppStorageKey.bookmarkText, AppStorageKey.bookmarkTranslation, ContinueReadingWidgetMirror.bookmarkSavedAtKey
+        ].forEach { shared.removeObject(forKey: $0) }
+        ContinueReadingWidgetMirror.update()
     }
 
+    @MainActor
     private static func mirrorToWidget(
         bookName: String,
         chapter: Int,
         verse: Int,
         verseText: String,
-        translation: String
+        translation: String,
+        savedAt: Date
     ) {
         let shared = UserDefaults(suiteName: "group.bible.app") ?? .standard
         shared.set(bookName, forKey: AppStorageKey.bookmarkBook)
@@ -87,6 +102,7 @@ extension Bookmark {
         shared.set(verse, forKey: AppStorageKey.bookmarkVerse)
         shared.set(verseText, forKey: AppStorageKey.bookmarkText)
         shared.set(translation, forKey: AppStorageKey.bookmarkTranslation)
-        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+        shared.set(savedAt, forKey: ContinueReadingWidgetMirror.bookmarkSavedAtKey)
+        ContinueReadingWidgetMirror.update()
     }
 }

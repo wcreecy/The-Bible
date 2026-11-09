@@ -127,7 +127,6 @@ enum DeveloperSampleData {
         }
 
         let existingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
-        var didSeedBookmark = false
         if existingBookmarks.isEmpty {
             for _ in 0..<50 {
                 guard let book = books.randomElement(),
@@ -148,7 +147,6 @@ enum DeveloperSampleData {
                     to: Date()
                 ) ?? Date()
                 context.insert(bookmark)
-                didSeedBookmark = true
                 break
             }
         }
@@ -156,10 +154,7 @@ enum DeveloperSampleData {
         if context.hasChanges {
             try context.save()
         }
-
-        if didSeedBookmark {
-            Bookmark.mirrorToWidget(in: context)
-        }
+        Bookmark.mirrorToWidget(in: context)
     }
 
     private static func generateReadingStats(books: [Book]) {

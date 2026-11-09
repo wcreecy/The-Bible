@@ -7,14 +7,17 @@ import Foundation
 enum WidgetTranslationTag {
     /// Text that follows the active translation: Verse of the Day and the lock screen verse.
     static var active: String { tag(forKey: "bibleTranslation") }
-    /// The bookmark widget keeps the text the bookmark was saved with.
-    static var bookmark: String { tag(forKey: "bookmarkTranslation") }
     /// The pinned verse widget keeps the text the verse was pinned with.
     static var pinned: String { tag(forKey: "pinnedVerseTranslation") }
 
+    /// The tag for a stored translation value, such as "kjv". The Continue Reading widget's text
+    /// is in the bookmark's translation or the active one, so it passes the value it was given.
+    static func tag(for storedTranslation: String) -> String {
+        storedTranslation.uppercased()
+    }
+
     /// Same abbreviations as `BibleTranslation.abbreviation`.
     private static func tag(forKey key: String) -> String {
-        let stored = UserDefaults(suiteName: "group.bible.app")?.string(forKey: key) ?? "kjv"
-        return stored.uppercased()
+        tag(for: UserDefaults(suiteName: "group.bible.app")?.string(forKey: key) ?? "kjv")
     }
 }

@@ -120,7 +120,7 @@ final class ReadingPositionStore {
 
         guard let position else {
             keys.forEach { shared.removeObject(forKey: $0) }
-            DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+            ContinueReadingWidgetMirror.update()
             return
         }
 
@@ -134,7 +134,7 @@ final class ReadingPositionStore {
         shared.set(position.chapterNumber, forKey: AppStorageKey.lastReadChapter)
         shared.set(verseNumber, forKey: AppStorageKey.lastReadVerse)
         shared.set(text, forKey: AppStorageKey.lastReadText)
-        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+        ContinueReadingWidgetMirror.update()
     }
 
     // MARK: - Migration
