@@ -227,6 +227,13 @@ extension iCloudSyncCoordinator {
             keys.append("bookorderPersistentStreak_\(d)")
             keys.append("bookorderPersistentBestStreak_\(d)")
         }
+        // Sections other than the whole Bible keep their own streak per difficulty.
+        for section in BookSourceScope.allCases where section != .both {
+            for d in ["easy","normal","hard"] {
+                keys.append("bookorderPersistentStreak_\(section.rawValue)_\(d)")
+                keys.append("bookorderPersistentBestStreak_\(section.rawValue)_\(d)")
+            }
+        }
         return keys
     }()
 

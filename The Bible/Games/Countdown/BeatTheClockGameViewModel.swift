@@ -223,6 +223,9 @@ final class BeatTheClockGameViewModel {
 
     private var bestGameScoreKey: String { "beatclockBestGameScore_\(difficulty.rawValue)" }
 
+    /// Each difficulty and category has its own pool, so each keeps its own pass through it.
+    private var recencyGameKey: String { "countdown.\(difficulty.rawValue).\(category.rawValue)" }
+
     var selectionLocked: Bool { roundOutcome != nil }
 
     /// Only a question with time running can be paused.
@@ -281,6 +284,11 @@ final class BeatTheClockGameViewModel {
     }
 
     func onDisappear() {
+        // Leaving mid-question counts as running out of time, so backing out can't be used
+        // to skip a hard question and keep the streak.
+        if phase == .playing, roundOutcome == nil, currentQuestion != nil {
+            finishRound(.timedOut)
+        }
         // Leaving after answering begins a new game session on return.
         if phase != .setup && session.answered > 0 {
             resetToSetup()
@@ -326,6 +334,22 @@ final class BeatTheClockGameViewModel {
         remainingSeconds = updatedRemaining
         if remainingSeconds == 0 {
             finishRound(.timedOut)
+        } else {
+            pulseTimer()
+        }
+    }
+
+    /// A short pulse on the timer each second, with a heavy tap in the last five.
+    private func pulseTimer() {
+        isPulsing = true
+        #if canImport(UIKit)
+        if remainingSeconds <= 5 {
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        }
+        #endif
+        Task {
+            try? await Task.sleep(for: .milliseconds(200))
+            isPulsing = false
         }
     }
 
@@ -403,6 +427,12 @@ final class BeatTheClockGameViewModel {
             )
         }
 
+        // A review round replays every missed question. The category can't be changed while
+        // reviewing, so filtering by it would hide missed questions from the other category.
+        guard reviewQuestionIDs.isEmpty else {
+            return (people + places).shuffled()
+        }
+
         switch category {
         case .people:
             return people.shuffled()
@@ -436,11 +466,10 @@ final class BeatTheClockGameViewModel {
     func startGame() {
         guard !isLoadingData else { return }
         let availableQuestions = reviewQuestionIDs.isEmpty
-            ? RecentGameQuestionStore.shared.select(
+            ? RecentGameQuestionStore.shared.selectCycling(
                 from: makeQuestionDeck(),
-                game: "countdown",
+                game: recencyGameKey,
                 count: Self.questionsPerGame,
-                cooldown: Self.questionsPerGame * 7,
                 id: \.id
             )
             : makeQuestionDeck().filter { reviewQuestionIDs.contains($0.id) }
@@ -461,7 +490,7 @@ final class BeatTheClockGameViewModel {
         }
 
         currentQuestion = question
-        RecentGameQuestionStore.shared.record(question, game: "countdown", id: \.id)
+        RecentGameQuestionStore.shared.record(question, game: recencyGameKey, id: \.id)
         questionNumber += 1
         roundOutcome = nil
         submittedBook = nil
@@ -501,19 +530,11 @@ final class BeatTheClockGameViewModel {
     /// Advances the timer by one deterministic second for tests without waiting on the real clock.
     func tick() {
         guard remainingSeconds > 0, !isPaused, !isTimerDisabled else { return }
-        isPulsing = true
-        #if canImport(UIKit)
-        if remainingSeconds <= 5 {
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-        }
-        #endif
-        Task {
-            try? await Task.sleep(for: .milliseconds(200))
-            isPulsing = false
-        }
         remainingSeconds -= 1
         if remainingSeconds == 0 {
             finishRound(.timedOut)
+        } else {
+            pulseTimer()
         }
     }
 

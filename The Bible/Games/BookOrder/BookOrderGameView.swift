@@ -7,13 +7,11 @@ struct BookOrderGameView: View {
     @State private var roundClock = GameActiveClock()
     @State private var isAppActive = true
     @State private var isTimerHidden: Bool = false
-    /// Height of the result card, so the iPhone layout can cap it and scroll the rest.
-    @State private var resultHeight: CGFloat = 0
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
             get: {
-                switch vm.difficulty {
+                switch vm.effectiveDifficulty {
                 case .easy: .learn
                 case .normal: .standard
                 case .hard, .fullBible: .challenge
@@ -43,12 +41,18 @@ struct BookOrderGameView: View {
 
                         GameSplashLaunchLayout(
                             tint: .purple,
-                            experienceLevel: vm.difficulty == .fullBible ? nil : experienceLevel,
+                            // A section too small for more than one level (like the Gospels) has
+                            // nothing to choose, so the picker is hidden.
+                            experienceLevel: vm.difficulty == .fullBible || vm.availableLevels.count < 2
+                                ? nil
+                                : experienceLevel,
                             experienceDetails: GameExperienceDetails(
-                                learn: "Arrange 5 books.",
-                                standard: "Arrange 10 books.",
-                                challenge: "Arrange 15 books."
+                                learn: "Arrange \(vm.bookCount(for: .easy)) books.",
+                                standard: "Arrange \(vm.bookCount(for: .normal)) books.",
+                                challenge: "Arrange \(vm.bookCount(for: .hard)) books."
                             ),
+                            startTitle: vm.hasSavedPuzzle ? "Resume" : "Start Game",
+                            startSubtitle: vm.hasSavedPuzzle ? "Pick up where you left off." : "Begin your challenge.",
                             startAction: startGame
                         ) {
                             GameLobbyPreview(kind: .bookOrder, bookOrderBooks: vm.source.previewBookNames)
@@ -117,9 +121,15 @@ struct BookOrderGameView: View {
                 roundClock.pause()
             }
             elapsedSeconds = roundClock.elapsedSeconds()
+            if !active {
+                // Kept in case the app is closed from the background.
+                vm.savePuzzle(elapsedSeconds: elapsedSeconds)
+            }
         }
         .onDisappear {
             roundClock.pause()
+            // An unchecked puzzle comes back next time instead of being skipped.
+            vm.savePuzzle(elapsedSeconds: roundClock.elapsedSeconds())
             vm.onDisappear()
         }
     }
@@ -150,10 +160,12 @@ struct BookOrderGameView: View {
                     BookOrderRow(
                         position: index + 1,
                         book: item,
-                        correctBook: vm.showResult ? vm.correctBook(at: index) : nil
+                        isChecked: vm.showResult,
+                        needsMoving: vm.needsMoving(item),
+                        moveHint: vm.moveHint(for: item)
                     )
                     .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .listRowBackground(rowBackground(for: item, at: index))
+                    .listRowBackground(rowBackground(for: item))
                     .moveDisabled(vm.showResult)
                 }
                 .onMove(perform: vm.move)
@@ -163,13 +175,9 @@ struct BookOrderGameView: View {
             .clipShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
 
             if vm.showResult {
-                // The list needs most of the screen, so the result scrolls within a capped height.
-                ScrollView {
-                    resultSummary
-                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { resultHeight = $0 }
-                }
-                .scrollBounceBehavior(.basedOnSize)
-                .frame(height: min(max(resultHeight, 1), 300))
+                // Just the headline and stats, so the checked list keeps most of the screen.
+                // The marked rows already show which books to move and where they go.
+                resultSummary(compact: true)
             }
 
             actionButtons
@@ -214,20 +222,20 @@ struct BookOrderGameView: View {
             List {
                 ForEach(Array(vm.currentItems.enumerated()), id: \.element) { index, item in
                     HStack(spacing: 10) {
-                        Image(systemName: vm.showResult ? resultIcon(for: item, at: index) : "line.3.horizontal")
+                        Image(systemName: vm.showResult ? resultIcon(for: item) : "line.3.horizontal")
                             .foregroundStyle(.secondary)
                         Text(item)
                             .font(.body.weight(.medium))
                         Spacer()
-                        if vm.showResult, let correct = vm.correctBook(at: index), correct != item {
-                            Text("Should be \(correct)")
+                        if vm.showResult, let hint = vm.moveHint(for: item) {
+                            Text(hint)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.red)
                         }
                     }
                     .padding(.horizontal, 14)
                     .frame(minHeight: 46)
-                    .glassEffect(answerGlass(for: item, at: index), in: .rect(cornerRadius: 12))
+                    .glassEffect(answerGlass(for: item), in: .rect(cornerRadius: 12))
                     .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -239,7 +247,7 @@ struct BookOrderGameView: View {
             .scrollContentBackground(.hidden)
 
             if vm.showResult {
-                resultSummary
+                resultSummary(compact: false)
             }
 
             actionButtons
@@ -263,6 +271,7 @@ struct BookOrderGameView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(Array(canonicalBooks.enumerated()), id: \.element) { index, book in
@@ -280,9 +289,17 @@ struct BookOrderGameView: View {
                             .padding(.horizontal, 14)
                             .frame(minHeight: 46)
                             .glassEffect(canonGlass(for: book), in: .rect(cornerRadius: 12))
+                            .id(book)
                         }
                     }
                     .padding(4)
+                }
+                // Brings the puzzle's books into view instead of always starting at Genesis.
+                .onAppear {
+                    if let first = vm.correctOrder.first {
+                        proxy.scrollTo(first, anchor: .top)
+                    }
+                }
                 }
             } else {
                 Spacer()
@@ -372,31 +389,33 @@ struct BookOrderGameView: View {
         .accessibilityLabel(isTimerHidden ? "Show timer" : "Time elapsed \(formattedElapsedTime). Hide timer")
     }
 
-    private var resultSummary: some View {
+    /// The result card. On iPhone (`compact`) it leaves out the streak, best-time note and
+    /// Books to Review, so the list of books stays visible.
+    private func resultSummary(compact: Bool) -> some View {
         let total = vm.correctOrder.count
         return GamePuzzleResultCard(
             title: vm.wasCorrect
                 ? String(localized: "Perfect Order")
-                : String(localized: "\(vm.booksInPlace) of \(total) in place"),
+                : String(localized: "\(vm.booksInOrder) of \(total) in order"),
             subtitle: vm.wasCorrect
                 ? String(localized: "All \(total) books are in the right order.")
-                : String(localized: "The books to review are added to your missed list."),
+                : String(localized: "Books marked in red are added to your missed list."),
             systemImage: vm.wasCorrect ? "checkmark.seal.fill" : "arrow.up.arrow.down.circle.fill",
             tint: vm.wasCorrect ? .green : .red,
             facts: [
                 ("stopwatch", GameTimeFormat.short(seconds: vm.lastTimeSeconds), String(localized: "Time")),
-                ("checkmark.circle", "\(vm.booksInPlace)/\(total)", String(localized: "In place")),
+                ("checkmark.circle", "\(vm.booksInOrder)/\(total)", String(localized: "In order")),
                 ("trophy", vm.bestTimeSeconds.map { GameTimeFormat.short(seconds: $0) } ?? "—", String(localized: "Best time"))
             ],
-            bestTime: vm.bestTimeComparison,
-            streak: GamePuzzleStreak(
+            bestTime: compact ? nil : vm.bestTimeComparison,
+            streak: compact ? nil : GamePuzzleStreak(
                 current: vm.session.savedCurrentStreak,
                 best: vm.persistentBestStreak,
                 isNewBest: vm.isNewBestStreak,
                 caption: String(localized: "This visit: \(vm.session.score) of \(vm.session.answered) puzzles in order")
             )
         ) {
-            if !vm.booksToReview.isEmpty {
+            if !compact, !vm.booksToReview.isEmpty {
                 GamePuzzleResultSection(title: "Books to Review", systemImage: "books.vertical", tint: .red) {
                     ForEach(vm.booksToReview) { item in
                         Label(item.hint, systemImage: "arrow.turn.down.right")
@@ -447,22 +466,18 @@ struct BookOrderGameView: View {
         BibleCanon.canonicalOrder()
     }
 
-    private func isInPlace(_ book: String, at index: Int) -> Bool {
-        vm.correctBook(at: index) == book
-    }
-
-    private func rowBackground(for book: String, at index: Int) -> Color? {
+    private func rowBackground(for book: String) -> Color? {
         guard vm.showResult else { return nil }
-        return isInPlace(book, at: index) ? Color.green.opacity(0.15) : Color.red.opacity(0.15)
+        return vm.needsMoving(book) ? Color.red.opacity(0.15) : Color.green.opacity(0.15)
     }
 
-    private func resultIcon(for book: String, at index: Int) -> String {
-        isInPlace(book, at: index) ? "checkmark.circle.fill" : "xmark.circle.fill"
+    private func resultIcon(for book: String) -> String {
+        vm.needsMoving(book) ? "xmark.circle.fill" : "checkmark.circle.fill"
     }
 
-    private func answerGlass(for book: String, at index: Int) -> Glass {
+    private func answerGlass(for book: String) -> Glass {
         guard vm.showResult else { return .regular.interactive() }
-        let tint: Color = isInPlace(book, at: index) ? .green.opacity(0.3) : .red.opacity(0.3)
+        let tint: Color = vm.needsMoving(book) ? .red.opacity(0.3) : .green.opacity(0.3)
         return .regular.tint(tint)
     }
 
@@ -472,12 +487,12 @@ struct BookOrderGameView: View {
     }
 
     private func startGame() {
-        roundClock.start()
+        let resumedSeconds = vm.startGame()
+        roundClock.start(alreadyElapsed: Double(resumedSeconds))
         if !isAppActive {
             roundClock.pause()
         }
         elapsedSeconds = roundClock.elapsedSeconds()
-        vm.startGame()
     }
 
     private func checkOrder() {
@@ -505,11 +520,13 @@ struct BookOrderGameView: View {
 private struct BookOrderRow: View {
     let position: Int
     let book: String
-    /// The book that belongs here, once checked.
-    let correctBook: String?
+    let isChecked: Bool
+    /// True once checked if this book was out of order.
+    let needsMoving: Bool
+    /// Where the book belongs, e.g. "Goes after Micah".
+    let moveHint: String?
 
-    private var isChecked: Bool { correctBook != nil }
-    private var isInPlace: Bool { correctBook == book }
+    private var isInPlace: Bool { !needsMoving }
 
     var body: some View {
         HStack(spacing: 10) {
@@ -522,8 +539,8 @@ private struct BookOrderRow: View {
                 Text(book)
                     .font(.subheadline.weight(.medium))
 
-                if let correctBook, !isInPlace {
-                    Text("Should be \(correctBook)")
+                if isChecked, let moveHint {
+                    Text(moveHint)
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
@@ -570,7 +587,7 @@ private struct BookOrderSetupControls: View {
         Binding(
             get: { source },
             set: { option in
-                difficulty = .normal
+                // The difficulty stays as chosen; a smaller section plays it at the level it allows.
                 source = option
             }
         )

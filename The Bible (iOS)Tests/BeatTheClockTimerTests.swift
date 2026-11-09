@@ -177,18 +177,45 @@ struct BeatTheClockTimerTests {
     }
 
     @Test
-    func leavingBeforeAnsweringKeepsTheRoundGoing() async {
-        let game = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+    func leavingMidQuestionCountsAsTimeUp() async {
+        let missed = MissedGameQuestionStore(entries: [])
+        let game = await loadedGame(missedQuestions: missed)
 
         await withRestoredDefaults {
             game.difficulty = .hard
             game.startGame()
             game.tick()
+            let questionID = try? #require(game.currentQuestion?.id)
 
             game.onDisappear()
-            #expect(game.phase == .playing)
-            #expect(game.currentQuestion != nil)
-            #expect(game.remainingSeconds == BeatTheClockDifficulty.hard.roundTime - 1)
+            // The unanswered question is recorded as missed, and the game ends.
+            #expect(game.phase == .setup)
+            #expect(game.currentQuestion == nil)
+            if let questionID {
+                #expect(missed.containsMiss(game: .beatTheClock, questionID: questionID))
+            }
+        }
+    }
+
+    @Test
+    func reviewRoundsIncludeMissedQuestionsFromEveryCategory() async {
+        let setup = await loadedGame(missedQuestions: MissedGameQuestionStore(entries: []))
+        await withRestoredDefaults {
+            setup.category = .places
+            setup.startGame()
+            let placeID = try? #require(setup.currentQuestion?.id)
+            setup.resetToSetup()
+            // Saved category is People, but the missed question is a place.
+            setup.category = .people
+
+            guard let placeID else { return }
+            let review = BeatTheClockGameViewModel(
+                reviewQuestionIDs: [placeID],
+                missedQuestions: MissedGameQuestionStore(entries: [])
+            )
+            await review.loadData()
+            review.startGame()
+            #expect(review.currentQuestion?.id == placeID)
         }
     }
 
