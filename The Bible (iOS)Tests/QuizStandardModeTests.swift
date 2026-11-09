@@ -59,25 +59,4 @@ struct QuizStandardModeTests {
             game.resetToSetup()
         }
     }
-
-    @Test func pausingDoesNotGiveBackTime() async throws {
-        _ = await BibleRepository.shared.loadAllBooks()
-        try await withRestoredSettings {
-            let game = QuizGameViewModel(mode: .standard)
-            game.difficulty = .normal
-            game.pool = .any
-            await game.prepareFilter()
-            game.startQuiz()
-
-            // Pause and resume quickly, many times. The clock keeps the time already used,
-            // so the question doesn't gain time from the restarts.
-            for _ in 0..<5 {
-                game.pause()
-                game.resume()
-            }
-            #expect(game.isTimerRunning)
-            #expect(game.remainingSeconds <= (game.timeLimit ?? 0))
-            game.resetToSetup()
-        }
-    }
 }

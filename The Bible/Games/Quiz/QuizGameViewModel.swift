@@ -320,6 +320,11 @@ final class QuizGameViewModel {
     private(set) var isPaused = false
     private var wasInRedZone = false
     private var pulseTask: Task<Void, Never>?
+    /// Time spent on the current question. It's the authority for the countdown, so pausing
+    /// and resuming can't give back part of a second.
+    private var questionClock = GameActiveClock()
+    /// Seconds taken off the current question for revealing the previous verse.
+    private var contextPenaltySeconds = 0
 
     // MARK: - Derived state
 
@@ -332,8 +337,6 @@ final class QuizGameViewModel {
     var current: QuizQuestion? {
         history.indices.contains(currentIndex) ? history[currentIndex] : nil
     }
-
-    var isViewingPrevious: Bool { currentIndex < history.count - 1 }
 
     var isAnswered: Bool { current?.outcome != nil }
 
@@ -349,20 +352,20 @@ final class QuizGameViewModel {
     var isTimed: Bool { timeLimit != nil }
 
     var isTimerRunning: Bool {
-        phase == .playing && isTimed && !isTimerDisabled && !isViewingPrevious && !isAnswered && !isPaused
+        phase == .playing && isTimed && !isTimerDisabled && !isAnswered && !isPaused
     }
 
     /// Only a question with its timer running can be paused. With "Timer Off" the question
     /// stays on screen and untimed, so there's nothing to pause.
     var canPause: Bool { isTimerRunning }
 
-    var canGoNext: Bool { isViewingPrevious || isAnswered }
+    var canGoNext: Bool { isAnswered }
 
-    var isOnLastQuestion: Bool { !isViewingPrevious && history.count >= totalQuestions }
+    var isOnLastQuestion: Bool { history.count >= totalQuestions }
 
     var canRevealContext: Bool {
         guard mode == .standard, let current, current.contextText != nil, !current.contextRevealed,
-              !isAnswered, !isViewingPrevious, !isPaused else { return false }
+              !isAnswered, !isPaused else { return false }
         return !isTimed || isTimerDisabled || remainingSeconds > difficulty.contextCost
     }
 
@@ -393,6 +396,11 @@ final class QuizGameViewModel {
     }
 
     func onDisappear() {
+        // Leaving a timed question counts as running out of time, so backing out can't skip a
+        // hard verse and keep the streak. Easy has no timer, so leaving it costs nothing.
+        if phase == .playing, isTimed, current != nil, !isAnswered {
+            finishQuestion(.timedOut, selected: nil)
+        }
         // Leaving after answering begins a new game on return.
         if phase != .setup && session.answered > 0 {
             resetToSetup()
@@ -400,16 +408,24 @@ final class QuizGameViewModel {
         session.clearStreak()
     }
 
-    /// Counts down the current question. Run from a task keyed on `timerID` so each
-    /// question restarts it and the first second is a full second.
+    /// Counts down the current question. Run from a task keyed on `timerID`, which changes for
+    /// each question and each resume. The clock is the authority; the short polling interval
+    /// only keeps the display current.
     func runTimer() async {
         while !Task.isCancelled, isTimerRunning, remainingSeconds > 0 {
-            try? await Task.sleep(for: .seconds(1))
+            try? await Task.sleep(for: .milliseconds(100))
             guard !Task.isCancelled, isTimerRunning else { return }
-            remainingSeconds -= 1
-            if remainingSeconds == 0 {
-                finishQuestion(.timedOut, selected: nil)
-            }
+            updateRemainingTime()
+        }
+    }
+
+    private func updateRemainingTime() {
+        guard let timeLimit else { return }
+        let remaining = max(0, timeLimit - contextPenaltySeconds - Int(questionClock.elapsed()))
+        guard remaining != remainingSeconds else { return }
+        remainingSeconds = remaining
+        if remainingSeconds == 0 {
+            finishQuestion(.timedOut, selected: nil)
         }
     }
 
@@ -445,8 +461,11 @@ final class QuizGameViewModel {
         }
         let pool = poolBookNames
         let difficultyKey = reviewQuestionIDs.isEmpty ? difficulty.rawValue : QuizDifficulty.hard.rawValue
+        // A review round replays every missed verse. The categories can't be changed while
+        // reviewing, so filtering by them would hide verses missed under other categories.
+        let isReview = !reviewQuestionIDs.isEmpty
         return BibleData.books
-            .filter { pool.contains($0.name) }
+            .filter { isReview || pool.contains($0.name) }
             .flatMap { book in
                 book.chapters.flatMap { chapter in
                     chapter.verses.indices.compactMap { index -> VerseCandidate? in
@@ -538,26 +557,14 @@ final class QuizGameViewModel {
             source.prepare()
             reverseSource = source
             reverseBag = reviewQuestionIDs.isEmpty
-                ? RecentGameQuestionStore.shared.select(
-                    from: source.buildQuestionBag(),
-                    game: "quiz-reverse",
-                    count: Self.questionsPerGame,
-                    cooldown: Self.questionsPerGame * 7,
-                    id: \.reference
-                )
+                ? selectQuestions(from: source.buildQuestionBag(), id: \.reference)
                 : source.reviewVerses().filter { reviewQuestionIDs.contains($0.reference) }.shuffled()
             guard !reverseBag.isEmpty else { return }
             totalQuestions = min(Self.questionsPerGame, reverseBag.count)
         } else {
             questionBag = buildQuestionBag()
             if reviewQuestionIDs.isEmpty {
-                questionBag = RecentGameQuestionStore.shared.select(
-                    from: questionBag,
-                    game: "quiz-standard",
-                    count: Self.questionsPerGame,
-                    cooldown: Self.questionsPerGame * 7,
-                    id: \.reviewID
-                )
+                questionBag = selectQuestions(from: questionBag, id: \.reviewID)
             } else {
                 questionBag = questionBag.filter { reviewQuestionIDs.contains($0.reviewID) }
             }
@@ -572,6 +579,36 @@ final class QuizGameViewModel {
         appendNextQuestion()
     }
 
+    /// Where shown questions are remembered. Well-known and Favorites are small enough to go
+    /// through in full, so each mode, pool and set of categories keeps its own pass. Any verse
+    /// has thousands, so it keeps the original short cooldown per mode.
+    private var recencyGameKey: String {
+        guard pool != .any else { return "quiz-\(mode.rawValue)" }
+        let sections = QuizVerseSection.allCases
+            .filter { selectedSections.contains($0) }
+            .map(\.rawValue)
+            .joined(separator: ",")
+        return "quiz-\(mode.rawValue).\(pool.rawValue).\(sections)"
+    }
+
+    private func selectQuestions<T>(from candidates: [T], id: (T) -> String) -> [T] {
+        if pool == .any {
+            return RecentGameQuestionStore.shared.select(
+                from: candidates,
+                game: recencyGameKey,
+                count: Self.questionsPerGame,
+                cooldown: Self.questionsPerGame * 7,
+                id: id
+            )
+        }
+        return RecentGameQuestionStore.shared.selectCycling(
+            from: candidates,
+            game: recencyGameKey,
+            count: Self.questionsPerGame,
+            id: id
+        )
+    }
+
     private func appendNextQuestion() {
         guard let question = makeQuestion() else {
             totalQuestions = history.count
@@ -579,13 +616,15 @@ final class QuizGameViewModel {
             return
         }
         history.append(question)
-        RecentGameQuestionStore.shared.record(
-            [question.reviewID],
-            game: "quiz-\(mode.rawValue)"
-        )
+        RecentGameQuestionStore.shared.record([question.reviewID], game: recencyGameKey)
         currentIndex = history.count - 1
         session.startQuestion()
         remainingSeconds = timeLimit ?? 0
+        contextPenaltySeconds = 0
+        questionClock.start()
+        if isTimerDisabled {
+            questionClock.pause()
+        }
         wasInRedZone = false
         stopTimerPulse()
         isPaused = false
@@ -598,6 +637,7 @@ final class QuizGameViewModel {
     }
 
     func resetToSetup() {
+        questionClock.pause()
         phase = .setup
         isPaused = false
         history = []
@@ -610,9 +650,7 @@ final class QuizGameViewModel {
     }
 
     func showNext() {
-        if isViewingPrevious {
-            currentIndex += 1
-        } else if history.count >= totalQuestions {
+        if history.count >= totalQuestions {
             showResults()
         } else {
             appendNextQuestion()
@@ -623,7 +661,8 @@ final class QuizGameViewModel {
         guard canRevealContext else { return }
         history[currentIndex].contextRevealed = true
         if !isTimerDisabled {
-            remainingSeconds -= difficulty.contextCost
+            contextPenaltySeconds += difficulty.contextCost
+            updateRemainingTime()
         }
     }
 
@@ -632,14 +671,16 @@ final class QuizGameViewModel {
     /// Stops the clock and hides the question until `resume()`.
     func pause() {
         guard canPause else { return }
+        questionClock.pause()
         isPaused = true
         stopTimerPulse()
     }
 
-    /// Restarts the countdown with a full first second.
+    /// Carries on from the time already used.
     func resume() {
         guard isPaused else { return }
         isPaused = false
+        questionClock.resume()
         timerID += 1
     }
 
@@ -648,6 +689,9 @@ final class QuizGameViewModel {
         isTimerDisabled.toggle()
         if isTimerDisabled {
             session.noteTimerTurnedOff()
+            questionClock.pause()
+        } else {
+            questionClock.resume()
         }
         stopTimerPulse()
         timerID += 1
@@ -660,9 +704,10 @@ final class QuizGameViewModel {
 
     /// Records the answer (or timeout) on the latest question, so it can't be answered again.
     private func finishQuestion(_ outcome: QuizOutcome, selected: String?) {
-        guard phase == .playing, !isViewingPrevious, let current, current.outcome == nil else { return }
+        guard phase == .playing, let current, current.outcome == nil else { return }
         history[currentIndex].outcome = outcome
         history[currentIndex].selected = selected
+        questionClock.pause()
         stopTimerPulse()
 
         let correct = outcome == .correct

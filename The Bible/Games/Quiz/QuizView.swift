@@ -304,7 +304,7 @@ struct QuizView: View {
                 .animation(.easeInOut(duration: 0.25), value: vm.remainingSeconds)
                 .padding(.horizontal)
 
-                if vm.isTimed, !vm.isAnswered, !vm.isViewingPrevious {
+                if vm.isTimed, !vm.isAnswered {
                     GameTimerCard(
                         remainingSeconds: vm.remainingSeconds,
                         tint: vm.isTimerDisabled ? .secondary : vm.timerColor,
@@ -334,7 +334,7 @@ struct QuizView: View {
                                     .padding()
                                     .foregroundStyle(.primary)
                             }
-                            .disabled(vm.isAnswered || vm.isViewingPrevious)
+                            .disabled(vm.isAnswered)
 
                             if vm.isAnswered,
                                let verse = current.optionVerses.first(where: { $0.verseText == option }) {
@@ -376,7 +376,7 @@ struct QuizView: View {
                 }
 
                 // DEBUG: WIN button
-                if debugAutoWinEnabled, !vm.isAnswered, !vm.isViewingPrevious {
+                if debugAutoWinEnabled, !vm.isAnswered {
                     Button("WIN") {
                         vm.selectOption(current.correctAnswer)
                     }
@@ -410,7 +410,6 @@ struct QuizView: View {
                     selectedOption: current.selected,
                     correctBookName: current.correctBook,
                     isAnswered: vm.isAnswered,
-                    isViewingPrevious: vm.isViewingPrevious,
                     onSelectOption: vm.selectOption
                 )
 
@@ -418,7 +417,7 @@ struct QuizView: View {
 
                 Spacer(minLength: 0)
 
-                if debugAutoWinEnabled && !vm.isAnswered && !vm.isViewingPrevious {
+                if debugAutoWinEnabled && !vm.isAnswered {
                     Button("Win", systemImage: "checkmark.seal.fill") {
                         vm.selectOption(current.correctAnswer)
                     }

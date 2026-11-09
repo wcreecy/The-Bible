@@ -165,7 +165,6 @@ struct QuizDashboardQuestion: View {
     let selectedOption: String?
     let correctBookName: String
     let isAnswered: Bool
-    let isViewingPrevious: Bool
     let onSelectOption: (String) -> Void
 
     var body: some View {
@@ -210,7 +209,7 @@ struct QuizDashboardQuestion: View {
                         .frame(minHeight: 52)
                     }
                     .buttonStyle(.glass(optionGlass(for: option)))
-                    .disabled(isAnswered || isViewingPrevious)
+                    .disabled(isAnswered)
                 }
             }
         }
