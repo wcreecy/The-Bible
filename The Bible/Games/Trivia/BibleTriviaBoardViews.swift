@@ -20,7 +20,6 @@ struct BibleTriviaCompactBoard: View {
     let reference: String
     let selectedAnswer: String?
     let isAnswered: Bool
-    let isViewingPrevious: Bool
     let onChoose: (String) -> Void
     let onToggleTimer: () -> Void
     let canGoNext: Bool
@@ -47,7 +46,6 @@ struct BibleTriviaCompactBoard: View {
                 isTimerDisabled: isTimerDisabled,
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
-                isViewingPrevious: isViewingPrevious,
                 onChoose: onChoose,
                 onToggleTimer: onToggleTimer
             )
@@ -76,7 +74,6 @@ struct BibleTriviaDashboard: View {
     let reference: String
     let selectedAnswer: String?
     let isAnswered: Bool
-    let isViewingPrevious: Bool
     let onChoose: (String) -> Void
     let canGoNext: Bool
     let isLastQuestion: Bool
@@ -103,7 +100,6 @@ struct BibleTriviaDashboard: View {
                 isTimerDisabled: false,
                 selectedAnswer: selectedAnswer,
                 isAnswered: isAnswered,
-                isViewingPrevious: isViewingPrevious,
                 onChoose: onChoose,
                 onToggleTimer: nil
             )
@@ -135,7 +131,6 @@ struct BibleTriviaQuestionBoard: View {
     let isTimerDisabled: Bool
     let selectedAnswer: String?
     let isAnswered: Bool
-    let isViewingPrevious: Bool
     let onChoose: (String) -> Void
     let onToggleTimer: (() -> Void)?
 
@@ -183,7 +178,7 @@ struct BibleTriviaQuestionBoard: View {
                         isCorrect: isAnswered && option == correctAnswer,
                         isSelected: option == selectedAnswer,
                         isIncorrectSelection: isAnswered && option == selectedAnswer && option != correctAnswer,
-                        isDisabled: isAnswered || isViewingPrevious
+                        isDisabled: isAnswered
                     ) {
                         onChoose(option)
                     }

@@ -22,9 +22,9 @@ enum BibleTriviaDifficulty: String, CaseIterable, Identifiable, Codable {
 
     var title: LocalizedStringResource {
         switch self {
-        case .easy: "Learn"
-        case .normal: "Standard"
-        case .hard: "Challenge"
+        case .easy: "Easy"
+        case .normal: "Normal"
+        case .hard: "Hard"
         }
     }
 
@@ -84,8 +84,17 @@ final class BibleTriviaProgressStore {
 
     private var progressByDifficulty: [String: BibleTriviaDifficultyProgress]
     @ObservationIgnored private var observer: NSObjectProtocol?
+    /// False for a store made for tests, which keeps everything in memory.
+    private let persists: Bool
+
+    /// A store that keeps progress in memory only, never saving or syncing it. For tests.
+    init(inMemory progress: [String: BibleTriviaDifficultyProgress]) {
+        progressByDifficulty = progress
+        persists = false
+    }
 
     private init() {
+        persists = true
         progressByDifficulty = Self.decode(UserDefaults.standard.data(forKey: Self.storageKey))
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -152,7 +161,7 @@ final class BibleTriviaProgressStore {
     }
 
     private func save() {
-        guard let data = try? JSONEncoder().encode(progressByDifficulty) else { return }
+        guard persists, let data = try? JSONEncoder().encode(progressByDifficulty) else { return }
         UserDefaults.standard.set(data, forKey: Self.storageKey)
         iCloudSyncCoordinator.shared.pushKey(Self.storageKey)
     }

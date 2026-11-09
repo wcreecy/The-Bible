@@ -17,9 +17,19 @@ final class BibleTriviaGameModel {
     private static let bestScoreKeyPrefix = "bibleTriviaBestScore"
 
     private let reviewQuestionIDs: Set<String>
+    /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
+    private let missedQuestions: MissedGameQuestionStore
 
-    init(reviewQuestionIDs: Set<String> = []) {
+    /// The stores default to the shared ones. They're resolved here rather than as default
+    /// arguments, which would be evaluated outside the main actor.
+    init(
+        reviewQuestionIDs: Set<String> = [],
+        missedQuestions: MissedGameQuestionStore? = nil,
+        progressStore: BibleTriviaProgressStore? = nil
+    ) {
         self.reviewQuestionIDs = reviewQuestionIDs
+        self.missedQuestions = missedQuestions ?? .shared
+        self.progressStore = progressStore ?? .shared
     }
 
     private struct RoundQuestion: Identifiable {
@@ -33,12 +43,19 @@ final class BibleTriviaGameModel {
     }
 
     var phase: Phase = .loading
-    var difficulty: BibleTriviaDifficulty = .normal
+    /// Saved like the other games' difficulty, so Trivia opens on the last one played.
+    var difficulty: BibleTriviaDifficulty = BibleTriviaDifficulty(
+        rawValue: UserDefaults.standard.string(forKey: AppStorageKey.triviaDifficulty) ?? ""
+    ) ?? .normal {
+        didSet {
+            UserDefaults.standard.set(difficulty.rawValue, forKey: AppStorageKey.triviaDifficulty)
+            session.syncSavedBest(from: persistentStreak)
+        }
+    }
     private(set) var questions: [BibleTriviaQuestion] = []
     private var round: [RoundQuestion] = []
     private var carryoverQuestionIDs: Set<Int> = []
     private(set) var currentIndex = 0
-    private var furthestPresentedIndex = 0
     /// Score and streaks; see `GameScore` for the rules. Trivia keeps its own best score below.
     private(set) var session = GameScore()
     private(set) var bestScore = 0
@@ -47,8 +64,10 @@ final class BibleTriviaGameModel {
     /// True while the question is paused: the timer stops and the question is hidden.
     private(set) var isPaused = false
     @ObservationIgnored private var timerTask: Task<Void, Never>?
+    /// Time spent on the current question; the countdown is worked out from it.
+    @ObservationIgnored private var questionClock = GameActiveClock()
 
-    let progressStore = BibleTriviaProgressStore.shared
+    let progressStore: BibleTriviaProgressStore
 
     private var currentRoundQuestion: RoundQuestion? {
         round.indices.contains(currentIndex) ? round[currentIndex] : nil
@@ -98,12 +117,8 @@ final class BibleTriviaGameModel {
         currentIndex == round.count - 1
     }
 
-    var isViewingPrevious: Bool {
-        currentIndex < furthestPresentedIndex
-    }
-
     var canGoNext: Bool {
-        isViewingPrevious || isAnswered
+        isAnswered
     }
 
     private var persistentStreak: PersistentGameStreak {
@@ -148,7 +163,6 @@ final class BibleTriviaGameModel {
         }
 
         currentIndex = 0
-        furthestPresentedIndex = 0
         // The session streak carries from one game to the next.
         session.beginGame(savedStreak: persistentStreak)
         // The saved best score is still kept (and synced) but no longer shown on the summary.
@@ -180,21 +194,18 @@ final class BibleTriviaGameModel {
     }
 
     func choose(_ answer: String) {
-        guard !isPaused, !isViewingPrevious, !isAnswered, options.contains(answer), let question = currentQuestion else { return }
+        guard !isPaused, !isAnswered, options.contains(answer), let question = currentQuestion else { return }
         finishAnswer(answer, question: question)
     }
 
     func advance() {
         guard canGoNext else { return }
-        if isViewingPrevious {
-            currentIndex += 1
-        } else if isLastQuestion {
+        if isLastQuestion {
             session.endGame()
             savePersonalBest()
             phase = .results
         } else {
             currentIndex += 1
-            furthestPresentedIndex = currentIndex
             prepareCurrentQuestion()
         }
     }
@@ -202,15 +213,20 @@ final class BibleTriviaGameModel {
     /// Back to the start screen. The streak is kept so the next game can continue it.
     func returnToSetup() {
         timerTask?.cancel()
+        questionClock.pause()
         isPaused = false
         phase = .setup
         round = []
         currentIndex = 0
-        furthestPresentedIndex = 0
         session.clearGame()
     }
 
     func onDisappear() {
+        // Every Trivia level is timed, so leaving mid-question counts as running out of time.
+        // Backing out can't be used to skip a hard question and keep the streak.
+        if phase == .playing, !isAnswered, let question = currentQuestion {
+            finishAnswer(nil, question: question)
+        }
         // Leaving after answering begins a new game on return.
         if (phase == .playing || phase == .results) && session.answered > 0 {
             returnToSetup()
@@ -219,10 +235,14 @@ final class BibleTriviaGameModel {
     }
 
     private func prepareCurrentQuestion() {
-        guard !isViewingPrevious, !isAnswered else { return }
+        guard !isAnswered else { return }
         remainingSeconds = difficulty.timerSeconds
         session.startQuestion()
         isPaused = false
+        questionClock.start()
+        if isTimerDisabled {
+            questionClock.pause()
+        }
         startTimer()
     }
 
@@ -231,37 +251,44 @@ final class BibleTriviaGameModel {
     /// Only a question with its timer running can be paused. With "Timer Off" the question
     /// stays on screen and untimed, so there's nothing to pause.
     var canPause: Bool {
-        phase == .playing && !isTimerDisabled && !isViewingPrevious && !isAnswered && !isPaused
+        phase == .playing && !isTimerDisabled && !isAnswered && !isPaused
     }
 
     /// Stops the clock and hides the question until `resume()`.
     func pause() {
         guard canPause else { return }
         isPaused = true
+        questionClock.pause()
         timerTask?.cancel()
     }
 
-    /// Restarts the countdown with a full first second.
+    /// Carries on from the time already used.
     func resume() {
         guard isPaused else { return }
         isPaused = false
+        questionClock.resume()
         startTimer()
     }
 
+    /// Updates the countdown from the question clock. The clock is the authority, so pausing
+    /// and resuming can't give back part of a second; the short interval only keeps the display current.
     private func startTimer() {
         timerTask?.cancel()
         guard !isTimerDisabled, !isPaused else { return }
         timerTask = Task { [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(1))
-                guard let self, !self.isViewingPrevious, !self.isAnswered else { return }
-                guard self.remainingSeconds > 1 else {
+                try? await Task.sleep(for: .milliseconds(100))
+                guard let self, !Task.isCancelled, !self.isAnswered else { return }
+                let remaining = max(0, self.difficulty.timerSeconds - Int(self.questionClock.elapsed()))
+                if remaining != self.remainingSeconds {
+                    self.remainingSeconds = remaining
+                }
+                if remaining == 0 {
                     if let question = self.currentQuestion {
                         self.finishAnswer(nil, question: question)
                     }
                     return
                 }
-                self.remainingSeconds -= 1
             }
         }
     }
@@ -270,8 +297,11 @@ final class BibleTriviaGameModel {
         isTimerDisabled.toggle()
         if isTimerDisabled {
             session.noteTimerTurnedOff()
+            questionClock.pause()
+        } else if !isAnswered {
+            questionClock.resume()
         }
-        if !isTimerDisabled, !isViewingPrevious, !isAnswered {
+        if !isTimerDisabled, !isAnswered {
             startTimer()
         } else {
             timerTask?.cancel()
@@ -279,8 +309,9 @@ final class BibleTriviaGameModel {
     }
 
     private func finishAnswer(_ answer: String?, question: BibleTriviaQuestion) {
-        guard !isViewingPrevious, !isAnswered else { return }
+        guard !isAnswered else { return }
         timerTask?.cancel()
+        questionClock.pause()
         round[currentIndex].selectedAnswer = answer
         round[currentIndex].timedOut = answer == nil
         let isCorrect = answer == question.correctAnswer
@@ -315,12 +346,12 @@ final class BibleTriviaGameModel {
             )
         }
         if isCorrect, !reviewQuestionIDs.isEmpty {
-            MissedGameQuestionStore.shared.resolveReviewQuestion(
+            missedQuestions.resolveReviewQuestion(
                 game: .bibleTrivia,
                 questionID: String(question.id)
             )
         } else if !isCorrect {
-            MissedGameQuestionStore.shared.record(
+            missedQuestions.record(
                 game: .bibleTrivia,
                 bookNames: scriptureReference.map { [$0.bookName] } ?? [],
                 chapterNumber: scriptureReference?.chapter,

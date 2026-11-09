@@ -225,10 +225,19 @@ final class QuizGameViewModel {
 
     /// Verses to replay from the missed-questions list; empty for a normal game.
     let reviewQuestionIDs: Set<String>
+    /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
+    private let missedQuestions: MissedGameQuestionStore
 
-    init(reviewQuestionIDs: Set<String> = [], mode: QuizMode = .standard) {
+    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
+    /// default argument, which would be evaluated outside the main actor.
+    init(
+        reviewQuestionIDs: Set<String> = [],
+        mode: QuizMode = .standard,
+        missedQuestions: MissedGameQuestionStore? = nil
+    ) {
         self.reviewQuestionIDs = reviewQuestionIDs
         self.mode = mode
+        self.missedQuestions = missedQuestions ?? .shared
     }
 
     var mode: QuizMode
@@ -733,12 +742,12 @@ final class QuizGameViewModel {
         )
         GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
         if correct, !reviewQuestionIDs.isEmpty {
-            MissedGameQuestionStore.shared.resolveReviewQuestion(
+            missedQuestions.resolveReviewQuestion(
                 game: mode == .reverse ? .quizReverse : .bibleQuiz,
                 questionID: current.reviewID
             )
         } else if !correct {
-            MissedGameQuestionStore.shared.record(
+            missedQuestions.record(
                 game: mode == .reverse ? .quizReverse : .bibleQuiz,
                 bookNames: [current.correctBook],
                 chapterNumber: current.chapter,

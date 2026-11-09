@@ -49,7 +49,6 @@ struct BibleTriviaGameView: View {
                     selectedAnswer: model.selectedAnswer,
                     isAnswered: model.isAnswered,
                     timedOut: model.timedOut,
-                    isViewingPrevious: model.isViewingPrevious,
                     canGoNext: model.canGoNext,
                     isLastQuestion: model.isLastQuestion,
                     onChoose: model.choose,
@@ -178,7 +177,6 @@ private struct BibleTriviaPlayScreen: View {
     let selectedAnswer: String?
     let isAnswered: Bool
     let timedOut: Bool
-    let isViewingPrevious: Bool
     let canGoNext: Bool
     let isLastQuestion: Bool
     let onChoose: (String) -> Void
@@ -227,7 +225,6 @@ private struct BibleTriviaPlayScreen: View {
                                 reference: question.reference,
                                 selectedAnswer: selectedAnswer,
                                 isAnswered: isAnswered,
-                                isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
                                 canGoNext: canGoNext,
                                 isLastQuestion: isLastQuestion,
@@ -251,7 +248,6 @@ private struct BibleTriviaPlayScreen: View {
                                 reference: question.reference,
                                 selectedAnswer: selectedAnswer,
                                 isAnswered: isAnswered,
-                                isViewingPrevious: isViewingPrevious,
                                 onChoose: onChoose,
                                 onToggleTimer: onToggleTimer,
                                 canGoNext: canGoNext,

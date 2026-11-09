@@ -95,6 +95,7 @@ enum AppStorageKey {
     static let bookOrderBookLastSeen = "bookOrderBookLastSeen"
     static let bookOrderSavedPuzzles = "bookOrderSavedPuzzles"
     static let quizDifficulty = "quizDifficulty"
+    static let triviaDifficulty = "triviaDifficulty"
     static let quizSections = "quizSections"
     static let quizScope = "quizScope"
     static let beatTheClockDifficulty = "beatTheClockDifficulty"

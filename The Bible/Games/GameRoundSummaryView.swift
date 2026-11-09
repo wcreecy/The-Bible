@@ -562,7 +562,7 @@ private struct GameRoundSummaryCard<Content: View>: View {
                     isNewBestStreak: false
                 ),
                 tint: .cyan,
-                poolProgress: .init(title: "Standard", seen: 142, total: 600),
+                poolProgress: .init(title: "Normal", seen: 142, total: 600),
                 onPlayAgain: {},
                 onChangeSettings: {}
             )

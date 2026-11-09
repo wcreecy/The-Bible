@@ -15,6 +15,7 @@ struct DeveloperSettingsResetTests {
         (AppStorageKey.hangmanDifficulty, { HangmanDifficulty(rawValue: $0) != nil }),
         (AppStorageKey.hangmanTheme, { HangmanTheme(rawValue: $0) != nil }),
         (AppStorageKey.quizDifficulty, { QuizDifficulty(rawValue: $0) != nil }),
+        (AppStorageKey.triviaDifficulty, { BibleTriviaDifficulty(rawValue: $0) != nil }),
         ("scrambleDifficulty", { ScrambleGameView.Difficulty(rawValue: $0) != nil })
     ]
 
@@ -55,6 +56,7 @@ struct DeveloperSettingsResetTests {
             #expect(reset[AppStorageKey.hangmanDifficulty] as? String == hangman.difficulty.rawValue)
             #expect(reset[AppStorageKey.hangmanTheme] as? String == hangman.theme.rawValue)
             #expect(reset[AppStorageKey.quizDifficulty] as? String == QuizGameViewModel().difficulty.rawValue)
+            #expect(reset[AppStorageKey.triviaDifficulty] as? String == BibleTriviaGameModel().difficulty.rawValue)
         }
     }
 }
