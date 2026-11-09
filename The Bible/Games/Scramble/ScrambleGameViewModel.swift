@@ -207,7 +207,7 @@ final class ScrambleGameViewModel {
     }
 
     var hintBadgeText: String? {
-        guard difficulty != .easy, maxHintLevel > 0 else { return nil }
+        guard maxHintLevel > 0 else { return nil }
         return "\(hintLevel)/\(maxHintLevel)"
     }
 
