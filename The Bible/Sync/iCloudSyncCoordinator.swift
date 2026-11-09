@@ -31,6 +31,8 @@ final class iCloudSyncCoordinator {
     private(set) var lastSynchronizeSucceeded: Bool?
     private(set) var approximateCloudBytes: Int = 0
     private(set) var cloudKeyCount: Int = 0
+    private(set) var lastReconciliationResult: String?
+    private(set) var lastReconciliationDate: Date?
     private var initialSyncTask: Task<Void, Never>?
     private var metricsTask: Task<Void, Never>?
     private var hasCompletedInitialDownload = false
@@ -103,6 +105,11 @@ final class iCloudSyncCoordinator {
 
     /// Whether the initial iCloud download has finished and local values may be published.
     var isInitialDownloadComplete: Bool { hasCompletedInitialDownload }
+
+    func recordReconciliation(result: String, at date: Date = Date()) {
+        lastReconciliationResult = result
+        lastReconciliationDate = date
+    }
 
     /// Starts sync once per launch (ContentView calls it). Later calls just refresh.
     func start() {
@@ -182,6 +189,9 @@ final class iCloudSyncCoordinator {
 
         // Join (or migrate into) the per-device game ledger now that cloud values are known.
         GameStatsLedger.shared.reconcile()
+        if MissedGameQuestionStore.shared.takePendingMigrationPublish() {
+            pushKey(MissedGameQuestionStore.storageKey)
+        }
         // Fold reading history older than ~2 years into its archive, after merging, so
         // the archive is built from every device's days.
         BibleStatsStore.shared.compactReadingHistoryIfNeeded()

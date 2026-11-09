@@ -147,5 +147,13 @@ extension iCloudSyncCoordinator {
         if isInitialDownloadComplete {
             GameStatsLedger.shared.reconcile()
         }
+        if appliedBibleReset || appliedGameReset {
+            recordReconciliation(result: "Applied a remote reset")
+        } else if touchedAny {
+            recordReconciliation(result: "Applied remote changes")
+        } else {
+            recordReconciliation(result: "Up to date")
+        }
+        AppDataChanges.shared.syncStatusChanged()
     }
 }

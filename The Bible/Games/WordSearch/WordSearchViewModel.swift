@@ -112,7 +112,7 @@ final class WordSearchViewModel {
     var favVerseNumber: Int = 0
 
     // Dependencies
-    private var modelContext: ModelContext
+    private var modelContext: ModelContext?
     private var favoritesFetch: () -> [Favorite]
     @ObservationIgnored private var clockTask: Task<Void, Never>?
     private var hasRecordedCurrentRound = false
@@ -128,7 +128,7 @@ final class WordSearchViewModel {
         WordSearchEngine(size: size, difficulty: difficulty)
     }
 
-    init(modelContext: ModelContext, favoritesFetch: @escaping () -> [Favorite]) {
+    init(modelContext: ModelContext? = nil, favoritesFetch: @escaping () -> [Favorite] = { [] }) {
         self.modelContext = modelContext
         self.favoritesFetch = favoritesFetch
 
@@ -628,7 +628,7 @@ final class WordSearchViewModel {
 
     func toggleFavoriteCurrent() {
         guard !favBookName.isEmpty, favChapterNumber > 0, favVerseNumber > 0 else { return }
-        let context = modelContext
+        guard let context = modelContext else { return }
         let (book, chapter, verse, text) = (favBookName, favChapterNumber, favVerseNumber, verseText)
         let favorites = favoritesFetch()
         ModelContextPersistence.perform(

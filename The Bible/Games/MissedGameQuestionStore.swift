@@ -4,7 +4,7 @@ import Foundation
 /// more specific without retaining the full question or answer text.
 @MainActor
 final class MissedGameQuestionStore {
-    static let shared = MissedGameQuestionStore()
+    static let shared = MissedGameQuestionStore(defaults: .standard)
 
     struct Entry: Codable, Identifiable, Hashable {
         enum Game: String, Codable, CaseIterable {
@@ -92,14 +92,18 @@ final class MissedGameQuestionStore {
     private var tombstones: [Tombstone]
     /// False for stores built from fixed entries (tests, previews), which never touch disk or iCloud.
     private let persists: Bool
+    private let defaults: UserDefaults
+    /// Consumed by the sync coordinator after startup. Initializing this store never enters sync.
+    private(set) var needsMigrationPublish = false
 
     /// Bump when the trivia question set is replaced and its IDs no longer refer to the same questions.
     private static let triviaQuestionSetVersion = 3
     private static let triviaQuestionSetVersionKey = "missedGameQuestionHistory.triviaQuestionSetVersion"
 
-    private init() {
-        entries = Self.load()
-        tombstones = Self.loadTombstones()
+    init(defaults: UserDefaults) {
+        self.defaults = defaults
+        entries = Self.load(from: defaults)
+        tombstones = Self.loadTombstones(from: defaults)
         persists = true
         prune()
         migrateTriviaQuestionSetIfNeeded()
@@ -108,6 +112,7 @@ final class MissedGameQuestionStore {
     init(entries: [Entry], tombstones: [Tombstone] = []) {
         self.entries = entries
         self.tombstones = tombstones
+        defaults = .standard
         persists = false
         prune()
     }
@@ -178,6 +183,12 @@ final class MissedGameQuestionStore {
     }
 
     var isEmpty: Bool { entries.isEmpty && tombstones.isEmpty }
+
+    /// Returns whether startup must publish a migration, clearing the request atomically.
+    func takePendingMigrationPublish() -> Bool {
+        defer { needsMigrationPublish = false }
+        return needsMigrationPublish
+    }
 
     /// Erases the whole history, including retirements, as part of a game data reset.
     /// Nothing is published; the reset itself tells other devices to clear theirs.
@@ -311,7 +322,6 @@ final class MissedGameQuestionStore {
     /// Misses recorded against an older trivia question set keep their book and chapter for study
     /// recommendations, but lose their question ID so review rounds can't replay a different question.
     private func migrateTriviaQuestionSetIfNeeded() {
-        let defaults = UserDefaults.standard
         guard defaults.integer(forKey: Self.triviaQuestionSetVersionKey) < Self.triviaQuestionSetVersion else { return }
 
         entries = entries.map { entry in
@@ -326,16 +336,10 @@ final class MissedGameQuestionStore {
                 date: entry.date
             )
         }
-        // Publishing here would make iCloud reconcile the history while `shared` is still
-        // initializing, which re-enters this singleton. Persist first and publish on the
-        // next main-actor turn after initialization has completed.
+        // Never enter the sync coordinator from initialization. It consumes this flag after
+        // the initial cloud download, when both singletons are fully initialized.
         save(publishing: false)
-        Task { @MainActor in
-            // A main-actor task may begin immediately when this initializer already runs there.
-            // Suspend first so `shared` has finished its one-time initialization before sync reads it.
-            await Task.yield()
-            iCloudSyncCoordinator.shared.pushKey(Self.storageKey)
-        }
+        needsMigrationPublish = true
         defaults.set(Self.triviaQuestionSetVersion, forKey: Self.triviaQuestionSetVersionKey)
     }
 
@@ -344,17 +348,17 @@ final class MissedGameQuestionStore {
         let chapterNumber: Int
     }
 
-    private static func load() -> [Entry] {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let entries = PersistedDecoding.decode([Entry].self, from: data, key: storageKey, keepingUnreadableIn: .standard) else {
+    private static func load(from defaults: UserDefaults) -> [Entry] {
+        guard let data = defaults.data(forKey: storageKey),
+              let entries = PersistedDecoding.decode([Entry].self, from: data, key: storageKey, keepingUnreadableIn: defaults) else {
             return []
         }
         return entries
     }
 
-    private static func loadTombstones() -> [Tombstone] {
-        guard let data = UserDefaults.standard.data(forKey: tombstoneStorageKey),
-              let tombstones = PersistedDecoding.decode([Tombstone].self, from: data, key: tombstoneStorageKey, keepingUnreadableIn: .standard) else {
+    private static func loadTombstones(from defaults: UserDefaults) -> [Tombstone] {
+        guard let data = defaults.data(forKey: tombstoneStorageKey),
+              let tombstones = PersistedDecoding.decode([Tombstone].self, from: data, key: tombstoneStorageKey, keepingUnreadableIn: defaults) else {
             return []
         }
         return tombstones
@@ -364,10 +368,10 @@ final class MissedGameQuestionStore {
     private func save(publishing: Bool = true) {
         guard persists else { return }
         if let data = try? JSONEncoder().encode(entries) {
-            UserDefaults.standard.set(data, forKey: Self.storageKey)
+            defaults.set(data, forKey: Self.storageKey)
         }
         if let data = try? JSONEncoder().encode(tombstones) {
-            UserDefaults.standard.set(data, forKey: Self.tombstoneStorageKey)
+            defaults.set(data, forKey: Self.tombstoneStorageKey)
         }
         if publishing {
             iCloudSyncCoordinator.shared.pushKey(Self.storageKey)

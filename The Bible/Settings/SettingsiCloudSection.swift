@@ -12,6 +12,11 @@ struct SettingsiCloudSection: View {
     @State private var statsSyncError: String?
     @State private var statsCloudBytes: Int = 0
     @State private var statsCloudKeyCount: Int = 0
+    @State private var lastReconciliationResult: String?
+    @State private var lastReconciliationDate: Date?
+    @State private var installationID = ""
+    @State private var deviceLedgerCount = 0
+    @State private var localContributionCount = 0
 
     /// Explains a fallback store, or nil when notes, favorites, and bookmarks sync normally.
     private var storeFallbackWarning: String? {
@@ -95,6 +100,31 @@ struct SettingsiCloudSection: View {
             .accessibilityIdentifier("icloudLastSyncedAt")
 
             DisclosureGroup("Advanced Sync Details") {
+                LabeledContent("Last Reconciliation") {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(lastReconciliationResult ?? "Not yet run")
+                        if let lastReconciliationDate {
+                            Text(lastReconciliationDate, format: .dateTime.month(.abbreviated).day().hour().minute())
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundStyle(.secondary)
+                }
+
+                LabeledContent("Installation") {
+                    Text(installationID.isEmpty ? "Unavailable" : installationID)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+                .accessibilityIdentifier("statsSyncInstallationID")
+
+                LabeledContent("Game Contributions") {
+                    Text("\(localContributionCount) local · \(deviceLedgerCount) devices")
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityIdentifier("statsSyncContributionCounts")
+
                 HStack {
                     Text("Stats Cloud Usage")
                     Spacer()
@@ -196,5 +226,11 @@ struct SettingsiCloudSection: View {
         statsSyncError = coordinator.lastErrorMessage
         statsCloudBytes = coordinator.approximateCloudBytes
         statsCloudKeyCount = coordinator.cloudKeyCount
+        lastReconciliationResult = coordinator.lastReconciliationResult
+        lastReconciliationDate = coordinator.lastReconciliationDate
+        let diagnostics = GameStatsLedger.shared.diagnostics
+        installationID = diagnostics.installationID
+        deviceLedgerCount = diagnostics.deviceLedgerCount
+        localContributionCount = diagnostics.localContributionCount
     }
 }

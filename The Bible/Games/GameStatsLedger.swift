@@ -35,6 +35,12 @@ final class GameStatsLedger {
         var contributions: Section
     }
 
+    struct Diagnostics: Equatable {
+        let installationID: String
+        let deviceLedgerCount: Int
+        let localContributionCount: Int
+    }
+
     private enum Kind {
         case sum
         case max
@@ -163,6 +169,34 @@ final class GameStatsLedger {
         if changed {
             AppDataChanges.shared.gameStatsChanged()
         }
+    }
+
+    var diagnostics: Diagnostics {
+        let installationID = LedgerInstallationIdentity.current
+        let epoch = defaults.double(forKey: lastSeenEpochKey)
+        let payload = loadOrCreateOwnPayload(epoch: epoch)
+        let contributionCount = Self.contributionCount(in: payload.contributions)
+        let ledgerCount = kvs.dictionaryRepresentation.keys.count {
+            $0.hasPrefix(Self.kvsKeyPrefix)
+        }
+        return Diagnostics(
+            installationID: installationID,
+            deviceLedgerCount: ledgerCount,
+            localContributionCount: contributionCount
+        )
+    }
+
+    private static func contributionCount(in section: Section) -> Int {
+        var total = section.counters.values.reduce(0, +)
+        for map in section.maps.values {
+            total += map.values.reduce(0, +)
+        }
+        for nestedMap in section.nestedMaps.values {
+            for map in nestedMap.values {
+                total += map.values.reduce(0, +)
+            }
+        }
+        return total
     }
 
     /// Starts an empty ledger for a new reset epoch and removes older ledgers from iCloud.

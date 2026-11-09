@@ -133,6 +133,24 @@ struct SearchAndBackgroundPerformanceTests {
     }
 
     @Test
+    func missingBackgroundPhotoFallsBackAndRepairsTheAffectedTab() throws {
+        let suiteName = "MissingBackgroundPhotoTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let missingFileName = "missing-\(UUID().uuidString).jpg"
+        let tab = AppTab.home
+
+        defaults.set(AppBackgroundMode.photo.rawValue, forKey: AppBackgroundStorage.modeKey(for: tab))
+        defaults.set(missingFileName, forKey: AppBackgroundStorage.photoKey(for: tab))
+
+        #expect(AppBackgroundStorage.image(named: missingFileName) == nil)
+        #expect(AppBackgroundStorage.repairMissingPhotoSelection(for: tab, defaults: defaults))
+        #expect(defaults.string(forKey: AppBackgroundStorage.modeKey(for: tab)) == AppBackgroundMode.defaultStyle.rawValue)
+        #expect(defaults.string(forKey: AppBackgroundStorage.photoKey(for: tab)) == nil)
+        #expect(!AppBackgroundStorage.repairMissingPhotoSelection(for: tab, defaults: defaults))
+    }
+
+    @Test
     func removeUnusedPhotosKeepsPhotosAnyPageStillUses() throws {
         // Uses the app's real settings, so put back whatever was there.
         let defaults = UserDefaults.standard

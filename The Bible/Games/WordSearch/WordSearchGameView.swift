@@ -5,28 +5,11 @@ struct WordSearchGameView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query private var favorites: [Favorite]
-    @State private var vm: WordSearchViewModel
+    @State private var vm = WordSearchViewModel()
     @State private var didBindVM = false
     @State private var confirmReveal = false
     /// Width available to the phone layout, used to size the grid.
     @State private var phoneContentWidth: CGFloat = 0
-
-    // Reuse a single in-memory placeholder container across instances to avoid store churn.
-    private static let placeholderContainer: ModelContainer = {
-        try! ModelContainer(
-            for: Favorite.self,
-            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-        )
-    }()
-
-    init() {
-        _vm = State(
-            initialValue: WordSearchViewModel(
-                modelContext: ModelContext(Self.placeholderContainer),
-                favoritesFetch: { [] }
-            )
-        )
-    }
 
     private var isPad: Bool { horizontalSizeClass == .regular }
     private static let scrollTopID = "wordSearchTop"

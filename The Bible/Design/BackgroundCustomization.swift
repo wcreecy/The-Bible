@@ -98,6 +98,9 @@ enum AppBackgroundStorage {
 
         guard let directory = try? backgroundsDirectory() else { return nil }
         let url = directory.appendingPathComponent(fileName)
+        // ImageIO logs an error when asked to open a missing URL. Check first because a
+        // restored preference can outlive the device-local photo it references.
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
               let cgImage = downsampledImage(from: source) else {
             return nil
@@ -106,6 +109,29 @@ enum AppBackgroundStorage {
         let image = UIImage(cgImage: cgImage)
         imageCache.setObject(image, forKey: key, cost: cgImage.bytesPerRow * cgImage.height)
         return image
+    }
+
+    /// Repairs a photo preference whose device-local file was removed or not restored.
+    @discardableResult
+    static func repairMissingPhotoSelection(
+        for tab: AppTab,
+        defaults: UserDefaults = .standard
+    ) -> Bool {
+        let modeKey = modeKey(for: tab)
+        let photoKey = photoKey(for: tab)
+        guard defaults.string(forKey: modeKey) == AppBackgroundMode.photo.rawValue,
+              let fileName = defaults.string(forKey: photoKey),
+              !fileName.isEmpty,
+              let directory = try? backgroundsDirectory(),
+              !FileManager.default.fileExists(atPath: directory.appendingPathComponent(fileName).path) else {
+            return false
+        }
+
+        imageCache.removeObject(forKey: fileName as NSString)
+        luminanceCache.removeObject(forKey: fileName as NSString)
+        defaults.removeObject(forKey: photoKey)
+        defaults.set(AppBackgroundMode.defaultStyle.rawValue, forKey: modeKey)
+        return true
     }
 
     /// The photo's average brightness, worked out once per photo.
@@ -162,6 +188,8 @@ struct AppBackgroundView: View {
     @AppStorage private var colorHex: String
     @AppStorage private var photoFileName: String
 
+    private var backgroundSelectionID: String { "\(modeRaw)|\(photoFileName)" }
+
     init(
         tab: AppTab,
         defaultImageName: String? = nil,
@@ -208,6 +236,10 @@ struct AppBackgroundView: View {
         .ignoresSafeArea(edges: extendsIntoSafeArea ? .all : [])
         .accessibilityHidden(true)
         .allowsHitTesting(false)
+        .task(id: backgroundSelectionID) {
+            guard modeRaw == AppBackgroundMode.photo.rawValue else { return }
+            AppBackgroundStorage.repairMissingPhotoSelection(for: tab)
+        }
     }
 }
 
