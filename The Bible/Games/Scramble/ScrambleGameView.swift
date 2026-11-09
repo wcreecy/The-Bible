@@ -155,10 +155,7 @@ struct ScrambleGameView: View {
             vm.session.syncSavedBest(from: vm.persistentStreak)
         }
         .onDisappear {
-            if vm.phase != .setup {
-                vm.resetToSetup()
-            }
-            vm.session.clearStreak()
+            vm.onDisappear()
         }
     }
 
@@ -292,7 +289,14 @@ struct ScrambleGameView: View {
                     )
                 }
 
-                if let answerFeedback = vm.answerFeedback {
+                if let alternate = vm.acceptedAlternate, vm.answerFeedback == .correct {
+                    // The reference above is still the puzzle's own word.
+                    Label("\(alternate) works too! The word was \(currentWord.answer).", systemImage: "checkmark.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.green)
+                        .multilineTextAlignment(.center)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                } else if let answerFeedback = vm.answerFeedback {
                     Label(answerFeedback.message, systemImage: answerFeedback.systemImage)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(answerFeedback.tint)

@@ -99,18 +99,6 @@ final class WordleGameViewModel {
 
     let practiceProgressKey = AppStorageKey.wordlePracticeProgress
 
-    #if canImport(UIKit)
-    static var spellCheckLanguage: String {
-        let languages = UITextChecker.availableLanguages
-
-        return languages.first {
-            $0.replacingOccurrences(of: "-", with: "_")
-                .caseInsensitiveCompare("en_US") == .orderedSame
-        } ?? languages.first {
-            $0.lowercased().hasPrefix("en")
-        } ?? "en_US"
-    }
-    #endif
 
     // MARK: - Answer verse
     struct VerseRefInfo: Sendable {
@@ -601,18 +589,6 @@ final class WordleGameViewModel {
 
     // MARK: - Word validity (system dictionary)
     func isValidWord(_ uppercasedWord: String) -> Bool {
-        let lower = uppercasedWord.lowercased()
-        guard lower.count == 5, lower.unicodeScalars.allSatisfy({ CharacterSet.lowercaseLetters.contains($0) }) else {
-            return false
-        }
-        #if canImport(UIKit)
-        let lang = Self.spellCheckLanguage
-        let checker = UITextChecker()
-        let range = NSRange(location: 0, length: lower.utf16.count)
-        let misspelled = checker.rangeOfMisspelledWord(in: lower, range: range, startingAt: 0, wrap: false, language: lang)
-        return misspelled.location == NSNotFound
-        #else
-        return true
-        #endif
+        uppercasedWord.count == 5 && EnglishDictionary.contains(uppercasedWord)
     }
 }

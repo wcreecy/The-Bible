@@ -14,6 +14,10 @@ final class ManualSleeper {
     private var now: UInt64 = 0
     private var sleepers: [Sleeper] = []
 
+    /// The clock's time as a date, for code that measures elapsed time rather than sleeping.
+    /// It starts at a fixed date and moves only with `advance(by:)`.
+    var date: Date { Date(timeIntervalSinceReferenceDate: Double(now) / 1_000_000_000) }
+
     func sleep(_ nanoseconds: UInt64) async throws {
         try Task.checkCancellation()
         let id = UUID()

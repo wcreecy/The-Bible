@@ -106,7 +106,11 @@ final class ScrambleGameViewModel {
     }
 
     var phase: Phase = .setup
-    var wordBank: [ScrambleWord] = []
+    var wordBank: [ScrambleWord] = [] {
+        didSet { bankAnswers = Set(wordBank.map(\.answer)) }
+    }
+    /// Every answer in the list, so another list word spelled from the same letters counts.
+    @ObservationIgnored private var bankAnswers: Set<String> = []
     /// Start waits for the word list, so a tap never has to decode it on the main thread.
     var wordBankStatus: WordBankStatus = .loading
 
@@ -131,20 +135,49 @@ final class ScrambleGameViewModel {
     var timerID = UUID()
     var hintLevel = 0
     private(set) var hintPositions: Set<Int> = []
-    var isTimerDisabled = false
+    var isTimerDisabled = false {
+        didSet {
+            guard isTimerDisabled != oldValue else { return }
+            if isTimerDisabled { wordClock.pause(at: now()) } else if !isPaused { wordClock.resume(at: now()) }
+        }
+    }
     /// True while the word is paused: the timer stops and the letters are hidden.
-    var isPaused = false
+    var isPaused = false {
+        didSet {
+            guard isPaused != oldValue else { return }
+            if isPaused { wordClock.pause(at: now()) } else if !isTimerDisabled { wordClock.resume(at: now()) }
+        }
+    }
+    /// Another real word the player spelled from the letters, accepted in place of the puzzle's word.
+    private(set) var acceptedAlternate: String?
     private let reviewQuestionIDs: Set<String>
+    /// Where missed words are recorded; tests pass a store that never touches disk or iCloud.
+    private let missedQuestions: MissedGameQuestionStore
 
     /// Waits between timer ticks; tests pass a manual clock.
     @ObservationIgnored private let sleep: (Duration) async throws -> Void
+    /// The current time for the word clock; tests pass the manual clock's time.
+    @ObservationIgnored private let now: () -> Date
+    /// Whether a string is a real English word; tests can pass a fixed list.
+    @ObservationIgnored private let isEnglishWord: (String) -> Bool
+    /// Time spent on the current word. The countdown is worked out from it, so pausing and
+    /// resuming can't give back part of a second.
+    @ObservationIgnored private var wordClock = GameActiveClock()
 
+    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
+    /// default argument, which would be evaluated outside the main actor.
     init(
         reviewQuestionIDs: Set<String> = [],
-        sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) }
+        missedQuestions: MissedGameQuestionStore? = nil,
+        sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
+        now: @escaping () -> Date = Date.init,
+        isEnglishWord: @escaping (String) -> Bool = EnglishDictionary.contains
     ) {
         self.reviewQuestionIDs = reviewQuestionIDs
+        self.missedQuestions = missedQuestions ?? .shared
         self.sleep = sleep
+        self.now = now
+        self.isEnglishWord = isEnglishWord
     }
 
     var selectedAnswer: String {
@@ -235,6 +268,9 @@ final class ScrambleGameViewModel {
         return hints
     }
 
+    /// Each difficulty has its own word list, so each keeps its own pass through it.
+    private var recencyGameKey: String { "scramble.\(difficulty.rawValue)" }
+
     // MARK: - Persistent streak (per difficulty)
     var persistentStreak: PersistentGameStreak {
         PersistentGameStreak(game: "scramble", variant: difficulty.rawValue)
@@ -273,13 +309,15 @@ final class ScrambleGameViewModel {
         guard !eligible.isEmpty else { return }
 
         let wordCount = isReviewRound ? min(10, eligible.count) : sessionLength.rawValue
-        deck = RecentGameQuestionStore.shared.select(
-            from: eligible.shuffled(),
-            game: "scramble",
-            count: wordCount,
-            cooldown: max(wordCount * 7, 10),
-            id: \.answer
-        )
+        // Every word at this difficulty comes up before any repeats.
+        deck = isReviewRound
+            ? Array(eligible.shuffled().prefix(wordCount))
+            : RecentGameQuestionStore.shared.selectCycling(
+                from: eligible,
+                game: recencyGameKey,
+                count: wordCount,
+                id: \.answer
+            )
         currentNumber = 0
         totalWords = deck.count
         // The session streak carries from one game to the next.
@@ -291,8 +329,21 @@ final class ScrambleGameViewModel {
         loadNextWord()
     }
 
+    /// Leaving mid-word counts as running out of time, so backing out can't skip a hard word
+    /// and keep the streak. Practice has no timer, so leaving it costs nothing.
+    func onDisappear() {
+        if phase == .playing, currentTimeLimit != nil, let currentWord, !isCurrentWordResolved {
+            revealTimedOutAnswer(for: currentWord)
+        }
+        if phase != .setup {
+            resetToSetup()
+        }
+        session.clearStreak()
+    }
+
     /// Back to the start screen. The streak is kept so the next game can continue it.
     func resetToSetup() {
+        wordClock.pause(at: now())
         phase = .setup
         isPaused = false
         deck = []
@@ -311,9 +362,10 @@ final class ScrambleGameViewModel {
         }
 
         currentWord = next
-        RecentGameQuestionStore.shared.record(next, game: "scramble", id: \.answer)
+        RecentGameQuestionStore.shared.record(next, game: recencyGameKey, id: \.answer)
         currentNumber += 1
         shuffledLetters = scrambledLetters(for: next.answer)
+        acceptedAlternate = nil
         selectedIndices.removeAll()
         typedAnswer = ""
         answerFeedback = nil
@@ -324,6 +376,10 @@ final class ScrambleGameViewModel {
         strikes = 0
         timeRemaining = currentTimeLimit ?? 0
         isPaused = false
+        wordClock.start(at: now())
+        if isTimerDisabled {
+            wordClock.pause(at: now())
+        }
         timerID = UUID()
         session.startQuestion()
     }
@@ -431,7 +487,8 @@ final class ScrambleGameViewModel {
     func checkAnswer() {
         guard let currentWord, !isCurrentWordResolved, canCheckAnswer else { return }
 
-        guard selectedAnswer.uppercased() == currentWord.answer else {
+        let guess = selectedAnswer.uppercased()
+        guard isAcceptedAnswer(guess, for: currentWord.answer) else {
             if difficulty != .easy {
                 strikes += 1
                 if strikes >= 3 {
@@ -444,7 +501,8 @@ final class ScrambleGameViewModel {
             return
         }
 
-        recordWordResult(.correct, givenAnswer: currentWord.answer)
+        acceptedAlternate = guess == currentWord.answer ? nil : guess
+        recordWordResult(.correct, givenAnswer: guess)
         answerFeedback = .correct
         let wordID = currentWord.id
         Task { [weak self] in
@@ -452,6 +510,14 @@ final class ScrambleGameViewModel {
             guard !Task.isCancelled, self?.currentWord?.id == wordID, self?.answerFeedback == .correct else { return }
             self?.isNextWordReady = true
         }
+    }
+
+    /// The puzzle's word, or another word with exactly the same letters: one from the Scramble
+    /// list or any real English word. EARTH can be solved as HEART.
+    func isAcceptedAnswer(_ guess: String, for answer: String) -> Bool {
+        guard guess != answer else { return true }
+        guard guess.count == answer.count, guess.sorted() == answer.sorted() else { return false }
+        return bankAnswers.contains(guess) || isEnglishWord(guess)
     }
 
     func revealAnswer() {
@@ -473,13 +539,17 @@ final class ScrambleGameViewModel {
     func runTimer() async {
         guard currentTimeLimit != nil, phase == .playing, !isPaused else { return }
 
+        // The clock is the authority; the short interval only keeps the display current.
         while !Task.isCancelled, phase == .playing, !isPaused, timeRemaining > 0 {
-            try? await sleep(.seconds(1))
+            try? await sleep(.milliseconds(100))
             guard !Task.isCancelled, phase == .playing, !isPaused else { return }
             guard !isCurrentWordResolved else { return }
-            guard !isTimerDisabled else { continue }
+            guard !isTimerDisabled, let timeLimit = currentTimeLimit else { continue }
 
-            timeRemaining -= 1
+            let remaining = max(0, timeLimit - Int(wordClock.elapsed(at: now())))
+            if remaining != timeRemaining {
+                timeRemaining = remaining
+            }
             if timeRemaining == 0 {
                 revealTimedOutAnswer(for: currentWord)
                 return
@@ -489,6 +559,7 @@ final class ScrambleGameViewModel {
 
     func revealTimedOutAnswer(for word: ScrambleWord?) {
         guard let word else { return }
+        wordClock.pause(at: now())
         typedAnswer = word.answer
         selectedIndices = Array(shuffledLetters.indices)
         recordWordResult(.timedOut, givenAnswer: nil)
@@ -497,6 +568,7 @@ final class ScrambleGameViewModel {
 
     /// Counts a resolved word. The saved streak ends on a reveal, the strike limit or a timeout.
     func recordWordResult(_ outcome: GameRoundEntry.Outcome, givenAnswer: String?) {
+        wordClock.pause(at: now())
         let correct = outcome == .correct
         if let currentWord {
             session.record(
@@ -524,9 +596,9 @@ final class ScrambleGameViewModel {
         if let currentWord {
             let questionID = currentWord.answer.uppercased()
             if correct, isReviewRound {
-                MissedGameQuestionStore.shared.resolveReviewQuestion(game: .scramble, questionID: questionID)
+                missedQuestions.resolveReviewQuestion(game: .scramble, questionID: questionID)
             } else if !correct {
-                MissedGameQuestionStore.shared.record(
+                missedQuestions.record(
                     game: .scramble,
                     bookNames: [],
                     topic: currentWord.categoryName,
@@ -536,15 +608,26 @@ final class ScrambleGameViewModel {
         }
     }
 
+    /// Shuffles the answer so the tiles don't already spell it, or any other word that would be
+    /// accepted (EARTH never starts as HEART). A word whose every arrangement is a word settles for
+    /// one that at least isn't the answer itself.
     func scrambledLetters(for answer: String) -> [Character] {
         let letters = Array(answer)
         guard letters.count > 1, Set(letters).count > 1 else { return letters }
+
+        var fallback: [Character]?
+        for _ in 0..<100 {
+            let result = letters.shuffled()
+            guard result != letters else { continue }
+            if !isAcceptedAnswer(String(result), for: answer) { return result }
+            fallback = fallback ?? result
+        }
+        if let fallback { return fallback }
 
         var result = letters
         repeat {
             result.shuffle()
         } while result == letters
-
         return result
     }
 }
