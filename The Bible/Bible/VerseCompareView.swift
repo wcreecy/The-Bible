@@ -105,6 +105,7 @@ final class VerseCompareModel {
 struct VerseCompareView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: VerseCompareModel
+    @State private var imageComposerVerse: VerseActionReference?
 
     init(bookName: String, chapter: Int, verse: Int) {
         _model = State(initialValue: VerseCompareModel(bookName: bookName, chapter: chapter, verse: verse))
@@ -158,6 +159,9 @@ struct VerseCompareView: View {
             }
         }
         .task { await model.load() }
+        .fullScreenCover(item: $imageComposerVerse) { verse in
+            VerseImageComposerView(verse: verse)
+        }
         .presentationDetents([.medium, .large])
     }
 
@@ -185,14 +189,14 @@ struct VerseCompareView: View {
             bookName: model.bookName,
             chapter: model.chapter,
             number: model.verse,
-            verse: model.verse(in: translation)
+            verse: model.verse(in: translation),
+            onCreateImage: { imageComposerVerse = $0 }
         )
     }
 }
 
 private struct VerseCompareCard: View {
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
-    @State private var imageComposerVerse: VerseActionReference?
 
     let translation: BibleTranslation
     let bookName: String
@@ -200,6 +204,7 @@ private struct VerseCompareCard: View {
     let number: Int
     /// Nil when the translation has no verse with this number.
     let verse: Verse?
+    let onCreateImage: (VerseActionReference) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -219,9 +224,10 @@ private struct VerseCompareCard: View {
                 Spacer(minLength: 0)
 
                 if let verse, !verse.isOmitted {
-                    VerseShareMenu(verse: actionReference(for: verse), onCreateImage: {
-                        imageComposerVerse = actionReference(for: verse)
-                    }) {
+                    VerseShareMenu(
+                        verse: actionReference(for: verse),
+                        onCreateImage: { onCreateImage(actionReference(for: verse)) }
+                    ) {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .font(.subheadline)
@@ -240,9 +246,6 @@ private struct VerseCompareCard: View {
         .padding()
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 14))
         .accessibilityElement(children: .combine)
-        .fullScreenCover(item: $imageComposerVerse) { verse in
-            VerseImageComposerView(verse: verse)
-        }
     }
 
     @ViewBuilder
