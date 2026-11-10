@@ -343,7 +343,7 @@ def parse_lexicon(path, language):
             continue
         key = key_match.group(0)
         entries.setdefault(key, (
-            key, language, fields[3].strip(), fields[4].strip(), fields[5].strip(),
+            key, language, fields[3].strip(), fields[4].strip(),
             fields[6].strip(), plain_definition("\t".join(fields[7:]), language),
         ))
     return entries
@@ -385,7 +385,6 @@ CREATE TABLE lexicon (
     language TEXT NOT NULL,
     lemma TEXT NOT NULL,
     translit TEXT NOT NULL,
-    partOfSpeech TEXT NOT NULL,
     gloss TEXT NOT NULL,
     definition TEXT NOT NULL
 ) WITHOUT ROWID;
@@ -492,7 +491,7 @@ def main():
                              [(number, *form) for form, number in form_ids.items()])
         database.executemany("INSERT INTO words VALUES (?,?,?,?,?)",
                              [(book_order[row[0]] + 1, *row[1:4], form_ids[row[4:]]) for row in rows])
-        database.executemany("INSERT INTO lexicon VALUES (?,?,?,?,?,?,?)", used_lexicon)
+        database.executemany("INSERT INTO lexicon VALUES (?,?,?,?,?,?)", used_lexicon)
         database.executemany("INSERT INTO meta VALUES (?,?)", sorted(meta.items()))
         database.commit()
         database.execute("VACUUM")

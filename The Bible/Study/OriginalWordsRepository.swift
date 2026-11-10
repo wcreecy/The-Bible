@@ -11,7 +11,6 @@ enum OriginalLanguage: Sendable {
 struct OriginalWordEntry: Equatable, Sendable {
     let lemma: String
     let transliteration: String
-    let partOfSpeech: String
     let gloss: String
     let definition: String
 }
@@ -61,7 +60,7 @@ actor OriginalWordsRepository {
         return withDatabase { database in
             let query = """
             SELECT word.position, form.original, form.translit, form.gloss, form.strongs, form.source,
-                   lexicon.lemma, lexicon.translit, lexicon.partOfSpeech, lexicon.gloss, lexicon.definition
+                   lexicon.lemma, lexicon.translit, lexicon.gloss, lexicon.definition
             FROM words AS word
             JOIN forms AS form ON form.id = word.form
             LEFT JOIN lexicon ON lexicon.strongs = form.strongs
@@ -90,9 +89,8 @@ actor OriginalWordsRepository {
                     OriginalWordEntry(
                         lemma: lemma,
                         transliteration: Self.columnText(statement, at: 7),
-                        partOfSpeech: Self.columnText(statement, at: 8),
-                        gloss: Self.columnText(statement, at: 9),
-                        definition: Self.columnText(statement, at: 10)
+                        gloss: Self.columnText(statement, at: 8),
+                        definition: Self.columnText(statement, at: 9)
                     )
                 }
                 words.append(

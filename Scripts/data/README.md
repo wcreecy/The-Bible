@@ -51,4 +51,4 @@ https://STEPBible.github.io/STEPBible-Data, and that changes to the data be note
 script's changes are listed in its docstring (English-numbered references, Psalm titles
 folded into verse 1, words only in unused editions left out, Greek definitions reduced to
 their English senses, plain-text definitions). The app credits STEPBible in Settings → Help →
-Acknowledgements and in the Word Study sheet, as it does OpenBible.info.
+Acknowledgements, as it does OpenBible.info.

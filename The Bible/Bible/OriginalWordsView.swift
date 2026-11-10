@@ -93,9 +93,10 @@ final class OriginalWordsModel {
     }
 }
 
-/// An interlinear of one verse: the English verse, then its Hebrew or Greek words wrapping in
-/// their own reading order (right to left for Hebrew), each over its English meaning. Tap a
-/// word for its dictionary entry; step through neighboring verses with the bottom bar.
+/// An interlinear of one verse: the English verse, then its Hebrew or Greek words in the
+/// verse's word order, wrapping left to right like the English above them (Hebrew too, so the
+/// word order lines up with the English). Tap a word for its dictionary entry; step through
+/// neighboring verses with the bottom bar.
 struct OriginalWordsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: OriginalWordsModel
@@ -146,7 +147,6 @@ struct OriginalWordsView: View {
                                 if selectedWord == nil {
                                     hint
                                 }
-                                credit
                             }
                             .padding()
                         }
@@ -231,16 +231,20 @@ struct OriginalWordsView: View {
     }
 
     private var interlinear: some View {
-        let title: LocalizedStringKey = model.language == .hebrew
-            ? "Hebrew, read right to left"
-            : "Greek"
+        let title: LocalizedStringKey = model.language == .hebrew ? "Hebrew" : "Greek"
         return VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.secondary)
-                .accessibilityAddTraits(.isHeader)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .accessibilityAddTraits(.isHeader)
+                // The original's grammar and a literal gloss never line up with a translation.
+                Text("Word for word, in the original’s order, so it won’t match the English wording.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
 
-            PassageFlowLayout(spacing: 8) {
+            InterlinearFlowLayout(spacing: 8) {
                 ForEach(model.words) { word in
                     InterlinearWordTile(
                         word: word,
@@ -250,8 +254,6 @@ struct OriginalWordsView: View {
                     .id(word.id)
                 }
             }
-            // Hebrew wraps right to left, as it is read.
-            .environment(\.layoutDirection, model.language == .hebrew ? .rightToLeft : .leftToRight)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -264,12 +266,6 @@ struct OriginalWordsView: View {
             .padding(.vertical, 8)
     }
 
-    private var credit: some View {
-        Text("Word data from STEPBible.org and Tyndale House, Cambridge (CC BY 4.0).")
-            .font(.caption2)
-            .foregroundStyle(.secondary)
-    }
-
     /// Shows a word's entry, or closes the panel when `word` is nil.
     private func select(_ word: OriginalWord?) {
         Haptics.selection()
@@ -279,6 +275,65 @@ struct OriginalWordsView: View {
                 detent = .large
             }
         }
+    }
+}
+
+/// Wraps its children onto rows, left to right, and stretches every child in a row to the row's
+/// height, so a tile with a two-line gloss doesn't sit taller than its neighbors.
+private struct InterlinearFlowLayout: Layout {
+    var spacing: CGFloat
+
+    private struct Row {
+        var indices: [Int] = []
+        var y: CGFloat = 0
+        var width: CGFloat = 0
+        var height: CGFloat = 0
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = arrange(width: proposal.width ?? .infinity, subviews: subviews)
+        let height = rows.last.map { $0.y + $0.height } ?? 0
+        let width = rows.map(\.width).max() ?? 0
+        return CGSize(width: proposal.width ?? width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        for row in arrange(width: bounds.width, subviews: subviews) {
+            var x = bounds.minX
+            for index in row.indices {
+                let width = measuredSize(of: subviews[index]).width
+                subviews[index].place(
+                    at: CGPoint(x: x, y: bounds.minY + row.y),
+                    proposal: ProposedViewSize(width: width, height: row.height)
+                )
+                x += width + spacing
+            }
+        }
+    }
+
+    /// A tile's size once its gloss has wrapped. The ideal size alone reports the width the text
+    /// is capped to but the height of the unwrapped line, so a two-line gloss would overflow its row.
+    private func measuredSize(of subview: LayoutSubview) -> CGSize {
+        let ideal = subview.sizeThatFits(.unspecified)
+        return subview.sizeThatFits(ProposedViewSize(width: ideal.width, height: nil))
+    }
+
+    private func arrange(width: CGFloat, subviews: Subviews) -> [Row] {
+        var rows: [Row] = []
+        var current = Row()
+        for index in subviews.indices {
+            let size = measuredSize(of: subviews[index])
+            let proposedWidth = current.indices.isEmpty ? size.width : current.width + spacing + size.width
+            if proposedWidth > width, !current.indices.isEmpty {
+                rows.append(current)
+                current = Row(y: current.y + current.height + spacing)
+            }
+            current.width = current.indices.isEmpty ? size.width : current.width + spacing + size.width
+            current.height = max(current.height, size.height)
+            current.indices.append(index)
+        }
+        if !current.indices.isEmpty { rows.append(current) }
+        return rows
     }
 }
 
@@ -320,10 +375,10 @@ private struct InterlinearWordTile: View {
                         .foregroundStyle(Color.accentColor)
                 }
             }
-            // The row may run right to left; the English inside a tile still reads left to right.
-            .environment(\.layoutDirection, .leftToRight)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
+            // Takes the height of its row (see InterlinearFlowLayout), so tiles side by side match.
+            .frame(maxHeight: .infinity)
             .background(
                 isSelected ? AnyShapeStyle(Color.accentColor.opacity(0.15)) : AnyShapeStyle(.background.secondary),
                 in: RoundedRectangle(cornerRadius: 10)
@@ -457,5 +512,11 @@ private struct WordEntryPanel: View {
 #Preview("Short Entry Selected") {
     NavigationStack {
         OriginalWordsView(bookName: "Genesis", chapter: 1, verse: 1, translation: .kjv, selectedWordID: 2)
+    }
+}
+
+#Preview("Long Verse") {
+    NavigationStack {
+        OriginalWordsView(bookName: "Isaiah", chapter: 10, verse: 12, translation: .kjv)
     }
 }
