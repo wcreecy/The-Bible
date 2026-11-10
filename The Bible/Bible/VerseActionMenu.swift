@@ -241,6 +241,7 @@ struct VerseActionMenuContent: View {
     @State private var isShowingMentions = false
     @State private var imageComposerVerse: VerseActionReference?
     @State private var isShowingCompare = false
+    @State private var isShowingOriginalWords = false
 
     let verse: VerseActionReference
     let saved: SavedVerseCollections
@@ -328,6 +329,16 @@ struct VerseActionMenuContent: View {
                     )
                 }
             }
+            .sheet(isPresented: $isShowingOriginalWords) {
+                NavigationStack {
+                    OriginalWordsView(
+                        bookName: verse.bookName,
+                        chapter: verse.chapterNumber,
+                        verse: verse.verseNumber,
+                        translation: verse.translation
+                    )
+                }
+            }
             .fullScreenCover(item: $imageComposerVerse) { verse in
                 VerseImageComposerView(verse: verse)
             }
@@ -373,6 +384,7 @@ struct VerseActionMenuContent: View {
 
                 Menu {
                     compareMenuButton
+                    wordStudyMenuButton
                     mentionsButton
                     pinMenuButton
                 } label: {
@@ -401,6 +413,7 @@ struct VerseActionMenuContent: View {
                     bookmarkMenuButton
 
                     compareMenuButton
+                    wordStudyMenuButton
 
                     Divider()
 
@@ -436,6 +449,7 @@ struct VerseActionMenuContent: View {
                     bookmarkMenuButton
                     pinMenuButton
                     compareMenuButton
+                    wordStudyMenuButton
                     copyMenuButton
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -455,6 +469,7 @@ struct VerseActionMenuContent: View {
                 bookmarkMenuButton
                 pinMenuButton
                 compareMenuButton
+                wordStudyMenuButton
                 copyMenuButton
                 shareMenuButton
             } label: {
@@ -518,6 +533,14 @@ struct VerseActionMenuContent: View {
             Button { isShowingCompare = true } label: {
                 Label("Compare Translations", systemImage: "rectangle.split.3x1")
             }
+        }
+    }
+
+    /// The Hebrew (Old Testament) or Greek (New Testament) words behind the verse.
+    private var wordStudyMenuButton: some View {
+        let title: LocalizedStringKey = Canon.isOld(verse.bookName) ? "Hebrew Words" : "Greek Words"
+        return Button { isShowingOriginalWords = true } label: {
+            Label(title, systemImage: "character.book.closed")
         }
     }
 

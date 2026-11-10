@@ -717,8 +717,9 @@ struct ScripturePassageSheet: View {
     }
 }
 
-/// Wraps its children onto as many rows as needed, left to right.
-private struct PassageFlowLayout: Layout {
+/// Wraps its children onto as many rows as needed, leading to trailing (so right to left in a
+/// right-to-left environment). Also lays out the Word Study interlinear.
+struct PassageFlowLayout: Layout {
     var spacing: CGFloat
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {

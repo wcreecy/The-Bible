@@ -4,3 +4,7 @@ xcuserdata/
 
 # Python
 __pycache__/
+
+# STEPBible source data: its licence asks that copies not be posted elsewhere
+# (see Scripts/data/README.md for where to download it)
+Scripts/data/stepbible/

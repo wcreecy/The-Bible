@@ -589,6 +589,25 @@ private struct AcknowledgementsView: View {
             }
 
             Section {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("STEPBible and Tyndale House, Cambridge")
+                        .font(.headline)
+                    Text("The Hebrew and Greek words, Strong’s numbers, and dictionary entries in Word Study come from STEPBible-Data by STEPBible.org and Tyndale House, Cambridge, used under the Creative Commons Attribution 4.0 license. The data was reformatted for this app: punctuation was removed from word endings, long dictionary entries were shortened, and morphology codes were left out.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 2)
+
+                if let url = URL(string: "https://STEPBible.github.io/STEPBible-Data") {
+                    Link(destination: url) {
+                        Label("STEPBible-Data", systemImage: "safari")
+                    }
+                }
+            } header: {
+                Text("Hebrew and Greek Words")
+            }
+
+            Section {
                 ForEach(BibleTranslation.available) { translation in
                     VStack(alignment: .leading, spacing: 6) {
                         Text("\(translation.name) (\(translation.abbreviation))")
