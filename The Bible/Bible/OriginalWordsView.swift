@@ -10,6 +10,8 @@ final class OriginalWordsModel {
     private(set) var verse: Int
     private(set) var words: [OriginalWord] = []
     private(set) var isLoading = true
+    /// How often each word is used, by Strong's number, once looked up.
+    private(set) var usage: [String: OriginalWordUsage] = [:]
 
     init(bookName: String, chapter: Int, verse: Int, translation: BibleTranslation) {
         self.bookName = bookName
@@ -37,16 +39,32 @@ final class OriginalWordsModel {
         isLoading = false
     }
 
+    /// Looks up how often a word is used, once. Words without a Strong's number have no count.
+    func loadUsage(for word: OriginalWord) async {
+        guard let strongs = word.strongsNumber, usage[strongs] == nil else { return }
+        usage[strongs] = await OriginalWordsRepository.shared.usage(of: strongs, translation: translation)
+    }
+
     /// The English verse shown above the words: in the verse's own translation when it's in
     /// memory, otherwise in the reader's.
     var englishVerse: (text: String, translation: BibleTranslation)? {
+        Self.verseText(
+            VerseLocation(bookName: bookName, chapter: chapter, verse: verse),
+            preferring: translation
+        )
+    }
+
+    /// A verse's text in `translation` if it's in memory, otherwise in the reader's translation.
+    static func verseText(
+        _ location: VerseLocation,
+        preferring translation: BibleTranslation
+    ) -> (text: String, translation: BibleTranslation)? {
         let repository = BibleRepository.shared
-        let candidates = [translation, repository.activeTranslation]
-        for candidate in candidates {
+        for candidate in [translation, repository.activeTranslation] {
             let match = repository.cachedBooks(for: candidate)
-                .first { $0.name == bookName }?
-                .chapters.first { $0.number == chapter }?
-                .verses.first { $0.number == self.verse }
+                .first { $0.name == location.bookName }?
+                .chapters.first { $0.number == location.chapter }?
+                .verses.first { $0.number == location.verse }
             if let match, !match.isOmitted {
                 return (match.text, candidate)
             }
@@ -104,6 +122,8 @@ struct OriginalWordsView: View {
     @State private var selectedWordID: Int?
     /// Choosing a word in the half-height sheet raises it, so the docked entry has room.
     @State private var detent: PresentationDetent = .medium
+    /// The word whose list of verses is open.
+    @State private var usageWord: OriginalWord?
 
     /// `selectedWordID` opens with a word's entry showing (its place in the verse, from 1).
     init(
@@ -156,7 +176,12 @@ struct OriginalWordsView: View {
                             if let word = selectedWord {
                                 WordEntryPanel(
                                     word: word,
+                                    usage: word.strongsNumber.flatMap { model.usage[$0] },
+                                    currentVerse: VerseLocation(
+                                        bookName: model.bookName, chapter: model.chapter, verse: model.verse
+                                    ),
                                     maximumHeight: geometry.size.height * 0.45,
+                                    onShowVerses: { usageWord = word },
                                     onClose: { select(nil) }
                                 )
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -202,6 +227,15 @@ struct OriginalWordsView: View {
         .task(id: verseKey) {
             await model.load()
         }
+        // Also runs once the words have loaded, for a word chosen before they did.
+        .task(id: selectedWord?.strongsNumber) {
+            if let word = selectedWord {
+                await model.loadUsage(for: word)
+            }
+        }
+        .sheet(item: $usageWord) { word in
+            WordUsageView(word: word, translation: model.translation, onOpen: openVerse)
+        }
         .onChange(of: verseKey) {
             // A new verse has different words, so its entry panel starts closed.
             selectedWordID = nil
@@ -239,7 +273,7 @@ struct OriginalWordsView: View {
                     .foregroundStyle(.secondary)
                     .accessibilityAddTraits(.isHeader)
                 // The original's grammar and a literal gloss never line up with a translation.
-                Text("Word for word, in the original’s order, so it won’t match the English wording.")
+                Text("Word for word, in the original’s order, so it won’t match the English wording. Bold is the meaning in this verse; gray is the dictionary’s.")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -264,6 +298,20 @@ struct OriginalWordsView: View {
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.vertical, 8)
+    }
+
+    /// Closes the sheets and opens the verse in the reader.
+    private func openVerse(_ location: VerseLocation) {
+        usageWord = nil
+        dismiss()
+        // Navigate after the sheets start dismissing so the reader can take over.
+        DispatchQueue.main.async {
+            AppRouter.shared.openBibleReference(
+                book: location.bookName,
+                chapter: location.chapter,
+                verse: location.verse
+            )
+        }
     }
 
     /// Shows a word's entry, or closes the panel when `word` is nil.
@@ -347,28 +395,27 @@ private struct InterlinearWordTile: View {
     let isSelected: Bool
     let onSelect: () -> Void
 
-    private var gloss: String {
-        word.gloss.isEmpty ? (word.entry?.gloss ?? "") : word.gloss
-    }
-
     var body: some View {
         Button(action: onSelect) {
             VStack(spacing: 3) {
                 Text(word.original)
                     .font(.title3)
                     .foregroundStyle(.primary)
-                if !word.transliteration.isEmpty {
-                    Text(word.transliteration)
-                        .font(.caption2)
-                        .italic()
-                        .foregroundStyle(.secondary)
-                }
-                Text(gloss)
+                // The meaning in this verse, then the dictionary's when it adds something.
+                Text(word.contextGloss)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: maximumGlossWidth)
                     .fixedSize(horizontal: false, vertical: true)
+                if let dictionary = word.dictionaryGloss {
+                    Text(dictionary)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: maximumGlossWidth)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 if let number = word.displayStrongsNumber {
                     Text(number)
                         .font(.caption2.monospaced())
@@ -387,6 +434,16 @@ private struct InterlinearWordTile: View {
                 RoundedRectangle(cornerRadius: 10)
                     .strokeBorder(isSelected ? Color.accentColor : .clear, lineWidth: 1.5)
             }
+            .overlay(alignment: .topTrailing) {
+                // The word isn't in every text; the entry panel says which.
+                if word.textVariant != nil {
+                    Image(systemName: "info.circle.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .padding(4)
+                        .accessibilityHidden(true)
+                }
+            }
             .contentShape(RoundedRectangle(cornerRadius: 10))
         }
         .buttonStyle(.plain)
@@ -399,11 +456,128 @@ private struct InterlinearWordTile: View {
     private var accessibilityLabel: String {
         var parts = [word.original]
         if !word.transliteration.isEmpty { parts.append(word.transliteration) }
-        if !gloss.isEmpty { parts.append(gloss) }
+        if !word.contextGloss.isEmpty { parts.append(word.contextGloss) }
+        if let dictionary = word.dictionaryGloss {
+            parts.append(String(localized: "dictionary meaning \(dictionary)"))
+        }
         if let number = word.displayStrongsNumber {
             parts.append(String(localized: "Strong’s \(number)"))
         }
+        if let variant = word.textVariant {
+            parts.append(variant.explanation)
+        }
         return parts.joined(separator: ", ")
+    }
+}
+
+extension OriginalTextVariant {
+    /// Why the word isn't in every text, in a sentence.
+    var explanation: String {
+        switch self {
+        case .traditionalGreekOnly:
+            String(localized: "In the Greek text behind the KJV, but not in modern critical editions.")
+        case .criticalGreekOnly:
+            String(localized: "In modern critical editions, but not in the Greek text behind the KJV.")
+        case .qere:
+            String(localized: "Read from the scribes’ margin (the Qere); the written text differs.")
+        case .restored:
+            String(localized: "Restored from a parallel passage, because the manuscript is missing it.")
+        }
+    }
+}
+
+/// Every verse that uses a word, grouped by book. Tapping one opens it in the reader.
+private struct WordUsageView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let word: OriginalWord
+    let translation: BibleTranslation
+    let onOpen: (VerseLocation) -> Void
+
+    @State private var verses: [VerseLocation] = []
+    @State private var isLoading = true
+
+    private var title: String {
+        [word.displayStrongsNumber, word.entry?.gloss].compactMap { $0 }.joined(separator: " · ")
+    }
+
+    /// The verses (already in Bible order) in runs by book.
+    private var books: [(name: String, verses: [VerseLocation])] {
+        var groups: [(name: String, verses: [VerseLocation])] = []
+        for verse in verses {
+            if groups.last?.name == verse.bookName {
+                groups[groups.count - 1].verses.append(verse)
+            } else {
+                groups.append((verse.bookName, [verse]))
+            }
+        }
+        return groups
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if verses.isEmpty {
+                    ContentUnavailableView(
+                        "No Verses",
+                        systemImage: "text.magnifyingglass",
+                        description: Text("No verses were found for this word.")
+                    )
+                } else {
+                    List {
+                        ForEach(books, id: \.name) { book in
+                            Section {
+                                ForEach(book.verses) { verse in
+                                    row(for: verse)
+                                }
+                            } header: {
+                                Text(verbatim: "\(book.name) · \(book.verses.count)")
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .task {
+            if let strongs = word.strongsNumber {
+                verses = await OriginalWordsRepository.shared.verses(using: strongs, translation: translation)
+            }
+            isLoading = false
+        }
+        .presentationDetents([.large])
+    }
+
+    private func row(for verse: VerseLocation) -> some View {
+        Button {
+            onOpen(verse)
+        } label: {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: "\(verse.chapter):\(verse.verse)")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                if let text = OriginalWordsModel.verseText(verse, preferring: translation)?.text {
+                    Text(text)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens this verse in the reader")
     }
 }
 
@@ -411,12 +585,24 @@ private struct InterlinearWordTile: View {
 /// scrolls inside the panel instead of pushing the verse off screen.
 private struct WordEntryPanel: View {
     let word: OriginalWord
+    /// Nil until the count has loaded, or when the word has no Strong's number.
+    let usage: OriginalWordUsage?
+    let currentVerse: VerseLocation
     let maximumHeight: CGFloat
+    let onShowVerses: () -> Void
     let onClose: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             header
+            if let variant = word.textVariant {
+                Label(variant.explanation, systemImage: "info.circle")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            if let usage {
+                usageRow(usage)
+            }
             ViewThatFits(in: .vertical) {
                 details
                 ScrollView {
@@ -467,13 +653,90 @@ private struct WordEntryPanel: View {
         }
     }
 
-    private var details: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if let entry = word.entry {
-                if !entry.gloss.isEmpty {
-                    Text(entry.gloss)
-                        .font(.headline)
+    /// The two meanings, labeled: how the word reads in this verse, and the dictionary's. When the
+    /// dictionary only repeats the first, there is just "Meaning".
+    @ViewBuilder
+    private var meanings: some View {
+        if let dictionary = word.dictionaryGloss {
+            labeledMeaning("In this verse", word.contextGloss, detail: formDescription)
+            labeledMeaning("Dictionary meaning", dictionary, detail: nil)
+        } else if !word.contextGloss.isEmpty {
+            labeledMeaning("Meaning", word.contextGloss, detail: formDescription)
+        }
+    }
+
+    /// The word as written in this verse with its transliteration, which the tile no longer shows.
+    private var formDescription: String {
+        [word.original, word.transliteration].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+
+    private func labeledMeaning(_ label: LocalizedStringKey, _ text: String, detail: String?) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(label)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(text)
+                .font(.headline)
+            if let detail, !detail.isEmpty {
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// "Used 2,599 times in 2,246 verses", opening the list of them. A word used only here has
+    /// nothing else to open.
+    @ViewBuilder
+    private func usageRow(_ usage: OriginalWordUsage) -> some View {
+        let hasOtherVerses = usage.verseCount > 1 || usage.first != currentVerse
+        if hasOtherVerses {
+            Button(action: onShowVerses) {
+                HStack(spacing: 8) {
+                    Image(systemName: "text.magnifyingglass")
+                        .foregroundStyle(Color.accentColor)
+                    usageText(usage)
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
+                .contentShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("Shows every verse that uses this word")
+        } else {
+            usageText(usage)
+        }
+    }
+
+    private func usageText(_ usage: OriginalWordUsage) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(summary(of: usage))
+                .font(.subheadline.weight(.semibold))
+            if let first = usage.first, usage.verseCount > 1 {
+                Text("First in \(first.reference)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private func summary(of usage: OriginalWordUsage) -> LocalizedStringKey {
+        let words = usage.wordCount.formatted()
+        let verses = usage.verseCount.formatted()
+        if usage.wordCount == 1 { return "Used once" }
+        if usage.verseCount == 1 { return "Used \(words) times in 1 verse" }
+        return "Used \(words) times in \(verses) verses"
+    }
+
+    private var details: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            meanings
+            if let entry = word.entry {
                 // Some entries have no English text beyond the gloss once the scholarly notes are cut.
                 if !entry.definition.isEmpty {
                     Text(entry.definition)
@@ -518,5 +781,33 @@ private struct WordEntryPanel: View {
 #Preview("Long Verse") {
     NavigationStack {
         OriginalWordsView(bookName: "Isaiah", chapter: 10, verse: 12, translation: .kjv)
+    }
+}
+
+
+#Preview("Text Variant") {
+    // 1 John 5:7: the word "in" is in the Greek text behind the KJV only.
+    NavigationStack {
+        OriginalWordsView(bookName: "1 John", chapter: 5, verse: 7, translation: .kjv, selectedWordID: 6)
+    }
+}
+
+#Preview("Verses Using a Word") {
+    WordUsageView(
+        word: OriginalWord(
+            id: 3, original: "אֱלֹהִים", transliteration: "'E.lo.Him", gloss: "God",
+            strongsNumber: "H0430G",
+            entry: OriginalWordEntry(lemma: "אֱלֹהִים", transliteration: "e.lo.him", gloss: "God", definition: ""),
+            source: "L"
+        ),
+        translation: .kjv,
+        onOpen: { _ in }
+    )
+}
+
+#Preview("Two Meanings") {
+    // Matthew 2:16: the KJV says "mocked"; the in-context gloss is "he had been outwitted".
+    NavigationStack {
+        OriginalWordsView(bookName: "Matthew", chapter: 2, verse: 16, translation: .kjv, selectedWordID: 5)
     }
 }

@@ -15,6 +15,18 @@ struct OriginalWordEntry: Equatable, Sendable {
     let definition: String
 }
 
+/// Why a word may be missing from some Bibles: it isn't in every text the translations follow.
+enum OriginalTextVariant: Equatable, Sendable {
+    /// Greek in the text behind the KJV that modern critical editions leave out.
+    case traditionalGreekOnly
+    /// Greek in modern critical editions that the text behind the KJV leaves out.
+    case criticalGreekOnly
+    /// Hebrew read from the scribes' marginal correction (the Qere), where the written text differs.
+    case qere
+    /// Hebrew restored from a parallel passage, because the manuscript is missing it.
+    case restored
+}
+
 /// One Hebrew or Greek word of a verse, in reading order.
 struct OriginalWord: Identifiable, Equatable, Sendable {
     /// The word's place in the verse, starting at 1.
@@ -26,6 +38,34 @@ struct OriginalWord: Identifiable, Equatable, Sendable {
     /// The disambiguated Strong's number, such as "H7225G" or "G3056".
     let strongsNumber: String?
     let entry: OriginalWordEntry?
+    /// Which texts have the word: N (critical) and K (the KJV's) for Greek, L, Q, or R for Hebrew.
+    let source: String
+
+    /// Set when the word isn't in every text, so the sheet can say so.
+    var textVariant: OriginalTextVariant? {
+        switch source {
+        case "K": .traditionalGreekOnly
+        case "N": .criticalGreekOnly
+        case "Q": .qere
+        case "R": .restored
+        default: nil
+        }
+    }
+
+    /// The meaning in this verse ("he created"), or the dictionary's when the verse has none.
+    var contextGloss: String {
+        gloss.isEmpty ? (entry?.gloss ?? "") : gloss
+    }
+
+    /// The dictionary's short meaning ("to create"), or nil when it only repeats `contextGloss`
+    /// ("the heavens" and "heaven", "(obj.)" and "[Obj.]").
+    var dictionaryGloss: String? {
+        guard let dictionary = entry?.gloss, !dictionary.isEmpty else { return nil }
+        func letters(_ text: String) -> String {
+            text.lowercased().filter(\.isLetter)
+        }
+        return letters(contextGloss).contains(letters(dictionary)) ? nil : dictionary
+    }
 
     /// The number as people write it: leading zeros and the disambiguating letter dropped.
     var displayStrongsNumber: String? {
@@ -34,6 +74,24 @@ struct OriginalWord: Identifiable, Equatable, Sendable {
         guard let number = Int(digits) else { return strongsNumber }
         return "\(language)\(number)"
     }
+}
+
+/// A verse, by the KJV's book, chapter, and verse numbers.
+struct VerseLocation: Identifiable, Hashable, Sendable {
+    let bookName: String
+    let chapter: Int
+    let verse: Int
+
+    var id: String { "\(bookName) \(chapter):\(verse)" }
+    var reference: String { id }
+}
+
+/// How often a word is used, by Strong's number.
+struct OriginalWordUsage: Equatable, Sendable {
+    /// Every use, counting a word that appears twice in a verse twice.
+    let wordCount: Int
+    let verseCount: Int
+    let first: VerseLocation?
 }
 
 /// The Hebrew and Greek words behind each verse, from OriginalWords.sqlite. The data comes
@@ -100,12 +158,93 @@ actor OriginalWordsRepository {
                         transliteration: Self.columnText(statement, at: 2),
                         gloss: Self.columnText(statement, at: 3),
                         strongsNumber: strongs,
-                        entry: entry
+                        entry: entry,
+                        source: source
                     )
                 )
             }
             return words
         } ?? []
+    }
+
+    /// The words using one Strong's number, in the Greek text the translation follows.
+    private static let usageFilter = "form.strongs = ?1 AND (form.strongs NOT LIKE 'G%' OR instr(form.source, ?2) > 0)"
+
+    /// How often a word is used. Greek words count only where the translation's Greek text has
+    /// them, so the KJV and the ASV can differ by a few.
+    func usage(of strongsNumber: String, translation: BibleTranslation) -> OriginalWordUsage? {
+        let greekSource = String(translation.greekTextSource)
+
+        return withDatabase { database in
+            let countQuery = """
+            SELECT COUNT(*), COUNT(DISTINCT word.book * 1000000 + word.chapter * 1000 + word.verse)
+            FROM words AS word JOIN forms AS form ON form.id = word.form
+            WHERE \(Self.usageFilter);
+            """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(database, countQuery, -1, &statement, nil) == SQLITE_OK,
+                  let statement else { return nil }
+            defer { sqlite3_finalize(statement) }
+            sqlite3_bind_text(statement, 1, strongsNumber, -1, Self.sqliteTransientDestructor())
+            sqlite3_bind_text(statement, 2, greekSource, -1, Self.sqliteTransientDestructor())
+            guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+
+            let wordCount = Int(sqlite3_column_int(statement, 0))
+            let verseCount = Int(sqlite3_column_int(statement, 1))
+            guard wordCount > 0 else { return nil }
+
+            return OriginalWordUsage(
+                wordCount: wordCount,
+                verseCount: verseCount,
+                first: Self.verseLocations(
+                    using: strongsNumber, greekSource: greekSource, limit: 1, in: database
+                ).first
+            )
+        }
+    }
+
+    /// Every verse using a word, in Bible order.
+    func verses(using strongsNumber: String, translation: BibleTranslation) -> [VerseLocation] {
+        let greekSource = String(translation.greekTextSource)
+        return withDatabase { database in
+            Self.verseLocations(using: strongsNumber, greekSource: greekSource, limit: -1, in: database)
+        } ?? []
+    }
+
+    private static func verseLocations(
+        using strongsNumber: String,
+        greekSource: String,
+        limit: Int32,
+        in database: OpaquePointer
+    ) -> [VerseLocation] {
+        let query = """
+        SELECT DISTINCT word.book, word.chapter, word.verse
+        FROM words AS word JOIN forms AS form ON form.id = word.form
+        WHERE \(usageFilter)
+        ORDER BY word.book, word.chapter, word.verse
+        LIMIT ?3;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else { return [] }
+        defer { sqlite3_finalize(statement) }
+        sqlite3_bind_text(statement, 1, strongsNumber, -1, sqliteTransientDestructor())
+        sqlite3_bind_text(statement, 2, greekSource, -1, sqliteTransientDestructor())
+        sqlite3_bind_int(statement, 3, limit)
+
+        var locations: [VerseLocation] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let bookIndex = Int(sqlite3_column_int(statement, 0))
+            guard OriginalWordsBooks.names.indices.contains(bookIndex - 1) else { continue }
+            locations.append(
+                VerseLocation(
+                    bookName: OriginalWordsBooks.names[bookIndex - 1],
+                    chapter: Int(sqlite3_column_int(statement, 1)),
+                    verse: Int(sqlite3_column_int(statement, 2))
+                )
+            )
+        }
+        return locations
     }
 
     private func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {
@@ -121,6 +260,10 @@ actor OriginalWordsRepository {
         defer { sqlite3_close(database) }
 
         return operation(database)
+    }
+
+    private nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {
+        unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     }
 
     private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
