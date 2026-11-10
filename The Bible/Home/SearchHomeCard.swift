@@ -130,6 +130,8 @@ struct SearchHomeCard: View {
         }
         .padding(10)
         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        // Without this the label replaces every control's own ("Open Search", "Clear search").
+        .accessibilityElement(children: .contain)
         .accessibilityLabel("Search the Bible")
     }
 

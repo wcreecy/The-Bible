@@ -166,6 +166,7 @@ struct StrongsSearchHeader: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Shows the full entry and every verse that uses this word")
+        .accessibilityIdentifier("strongsSearchCard")
         .sheet(isPresented: $isShowingStudy) {
             StrongsStudySheet(
                 match: match,

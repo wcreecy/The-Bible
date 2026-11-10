@@ -289,6 +289,7 @@ struct WordEntryPanel: View {
             }
             .buttonStyle(.plain)
             .accessibilityHint("Shows every verse that uses this word")
+            .accessibilityIdentifier("wordUsageRow")
         } else {
             usageText(usage)
         }

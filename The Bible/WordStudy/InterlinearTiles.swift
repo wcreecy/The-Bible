@@ -125,6 +125,7 @@ struct InterlinearWordTile: View {
         .accessibilityLabel(accessibilityLabel)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityHint("Shows the dictionary entry")
+        .accessibilityIdentifier("interlinearTile-\(word.id)")
     }
 
     private var accessibilityLabel: String {
