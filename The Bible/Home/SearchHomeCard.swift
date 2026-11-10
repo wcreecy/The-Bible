@@ -146,6 +146,8 @@ struct SearchHomeCard: View {
 
             if !isSearching, let strongsMatch {
                 StrongsSearchHeader(match: strongsMatch, onOpenVerse: onSelectResult)
+                    .padding(10)
+                    .background(Color.accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
 
             if isSearching {
