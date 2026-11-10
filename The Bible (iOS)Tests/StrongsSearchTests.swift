@@ -103,6 +103,21 @@ struct StrongsSearchTests {
         #expect(order == order.sorted())
     }
 
+    /// A search for a number shows the word, its meaning, the dictionary's explanation, and verses.
+    @Test
+    func aSearchShowsTheWordItsDefinitionAndItsVerses() async throws {
+        let outcome = try #require(await search("h1834"))
+        let damascus = try #require(outcome.match.entries.first)
+        #expect(damascus.displayNumber == "H1834")
+        #expect(damascus.lemma == "דַּמֶּ֫שֶׂק")
+        #expect(damascus.transliteration == "dam.me.seq")
+        #expect(damascus.gloss == "Damascus")
+        #expect(damascus.definition.contains("capital of Syria"))
+        #expect(!outcome.results.isEmpty)
+        #expect(outcome.results.allSatisfy { !$0.verseText.isEmpty })
+        #expect(outcome.results.contains { $0.bookName == "Genesis" && $0.chapterNumber == 14 && $0.verseNumber == 15 })
+    }
+
     @Test
     func aHebrewNumberFindsEverySenseOfIt() async throws {
         let outcome = try #require(await search("H430"))

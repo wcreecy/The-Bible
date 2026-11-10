@@ -31,6 +31,8 @@ enum AppStorageKey {
     static let bibleBooksSortAlphabetical = "bibleBooksSortAlphabetical"
     static let studyBooksSortAlphabetical = "studyBooksSortAlphabetical"
     static let lastStudiedBook = "lastStudiedBook"
+    /// Word Study hides articles, conjunctions, and the Hebrew object marker when on.
+    static let wordStudyHidesSmallWords = "wordStudyHidesSmallWords"
     static let lastStudiedChapter = "lastStudiedChapter"
     static let statsSelectedMode = "statsSelectedMode"
     static let chapterListLayout = "chapterListLayout"

@@ -69,9 +69,23 @@ struct OriginalWord: Identifiable, Equatable, Sendable {
         return letters(contextGloss).contains(letters(dictionary)) ? nil : dictionary
     }
 
+    /// An article, a conjunction, or the Hebrew object marker (which has no English): the small
+    /// words that make a long verse long. The grammar line starts with the kind of word.
+    var isSmallWord: Bool {
+        guard let parse else { return false }
+        return parse.hasPrefix("Definite article")
+            || parse.hasPrefix("Conjunction")
+            || parse.hasPrefix("Particle · Object indicator")
+    }
+
     /// The number as people write it: leading zeros and the disambiguating letter dropped.
     var displayStrongsNumber: String? {
-        guard let strongsNumber, let language = strongsNumber.first else { return nil }
+        strongsNumber.map(Self.displayNumber(for:))
+    }
+
+    /// "H0430G" as "H430".
+    static func displayNumber(for strongsNumber: String) -> String {
+        guard let language = strongsNumber.first else { return strongsNumber }
         let digits = strongsNumber.dropFirst().prefix { $0.isNumber }
         guard let number = Int(digits) else { return strongsNumber }
         return "\(language)\(number)"
@@ -247,7 +261,7 @@ actor OriginalWordsRepository {
     }
 
     /// The words using one Strong's number, in the Greek text the translation follows.
-    private static let usageFilter = "form.strongs = ?1 AND (form.strongs NOT LIKE 'G%' OR instr(form.source, ?2) > 0)"
+    static let usageFilter = "form.strongs = ?1 AND (form.strongs NOT LIKE 'G%' OR instr(form.source, ?2) > 0)"
 
     /// How often a word is used. Greek words count only where the translation's Greek text has
     /// them, so the KJV and the ASV can differ by a few.
@@ -326,7 +340,7 @@ actor OriginalWordsRepository {
         return locations
     }
 
-    private func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {
+    func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {
         guard let databaseURL = Bundle.main.url(forResource: databaseResourceName, withExtension: "sqlite") else {
             return nil
         }
@@ -341,16 +355,16 @@ actor OriginalWordsRepository {
         return operation(database)
     }
 
-    private nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {
+    nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {
         unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     }
 
-    private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
+    static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
         guard let text = sqlite3_column_text(statement, index) else { return "" }
         return String(cString: text)
     }
 
-    private static func optionalColumnText(_ statement: OpaquePointer, at index: Int32) -> String? {
+    static func optionalColumnText(_ statement: OpaquePointer, at index: Int32) -> String? {
         guard let text = sqlite3_column_text(statement, index) else { return nil }
         let value = String(cString: text)
         return value.isEmpty ? nil : value

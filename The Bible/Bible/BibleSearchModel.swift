@@ -38,7 +38,7 @@ final class BibleSearchModel {
     private static let recentSearchesKey = AppStorageKey.bibleRecentSearches
     private static let recentSearchLimit = 6
 
-    let suggestedSearches = ["love", "faith", "peace", "John 3:16", "Psalm 23"]
+    let suggestedSearches = ["love", "faith", "peace", "John 3:16", "Psalm 23", "G3056"]
 
     var query = "" {
         didSet {
@@ -77,6 +77,9 @@ final class BibleSearchModel {
     private(set) var isSearching = false
     /// Whether matches beyond `maxResults` were left out.
     private(set) var hasMoreResults = false
+    /// Set when the results are the verses using a Hebrew or Greek word (a Strong's number such
+    /// as "G3056", the word in its own letters, or a transliteration English found nothing for).
+    private(set) var strongsMatch: StrongsSearchMatch?
     private(set) var recentSearches: [String] = []
 
     private var searchTask: Task<Void, Never>?
@@ -159,6 +162,7 @@ final class BibleSearchModel {
             results = []
             highlightedResults = [:]
             hasMoreResults = false
+            strongsMatch = nil
             isSearching = false
             return
         }
@@ -178,12 +182,16 @@ final class BibleSearchModel {
             guard !Task.isCancelled, let self else { return }
             let queryTokens = BibleSearchTokenizer.tokens(in: query)
             results = outcome.results
-            highlightedResults = Dictionary(
-                uniqueKeysWithValues: outcome.results.map { item in
-                    (item.id, Self.highlightedText(for: item, tokens: queryTokens))
-                }
-            )
+            // A Hebrew or Greek word isn't in the English text, so there is nothing to highlight.
+            highlightedResults = outcome.strongsMatch == nil
+                ? Dictionary(
+                    uniqueKeysWithValues: outcome.results.map { item in
+                        (item.id, Self.highlightedText(for: item, tokens: queryTokens))
+                    }
+                )
+                : [:]
             hasMoreResults = outcome.hasMore
+            strongsMatch = outcome.strongsMatch
             isSearching = false
         }
     }
@@ -192,12 +200,12 @@ final class BibleSearchModel {
         query: String,
         scope: BibleSearchScope,
         scopeBookName: String?
-    ) async -> (results: [SearchResult], hasMore: Bool) {
+    ) async -> (results: [SearchResult], hasMore: Bool, strongsMatch: StrongsSearchMatch?) {
         // Waits for the corpus so an early search never runs against an empty Bible.
         let books = await BibleRepository.shared.loadAllBooks()
 
         if let referenceResults = BibleReferenceParser.results(for: query, in: books) {
-            return (referenceResults, false)
+            return (referenceResults, false, nil)
         }
 
         let matthewIndex = books.firstIndex { $0.name == "Matthew" } ?? books.count
@@ -212,9 +220,22 @@ final class BibleSearchModel {
         case .book:
             guard let scopeBookName,
                   let index = books.firstIndex(where: { $0.name == scopeBookName }) else {
-                return ([], false)
+                return ([], false, nil)
             }
             allowedBookIndices = index..<(index + 1)
+        }
+
+        // A Strong's number or a word in Greek or Hebrew letters can't be an English search.
+        let translation = BibleRepository.shared.activeTranslation
+        if let strongs = await StrongsSearch.search(
+            query,
+            allowingTransliteration: false,
+            translation: translation,
+            books: books,
+            allowedBookIndices: allowedBookIndices,
+            maxResults: maxResults
+        ) {
+            return (strongs.results, strongs.hasMore, strongs.match)
         }
 
         // One extra result reveals whether the list was cut off.
@@ -223,7 +244,19 @@ final class BibleSearchModel {
             allowedBookIndices: allowedBookIndices,
             maxResults: maxResults + 1
         )
-        return (Array(found.prefix(maxResults)), found.count > maxResults)
+
+        // English found nothing; "agape" isn't in the KJV but is a Greek word.
+        if found.isEmpty, let strongs = await StrongsSearch.search(
+            query,
+            allowingTransliteration: true,
+            translation: translation,
+            books: books,
+            allowedBookIndices: allowedBookIndices,
+            maxResults: maxResults
+        ) {
+            return (strongs.results, strongs.hasMore, strongs.match)
+        }
+        return (Array(found.prefix(maxResults)), found.count > maxResults, nil)
     }
 
 }
@@ -270,6 +303,11 @@ struct BibleSearchResultsView: View {
                 bookmarks: bookmarks
             )
             List {
+                if let match = model.strongsMatch {
+                    StrongsSearchHeader(match: match, onOpenVerse: onOpen)
+                        .listRowBackground(Color.accentColor.opacity(0.08))
+                }
+
                 ForEach(model.results) { item in
                     BibleSearchResultRow(
                         item: item,

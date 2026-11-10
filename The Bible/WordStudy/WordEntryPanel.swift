@@ -97,78 +97,137 @@ struct NameCard: View {
     }
 }
 
-/// The dictionary entry for the chosen word, docked at the bottom of the sheet. A long entry
-/// scrolls inside the panel instead of pushing the verse off screen.
+/// The dictionary entry for the chosen word. Docked at the bottom of the sheet, a long entry
+/// scrolls inside the panel instead of pushing the verse off screen. With no `maximumHeight` it
+/// fills a sheet of its own, which is how it appears at accessibility text sizes.
 struct WordEntryPanel: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     let word: OriginalWord
     /// Nil until the count has loaded, or when the word has no Strong's number.
     let usage: OriginalWordUsage?
     /// Who the word is when it's a name in this verse; empty for any other word.
     let names: [OriginalName]
     let currentVerse: VerseLocation
-    let maximumHeight: CGFloat
+    /// The height the docked panel may take; nil when the entry fills a sheet of its own.
+    let maximumHeight: CGFloat?
     let onShowVerses: () -> Void
     let onClose: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            header
-            if let variant = word.textVariant {
-                Label(variant.explanation, systemImage: "info.circle")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            if let usage {
-                usageRow(usage)
-            }
-            ViewThatFits(in: .vertical) {
-                details
-                ScrollView {
+        if let maximumHeight {
+            VStack(alignment: .leading, spacing: 8) {
+                top
+                ViewThatFits(in: .vertical) {
                     details
+                    ScrollView {
+                        details
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
+                    // Shows that a long entry continues below the panel's edge.
+                    .scrollIndicatorsFlash(trigger: word.id)
+                    .scrollIndicatorsFlash(onAppear: true)
                 }
-                .scrollBounceBehavior(.basedOnSize)
-                // Shows that a long entry continues below the panel's edge.
-                .scrollIndicatorsFlash(trigger: word.id)
-                .scrollIndicatorsFlash(onAppear: true)
             }
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: maximumHeight, alignment: .topLeading)
-        .fixedSize(horizontal: false, vertical: true)
-        .background(.regularMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 18, topTrailingRadius: 18))
-        .overlay(alignment: .top) {
-            Divider()
+            .padding()
+            .frame(maxWidth: .infinity, maxHeight: maximumHeight, alignment: .topLeading)
+            .fixedSize(horizontal: false, vertical: true)
+            .background(.regularMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 18, topTrailingRadius: 18))
+            .overlay(alignment: .top) {
+                Divider()
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 12) {
+                top
+                details
+            }
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
     }
 
-    private var header: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(word.entry?.lemma ?? word.original)
-                .font(.title2)
-            if let transliteration = word.entry?.transliteration, !transliteration.isEmpty {
-                Text(transliteration)
-                    .font(.subheadline)
-                    .italic()
-                    .foregroundStyle(.secondary)
-            }
-            if let number = word.displayStrongsNumber {
-                Text(number)
-                    .font(.caption.monospaced().weight(.semibold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Color.accentColor.opacity(0.15), in: Capsule())
-                    .foregroundStyle(Color.accentColor)
-            }
-            Spacer(minLength: 8)
-            Button(action: onClose) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title2)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Close Entry")
+    /// The word, why it may be missing from some texts, and how often it's used.
+    @ViewBuilder
+    private var top: some View {
+        header
+        if let variant = word.textVariant {
+            Label(variant.explanation, systemImage: "info.circle")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
+        if let usage {
+            usageRow(usage)
+        }
+    }
+
+    @ViewBuilder
+    private var header: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            // Too wide for one row: the word and close button, then its transliteration and number.
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .top, spacing: 8) {
+                    lemma
+                    Spacer(minLength: 8)
+                    if maximumHeight != nil {
+                        closeButton
+                    }
+                }
+                transliteration
+                strongsChip
+            }
+        } else {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                lemma
+                transliteration
+                strongsChip
+                Spacer(minLength: 8)
+                if maximumHeight != nil {
+                    closeButton
+                }
+            }
+        }
+    }
+
+    private var lemma: some View {
+        Text(word.entry?.lemma ?? word.original)
+            .font(.title2)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    @ViewBuilder
+    private var transliteration: some View {
+        if let transliteration = word.entry?.transliteration, !transliteration.isEmpty {
+            Text(transliteration)
+                .font(.subheadline)
+                .italic()
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    /// Never wraps: "H175" split over two lines reads as two numbers.
+    @ViewBuilder
+    private var strongsChip: some View {
+        if let number = word.displayStrongsNumber {
+            Text(number)
+                .font(.caption.monospaced().weight(.semibold))
+                .lineLimit(1)
+                .fixedSize()
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.accentColor.opacity(0.15), in: Capsule())
+                .foregroundStyle(Color.accentColor)
+        }
+    }
+
+    private var closeButton: some View {
+        Button(action: onClose) {
+            Image(systemName: "xmark.circle.fill")
+                .font(.title2)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Close Entry")
     }
 
     /// The two meanings, labeled: how the word reads in this verse, and the dictionary's. When the
@@ -239,10 +298,12 @@ struct WordEntryPanel: View {
         VStack(alignment: .leading, spacing: 1) {
             Text(summary(of: usage))
                 .font(.subheadline.weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
             if let first = usage.first, usage.verseCount > 1 {
                 Text("First in \(first.reference)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

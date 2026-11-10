@@ -8,6 +8,8 @@ struct StrongsEntry: Identifiable, Equatable, Sendable {
     let lemma: String
     let transliteration: String
     let gloss: String
+    /// The dictionary's longer explanation; empty when there is none beyond the gloss.
+    let definition: String
 
     var id: String { strongs }
     var displayNumber: String { OriginalWord.displayNumber(for: strongs) }
@@ -30,7 +32,7 @@ extension OriginalWordsRepository {
     private func entries(whereClause: String, value: String) -> [StrongsEntry] {
         withDatabase { database in
             let query = """
-            SELECT strongs, lemma, translit, gloss FROM lexicon
+            SELECT strongs, lemma, translit, gloss, definition FROM lexicon
             WHERE \(whereClause)
             ORDER BY strongs LIMIT 12;
             """
@@ -47,7 +49,8 @@ extension OriginalWordsRepository {
                         strongs: Self.columnText(statement, at: 0),
                         lemma: Self.columnText(statement, at: 1),
                         transliteration: Self.columnText(statement, at: 2),
-                        gloss: Self.columnText(statement, at: 3)
+                        gloss: Self.columnText(statement, at: 3),
+                        definition: Self.columnText(statement, at: 4)
                     )
                 )
             }

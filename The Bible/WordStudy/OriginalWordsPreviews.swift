@@ -80,3 +80,13 @@ import SwiftUI
         OriginalWordsView(bookName: "Mark", chapter: 15, verse: 12, translation: .kjv, selectedWordID: 16)
     }
 }
+
+#Preview("Small Words Hidden") {
+    // A separate defaults suite, so the preview's choice never touches the app's setting.
+    let defaults = UserDefaults(suiteName: "WordStudyPreview") ?? .standard
+    defaults.set(true, forKey: AppStorageKey.wordStudyHidesSmallWords)
+    return NavigationStack {
+        OriginalWordsView(bookName: "Isaiah", chapter: 10, verse: 12, translation: .kjv)
+    }
+    .defaultAppStorage(defaults)
+}

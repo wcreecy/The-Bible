@@ -27,6 +27,8 @@ matches the KJV, so the brackets are ignored. Two differences are handled here:
 
 To keep the database small (about 20 MB, 8 MB compressed), it also:
 
+- stores a search key beside each dictionary entry's lemma and transliteration, so the app can
+  find an entry from "ἀγάπη", "agapē", or "agape";
 - stores each distinct word once (`forms`) and each verse as a list of them (`words`);
 - turns each word's grammar code into one English line ("Verb · Aorist Passive Indicative ·
   3rd Singular") using the expansion tables, and stores only those lines (`parses`);
@@ -119,13 +121,27 @@ def trim_word_edges(text):
     return text[start:end].strip()
 
 
+def search_key(text):
+    """What a word is matched on when someone types it: lowercase letters only, without accents,
+    vowel points, or macrons, and with the Greek final sigma as an ordinary one. The app
+    builds the same key from what is typed, so "ἀγάπη", "agapē", and "agape" all find G26."""
+    decomposed = unicodedata.normalize("NFD", text.lower())
+    letters = "".join(ch for ch in decomposed if unicodedata.category(ch)[0] == "L")
+    return letters.replace("ς", "σ")
+
+
 def hebrew_text(field):
     return re.sub(r"\s+", " ", HEBREW_DISPLAY_STRIP.sub("", field)).strip()
 
 
+# Notes in the source's English that aren't part of the meaning: "{14.24}" marks a verse that
+# some editions place elsewhere, and "¿" opens a question ("¿ not").
+GLOSS_NOTES = re.compile(r"\{[^}]*\}|¿")
+
+
 def hebrew_gloss(field):
     """'and/ <obj.>' → 'and (obj.)': the slashes mirror the Hebrew prefixes."""
-    gloss = field.replace("/", " ").replace("<", "(").replace(">", ")")
+    gloss = GLOSS_NOTES.sub("", field).replace("/", " ").replace("<", "(").replace(">", ")")
     return trim_edges(re.sub(r"\s+", " ", gloss))
 
 
@@ -160,6 +176,7 @@ DANGLING_END = re.compile(
     r"adv|prep|cf|see|also|esp|e\.g|i\.e)\.?:?$",
     re.IGNORECASE,
 )
+LEFTOVER_MARKS = re.compile(r"[*=]|^in (?:OT|NT|LXX)\b", re.IGNORECASE)
 SENSE_MARKER = re.compile(r"^(__)?([IVX]+\.|\d+\.|\([a-z]\)|[a-z]\))?\s*")
 
 
@@ -223,8 +240,9 @@ def clean_greek_clause(clause):
     clause = tidy_punctuation(clause)
     if clause == original:
         return clause  # nothing was taken out
-    # Something was cut, so keep what is left only if it still says something.
-    if len(english_words(clause)) < 3 or DANGLING_END.search(clause):
+    # Something was cut, so keep what is left only if it still says something: a couple of words
+    # ("a reason, cause"), not a dangling preposition or a leftover mark ("in OT, *", "= (which see)").
+    if len(english_words(clause)) < 2 or DANGLING_END.search(clause) or LEFTOVER_MARKS.search(clause):
         return ""
     return clause
 
@@ -631,7 +649,9 @@ CREATE TABLE lexicon (
     lemma TEXT NOT NULL,
     translit TEXT NOT NULL,
     gloss TEXT NOT NULL,
-    definition TEXT NOT NULL
+    definition TEXT NOT NULL,
+    lemma_key TEXT NOT NULL,
+    translit_key TEXT NOT NULL
 ) WITHOUT ROWID;
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;
 """
@@ -777,7 +797,10 @@ def main():
         database.executemany("INSERT INTO name_verses VALUES (?,?,?,?,?)", name_links)
         database.executemany("INSERT INTO words VALUES (?,?,?,?,?)",
                              [(book_order[row[0]] + 1, *row[1:4], form_ids[row[4:]]) for row in rows])
-        database.executemany("INSERT INTO lexicon VALUES (?,?,?,?,?,?)", used_lexicon)
+        database.executemany(
+            "INSERT INTO lexicon VALUES (?,?,?,?,?,?,?,?)",
+            [(*entry, search_key(entry[2]), search_key(entry[3])) for entry in used_lexicon],
+        )
         database.executemany("INSERT INTO meta VALUES (?,?)", sorted(meta.items()))
         database.commit()
         database.execute("VACUUM")

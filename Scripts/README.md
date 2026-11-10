@@ -56,6 +56,7 @@ stories or history are ever changed directly in the database,
 | `python3 Scripts/build_translation.py <id>` (`asv`, `web`) | `The Bible/<ID>Text.json` from `The Bible (iOS)Tests/TranslationSources/<id>.json`. Checks the translation lines up with the KJV verse for verse; `--check` validates without writing. To add a translation, see the script's header. |
 | `python3 Scripts/make_lockscreen_verses.py` | `The Bible Widgets/LockScreenVerses.json`, shared by the app and the widget. Re-run after editing its verse list or `kjv.json`, or after adding a translation (it adds each translation's text for the widget). |
 | `python3 -I Scripts/build_original_words.py` (`--check` reports only) | `The Bible (iOS)/OriginalWords.sqlite`: the Hebrew and Greek words of every KJV verse, with Strong's numbers, lexicon definitions, grammar, and who each proper name is, from the STEPBible files in `data/stepbible/` (CC BY 4.0; see `data/README.md`). Prints the KJV verses it has no words for. |
+| `python3 -I Scripts/test_build_original_words.py` | Tests for the rules above (Greek definition cleanup, grammar lines, name groups, search keys). Run after editing `build_original_words.py`; the examples are made up, so no source files are needed. |
 
 ## One-time and occasional tools
 

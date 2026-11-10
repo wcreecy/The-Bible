@@ -38,6 +38,8 @@ struct SearchHomeCard: View {
     @State private var query = ""
     @State private var referenceMatch: ReferenceMatch?
     @State private var results: [SearchResult] = []
+    /// The Hebrew or Greek word a Strong's search matched, shown above its verses.
+    @State private var strongsMatch: StrongsSearchMatch?
     @State private var searchTask: Task<Void, Never>?
     @State private var isSearching = false
     @FocusState private var isFieldFocused: Bool
@@ -142,6 +144,10 @@ struct SearchHomeCard: View {
                 referenceRow(referenceMatch)
             }
 
+            if !isSearching, let strongsMatch {
+                StrongsSearchHeader(match: strongsMatch, onOpenVerse: onSelectResult)
+            }
+
             if isSearching {
                 ProgressView()
                     .controlSize(.small)
@@ -225,6 +231,7 @@ struct SearchHomeCard: View {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !searchTokens.isEmpty else {
             referenceMatch = nil
+            strongsMatch = nil
             results = []
             isSearching = false
             return
@@ -238,14 +245,42 @@ struct SearchHomeCard: View {
 
             let books = await BibleRepository.shared.loadAllBooks()
             let match = Self.referenceMatch(for: trimmedQuery, in: books)
-            let matchingResults = await BibleSearchIndex.shared.search(
-                tokens: tokens,
+            let limit = match == nil ? 3 : 2
+            let translation = BibleRepository.shared.activeTranslation
+
+            // A Strong's number or a word in Greek or Hebrew letters can't be an English search.
+            var strongs = await StrongsSearch.search(
+                trimmedQuery,
+                allowingTransliteration: false,
+                translation: translation,
+                books: books,
                 allowedBookIndices: nil,
-                maxResults: match == nil ? 3 : 2
+                maxResults: limit
             )
+            var matchingResults = strongs?.results ?? []
+            if strongs == nil {
+                matchingResults = await BibleSearchIndex.shared.search(
+                    tokens: tokens,
+                    allowedBookIndices: nil,
+                    maxResults: limit
+                )
+                // English found nothing; "agape" isn't in the KJV but is a Greek word.
+                if matchingResults.isEmpty, match == nil {
+                    strongs = await StrongsSearch.search(
+                        trimmedQuery,
+                        allowingTransliteration: true,
+                        translation: translation,
+                        books: books,
+                        allowedBookIndices: nil,
+                        maxResults: limit
+                    )
+                    matchingResults = strongs?.results ?? []
+                }
+            }
             guard !Task.isCancelled else { return }
 
             referenceMatch = match
+            strongsMatch = strongs?.match
             results = matchingResults.filter { $0.id != match?.destination.id }
             isSearching = false
         }
