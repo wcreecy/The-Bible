@@ -82,10 +82,10 @@ struct InterlinearWordTile: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: maximumGlossWidth)
                     .fixedSize(horizontal: false, vertical: true)
-                if let dictionary = word.dictionaryGloss {
+                if let dictionary = word.tileDictionaryGloss {
                     Text(dictionary)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.wordStudySecondary)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: maximumGlossWidth)
                         .fixedSize(horizontal: false, vertical: true)
@@ -93,7 +93,7 @@ struct InterlinearWordTile: View {
                 if let number = word.displayStrongsNumber {
                     Text(number)
                         .font(.caption2.monospaced())
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(.wordStudyNumber)
                 }
             }
             .padding(.horizontal, 10)
@@ -113,7 +113,7 @@ struct InterlinearWordTile: View {
                 if word.textVariant != nil {
                     Image(systemName: "info.circle.fill")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.wordStudySecondary)
                         .padding(4)
                         .accessibilityHidden(true)
                 }
@@ -132,7 +132,7 @@ struct InterlinearWordTile: View {
         var parts = [word.original]
         if !word.transliteration.isEmpty { parts.append(word.transliteration) }
         if !word.contextGloss.isEmpty { parts.append(word.contextGloss) }
-        if let dictionary = word.dictionaryGloss {
+        if let dictionary = word.tileDictionaryGloss {
             parts.append(String(localized: "dictionary meaning \(dictionary)"))
         }
         if let number = word.displayStrongsNumber {

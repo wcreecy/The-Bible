@@ -61,7 +61,7 @@ struct NameCard: View {
                     .font(.headline)
                 Text(name.kind.label)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.wordStudySecondary)
             }
             if !name.description.isEmpty {
                 Text(name.description)
@@ -74,7 +74,7 @@ struct NameCard: View {
             if !name.area.isEmpty {
                 Text(name.area)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.wordStudySecondary)
             }
         }
         .padding(12)
@@ -88,7 +88,7 @@ struct NameCard: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(label)
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.wordStudySecondary)
                     .frame(width: 62, alignment: .leading)
                 Text(value)
                     .font(.subheadline)
@@ -152,7 +152,7 @@ struct WordEntryPanel: View {
         if let variant = word.textVariant {
             Label(variant.explanation, systemImage: "info.circle")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.wordStudySecondary)
         }
         if let usage {
             usageRow(usage)
@@ -199,7 +199,7 @@ struct WordEntryPanel: View {
             Text(transliteration)
                 .font(.subheadline)
                 .italic()
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.wordStudySecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -215,7 +215,7 @@ struct WordEntryPanel: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 2)
                 .background(Color.accentColor.opacity(0.15), in: Capsule())
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.wordStudyNumber)
         }
     }
 
@@ -224,7 +224,7 @@ struct WordEntryPanel: View {
             Image(systemName: "xmark.circle.fill")
                 .font(.title2)
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.wordStudySecondary)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Close Entry")
@@ -255,13 +255,13 @@ struct WordEntryPanel: View {
         VStack(alignment: .leading, spacing: 1) {
             Text(label)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.wordStudySecondary)
             Text(text)
                 .font(.headline)
             ForEach(details, id: \.self) { detail in
                 Text(detail)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.wordStudySecondary)
             }
         }
     }
@@ -280,7 +280,7 @@ struct WordEntryPanel: View {
                     Spacer(minLength: 8)
                     Image(systemName: "chevron.right")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.wordStudySecondary)
                 }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 12)
@@ -303,7 +303,7 @@ struct WordEntryPanel: View {
             if let first = usage.first, usage.verseCount > 1 {
                 Text("First in \(first.reference)")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.wordStudySecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -326,7 +326,7 @@ struct WordEntryPanel: View {
             if names.count > 3 {
                 Text("\(names.count - 3) more with this name in this verse")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.wordStudySecondary)
             }
             meanings
             if let entry = word.entry {
@@ -334,13 +334,13 @@ struct WordEntryPanel: View {
                 if !entry.definition.isEmpty {
                     Text(entry.definition)
                         .font(.callout)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.wordStudySecondary)
                         .textSelection(.enabled)
                 }
             } else {
                 Text("No dictionary entry for this word.")
                     .font(.callout)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.wordStudySecondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

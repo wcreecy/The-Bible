@@ -185,21 +185,19 @@ struct VerseActionMenu: View {
     let verse: VerseActionReference
     var presentation: VerseActionPresentation = .menu
     var onFeedback: ((VerseActionFeedback) -> Void)?
-    var onNoteEditorPresented: () -> Void = {}
-    var onNoteEditorDismissed: () -> Void = {}
+    /// Adds Chapter Insights to the Focus Mode menu.
+    var onShowChapterInsights: (() -> Void)?
 
     init(
         verse: VerseActionReference,
         presentation: VerseActionPresentation = .menu,
         onFeedback: ((VerseActionFeedback) -> Void)? = nil,
-        onNoteEditorPresented: @escaping () -> Void = {},
-        onNoteEditorDismissed: @escaping () -> Void = {}
+        onShowChapterInsights: (() -> Void)? = nil
     ) {
         self.verse = verse
         self.presentation = presentation
         self.onFeedback = onFeedback
-        self.onNoteEditorPresented = onNoteEditorPresented
-        self.onNoteEditorDismissed = onNoteEditorDismissed
+        self.onShowChapterInsights = onShowChapterInsights
 
         // Favorites and bookmarks matter only for this verse. Notes stay unfiltered: a note
         // anywhere can mention this verse, and the mention count needs them all.
@@ -225,8 +223,7 @@ struct VerseActionMenu: View {
             ),
             presentation: presentation,
             onFeedback: onFeedback,
-            onNoteEditorPresented: onNoteEditorPresented,
-            onNoteEditorDismissed: onNoteEditorDismissed
+            onShowChapterInsights: onShowChapterInsights
         )
     }
 }
@@ -247,8 +244,7 @@ struct VerseActionMenuContent: View {
     let saved: SavedVerseCollections
     var presentation: VerseActionPresentation = .menu
     var onFeedback: ((VerseActionFeedback) -> Void)?
-    var onNoteEditorPresented: () -> Void = {}
-    var onNoteEditorDismissed: () -> Void = {}
+    var onShowChapterInsights: (() -> Void)?
 
     /// Reports to this menu's own handler, or else to the screen's `verseActionToast`.
     private func sendFeedback(_ feedback: VerseActionFeedback) {
@@ -310,7 +306,7 @@ struct VerseActionMenuContent: View {
                 await pinnedStore.load()
             }
             .persistenceFailureAlert(failure: $persistenceFailure)
-            .sheet(isPresented: $isShowingNoteEditor, onDismiss: onNoteEditorDismissed) {
+            .sheet(isPresented: $isShowingNoteEditor) {
                 NavigationStack {
                     VerseNoteEditorView(verse: verse, existingNote: existingNote)
                 }
@@ -400,31 +396,30 @@ struct VerseActionMenuContent: View {
             .buttonStyle(VerseActionButtonStyle())
 
         case .focus:
-            HStack(spacing: 18) {
-                Button(action: toggleFavorite) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart")
-                        .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
+            // One menu keeps Focus Mode's bar to a few controls.
+            Menu {
+                favoriteMenuButton
+                noteMenuButton
+                mentionsButton
+                bookmarkMenuButton
+
+                compareMenuButton
+                wordStudyMenuButton
+                if let onShowChapterInsights {
+                    Button(action: onShowChapterInsights) {
+                        Label("Chapter Insights", systemImage: "lightbulb")
+                    }
                 }
-                .accessibilityLabel(favoriteActionTitle)
 
-                Menu {
-                    noteMenuButton(notifiesPresentation: true)
-                    mentionsButton
-                    bookmarkMenuButton
+                Divider()
 
-                    compareMenuButton
-                    wordStudyMenuButton
-
-                    Divider()
-
-                    copyMenuButton
-                    shareMenuButton
-                    pinMenuButton
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
-                .accessibilityLabel("More verse actions")
+                copyMenuButton
+                shareMenuButton
+                pinMenuButton
+            } label: {
+                Image(systemName: "ellipsis.circle")
             }
+            .accessibilityLabel("More verse actions")
             .buttonStyle(.plain)
 
         case .cardActions:
@@ -444,7 +439,7 @@ struct VerseActionMenuContent: View {
                 .accessibilityLabel("Share")
 
                 Menu {
-                    noteMenuButton(notifiesPresentation: false)
+                    noteMenuButton
                     mentionsButton
                     bookmarkMenuButton
                     pinMenuButton
@@ -463,7 +458,7 @@ struct VerseActionMenuContent: View {
 
         case .menu:
             Menu {
-                noteMenuButton(notifiesPresentation: false)
+                noteMenuButton
                 mentionsButton
                 favoriteMenuButton
                 bookmarkMenuButton
@@ -498,10 +493,8 @@ struct VerseActionMenuContent: View {
         isPinned ? "Unpin from Widget" : "Pin to Widget"
     }
 
-    /// Only the Focus Mode menu tells its host when the note editor opens.
-    private func noteMenuButton(notifiesPresentation: Bool) -> some View {
+    private var noteMenuButton: some View {
         Button {
-            if notifiesPresentation { onNoteEditorPresented() }
             isShowingNoteEditor = true
         } label: {
             Label(noteActionTitle, systemImage: "highlighter")

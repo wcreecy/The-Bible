@@ -281,6 +281,37 @@ struct OriginalWordsTests {
         #expect(word(gloss: "God", dictionary: "").dictionaryGloss == nil)
     }
 
+    /// "tribe: staff" is the word and then the sense this word has; the tile shows the sense.
+    @Test
+    func aTileShowsTheSenseAfterTheColon() {
+        #expect(word(gloss: "rod his", dictionary: "tribe: staff").tileDictionaryGloss == "staff")
+        #expect(word(gloss: "son his", dictionary: "son: child").tileDictionaryGloss == "child")
+        #expect(word(gloss: "[the] wealth of", dictionary: "strength: rich").tileDictionaryGloss == "rich")
+        // The full gloss stays for the entry panel.
+        #expect(word(gloss: "rod his", dictionary: "tribe: staff").dictionaryGloss == "tribe: staff")
+    }
+
+    @Test
+    func aTileLeavesOutASenseTheVerseAlreadySays() {
+        #expect(word(gloss: "and forgive", dictionary: "to release: forgive").tileDictionaryGloss == nil)
+        #expect(word(gloss: "to withhold", dictionary: "to withhold").tileDictionaryGloss == nil)
+        #expect(word(gloss: "he created", dictionary: "to create").tileDictionaryGloss == "to create")
+        #expect(word(gloss: "son", dictionary: "son:").tileDictionaryGloss == nil)
+    }
+
+    /// The two verses from the screenshots: Proverbs 13:24 and 13:22.
+    @Test
+    func proverbsTilesShowTheSensesUsedThere() async {
+        let repository = OriginalWordsRepository.shared
+        let rod = await repository.words(bookName: "Proverbs", chapter: 13, verse: 24, translation: .kjv)
+            .first { $0.strongsNumber?.hasPrefix("H7626") == true }
+        #expect(rod?.tileDictionaryGloss == "staff")
+
+        let wealth = await repository.words(bookName: "Proverbs", chapter: 13, verse: 22, translation: .kjv)
+            .first { $0.strongsNumber?.hasPrefix("H2428") == true }
+        #expect(wealth?.tileDictionaryGloss == "rich")
+    }
+
     @Test
     func aWordWithoutAGlossFallsBackToTheDictionaryMeaning() {
         let fallback = word(gloss: "", dictionary: "to mock")

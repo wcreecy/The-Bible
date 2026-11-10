@@ -1,5 +1,5 @@
 import Testing
-@testable import The_Bible
+@testable import Bible
 
 /// Focus Mode numbers every page of the Bible (a title page per chapter, then its verses)
 /// without building them, so a wrong page number means landing on the wrong verse.

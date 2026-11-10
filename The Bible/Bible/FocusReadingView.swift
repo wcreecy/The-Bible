@@ -14,9 +14,11 @@ struct FocusReadingView: View {
     @State private var scrollPhase: ScrollPhase = .idle
     @State private var lastReportedPageIndex: Int?
     @State private var showsControls = false
-    @State private var controlsAutoHideID = 0
-    @State private var isControlsAutoHideSuspended = false
     @State private var isLocationPickerPresented = false
+    /// Owned here so the picker's query survives dismissing it with Cancel.
+    @State private var locationSearchText = ""
+    /// The controls bar's height, so the verse toast sits just above it at any text size.
+    @State private var controlsHeight: CGFloat = 56
     @State private var chapterInsightsDismissal = StudySheetDismissal()
     @State private var verseToast = VerseActionToastState()
     @AppStorage(AppStorageKey.hasSeenFocusModeControlsHint) private var hasSeenControlsHint = false
@@ -36,7 +38,7 @@ struct FocusReadingView: View {
         self.onLocationChange = onLocationChange
         self.onVisibleVerseChange = onVisibleVerseChange
         self.onExit = onExit
-        let pageMap = FocusPageMap(books: BibleData.books)
+        let pageMap = FocusPageMap.current()
         self.pageMap = pageMap
         _visiblePageIndex = State(initialValue: pageMap.index(of: initialLocation))
     }
@@ -98,8 +100,12 @@ struct FocusReadingView: View {
                 }
             }
             .onAppear(perform: reportSettledPage)
-            .onTapGesture(perform: showControls)
-            .accessibilityAction(named: "Show Focus Mode Controls", showControls)
+            // The controls stay up until the next tap on the page; there is no timer.
+            .onTapGesture(perform: toggleControls)
+            .accessibilityAction(
+                named: showsControls ? "Hide Focus Mode Controls" : "Show Focus Mode Controls",
+                toggleControls
+            )
             .accessibilityAction(named: "Exit Focus Mode", onExit)
 
             if showsControls {
@@ -112,11 +118,9 @@ struct FocusReadingView: View {
                     onShowChapterInsights: {
                         chapterInsightsDismissal.isPresented = true
                     },
-                    onExit: onExit,
-                    onInteraction: resetControlsAutoHideTimer,
-                    onHighlightOrNote: suspendControlsAutoHide,
-                    onNoteEditorDismissed: restoreControlsAutoHide
+                    onExit: onExit
                 )
+                .onGeometryChange(for: CGFloat.self, of: \.size.height) { controlsHeight = $0 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
                 .transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -128,13 +132,22 @@ struct FocusReadingView: View {
         }
         .background(Color(uiColor: .systemBackground))
         // Sits above the controls bar, which is where the verse menu lives.
-        .verseActionToast($verseToast, bottomPadding: 84)
+        .verseActionToast($verseToast, bottomPadding: controlsHeight + 28)
         .sheet(isPresented: $isLocationPickerPresented) {
-            FocusLocationPicker(initialLocation: currentLocation) { location in
-                // Moving the scroll position reports the new location through onChange.
-                visiblePageIndex = pageMap.index(of: location)
-                isLocationPickerPresented = false
-            }
+            ReaderBookPickerSheet(
+                searchText: $locationSearchText,
+                onSelectBook: { book in
+                    go(to: FocusVerseLocation(bookName: book.name, chapterNumber: book.chapters.first?.number ?? 1, verseNumber: 0))
+                },
+                onSelectReference: { reference in
+                    go(to: FocusVerseLocation(
+                        bookName: reference.book.name,
+                        chapterNumber: reference.chapter.number,
+                        verseNumber: reference.reference.startVerse
+                    ))
+                },
+                onCancel: { isLocationPickerPresented = false }
+            )
         }
         .sheet(isPresented: $chapterInsightsDismissal.isPresented) {
             NavigationStack {
@@ -153,33 +166,21 @@ struct FocusReadingView: View {
             }
             .environment(\.studySheetDismissal, chapterInsightsDismissal)
         }
-        .task(id: controlsAutoHideID) {
-            guard showsControls, !isControlsAutoHideSuspended else { return }
-            try? await Task.sleep(for: .seconds(4))
-            guard Task.isCancelled == false else { return }
-            showsControls = false
+    }
+
+    /// Moving the scroll position reports the new location through onChange. A book alone
+    /// (verse 0) opens on its first chapter's title page.
+    private func go(to location: FocusVerseLocation) {
+        visiblePageIndex = pageMap.index(of: location)
+        locationSearchText = ""
+        isLocationPickerPresented = false
+    }
+
+    private func toggleControls() {
+        withAnimation(.snappy) {
+            showsControls.toggle()
         }
-    }
-
-    private func showControls() {
-        showsControls = true
         hasSeenControlsHint = true
-        isControlsAutoHideSuspended = false
-        resetControlsAutoHideTimer()
-    }
-
-    private func resetControlsAutoHideTimer() {
-        controlsAutoHideID += 1
-    }
-
-    private func suspendControlsAutoHide() {
-        isControlsAutoHideSuspended = true
-        controlsAutoHideID += 1
-    }
-
-    private func restoreControlsAutoHide() {
-        isControlsAutoHideSuspended = false
-        resetControlsAutoHideTimer()
     }
 }
 
@@ -201,9 +202,6 @@ private struct FocusControls: View {
     let onChooseLocation: () -> Void
     let onShowChapterInsights: () -> Void
     let onExit: () -> Void
-    let onInteraction: () -> Void
-    let onHighlightOrNote: () -> Void
-    let onNoteEditorDismissed: () -> Void
 
     var body: some View {
         HStack(spacing: 18) {
@@ -219,25 +217,27 @@ private struct FocusControls: View {
 
             Spacer(minLength: 0)
 
-            Button(action: onShowChapterInsights) {
-                Image(systemName: "lightbulb")
-            }
-            .accessibilityLabel("Chapter Insights")
-            .accessibilityHint("Shows insights for \(location.bookName) \(location.chapterNumber)")
-
-            // An omitted verse has nothing to save or share.
+            // Favorite, Chapter Insights, and the rest live in one menu so the bar stays small.
             if let verse, !verse.text.isEmpty {
                 VerseActionMenu(
                     verse: VerseActionReference(
-                        bookName: verse.bookName,
-                        chapterNumber: verse.chapterNumber,
-                        verseNumber: verse.verseNumber,
+                        bookName: verse.location.bookName,
+                        chapterNumber: verse.location.chapterNumber,
+                        verseNumber: verse.location.verseNumber,
                         verseText: verse.text
                     ),
                     presentation: .focus,
-                    onNoteEditorPresented: onHighlightOrNote,
-                    onNoteEditorDismissed: onNoteEditorDismissed
+                    onShowChapterInsights: onShowChapterInsights
                 )
+            } else {
+                // A title page or an omitted verse has nothing to save, but the chapter
+                // still has insights.
+                Menu {
+                    chapterInsightsButton
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("More actions")
             }
 
             Button(action: onExit) {
@@ -251,99 +251,12 @@ private struct FocusControls: View {
         .frame(minHeight: 56)
         .background(.thinMaterial, in: Capsule())
         .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
-        .simultaneousGesture(TapGesture().onEnded { _ in onInteraction() })
-    }
-}
-
-private struct FocusLocationPicker: View {
-    @Environment(\.dismiss) private var dismiss
-
-    let onSelect: (FocusVerseLocation) -> Void
-
-    @State private var selectedBookName: String
-    @State private var selectedChapterNumber: Int
-    @State private var selectedVerseNumber: Int
-
-    init(initialLocation: FocusVerseLocation, onSelect: @escaping (FocusVerseLocation) -> Void) {
-        self.onSelect = onSelect
-        _selectedBookName = State(initialValue: initialLocation.bookName)
-        _selectedChapterNumber = State(initialValue: initialLocation.chapterNumber)
-        _selectedVerseNumber = State(initialValue: initialLocation.verseNumber)
     }
 
-    private var selectedBook: Book? {
-        BibleData.books.first(where: { $0.name == selectedBookName })
-    }
-
-    private var selectedChapter: Chapter? {
-        selectedBook?.chapters.first(where: { $0.number == selectedChapterNumber })
-    }
-
-    var body: some View {
-        NavigationStack {
-            Group {
-                if let selectedBook, let selectedChapter {
-                    Form {
-                        Picker("Book", selection: $selectedBookName) {
-                            ForEach(BibleData.books) { book in
-                                Text(book.name).tag(book.name)
-                            }
-                        }
-
-                        Picker("Chapter", selection: $selectedChapterNumber) {
-                            ForEach(selectedBook.chapters) { chapter in
-                                Text("\(chapter.number)").tag(chapter.number)
-                            }
-                        }
-
-                        Picker("Verse", selection: $selectedVerseNumber) {
-                            ForEach(selectedChapter.verses) { verse in
-                                Text("\(verse.number)").tag(verse.number)
-                            }
-                        }
-                    }
-                } else {
-                    ContentUnavailableView(
-                        "Bible Data Unavailable",
-                        systemImage: "book.closed",
-                        description: Text("Choose a location after the Bible text has loaded.")
-                    )
-                }
-            }
-            .navigationTitle("Go to Verse")
-            .navigationBarTitleDisplayMode(.inline)
-            .onChange(of: selectedBookName) { _, _ in
-                guard let chapter = selectedBook?.chapters.first,
-                      let verse = chapter.verses.first else { return }
-                selectedChapterNumber = chapter.number
-                selectedVerseNumber = verse.number
-            }
-            .onChange(of: selectedChapterNumber) { _, _ in
-                guard let verse = selectedChapter?.verses.first else { return }
-                selectedVerseNumber = verse.number
-            }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: dismiss.callAsFunction)
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Go") {
-                        if let selectedBook, let selectedChapter {
-                            onSelect(
-                                FocusVerseLocation(
-                                    bookName: selectedBook.name,
-                                    chapterNumber: selectedChapter.number,
-                                    verseNumber: selectedVerseNumber
-                                )
-                            )
-                        }
-                    }
-                    .disabled(selectedBook == nil || selectedChapter == nil)
-                }
-            }
+    private var chapterInsightsButton: some View {
+        Button(action: onShowChapterInsights) {
+            Label("Chapter Insights", systemImage: "lightbulb")
         }
-        .presentationDetents([.medium, .large])
     }
 }
 
@@ -354,6 +267,8 @@ private struct FocusVersePage: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @ScaledMetric(relativeTo: .body) private var defaultReaderFontSize: CGFloat = 17
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
+
+    private static let minimumScale: CGFloat = 0.35
 
     private var focusFontAdjustment: CGFloat {
         horizontalSizeClass == .regular ? 4 : 0
@@ -367,24 +282,27 @@ private struct FocusVersePage: View {
                     .italic()
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .minimumScaleFactor(Self.minimumScale)
             } else {
+                // A page is one screen tall and doesn't scroll, so a verse too long for it
+                // (Esther 8:9 at a large text size) shrinks to fit instead of being cut off.
                 Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))
                     .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17) + focusFontAdjustment))
                     .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .minimumScaleFactor(Self.minimumScale)
             }
 
-            Text("\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)")
+            Text(verse.location.reference)
                 .font(.footnote.weight(.medium))
                 .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityHidden(true)
         }
         .frame(maxWidth: 680)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber), \(verse.text.isEmpty ? Verse.omittedNote(in: BibleRepository.shared.activeTranslation) : verse.text)")
+        .accessibilityLabel("\(verse.location.reference), \(verse.text.isEmpty ? Verse.omittedNote(in: BibleRepository.shared.activeTranslation) : verse.text)")
     }
 }
 
@@ -396,9 +314,14 @@ struct FocusVerseLocation: Equatable {
     var id: String {
         "verse-\(bookName)-\(chapterNumber)-\(verseNumber)"
     }
+
+    /// "John 3:16".
+    var reference: String {
+        "\(bookName) \(chapterNumber):\(verseNumber)"
+    }
 }
 
-private enum FocusPage: Identifiable {
+enum FocusPage: Identifiable {
     case chapter(bookName: String, chapterNumber: Int)
     case verse(FocusVerse)
 
@@ -407,7 +330,7 @@ private enum FocusPage: Identifiable {
         case .chapter(let bookName, let chapterNumber):
             "chapter-\(bookName)-\(chapterNumber)"
         case .verse(let verse):
-            verse.id
+            verse.location.id
         }
     }
 
@@ -452,7 +375,7 @@ private struct FocusPageList: View, Equatable {
 
 /// Numbers every Focus Mode page across the Bible (a title page per chapter followed by
 /// its verses) without building them. One entry per chapter locates any page number.
-private struct FocusPageMap {
+struct FocusPageMap {
     private struct ChapterEntry {
         let bookIndex: Int
         let chapterIndex: Int
@@ -465,6 +388,20 @@ private struct FocusPageMap {
     private let chapters: [ChapterEntry]
     private let chapterLookup: [String: Int]
     let pageCount: Int
+
+    private static var cached: (translation: BibleTranslation, map: FocusPageMap)?
+
+    /// The map for the active translation, built once rather than each time the reader
+    /// redraws Focus Mode.
+    static func current() -> FocusPageMap {
+        let translation = BibleRepository.shared.activeTranslation
+        if let cached, cached.translation == translation, cached.map.pageCount > 0 {
+            return cached.map
+        }
+        let map = FocusPageMap(books: BibleData.books)
+        cached = (translation, map)
+        return map
+    }
 
     init(books: [Book]) {
         self.books = books
@@ -512,9 +449,7 @@ private struct FocusPageMap {
         }
         let verse = chapter.verses[offset - 1]
         return .verse(FocusVerse(
-            bookName: book.name,
-            chapterNumber: chapter.number,
-            verseNumber: verse.number,
+            location: FocusVerseLocation(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number),
             text: verse.text,
             redLetterRanges: verse.redLetterRanges,
             suppliedWordRanges: verse.suppliedWordRanges
@@ -539,10 +474,8 @@ private struct FocusPageMap {
     }
 }
 
-private struct FocusVerse: Identifiable {
-    let bookName: String
-    let chapterNumber: Int
-    let verseNumber: Int
+struct FocusVerse {
+    let location: FocusVerseLocation
     let text: String
     let redLetterRanges: [Range<Int>]
     let suppliedWordRanges: [Range<Int>]
@@ -553,18 +486,6 @@ private struct FocusVerse: Identifiable {
             redLetterRanges: redLetterRanges,
             suppliedWordRanges: suppliedWordRanges,
             italicizesSuppliedWords: italicizingSuppliedWords
-        )
-    }
-
-    var id: String {
-        "verse-\(bookName)-\(chapterNumber)-\(verseNumber)"
-    }
-
-    var location: FocusVerseLocation {
-        FocusVerseLocation(
-            bookName: bookName,
-            chapterNumber: chapterNumber,
-            verseNumber: verseNumber
         )
     }
 }
@@ -596,4 +517,17 @@ private struct FocusChapterMarkerPage: View {
             .padding(32)
             .accessibilityAddTraits(.isHeader)
     }
+}
+
+#Preview("Long Verse") {
+    // Esther 8:9, the Bible's longest verse; at large text sizes it shrinks to fit its page.
+    FocusVersePage(
+        verse: FocusVerse(
+            location: FocusVerseLocation(bookName: "Esther", chapterNumber: 8, verseNumber: 9),
+            text: "Then were the king’s scribes called at that time in the third month, that is, the month Sivan, on the three and twentieth day thereof; and it was written according to all that Mordecai commanded unto the Jews, and to the lieutenants, and the deputies and rulers of the provinces which are from India unto Ethiopia, an hundred twenty and seven provinces, unto every province according to the writing thereof, and unto every people after their language, and to the Jews according to their writing, and according to their language.",
+            redLetterRanges: [],
+            suppliedWordRanges: []
+        ),
+        readerFontSize: 17
+    )
 }

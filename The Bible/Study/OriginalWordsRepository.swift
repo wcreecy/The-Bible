@@ -63,10 +63,23 @@ struct OriginalWord: Identifiable, Equatable, Sendable {
     /// ("the heavens" and "heaven", "(obj.)" and "[Obj.]").
     var dictionaryGloss: String? {
         guard let dictionary = entry?.gloss, !dictionary.isEmpty else { return nil }
-        func letters(_ text: String) -> String {
-            text.lowercased().filter(\.isLetter)
-        }
-        return letters(contextGloss).contains(letters(dictionary)) ? nil : dictionary
+        return Self.letters(contextGloss).contains(Self.letters(dictionary)) ? nil : dictionary
+    }
+
+    /// The dictionary's meaning short enough for a tile. A number with several senses glosses
+    /// as "word: sense" ("tribe: staff", "to release: forgive"), and the sense after the colon
+    /// is the one this word has, so the tile shows that ("staff"), or nothing when the verse's
+    /// meaning already says it.
+    var tileDictionaryGloss: String? {
+        guard let dictionary = dictionaryGloss else { return nil }
+        guard let colon = dictionary.firstIndex(of: ":") else { return dictionary }
+        let sense = dictionary[dictionary.index(after: colon)...].trimmingCharacters(in: .whitespaces)
+        guard !sense.isEmpty else { return dictionary }
+        return Self.letters(contextGloss).contains(Self.letters(sense)) ? nil : sense
+    }
+
+    private static func letters(_ text: String) -> String {
+        text.lowercased().filter(\.isLetter)
     }
 
     /// An article, a conjunction, or the Hebrew object marker (which has no English): the small
