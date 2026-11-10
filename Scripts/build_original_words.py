@@ -7,6 +7,8 @@ The sources are STEPBible-Data (Tyndale House Cambridge, CC BY 4.0), kept unedit
     TAHOT *.txt   Hebrew OT, one word per line
     TAGNT *.txt   Greek NT, one word per line
     TBESH / TBESG Brief lexicons (definitions) keyed by extended Strong's number
+    TEHMC / TEGMC Expansions of the Hebrew and Greek morphology (grammar) codes
+    TIPNR         Proper names: who each person is, and the places, with every verse
 
     python3 -I Scripts/build_original_words.py            # build and replace the bundled database
     python3 -I Scripts/build_original_words.py --check    # report only; writes nothing
@@ -26,7 +28,11 @@ matches the KJV, so the brackets are ignored. Two differences are handled here:
 To keep the database small (about 20 MB, 8 MB compressed), it also:
 
 - stores each distinct word once (`forms`) and each verse as a list of them (`words`);
-- leaves out the morphology codes;
+- turns each word's grammar code into one English line ("Verb · Aorist Passive Indicative ·
+  3rd Singular") using the expansion tables, and stores only those lines (`parses`);
+- keeps, for each name in the Bible, who or what it is and how it's related (`names`), and
+  links it to the verses it appears in by Strong's number (`name_verses`), because many
+  people share a name and only the verse says which one is meant;
 - strips punctuation from the ends of words and glosses ("λόγος," → "λόγος");
 - reduces the Greek definitions to their English senses (no quoted Greek or Hebrew, Latin
   glosses, verse lists, or citations of other works) and cuts any definition over
@@ -45,6 +51,7 @@ import shutil
 import sqlite3
 import sys
 import tempfile
+import unicodedata
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SOURCES = ROOT / "Scripts" / "data" / "stepbible"
@@ -84,12 +91,32 @@ def sha256(path):
 
 
 def read_lines(path):
-    # utf-8-sig: the Greek files start with a byte order mark.
-    return path.read_text(encoding="utf-8-sig").split("\n")
+    # utf-8-sig: the Greek files start with a byte order mark. The names file has CRLF endings.
+    return path.read_text(encoding="utf-8-sig").replace("\r", "").split("\n")
 
 
 def trim_edges(text):
     return text.strip().strip(EDGE_PUNCTUATION + " ").strip()
+
+
+# The apostrophe that marks a dropped vowel ("ἀλλ᾽") belongs to the word.
+ELISION_MARKS = "’ʼ᾽"
+
+
+def trim_word_edges(text):
+    """A Greek word without the printed text's punctuation: the question mark (;), the raised dot
+    (·), the paragraph sign (¶), brackets. Unicode has its own characters for the Greek ones, so
+    this goes by category instead of a list."""
+    def punctuation(character):
+        return character not in ELISION_MARKS and (
+            unicodedata.category(character).startswith("P") or character in "¶¬")
+
+    start, end = 0, len(text)
+    while start < end and punctuation(text[start]):
+        start += 1
+    while end > start and punctuation(text[end - 1]):
+        end -= 1
+    return text[start:end].strip()
 
 
 def hebrew_text(field):
@@ -295,6 +322,7 @@ def parse_hebrew(paths, names, problems):
                 "translit": fields[2].replace("/", "").replace("\\", ""),
                 "gloss": hebrew_gloss(fields[3]), "strongs": root.group(0) if root else None,
                 "source": text_type[0],
+                "codes": hebrew_root_code(fields[4], fields[5] if len(fields) > 5 else ""),
             })
     return words
 
@@ -321,10 +349,11 @@ def parse_greek(paths, names, problems):
             root = STRONGS.match(strongs)
             words.append({
                 "book": names[abbreviation], "chapter": int(chapter), "verse": int(verse),
-                "number": int(number), "original": trim_edges(greek.group(1) if greek else fields[1]),
+                "number": int(number), "original": trim_word_edges(greek.group(1) if greek else fields[1]),
                 "translit": greek.group(2) if greek else "",
                 "gloss": hebrew_gloss(fields[2].replace("/", "")),
                 "strongs": root.group(0) if root else None, "source": source,
+                "codes": greek_codes(fields[3]),
             })
     return words
 
@@ -347,6 +376,202 @@ def parse_lexicon(path, language):
             fields[6].strip(), plain_definition("\t".join(fields[7:]), language),
         ))
     return entries
+
+
+# --- Grammar ---------------------------------------------------------------------------------
+# Each word has a morphology code ("V-API-3S", "HVqp3ms"). STEPBible's TEGMC and TEHMC tables
+# expand every code into pairs ("Function=Verb; Tense=Aorist; …"), which this turns into one
+# short line. Only the word's own element is described; a Hebrew prefix ("and", "the") is
+# already in its gloss.
+
+# The pairs, read in this order, make the line: the function, then what the word does or is
+# (stem, tense, voice, mood, form), then who or what it applies to. Greek reads case, person,
+# number, gender; Hebrew person, gender, number, state.
+MORPHOLOGY_WHAT = ("Extra", "Stem", "Tense", "Voice", "Mood", "Form")
+MORPHOLOGY_WHO = {
+    "greek": ("Case", "Person", "Number", "Gender"),
+    "hebrew": ("Person", "Gender", "Number", "State"),
+}
+HENCE = re.compile(r"\s*\(hence [^)]*\)")
+
+
+def morphology_pairs(text):
+    """[(key, value)] from "Function=Verb; Stem=Qal (hence Action=Simple; Voice=Active)".
+
+    The parentheses hold explanations with semicolons of their own, so split outside them."""
+    parts, depth, current = [], 0, ""
+    for character in text:
+        depth += (character == "(") - (character == ")")
+        if character == ";" and depth == 0:
+            parts.append(current)
+            current = ""
+        else:
+            current += character
+    parts.append(current)
+    pairs = []
+    for part in parts:
+        key, separator, value = part.partition("=")
+        if separator:
+            pairs.append((key.strip(), HENCE.sub("", value).strip()))
+    return pairs
+
+
+def morphology_line(expansion, language):
+    """One readable line for a code's expansion: "Verb · Aorist Passive Indicative · 3rd Singular"."""
+    values = {}
+    for key, value in morphology_pairs(expansion):
+        if value:
+            values.setdefault(key, value)
+    segments = [values.get("Function", "")]
+    segments.append(" ".join(values[key] for key in MORPHOLOGY_WHAT if key in values))
+    who = [values[key] for key in MORPHOLOGY_WHO[language] if key in values]
+    if "Name type" in values:
+        who.append(f"{values['Name type']} name")
+    segments.append(" ".join(who))
+    return " · ".join(segment for segment in segments if segment)
+
+
+def parse_morphology_table(path):
+    """{code: expansion} from a TEGMC or TEHMC file (the codes used in the tagged texts)."""
+    codes = {}
+    for line in read_lines(path):
+        cells = line.split("\t")
+        if len(cells) >= 2 and re.fullmatch(r"[A-Za-z][A-Za-z0-9\-]*", cells[0].strip()) and "=" in cells[1]:
+            codes.setdefault(cells[0].strip(), cells[1].strip())
+    return codes
+
+
+def hebrew_root_code(strongs_field, grammar_field):
+    """The grammar code of a Hebrew word's root, as a tuple of one code, or ().
+
+    "H9003/{H7225G}" and "HR/Ncfsa" line up element by element (a prefix, the root in braces).
+    The first element's letter says the language (H Hebrew, A Aramaic) and is left off the
+    rest, so it is put back to find them in the table."""
+    elements, grammar = strongs_field.split("/"), grammar_field.split("/")
+    if not grammar or not grammar[0]:
+        return ()
+    for index, element in enumerate(elements):
+        if "{" in element and index < len(grammar) and grammar[index]:
+            return (grammar[index] if index == 0 else grammar[0][0] + grammar[index],)
+    return ()
+
+
+def greek_codes(field):
+    """The grammar codes of a Greek word: "G2424G=N-GSM-P" → ("N-GSM-P",). Two words written as
+    one ("G1473=P-1NS + G2532=CONJ") give both."""
+    codes = []
+    for part in field.split("+"):
+        _, separator, code = part.partition("=")
+        if separator and code.strip():
+            codes.append(code.strip())
+    return tuple(codes)
+
+
+def describe_codes(codes, table, language):
+    """The line for a word's codes, joined with " + " for a word made of two; None if unknown."""
+    lines = [morphology_line(table[code], language) for code in codes if code in table]
+    return " + ".join(lines) if lines and len(lines) == len(codes) else None
+
+
+# --- Names -----------------------------------------------------------------------------------
+# TIPNR lists every proper name with a unique identity for each individual: Aaron the priest
+# is not Aaron the name of someone else. A record is a "$========== PERSON(s)" line, a line
+# of facts, and then one line per spelling (Hebrew, Greek, Aramaic) with its Strong's number
+# and every verse. The same name and Strong's number can belong to several records (there are
+# dozens of Zechariahs), so a verse is what says which one.
+
+NAME_MARKERS = re.compile(r"\((?:d|a|f|\?)\)|_\d+|=[HG]\d{4}[A-Z]?|@\S*")
+NAME_REFERENCE = re.compile(r"^([1-3A-Za-z]{3})\.(\d+)\.(\d+)[a-z]?$")
+MAP_COORDINATES = re.compile(r"/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)")
+
+
+def plain_name(text):
+    """"Amram@Exo.6.18-1Ch" → "Amram"; "Etam_2" → "Etam"."""
+    return NAME_MARKERS.sub("", text).strip(" ,+-|>")
+
+
+def relatives(text, joiner=", "):
+    """A list of related names ("Moses@Exo.2.10-Rev, Miriam@Exo.15.20-Mic") as plain names."""
+    names = [plain_name(token) for token in re.split(r"\s*[,+]\s*", text)]
+    return joiner.join(name for name in names if name)
+
+
+def parse_names(path, book_numbers, resolve, problems):
+    """([name rows], [(strongs, book, chapter, verse, name id)]) from the TIPNR file."""
+    lines = read_lines(path)
+    records, links, seen = [], [], set()
+    index = 0
+    while index < len(lines):
+        if not lines[index].startswith("$========== "):
+            index += 1
+            continue
+        top = (lines[index + 1] if index + 1 < len(lines) else "").split("\t")
+        cursor = index + 2
+        spellings = []
+        while cursor < len(lines) and lines[cursor].startswith("– "):
+            spellings.append(lines[cursor].split("\t"))
+            cursor += 1
+        index = cursor
+        if len(top) < 9 or "@" not in top[0]:
+            continue
+
+        cells = [cell.strip() for cell in top]
+        kind = cells[8]
+        is_place = kind == "Place"
+        coordinates = MAP_COORDINATES.search(cells[4]) if is_place else None
+        area = "" if cells[6] in ("", ">") else cells[6]
+        name_id = len(records) + 1
+        record_name = plain_name(cells[0].split("@")[0])
+        records.append((
+            name_id, record_name, kind,
+            "" if is_place else cells[1],
+            "" if is_place else relatives(cells[2], " and "),
+            "" if is_place else relatives(cells[3]),
+            "" if is_place else relatives(cells[4]),
+            "" if is_place else relatives(cells[5]),
+            area,
+            float(coordinates.group(1)) if coordinates else None,
+            float(coordinates.group(2)) if coordinates else None,
+        ))
+        # "– Group" lines are the people descended from this person (the Jews under Judah, the
+        # Israelites under Israel) or who live in this place. They are not the individual, so each
+        # group gets a card of its own, named by the alias ("Jews|Judah") or else the record.
+        # Other spellings under the same alias ("Jews" in Aramaic, "Jewish") belong to it too.
+        group_aliases = {
+            plain_name(spelling[1].split("|")[0])
+            for spelling in spellings
+            if spelling[0].strip() == "– Group" and "|" in spelling[1]
+        }
+        groups = {}
+        for spelling in spellings:
+            label = spelling[0].strip()
+            if label.startswith("– Total") or len(spelling) < 5:
+                continue
+            strongs = re.match(r"^([HG]\d{4}[A-Z]?)«", spelling[2].strip())
+            if not strongs:
+                continue
+            alias = plain_name(spelling[1].split("|")[0]) if "|" in spelling[1] else ""
+            target = name_id
+            if label == "– Group" or (alias and alias in group_aliases):
+                group_name = alias or record_name
+                if group_name not in groups:
+                    groups[group_name] = len(records) + 1
+                    records.append((
+                        groups[group_name], group_name, "Group",
+                        f"People of {record_name}" if is_place else f"People descended from {record_name}",
+                        "", "", "", "", "", None, None,
+                    ))
+                target = groups[group_name]
+            for reference in re.split(r"[;,]\s*", spelling[4]):
+                match = NAME_REFERENCE.match(reference.strip())
+                if not match or match.group(1) not in book_numbers:
+                    continue
+                verse = max(int(match.group(3)), 1)  # verse 0 is a Psalm title, part of verse 1
+                link = (resolve(strongs.group(1)), book_numbers[match.group(1)], int(match.group(2)), verse, target)
+                if link not in seen:
+                    seen.add(link)
+                    links.append(link)
+    return records, links
 
 
 def fold_psalm_titles(words):
@@ -378,8 +603,34 @@ CREATE TABLE forms (
     translit TEXT NOT NULL,
     gloss TEXT NOT NULL,
     strongs TEXT,
-    source TEXT NOT NULL
+    source TEXT NOT NULL,
+    parse INTEGER REFERENCES parses(id)
 );
+-- A word's grammar as one English line, shared by every word with the same parse.
+CREATE TABLE parses (id INTEGER PRIMARY KEY, description TEXT NOT NULL);
+-- Who or what a name is. `kind` is the source's type: Male, Female, Group, Place, and so on.
+CREATE TABLE names (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    description TEXT NOT NULL,
+    parents TEXT NOT NULL,
+    siblings TEXT NOT NULL,
+    partners TEXT NOT NULL,
+    offspring TEXT NOT NULL,
+    area TEXT NOT NULL,
+    latitude REAL,
+    longitude REAL
+);
+-- The verses a name's Strong's number refers to this individual in.
+CREATE TABLE name_verses (
+    strongs TEXT NOT NULL,
+    book INTEGER NOT NULL,
+    chapter INTEGER NOT NULL,
+    verse INTEGER NOT NULL,
+    name INTEGER NOT NULL REFERENCES names(id),
+    PRIMARY KEY (strongs, book, chapter, verse, name)
+) WITHOUT ROWID;
 CREATE TABLE lexicon (
     strongs TEXT PRIMARY KEY,
     language TEXT NOT NULL,
@@ -403,9 +654,14 @@ def main():
     greek_paths = sorted(SOURCES.glob("TAGNT*.txt"))
     lexicon_paths = {"hebrew": next(iter(SOURCES.glob("TBESH*.txt")), None),
                      "greek": next(iter(SOURCES.glob("TBESG*.txt")), None)}
-    if len(hebrew_paths) != 4 or len(greek_paths) != 2 or not all(lexicon_paths.values()):
+    grammar_paths = {"hebrew": next(iter(SOURCES.glob("TEHMC*.txt")), None),
+                     "greek": next(iter(SOURCES.glob("TEGMC*.txt")), None)}
+    names_path = next(iter(SOURCES.glob("TIPNR*.txt")), None)
+    if (len(hebrew_paths) != 4 or len(greek_paths) != 2 or not all(lexicon_paths.values())
+            or not all(grammar_paths.values()) or not names_path):
         sys.exit(
-            f"Expected 4 TAHOT, 2 TAGNT, TBESH, and TBESG files in {SOURCES.relative_to(ROOT)}.\n"
+            f"Expected 4 TAHOT, 2 TAGNT, TBESH, TBESG, TEHMC, TEGMC, and TIPNR files in "
+            f"{SOURCES.relative_to(ROOT)}.\n"
             "They are not in git; Scripts/data/README.md says where to download them."
         )
 
@@ -435,6 +691,13 @@ def main():
     for word in words:
         word["strongs"] = resolve(word["strongs"])
 
+    # Each word's grammar as a line of English, from the expansion tables.
+    tables = {language: parse_morphology_table(path) for language, path in grammar_paths.items()}
+    for word in hebrew:
+        word["parse"] = describe_codes(word["codes"], tables["hebrew"], "hebrew")
+    for word in greek:
+        word["parse"] = describe_codes(word["codes"], tables["greek"], "greek")
+
     # A word's position is its order within the verse. Words are unique by (verse, number).
     seen, rows = set(), []
     book_order = {name: index for index, (name, _) in enumerate(kjv)}
@@ -449,7 +712,7 @@ def main():
             sys.exit(f"Duplicate word at {verse_key} position {position}.")
         seen.add((*verse_key, position))
         rows.append((*verse_key, position, word["original"], word["translit"], word["gloss"],
-                     word["strongs"], word["source"]))
+                     word["strongs"], word["source"], word["parse"]))
 
     # Report: KJV verses with no words, and words for verses the KJV doesn't have.
     covered = {(r[0], r[1], r[2]) for r in rows}
@@ -464,6 +727,20 @@ def main():
     unused = {r[7] for r in rows if r[7]}
     used_lexicon = [entry for key, entry in sorted(lexicon.items()) if key in unused]
 
+    book_numbers = {abbreviation: number for number, abbreviation in enumerate(ABBREVIATIONS, 1)}
+    name_rows, name_links = parse_names(names_path, book_numbers, resolve, problems)
+    if problems:
+        print("\n".join(problems[:50]))
+        sys.exit(1)
+    # How well the names line up with the words: a link is useful when the verse has a word
+    # with that Strong's number.
+    strongs_by_verse = {}
+    for row in rows:
+        if row[7]:
+            strongs_by_verse.setdefault((book_order[row[0]] + 1, row[1], row[2]), set()).add(row[7])
+    matched = sum(1 for strongs, book, chapter, verse, _ in name_links
+                  if strongs in strongs_by_verse.get((book, chapter, verse), ()))
+
     print(f"{len(hebrew)} Hebrew and {len(greek)} Greek words in {len(covered)} verses.")
     print(f"{len(used_lexicon)} lexicon entries used; {len(unknown)} Strong's numbers have no entry"
           + (f": {', '.join(unknown[:20])}" if unknown else "."))
@@ -471,6 +748,13 @@ def main():
     if len(missing) > 40:
         print(f"  … and {len(missing) - 40} more")
     print(f"{len(extra)} verses with words aren't in the KJV" + (f": {extra[:20]}" if extra else "."))
+    for language, group in (("Hebrew", hebrew), ("Greek", greek)):
+        described = sum(1 for word in group if word["parse"])
+        print(f"{described:,} of {len(group):,} {language} words have a grammar line"
+              + ("." if described == len(group) else f"; {len(group) - described:,} don't."))
+    print(f"{len(name_rows):,} names ({sum(1 for r in name_rows if r[2] == 'Place'):,} places) with "
+          f"{len(name_links):,} verse links; {matched:,} of the links land on a word with that "
+          f"Strong's number ({100 * matched / max(len(name_links), 1):.0f}%).")
     if check_only:
         print("Nothing written.")
         return
@@ -478,7 +762,9 @@ def main():
     meta = {
         "attribution": "Data from STEPBible.org and Tyndale House Cambridge, CC BY 4.0 "
                        "(https://github.com/STEPBible/STEPBible-Data).",
-        **{path.name: sha256(path) for path in [*hebrew_paths, *greek_paths, *lexicon_paths.values()]},
+        **{path.name: sha256(path) for path in [
+            *hebrew_paths, *greek_paths, *lexicon_paths.values(), *grammar_paths.values(), names_path,
+        ]},
     }
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as folder:
@@ -487,8 +773,14 @@ def main():
         database.executescript(SCHEMA)
         forms = Counter(row[4:] for row in rows)
         form_ids = {form: number for number, (form, _) in enumerate(forms.most_common(), 1)}
-        database.executemany("INSERT INTO forms VALUES (?,?,?,?,?,?)",
-                             [(number, *form) for form, number in form_ids.items()])
+        parse_counts = Counter(row[9] for row in rows if row[9])
+        parse_ids = {text: number for number, (text, _) in enumerate(parse_counts.most_common(), 1)}
+        database.executemany("INSERT INTO parses VALUES (?,?)",
+                             [(number, text) for text, number in parse_ids.items()])
+        database.executemany("INSERT INTO forms VALUES (?,?,?,?,?,?,?)",
+                             [(number, *form[:5], parse_ids.get(form[5])) for form, number in form_ids.items()])
+        database.executemany("INSERT INTO names VALUES (?,?,?,?,?,?,?,?,?,?,?)", name_rows)
+        database.executemany("INSERT INTO name_verses VALUES (?,?,?,?,?)", name_links)
         database.executemany("INSERT INTO words VALUES (?,?,?,?,?)",
                              [(book_order[row[0]] + 1, *row[1:4], form_ids[row[4:]]) for row in rows])
         database.executemany("INSERT INTO lexicon VALUES (?,?,?,?,?,?)", used_lexicon)

@@ -141,6 +141,118 @@ struct OriginalWordsTests {
         #expect(restored.contains { $0.textVariant == .restored })
     }
 
+    // MARK: Grammar
+
+    @Test
+    func wordsHaveAReadableGrammarLine() async {
+        let hebrew = await OriginalWordsRepository.shared.words(
+            bookName: "Genesis", chapter: 1, verse: 1, translation: .kjv
+        )
+        #expect(hebrew[0].parse == "Noun · Common · Feminine Singular Absolute")
+        #expect(hebrew[1].parse == "Verb · Qal Perfect · Third Masculine Singular")
+
+        let greek = await OriginalWordsRepository.shared.words(
+            bookName: "John", chapter: 1, verse: 1, translation: .kjv
+        )
+        #expect(greek[2].parse == "Verb · Imperfect Active Indicative · 3rd Singular")
+        #expect(greek[4].parse == "Noun · Nominative Singular Masculine")
+    }
+
+    /// κἀγώ is "and I" written as one word, so it has both grammar lines.
+    @Test
+    func aWordWrittenAsTwoGetsBothGrammarLines() async throws {
+        let words = await OriginalWordsRepository.shared.words(
+            bookName: "John", chapter: 1, verse: 31, translation: .kjv
+        )
+        let first = try #require(words.first)
+        #expect(first.parse == "Personal pronoun · Nominative 1st Singular + Conjunction")
+    }
+
+    // MARK: Names
+
+    @Test
+    func aNameIsLookedUpByItsVerse() async throws {
+        let names = await OriginalWordsRepository.shared.names(
+            forStrongs: "H0175", in: VerseLocation(bookName: "Exodus", chapter: 4, verse: 14)
+        )
+        let aaron = try #require(names.first)
+        #expect(names.count == 1)
+        #expect(aaron.name == "Aaron")
+        #expect(aaron.kind == .male)
+        #expect(aaron.description.contains("High Priest"))
+        #expect(aaron.parents == "Amram and Jochebed")
+        #expect(aaron.siblings == "Moses, Miriam")
+        #expect(aaron.partners == "Elisheba")
+        #expect(aaron.offspring.contains("Eleazar"))
+        #expect(aaron.area == "Tribe of Levi")
+        #expect(aaron.mapURL == nil)
+    }
+
+    @Test
+    func aPlaceHasACoordinateAndAMapLink() async throws {
+        let names = await OriginalWordsRepository.shared.names(
+            forStrongs: "G0965", in: VerseLocation(bookName: "Matthew", chapter: 2, verse: 1)
+        )
+        let bethlehem = try #require(names.first)
+        #expect(bethlehem.name == "Bethlehem")
+        #expect(bethlehem.kind == .place)
+        #expect(try #require(bethlehem.latitude) > 31.6 && bethlehem.latitude! < 31.8)
+        let url = try #require(bethlehem.mapURL)
+        #expect(url.host == "maps.apple.com")
+        #expect(url.absoluteString.contains("q=Bethlehem"))
+    }
+
+    /// Several men are called Zechariah, but in Luke 1:5 the verse says which.
+    @Test
+    func theVerseSaysWhichPersonSharesAName() async throws {
+        let names = await OriginalWordsRepository.shared.names(
+            forStrongs: "G2197H", in: VerseLocation(bookName: "Luke", chapter: 1, verse: 5)
+        )
+        let zechariah = try #require(names.first)
+        #expect(names.count == 1)
+        #expect(zechariah.description.contains("New Testament"))
+    }
+
+    /// The people descended from Judah are "the Jews", not Judah: the source files them under his
+    /// record, but they get a card of their own.
+    @Test
+    func aGroupOfPeopleIsNotTheirAncestor() async throws {
+        let jews = await OriginalWordsRepository.shared.names(
+            forStrongs: "G2453G", in: VerseLocation(bookName: "Mark", chapter: 15, verse: 12)
+        )
+        let group = try #require(jews.first)
+        #expect(jews.count == 1)
+        #expect(group.name == "Jews")
+        #expect(group.kind == .group)
+        #expect(group.description == "People descended from Judah")
+
+        let judah = await OriginalWordsRepository.shared.names(
+            forStrongs: "H3063G", in: VerseLocation(bookName: "Genesis", chapter: 29, verse: 35)
+        )
+        #expect(judah.first?.name == "Judah")
+        #expect(judah.first?.kind == .male)
+    }
+
+    /// "Heart" (H3820) shares its number with a rare name, so a name must never be found by
+    /// number alone: only in a verse the names data lists it for.
+    @Test
+    func aWordThatIsNotANameInThatVerseHasNoName() async {
+        let heart = await OriginalWordsRepository.shared.names(
+            forStrongs: "H3820A", in: VerseLocation(bookName: "Exodus", chapter: 4, verse: 14)
+        )
+        #expect(heart.isEmpty)
+
+        let elsewhere = await OriginalWordsRepository.shared.names(
+            forStrongs: "H0175", in: VerseLocation(bookName: "Genesis", chapter: 1, verse: 1)
+        )
+        #expect(elsewhere.isEmpty)
+
+        let logos = await OriginalWordsRepository.shared.names(
+            forStrongs: "G3056", in: VerseLocation(bookName: "John", chapter: 1, verse: 1)
+        )
+        #expect(logos.isEmpty)
+    }
+
     // MARK: Meanings
 
     private func word(gloss: String, dictionary: String?) -> OriginalWord {
@@ -149,7 +261,8 @@ struct OriginalWordsTests {
             entry: dictionary.map {
                 OriginalWordEntry(lemma: "", transliteration: "", gloss: $0, definition: "")
             },
-            source: "NK"
+            source: "NK",
+            parse: nil
         )
     }
 
@@ -182,11 +295,11 @@ struct OriginalWordsTests {
     @Test
     func strongsNumbersDropZerosAndLetters() {
         let word = OriginalWord(
-            id: 1, original: "", transliteration: "", gloss: "", strongsNumber: "G0011", entry: nil, source: "NK"
+            id: 1, original: "", transliteration: "", gloss: "", strongsNumber: "G0011", entry: nil, source: "NK", parse: nil
         )
         #expect(word.displayStrongsNumber == "G11")
         let lettered = OriginalWord(
-            id: 1, original: "", transliteration: "", gloss: "", strongsNumber: "H0430G", entry: nil, source: "L"
+            id: 1, original: "", transliteration: "", gloss: "", strongsNumber: "H0430G", entry: nil, source: "L", parse: nil
         )
         #expect(lettered.displayStrongsNumber == "H430")
     }

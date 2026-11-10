@@ -12,6 +12,8 @@ final class OriginalWordsModel {
     private(set) var isLoading = true
     /// How often each word is used, by Strong's number, once looked up.
     private(set) var usage: [String: OriginalWordUsage] = [:]
+    /// Who each name in the current verse is, by Strong's number and verse, once looked up.
+    private(set) var names: [String: [OriginalName]] = [:]
 
     init(bookName: String, chapter: Int, verse: Int, translation: BibleTranslation) {
         self.bookName = bookName
@@ -43,6 +45,25 @@ final class OriginalWordsModel {
     func loadUsage(for word: OriginalWord) async {
         guard let strongs = word.strongsNumber, usage[strongs] == nil else { return }
         usage[strongs] = await OriginalWordsRepository.shared.usage(of: strongs, translation: translation)
+    }
+
+    /// Looks up who a name is in this verse, once. Most words aren't names and have none.
+    func loadNames(for word: OriginalWord) async {
+        guard let strongs = word.strongsNumber, names[nameKey(strongs)] == nil else { return }
+        names[nameKey(strongs)] = await OriginalWordsRepository.shared.names(
+            forStrongs: strongs,
+            in: VerseLocation(bookName: bookName, chapter: chapter, verse: verse)
+        )
+    }
+
+    /// Who the word is, if it's a name here: usually one person or place; several when the
+    /// verse names more than one with the same number.
+    func names(for word: OriginalWord) -> [OriginalName] {
+        word.strongsNumber.flatMap { names[nameKey($0)] } ?? []
+    }
+
+    private func nameKey(_ strongs: String) -> String {
+        "\(strongs)|\(chapter):\(verse)"
     }
 
     /// The English verse shown above the words: in the verse's own translation when it's in
@@ -177,6 +198,7 @@ struct OriginalWordsView: View {
                                 WordEntryPanel(
                                     word: word,
                                     usage: word.strongsNumber.flatMap { model.usage[$0] },
+                                    names: model.names(for: word),
                                     currentVerse: VerseLocation(
                                         bookName: model.bookName, chapter: model.chapter, verse: model.verse
                                     ),
@@ -231,6 +253,7 @@ struct OriginalWordsView: View {
         .task(id: selectedWord?.strongsNumber) {
             if let word = selectedWord {
                 await model.loadUsage(for: word)
+                await model.loadNames(for: word)
             }
         }
         .sheet(item: $usageWord) { word in
@@ -581,12 +604,101 @@ private struct WordUsageView: View {
     }
 }
 
+extension OriginalName.Kind {
+    var label: LocalizedStringKey {
+        switch self {
+        case .male: "Man"
+        case .female: "Woman"
+        case .group: "People group"
+        case .place: "Place"
+        case .supernatural: "Supernatural being"
+        case .time: "Time"
+        case .musical: "Musical term"
+        case .title: "Title"
+        case .star: "Star"
+        case .language: "Language"
+        case .other: "Name"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .male, .female: "person.fill"
+        case .group: "person.3.fill"
+        case .place: "mappin.circle.fill"
+        case .supernatural: "sparkles"
+        case .time: "calendar"
+        case .musical: "music.note"
+        case .star: "star.fill"
+        case .language: "text.bubble.fill"
+        case .title, .other: "tag.fill"
+        }
+    }
+}
+
+/// Who a name is: what the source says about the person, or where the place is.
+private struct NameCard: View {
+    let name: OriginalName
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: name.kind.symbol)
+                    .foregroundStyle(Color.accentColor)
+                Text(name.name)
+                    .font(.headline)
+                Text(name.kind.label)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            if !name.description.isEmpty {
+                Text(name.description)
+                    .font(.subheadline)
+            }
+            fact("Parents", name.parents)
+            fact("Siblings", name.siblings)
+            fact("Spouse", name.partners)
+            fact("Children", name.offspring)
+            if !name.area.isEmpty {
+                Text(name.area)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            if let url = name.mapURL {
+                Link(destination: url) {
+                    Label("Show on Map", systemImage: "map")
+                        .font(.subheadline)
+                }
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    @ViewBuilder
+    private func fact(_ label: LocalizedStringKey, _ value: String) -> some View {
+        if !value.isEmpty {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(label)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 62, alignment: .leading)
+                Text(value)
+                    .font(.subheadline)
+            }
+        }
+    }
+}
+
 /// The dictionary entry for the chosen word, docked at the bottom of the sheet. A long entry
 /// scrolls inside the panel instead of pushing the verse off screen.
 private struct WordEntryPanel: View {
     let word: OriginalWord
     /// Nil until the count has loaded, or when the word has no Strong's number.
     let usage: OriginalWordUsage?
+    /// Who the word is when it's a name in this verse; empty for any other word.
+    let names: [OriginalName]
     let currentVerse: VerseLocation
     let maximumHeight: CGFloat
     let onShowVerses: () -> Void
@@ -658,26 +770,30 @@ private struct WordEntryPanel: View {
     @ViewBuilder
     private var meanings: some View {
         if let dictionary = word.dictionaryGloss {
-            labeledMeaning("In this verse", word.contextGloss, detail: formDescription)
-            labeledMeaning("Dictionary meaning", dictionary, detail: nil)
+            labeledMeaning("In this verse", word.contextGloss, details: thisWord)
+            labeledMeaning("Dictionary meaning", dictionary, details: [])
         } else if !word.contextGloss.isEmpty {
-            labeledMeaning("Meaning", word.contextGloss, detail: formDescription)
+            labeledMeaning("Meaning", word.contextGloss, details: thisWord)
         }
     }
 
-    /// The word as written in this verse with its transliteration, which the tile no longer shows.
-    private var formDescription: String {
-        [word.original, word.transliteration].filter { !$0.isEmpty }.joined(separator: " · ")
+    /// The word as written in this verse with its transliteration (which the tile doesn't show),
+    /// and its grammar.
+    private var thisWord: [String] {
+        [
+            [word.original, word.transliteration].filter { !$0.isEmpty }.joined(separator: " · "),
+            word.parse ?? "",
+        ].filter { !$0.isEmpty }
     }
 
-    private func labeledMeaning(_ label: LocalizedStringKey, _ text: String, detail: String?) -> some View {
+    private func labeledMeaning(_ label: LocalizedStringKey, _ text: String, details: [String]) -> some View {
         VStack(alignment: .leading, spacing: 1) {
             Text(label)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
             Text(text)
                 .font(.headline)
-            if let detail, !detail.isEmpty {
+            ForEach(details, id: \.self) { detail in
                 Text(detail)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -735,6 +851,15 @@ private struct WordEntryPanel: View {
 
     private var details: some View {
         VStack(alignment: .leading, spacing: 10) {
+            // Most people share a name, so at most a few, in case a verse names several.
+            ForEach(names.prefix(3)) { name in
+                NameCard(name: name)
+            }
+            if names.count > 3 {
+                Text("\(names.count - 3) more with this name in this verse")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
             meanings
             if let entry = word.entry {
                 // Some entries have no English text beyond the gloss once the scholarly notes are cut.
@@ -798,7 +923,8 @@ private struct WordEntryPanel: View {
             id: 3, original: "אֱלֹהִים", transliteration: "'E.lo.Him", gloss: "God",
             strongsNumber: "H0430G",
             entry: OriginalWordEntry(lemma: "אֱלֹהִים", transliteration: "e.lo.him", gloss: "God", definition: ""),
-            source: "L"
+            source: "L",
+            parse: nil
         ),
         translation: .kjv,
         onOpen: { _ in }
@@ -809,5 +935,27 @@ private struct WordEntryPanel: View {
     // Matthew 2:16: the KJV says "mocked"; the in-context gloss is "he had been outwitted".
     NavigationStack {
         OriginalWordsView(bookName: "Matthew", chapter: 2, verse: 16, translation: .kjv, selectedWordID: 5)
+    }
+}
+
+
+#Preview("Person") {
+    // Exodus 4:14: Aaron, the 7th word.
+    NavigationStack {
+        OriginalWordsView(bookName: "Exodus", chapter: 4, verse: 14, translation: .kjv, selectedWordID: 7)
+    }
+}
+
+#Preview("Place") {
+    // Matthew 2:1: Bethlehem, the 6th word.
+    NavigationStack {
+        OriginalWordsView(bookName: "Matthew", chapter: 2, verse: 1, translation: .kjv, selectedWordID: 6)
+    }
+}
+
+#Preview("Group") {
+    // Mark 15:12: "the Jews", the 16th word (word numbers include words only some texts have).
+    NavigationStack {
+        OriginalWordsView(bookName: "Mark", chapter: 15, verse: 12, translation: .kjv, selectedWordID: 16)
     }
 }

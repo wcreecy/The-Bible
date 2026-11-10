@@ -592,7 +592,7 @@ private struct AcknowledgementsView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("STEPBible and Tyndale House, Cambridge")
                         .font(.headline)
-                    Text("The Hebrew and Greek words, Strong’s numbers, and dictionary entries in Word Study come from STEPBible-Data by STEPBible.org and Tyndale House, Cambridge, used under the Creative Commons Attribution 4.0 license. The data was reformatted for this app: punctuation was removed from word endings, long dictionary entries were shortened, and morphology codes were left out.")
+                    Text("The Hebrew and Greek words, Strong’s numbers, dictionary entries, grammar, and names of people and places in Word Study come from STEPBible-Data by STEPBible.org and Tyndale House, Cambridge, used under the Creative Commons Attribution 4.0 license. The data was reformatted for this app: punctuation was removed from word endings, long dictionary entries were shortened, grammar codes were rewritten as plain English, and name records were trimmed to who each is, how they are related, and the verses they appear in.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }

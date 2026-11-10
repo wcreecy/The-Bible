@@ -40,6 +40,8 @@ struct OriginalWord: Identifiable, Equatable, Sendable {
     let entry: OriginalWordEntry?
     /// Which texts have the word: N (critical) and K (the KJV's) for Greek, L, Q, or R for Hebrew.
     let source: String
+    /// The word's grammar in one line ("Verb · Aorist Passive Indicative · 3rd Singular"), if known.
+    let parse: String?
 
     /// Set when the word isn't in every text, so the sheet can say so.
     var textVariant: OriginalTextVariant? {
@@ -73,6 +75,50 @@ struct OriginalWord: Identifiable, Equatable, Sendable {
         let digits = strongsNumber.dropFirst().prefix { $0.isNumber }
         guard let number = Int(digits) else { return strongsNumber }
         return "\(language)\(number)"
+    }
+}
+
+/// Who or what a proper name is in a verse: a person, a place, a group. Many people share a
+/// name ("Zechariah" is dozens of men), so this is looked up by verse, not by word alone.
+struct OriginalName: Identifiable, Equatable, Sendable {
+    /// The source's type for the name.
+    enum Kind: String, Sendable {
+        case male = "Male"
+        case female = "Female"
+        case group = "Group"
+        case place = "Place"
+        case supernatural = "Supernatural"
+        case time = "Time"
+        case musical = "Musical"
+        case title = "Title"
+        case star = "Star"
+        case language = "Language"
+        case other = "Other"
+    }
+
+    let id: Int
+    let name: String
+    let kind: Kind
+    /// "High Priest living at the time of Egypt and Wilderness"; empty for a place.
+    let description: String
+    let parents: String
+    let siblings: String
+    let partners: String
+    let offspring: String
+    /// The tribe or nation of a person, or the region of a place.
+    let area: String
+    let latitude: Double?
+    let longitude: Double?
+
+    /// An Apple Maps link for a place whose location is known.
+    var mapURL: URL? {
+        guard let latitude, let longitude else { return nil }
+        var components = URLComponents(string: "https://maps.apple.com/")
+        components?.queryItems = [
+            URLQueryItem(name: "ll", value: "\(latitude),\(longitude)"),
+            URLQueryItem(name: "q", value: name),
+        ]
+        return components?.url
     }
 }
 
@@ -118,10 +164,11 @@ actor OriginalWordsRepository {
         return withDatabase { database in
             let query = """
             SELECT word.position, form.original, form.translit, form.gloss, form.strongs, form.source,
-                   lexicon.lemma, lexicon.translit, lexicon.gloss, lexicon.definition
+                   lexicon.lemma, lexicon.translit, lexicon.gloss, lexicon.definition, parse.description
             FROM words AS word
             JOIN forms AS form ON form.id = word.form
             LEFT JOIN lexicon ON lexicon.strongs = form.strongs
+            LEFT JOIN parses AS parse ON parse.id = form.parse
             WHERE word.book = ? AND word.chapter = ? AND word.verse = ?
             ORDER BY word.position;
             """
@@ -159,11 +206,58 @@ actor OriginalWordsRepository {
                         gloss: Self.columnText(statement, at: 3),
                         strongsNumber: strongs,
                         entry: entry,
-                        source: source
+                        source: source,
+                        parse: Self.optionalColumnText(statement, at: 10)
                     )
                 )
             }
             return words
+        } ?? []
+    }
+
+    /// Who a name is in one verse, by the Strong's number of the word. Only the verse says which
+    /// person is meant, so a word that isn't a name in that verse (or whose verse the names
+    /// data numbers differently) has none. Matching by number alone would label every "heart"
+    /// with the name that shares its number.
+    func names(forStrongs strongsNumber: String, in verse: VerseLocation) -> [OriginalName] {
+        guard let bookIndex = OriginalWordsBooks.index(of: verse.bookName) else { return [] }
+
+        return withDatabase { database in
+            let query = """
+            SELECT name.id, name.name, name.kind, name.description, name.parents, name.siblings,
+                   name.partners, name.offspring, name.area, name.latitude, name.longitude
+            FROM name_verses AS link JOIN names AS name ON name.id = link.name
+            WHERE link.strongs = ? AND link.book = ? AND link.chapter = ? AND link.verse = ?
+            ORDER BY name.id;
+            """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+                  let statement else { return [OriginalName]() }
+            defer { sqlite3_finalize(statement) }
+            sqlite3_bind_text(statement, 1, strongsNumber, -1, Self.sqliteTransientDestructor())
+            sqlite3_bind_int(statement, 2, Int32(bookIndex))
+            sqlite3_bind_int(statement, 3, Int32(verse.chapter))
+            sqlite3_bind_int(statement, 4, Int32(verse.verse))
+
+            var names: [OriginalName] = []
+            while sqlite3_step(statement) == SQLITE_ROW {
+                names.append(
+                    OriginalName(
+                        id: Int(sqlite3_column_int(statement, 0)),
+                        name: Self.columnText(statement, at: 1),
+                        kind: OriginalName.Kind(rawValue: Self.columnText(statement, at: 2)) ?? .other,
+                        description: Self.columnText(statement, at: 3),
+                        parents: Self.columnText(statement, at: 4),
+                        siblings: Self.columnText(statement, at: 5),
+                        partners: Self.columnText(statement, at: 6),
+                        offspring: Self.columnText(statement, at: 7),
+                        area: Self.columnText(statement, at: 8),
+                        latitude: Self.optionalColumnDouble(statement, at: 9),
+                        longitude: Self.optionalColumnDouble(statement, at: 10)
+                    )
+                )
+            }
+            return names
         } ?? []
     }
 
@@ -269,6 +363,10 @@ actor OriginalWordsRepository {
     private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
         guard let text = sqlite3_column_text(statement, index) else { return "" }
         return String(cString: text)
+    }
+
+    private static func optionalColumnDouble(_ statement: OpaquePointer, at index: Int32) -> Double? {
+        sqlite3_column_type(statement, index) == SQLITE_NULL ? nil : sqlite3_column_double(statement, index)
     }
 
     private static func optionalColumnText(_ statement: OpaquePointer, at index: Int32) -> String? {
