@@ -107,19 +107,6 @@ struct OriginalName: Identifiable, Equatable, Sendable {
     let offspring: String
     /// The tribe or nation of a person, or the region of a place.
     let area: String
-    let latitude: Double?
-    let longitude: Double?
-
-    /// An Apple Maps link for a place whose location is known.
-    var mapURL: URL? {
-        guard let latitude, let longitude else { return nil }
-        var components = URLComponents(string: "https://maps.apple.com/")
-        components?.queryItems = [
-            URLQueryItem(name: "ll", value: "\(latitude),\(longitude)"),
-            URLQueryItem(name: "q", value: name),
-        ]
-        return components?.url
-    }
 }
 
 /// A verse, by the KJV's book, chapter, and verse numbers.
@@ -225,7 +212,7 @@ actor OriginalWordsRepository {
         return withDatabase { database in
             let query = """
             SELECT name.id, name.name, name.kind, name.description, name.parents, name.siblings,
-                   name.partners, name.offspring, name.area, name.latitude, name.longitude
+                   name.partners, name.offspring, name.area
             FROM name_verses AS link JOIN names AS name ON name.id = link.name
             WHERE link.strongs = ? AND link.book = ? AND link.chapter = ? AND link.verse = ?
             ORDER BY name.id;
@@ -251,9 +238,7 @@ actor OriginalWordsRepository {
                         siblings: Self.columnText(statement, at: 5),
                         partners: Self.columnText(statement, at: 6),
                         offspring: Self.columnText(statement, at: 7),
-                        area: Self.columnText(statement, at: 8),
-                        latitude: Self.optionalColumnDouble(statement, at: 9),
-                        longitude: Self.optionalColumnDouble(statement, at: 10)
+                        area: Self.columnText(statement, at: 8)
                     )
                 )
             }
@@ -363,10 +348,6 @@ actor OriginalWordsRepository {
     private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
         guard let text = sqlite3_column_text(statement, index) else { return "" }
         return String(cString: text)
-    }
-
-    private static func optionalColumnDouble(_ statement: OpaquePointer, at index: Int32) -> Double? {
-        sqlite3_column_type(statement, index) == SQLITE_NULL ? nil : sqlite3_column_double(statement, index)
     }
 
     private static func optionalColumnText(_ statement: OpaquePointer, at index: Int32) -> String? {

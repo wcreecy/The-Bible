@@ -185,21 +185,18 @@ struct OriginalWordsTests {
         #expect(aaron.partners == "Elisheba")
         #expect(aaron.offspring.contains("Eleazar"))
         #expect(aaron.area == "Tribe of Levi")
-        #expect(aaron.mapURL == nil)
     }
 
     @Test
-    func aPlaceHasACoordinateAndAMapLink() async throws {
+    func aPlaceIsMarkedAsOneWithItsRegion() async throws {
         let names = await OriginalWordsRepository.shared.names(
             forStrongs: "G0965", in: VerseLocation(bookName: "Matthew", chapter: 2, verse: 1)
         )
         let bethlehem = try #require(names.first)
+        #expect(names.count == 1)
         #expect(bethlehem.name == "Bethlehem")
         #expect(bethlehem.kind == .place)
-        #expect(try #require(bethlehem.latitude) > 31.6 && bethlehem.latitude! < 31.8)
-        let url = try #require(bethlehem.mapURL)
-        #expect(url.host == "maps.apple.com")
-        #expect(url.absoluteString.contains("q=Bethlehem"))
+        #expect(bethlehem.area == "Tribe of Judah")
     }
 
     /// Several men are called Zechariah, but in Luke 1:5 the verse says which.

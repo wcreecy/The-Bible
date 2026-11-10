@@ -55,6 +55,6 @@ https://STEPBible.github.io/STEPBible-Data, and that changes to the data be note
 script's changes are listed in its docstring (English-numbered references, Psalm titles
 folded into verse 1, words only in unused editions left out, Greek definitions reduced to
 their English senses, plain-text definitions, grammar codes turned into one English line,
-and name records cut down to who each is and the verses they appear in; the map links in
-TIPNR became coordinates). The app credits STEPBible in Settings → Help →
+and name records cut down to who each is and the verses they appear in; TIPNR's map
+coordinates were left out because many are rough placeholders). The app credits STEPBible in Settings → Help →
 Acknowledgements, as it does OpenBible.info.

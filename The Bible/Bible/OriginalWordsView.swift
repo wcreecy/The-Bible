@@ -664,12 +664,6 @@ private struct NameCard: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            if let url = name.mapURL {
-                Link(destination: url) {
-                    Label("Show on Map", systemImage: "map")
-                        .font(.subheadline)
-                }
-            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)

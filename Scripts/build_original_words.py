@@ -482,7 +482,6 @@ def describe_codes(codes, table, language):
 
 NAME_MARKERS = re.compile(r"\((?:d|a|f|\?)\)|_\d+|=[HG]\d{4}[A-Z]?|@\S*")
 NAME_REFERENCE = re.compile(r"^([1-3A-Za-z]{3})\.(\d+)\.(\d+)[a-z]?$")
-MAP_COORDINATES = re.compile(r"/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)")
 
 
 def plain_name(text):
@@ -518,7 +517,6 @@ def parse_names(path, book_numbers, resolve, problems):
         cells = [cell.strip() for cell in top]
         kind = cells[8]
         is_place = kind == "Place"
-        coordinates = MAP_COORDINATES.search(cells[4]) if is_place else None
         area = "" if cells[6] in ("", ">") else cells[6]
         name_id = len(records) + 1
         record_name = plain_name(cells[0].split("@")[0])
@@ -530,8 +528,6 @@ def parse_names(path, book_numbers, resolve, problems):
             "" if is_place else relatives(cells[4]),
             "" if is_place else relatives(cells[5]),
             area,
-            float(coordinates.group(1)) if coordinates else None,
-            float(coordinates.group(2)) if coordinates else None,
         ))
         # "– Group" lines are the people descended from this person (the Jews under Judah, the
         # Israelites under Israel) or who live in this place. They are not the individual, so each
@@ -559,7 +555,7 @@ def parse_names(path, book_numbers, resolve, problems):
                     records.append((
                         groups[group_name], group_name, "Group",
                         f"People of {record_name}" if is_place else f"People descended from {record_name}",
-                        "", "", "", "", "", None, None,
+                        "", "", "", "", "",
                     ))
                 target = groups[group_name]
             for reference in re.split(r"[;,]\s*", spelling[4]):
@@ -618,9 +614,7 @@ CREATE TABLE names (
     siblings TEXT NOT NULL,
     partners TEXT NOT NULL,
     offspring TEXT NOT NULL,
-    area TEXT NOT NULL,
-    latitude REAL,
-    longitude REAL
+    area TEXT NOT NULL
 );
 -- The verses a name's Strong's number refers to this individual in.
 CREATE TABLE name_verses (
@@ -779,7 +773,7 @@ def main():
                              [(number, text) for text, number in parse_ids.items()])
         database.executemany("INSERT INTO forms VALUES (?,?,?,?,?,?,?)",
                              [(number, *form[:5], parse_ids.get(form[5])) for form, number in form_ids.items()])
-        database.executemany("INSERT INTO names VALUES (?,?,?,?,?,?,?,?,?,?,?)", name_rows)
+        database.executemany("INSERT INTO names VALUES (?,?,?,?,?,?,?,?,?)", name_rows)
         database.executemany("INSERT INTO name_verses VALUES (?,?,?,?,?)", name_links)
         database.executemany("INSERT INTO words VALUES (?,?,?,?,?)",
                              [(book_order[row[0]] + 1, *row[1:4], form_ids[row[4:]]) for row in rows])
