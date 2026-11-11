@@ -325,9 +325,11 @@ struct OriginalWordsView: View {
         Haptics.selection()
         withAnimation(.snappy) {
             selectedWordID = word?.id
-            if word != nil, detent == .medium {
-                detent = .large
-            }
+        }
+        // Outside the animation: the sheet animates its own resize, and a SwiftUI animation
+        // on top of it runs two animations on the sheet's layer at once.
+        if word != nil, detent == .medium {
+            detent = .large
         }
     }
 }

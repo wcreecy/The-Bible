@@ -7,43 +7,23 @@ struct ReadingInsightsCardView: View {
     let averageSessionSeconds: Int
     let formatSeconds: (Int) -> String
 
-    private let heatColumns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 14)
-
     var body: some View {
-        GroupBox {
+        // Which days had reading lives in the Reading History card, so this one sticks to
+        // the numbers.
+        HeroCard(title: "Reading Insights", icon: "lightbulb", tint: .yellow) {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Reading Insights")
-                    .font(.headline)
-
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                    metric(title: "Current goal streak", value: "\(insights.currentStreak) days")
-                    metric(title: "Longest goal streak", value: "\(insights.bestStreak) days")
-                    metric(title: "Goal completion", value: goalCompletionText)
-                    metric(title: "Usual reading time", value: insights.consistentTimeLabel)
+                    metric(title: "Goal streak", value: dayCount(insights.currentStreak),
+                           accessibilityTitle: "Current goal streak")
+                    metric(title: "Best streak", value: dayCount(insights.bestStreak),
+                           accessibilityTitle: "Longest goal streak")
+                    metric(title: "Goals met", value: goalCompletionText,
+                           accessibilityTitle: "Daily goals met in the last 30 days")
+                    metric(title: "Usual time", value: insights.consistentTimeLabel,
+                           accessibilityTitle: "Usual reading time")
                 }
 
                 comparison
-
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Reading Days")
-                            .font(.subheadline.weight(.semibold))
-                        Spacer()
-                        Text("Last 13 weeks")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    LazyVGrid(columns: heatColumns, spacing: 4) {
-                        ForEach(insights.heatMapDays) { day in
-                            RoundedRectangle(cornerRadius: 3)
-                                .fill(heatColor(seconds: day.seconds))
-                                .aspectRatio(1, contentMode: .fit)
-                                .accessibilityLabel("\(day.date.formatted(date: .abbreviated, time: .omitted)), \(formatSeconds(day.seconds))")
-                        }
-                    }
-                    .accessibilityElement(children: .contain)
-                }
 
                 Divider()
 
@@ -54,6 +34,10 @@ struct ReadingInsightsCardView: View {
                 )
             }
         }
+    }
+
+    private func dayCount(_ days: Int) -> String {
+        days == 1 ? "1 day" : "\(days) days"
     }
 
     private var goalCompletionText: String {
@@ -87,27 +71,23 @@ struct ReadingInsightsCardView: View {
         .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func metric(title: String, value: String) -> some View {
+    /// A short label over its value. `accessibilityTitle` is the full name VoiceOver reads.
+    private func metric(title: String, value: String, accessibilityTitle: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
             Text(value)
                 .font(.footnote.weight(.semibold))
                 .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
         .padding(10)
         .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
-    }
-
-    private func heatColor(seconds: Int) -> Color {
-        switch seconds {
-        case ...0: return Color.secondary.opacity(0.12)
-        case 1..<300: return Color.accentColor.opacity(0.25)
-        case 300..<900: return Color.accentColor.opacity(0.45)
-        case 900..<1800: return Color.accentColor.opacity(0.7)
-        default: return Color.accentColor
-        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(accessibilityTitle): \(value)")
     }
 }

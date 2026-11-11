@@ -211,54 +211,12 @@ struct ScrambleAnswerTiles: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let tileCount = max(answerLength, 1)
-            let maximumSpacing = 7.0
-            let minimumTileWidth = 28.0
-            let spacing = min(
-                maximumSpacing,
-                max(
-                    3,
-                    (proxy.size.width - CGFloat(tileCount) * minimumTileWidth)
-                        / CGFloat(max(tileCount - 1, 1))
-                )
-            )
-            let tileWidth = max(
-                1,
-                min(
-                    48,
-                    (proxy.size.width - spacing * CGFloat(max(tileCount - 1, 0)))
-                        / CGFloat(tileCount)
-                )
-            )
-            let tileHeight = min(56, max(36, tileWidth + 8))
+            let metrics = Self.tileMetrics(availableWidth: proxy.size.width, tileCount: max(answerLength, 1))
 
-            HStack(spacing: spacing) {
+            HStack(spacing: metrics.spacing) {
                 ForEach(0..<answerLength, id: \.self) { index in
-                    let letter = index < answer.count ? String(answer[answer.index(answer.startIndex, offsetBy: index)]) : ""
-                    let hint = index >= answer.count && index < hintedLetters.count ? hintedLetters[index].map(String.init) ?? "" : ""
-                    let tile = Text(letter.isEmpty ? hint : letter)
-                        .font(.title3.weight(.bold).monospaced())
-                        .foregroundStyle(
-                            showsCorrectHighlight ? Color.green
-                                : (letter.isEmpty && !hint.isEmpty
-                                ? Color.yellow
-                                : (isResolved ? .secondary : .primary))
-                        )
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.5)
-                        .frame(width: tileWidth, height: tileHeight)
-                        .background(
-                            isIncorrect ? Color.orange.opacity(0.10) : (showsCorrectHighlight ? Color.green.opacity(0.18) : (letter.isEmpty && !hint.isEmpty ? Color.yellow.opacity(0.12) : Color.clear)),
-                            in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        )
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .strokeBorder(
-                                    isIncorrect ? Color.orange : (showsCorrectHighlight ? Color.green : (letter.isEmpty && !hint.isEmpty ? Color.yellow.opacity(0.8) : Color.primary.opacity(isResolved ? 0.08 : 0.15))),
-                                    lineWidth: isIncorrect || showsCorrectHighlight || (letter.isEmpty && !hint.isEmpty) ? 2 : 1
-                                )
-                        }
-                        .offset(x: shakeOffset)
+                    let letter = letter(at: index)
+                    let tile = tile(letter: letter, hint: hint(at: index), metrics: metrics)
 
                     if letter.isEmpty || isResolved {
                         tile
@@ -312,6 +270,78 @@ struct ScrambleAnswerTiles: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Answer")
         .accessibilityValue(answer.isEmpty ? "Empty" : answer)
+    }
+
+    // The tile's size, letter, and colors are worked out in these helpers rather than inline
+    // in `body`, which kept the type checker busy for seconds.
+
+    private struct TileMetrics {
+        let spacing: CGFloat
+        let width: CGFloat
+        let height: CGFloat
+    }
+
+    /// Tiles as wide as fits (up to 48 points), with the gaps shrinking first for long words.
+    private static func tileMetrics(availableWidth: CGFloat, tileCount: Int) -> TileMetrics {
+        let count = CGFloat(tileCount)
+        let maximumSpacing: CGFloat = 7
+        let minimumTileWidth: CGFloat = 28
+        let gaps = CGFloat(max(tileCount - 1, 1))
+        let spacing = min(maximumSpacing, max(3, (availableWidth - count * minimumTileWidth) / gaps))
+        let width = max(1, min(48, (availableWidth - spacing * CGFloat(max(tileCount - 1, 0))) / count))
+        return TileMetrics(spacing: spacing, width: width, height: min(56, max(36, width + 8)))
+    }
+
+    /// The typed letter at `index`, or "" past the end of what's been typed.
+    private func letter(at index: Int) -> String {
+        guard index < answer.count else { return "" }
+        return String(answer[answer.index(answer.startIndex, offsetBy: index)])
+    }
+
+    /// A revealed hint letter for an untyped position, or "".
+    private func hint(at index: Int) -> String {
+        guard index >= answer.count, index < hintedLetters.count else { return "" }
+        return hintedLetters[index].map(String.init) ?? ""
+    }
+
+    private func tile(letter: String, hint: String, metrics: TileMetrics) -> some View {
+        let showsHint = letter.isEmpty && !hint.isEmpty
+        let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+
+        return Text(letter.isEmpty ? hint : letter)
+            .font(.title3.weight(.bold).monospaced())
+            .foregroundStyle(textColor(showsHint: showsHint))
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .frame(width: metrics.width, height: metrics.height)
+            .background(fillColor(showsHint: showsHint), in: shape)
+            .overlay {
+                shape.strokeBorder(
+                    strokeColor(showsHint: showsHint),
+                    lineWidth: isIncorrect || showsCorrectHighlight || showsHint ? 2 : 1
+                )
+            }
+            .offset(x: shakeOffset)
+    }
+
+    private func textColor(showsHint: Bool) -> Color {
+        if showsCorrectHighlight { return .green }
+        if showsHint { return .yellow }
+        return isResolved ? .secondary : .primary
+    }
+
+    private func fillColor(showsHint: Bool) -> Color {
+        if isIncorrect { return Color.orange.opacity(0.10) }
+        if showsCorrectHighlight { return Color.green.opacity(0.18) }
+        if showsHint { return Color.yellow.opacity(0.12) }
+        return .clear
+    }
+
+    private func strokeColor(showsHint: Bool) -> Color {
+        if isIncorrect { return .orange }
+        if showsCorrectHighlight { return .green }
+        if showsHint { return Color.yellow.opacity(0.8) }
+        return Color.primary.opacity(isResolved ? 0.08 : 0.15)
     }
 }
 

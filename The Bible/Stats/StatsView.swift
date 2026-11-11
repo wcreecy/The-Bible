@@ -1,6 +1,14 @@
 import SwiftUI
 import Charts
 
+/// Card widths shared by Reading Stats and Game Stats, so switching modes on iPad keeps
+/// the cards the same size.
+private enum StatsLayoutWidth {
+    static let column: CGFloat = 560
+    /// Two columns plus the 16-point gap between them.
+    static let wide: CGFloat = column * 2 + 16
+}
+
 private struct ReadingStatsSections<
     ReadingAndGames: View,
     Progress: View,
@@ -30,7 +38,7 @@ private struct ReadingStatsSections<
                         progress
                         insights
                     }
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .frame(maxWidth: StatsLayoutWidth.column, alignment: .topLeading)
 
                     VStack(spacing: 16) {
                         totals
@@ -38,8 +46,9 @@ private struct ReadingStatsSections<
                         history
                         prayer
                     }
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .frame(maxWidth: StatsLayoutWidth.column, alignment: .topLeading)
                 }
+                .frame(maxWidth: .infinity, alignment: .top)
             } else {
                 VStack(spacing: 16) {
                     readingAndGames
@@ -50,6 +59,7 @@ private struct ReadingStatsSections<
                     history
                     prayer
                 }
+                .frame(maxWidth: StatsLayoutWidth.column)
             }
         }
         .padding(.horizontal, 16)
@@ -68,13 +78,13 @@ private struct GameStatsSections: View {
                         GamesOverviewCardView()
                         GameInsightsCardView()
                     }
-                    .frame(maxWidth: 560, alignment: .topLeading)
+                    .frame(maxWidth: StatsLayoutWidth.column, alignment: .topLeading)
 
                     VStack(spacing: 16) {
                         AllGamesComparisonCardView()
                         PlayerStatSheetCardView()
                     }
-                    .frame(maxWidth: 560, alignment: .topLeading)
+                    .frame(maxWidth: StatsLayoutWidth.column, alignment: .topLeading)
                 }
                 .frame(maxWidth: .infinity, alignment: .top)
             } else {
@@ -84,7 +94,7 @@ private struct GameStatsSections: View {
                     AllGamesComparisonCardView()
                     PlayerStatSheetCardView()
                 }
-                .frame(maxWidth: 560)
+                .frame(maxWidth: StatsLayoutWidth.column)
             }
         }
         .padding(.horizontal, 16)
@@ -192,7 +202,6 @@ struct StatsView: View {
                 }
             }
         }
-        .groupBoxStyle(StatsHeroGroupBoxStyle())
         .tabBarContentClearance()
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("Stats")
@@ -277,6 +286,11 @@ struct StatsView: View {
         !dynamicTypeSize.isAccessibilitySize && (hSizeClass == .regular || vSizeClass == .compact)
     }
 
+    /// The weekly summary spans both card columns in the wide layout, or one otherwise.
+    private var summaryCardMaxWidth: CGFloat {
+        usesWideStatsLayout ? StatsLayoutWidth.wide : StatsLayoutWidth.column
+    }
+
     private var bibleContent: some View {
         VStack(spacing: 16) {
             WeeklyReadingSummaryCard(
@@ -286,6 +300,7 @@ struct StatsView: View {
                 topBook: model.topBookThisWeek,
                 formatSeconds: { BibleStatsStore.shared.format($0) }
             )
+            .frame(maxWidth: summaryCardMaxWidth)
             .padding(.horizontal, 16)
 
             ReadingStatsSections(
@@ -308,7 +323,7 @@ struct StatsView: View {
     private var gameContent: some View {
         VStack(spacing: 16) {
             GameWeekSummaryCardView()
-                .frame(maxWidth: usesWideStatsLayout ? 1_136 : 560)
+                .frame(maxWidth: summaryCardMaxWidth)
                 .padding(.horizontal, 16)
 
             GameStatsSections(usesWideLayout: usesWideStatsLayout)
@@ -438,17 +453,6 @@ struct StatsView: View {
     @AxisContentBuilder
     private var totalsChartXAxisMarks: some AxisContent {
         StatsChartConfig.xAxisMarks(for: totalsCurrentXAxisAggregation)
-    }
-}
-
-private struct StatsHeroGroupBoxStyle: GroupBoxStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            configuration.label
-            configuration.content
-        }
-        .padding(AppDesignMetrics.cardPadding)
-        .heroCardSurface()
     }
 }
 

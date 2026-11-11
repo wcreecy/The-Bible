@@ -19,8 +19,6 @@ struct ProgressCardView: View {
     @Binding var search: String
     @Binding var selectedBookForChapters: String?
 
-    @Environment(\.horizontalSizeClass) private var hSizeClass
-
     // Helpers
     private func formatInt(_ v: Int) -> String { v.formatted(.number.grouping(.automatic)) }
 
@@ -63,7 +61,7 @@ struct ProgressCardView: View {
     }
 
     var body: some View {
-        GroupBox {
+        HeroCard(title: "Reading Progress", icon: "books.vertical", tint: .green) {
             VStack(alignment: .leading, spacing: 10) {
                 // Unified header tap target
                 headerView
@@ -101,110 +99,90 @@ struct ProgressCardView: View {
         }
     }
 
-    // MARK: - Unified header
-    @ViewBuilder
+    // MARK: - Header
+
+    /// The same header whether or not the details are open, so expanding doesn't make the
+    /// top of the card jump.
     private var headerView: some View {
-        if isExpanded {
-            if hSizeClass == .compact {
-                compactHeader
-            } else {
-                regularHeader
-            }
-        } else {
-            collapsedHeader
-        }
-    }
-
-    // MARK: - Collapsed header (polished summary)
-
-    private var collapsedHeader: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Reading Progress")
-                .font(.headline)
+            Text("Books and chapters count once every verse in them is viewed.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
-            if hSizeClass == .regular {
-                HStack(spacing: 12) {
-                    summaryTile(
-                        title: "Books fully viewed",
-                        countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
-                        percent: booksPercent,
-                        tint: .green
-                    )
-                    summaryTile(
-                        title: "Chapters fully viewed",
-                        countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
-                        percent: chaptersPercent,
-                        tint: .blue
-                    )
-                    summaryTile(
-                        title: "Verses viewed",
-                        countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
-                        percent: versesPercent,
-                        tint: .accentColor
-                    )
+            // Side by side when the three fit, otherwise one per row.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 10) {
+                    ForEach(metrics) { metric in
+                        metricTile(metric, axis: .vertical)
+                    }
                 }
-            } else {
                 VStack(spacing: 8) {
-                    summaryTile(
-                        title: "Books fully viewed",
-                        countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
-                        percent: booksPercent,
-                        tint: .green
-                    )
-                    summaryTile(
-                        title: "Chapters fully viewed",
-                        countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
-                        percent: chaptersPercent,
-                        tint: .blue
-                    )
-                    summaryTile(
-                        title: "Verses viewed",
-                        countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
-                        percent: versesPercent,
-                        tint: .accentColor
-                    )
+                    ForEach(metrics) { metric in
+                        metricTile(metric, axis: .horizontal)
+                    }
                 }
             }
         }
     }
 
-    private func summaryTile(title: String, countText: String, percent: Int, tint: Color) -> some View {
-        HStack(spacing: 12) {
-            ProgressRing(
-                progress: Double(percent) / 100.0,
-                lineWidth: 7,
-                size: 40,
-                tint: tint,
-                track: Color.primary.opacity(0.12),
-                label: {
-                    Text("\(percent)%")
-                        .font(.caption2.weight(.semibold))
-                        .monospacedDigit()
-                }
-            )
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(title)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    // Small accent chip for percent — mark decorative to avoid intercepting taps
-                    Text("\(percent)%")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(tint)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            Capsule(style: .continuous)
-                                .fill(tint.opacity(0.12))
-                        )
-                        .accessibilityHidden(true)
-                        .allowsHitTesting(false)
-                }
-                Text(countText + " " + title.lowercased())
-                    .font(.footnote.weight(.semibold))
+    private struct Metric: Identifiable {
+        let title: String
+        let count: Int
+        let total: Int
+        let percent: Int
+        let tint: Color
+
+        var id: String { title }
+    }
+
+    private var metrics: [Metric] {
+        [
+            Metric(title: "Books", count: booksCompleted, total: totalBooks, percent: booksPercent, tint: .green),
+            Metric(title: "Chapters", count: visitedCount, total: totalChapters, percent: chaptersPercent, tint: .blue),
+            Metric(title: "Verses", count: completedVerses, total: totalVerses, percent: versesPercent, tint: .accentColor)
+        ]
+    }
+
+    /// A ring with the percent, the metric's name, and its count. `axis` places the ring
+    /// above the text (.vertical) or beside it (.horizontal).
+    private func metricTile(_ metric: Metric, axis: Axis) -> some View {
+        let ring = ProgressRing(
+            progress: Double(metric.percent) / 100.0,
+            lineWidth: 7,
+            size: 40,
+            tint: metric.tint,
+            track: Color.primary.opacity(0.12),
+            label: {
+                Text("\(metric.percent)%")
+                    .font(.caption2.weight(.semibold))
                     .monospacedDigit()
             }
-            Spacer(minLength: 0)
+        )
+        let text = VStack(alignment: axis == .vertical ? .center : .leading, spacing: 2) {
+            Text(metric.title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("\(formatInt(metric.count))/\(formatInt(metric.total))")
+                .font(.footnote.weight(.semibold))
+                .monospacedDigit()
+        }
+        .lineLimit(1)
+
+        return Group {
+            if axis == .vertical {
+                VStack(spacing: 6) {
+                    ring
+                    text
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                HStack(spacing: 12) {
+                    ring
+                    text
+                    Spacer(minLength: 0)
+                }
+            }
         }
         .padding(10)
         .background(
@@ -215,104 +193,9 @@ struct ProgressCardView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(Color.black.opacity(0.06), lineWidth: 1)
         )
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title) \(countText), \(percent) percent complete")
-        .allowsHitTesting(false) // ensure the tile never steals the header tap
-    }
-
-    // MARK: - Original headers (kept for expanded view)
-
-    private var compactHeader: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Reading Progress")
-                .font(.headline)
-
-            VStack(spacing: 8) {
-                metricRow(title: "Books", countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))", percent: booksPercent, tint: .green)
-                metricRow(title: "Chapters", countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))", percent: chaptersPercent, tint: .blue)
-                metricRow(title: "Verses", countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))", percent: versesPercent, tint: .accentColor)
-            }
-        }
-    }
-
-    private var regularHeader: some View {
-        HStack(alignment: .center, spacing: 14) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Reading Progress")
-                    .font(.headline)
-                HStack(spacing: 8) {
-                    Text("\(formatInt(booksCompleted))/\(formatInt(totalBooks)) books")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                    Text("• \(formatInt(visitedCount))/\(formatInt(totalChapters)) chapters")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                    Text("• \(formatInt(completedVerses))/\(formatInt(totalVerses)) verses")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                }
-            }
-            Spacer()
-            HStack(spacing: 12) {
-                labeledRing(title: "Books", percent: booksPercent, tint: .green)
-                labeledRing(title: "Chapters", percent: chaptersPercent, tint: .blue)
-                labeledRing(title: "Verses", percent: versesPercent, tint: .accentColor)
-            }
-            .allowsHitTesting(false) // decorative cluster; avoid stealing taps
-        }
-    }
-
-    private func labeledRing(title: String, percent: Int, tint: Color) -> some View {
-        VStack(spacing: 4) {
-            Text(title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            ProgressRing(
-                progress: Double(percent) / 100.0,
-                lineWidth: 7,
-                size: 40,
-                tint: tint,
-                track: Color.primary.opacity(0.12),
-                label: {
-                    Text("\(percent)%")
-                        .font(.caption2.weight(.semibold))
-                        .monospacedDigit()
-                }
-            )
-            .accessibilityLabel(Text("\(title) \(percent) percent complete"))
-        }
-    }
-
-    private func metricRow(title: String, countText: String, percent: Int, tint: Color) -> some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(countText)
-                    .font(.footnote.weight(.semibold))
-                    .monospacedDigit()
-            }
-            Spacer(minLength: 8)
-            ProgressRing(
-                progress: Double(percent) / 100.0,
-                lineWidth: 7,
-                size: 36,
-                tint: tint,
-                track: Color.primary.opacity(0.12),
-                label: {
-                    Text("\(percent)%")
-                        .font(.caption2.weight(.semibold))
-                        .monospacedDigit()
-                }
-            )
-            .accessibilityLabel(Text("\(title) \(percent) percent complete"))
-        }
-        .padding(.vertical, 2)
-        .allowsHitTesting(false) // decorative; keep header tap unified
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(metric.title) fully viewed: \(metric.count) of \(metric.total), \(metric.percent) percent")
+        .allowsHitTesting(false) // the tile never steals the header tap
     }
 
     // MARK: - Expanded content (kept)

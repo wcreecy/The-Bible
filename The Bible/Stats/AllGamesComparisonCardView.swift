@@ -22,14 +22,13 @@ struct AllGamesComparisonCardView: View {
         let accuracy: Double? // nil until the game has an attempt
     }
 
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var showsAllGames = false
+    /// Starts at 0 so the list shows until the card has been measured.
+    @State private var contentWidth: CGFloat = 0
 
-    private var segmentedTint: Color {
-        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
-    }
+    /// Below this, the chart's game names crowd together, so a ranked list shows instead.
+    private static let minimumChartWidth: CGFloat = 460
 
     var body: some View {
         HeroCard(title: "All Games Comparison", icon: "chart.bar.xaxis", tint: .blue) {
@@ -40,25 +39,7 @@ struct AllGamesComparisonCardView: View {
             let isEmpty: Bool = (totalAnswered == 0)
 
             VStack(alignment: .leading, spacing: 8) {
-                if dynamicTypeSize.isAccessibilitySize {
-                    Picker("Sort", selection: $sort) {
-                        ForEach(Sort.allCases) { s in
-                            Text(s.rawValue).tag(s)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                } else {
-                    Picker("Sort", selection: $sort) {
-                        ForEach(Sort.allCases) { s in
-                            Text(s.rawValue).tag(s)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .tint(segmentedTint)
-                    .frame(maxWidth: 280, alignment: .trailing)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
+                StatsSortPicker(selection: $sort)
 
                 if isEmpty {
                     Text("Play any game to see your stats.")
@@ -79,7 +60,7 @@ struct AllGamesComparisonCardView: View {
 
                     if dynamicTypeSize.isAccessibilitySize {
                         AccessibleComparisonView(rows: rows, sort: sort)
-                    } else if horizontalSizeClass == .compact {
+                    } else if contentWidth < Self.minimumChartWidth {
                         RankedComparisonView(
                             rows: rows,
                             sort: sort,
@@ -109,6 +90,9 @@ struct AllGamesComparisonCardView: View {
                 }
             }
             .padding(.top, 2)
+            // The card's own width decides chart or list: an iPad column can be as narrow
+            // as an iPhone, and an iPhone in landscape as wide as an iPad column.
+            .onGeometryChange(for: CGFloat.self, of: \.size.width) { contentWidth = $0 }
         }
     }
 

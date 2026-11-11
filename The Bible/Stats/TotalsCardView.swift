@@ -26,7 +26,6 @@ struct TotalsCardView: View {
     // Formatting helper (seconds -> H:MM:SS or M:SS)
     let formatSeconds: (Int) -> String
 
-    @Environment(\.horizontalSizeClass) private var hSizeClass
     @Environment(\.colorScheme) private var colorScheme
 
     private var segmentedTint: Color {
@@ -34,24 +33,20 @@ struct TotalsCardView: View {
     }
 
     var body: some View {
-        GroupBox {
+        // The scope picker names the period, so the title doesn't repeat it.
+        HeroCard(
+            title: "Bible Reading Time",
+            icon: "clock",
+            tint: .blue,
+            trailingAccessory: {
+                Text(formatSeconds(totalSeconds))
+                    .font(.headline)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .accessibilityLabel("Total \(formatSeconds(totalSeconds)) \(timeScope.rawValue)")
+            }
+        ) {
             VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Bible Reading Time — \(timeScope.rawValue)")
-                        .font(.headline)
-                    Spacer()
-                    Text(formatSeconds(totalSeconds))
-                        .font(.headline)
-                        .monospacedDigit()
-                        .foregroundStyle(.primary)
-                        .accessibilityHidden(true)
-                        .overlay(
-                            Color.clear
-                                .accessibilityElement(children: .ignore)
-                                .accessibilityLabel("Total \(formatSeconds(totalSeconds))")
-                        )
-                }
-
                 Picker("Scope", selection: $timeScope) {
                     ForEach(StatsTimeScope.allCases) { scope in
                         Text(scope.rawValue).tag(scope)
@@ -84,18 +79,10 @@ struct TotalsCardView: View {
                                 .cornerRadius(3)
                                 .annotation(position: .top, alignment: .center) {
                                     if minutes > 0, showValueLabels {
-                                        // Smaller font on iPhone (compact) for legibility with many bars
-                                        if hSizeClass == .compact {
-                                            Text(minutes.formatted(.number.precision(.fractionLength(minutes < 1 ? 1 : 0))))
-                                                .font(.caption2.weight(.semibold))
-                                                .foregroundStyle(.secondary)
-                                                .monospacedDigit()
-                                        } else {
-                                            Text(minutes.formatted(.number.precision(.fractionLength(minutes < 1 ? 1 : 0))))
-                                                .font(.caption2.weight(.semibold))
-                                                .foregroundStyle(.secondary)
-                                                .monospacedDigit()
-                                        }
+                                        Text(minutes.formatted(.number.precision(.fractionLength(minutes < 1 ? 1 : 0))))
+                                            .font(.caption2.weight(.semibold))
+                                            .foregroundStyle(.secondary)
+                                            .monospacedDigit()
                                     }
                                 }
                             }
@@ -142,7 +129,7 @@ struct TotalsCardView: View {
                             Text(formatSeconds(entry.seconds))
                                 .foregroundStyle(.secondary)
                                 .monospacedDigit()
-                                .frame(width: 80, alignment: .trailing)
+                                .fixedSize()
                         }
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel("\(entry.book) \(formatSeconds(entry.seconds))")

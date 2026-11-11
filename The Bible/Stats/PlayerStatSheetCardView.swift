@@ -13,11 +13,7 @@ struct PlayerStatSheetCardView: View {
     }
     @State private var sort: Sort = .avg
 
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    private var segmentedTint: Color {
-        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
-    }
 
     private func uniqueMaxIndex<T: Comparable & Equatable>(_ values: [T]) -> Int? {
         guard let maxVal = values.max() else { return nil }
@@ -62,25 +58,7 @@ struct PlayerStatSheetCardView: View {
             let worstStreakIndex = uniqueMinIndex(streaks.map { $0 == 0 ? Int.max : $0 })
 
             VStack(alignment: .leading, spacing: 8) {
-                if dynamicTypeSize.isAccessibilitySize {
-                    Picker("Sort", selection: $sort) {
-                        ForEach(Sort.allCases) { s in
-                            Text(s.rawValue).tag(s)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                } else {
-                    Picker("Sort", selection: $sort) {
-                        ForEach(Sort.allCases) { s in
-                            Text(s.rawValue).tag(s)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .tint(segmentedTint)
-                    .frame(maxWidth: 280, alignment: .trailing)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
+                StatsSortPicker(selection: $sort)
 
                 if isEmpty {
                     Text("Play any game to see your stats.")
@@ -134,81 +112,61 @@ struct PlayerStatSheetCardView: View {
                             .accessibilityElement(children: .combine)
                         }
                     } else {
-                        let nameWidth: CGFloat = 88
-                        let percentageWidth: CGFloat = 60
-                        let streakWidth: CGFloat = 46
+                        // A Grid sizes each number column to its widest value, and the game
+                        // name takes the rest, so nothing is cut off at larger text sizes.
+                        Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
+                            GridRow {
+                                columnHeader("Game")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                columnHeader("Attempts")
+                                columnHeader("Avg")
+                                columnHeader("Streak")
+                            }
+                            .accessibilityHidden(true)
 
-                        HStack(spacing: 8) {
-                            Text("Game")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: nameWidth, alignment: .leading)
-                            Spacer(minLength: 0)
-                            Text("Attempts")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: percentageWidth, alignment: .center)
-                            Text("Avg")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: percentageWidth, alignment: .center)
-                            Text("Streak")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: streakWidth, alignment: .center)
-                        }
+                            ForEach(sortedIndices, id: \.self) { idx in
+                                let s = entries[idx]
+                                let attemptCount = attempts[idx]
+                                let avg = avgs[idx]
+                                let best = streaks[idx]
 
-                        ForEach(sortedIndices, id: \.self) { idx in
-                        let s = entries[idx]
-                        let attemptCount = attempts[idx]
-                        let avg = avgs[idx]
-                        let best = streaks[idx]
+                                Divider()
 
-                        HStack(spacing: 8) {
-                            Text(s.name)
-                                .font(.subheadline.weight(.semibold))
-                                .padding(.leading, 8)
-                                .frame(width: nameWidth, alignment: .leading)
+                                GridRow {
+                                    Text(s.name)
+                                        .font(.subheadline.weight(.semibold))
+                                        .lineLimit(2)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Spacer(minLength: 0)
+                                    labeledValue("\(attemptCount)",
+                                                 isBest: bestAttemptsIndex == idx,
+                                                 isWorst: worstAttemptsIndex == idx)
+                                        .gridColumnAlignment(.trailing)
 
-                            labeledValue("\(attemptCount)",
-                                         isBest: bestAttemptsIndex == idx,
-                                         isWorst: worstAttemptsIndex == idx)
-                                .frame(width: percentageWidth, alignment: .center)
+                                    labeledValue(avg.map { "\(Int(round($0)))%" } ?? "—",
+                                                 isBest: bestAvgIndex == idx,
+                                                 isWorst: worstAvgIndex == idx)
+                                        .gridColumnAlignment(.trailing)
 
-                            labeledValue(avg.map { "\(Int(round($0)))%" } ?? "—",
-                                         isBest: bestAvgIndex == idx,
-                                         isWorst: worstAvgIndex == idx)
-                                .frame(width: percentageWidth, alignment: .center)
-
-                            labeledValue(best > 0 ? "\(best)" : "—",
-                                         isBest: best > 0 && bestStreakIndex == idx,
-                                         isWorst: best > 0 && worstStreakIndex == idx)
-                                .frame(width: streakWidth, alignment: .center)
-                        }
-                        .foregroundStyle(s.answered == 0 ? .secondary : .primary)
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel(
-                            {
-                                var parts: [String] = [s.name]
-                                parts.append("\(attemptCount) attempts")
-                                if let avg { parts.append("Accuracy \(Int(round(avg))) percent") }
-                                if let bs = s.bestStreak, bs > 0 {
-                                    parts.append("Best streak \(bs)")
+                                    labeledValue(best > 0 ? "\(best)" : "—",
+                                                 isBest: best > 0 && bestStreakIndex == idx,
+                                                 isWorst: best > 0 && worstStreakIndex == idx)
+                                        .gridColumnAlignment(.trailing)
                                 }
-                                return parts.joined(separator: ". ") + "."
-                            }()
-                        )
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(Color(.secondarySystemBackground))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
-                        )
+                                .foregroundStyle(s.answered == 0 ? .secondary : .primary)
+                                .accessibilityElement(children: .ignore)
+                                .accessibilityLabel(
+                                    {
+                                        var parts: [String] = [s.name]
+                                        parts.append("\(attemptCount) attempts")
+                                        if let avg { parts.append("Accuracy \(Int(round(avg))) percent") }
+                                        if let bs = s.bestStreak, bs > 0 {
+                                            parts.append("Best streak \(bs)")
+                                        }
+                                        return parts.joined(separator: ". ") + "."
+                                    }()
+                                )
+                            }
                         }
                         .animation(.easeInOut(duration: 0.2), value: sort)
                     }
@@ -218,6 +176,13 @@ struct PlayerStatSheetCardView: View {
         }
         .onAppear { version &+= 1 }
         .onChange(of: stats.version) { _, _ in version &+= 1 }
+    }
+
+    private func columnHeader(_ title: String) -> some View {
+        Text(title)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
     }
 
     private func labeledValue(_ text: String, isBest: Bool, isWorst: Bool) -> some View {

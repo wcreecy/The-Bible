@@ -1,14 +1,6 @@
 import Foundation
 
-struct ReadingHeatMapDay: Identifiable, Equatable {
-    let date: Date
-    let seconds: Int
-
-    var id: Date { date }
-}
-
 struct ReadingInsights: Equatable {
-    var heatMapDays: [ReadingHeatMapDay] = []
     var currentStreak: Int = 0
     var bestStreak: Int = 0
     var recentSeconds: Int = 0
@@ -51,12 +43,6 @@ enum ReadingInsightsCalculator {
             }
         }
 
-        let heatMapDays = stride(from: 90, through: 0, by: -1).compactMap { offset -> ReadingHeatMapDay? in
-            guard let date = cal.date(byAdding: .day, value: -offset, to: today) else { return nil }
-            let key = BibleStatsStore.isoDateString(date, calendar: cal)
-            return ReadingHeatMapDay(date: date, seconds: max(0, dailyTotals[key, default: 0]))
-        }
-
         var goalDaysMet = 0
         var evaluatedGoalDays = 0
         for offset in 0..<30 {
@@ -80,7 +66,6 @@ enum ReadingInsightsCalculator {
         }
 
         return ReadingInsights(
-            heatMapDays: heatMapDays,
             currentStreak: StreakTracker.currentStreak(dailyTotals: dailyTotals, now: now, calendar: cal),
             bestStreak: StreakTracker.bestStreak(dailyTotals: dailyTotals, now: now, calendar: cal),
             recentSeconds: seconds(daysAgo: 0..<7),

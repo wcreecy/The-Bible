@@ -25,14 +25,9 @@ struct GenreDistributionCardView: View {
     }
 
     var body: some View {
-        GroupBox {
+        // The scope picker names the period, so the title doesn't repeat it.
+        HeroCard(title: "Genre Distribution", icon: "chart.bar.doc.horizontal", tint: .teal) {
             VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Genre Distribution — \(timeScope.rawValue)")
-                        .font(.headline)
-                    Spacer()
-                }
-
                 Picker("Scope", selection: $timeScope) {
                     ForEach(StatsTimeScope.allCases) { scope in
                         Text(scope.rawValue).tag(scope)
@@ -48,7 +43,9 @@ struct GenreDistributionCardView: View {
                 let maxValRaw = perGenreTotals.map { max(0, $0.seconds) }.max() ?? 0
                 let maxVal = max(1, maxValRaw)
 
-                VStack(spacing: 8) {
+                // Name and time share a line with the bar beneath, so long genre names and
+                // large text sizes fit without fixed column widths.
+                VStack(spacing: 10) {
                     ForEach(perGenreTotals, id: \.genre) { item in
                         let safeSeconds = max(0, item.seconds)
                         Button {
@@ -57,11 +54,17 @@ struct GenreDistributionCardView: View {
                                 onSelectGenre(g)
                             }
                         } label: {
-                            HStack(spacing: 8) {
-                                Text(item.genre)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 110, alignment: .leading)
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(item.genre)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Spacer(minLength: 8)
+                                    Text(formatSeconds(safeSeconds))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .monospacedDigit()
+                                }
                                 GeometryReader { geo in
                                     let raw = CGFloat(safeSeconds) / CGFloat(maxVal)
                                     let frac = raw.isFinite ? min(max(0, raw), 1) : 0
@@ -70,13 +73,8 @@ struct GenreDistributionCardView: View {
                                         .frame(width: max(0, geo.size.width * frac), height: 10, alignment: .leading)
                                 }
                                 .frame(height: 10)
-                                Text(formatSeconds(safeSeconds))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                                    .frame(width: 60, alignment: .trailing)
                             }
-                            .frame(height: 16)
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("\(item.genre) \(formatSeconds(safeSeconds))")

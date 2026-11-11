@@ -158,8 +158,9 @@ final class ScrambleGameViewModel {
     @ObservationIgnored private let sleep: (Duration) async throws -> Void
     /// The current time for the word clock; tests pass the manual clock's time.
     @ObservationIgnored private let now: () -> Date
-    /// Whether a string is a real English word; tests can pass a fixed list.
-    @ObservationIgnored private let isEnglishWord: (String) -> Bool
+    /// Whether a string is a real English word; tests can pass a fixed list. Main actor
+    /// because the real check uses UIKit's spell checker.
+    @ObservationIgnored private let isEnglishWord: @MainActor (String) -> Bool
     /// Time spent on the current word. The countdown is worked out from it, so pausing and
     /// resuming can't give back part of a second.
     @ObservationIgnored private var wordClock = GameActiveClock()
@@ -171,7 +172,7 @@ final class ScrambleGameViewModel {
         missedQuestions: MissedGameQuestionStore? = nil,
         sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         now: @escaping () -> Date = Date.init,
-        isEnglishWord: @escaping (String) -> Bool = EnglishDictionary.contains
+        isEnglishWord: @escaping @MainActor (String) -> Bool = EnglishDictionary.contains
     ) {
         self.reviewQuestionIDs = reviewQuestionIDs
         self.missedQuestions = missedQuestions ?? .shared

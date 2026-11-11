@@ -96,8 +96,8 @@ struct OriginalWord: Identifiable, Equatable, Sendable {
         strongsNumber.map(Self.displayNumber(for:))
     }
 
-    /// "H0430G" as "H430".
-    static func displayNumber(for strongsNumber: String) -> String {
+    /// "H0430G" as "H430". Pure, so the database actor can call it too.
+    nonisolated static func displayNumber(for strongsNumber: String) -> String {
         guard let language = strongsNumber.first else { return strongsNumber }
         let digits = strongsNumber.dropFirst().prefix { $0.isNumber }
         guard let number = Int(digits) else { return strongsNumber }
@@ -396,7 +396,8 @@ extension BibleTranslation {
 }
 
 /// The 1-based number OriginalWords.sqlite stores for a book: its place in the KJV's order.
-enum OriginalWordsBooks {
+/// Constants only, so the database actor can use it off the main actor.
+nonisolated enum OriginalWordsBooks {
     static let names = [
         "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth",
         "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra",
