@@ -59,14 +59,13 @@ private struct SettingsAppLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Home Layout",
-                    subtitle: "Choose what appears on Home",
-                    status: homeLayoutSummary,
+                    subtitle: homeLayoutSummary,
                     systemImage: "rectangle.grid.1x2"
                 )
             }
 
             NavigationLink {
-                SettingsLaunchTabSection()
+                SettingsLaunchTabDetailView()
             } label: {
                 SettingsNavigationRow(
                     title: "Launch Page",
@@ -105,9 +104,9 @@ private struct SettingsAppLinksSection: View {
         }
     }
 
-    private var homeLayoutSummary: String {
-        String(
-            localized: "\(homeVisibleCardCount) cards shown · \(homeHiddenCardCount) hidden",
+    private var homeLayoutSummary: LocalizedStringResource {
+        LocalizedStringResource(
+            "\(homeVisibleCardCount) cards shown · \(homeHiddenCardCount) hidden",
             comment: "Home Layout summary; the values are the number of visible and hidden Home cards."
         )
     }
@@ -138,12 +137,9 @@ private struct SettingsAppLinksSection: View {
 
 private struct SettingsReadingAndPrayerLinksSection: View {
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
-    @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
     @AppStorage(AppStorageKey.focusReadingEnabled) private var focusReadingEnabled = false
     @AppStorage(AppStorageKey.dailyGoalMinutes) private var dailyGoalMinutes = 30
     @AppStorage(AppStorageKey.verseOfDayScope) private var verseScopeRaw = "whole"
-    @AppStorage(AppStorageKey.verseOfDayRefreshFrequency) private var refreshFrequencyRaw = VOTDRefreshFrequency.custom.rawValue
-    @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var verseOfDayNotificationsEnabled = false
     @AppStorage(AppStorageKey.timerSoundSelection) private var timerSoundSelection = TimerSound.default.rawValue
 
     var body: some View {
@@ -154,7 +150,6 @@ private struct SettingsReadingAndPrayerLinksSection: View {
                 SettingsNavigationRow(
                     title: "Bible Reader",
                     subtitle: bibleReaderSummary,
-                    status: bibleReaderStatus,
                     systemImage: "book"
                 )
             }
@@ -164,9 +159,11 @@ private struct SettingsReadingAndPrayerLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Daily Goal",
-                    subtitle: "Daily reading target",
-                    systemImage: "target",
-                    value: dailyGoalMinutes
+                    subtitle: LocalizedStringResource(
+                        "\(dailyGoalMinutes) minutes of reading per day",
+                        comment: "Daily Goal summary; the value is the configured number of reading minutes."
+                    ),
+                    systemImage: "target"
                 )
             }
 
@@ -176,7 +173,6 @@ private struct SettingsReadingAndPrayerLinksSection: View {
                 SettingsNavigationRow(
                     title: "Verse of the Day",
                     subtitle: verseOfTheDaySummary,
-                    status: verseOfTheDayStatus,
                     systemImage: "book.pages"
                 )
             }
@@ -203,13 +199,6 @@ private struct SettingsReadingAndPrayerLinksSection: View {
         }
     }
 
-    private var bibleReaderStatus: String {
-        String(
-            localized: "Focus \(settingStatus(focusReadingEnabled)) · Progress \(settingStatus(showsReadProgress)) · Markers \(settingStatus(showsVerseMarkers))",
-            comment: "Bible Reader settings summary; the values are whether Focus Reading, reading progress, and verse markers are enabled."
-        )
-    }
-
     private var verseOfTheDaySummary: LocalizedStringResource {
         switch verseScopeRaw {
         case "old": "Old Testament"
@@ -218,35 +207,6 @@ private struct SettingsReadingAndPrayerLinksSection: View {
         case "favorites": "Saved favorite verses"
         default: "Whole Bible"
         }
-    }
-
-    private var verseOfTheDayStatus: String {
-        String(
-            localized: "\(verseOfTheDayScopeStatus) · \(refreshFrequencyStatus) · Alerts \(settingStatus(verseOfDayNotificationsEnabled))",
-            comment: "Verse of the Day settings summary; the values are the selected source, refresh schedule, and whether refresh alerts are enabled."
-        )
-    }
-
-    private var verseOfTheDayScopeStatus: String {
-        switch verseScopeRaw {
-        case "old": String(localized: "Old Testament")
-        case "new": String(localized: "New Testament")
-        case "book": String(localized: "Selected Book")
-        case "favorites": String(localized: "Saved Favorites")
-        default: String(localized: "Whole Bible")
-        }
-    }
-
-    private var refreshFrequencyStatus: String {
-        switch VOTDRefreshFrequency(rawValue: refreshFrequencyRaw) ?? .custom {
-        case .custom: String(localized: "Twice Daily")
-        case .hourly: String(localized: "Hourly")
-        case .daily: String(localized: "Daily")
-        }
-    }
-
-    private func settingStatus(_ isEnabled: Bool) -> String {
-        isEnabled ? String(localized: "On") : String(localized: "Off")
     }
 
     private var prayerTimerSummary: LocalizedStringResource {
@@ -416,8 +376,11 @@ private struct SettingsVerseMarkersCard: View {
 }
 
 private struct SettingsNotificationsAndPermissionsSection: View {
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var verseNotificationsEnabled = false
     @AppStorage(StreakReminderScheduler.enabledKey) private var streakNotificationsEnabled = false
+    @State private var notificationsDenied = false
+    @State private var timerAlarmsAllowed = false
 
     var body: some View {
         Section("Notifications & Permissions") {
@@ -426,8 +389,7 @@ private struct SettingsNotificationsAndPermissionsSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Notifications",
-                    subtitle: "Verse of the Day, streak reminder, and timer alarms",
-                    status: notificationSummary,
+                    subtitle: notificationSummary,
                     systemImage: "bell.badge"
                 )
             }
@@ -443,15 +405,41 @@ private struct SettingsNotificationsAndPermissionsSection: View {
                 )
             }
         }
+        .task {
+            await updateAccessStatus()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task {
+                await updateAccessStatus()
+            }
+        }
     }
 
-    private var notificationSummary: String {
-        let enabledCount = [verseNotificationsEnabled, streakNotificationsEnabled].filter { $0 }.count
-        switch enabledCount {
-        case 0: return String(localized: "No reminders enabled")
-        case 1: return String(localized: "1 reminder enabled")
-        default: return String(localized: "\(enabledCount) reminders enabled")
+    private var notificationSummary: LocalizedStringResource {
+        let remindersOn = verseNotificationsEnabled || streakNotificationsEnabled
+        // Reminders can't be delivered while notifications are denied, so say that instead of a
+        // count. Timer alarms use AlarmKit, which doesn't need notification access.
+        if notificationsDenied && remindersOn {
+            return "Notifications are off in iOS Settings"
         }
+        let enabledCount = [verseNotificationsEnabled, streakNotificationsEnabled, timerAlarmsAllowed]
+            .filter { $0 }
+            .count
+        switch enabledCount {
+        case 0: return "No alerts on"
+        case 1: return "1 alert on"
+        default: return LocalizedStringResource(
+            "\(enabledCount) alerts on",
+            comment: "Notifications summary; the value is how many of Verse of the Day, streak reminder, and timer alarms are on."
+        )
+        }
+    }
+
+    private func updateAccessStatus() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        notificationsDenied = settings.authorizationStatus == .denied
+        timerAlarmsAllowed = PrayerTimerAlarmScheduler.authorizationStatus() == .authorized
     }
 }
 
@@ -519,7 +507,7 @@ private struct SettingsDataManagementLinksSection: View {
 
 private struct SettingsAboutSection: View {
     var body: some View {
-        Section("About") {
+        Section {
             NavigationLink {
                 FeedbackView()
             } label: {
@@ -531,6 +519,26 @@ private struct SettingsAboutSection: View {
             }
             .accessibilityIdentifier("shareFeedbackLink")
 
+            if let url = URL(string: "https://apps.apple.com/app/id6756133350?action=write-review") {
+                SettingsExternalLinkRow(
+                    url: url,
+                    title: "Rate the App",
+                    subtitle: "Leave a rating or review on the App Store",
+                    systemImage: "star"
+                )
+                .accessibilityIdentifier("rateAppLink")
+            }
+
+            if let url = URL(string: "https://medium.com/@williamcreecy/privacy-policy-a46d78662bb7") {
+                SettingsExternalLinkRow(
+                    url: url,
+                    title: "Privacy Policy",
+                    subtitle: "How the app handles your data",
+                    systemImage: "lock.shield"
+                )
+                .accessibilityIdentifier("privacyPolicyLink")
+            }
+
             NavigationLink {
                 AcknowledgementsView()
             } label: {
@@ -541,18 +549,11 @@ private struct SettingsAboutSection: View {
                 )
             }
             .accessibilityIdentifier("acknowledgementsLink")
-
-            LabeledContent {
-                Text(appVersion)
-            } label: {
-                Label {
-                    Text("Version")
-                } icon: {
-                    Image(systemName: "info.circle")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .accessibilityIdentifier("appVersionRow")
+        } header: {
+            Text("About")
+        } footer: {
+            Text("Version \(appVersion)", comment: "App version shown below the About section; the value is the version and build, e.g. 1.2 (45).")
+                .accessibilityIdentifier("appVersionLabel")
         }
     }
 
@@ -736,29 +737,15 @@ enum DeveloperSettingsReset {
 private struct SettingsNavigationRow: View {
     let title: LocalizedStringResource
     let subtitle: LocalizedStringResource
-    var status: String? = nil
     let systemImage: String
-    var value: Int? = nil
 
     var body: some View {
         Label {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                if let value {
-                    Text("\(value) minutes per day", comment: "Daily Goal summary; the value is the configured number of minutes.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else if let status {
-                    Text(status)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                } else {
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         } icon: {
             Image(systemName: systemImage)
@@ -767,11 +754,42 @@ private struct SettingsNavigationRow: View {
     }
 }
 
+/// A settings row that opens a web page or the App Store outside the app.
+private struct SettingsExternalLinkRow: View {
+    let url: URL
+    let title: LocalizedStringResource
+    let subtitle: LocalizedStringResource
+    let systemImage: String
+
+    var body: some View {
+        Link(destination: url) {
+            HStack {
+                SettingsNavigationRow(title: title, subtitle: subtitle, systemImage: systemImage)
+                Spacer()
+                Image(systemName: "arrow.up.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
+        }
+        .foregroundStyle(.primary)
+        .accessibilityAddTraits(.isLink)
+    }
+}
+
 struct SettingsAppearanceDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "Appearance") {
             SettingsAppearanceSection()
             SettingsBackgroundSection()
+        }
+    }
+}
+
+private struct SettingsLaunchTabDetailView: View {
+    var body: some View {
+        SettingsDetailForm(title: "Launch Page") {
+            SettingsLaunchTabSection()
         }
     }
 }

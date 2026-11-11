@@ -9,7 +9,7 @@ struct SettingsDailyGoalSection: View {
     var body: some View {
         Section(
             header: Text("Daily Goal").foregroundStyle(.primary),
-            footer: Text("Set the number of minutes you want to spend in the app each day. Your reading streak is based on meeting this goal. The reminder is skipped on days you've already met your goal.")
+            footer: Text("Set the number of minutes you want to spend reading each day. Your reading streak is based on meeting this goal. The reminder is skipped on days you've already met your goal.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         ) {

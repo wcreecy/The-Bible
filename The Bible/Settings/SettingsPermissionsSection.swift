@@ -21,7 +21,7 @@ struct SettingsPermissionsSection: View {
             Text("Permissions")
                 .foregroundStyle(.primary)
         } footer: {
-            Text("Photo backgrounds use the system picker, so the app only receives photos you select. Prayer & Study Timer Alarms, Live Activities, and Mindful Minutes are managed in Prayer Timer settings.")
+            Text("Photo backgrounds use the system picker, so the app only receives photos you select. Prayer & Study Timer Alarms, Live Activities, and Mindful Minutes are managed in Prayer & Study Timer settings.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
