@@ -158,6 +158,7 @@ struct ContentView: View {
             try? await Task.sleep(for: .seconds(2))
             guard !Task.isCancelled else { return }
             SwiftDataDeduplicator.run(in: modelContext)
+            await SavedConnectionTakeawayMigration.run(in: modelContext)
         }
     }
 
@@ -229,6 +230,7 @@ struct ContentView: View {
             AppPerformance.measure("InitialDataMaintenance") {
                 SwiftDataDeduplicator.run(in: modelContext)
             }
+            await SavedConnectionTakeawayMigration.run(in: modelContext)
         }
     }
 

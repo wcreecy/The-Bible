@@ -12,13 +12,13 @@ struct ChapterCrossReferencesPreview: View {
     @State private var isLoading = true
 
     var body: some View {
-        HeroCard(title: "Cross References", icon: "arrow.triangle.branch") {
+        HeroCard(title: "Scripture Connections", icon: "arrow.triangle.branch") {
             if isLoading {
-                ProgressView("Loading cross references…")
+                ProgressView("Loading Scripture connections…")
                     .frame(maxWidth: .infinity, alignment: .center)
             } else if pairs.isEmpty {
                 ContentUnavailableView(
-                    "Cross References Unavailable",
+                    "Scripture Connections Unavailable",
                     systemImage: "arrow.triangle.branch",
                     description: Text("The linked passages could not be loaded.")
                 )
@@ -35,10 +35,10 @@ struct ChapterCrossReferencesPreview: View {
                             relatedVerses: relatedVerses
                         )
                     } label: {
-                        Label("See all \(pairs.count) cross references", systemImage: "arrow.right")
+                        Label("See all \(pairs.count) Scripture connections", systemImage: "arrow.right")
                             .font(.subheadline.weight(.semibold))
                     }
-                    .accessibilityHint("Opens every cross reference for this chapter")
+                    .accessibilityHint("Opens every Scripture connection for this chapter")
                 }
             }
         }
@@ -65,7 +65,7 @@ struct ChapterCrossReferencesView: View {
     var body: some View {
         ScrollView {
             if isLoading {
-                ProgressView("Loading cross references…")
+                ProgressView("Loading Scripture connections…")
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
             } else {
@@ -78,7 +78,7 @@ struct ChapterCrossReferencesView: View {
             }
         }
         .background(AppBackgroundView(tab: .bible))
-        .navigationTitle("Cross References")
+        .navigationTitle("Scripture Connections")
         .navigationBarTitleDisplayMode(.inline)
         .scripturePassagePreviews()
         .task(id: "\(bookName)-\(chapterNumber)") {
@@ -206,6 +206,14 @@ private struct ScriptureConnectionDetailView: View {
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Scripture Connection")
         .navigationBarTitleDisplayMode(.inline)
+        .scriptureConnectionActions(
+            ScriptureConnectionNote(
+                connectionID: pair.connectionID,
+                source: pair.source.reference.displayTitle,
+                target: pair.target.reference.displayTitle,
+                explanation: pair.relationshipDescription
+            )
+        )
         .scripturePassagePreviews()
     }
 }
@@ -277,9 +285,11 @@ private struct ScriptureCrossReference: Identifiable, Hashable {
     let source: Source
     let target: Target
     let connectionExplanation: String?
+    /// The ID Scripture Connections saves this pair under, so saving it here or there is the same.
+    let connectionID: Int
 
-    /// Prefers pair-specific editorial copy. The fallback remains careful not to
-    /// invent a connection that is not represented in the source data.
+    /// Pair-specific editorial copy, then the database's explanation, then the sentence
+    /// every unexplained connection shares.
     var relationshipDescription: String {
         ChapterCrossReferenceEditorialCatalog.relationshipDescription(
             bookName: source.reference.bookName,
@@ -288,26 +298,7 @@ private struct ScriptureCrossReference: Identifiable, Hashable {
             targetBookName: target.reference.bookName,
             targetChapterNumber: target.reference.startChapter,
             targetVerse: target.reference.startVerse ?? 0
-        ) ?? connectionExplanation ?? defaultRelationshipDescription
-    }
-
-    private var defaultRelationshipDescription: String {
-        switch target.reference.bookName {
-        case "Genesis":
-            "This connection follows the Genesis narrative, linking the same people, place, promise, or event at another point in the account."
-        case "Exodus", "Numbers", "Deuteronomy", "Joshua", "Judges", "1 Samuel", "2 Samuel":
-            "This later historical passage shows how a person, place, promise, or consequence from Genesis continues in Israel's story."
-        case "1 Chronicles", "2 Chronicles":
-            "This later historical record preserves the Genesis family line, place, or event and places it within Israel's history."
-        case "Psalms", "Job", "Proverbs", "Ecclesiastes":
-            "This poetic or wisdom passage reflects on an image, person, or theme introduced in Genesis and invites the two passages to be read together."
-        case "Isaiah", "Jeremiah", "Ezekiel", "Hosea", "Micah", "Malachi", "Daniel":
-            "This prophetic passage develops an image, place, person, or theological theme first introduced in Genesis."
-        case "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "Galatians", "Ephesians", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "Jude", "Revelation":
-            "This New Testament passage looks back to Genesis to interpret its people, promises, images, or themes in light of Christ and the gospel."
-        default:
-            "These passages are linked for a meaningful biblical connection. Read them together to see how the later passage echoes or develops the Genesis account."
-        }
+        ) ?? connectionExplanation ?? ScriptureConnectionText.unexplainedRelationship
     }
 
     var id: String { "\(source.reference.id)-\(target.reference.id)" }
@@ -340,14 +331,19 @@ private enum ScriptureCrossReferenceLoader {
                 relatedVerse.relatedReference,
                 book: bookName,
                 chapter: chapterNumber
-            ).map { reference in
+            ).enumerated().map { index, reference in
                 ScriptureCrossReference(
                     source: source,
                     target: ScriptureCrossReference.Target(
                         reference: reference,
                         excerpt: excerpt(for: reference, in: books)
                     ),
-                    connectionExplanation: relatedVerse.connectionExplanation
+                    connectionExplanation: relatedVerse.connectionExplanation,
+                    connectionID: CrossReferenceExplorerEntry.connectionID(
+                        recordID: relatedVerse.id,
+                        targetIndex: index,
+                        reference: reference.displayTitle
+                    )
                 )
             }
         }

@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 /// A note about a Scripture connection, as written from Scripture Connections or Chapter Insights.
 /// The note is about the connection's first passage, so Notes finds it by that reference and can
@@ -44,6 +45,61 @@ struct ScriptureConnectionNote {
             body: body(),
             passageReference: source
         )
+    }
+}
+
+extension View {
+    /// Adds Create Note and Save Connection to the toolbar of a page showing one connection.
+    /// Pass nil while the connection is still loading.
+    func scriptureConnectionActions(_ note: ScriptureConnectionNote?) -> some View {
+        modifier(ScriptureConnectionActions(note: note))
+    }
+}
+
+/// The same actions wherever a connection is shown, so saving it in Chapter Insights or in
+/// Scripture Connections is the same save.
+private struct ScriptureConnectionActions: ViewModifier {
+    let note: ScriptureConnectionNote?
+
+    @Environment(\.modelContext) private var modelContext
+    @Query private var savedConnections: [SavedCrossReference]
+    @State private var notePrefill: UserNotePrefill?
+
+    private var savedConnection: SavedCrossReference? {
+        guard let note else { return nil }
+        return savedConnections.first { $0.entryID == note.connectionID }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .toolbar {
+                if let note {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Create Note", systemImage: "square.and.pencil") {
+                            notePrefill = note.prefill
+                        }
+                    }
+
+                    ToolbarItem(placement: .primaryAction) {
+                        if let savedConnection {
+                            Button("Remove from Saved", systemImage: "bookmark.fill") {
+                                modelContext.delete(savedConnection)
+                                modelContext.saveLoggingErrors()
+                            }
+                        } else {
+                            Button("Save Connection", systemImage: "bookmark") {
+                                modelContext.insert(SavedCrossReference(entryID: note.connectionID))
+                                modelContext.saveLoggingErrors()
+                            }
+                        }
+                    }
+                }
+            }
+            .sheet(item: $notePrefill) { prefill in
+                NavigationStack {
+                    UserNoteEditorView(existingNote: nil, prefill: prefill)
+                }
+            }
     }
 }
 

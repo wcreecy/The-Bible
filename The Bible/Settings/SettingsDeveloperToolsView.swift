@@ -79,7 +79,7 @@ struct SettingsDeveloperToolsView: View {
             }
             .disabled(deleteAllConfirmationText != "delete")
         } message: {
-            Text("This permanently deletes all notes, favorites, highlights, bookmarks, saved cross references, reading progress, and reading and game stats, and resets every setting. Because iCloud sync is on, the deletions also reach your other devices. Type delete to continue.")
+            Text("This permanently deletes all notes, favorites, highlights, bookmarks, saved Scripture connections, reading progress, and reading and game stats, and resets every setting. Because iCloud sync is on, the deletions also reach your other devices. Type delete to continue.")
         }
         .task {
             refreshLibraryCounts()

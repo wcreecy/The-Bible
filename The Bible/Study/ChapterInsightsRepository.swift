@@ -43,15 +43,25 @@ struct CrossReferenceExplorerEntry: Identifiable, Equatable, Sendable {
         "\(bookName) \(chapterNumber):\(sourceVerse)"
     }
 
-    /// Uses pair-specific editorial copy when available, with a careful fallback so every
-    /// connection in the global explorer explains why the passages are shown together.
-    var relationshipDescription: String {
+    var sourcePassage: PassageReference {
+        PassageReference(
+            bookName: bookName,
+            startChapter: chapterNumber,
+            startVerse: sourceVerse,
+            endChapter: chapterNumber,
+            endVerse: sourceVerse
+        )
+    }
+
+    /// The pair's own explanation, from the editorial catalog or the database, or nil
+    /// when none has been written yet.
+    var writtenExplanation: String? {
         guard let targetReference = PassageReferenceParser.parseList(
             relatedReference,
             book: bookName,
             chapter: chapterNumber
         ).first else {
-            return connectionExplanation ?? "These passages are presented together as a curated Scripture connection."
+            return connectionExplanation
         }
 
         return ChapterCrossReferenceEditorialCatalog.relationshipDescription(
@@ -61,12 +71,86 @@ struct CrossReferenceExplorerEntry: Identifiable, Equatable, Sendable {
             targetBookName: targetReference.bookName,
             targetChapterNumber: targetReference.startChapter,
             targetVerse: targetReference.startVerse ?? 0
-        ) ?? connectionExplanation ?? "These passages are presented together as a curated Scripture connection."
+        ) ?? connectionExplanation
     }
 
-    /// A browseable category inferred from the editorial explanation for this curated pair.
-    var connectionType: CrossReferenceConnectionType {
-        CrossReferenceConnectionType.classify(relationshipDescription)
+    /// The written explanation, or the shared sentence for a pair without one.
+    var relationshipDescription: String {
+        writtenExplanation ?? ScriptureConnectionText.unexplainedRelationship
+    }
+
+    /// A browseable category inferred from the written explanation. Nil for a pair without
+    /// one, so the type filters only list connections whose explanation says how they relate.
+    var connectionType: CrossReferenceConnectionType? {
+        writtenExplanation.map(CrossReferenceConnectionType.classify)
+    }
+
+    /// Every Scripture connection as the explorer lists it: one per target passage, with
+    /// connections already covered by a wider one left out.
+    static func loadAll() async -> [CrossReferenceExplorerEntry] {
+        let records = await ChapterInsightsRepository.shared.allCrossReferences()
+        return ChapterCrossReferenceDeduplicator.deduplicated(expanded(records))
+    }
+
+    /// Splits each database record into one connection per target passage. The first target
+    /// keeps the record's ID, so connections saved before records were split still match.
+    static func expanded(_ entries: [CrossReferenceExplorerEntry]) -> [CrossReferenceExplorerEntry] {
+        entries.flatMap { entry in
+            let references = PassageReferenceParser.parseList(
+                entry.relatedReference,
+                book: entry.bookName,
+                chapter: entry.chapterNumber
+            )
+
+            guard references.count > 1 else {
+                return [entry]
+            }
+
+            return references.enumerated().map { index, reference in
+                CrossReferenceExplorerEntry(
+                    id: connectionID(recordID: entry.id, targetIndex: index, reference: reference.displayTitle),
+                    bookName: entry.bookName,
+                    chapterNumber: entry.chapterNumber,
+                    sourceVerse: entry.sourceVerse,
+                    relatedReference: reference.displayTitle,
+                    connectionExplanation: entry.connectionExplanation
+                )
+            }
+        }
+    }
+
+    /// The saved-connection ID for one target of a database record. The first target uses the
+    /// record's own ID; later ones get a repeatable ID derived from the record and target.
+    nonisolated static func connectionID(recordID: Int, targetIndex: Int, reference: String) -> Int {
+        guard targetIndex > 0 else { return recordID }
+        var value = UInt64(bitPattern: Int64(recordID))
+        for scalar in reference.unicodeScalars {
+            value = value &* 31 &+ UInt64(scalar.value)
+        }
+        value = value &* 31 &+ UInt64(targetIndex)
+        return Int(truncatingIfNeeded: value)
+    }
+}
+
+extension PassageReference {
+    /// Whether this passage shares at least one verse with `reference`, such as a searched verse.
+    func overlaps(_ reference: ScriptureRef) -> Bool {
+        guard bookName.caseInsensitiveCompare(reference.bookName) == .orderedSame,
+              (startChapter...endChapter).contains(reference.chapter) else { return false }
+        // This passage's verses within the searched chapter; whole chapters have no verse bounds.
+        let first = reference.chapter == startChapter ? (startVerse ?? 1) : 1
+        let last = reference.chapter == endChapter ? (endVerse ?? .max) : .max
+        let searchedLast = reference.endVerse ?? reference.startVerse
+        return reference.startVerse <= last && searchedLast >= first
+    }
+}
+
+/// Wording shared by every place that shows a Scripture connection.
+enum ScriptureConnectionText {
+    /// Shown for a connection that has no written explanation yet. It makes no claim about
+    /// which books are involved, so it is true for any pair.
+    nonisolated static var unexplainedRelationship: String {
+        String(localized: "These passages are linked in Scripture. Read them side by side to see how they relate.")
     }
 }
 

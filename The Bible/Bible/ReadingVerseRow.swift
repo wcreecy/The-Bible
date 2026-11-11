@@ -135,7 +135,7 @@ struct ReadingVerseRow: View {
                 Button("Open note", action: onOpenNote)
             }
             if hasCrossReferences {
-                Button("Show cross references", action: onOpenCrossReferences)
+                Button("Show Scripture connections", action: onOpenCrossReferences)
             }
         }
         .onScrollVisibilityChange(threshold: 0.6, onVisibilityChange)
@@ -196,7 +196,7 @@ struct ReadingVerseRow: View {
         if isCurrentlyPinned { statuses.append("Pinned") }
         if isFavorite { statuses.append("Favorite") }
         if hasNote { statuses.append("Has note") }
-        if hasCrossReferences { statuses.append("Has cross references") }
+        if hasCrossReferences { statuses.append("Has Scripture connections") }
         if showsReadProgress && isRead { statuses.append("Read") }
         return statuses.formatted(.list(type: .and))
     }

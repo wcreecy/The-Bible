@@ -626,7 +626,7 @@ struct ReadingView: View {
         ContextualTipView(
             id: "reader.statusIcons",
             title: "Understand verse icons",
-            message: "Icons beside a verse's reference show your bookmark, favorites, notes, and cross-references. Tap a note or cross-reference icon to open it. Change this in Settings › Bible Reader.",
+            message: "Icons beside a verse's reference show your bookmark, favorites, notes, and Scripture connections. Tap a note or Scripture connection icon to open it. Change this in Settings › Bible Reader.",
             systemImage: "info.circle"
         )
         .padding(.bottom, 12)

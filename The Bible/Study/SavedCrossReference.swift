@@ -7,6 +7,8 @@ final class SavedCrossReference {
     /// The stable identifier from the bundled Cross Reference database.
     var entryID: Int = 0
     var savedAt: Date?
+    /// No longer shown or edited. Kept so the iCloud store keeps its shape;
+    /// `SavedConnectionTakeawayMigration` moves any text here into a note.
     var takeaway: String = ""
 
     init(entryID: Int, savedAt: Date = Date()) {

@@ -300,7 +300,7 @@ private struct SettingsReadingProgressSection: View {
             Text("Bible Reader")
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Choose which bookmark, pinned verse, favorite, note, and cross-reference icons appear beside each verse reference. Tap a note or cross-reference icon to open it.")
+                Text("Choose which bookmark, pinned verse, favorite, note, and Scripture connection icons appear beside each verse reference. Tap a note or Scripture connection icon to open it.")
                 Text("Read progress reflects your reading statistics and disappears when they are reset.")
                 Text("Printed King James Bibles set supplied words in italics, such as “ye *are* the branches.”")
             }
@@ -338,7 +338,7 @@ private struct SettingsVerseMarkersCard: View {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Verse Markers")
-                        Text("Show your bookmark, pinned verse, favorites, notes, and cross-references beside each reference")
+                        Text("Show your bookmark, pinned verse, favorites, notes, and Scripture connections beside each reference")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -365,7 +365,7 @@ private struct SettingsVerseMarkersCard: View {
                 Toggle("Notes", isOn: $showsNoteMarkers)
                     .accessibilityIdentifier("noteMarkerToggle")
 
-                Toggle("Cross-References", isOn: $showsCrossReferenceMarkers)
+                Toggle("Scripture Connections", isOn: $showsCrossReferenceMarkers)
                     .accessibilityIdentifier("crossReferenceMarkerToggle")
             }
             .padding(.leading, 36)
@@ -574,7 +574,7 @@ private struct AcknowledgementsView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("OpenBible.info")
                         .font(.headline)
-                    Text("Cross references in Chapter Insights are selected from the OpenBible.info cross-reference dataset, used under the Creative Commons Attribution license.")
+                    Text("Scripture connections in Chapter Insights are selected from the OpenBible.info cross-reference dataset, used under the Creative Commons Attribution license.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -586,7 +586,7 @@ private struct AcknowledgementsView: View {
                     }
                 }
             } header: {
-                Text("Cross References")
+                Text("Scripture Connections")
             }
 
             Section {

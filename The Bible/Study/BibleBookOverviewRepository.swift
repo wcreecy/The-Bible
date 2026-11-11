@@ -45,11 +45,6 @@ struct BibleBookStorySection: Identifiable, Equatable, Sendable {
     let passage: String
     let text: String
 
-    /// The one-sentence preview shown on a book's About page.
-    var previewText: String {
-        openingSentence(in: summary ?? text)
-    }
-
     /// The section's opening summary paragraph, when it has one ahead of the retelling.
     /// Unlabeled continuation paragraphs are pure story, so they never have a summary.
     var summary: String? {
@@ -62,17 +57,6 @@ struct BibleBookStorySection: Identifiable, Equatable, Sendable {
         guard summary != nil, let paragraphBreak = text.range(of: "\n\n") else { return text }
         return String(text[paragraphBreak.upperBound...])
             .trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private func openingSentence(in text: String) -> String {
-        for index in text.indices where ".!?".contains(text[index]) {
-            let nextIndex = text.index(after: index)
-            if nextIndex == text.endIndex || text[nextIndex].isWhitespace {
-                return String(text[...index])
-            }
-        }
-
-        return text
     }
 }
 

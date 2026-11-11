@@ -34,9 +34,9 @@ struct BookOverviewView: View {
 
     private func overviewContent(_ overview: BibleBookOverview) -> some View {
         ScrollView {
-            // Ordered to build context before reading: what the book is, who wrote it
-            // and why, the world it came from, how to approach it, what's inside, how it
-            // fits the rest of the Bible, then the full story.
+            // Ordered to build context before reading: what the book is (with the way into
+            // its full story), who wrote it and why, the world it came from, how to approach
+            // it, what's inside, and how it fits the rest of the Bible.
             VStack(alignment: .leading, spacing: 20) {
                 AtAGlanceSection(overview: overview)
 
@@ -64,10 +64,6 @@ struct BookOverviewView: View {
 
                 if !overview.connections.isEmpty {
                     ConnectionsSection(connections: overview.connections)
-                }
-
-                if !overview.story.isEmpty {
-                    StoryPreviewSection(bookName: bookName, story: overview.story)
                 }
 
                 StartReadingButton(bookName: bookName)
@@ -302,34 +298,6 @@ private struct StartReadingButton: View {
         }
         .buttonStyle(.borderedProminent)
         .accessibilityHint("Opens \(bookName) chapter 1")
-    }
-}
-
-/// The opening of the book's story, with a link to read all of it.
-private struct StoryPreviewSection: View {
-    let bookName: String
-    let story: [BibleBookStorySection]
-
-    var body: some View {
-        HeroCard(title: "Go Deeper: \(bookRetellingTitle(for: bookName))", icon: "book.pages") {
-            VStack(alignment: .leading, spacing: 12) {
-                if let opening = story.first {
-                    Text(opening.previewText)
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(4)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-
-                NavigationLink {
-                    BookStoryView(bookName: bookName, story: story)
-                        .studySheetDoneButton()
-                } label: {
-                    Label("Read More", systemImage: "arrow.right.circle.fill")
-                        .font(.subheadline.weight(.semibold))
-                }
-            }
-        }
     }
 }
 

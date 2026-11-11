@@ -43,6 +43,8 @@ struct CrossReferenceExplorerView: View {
     @Query(sort: \SavedCrossReference.savedAt, order: .reverse) private var savedConnections: [SavedCrossReference]
 
     @State private var entries: [CrossReferenceExplorerEntry] = []
+    /// Worked out once per connection when the page loads, so filtering doesn't redo it per keystroke.
+    @State private var searchDetails: [Int: SearchDetails] = [:]
     @State private var sections: [CrossReferenceExplorerSection] = []
     @State private var isLoading = true
     @State private var searchText = ""
@@ -51,6 +53,7 @@ struct CrossReferenceExplorerView: View {
     @State private var selectedConnectionType: CrossReferenceConnectionType?
     @State private var isShowingSavedOnly = false
     @State private var selectedEntry: CrossReferenceExplorerEntry?
+    @State private var studyTimeSourceID = UUID()
 
     private var sourceBookNames: [String] {
         let availableBooks = Set(entries.map(\.bookName))
@@ -74,6 +77,18 @@ struct CrossReferenceExplorerView: View {
                     Spacer()
                     ProgressView("Loading curated connections…")
                     Spacer()
+                }
+                .listRowSeparator(.hidden)
+            } else if isShowingSavedOnly && savedEntryIDs.isEmpty {
+                ContentUnavailableView {
+                    Label("No Saved Connections", systemImage: "bookmark")
+                } description: {
+                    Text("Open a connection and tap the bookmark to save it here.")
+                } actions: {
+                    Button("Show All Connections") {
+                        isShowingSavedOnly = false
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
                 .listRowSeparator(.hidden)
             } else if sections.isEmpty {
@@ -103,7 +118,11 @@ struct CrossReferenceExplorerView: View {
         .listStyle(.insetGrouped)
         .navigationTitle("Scripture Connections")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText, prompt: "Search Genesis 1:1, John 3:16, or a topic")
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Search Genesis 1:1, John 3:16, or a topic"
+        )
         .searchScopes($searchScope) {
             ForEach(CrossReferenceSearchScope.allCases) { scope in
                 Text(scope.title).tag(scope)
@@ -147,12 +166,20 @@ struct CrossReferenceExplorerView: View {
             }
         }
         .task {
-            let loadedEntries = await ChapterInsightsRepository.shared.allCrossReferences()
-            entries = ChapterCrossReferenceDeduplicator.deduplicated(
-                expandedEntries(from: loadedEntries)
+            let loaded = await CrossReferenceExplorerEntry.loadAll()
+            searchDetails = Dictionary(
+                loaded.map { ($0.id, SearchDetails(entry: $0)) },
+                uniquingKeysWith: { first, _ in first }
             )
+            entries = loaded
             recomputeSections()
             isLoading = false
+        }
+        .onAppear {
+            StudyTimeTracker.shared.start(studyTimeSourceID)
+        }
+        .onDisappear {
+            StudyTimeTracker.shared.stop(studyTimeSourceID)
         }
         .onChange(of: searchText) { _, _ in recomputeSections() }
         .onChange(of: searchScope) { _, _ in recomputeSections() }
@@ -167,60 +194,17 @@ struct CrossReferenceExplorerView: View {
         }
     }
 
-    /// Expands one database record into one explorer row per target passage.
-    /// The first target keeps the database ID so existing saved connections continue to match.
-    private func expandedEntries(from entries: [CrossReferenceExplorerEntry]) -> [CrossReferenceExplorerEntry] {
-        entries.flatMap { entry in
-            let references = PassageReferenceParser.parseList(
-                entry.relatedReference,
-                book: entry.bookName,
-                chapter: entry.chapterNumber
-            )
-
-            guard references.count > 1 else {
-                return [entry]
-            }
-
-            return references.enumerated().map { index, reference in
-                CrossReferenceExplorerEntry(
-                    id: index == 0
-                        ? entry.id
-                        : expandedEntryID(
-                            baseID: entry.id,
-                            targetIndex: index,
-                            reference: reference.displayTitle
-                        ),
-                    bookName: entry.bookName,
-                    chapterNumber: entry.chapterNumber,
-                    sourceVerse: entry.sourceVerse,
-                    relatedReference: reference.displayTitle,
-                    connectionExplanation: entry.connectionExplanation
-                )
-            }
-        }
-    }
-
-    /// Produces a repeatable ID for additional targets without changing existing IDs.
-    private func expandedEntryID(
-        baseID: Int,
-        targetIndex: Int,
-        reference: String
-    ) -> Int {
-        var value = UInt64(bitPattern: Int64(baseID))
-        for scalar in reference.unicodeScalars {
-            value = value &* 31 &+ UInt64(scalar.value)
-        }
-        value = value &* 31 &+ UInt64(targetIndex)
-        return Int(truncatingIfNeeded: value)
-    }
-
     private func recomputeSections() {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        // A query that reads as a verse ("John 3:16", "Jn 3:16") matches by verse range, so
+        // John 3:1 doesn't also find John 3:10 or 1 John 3:1. Anything else matches as text.
+        let searchedReference = query.isEmpty ? nil : BibleReferenceLinker.parse(query)
         let filteredEntries = entries.filter { entry in
+            let details = searchDetails[entry.id]
             guard selectedSourceBook == nil || entry.bookName == selectedSourceBook else {
                 return false
             }
-            guard selectedConnectionType == nil || entry.connectionType == selectedConnectionType else {
+            guard selectedConnectionType == nil || details?.connectionType == selectedConnectionType else {
                 return false
             }
             guard !isShowingSavedOnly || savedEntryIDs.contains(entry.id) else {
@@ -228,9 +212,18 @@ struct CrossReferenceExplorerView: View {
             }
             guard !query.isEmpty else { return true }
 
-            let matchesSource = entry.sourceReference.localizedCaseInsensitiveContains(query)
-            let matchesRelated = entry.relatedReference.localizedCaseInsensitiveContains(query)
-            let matchesExplanation = entry.connectionExplanation?.localizedCaseInsensitiveContains(query) == true
+            let matchesSource: Bool
+            let matchesRelated: Bool
+            let matchesExplanation: Bool
+            if let searchedReference {
+                matchesSource = entry.sourcePassage.overlaps(searchedReference)
+                matchesRelated = details?.target?.overlaps(searchedReference) == true
+                matchesExplanation = false
+            } else {
+                matchesSource = entry.sourceReference.localizedCaseInsensitiveContains(query)
+                matchesRelated = entry.relatedReference.localizedCaseInsensitiveContains(query)
+                matchesExplanation = details?.explanation?.localizedCaseInsensitiveContains(query) == true
+            }
 
             switch searchScope {
             case .source:
@@ -267,6 +260,23 @@ struct CrossReferenceExplorerView: View {
     }
 }
 
+/// What filtering needs to know about one connection.
+private struct SearchDetails {
+    let target: PassageReference?
+    let explanation: String?
+    let connectionType: CrossReferenceConnectionType?
+
+    init(entry: CrossReferenceExplorerEntry) {
+        target = PassageReferenceParser.parseList(
+            entry.relatedReference,
+            book: entry.bookName,
+            chapter: entry.chapterNumber
+        ).first
+        explanation = entry.writtenExplanation
+        connectionType = explanation.map(CrossReferenceConnectionType.classify)
+    }
+}
+
 private enum CrossReferenceSearchScope: String, CaseIterable, Identifiable {
     case both
     case source
@@ -294,14 +304,7 @@ private struct CrossReferencePreviewSheet: View {
     let entry: CrossReferenceExplorerEntry
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @Query private var savedConnections: [SavedCrossReference]
     @State private var preview: CrossReferencePreview?
-    @State private var notePrefill: UserNotePrefill?
-
-    private var savedConnection: SavedCrossReference? {
-        savedConnections.first { $0.entryID == entry.id }
-    }
 
     var body: some View {
         NavigationStack {
@@ -315,10 +318,6 @@ private struct CrossReferencePreviewSheet: View {
 
                         if let explanation = preview.explanation {
                             CrossReferenceExplanationPreview(text: explanation)
-                        }
-
-                        if let savedConnection {
-                            SavedCrossReferenceTakeaway(savedConnection: savedConnection)
                         }
                     } else {
                         ProgressView("Loading passages…")
@@ -335,55 +334,12 @@ private struct CrossReferencePreviewSheet: View {
                         dismiss()
                     }
                 }
-
-                ToolbarItem(placement: .primaryAction) {
-                    if let preview {
-                        Button {
-                            notePrefill = makeNotePrefill(preview: preview)
-                        } label: {
-                            Label("Create Note", systemImage: "square.and.pencil")
-                        }
-                    }
-                }
-
-                ToolbarItem(placement: .primaryAction) {
-                    if let savedConnection {
-                        Button {
-                            modelContext.delete(savedConnection)
-                        } label: {
-                            Label("Remove from Saved", systemImage: "bookmark.slash")
-                        }
-                    } else {
-                        Button {
-                            modelContext.insert(SavedCrossReference(entryID: entry.id))
-                        } label: {
-                            Label("Save Connection", systemImage: "bookmark")
-                        }
-                    }
-                }
             }
+            .scriptureConnectionActions(preview.map { _ in ScriptureConnectionNote(entry: entry) })
             .task {
                 preview = await CrossReferencePreviewLoader.load(entry: entry)
             }
         }
-        .sheet(item: $notePrefill) { prefill in
-            NavigationStack {
-                UserNoteEditorView(existingNote: nil, prefill: prefill)
-            }
-        }
-    }
-
-    private func makeNotePrefill(preview: CrossReferencePreview) -> UserNotePrefill {
-        let source = preview.source.reference.displayTitle
-        let target = preview.target.reference.displayTitle
-        let relationship = preview.explanation ?? "These passages are presented together as a curated Scripture connection."
-
-        return UserNotePrefill(
-            id: "cross-reference-note-\(entry.id)",
-            title: "",
-            body: "Related Scriptures\n\(source)\n\(target)\n\nRelationship\n\(relationship)\n\nMy thoughts:\n",
-            passageReference: ""
-        )
     }
 }
 
@@ -586,9 +542,11 @@ private struct CrossReferenceExplorerRow: View {
                 .foregroundStyle(.secondary)
 
             HStack(spacing: 8) {
-                Label(entry.connectionType.title, systemImage: entry.connectionType.systemImage)
-                    .font(.caption2.weight(.medium))
-                    .foregroundStyle(.tint)
+                if let connectionType = entry.connectionType {
+                    Label(connectionType.title, systemImage: connectionType.systemImage)
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.tint)
+                }
 
                 if isSaved {
                     Image(systemName: "bookmark.fill")
@@ -599,21 +557,5 @@ private struct CrossReferenceExplorerRow: View {
             }
         }
         .padding(.vertical, 3)
-    }
-}
-
-private struct SavedCrossReferenceTakeaway: View {
-    @Bindable var savedConnection: SavedCrossReference
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label("My Takeaway", systemImage: "bookmark.fill")
-                .font(.subheadline.weight(.semibold))
-
-            TextField("Add a personal takeaway", text: $savedConnection.takeaway, axis: .vertical)
-                .lineLimit(2...5)
-                .textFieldStyle(.roundedBorder)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

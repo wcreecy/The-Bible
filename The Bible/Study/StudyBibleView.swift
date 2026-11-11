@@ -19,7 +19,7 @@ struct StudyBibleEntryCard: View {
                     Text("Bible Study")
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    Text("Explore book overviews and chapter insights")
+                    Text("Explore book overviews, chapter insights, and Scripture connections")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -36,7 +36,7 @@ struct StudyBibleEntryCard: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("studyBibleEntryCard")
-        .accessibilityHint("Opens book overviews and chapter insights")
+        .accessibilityHint("Opens book overviews, chapter insights, and Scripture connections")
     }
 }
 
@@ -132,7 +132,7 @@ struct StudyBibleView: View {
             .tabBarContentClearance()
             .background(AppBackgroundView(tab: .bible))
             .accessibilityIdentifier("studyBibleView")
-            .navigationTitle("Study")
+            .navigationTitle("Bible Study")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(
                 text: $searchText,
@@ -239,7 +239,7 @@ private struct StudyBibleHeader: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Explore Scripture")
                 .font(.title2.weight(.bold))
-            Text("Choose a book to read its overview or explore chapter insights.")
+            Text("Choose a book to study, or explore Scripture connections.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -321,6 +321,7 @@ struct StudyBookView: View {
     @State private var isShowingOverview = false
     @State private var headerHeight: CGFloat = 0
     @State private var isHeaderScrolledAway = false
+    @State private var studyTimeSourceID = UUID()
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -378,6 +379,12 @@ struct StudyBookView: View {
         }
         .navigationDestination(isPresented: $isShowingOverview) {
             BookOverviewView(bookName: book.name)
+        }
+        .onAppear {
+            StudyTimeTracker.shared.start(studyTimeSourceID)
+        }
+        .onDisappear {
+            StudyTimeTracker.shared.stop(studyTimeSourceID)
         }
         .task(id: book.name) {
             details = await ChapterOutlineDetails.load(for: book)
