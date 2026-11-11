@@ -30,7 +30,7 @@ struct LastReadWidgetEntryView: View {
                 Image(systemName: entry.isBookmark ? "bookmark.fill" : "book.fill")
                     .font(isExtraLarge ? .title2 : (isLarge ? .headline : (isMedium ? .subheadline : .caption2)))
                     .symbolRenderingMode(.monochrome)
-                    .foregroundStyle(Color.blue)
+                    .foregroundStyle(entry.isBookmark ? Color.bookmarkTint : Color.blue)
                     .widgetAccentable()
                 // The small widget has room for only the shorter title.
                 ViewThatFits(in: .horizontal) {
@@ -108,7 +108,7 @@ struct LastReadWidgetEntryView: View {
             Spacer(minLength: 0)
             HStack(spacing: 6) {
                 Image(systemName: "bookmark.fill")
-                    .foregroundStyle(Color.blue)
+                    .foregroundStyle(Color.bookmarkTint)
                     .widgetAccentable()
                 Text(reference)
                     .fontWeight(.semibold)

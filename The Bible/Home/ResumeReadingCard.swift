@@ -100,7 +100,7 @@ struct ResumeReadingCard: View {
                 HStack(spacing: 8) {
                     Image(systemName: primary.isBookmark ? "bookmark.fill" : "book.fill")
                         .font(.title3)
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(primary.isBookmark ? Color.bookmarkTint : Color.accentColor)
                     Text("Continue Reading")
                         .font(.headline)
                         .bold()
@@ -169,7 +169,7 @@ struct ResumeReadingCard: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "bookmark.fill")
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(Color.bookmarkTint)
                 // The reference always shows in full; the verse text fills the rest of the line.
                 Text("\(bookmark.bookName) \(bookmark.chapterNumber):\(bookmark.verseNumber)")
                     .fontWeight(.semibold)

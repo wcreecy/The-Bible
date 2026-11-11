@@ -103,7 +103,7 @@ struct HomeMinimalQuickActions: View {
                 message: continueMessage,
                 verseText: bookmarkText,
                 icon: isBookmark ? "bookmark.fill" : "book.fill",
-                tint: .indigo,
+                tint: isBookmark ? .bookmarkTint : .indigo,
                 action: onContinueReading
             )
 

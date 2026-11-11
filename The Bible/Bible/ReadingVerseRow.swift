@@ -172,7 +172,7 @@ struct ReadingVerseRow: View {
         }
         if showsBookmarkMarker && isPinned {
             Image(systemName: "bookmark.fill")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(Color.bookmarkTint)
                 .accessibilityHidden(true)
         }
         if showsPinnedVerseMarker && isCurrentlyPinned {

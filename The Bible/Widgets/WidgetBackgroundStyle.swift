@@ -26,6 +26,16 @@ enum WidgetBackgroundStyle: String {
     }
 }
 
+extension Color {
+    /// The reader's bookmark, wherever it appears: the Continue Reading card and widget, the
+    /// reader's verse markers, and the verse menu. Green keeps it apart from the blue book icon
+    /// and the blue note and Scripture connection markers.
+    ///
+    /// The "Bookmark" color is in both the app's and the widget's asset catalogs. It's declared
+    /// here because this file is compiled into both targets.
+    static let bookmarkTint = Color("Bookmark")
+}
+
 /// Draws a `WidgetBackgroundStyle`.
 struct WidgetBackgroundView: View {
     let style: WidgetBackgroundStyle

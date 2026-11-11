@@ -109,7 +109,8 @@ enum VerseActionFeedback {
         switch self {
         case .addedFavorite: .pink
         case .removedFavorite, .removedBookmark: .secondary
-        case .bookmarked, .copied: .accentColor
+        case .bookmarked: .bookmarkTint
+        case .copied: .accentColor
         case .pinned, .unpinned: .red
         }
     }
@@ -364,7 +365,7 @@ struct VerseActionMenuContent: View {
                 // The one bookmark: where the reader stopped, shown first by Continue Reading.
                 Button(action: bookmark) {
                     Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                        .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
+                        .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.bookmarkTint) : AnyShapeStyle(.primary))
                 }
                 .accessibilityLabel(bookmarkActionTitle)
                 .frame(maxWidth: .infinity)
