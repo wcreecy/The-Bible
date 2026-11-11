@@ -368,17 +368,8 @@ struct NotesTabTests {
         #expect(all.allItems.count == 3)
         #expect(all.tags == [.init(tag: "faith", count: 2), .init(tag: "hope", count: 2)])
 
-        var filters = NotesFilters()
-        filters.category = .sermon
-        #expect(library(notes.0, notes.1, filters: filters).visibleItems.map(\.title) == ["Sunday"])
-
-        filters = NotesFilters(tag: "hope")
+        let filters = NotesFilters(tag: "hope")
         #expect(library(notes.0, notes.1, filters: filters, sort: .title, ascending: true).visibleItems.map(\.title) == ["Hope", "Sunday"])
-
-        filters = NotesFilters(category: .sermon, tag: "hope")
-        let summary = library(notes.0, notes.1, filters: filters).summaryTitle
-        #expect(summary.contains("#hope"))
-        #expect(summary.hasSuffix("1"))
         #expect(filters.isActive)
         #expect(!NotesFilters().isActive)
     }

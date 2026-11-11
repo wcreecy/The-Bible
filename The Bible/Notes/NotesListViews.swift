@@ -42,7 +42,6 @@ struct NotesFilterBar: View {
 
             if let clearFiltersAction {
                 NotesActiveFiltersSummary(
-                    category: filters.category,
                     tag: filters.tag,
                     search: filters.search,
                     clearAction: clearFiltersAction
@@ -94,16 +93,12 @@ struct NotesFilterBar: View {
 
 /// States exactly what is narrowing the list, with the reset action where it is needed.
 struct NotesActiveFiltersSummary: View {
-    let category: NotesFilter
     let tag: String?
     let search: String
     let clearAction: () -> Void
 
     private var activeDescription: String {
         var parts = [String]()
-        if category != .all {
-            parts.append(String(localized: category.title))
-        }
         if let tag {
             parts.append("#\(tag)")
         }
@@ -258,7 +253,7 @@ struct NotesListCard: View {
             ContentUnavailableView {
                 Label("No Matching Notes", systemImage: "note.text")
             } description: {
-                Text("Try another type, tag, or search.")
+                Text("Try another tag or search.")
             } actions: {
                 if showsClearFiltersAction {
                     Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
@@ -378,7 +373,6 @@ struct NotesFilterMenu: View {
     @Binding var filters: NotesFilters
 
     let tags: [NotesLibrary.TagCount]
-    let manageTagsAction: () -> Void
     let clearFiltersAction: () -> Void
 
     var body: some View {
@@ -394,8 +388,6 @@ struct NotesFilterMenu: View {
                         }
                     }
                     .pickerStyle(.inline)
-
-                    Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
                 }
 
                 if filters.isActive {
@@ -410,16 +402,18 @@ struct NotesFilterMenu: View {
     }
 }
 
-/// Sorting and export in one toolbar menu.
-struct NotesViewOptionsMenu: View {
+/// The page's other actions in one toolbar menu: sorting, managing tags, and export.
+struct NotesMoreMenu: View {
     @Binding var sortField: NotesTabSort
     @Binding var sortAscending: Bool
 
+    /// Nil when there are no tags to manage.
+    let manageTagsAction: (() -> Void)?
     let exportAction: () -> Void
 
     var body: some View {
         Menu {
-            Section("Sort Notes") {
+            Menu {
                 ForEach(NotesTabSort.allCases) { option in
                     Menu {
                         Button {
@@ -437,16 +431,26 @@ struct NotesViewOptionsMenu: View {
                         Label(option.title, systemImage: option.systemImage)
                     }
                 }
+            } label: {
+                Label {
+                    Text("Sort By")
+                    Text(sortField.title)
+                } icon: {
+                    Image(systemName: "arrow.up.arrow.down")
+                }
+            }
+
+            if let manageTagsAction {
+                Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
             }
 
             Section {
                 Button("Export All Notes…", systemImage: "square.and.arrow.up", action: exportAction)
             }
         } label: {
-            Image(systemName: "arrow.up.arrow.down")
+            Image(systemName: "ellipsis")
         }
-        .accessibilityLabel("Sort and export notes")
-        .accessibilityValue(Text(sortField.title))
+        .accessibilityLabel("More")
     }
 
     private func applySort(_ field: NotesTabSort, ascending: Bool) {

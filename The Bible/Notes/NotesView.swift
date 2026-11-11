@@ -39,7 +39,7 @@ struct NotesView: View {
             }
         }
         .background(AppBackgroundView(tab: .notes))
-        .navigationTitle("Notes (\(library.visibleItems.count))")
+        .navigationTitle("Notes")
         .navigationDestination(isPresented: $isShowingCompactDetail) {
             // The editor opens over the detail page, so closing it returns here without a pop.
             NoteDetailCard(item: selectedItem, editAction: { isEditingSelection = true })
@@ -53,7 +53,7 @@ struct NotesView: View {
             text: $filters.search,
             isPresented: $isSearchPresented,
             placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Search all note text, verses, or #tags"
+            prompt: "Search notes, verses, or #tags"
         )
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -61,14 +61,14 @@ struct NotesView: View {
                     NotesFilterMenu(
                         filters: $filters,
                         tags: library.tags,
-                        manageTagsAction: { isManagingTags = true },
                         clearFiltersAction: { clearFilters() }
                     )
                 }
 
-                NotesViewOptionsMenu(
+                NotesMoreMenu(
                     sortField: sortFieldBinding,
                     sortAscending: $sortAscending,
+                    manageTagsAction: library.tags.isEmpty ? nil : { isManagingTags = true },
                     exportAction: {
                         exportDocument = NotesMarkdownDocument(text: NotesMarkdownExporter.markdown(for: library.allItems))
                     }
@@ -251,7 +251,7 @@ struct NotesView: View {
             ContextualTipView(
                 id: "notes.quickActions",
                 title: "Browse and manage notes",
-                message: "Use #Tags to organize notes. Smart filters can show sermon notes or notes linked to Scripture. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
+                message: "Use #Tags to organize notes. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
                 systemImage: "hand.point.up.left"
             )
         }
@@ -362,7 +362,7 @@ struct NotesView: View {
             selectedID = remainingNotes.isEmpty ? nil : remainingNotes[min(deletedIndex ?? 0, remainingNotes.count - 1)].id
         }
 
-        showDeleteUndo(item.hasNoteText ? "Note deleted" : "Highlight removed")
+        showDeleteUndo("Note deleted")
     }
 
     private func showDeleteUndo(_ text: String) {

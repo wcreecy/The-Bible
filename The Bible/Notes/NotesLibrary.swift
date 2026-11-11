@@ -2,12 +2,11 @@ import Foundation
 
 /// The Notes page's filters, kept together so the page and tests share one definition.
 struct NotesFilters: Equatable {
-    var category: NotesFilter = .all
     var tag: String?
     var search = ""
 
     var isActive: Bool {
-        category != .all || tag != nil || !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        tag != nil || !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 
@@ -42,8 +41,6 @@ struct NotesLibrary {
     /// `visibleItems` under headings: Favorites, then groups that follow the sort.
     let sections: [NotesListSection]
 
-    private let filters: NotesFilters
-
     init(
         scriptureNotes: [VerseNote],
         userNotes: [UserNote],
@@ -53,7 +50,6 @@ struct NotesLibrary {
         now: Date = .now,
         calendar: Calendar = .current
     ) {
-        self.filters = filters
         let items = scriptureNotes.map(NotesListItem.scripture).filter(\.hasNoteText) + userNotes.map(NotesListItem.user)
         allItems = items
 
@@ -69,8 +65,7 @@ struct NotesLibrary {
 
         let matching = items.filter { item in
             let itemTags = tagsByID[item.id] ?? []
-            return filters.category.matches(item) &&
-                (filters.tag.map(itemTags.contains) ?? true) &&
+            return (filters.tag.map(itemTags.contains) ?? true) &&
                 item.matchesSearch(filters.search, tags: itemTags)
         }
         let ordered = Self.sorted(matching, by: sort, ascending: ascending)
@@ -187,17 +182,6 @@ struct NotesLibrary {
     func isVisible(_ id: NotesListItem.ID?) -> Bool {
         guard let id else { return false }
         return visibleItems.contains { $0.id == id }
-    }
-
-    /// The list heading: the type, then any other active filter, then the count,
-    /// e.g. "Sermon Notes · #prayer · 4".
-    var summaryTitle: String {
-        var parts = [String(localized: filters.category.libraryTitle)]
-        if let tag = filters.tag { parts.append("#\(tag)") }
-        let search = filters.search.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !search.isEmpty { parts.append("“\(search)”") }
-        parts.append(visibleItems.count.formatted())
-        return parts.joined(separator: " · ")
     }
 
     // MARK: Sorting

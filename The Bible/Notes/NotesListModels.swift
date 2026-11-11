@@ -172,47 +172,6 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     }
 }
 
-/// Smart filters for note metadata. Custom tags remain the primary way to organize notes.
-enum NotesFilter: String, CaseIterable, Identifiable {
-    case all
-    case sermon
-    case scripture
-
-    var id: String { rawValue }
-
-    var title: LocalizedStringResource {
-        switch self {
-        case .all: "All"
-        case .sermon: "Sermons"
-        case .scripture: "Scripture-linked"
-        }
-    }
-
-    var libraryTitle: LocalizedStringResource {
-        switch self {
-        case .all: "All Notes"
-        case .sermon: "Sermon Notes"
-        case .scripture: "Scripture-linked Notes"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .all: "square.grid.2x2"
-        case .sermon: "person.wave.2"
-        case .scripture: "book.closed"
-        }
-    }
-
-    func matches(_ item: NotesListItem) -> Bool {
-        switch self {
-        case .all: true
-        case .sermon: item.isSermon
-        case .scripture: item.isScriptureLinked
-        }
-    }
-}
-
 /// One entry on the Notes page: a verse note (or highlight) or a personal note.
 enum NotesListItem: Identifiable {
     enum ID: Hashable {
