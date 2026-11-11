@@ -4,7 +4,7 @@ import Testing
 
 struct ChapterCrossReferenceEditorialCatalogTests {
     /// Update this when entries are intentionally added or removed.
-    private static let expectedEntryCount = 3378
+    private static let expectedEntryCount = 4056
 
     @Test
     func catalogLoadsEveryEntry() {

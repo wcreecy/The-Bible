@@ -55,9 +55,7 @@ struct HomeLayoutStore {
                 .streaks,
                 .timer,
                 .dailyFocus,
-                .resumeReading,
-                .search,
-                .bibleStats
+                .resumeReading
             ]
         }
 
@@ -71,18 +69,16 @@ struct HomeLayoutStore {
             .study,
             .streaks,
             .timer,
-            .dailyFocus,
-            .search,
-            .bibleStats
+            .dailyFocus
         ]
     }
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
             // Keep the first iPad dashboard focused on Welcome, Today, and the timer.
-            return [.resumeReading, .savedVerses, .study, .streaks, .dailyFocus, .search, .bibleStats]
+            return [.resumeReading, .savedVerses, .study, .streaks, .dailyFocus]
         }
         // Keep the first iPhone home screen focused on Welcome, Verse of the Day, and reading.
-        return [.today, .savedVerses, .study, .streaks, .timer, .dailyFocus, .search, .bibleStats]
+        return [.today, .savedVerses, .study, .streaks, .timer, .dailyFocus]
     }
     // The iPad Today's Reading panel; iPhone does not show it.
     static let defaultBibleReaderVisible = true
@@ -98,7 +94,7 @@ struct HomeLayoutStore {
             return HomeColumnLayout(
                 left: [.verseOfDay, .setup, .savedVerses, .study],
                 middle: [.today, .streaks, .dailyFocus],
-                right: [.timer, .resumeReading, .search, .bibleStats],
+                right: [.timer, .resumeReading],
                 verseOfDayWidth: .allColumns
             )
         }
@@ -138,8 +134,9 @@ struct HomeLayoutStore {
         migrateReaderSideIfNeeded()
 
         // Decode order
+        let savedOrderIDs = PersistedDecoding.decode([String].self, fromText: orderRaw, key: Self.keyOrder)
         let order: [HomeCardID] = {
-            if let ids = PersistedDecoding.decode([String].self, fromText: orderRaw, key: Self.keyOrder) {
+            if let ids = savedOrderIDs {
                 let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
                 // Append any newly added IDs to the end
                 let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
@@ -157,6 +154,7 @@ struct HomeLayoutStore {
                     hidden.insert(.today)
                 }
                 todayVisibilityMigrated = true
+                Self.showProgressIfStatsWasShown(&hidden, savedOrder: savedOrderIDs ?? [], savedHidden: ids)
                 return hidden
             } else {
                 return Self.baselineHidden
@@ -266,6 +264,7 @@ struct HomeLayoutStore {
                 hidden.insert(.today)
             }
             favoriteTodayVisibilityMigrated = true
+            Self.showProgressIfStatsWasShown(&hidden, savedOrder: orderIDs, savedHidden: hiddenIDs)
         } else if !favoriteTodayVisibilityMigrated {
             hidden.insert(.today)
             favoriteTodayVisibilityMigrated = true
@@ -284,6 +283,21 @@ struct HomeLayoutStore {
         bibleReaderVisible = fav.bibleReaderVisible
         bibleReaderColumn = fav.bibleReaderColumn
         save(order: fav.order, hidden: fav.hidden, columns: fav.columns)
+    }
+
+    // MARK: - Retired cards
+
+    /// The Your Stats card ("bibleStats") was merged into the streak card, now Your Progress.
+    /// A layout that showed Your Stats shows Your Progress instead, so no one loses their stats
+    /// from Home. The Search card was removed outright; its saved ID no longer decodes.
+    static func showProgressIfStatsWasShown(
+        _ hidden: inout Set<HomeCardID>,
+        savedOrder: [String],
+        savedHidden: [String]
+    ) {
+        let retiredStats = "bibleStats"
+        guard savedOrder.contains(retiredStats), !savedHidden.contains(retiredStats) else { return }
+        hidden.remove(.streaks)
     }
 
     // MARK: - Notification

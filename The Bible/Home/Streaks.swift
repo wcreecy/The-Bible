@@ -1,14 +1,19 @@
 import SwiftUI
 
+/// Home's Your Progress card: the reading streak and today's goal, then how today's time split
+/// between reading, study, and games.
 struct StreaksCard: View {
-    /// Opens Reading Stats when the card is tapped.
+    /// Opens Reading Stats from See All or a tap on the card.
     var onOpenStats: () -> Void = {}
     /// Opens the reader at the bookmarked verse.
     var onReadNow: () -> Void = {}
 
+    @Environment(\.scenePhase) private var scenePhase
     @State private var vm = StreaksViewModel()
     @State private var isDailyGoalEditorPresented = false
     @State private var celebratingMilestone: Int?
+    @State private var todayStudySeconds = 0
+    @State private var todayGameSeconds = 0
     /// The highest milestone already celebrated for the current streak.
     @AppStorage("streakCelebratedMilestone") private var celebratedMilestone = 0
 
@@ -20,10 +25,20 @@ struct StreaksCard: View {
         let weekDates = vm.currentWeekDates()
 
         HeroCard(
-            title: "Reading Streak",
+            title: HomeCardID.streaks.title,
             subtitle: nil,
-            icon: "flame.fill",
-            tint: .orange
+            icon: HomeCardID.streaks.systemImage,
+            tint: .orange,
+            trailingAccessory: {
+                Button(action: onOpenStats) {
+                    Label("See All", systemImage: "chevron.right")
+                        .labelStyle(.titleAndIcon)
+                        .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.orange)
+                .accessibilityLabel("See all stats")
+            }
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 StreakHeadline(
@@ -46,6 +61,12 @@ struct StreaksCard: View {
                     dates: weekDates,
                     statusForDate: { vm.weekStatus(for: $0, summary: summary) },
                     onEditGoal: { isDailyGoalEditorPresented = true }
+                )
+
+                TodayTimeSection(
+                    readingSeconds: summary.todaySeconds,
+                    studySeconds: todayStudySeconds,
+                    gameSeconds: todayGameSeconds
                 )
 
                 if !summary.todayGoalMet {
@@ -72,6 +93,23 @@ struct StreaksCard: View {
         .sheet(isPresented: $isDailyGoalEditorPresented) {
             DailyGoalEditorView()
         }
+        .onAppear(perform: refreshOtherActivity)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active { refreshOtherActivity() }
+        }
+        .onChange(of: AppDataChanges.shared.studyTime) {
+            todayStudySeconds = StudyTimeTracker.shared.seconds()
+        }
+        .onChange(of: AppDataChanges.shared.gameStats) {
+            todayGameSeconds = GameStats.shared.playSeconds()
+        }
+    }
+
+    /// Study and game time aren't part of the streak, so they're read here rather than
+    /// from the streak summary.
+    private func refreshOtherActivity() {
+        todayStudySeconds = StudyTimeTracker.shared.seconds()
+        todayGameSeconds = GameStats.shared.playSeconds()
     }
 
     /// Celebrates the first time the current streak reaches a milestone. When a streak
@@ -155,6 +193,111 @@ private struct StreakHeadline: View {
         var parts = ["Current streak, \(dayCount(current))", "Best streak, \(dayCount(best))"]
         if milestone > 0 { parts.append("Milestone reached, \(StreakMilestone.title(for: milestone))") }
         return parts.joined(separator: ". ")
+    }
+}
+
+// MARK: - Today's time
+
+/// Today's reading, study, and game time as one bar, with each part labeled below.
+private struct TodayTimeSection: View {
+    let readingSeconds: Int
+    let studySeconds: Int
+    let gameSeconds: Int
+
+    private var reading: Int { max(0, readingSeconds) }
+    private var study: Int { max(0, studySeconds) }
+    private var games: Int { max(0, gameSeconds) }
+    private var total: Int { reading + study + games }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack {
+                Text("Today's Time")
+                    .font(.subheadline.weight(.semibold))
+
+                Spacer()
+
+                Text(Self.formatted(total))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
+
+            GeometryReader { proxy in
+                let parts = [(reading, Color.blue), (study, Color.mint), (games, Color.indigo)].filter { $0.0 > 0 }
+                let spacing: CGFloat = parts.count > 1 ? 3 : 0
+                let available = max(0, proxy.size.width - spacing * CGFloat(max(0, parts.count - 1)))
+
+                HStack(spacing: spacing) {
+                    ForEach(parts.indices, id: \.self) { index in
+                        Rectangle()
+                            .fill(parts[index].1.gradient)
+                            .frame(width: available * Double(parts[index].0) / Double(max(1, total)))
+                    }
+                    if total == 0 {
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.15))
+                    }
+                }
+                .clipShape(Capsule())
+            }
+            .frame(height: 12)
+            .accessibilityHidden(true)
+
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) { legend }
+                VStack(alignment: .leading, spacing: 4) { legend }
+            }
+        }
+        .padding(12)
+        .background {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
+                .fill(Color.orange.opacity(0.08))
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            "Today's time, \(Self.formatted(total)). Reading \(Self.formatted(reading)), study \(Self.formatted(study)), games \(Self.formatted(games))."
+        )
+    }
+
+    @ViewBuilder
+    private var legend: some View {
+        TimeLegend(title: "Reading", seconds: reading, tint: .blue)
+        TimeLegend(title: "Study", seconds: study, tint: .mint)
+        TimeLegend(title: "Games", seconds: games, tint: .indigo)
+    }
+
+    /// "45s", "12m", or "1h 5m".
+    static func formatted(_ seconds: Int) -> String {
+        let seconds = max(0, seconds)
+        guard seconds >= 60 else { return "\(seconds)s" }
+        let hours = seconds / 3_600
+        let minutes = (seconds % 3_600) / 60
+        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
+    }
+}
+
+private struct TimeLegend: View {
+    let title: LocalizedStringResource
+    let seconds: Int
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(tint)
+                .frame(width: 8, height: 8)
+
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Text(TodayTimeSection.formatted(seconds))
+                .font(.caption.weight(.semibold))
+                .monospacedDigit()
+        }
+        .lineLimit(1)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

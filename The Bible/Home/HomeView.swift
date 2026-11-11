@@ -89,7 +89,6 @@ struct HomeView: View {
 
     @State private var votdVM = VerseOfDayViewModel()
     @State private var focusVM = FocusViewModel()
-    @State private var bibleVM = HomeBibleStatsViewModel()
 
     // Bind Live Activities setting directly so Home tracks Settings in real time.
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
@@ -105,8 +104,6 @@ struct HomeView: View {
     @State private var isEditingLayout = false
     /// Whether the two-column dashboard (rather than the single column) is on screen.
     @State private var isShowingDashboard = false
-    /// Incremented by the Search card to ask Home to scroll it into view while typing.
-    @State private var searchScrollRequest = 0
     /// Set by the Welcome card's Make Home Yours step.
     @State private var showsSetupLayoutEditor = false
     @State private var showsEditHomeOnboardingCue = false
@@ -139,15 +136,6 @@ struct HomeView: View {
 
                     // Controllers
                     timerController.onAppear()
-
-                    // The stats card can populate just after the initial frame. Keeping the
-                    // aggregation out of this appearance pass makes Home immediately tappable.
-                    Task { @MainActor in
-                        await Task.yield()
-                        AppPerformance.measure("HomeStatsRefresh") {
-                            bibleVM.refresh()
-                        }
-                    }
                 }
             }
             .onNotification(.homeLayoutChanged) {
@@ -161,9 +149,6 @@ struct HomeView: View {
                 switch newPhase {
                 case .active:
                     handleOpenPendingVerse()
-                    AppPerformance.measure("HomeStatsRefresh") {
-                        bibleVM.refresh()
-                    }
                     votdVM.handleScenePhaseChange(newPhase, favorites: favorites)
                     timerController.onSceneBecameActive()
                 case .inactive, .background:
@@ -201,7 +186,6 @@ struct HomeView: View {
                 contentWidth: contentWidth,
                 availableHeight: proxy.size.height,
                 horizontalPadding: horizontalPadding,
-                searchScrollRequest: searchScrollRequest,
                 dismissCue: { dismissEditHomeOnboardingCue() },
                 dashboard: {
                     dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
@@ -435,29 +419,12 @@ struct HomeView: View {
             )
         case .study:
             studyCard
-        case .search:
-            SearchHomeCard(
-                onNeedsVisibility: { searchScrollRequest += 1 },
-                onOpenSearch: { coordinator.push(.search) }
-            ) { result in
-                openBibleReference(book: result.bookName, chapter: result.chapterNumber, verse: result.verseNumber)
-            }
-            .id(HomeCardID.search)
         case .today:
             HomeTodayCard(onStartPrayerTimer: startPrayerChallengeTimer)
         case .streaks:
             StreaksCard(
                 onOpenStats: openReadingStats,
                 onReadNow: openContinueReading
-            )
-        case .bibleStats:
-            BibleStatsCard(
-                bibleVM: bibleVM,
-                scenePhase: scenePhase,
-                onOpenReadingStats: openReadingStats,
-                onOpenGameStats: {
-                    AppRouter.shared.open(.stats(.games))
-                }
             )
         case .setup:
             SetupChecklistCard(
@@ -517,7 +484,6 @@ struct HomeView: View {
     /// The inline search field above the cards, in both the compact and dashboard layouts.
     private var quickSearchCard: some View {
         SearchHomeCard(
-            presentation: .inline,
             onOpenSearch: { coordinator.push(.search) },
             onSelectResult: { result in
                 openBibleReference(

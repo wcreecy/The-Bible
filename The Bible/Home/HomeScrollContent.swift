@@ -7,7 +7,6 @@ struct HomeScrollContent<Dashboard: View, Compact: View>: View {
     let contentWidth: CGFloat
     let availableHeight: CGFloat
     let horizontalPadding: CGFloat
-    let searchScrollRequest: Int
     let dismissCue: () -> Void
     private let dashboard: () -> Dashboard
     private let compact: () -> Compact
@@ -17,7 +16,6 @@ struct HomeScrollContent<Dashboard: View, Compact: View>: View {
         contentWidth: CGFloat,
         availableHeight: CGFloat,
         horizontalPadding: CGFloat,
-        searchScrollRequest: Int,
         dismissCue: @escaping () -> Void,
         @ViewBuilder dashboard: @escaping () -> Dashboard,
         @ViewBuilder compact: @escaping () -> Compact
@@ -26,56 +24,27 @@ struct HomeScrollContent<Dashboard: View, Compact: View>: View {
         self.contentWidth = contentWidth
         self.availableHeight = availableHeight
         self.horizontalPadding = horizontalPadding
-        self.searchScrollRequest = searchScrollRequest
         self.dismissCue = dismissCue
         self.dashboard = dashboard
         self.compact = compact
     }
 
-    /// When the Search card last asked to be scrolled into view, so the keyboard appearing
-    /// afterward can finish that scroll without reacting to unrelated keyboards.
-    @State private var searchScrollRequestedAt: Date?
-
-    private func scrollSearchIntoView(_ scrollProxy: ScrollViewProxy) {
-        withAnimation(.snappy) {
-            scrollProxy.scrollTo(HomeCardID.search, anchor: .top)
-        }
-    }
-
     var body: some View {
-        ScrollViewReader { scrollProxy in
-            ScrollView {
-                VStack(spacing: 16) {
-                    if usesDashboard {
-                        dashboard()
-                    } else {
-                        compact()
-                    }
+        ScrollView {
+            VStack(spacing: 16) {
+                if usesDashboard {
+                    dashboard()
+                } else {
+                    compact()
                 }
-                .frame(width: contentWidth, alignment: .leading)
-                .padding(.horizontal, horizontalPadding)
             }
-            .scrollDismissesKeyboard(.interactively)
-            .tabBarContentClearance()
-            .simultaneousGesture(DragGesture(minimumDistance: 1).onChanged { _ in dismissCue() })
-            .simultaneousGesture(TapGesture().onEnded { dismissCue() })
-            .task(id: searchScrollRequest) {
-                guard searchScrollRequest > 0 else { return }
-                searchScrollRequestedAt = .now
-                // Let the card's new height lay out before scrolling to it.
-                await Task.yield()
-                guard !Task.isCancelled else { return }
-                scrollSearchIntoView(scrollProxy)
-            }
-            // The keyboard changes how far the content can scroll, so finish the scroll
-            // once it is fully up.
-            .onNotification(UIResponder.keyboardDidShowNotification) {
-                guard let requestedAt = searchScrollRequestedAt,
-                      Date.now.timeIntervalSince(requestedAt) < 2 else { return }
-                searchScrollRequestedAt = nil
-                scrollSearchIntoView(scrollProxy)
-            }
+            .frame(width: contentWidth, alignment: .leading)
+            .padding(.horizontal, horizontalPadding)
         }
+        .scrollDismissesKeyboard(.interactively)
+        .tabBarContentClearance()
+        .simultaneousGesture(DragGesture(minimumDistance: 1).onChanged { _ in dismissCue() })
+        .simultaneousGesture(TapGesture().onEnded { dismissCue() })
     }
 }
 

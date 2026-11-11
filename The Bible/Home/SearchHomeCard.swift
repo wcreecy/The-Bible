@@ -1,30 +1,11 @@
 import SwiftUI
 
+/// The quick search field at the top of Home, with results listed below it as you type.
+/// The magnifying glass opens the full Search page.
 struct SearchHomeCard: View {
-    enum Presentation {
-        case card
-        case inline
-    }
-
-    let presentation: Presentation
-    /// Called when typing starts and when results arrive, so Home can scroll the card
-    /// above the keyboard and tab bar.
-    let onNeedsVisibility: () -> Void
     /// Opens the full Search page from the magnifying-glass button.
     let onOpenSearch: () -> Void
     let onSelectResult: (SearchResult) -> Void
-
-    init(
-        presentation: Presentation = .card,
-        onNeedsVisibility: @escaping () -> Void = {},
-        onOpenSearch: @escaping () -> Void = {},
-        onSelectResult: @escaping (SearchResult) -> Void
-    ) {
-        self.presentation = presentation
-        self.onNeedsVisibility = onNeedsVisibility
-        self.onOpenSearch = onOpenSearch
-        self.onSelectResult = onSelectResult
-    }
 
     /// A book, chapter, or verse the query names directly, shown above the keyword matches.
     private struct ReferenceMatch: Identifiable {
@@ -53,29 +34,10 @@ struct SearchHomeCard: View {
     }
 
     var body: some View {
-        Group {
-            switch presentation {
-            case .card:
-                HeroCard(
-                    title: "",
-                    subtitle: nil,
-                    icon: nil,
-                    tint: .purple
-                ) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("Search the Bible", systemImage: "magnifyingglass")
-                            .font(.headline)
-                        searchField
-                        searchResults
-                    }
-                }
-            case .inline:
-                VStack(alignment: .leading, spacing: 10) {
-                    searchField
-                    if !query.isEmpty {
-                        searchResults
-                    }
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            searchField
+            if !query.isEmpty {
+                searchResults
             }
         }
         .onChange(of: query) { _, newValue in
@@ -86,13 +48,6 @@ struct SearchHomeCard: View {
                 return
             }
             scheduleSearch()
-        }
-        .onChange(of: isFieldFocused) { _, focused in
-            if focused { onNeedsVisibility() }
-        }
-        .onChange(of: isSearching) { _, searching in
-            // Results change the card's height; keep all of it in view.
-            if !searching && isFieldFocused { onNeedsVisibility() }
         }
         .onDisappear {
             searchTask?.cancel()
@@ -137,34 +92,28 @@ struct SearchHomeCard: View {
 
     @ViewBuilder
     private var searchResults: some View {
-        if query.isEmpty {
-            Text("Find words, phrases, or references like John 3:16.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        if let referenceMatch {
+            referenceRow(referenceMatch)
+        }
+
+        if !isSearching, let strongsMatch {
+            StrongsSearchHeader(match: strongsMatch, onOpenVerse: onSelectResult)
+                .padding(10)
+                .background(Color.accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        }
+
+        if isSearching {
+            ProgressView()
+                .controlSize(.small)
+        } else if results.isEmpty {
+            if referenceMatch == nil {
+                Text("No matching verses.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         } else {
-            if let referenceMatch {
-                referenceRow(referenceMatch)
-            }
-
-            if !isSearching, let strongsMatch {
-                StrongsSearchHeader(match: strongsMatch, onOpenVerse: onSelectResult)
-                    .padding(10)
-                    .background(Color.accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-
-            if isSearching {
-                ProgressView()
-                    .controlSize(.small)
-            } else if results.isEmpty {
-                if referenceMatch == nil {
-                    Text("No matching verses.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            } else {
-                ForEach(results) { result in
-                    resultRow(result)
-                }
+            ForEach(results) { result in
+                resultRow(result)
             }
         }
     }

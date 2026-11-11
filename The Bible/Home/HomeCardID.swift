@@ -2,7 +2,7 @@
 import Foundation
 
 enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
-    case verseOfDay, resumeReading, study, search, today, savedVerses, streaks, timer, dailyFocus, bibleStats, setup
+    case verseOfDay, resumeReading, study, today, savedVerses, streaks, timer, dailyFocus, setup
 
     var id: String { rawValue }
 
@@ -15,9 +15,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .savedVerses: return "Saved Verses"
         case .resumeReading: return "Continue Reading"
         case .study: return "Study"
-        case .search: return "Search Scripture"
-        case .streaks: return "Reading Streak"
-        case .bibleStats: return "Your Stats"
+        case .streaks: return "Your Progress"
         case .setup: return "Welcome"
         }
     }
@@ -31,9 +29,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .savedVerses: return "heart.text.clipboard"
         case .resumeReading: return "bookmark.fill"
         case .study: return "text.book.closed"
-        case .search: return "magnifyingglass"
         case .streaks: return "flame.fill"
-        case .bibleStats: return "chart.bar.fill"
         case .setup: return "list.bullet.clipboard"
         }
     }

@@ -60,7 +60,43 @@ struct HomeLayoutModelTests {
         #expect(model.hidesEveryCard)
         #expect(model.visibleOrder.isEmpty)
 
-        model.hidden.remove(.search)
+        model.hidden.remove(.today)
         #expect(!model.hidesEveryCard)
+    }
+
+    @Test
+    func aLayoutThatShowedYourStatsShowsYourProgress() {
+        // Your Stats ("bibleStats") was shown and the streak card hidden.
+        var hidden: Set<HomeCardID> = [.streaks, .timer]
+        HomeLayoutStore.showProgressIfStatsWasShown(
+            &hidden,
+            savedOrder: ["verseOfDay", "streaks", "bibleStats", "timer"],
+            savedHidden: ["streaks", "timer"]
+        )
+        #expect(hidden == [.timer])
+
+        // Your Stats was hidden too, so nothing changes.
+        hidden = [.streaks]
+        HomeLayoutStore.showProgressIfStatsWasShown(
+            &hidden,
+            savedOrder: ["streaks", "bibleStats"],
+            savedHidden: ["streaks", "bibleStats"]
+        )
+        #expect(hidden == [.streaks])
+
+        // A layout saved after the merge no longer lists Your Stats.
+        HomeLayoutStore.showProgressIfStatsWasShown(&hidden, savedOrder: ["streaks"], savedHidden: ["streaks"])
+        #expect(hidden == [.streaks])
+    }
+
+    @Test
+    func retiredCardsDropOutOfSavedColumns() {
+        let decoded = HomeColumnLayout(
+            storageString: #"{"left":["search","verseOfDay"],"middle":["bibleStats","today"],"right":["timer"]}"#,
+            readerColumn: nil
+        )
+        #expect(decoded?.left.first == .verseOfDay)
+        #expect(decoded?.middle.first == .today)
+        #expect(decoded?.right.first == .timer)
     }
 }

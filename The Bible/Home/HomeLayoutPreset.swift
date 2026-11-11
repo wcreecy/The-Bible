@@ -21,7 +21,7 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
     var detail: String {
         switch self {
         case .reading: return "Pick up reading and stay consistent."
-        case .study: return "Study tools, saved verses, and quick search."
+        case .study: return "Study tools, your reading place, and saved verses."
         case .dailyPractice: return "A focused daily rhythm of reading, prayer, and challenges."
         case .minimal: return "Just the essentials."
         }
@@ -42,11 +42,11 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
         case .reading:
             [.verseOfDay, .resumeReading, .streaks, .dailyFocus, .savedVerses]
         case .study:
-            [.verseOfDay, .study, .search, .resumeReading, .savedVerses]
+            [.verseOfDay, .study, .resumeReading, .savedVerses]
         case .dailyPractice:
-            [.verseOfDay, .resumeReading, .timer, .search, .dailyFocus, .today]
+            [.verseOfDay, .resumeReading, .timer, .dailyFocus, .today]
         case .minimal:
-            [.resumeReading, .search]
+            [.resumeReading]
         }
     }
 
@@ -79,7 +79,7 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
             )
         case .study:
             layout = HomeColumnLayout(
-                left: [.verseOfDay, .study, .search],
+                left: [.verseOfDay, .study],
                 middle: [.resumeReading, .savedVerses],
                 right: [],
                 verseOfDayWidth: .leftTwoColumns
@@ -87,7 +87,7 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
         case .dailyPractice:
             layout = HomeColumnLayout(
                 left: [.verseOfDay, .resumeReading, .timer],
-                middle: [.search, .dailyFocus],
+                middle: [.dailyFocus],
                 right: [.today],
                 verseOfDayWidth: .allColumns
             )

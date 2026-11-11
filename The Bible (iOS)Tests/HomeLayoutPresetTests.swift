@@ -3,8 +3,8 @@ import Testing
 
 struct HomeLayoutPresetTests {
     @Test
-    func minimalPresetShowsOnlyContinueReadingAndSearchOnIPhone() {
-        #expect(HomeLayoutPreset.minimal.visibleCards(usesDashboard: false) == [.resumeReading, .search])
+    func minimalPresetShowsOnlyContinueReadingOnIPhone() {
+        #expect(HomeLayoutPreset.minimal.visibleCards(usesDashboard: false) == [.resumeReading])
         #expect(HomeLayoutPreset.minimal.showsTodayReadingPanel == false)
     }
 
@@ -29,7 +29,7 @@ struct HomeLayoutPresetTests {
         let layout = HomeLayoutPreset.study.dashboardColumns
 
         #expect(layout.verseOfDayWidth == .leftTwoColumns)
-        #expect(layout.left.prefix(3) == [.verseOfDay, .study, .search])
+        #expect(layout.left.prefix(2) == [.verseOfDay, .study])
         #expect(layout.middle.prefix(2) == [.resumeReading, .savedVerses])
         #expect(HomeLayoutPreset.study.showsTodayReadingPanel)
     }
@@ -40,7 +40,7 @@ struct HomeLayoutPresetTests {
 
         #expect(layout.verseOfDayWidth == .allColumns)
         #expect(layout.left.prefix(3) == [.verseOfDay, .resumeReading, .timer])
-        #expect(layout.middle.prefix(2) == [.search, .dailyFocus])
+        #expect(layout.middle.first == .dailyFocus)
         #expect(layout.right.first == .today)
         #expect(!HomeLayoutPreset.dailyPractice.showsTodayReadingPanel)
     }
