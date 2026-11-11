@@ -167,19 +167,14 @@ struct RandomVerseLockScreenView: View {
     }
 
     var body: some View {
-        // Adopt the iOS 17+ background API to remove the system overlay on devices.
-        if #available(iOSApplicationExtension 17.0, *) {
-            if family == .accessoryCircular || family == .accessoryRectangular {
-                // Opt into the system’s tinted background for accessory widgets.
-                content
-                    .containerBackground(.fill.tertiary, for: .widget)
-            } else {
-                // Keep inline (and other) appearance unchanged while adopting the API.
-                content
-                    .containerBackground(for: .widget) { Color.clear }
-            }
-        } else {
+        if family == .accessoryCircular || family == .accessoryRectangular {
+            // Opt into the system’s tinted background for accessory widgets.
             content
+                .containerBackground(.fill.tertiary, for: .widget)
+        } else {
+            // Inline widgets have no background of their own.
+            content
+                .containerBackground(for: .widget) { Color.clear }
         }
     }
 

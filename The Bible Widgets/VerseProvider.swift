@@ -67,6 +67,15 @@ struct VerseWidgetEntry: TimelineEntry {
     let backgroundStyleRaw: String
     /// Tells Smart Rotate when this widget belongs at the top of a stack.
     var relevance: TimelineEntryRelevance? = nil
+
+    /// The heading reads "Word of the Night" from this hour until `morningHour`.
+    static let eveningHour = 18
+    static let morningHour = 5
+
+    static func isEvening(_ date: Date, calendar: Calendar = .current) -> Bool {
+        let hour = calendar.component(.hour, from: date)
+        return hour >= eveningHour || hour < morningHour
+    }
 }
 
 struct VerseProvider: AppIntentTimelineProvider {
@@ -93,27 +102,46 @@ struct VerseProvider: AppIntentTimelineProvider {
         let now = Date()
         let refresh = nextAutoRefreshDate(from: now)
         verseWidgetLogger.debug("Built Verse widget timeline; next refresh interval=\(refresh.timeIntervalSince(now), privacy: .public)s.")
-        var entry = loadCurrentEntry(configuration: configuration, date: now)
-        entry.relevance = TimelineEntryRelevance(score: Self.restingScore)
-        var entries = [entry]
 
         // A new verse is worth surfacing for a few hours, then the widget settles back.
         let changedAt = UserDefaults(suiteName: "group.bible.app")?.object(forKey: "verseOfDayChangedAt") as? Date
-        if let changedAt {
-            let boostEnd = changedAt.addingTimeInterval(Self.newVerseBoost)
-            if boostEnd > now {
-                entries[0].relevance = TimelineEntryRelevance(
+        let boostEnd = changedAt?.addingTimeInterval(Self.newVerseBoost)
+
+        // The verse only changes at `refresh`, but the heading switches between Verse of the Day
+        // and Word of the Night on its own schedule, so each switch needs an entry too.
+        var dates: Set<Date> = [now]
+        if let boostEnd, boostEnd > now, boostEnd < refresh {
+            dates.insert(boostEnd)
+        }
+        dates.formUnion(headingChangeDates(after: now, before: refresh))
+
+        let entries = dates.sorted().map { date in
+            var entry = loadCurrentEntry(configuration: configuration, date: date)
+            if let boostEnd, boostEnd > date {
+                entry.relevance = TimelineEntryRelevance(
                     score: Self.newVerseScore,
-                    duration: boostEnd.timeIntervalSince(now)
+                    duration: boostEnd.timeIntervalSince(date)
                 )
-                if boostEnd < refresh {
-                    var settled = loadCurrentEntry(configuration: configuration, date: boostEnd)
-                    settled.relevance = TimelineEntryRelevance(score: Self.restingScore)
-                    entries.append(settled)
-                }
+            } else {
+                entry.relevance = TimelineEntryRelevance(score: Self.restingScore)
             }
+            return entry
         }
         return Timeline(entries: entries, policy: .after(refresh))
+    }
+
+    /// Each evening and morning start between `start` and `end`, when the heading changes.
+    private func headingChangeDates(after start: Date, before end: Date) -> [Date] {
+        let calendar = Calendar.current
+        let firstDay = calendar.startOfDay(for: start)
+        // A timeline lasts at most about a day, so three days covers every switch in it.
+        return (0...2).flatMap { dayOffset -> [Date] in
+            guard let day = calendar.date(byAdding: .day, value: dayOffset, to: firstDay) else { return [] }
+            return [VerseWidgetEntry.morningHour, VerseWidgetEntry.eveningHour].compactMap {
+                calendar.date(bySettingHour: $0, minute: 0, second: 0, of: day)
+            }
+        }
+        .filter { $0 > start && $0 < end }
     }
 
     /// Relevance scores are compared only with this app's other widgets.

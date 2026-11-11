@@ -3,6 +3,7 @@ import WidgetKit
 
 struct VerseWidgetEntryView: View {
     @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.widgetRenderingMode) private var renderingMode
 
     var entry: VerseProvider.Entry
 
@@ -10,19 +11,16 @@ struct VerseWidgetEntryView: View {
     private var isLarge: Bool { widgetFamily == .systemLarge }
     private var isMedium: Bool { widgetFamily == .systemMedium }
 
-    private var isEvening: Bool {
-        let hour = Calendar.current.component(.hour, from: entry.date)
-        return hour >= 18 || hour < 5
-    }
+    private var isEvening: Bool { VerseWidgetEntry.isEvening(entry.date) }
 
     private var headerTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
     private var headerIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
-    private var backgroundStyle: VerseWidgetBackgroundStyle {
-        VerseWidgetBackgroundStyle(rawValue: entry.backgroundStyleRaw) ?? .black
+    private var backgroundStyle: WidgetBackgroundStyle {
+        WidgetBackgroundStyle(rawValue: entry.backgroundStyleRaw) ?? .black
     }
 
     private var primaryTextColor: Color {
-        backgroundStyle == .parchment ? Color(red: 0.20, green: 0.15, blue: 0.08) : .white
+        backgroundStyle.primaryTextColor(in: renderingMode)
     }
 
     private var secondaryTextColor: Color {
@@ -41,6 +39,7 @@ struct VerseWidgetEntryView: View {
                         ? .purple.opacity(0.9) : .yellow, // primary layer
                         .white.opacity(0.9)               // secondary layer (stars/rays where applicable)
                     )
+                    .widgetAccentable()
 
                 Text(headerTitle)
                     .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : (isMedium ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))))
@@ -49,7 +48,7 @@ struct VerseWidgetEntryView: View {
             }
 
             if !entry.text.isEmpty {
-                Text("“\(entry.text)\"")
+                Text("“\(entry.text)”")
                     .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
                     .foregroundStyle(primaryTextColor)
                     .multilineTextAlignment(.leading)
@@ -69,99 +68,10 @@ struct VerseWidgetEntryView: View {
         .padding(isExtraLarge ? 28 : (isLarge ? 22 : 16))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .containerBackground(for: .widget) {
-            VerseWidgetBackground(style: backgroundStyle)
+            WidgetBackgroundView(style: backgroundStyle)
         }
         .widgetURL(URL(string: "thebible://home")) // Always open Home when tapping this widget
+        // The heading names the widget, so VoiceOver reads it followed by the verse and reference.
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(isEvening ? "Word of the Night widget" : "Verse of the Day widget")
-    }
-}
-
-
-private enum VerseWidgetBackgroundStyle: String {
-    case black
-    case midnight
-    case forest
-    case burgundy
-    case indigo
-    case sunset
-    case blackToGray
-    case blueToPurple
-    case riverstone
-    case oliveGold
-    case amethyst
-    case parchment
-}
-
-private struct VerseWidgetBackground: View {
-    let style: VerseWidgetBackgroundStyle
-
-    var body: some View {
-        switch style {
-        case .black:
-            Color.black
-        case .midnight:
-            LinearGradient(
-                colors: [Color(red: 0.03, green: 0.08, blue: 0.18), Color(red: 0.08, green: 0.22, blue: 0.38)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .forest:
-            LinearGradient(
-                colors: [Color(red: 0.03, green: 0.16, blue: 0.12), Color(red: 0.10, green: 0.34, blue: 0.23)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .burgundy:
-            LinearGradient(
-                colors: [Color(red: 0.22, green: 0.03, blue: 0.08), Color(red: 0.48, green: 0.08, blue: 0.16)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .indigo:
-            LinearGradient(
-                colors: [Color(red: 0.10, green: 0.07, blue: 0.28), Color(red: 0.28, green: 0.20, blue: 0.58)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .sunset:
-            LinearGradient(
-                colors: [Color(red: 0.33, green: 0.07, blue: 0.18), Color(red: 0.72, green: 0.28, blue: 0.16)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .blackToGray:
-            LinearGradient(
-                colors: [.black, .gray],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .blueToPurple:
-            LinearGradient(
-                colors: [.blue, .purple],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .riverstone:
-            LinearGradient(
-                colors: [Color(red: 0.02, green: 0.23, blue: 0.25), Color(red: 0.12, green: 0.31, blue: 0.37)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .oliveGold:
-            LinearGradient(
-                colors: [Color(red: 0.20, green: 0.27, blue: 0.16), Color(red: 0.54, green: 0.42, blue: 0.17)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .amethyst:
-            LinearGradient(
-                colors: [Color(red: 0.21, green: 0.07, blue: 0.31), Color(red: 0.44, green: 0.27, blue: 0.65)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        case .parchment:
-            Color(red: 0.91, green: 0.85, blue: 0.70)
-        }
     }
 }
