@@ -10,8 +10,15 @@ The sources are STEPBible-Data (Tyndale House Cambridge, CC BY 4.0), kept unedit
     TEHMC / TEGMC Expansions of the Hebrew and Greek morphology (grammar) codes
     TIPNR         Proper names: who each person is, and the places, with every verse
 
-    python3 -I Scripts/build_original_words.py            # build and replace the bundled database
-    python3 -I Scripts/build_original_words.py --check    # report only; writes nothing
+    python3 -I Scripts/build_original_words.py              # build and replace the bundled database
+    python3 -I Scripts/build_original_words.py --check      # report only; writes nothing
+    python3 -I Scripts/build_original_words.py --no-edits   # STEPBible's dictionary text only
+
+Hand edits to the dictionary (lemma, transliteration, gloss, definition) are kept in
+`Scripts/data/lexicon_edits.csv`, which lists only the entries that differ from STEPBible's,
+and are applied on every build so a rebuild doesn't undo them. `--no-edits` leaves them out
+(the file is untouched). `Scripts/import_lexicon_edits.py` merges a new CSV into that file
+and updates the bundled database without a rebuild.
 
 Verse numbers are the KJV's, which the app keys everything by. TAHOT and TAGNT give the
 English (NRSV) reference first and the Hebrew one in brackets, and the English numbering
@@ -44,6 +51,7 @@ The build runs against a temporary file and replaces the bundled database only i
 succeeds. Coverage against `The Bible/KJVText.json` is printed, not enforced: it lists
 KJV verses that have no words.
 """
+import csv
 import hashlib
 import json
 from collections import Counter
@@ -59,6 +67,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SOURCES = ROOT / "Scripts" / "data" / "stepbible"
 KJV = ROOT / "The Bible" / "KJVText.json"
 OUTPUT = ROOT / "The Bible (iOS)" / "OriginalWords.sqlite"
+LEXICON_EDITS = ROOT / "Scripts" / "data" / "lexicon_edits.csv"
 
 # The STEPBible abbreviations, in the KJV's book order.
 ABBREVIATIONS = (
@@ -394,6 +403,56 @@ def parse_lexicon(path, language):
             fields[6].strip(), plain_definition("\t".join(fields[7:]), language),
         ))
     return entries
+
+
+# The columns of `lexicon_edits.csv`, and of the CSVs `import_lexicon_edits.py` reads. A row
+# is a whole entry: every column replaces STEPBible's.
+EDIT_COLUMNS = ("strongs_number", "language", "lemma", "transliteration", "gloss", "definition")
+
+
+def read_lexicon_edits(path):
+    """{strongs: entry} from a CSV with `EDIT_COLUMNS`, in `parse_lexicon`'s entry form."""
+    if not path.exists():
+        return {}
+    with path.open(newline="", encoding="utf-8-sig") as file:
+        reader = csv.DictReader(file)
+        missing = [column for column in EDIT_COLUMNS if column not in (reader.fieldnames or [])]
+        if missing:
+            sys.exit(f"{path.name} has no {', '.join(missing)} column.")
+        edits = {}
+        for line, row in enumerate(reader, 2):
+            key = row["strongs_number"].strip()
+            if not STRONGS.fullmatch(key):
+                sys.exit(f"{path.name} line {line}: {key!r} isn't a Strong's number.")
+            if key in edits:
+                sys.exit(f"{path.name} lists {key} twice.")
+            edits[key] = (key, row["language"].strip(), row["lemma"], row["transliteration"],
+                          row["gloss"], row["definition"])
+    return edits
+
+
+def write_lexicon_edits(path, edits):
+    with path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(EDIT_COLUMNS)
+        writer.writerows(edits[key] for key in sorted(edits))
+
+
+def apply_lexicon_edits(entries, edits, warnings):
+    """The entries with their edited versions in place of STEPBible's. An edit for an entry
+    the database doesn't have, or in the other language, is left out and reported."""
+    by_key = {entry[0]: entry for entry in entries}
+    applied = 0
+    for key, edit in sorted(edits.items()):
+        original = by_key.get(key)
+        if original is None:
+            warnings.append(f"Lexicon edit for {key} skipped: no word uses that entry.")
+        elif original[1] != edit[1]:
+            warnings.append(f"Lexicon edit for {key} skipped: it's {edit[1]}, the entry is {original[1]}.")
+        else:
+            by_key[key] = edit
+            applied += 1
+    return [by_key[entry[0]] for entry in entries], applied
 
 
 # --- Grammar ---------------------------------------------------------------------------------
@@ -740,6 +799,11 @@ def main():
     unknown = sorted({r[7] for r in rows if r[7] and r[7] not in lexicon})
     unused = {r[7] for r in rows if r[7]}
     used_lexicon = [entry for key, entry in sorted(lexicon.items()) if key in unused]
+    uses_edits = "--no-edits" not in sys.argv and LEXICON_EDITS.exists()
+    edit_warnings, edits_applied = [], 0
+    if uses_edits:
+        used_lexicon, edits_applied = apply_lexicon_edits(
+            used_lexicon, read_lexicon_edits(LEXICON_EDITS), edit_warnings)
 
     book_numbers = {abbreviation: number for number, abbreviation in enumerate(ABBREVIATIONS, 1)}
     name_rows, name_links = parse_names(names_path, book_numbers, resolve, problems)
@@ -769,6 +833,13 @@ def main():
     print(f"{len(name_rows):,} names ({sum(1 for r in name_rows if r[2] == 'Place'):,} places) with "
           f"{len(name_links):,} verse links; {matched:,} of the links land on a word with that "
           f"Strong's number ({100 * matched / max(len(name_links), 1):.0f}%).")
+    if uses_edits:
+        print(f"{edits_applied:,} dictionary entries use the hand edits in "
+              f"{LEXICON_EDITS.relative_to(ROOT)}.")
+        if edit_warnings:
+            print("\n".join(edit_warnings[:20]))
+    else:
+        print("Dictionary entries are STEPBible's, without hand edits.")
     if check_only:
         print("Nothing written.")
         return
@@ -779,6 +850,7 @@ def main():
         **{path.name: sha256(path) for path in [
             *hebrew_paths, *greek_paths, *lexicon_paths.values(), *grammar_paths.values(), names_path,
         ]},
+        **({LEXICON_EDITS.name: sha256(LEXICON_EDITS)} if uses_edits else {}),
     }
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as folder:

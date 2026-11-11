@@ -58,3 +58,21 @@ their English senses, plain-text definitions, grammar codes turned into one Engl
 and name records cut down to who each is and the verses they appear in; TIPNR's map
 coordinates were left out because many are rough placeholders). The app credits STEPBible in Settings → Help →
 Acknowledgements, as it does OpenBible.info.
+
+## lexicon_edits.csv
+
+Hand-written dictionary entries that replace STEPBible's: plainer definitions, corrected
+glosses, and a few corrected lemmas. It lists only the entries that differ from STEPBible's
+(columns `strongs_number, language, lemma, transliteration, gloss, definition`; each row is the
+whole entry), and `build_original_words.py` applies it on every build so a rebuild keeps the
+edits. `--no-edits` builds with STEPBible's text only, without touching this file.
+
+To take in a new batch of edits (a full export of the dictionary or just a few rows):
+
+    python3 -I Scripts/import_lexicon_edits.py ~/Downloads/edits.csv --check   # what would change
+    python3 -I Scripts/import_lexicon_edits.py ~/Downloads/edits.csv           # merge and update
+
+A row that differs from STEPBible's becomes that entry's edit; a row identical to STEPBible's
+removes the entry's edit, which is how an edit is undone. Entries the CSV leaves out keep their
+edits. The script also updates the bundled database, so no rebuild is needed. These are
+changes to STEPBible's data, which the licence asks to be noted.

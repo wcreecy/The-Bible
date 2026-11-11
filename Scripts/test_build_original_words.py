@@ -228,6 +228,76 @@ class GreekDefinitionTests(unittest.TestCase):
         self.assertEqual(bow.shorten("short"), "short")
 
 
+_import_spec = importlib.util.spec_from_file_location(
+    "import_lexicon_edits", SCRIPT.parent / "import_lexicon_edits.py")
+ile = importlib.util.module_from_spec(_import_spec)
+_import_spec.loader.exec_module(ile)
+
+
+def entry(key, gloss, language="hebrew", definition="A definition."):
+    return (key, language, "שֵׁבֶט", "she.vet", gloss, definition)
+
+
+class LexiconEditTests(unittest.TestCase):
+    """Hand edits to the dictionary, kept in `lexicon_edits.csv` so rebuilds don't undo them."""
+
+    def test_the_edits_file_reads_back_what_was_written(self):
+        edits = {"H7626G": entry("H7626G", "staff", definition="A rod, staff;\nalso a \"tribe\", 2, 3."),
+                 "G0026": entry("G0026", "love", language="greek")}
+        with tempfile.TemporaryDirectory() as folder:
+            path = pathlib.Path(folder) / "edits.csv"
+            bow.write_lexicon_edits(path, edits)
+            self.assertEqual(bow.read_lexicon_edits(path), edits)
+
+    def test_a_missing_edits_file_is_no_edits(self):
+        self.assertEqual(bow.read_lexicon_edits(pathlib.Path("/nonexistent/edits.csv")), {})
+
+    def test_a_listed_entry_is_replaced_and_the_rest_are_stepbibles(self):
+        entries = [entry("H0001G", "father"), entry("H7626G", "tribe: staff")]
+        edited, applied = bow.apply_lexicon_edits(entries, {"H7626G": entry("H7626G", "staff")}, [])
+        self.assertEqual(edited, [entry("H0001G", "father"), entry("H7626G", "staff")])
+        self.assertEqual(applied, 1)
+
+    def test_an_edit_for_an_unused_entry_or_the_other_language_is_reported_not_applied(self):
+        entries = [entry("H0001G", "father")]
+        warnings = []
+        edited, applied = bow.apply_lexicon_edits(entries, {
+            "H9999": entry("H9999", "nothing"),
+            "H0001G": entry("H0001G", "father", language="greek"),
+        }, warnings)
+        self.assertEqual((edited, applied), (entries, 0))
+        self.assertEqual(len(warnings), 2)
+
+    def test_merging_adds_replaces_and_undoes_edits(self):
+        originals = {key: entry(key, "original") for key in ("H0001", "H0002", "H0003", "H0004")}
+        existing = {"H0002": entry("H0002", "first edit"), "H0003": entry("H0003", "kept edit"),
+                    "H0004": entry("H0004", "same edit")}
+        incoming = {
+            "H0001": entry("H0001", "new edit"),
+            "H0002": entry("H0002", "second edit"),
+            "H0003": entry("H0003", "original"),   # pasting the original back undoes the edit
+            "H0004": entry("H0004", "same edit"),
+            "H9999": entry("H9999", "unknown"),
+        }
+        edits, (added, replaced, dropped, unchanged, problems) = ile.merge(incoming, existing, originals)
+        self.assertEqual(sorted(edits), ["H0001", "H0002", "H0004"])
+        self.assertEqual(edits["H0002"][4], "second edit")
+        self.assertEqual((added, replaced, dropped, unchanged), (["H0001"], ["H0002"], ["H0003"], ["H0004"]))
+        self.assertEqual(len(problems), 1)
+
+    def test_entries_a_csv_leaves_out_keep_their_edits(self):
+        originals = {"H0001": entry("H0001", "original"), "H0002": entry("H0002", "original")}
+        existing = {"H0002": entry("H0002", "earlier edit")}
+        edits, _ = ile.merge({"H0001": entry("H0001", "new edit")}, existing, originals)
+        self.assertEqual(edits["H0002"][4], "earlier edit")
+
+    def test_a_row_in_the_other_language_is_skipped(self):
+        originals = {"H0001": entry("H0001", "original")}
+        edits, (_, _, _, _, problems) = ile.merge(
+            {"H0001": entry("H0001", "edit", language="greek")}, {}, originals)
+        self.assertEqual((edits, len(problems)), ({}, 1))
+
+
 class RealDefinitionTests(unittest.TestCase):
     """Properties every cleaned definition must have, checked against the real Greek lexicon."""
 
