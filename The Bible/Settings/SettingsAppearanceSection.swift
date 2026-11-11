@@ -1,62 +1,29 @@
 import SwiftUI
 
 struct SettingsAppearanceSection: View {
-    @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
+    @AppStorage(AppStorageKey.colorSchemePreference) private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
+
     var body: some View {
-        Section(header: Text("Appearance").foregroundStyle(.primary)) {
+        Section {
             VStack(alignment: .leading, spacing: 8) {
                 Label("App Appearance", systemImage: "paintbrush")
-                HStack(spacing: 0) {
-                    appearanceSegmentButton(.system)
-                    verticalSeparator()
-                    appearanceSegmentButton(.light)
-                    verticalSeparator()
-                    appearanceSegmentButton(.dark)
+                Picker("App Appearance", selection: $colorSchemePreferenceRaw) {
+                    ForEach(ColorSchemePreference.allCases) { preference in
+                        Text(preference.title).tag(preference.rawValue)
+                    }
                 }
-                .frame(maxWidth: .infinity)
-                .padding(4)
-                .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color(.secondarySystemBackground))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                )
+                .pickerStyle(.segmented)
+                .labelsHidden()
                 .accessibilityIdentifier("appearancePicker")
             }
+        } header: {
+            Text("Appearance")
+                .foregroundStyle(.primary)
+        } footer: {
             Text("Choose Light, Dark, or follow the System setting for the app's appearance.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .headerProminence(.increased)
     }
-
-    private func verticalSeparator() -> some View {
-        Rectangle()
-            .fill(Color.gray.opacity(0.25))
-            .frame(width: 1, height: 24)
-    }
-
-    private func appearanceSegmentButton(_ pref: ColorSchemePreference) -> some View {
-        let isSelected = (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system) == pref
-        return Button(action: { colorSchemePreferenceRaw = pref.rawValue }) {
-            Text(pref.title)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .foregroundStyle(isSelected ? .primary : .secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(
-                    Group {
-                        if isSelected {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.accentColor.opacity(0.15))
-                        }
-                    }
-                )
-        }
-        .buttonStyle(.plain)
-    }
-
 }
