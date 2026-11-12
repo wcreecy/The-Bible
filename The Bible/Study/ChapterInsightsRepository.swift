@@ -183,7 +183,7 @@ enum CrossReferenceConnectionType: String, CaseIterable, Identifiable, Sendable 
         }
     }
 
-    static func classify(_ description: String) -> Self {
+    nonisolated static func classify(_ description: String) -> Self {
         let text = description.localizedLowercase
 
         if text.contains("fulfill") || text.contains("prophecy") || text.contains("prophetic") {

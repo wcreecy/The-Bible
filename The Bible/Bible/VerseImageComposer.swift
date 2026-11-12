@@ -43,6 +43,7 @@ struct VerseImageComposerView: View {
             .onChange(of: model.format) { model.clampPhotoOffset() }
             .navigationTitle("Share as Image")
             .navigationBarTitleDisplayMode(.inline)
+            .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close", action: dismiss.callAsFunction)
@@ -268,10 +269,45 @@ private struct VerseImageCanvasControls: View {
 
 private struct VerseImageTextControls: View {
     let model: VerseImageComposerModel
+    @FocusState private var isEditingText: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Verse Text").font(.headline)
+
+            VStack(alignment: .leading, spacing: 8) {
+                TextField("Verse Text", text: Bindable(model).editedText, axis: .vertical)
+                    .lineLimit(3...8)
+                    .focused($isEditingText)
+                    .padding(10)
+                    .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 10))
+                    .accessibilityHint("Edit to show only part of the verse on the image.")
+
+                HStack {
+                    Text("Delete words to show only part of the verse.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    if model.isTextEdited {
+                        Button("Use Full Verse") {
+                            isEditingText = false
+                            model.restoreFullVerse()
+                        }
+                        .font(.footnote.weight(.semibold))
+                        .buttonStyle(.borderless)
+                    }
+                }
+            }
+            .onChange(of: isEditingText) { _, isEditing in
+                if isEditing { model.beginEditingText() }
+            }
+            .toolbar {
+                // Return adds a line break in a multi-line field, so the keyboard needs its own way out.
+                ToolbarItem(placement: .keyboard) {
+                    Button("Done") { isEditingText = false }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
 
             Picker("Font", selection: Bindable(model).fontStyle) {
                 ForEach(VerseImageFontStyle.allCases) { style in

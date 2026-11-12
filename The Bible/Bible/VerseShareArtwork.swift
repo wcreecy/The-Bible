@@ -16,7 +16,7 @@ struct VerseShareArtwork: View {
                 Color.black.opacity(model.background == .photo ? model.photoDimming : 0.12)
 
                 VStack(alignment: model.textAlignment.horizontalAlignment, spacing: size.width * 0.035) {
-                    Text(model.verse.verseText)
+                    Text(model.displayedText)
                         .font(model.fontStyle.font(size: verseFontSize(for: size)))
                         .fontWeight(.semibold)
                         .multilineTextAlignment(model.textAlignment.textAlignment)
@@ -99,7 +99,7 @@ struct VerseShareArtwork: View {
 
     private func verseFontSize(for size: CGSize) -> CGFloat {
         let base: CGFloat
-        switch model.verse.verseText.count {
+        switch model.displayedText.count {
         case ..<100: base = 0.064
         case ..<200: base = 0.052
         default: base = 0.042

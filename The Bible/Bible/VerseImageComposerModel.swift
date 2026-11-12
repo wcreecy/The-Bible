@@ -17,6 +17,7 @@ final class VerseImageComposerModel {
         let photoDimming: Double
         let photoBlur: Double
         let photoLuminance: Double
+        let editedText: String
         let fontStyle: VerseImageFontStyle
         let textScale: CGFloat
         let textOffset: CGSize
@@ -27,6 +28,16 @@ final class VerseImageComposerModel {
     }
 
     let verse: VerseActionReference
+
+    /// The verse as it appears on the image. People can trim it to show only part of the verse.
+    /// Typing doesn't record undo steps; `beginEditingText()` records one per editing session.
+    var editedText: String
+    var isTextEdited: Bool { editedText != verse.verseText }
+    /// Falls back to the whole verse so clearing the field never leaves a blank image.
+    var displayedText: String {
+        let trimmed = editedText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? verse.verseText : trimmed
+    }
 
     var format: VerseImageFormat = .portrait { willSet { recordUndoSnapshot() } }
     var background: VerseImageBackground = .gradient { willSet { recordUndoSnapshot() } }
@@ -55,6 +66,7 @@ final class VerseImageComposerModel {
 
     init(verse: VerseActionReference) {
         self.verse = verse
+        self.editedText = verse.verseText
         loadPreferences()
     }
 
@@ -73,6 +85,7 @@ final class VerseImageComposerModel {
         photoDimming = snapshot.photoDimming
         photoBlur = snapshot.photoBlur
         photoLuminance = snapshot.photoLuminance
+        editedText = snapshot.editedText
         fontStyle = snapshot.fontStyle
         textScale = snapshot.textScale
         textOffset = snapshot.textOffset
@@ -80,6 +93,17 @@ final class VerseImageComposerModel {
         textAlignment = snapshot.textAlignment
         showsReference = snapshot.showsReference
         showsBranding = snapshot.showsBranding
+    }
+
+    /// Records one undo step before the person starts typing in the verse field.
+    func beginEditingText() {
+        recordUndoSnapshot()
+    }
+
+    func restoreFullVerse() {
+        guard isTextEdited else { return }
+        recordUndoSnapshot()
+        editedText = verse.verseText
     }
 
     func clearUndoHistory() {
@@ -119,6 +143,7 @@ final class VerseImageComposerModel {
                 photoDimming: photoDimming,
                 photoBlur: photoBlur,
                 photoLuminance: photoLuminance,
+                editedText: editedText,
                 fontStyle: fontStyle,
                 textScale: textScale,
                 textOffset: textOffset,
