@@ -603,8 +603,6 @@ struct HomeLayoutEditorView: View {
             }
         } header: {
             Label("Home Options", systemImage: "slider.horizontal.3")
-        } footer: {
-            Text("Quick Search lets you find words, phrases, and Bible references directly from Home.")
         }
     }
 
@@ -629,7 +627,7 @@ struct HomeLayoutEditorView: View {
                 }
             } label: {
                 HStack {
-                    Label("Start from…", systemImage: "rectangle.3.group")
+                    Label("Choose a Setup", systemImage: "rectangle.3.group")
                     Spacer()
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.footnote)
@@ -717,6 +715,8 @@ struct HomeLayoutEditorView: View {
                     Text("These cards appear on Home. Use the arrows to choose their order.")
                 }
 
+                homeOptionsSection
+
                 if !hiddenListedCards.isEmpty {
                     Section {
                         ForEach(hiddenListedCards) { id in
@@ -728,8 +728,6 @@ struct HomeLayoutEditorView: View {
                         Text("These cards are hidden from Home. Show a card to make it available there.")
                     }
                 }
-
-                homeOptionsSection
             }
 
             if usesDashboard {
