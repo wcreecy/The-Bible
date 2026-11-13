@@ -19,6 +19,23 @@ nonisolated struct BibleTerm: Identifiable, Hashable, Sendable, Decodable {
     let references: [Reference]
 }
 
+extension BibleTerm {
+    /// The passage a tap opens: the first primary reference ("Matthew 6:9-13" for the
+    /// Lord's Prayer), or the first reference when none is marked primary.
+    @MainActor var primaryPassage: PassageReference? {
+        let primary = references.first { $0.type == "primary" } ?? references.first
+        return primary.flatMap { PassageReferenceParser.parse($0.reference) }
+    }
+
+    /// Every reference that names a real passage, in the catalog's order.
+    @MainActor var passages: [PassageReference] {
+        var seen = Set<String>()
+        return references
+            .compactMap { PassageReferenceParser.parse($0.reference) }
+            .filter { seen.insert($0.id).inserted }
+    }
+}
+
 /// Finds Bible terms by their name or a common alias. Matching ignores case, accents,
 /// apostrophes, punctuation, and a leading "the", so "lords prayer", "Lord’s Prayer", and
 /// "the lord's prayer" all find the same entry.
@@ -99,6 +116,13 @@ nonisolated enum BibleTermMatcher {
     }
 
     private static let apostrophes: Set<Character> = ["'", "’", "‘", "ʼ", "`"]
+
+    /// Whether `query` is exactly the term's title or one of its aliases, ignoring the same
+    /// differences matching does.
+    static func isExactMatch(_ term: BibleTerm, for query: String) -> Bool {
+        let query = normalized(query)
+        return ([term.term] + term.aliases).contains { normalized($0) == query }
+    }
 
     /// How closely a name matches the query; lower is better.
     private enum Rank: Int, Comparable {

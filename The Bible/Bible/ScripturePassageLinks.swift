@@ -134,7 +134,7 @@ private struct ScripturePassagePreviewModifier: ViewModifier {
 }
 
 /// Wraps its children onto as many rows as needed, left to right.
-private struct PassageFlowLayout: Layout {
+struct PassageFlowLayout: Layout {
     var spacing: CGFloat
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {

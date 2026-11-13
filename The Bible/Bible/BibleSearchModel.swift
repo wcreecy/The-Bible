@@ -80,6 +80,8 @@ final class BibleSearchModel {
     /// Set when the results are the verses using a Hebrew or Greek word (a Strong's number such
     /// as "G3056", the word in its own letters, or a transliteration English found nothing for).
     private(set) var strongsMatch: StrongsSearchMatch?
+    /// Named topics and events the query matches ("Lord's Prayer"), shown above the verses.
+    private(set) var termMatches: [BibleTerm] = []
     private(set) var recentSearches: [String] = []
 
     private var searchTask: Task<Void, Never>?
@@ -163,6 +165,7 @@ final class BibleSearchModel {
             highlightedResults = [:]
             hasMoreResults = false
             strongsMatch = nil
+            termMatches = []
             isSearching = false
             return
         }
@@ -173,14 +176,19 @@ final class BibleSearchModel {
                 try? await Task.sleep(for: .milliseconds(300))
             }
             guard !Task.isCancelled else { return }
+            // Topics are matched alongside the verse search and shown with any kind of result,
+            // including references ("Psalm 23") and words the text never uses ("rapture").
+            async let terms = BibleTermSearch.shared.matches(for: query)
             let outcome = await AppPerformance.measure(
                 "SearchFirstResult",
                 budget: PerformanceBudget.searchFirstResult
             ) {
                 await Self.search(query: query, scope: scope, scopeBookName: scopeBookName)
             }
+            let matchedTerms = await terms
             guard !Task.isCancelled, let self else { return }
             let queryTokens = BibleSearchTokenizer.tokens(in: query)
+            termMatches = matchedTerms
             results = outcome.results
             // A Hebrew or Greek word isn't in the English text, so there is nothing to highlight.
             highlightedResults = outcome.strongsMatch == nil
@@ -270,6 +278,10 @@ struct BibleSearchResultsView: View {
     @Query private var userNotes: [UserNote]
     @Query private var bookmarks: [Bookmark]
     @State private var verseToast = VerseActionToastState()
+    @State private var showsAllTerms = false
+
+    /// Topics shown before "Show All"; broad words such as "prayer" match many.
+    private static let collapsedTermCount = 3
 
     let model: BibleSearchModel
     var bookSelectionMessage: LocalizedStringKey = "Choose a book to search."
@@ -285,10 +297,10 @@ struct BibleSearchResultsView: View {
                 description: Text(bookSelectionMessage)
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if model.isSearching && model.results.isEmpty {
+        } else if model.isSearching && model.results.isEmpty && model.termMatches.isEmpty {
             ProgressView("Searching…")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if model.results.isEmpty {
+        } else if model.results.isEmpty && model.termMatches.isEmpty {
             ContentUnavailableView(
                 "No Results",
                 systemImage: "magnifyingglass",
@@ -303,30 +315,65 @@ struct BibleSearchResultsView: View {
                 bookmarks: bookmarks
             )
             List {
-                if let match = model.strongsMatch {
-                    StrongsSearchHeader(match: match, onOpenVerse: onOpen)
-                        .listRowBackground(Color.accentColor.opacity(0.08))
+                if !model.termMatches.isEmpty {
+                    termsSection
                 }
 
-                ForEach(model.results) { item in
-                    BibleSearchResultRow(
-                        item: item,
-                        saved: saved,
-                        highlightedText: model.highlightedText(for: item),
-                        onOpen: { open(item) }
-                    )
-                }
+                Section {
+                    if let match = model.strongsMatch {
+                        StrongsSearchHeader(match: match, onOpenVerse: onOpen)
+                            .listRowBackground(Color.accentColor.opacity(0.08))
+                    }
 
-                if model.hasMoreResults {
-                    Text("Showing the first \(BibleSearchModel.maxResults) results. Add words or narrow the scope to see more specific matches.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .listRowBackground(Color.clear)
+                    ForEach(model.results) { item in
+                        BibleSearchResultRow(
+                            item: item,
+                            saved: saved,
+                            highlightedText: model.highlightedText(for: item),
+                            onOpen: { open(item) }
+                        )
+                    }
+
+                    if model.hasMoreResults {
+                        Text("Showing the first \(BibleSearchModel.maxResults) results. Add words or narrow the scope to see more specific matches.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .listRowBackground(Color.clear)
+                    }
+                } header: {
+                    // Only needed to separate verses from topics.
+                    if !model.termMatches.isEmpty && !model.results.isEmpty {
+                        Label("Verses", systemImage: "text.quote")
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
             .background(Color.clear)
             .verseActionToast($verseToast)
+            // Topic rows open a preview of their whole passage.
+            .scripturePassagePreviews()
+            .onChange(of: model.termMatches) {
+                showsAllTerms = false
+            }
+        }
+    }
+
+    private var termsSection: some View {
+        let terms = model.termMatches
+        let visibleTerms = showsAllTerms ? terms : Array(terms.prefix(Self.collapsedTermCount))
+        return Section {
+            ForEach(visibleTerms) { term in
+                BibleTermRow(term: term)
+            }
+
+            if terms.count > Self.collapsedTermCount {
+                Button(showsAllTerms ? "Show Fewer Topics" : "Show All \(terms.count) Topics") {
+                    withAnimation { showsAllTerms.toggle() }
+                }
+                .font(.subheadline.weight(.semibold))
+            }
+        } header: {
+            Label("Topics", systemImage: "text.book.closed")
         }
     }
 
@@ -377,6 +424,86 @@ struct BibleSearchResultsView: View {
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.035))
+        }
+    }
+}
+
+/// A named topic or event. Tapping the text previews its main passage; each passage chip
+/// below previews that passage.
+struct BibleTermRow: View {
+    let term: BibleTerm
+
+    /// Handled by `scripturePassagePreviews()` on the list, which shows the passage sheet.
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        // Separate styled buttons (not nested) so the list routes each tap to the one touched
+        // instead of treating the whole row as one button.
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                if let passage = term.primaryPassage {
+                    openURL(passage.url)
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(term.category)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.accentColor)
+
+                        Text(term.term)
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+
+                        Text(term.description)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .contentShape(Rectangle())
+            }
+            // Plain, not borderless: a borderless button tints its whole label with the accent color.
+            .buttonStyle(.plain)
+            .accessibilityHint("Shows a preview of the main passage")
+
+            BibleTermPassageChips(term: term) { passage in
+                openURL(passage.url)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+/// One tappable chip per passage of a topic, wrapping onto more lines as needed.
+struct BibleTermPassageChips: View {
+    let term: BibleTerm
+    let onSelect: (PassageReference) -> Void
+
+    var body: some View {
+        PassageFlowLayout(spacing: 8) {
+            ForEach(term.passages) { passage in
+                Button {
+                    onSelect(passage)
+                } label: {
+                    Text(passage.displayTitle)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.accentColor)
+                        .lineLimit(1)
+                        // Keeps the chip at its text's width instead of wrapping into a tall capsule.
+                        .fixedSize()
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.accentColor.opacity(0.12), in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Shows a preview of this passage")
+            }
         }
     }
 }

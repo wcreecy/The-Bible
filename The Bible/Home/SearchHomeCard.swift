@@ -21,6 +21,10 @@ struct SearchHomeCard: View {
     @State private var results: [SearchResult] = []
     /// The Hebrew or Greek word a Strong's search matched, shown above its verses.
     @State private var strongsMatch: StrongsSearchMatch?
+    /// Named topics and events the query matches ("Lord's Prayer"), shown above the verses.
+    @State private var termMatches: [BibleTerm] = []
+    /// The topic passage being previewed.
+    @State private var previewedPassage: PassageReference?
     @State private var searchTask: Task<Void, Never>?
     @State private var isSearching = false
     @FocusState private var isFieldFocused: Bool
@@ -52,7 +56,13 @@ struct SearchHomeCard: View {
         .onDisappear {
             searchTask?.cancel()
         }
+        .sheet(item: $previewedPassage) { reference in
+            ScripturePassageSheet(reference: reference)
+        }
     }
+
+    /// The dropdown is compact, so only the closest topics are shown.
+    private static let maxVisibleTerms = 2
 
     private var searchField: some View {
         HStack(spacing: 8) {
@@ -96,6 +106,10 @@ struct SearchHomeCard: View {
             referenceRow(referenceMatch)
         }
 
+        ForEach(termMatches.prefix(Self.maxVisibleTerms)) { term in
+            termRow(term)
+        }
+
         if !isSearching, let strongsMatch {
             StrongsSearchHeader(match: strongsMatch, onOpenVerse: onSelectResult)
                 .padding(10)
@@ -106,7 +120,7 @@ struct SearchHomeCard: View {
             ProgressView()
                 .controlSize(.small)
         } else if results.isEmpty {
-            if referenceMatch == nil {
+            if referenceMatch == nil && termMatches.isEmpty {
                 Text("No matching verses.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -152,6 +166,45 @@ struct SearchHomeCard: View {
         .accessibilityHint("Opens \(match.title) in the Bible reader")
     }
 
+    /// The title previews the main passage; each chip below previews its own passage.
+    private func termRow(_ term: BibleTerm) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                previewPrimaryPassage(of: term)
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "text.book.closed")
+                        .foregroundStyle(Color.accentColor)
+
+                    Text("\(Text(term.term).font(.subheadline.weight(.semibold)).foregroundStyle(.primary))\(Text(verbatim: " · \(term.category)").font(.caption).foregroundStyle(.secondary))")
+                        .multilineTextAlignment(.leading)
+
+                    Spacer(minLength: 0)
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(term.term), \(term.category)")
+            .accessibilityHint("Shows a preview of the main passage")
+
+            BibleTermPassageChips(term: term) { passage in
+                previewedPassage = passage
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    /// Previews the term's main passage ("Matthew 6:9-13" for the Lord's Prayer).
+    private func previewPrimaryPassage(of term: BibleTerm) {
+        previewedPassage = term.primaryPassage
+    }
+
     private func resultRow(_ result: SearchResult) -> some View {
         Button {
             onSelectResult(result)
@@ -172,8 +225,14 @@ struct SearchHomeCard: View {
         .accessibilityHint("Opens this verse in the Bible reader")
     }
 
+    /// A reference ("John 3:16") wins, then a topic named exactly ("Lord's Prayer"), then the
+    /// first verse.
     private func openTopResult() {
-        if let destination = referenceMatch?.destination ?? results.first {
+        if let destination = referenceMatch?.destination {
+            onSelectResult(destination)
+        } else if let term = termMatches.first, BibleTermMatcher.isExactMatch(term, for: query) {
+            previewPrimaryPassage(of: term)
+        } else if let destination = results.first {
             onSelectResult(destination)
         }
     }
@@ -185,6 +244,7 @@ struct SearchHomeCard: View {
         guard !searchTokens.isEmpty else {
             referenceMatch = nil
             strongsMatch = nil
+            termMatches = []
             results = []
             isSearching = false
             return
@@ -196,6 +256,9 @@ struct SearchHomeCard: View {
             try? await Task.sleep(for: .milliseconds(250))
             guard !Task.isCancelled else { return }
 
+            // Topics are matched alongside the verse search, including for references and
+            // words the text never uses ("rapture").
+            async let terms = BibleTermSearch.shared.matches(for: trimmedQuery)
             let books = await BibleRepository.shared.loadAllBooks()
             let match = Self.referenceMatch(for: trimmedQuery, in: books)
             let limit = match == nil ? 3 : 2
@@ -230,10 +293,12 @@ struct SearchHomeCard: View {
                     matchingResults = strongs?.results ?? []
                 }
             }
+            let matchedTerms = await terms
             guard !Task.isCancelled else { return }
 
             referenceMatch = match
             strongsMatch = strongs?.match
+            termMatches = matchedTerms
             results = matchingResults.filter { $0.id != match?.destination.id }
             isSearching = false
         }
