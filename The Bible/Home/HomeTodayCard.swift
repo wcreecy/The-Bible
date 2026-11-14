@@ -116,6 +116,11 @@ struct HomeTodayCard: View {
             Haptics.selection()
             onStartPrayerTimer(minutes)
         case .reflection:
+            if challenge.isStartReadingPlan, let planID = challenge.planID {
+                Haptics.selection()
+                AppRouter.shared.open(.readingPlan(planID))
+                return
+            }
             store.toggleManualChallenge(id: challenge.id)
         case .favoriteVerse, .highlightVerse:
             break
@@ -183,7 +188,7 @@ struct TodayChallengeRow: View {
         case .studyChapter: ("Study", "text.book.closed")
         case .playGame: ("Play", "gamecontroller")
         case .prayerTimer: challenge.isCompleted ? nil : ("Start", "timer")
-        case .reflection: nil
+        case .reflection: challenge.isStartReadingPlan && !challenge.isCompleted ? ("View Plan", "calendar.badge.checkmark") : nil
         case .favoriteVerse: ("Favorite verse", "heart")
         case .highlightVerse: ("Highlight verse", "highlighter")
         }
@@ -203,6 +208,8 @@ struct TodayChallengeRow: View {
             "Opens the game."
         case .prayerTimer:
             challenge.isCompleted ? "" : "Starts a prayer timer."
+        case .reflection where challenge.isStartReadingPlan:
+            challenge.isCompleted ? "Completed when the plan was started." : "Opens the plan. Starting it completes this."
         case .reflection:
             challenge.isCompleted ? "Double tap to mark incomplete." : "Double tap to mark complete."
         case .favoriteVerse:

@@ -46,7 +46,16 @@ final class TodayChallengeStore {
         loadOrCreateForToday()
         // A chapter task is complete when every verse in it is recorded as read.
         syncCompletedReadingChallenges()
+        syncStartedReadingPlans()
         syncGameProgress()
+    }
+
+    /// A plan suggestion is complete once that plan has been started.
+    private func syncStartedReadingPlans() {
+        updateChallenges { challenge in
+            guard challenge.isStartReadingPlan, let planID = challenge.planID else { return false }
+            return ReadingPlanStore.shared.enrollment(for: planID) != nil
+        }
     }
 
     /// Reconciles only when iCloud reports that Today Challenge data changed. The key-value
@@ -85,7 +94,8 @@ final class TodayChallengeStore {
     func toggleManualChallenge(id: UUID) {
         loadOrCreateForToday()
 
-        guard let index = challenges.firstIndex(where: { $0.id == id && $0.kind == .reflection }) else {
+        // A plan suggestion completes by starting the plan, not by a tap.
+        guard let index = challenges.firstIndex(where: { $0.id == id && $0.kind == .reflection && !$0.isStartReadingPlan }) else {
             return
         }
 

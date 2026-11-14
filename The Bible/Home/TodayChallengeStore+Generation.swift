@@ -90,10 +90,21 @@ extension TodayChallengeStore {
         var picker = FreshPicker(lastShown: history.lastShown(excluding: todayKey))
 
         var challenges = [makeReadingChallenge(using: &picker)]
-        // If the app was not opened on either scheduled date, show one overdue optional
-        // prompt today and leave the other for a later day instead of pairing them.
-        if let title = monthlySystemTaskTitlesDue(in: history, on: now).randomElement() {
-            let monthlyTask = makeMonthlySystemTask(title: title, using: &picker)
+        // If the app was not opened on a scheduled date, show one overdue optional prompt
+        // today and leave the others for later days instead of pairing them. The reading
+        // plan suggestion shares this slot.
+        let suggestedPlan = isReadingPlanTaskDue(in: history, on: now)
+            ? ReadingPlanStore.shared.plansToSuggest.randomElement()
+            : nil
+        let monthlyOptions = monthlySystemTaskTitlesDue(in: history, on: now).map { Optional($0) }
+            + (suggestedPlan == nil ? [] : [nil])
+        if let option = monthlyOptions.randomElement() {
+            let monthlyTask: TodayChallenge
+            if let title = option {
+                monthlyTask = makeMonthlySystemTask(title: title, using: &picker)
+            } else {
+                monthlyTask = makeReadingPlanTask(suggestedPlan!, using: &picker)
+            }
             challenges.append(monthlyTask)
             todayChallengesLogger.notice("Scheduled monthly Today prompt; kind=\(monthlyTask.kind.rawValue, privacy: .public).")
         }
@@ -332,6 +343,42 @@ extension TodayChallengeStore {
             return !wasShownThisMonth &&
                 currentDay >= Self.monthlySystemTaskDay(for: title, on: date)
         }
+    }
+
+    static let readingPlanTaskTitle = "Start a reading plan"
+
+    /// The plan suggestion is due once a month, from its own day on, while there's room for
+    /// another plan.
+    private func isReadingPlanTaskDue(in history: TodayChallengeHistory, on date: Date) -> Bool {
+        guard ReadingPlanStore.shared.canStartAnotherPlan else { return false }
+        let calendar = Calendar.autoupdatingCurrent
+        guard let month = calendar.dateInterval(of: .month, for: date) else { return false }
+        let monthStartKey = dayKey(for: month.start)
+        let taskKey = HistoryKey.reflection(Self.readingPlanTaskTitle)
+        let wasShownThisMonth = history.days.contains { day, keys in
+            day >= monthStartKey && keys.contains(taskKey)
+        }
+        return !wasShownThisMonth
+            && calendar.component(.day, from: date) >= Self.monthlySystemTaskDay(for: Self.readingPlanTaskTitle, on: date)
+    }
+
+    /// Suggests a plan not done yet. Stored as a reflection with the plan attached, so
+    /// older versions show it as an ordinary task; it completes when the plan is started.
+    private func makeReadingPlanTask(_ plan: ReadingPlan, using picker: inout FreshPicker) -> TodayChallenge {
+        picker.record(HistoryKey.reflection(Self.readingPlanTaskTitle))
+        return TodayChallenge(
+            id: UUID(),
+            kind: .reflection,
+            title: "Start a reading plan: \(plan.title)",
+            detail: "\(plan.metadataText). Open it to start.",
+            bookName: nil,
+            chapterNumber: nil,
+            gameName: nil,
+            minimumMinutes: nil,
+            isCompleted: false,
+            planID: plan.id,
+            planDay: nil
+        )
     }
 
     private func makeMonthlySystemTask(

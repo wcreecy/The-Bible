@@ -420,6 +420,53 @@ struct ReadingPlanLimitAndSessionTests {
     }
 
     @Test
+    func suggestionsSkipFinishedAndRunningPlansAndKeepSeriesInOrder() {
+        let store = makeStore()
+        store.start("a")
+        store.start("b")
+        store.setDay(1, of: "b", complete: true)   // finished
+        let suggested = Set(store.plansToSuggest.map(\.id))
+        #expect(!suggested.contains("a"))           // running
+        #expect(!suggested.contains("b"))           // finished
+        #expect(suggested.contains("c"))
+        // Only the first unfinished part of a series.
+        #expect(suggested.contains("part-1"))
+        #expect(!suggested.contains("part-2"))
+
+        store.start("part-1")
+        store.setDay(1, of: "part-1", complete: true)
+        #expect(store.plansToSuggest.contains { $0.id == "part-2" })
+    }
+
+    @Test
+    func suggestionsStopOnceEveryPlanIsFinishedAndReturnForNewOnes() {
+        let catalog = [Self.plan("one"), Self.plan("two")]
+        let defaults = UserDefaults(suiteName: "ReadingPlanLimitTests-\(UUID().uuidString)")!
+        let store = ReadingPlanStore(defaults: defaults, catalog: catalog, publishesChanges: false)
+        for id in ["one", "two"] {
+            store.start(id)
+            store.setDay(1, of: id, complete: true)
+        }
+        #expect(store.plansToSuggest.isEmpty)
+
+        // A later version adds a plan; the same progress now has something to suggest.
+        let updated = ReadingPlanStore(defaults: defaults, catalog: catalog + [Self.plan("three")], publishesChanges: false)
+        #expect(updated.plansToSuggest.map(\.id) == ["three"])
+    }
+
+    @Test
+    func aPlanSuggestionIsNotADayReading() {
+        var task = TodayChallenge(
+            id: UUID(), kind: .reflection, title: "Start a reading plan: John", detail: "",
+            bookName: nil, chapterNumber: nil, gameName: nil, minimumMinutes: nil, isCompleted: false,
+            planID: "gospel-of-john"
+        )
+        #expect(task.isStartReadingPlan)
+        task.planDay = 3
+        #expect(!task.isStartReadingPlan)
+    }
+
+    @Test
     func theBundledFruitOfTheSpiritSeriesIsComplete() {
         let catalog = ReadingPlanStore.loadCatalog()
         #expect(catalog.filter { $0.series == "Fruit of the Spirit" }.count == 9)

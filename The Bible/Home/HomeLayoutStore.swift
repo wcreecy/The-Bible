@@ -43,24 +43,25 @@ struct HomeLayoutStore {
 
     // Baseline hidden set used when no hidden config exists
     static var baselineOrder: [HomeCardID] {
-        // iPad: read row by row into the dashboard's left and middle columns (see
-        // `baselineColumns`), with the Today's Reading panel in the right column.
+        // iPad: `baselineColumns` read row by row (left, then middle), the order narrow
+        // widths use. The Today's Reading panel takes the right column.
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [
-                .verseOfDay,
                 .setup,
+                .readingPlan,
+                .verseOfDay,
                 .today,
-                .savedVerses,
-                .study,
-                .streaks,
-                .timer,
-                .dailyFocus,
                 .resumeReading,
-                .readingPlan
+                .timer,
+                .savedVerses,
+                .streaks,
+                .study,
+                .dailyFocus
             ]
         }
 
-        // iPhone: a quiet first home screen—Welcome, then the daily verse, then reading.
+        // iPhone: a quiet first home screen—Welcome, the daily verse, your place and plan,
+        // then the day's checklist.
         return [
             .setup,
             .verseOfDay,
@@ -76,11 +77,12 @@ struct HomeLayoutStore {
     }
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            // Keep the first iPad dashboard focused on Welcome, Today, and the timer.
+            // Welcome, the verse, the plan, Today, and the timer beside the Today's Reading
+            // panel. Continue Reading is left off: the panel already opens your place.
             return [.resumeReading, .savedVerses, .study, .streaks, .dailyFocus]
         }
-        // Keep the first iPhone home screen focused on Welcome, Verse of the Day, and reading.
-        return [.today, .savedVerses, .study, .streaks, .timer, .dailyFocus]
+        // Welcome, Verse of the Day, Continue Reading, Reading Plan, and Today.
+        return [.savedVerses, .study, .streaks, .timer, .dailyFocus]
     }
     // The iPad Today's Reading panel; iPhone does not show it.
     static let defaultBibleReaderVisible = true
@@ -93,11 +95,12 @@ struct HomeLayoutStore {
 
     static var baselineColumns: HomeColumnLayout {
         if UIDevice.current.userInterfaceIdiom == .pad {
+            // Hidden cards sit at the ends of the columns, ready to be shown.
             return HomeColumnLayout(
-                left: [.verseOfDay, .setup, .savedVerses, .study],
-                middle: [.today, .streaks, .dailyFocus],
-                right: [.timer, .resumeReading, .readingPlan],
-                verseOfDayWidth: .allColumns
+                left: [.setup, .verseOfDay, .resumeReading, .savedVerses, .study],
+                middle: [.readingPlan, .today, .timer, .streaks, .dailyFocus],
+                right: [],
+                verseOfDayWidth: .oneColumn
             )
         }
 
@@ -163,9 +166,15 @@ struct HomeLayoutStore {
             }
         }()
 
-        // First launch with columns: build them from the order so nothing moves.
-        let columns = (Self.storesColumns ? HomeColumnLayout(storageString: columnsRaw, readerColumn: visibleReaderColumn) : nil)
-            ?? HomeColumnLayout.seeded(from: order, hidden: hidden, readerColumn: visibleReaderColumn)
+        // Nothing saved yet: iPad starts from the default columns; elsewhere the columns
+        // follow the order.
+        let savedColumns = Self.storesColumns
+            ? HomeColumnLayout(storageString: columnsRaw, readerColumn: visibleReaderColumn)
+            : nil
+        let columns = savedColumns
+            ?? (Self.storesColumns && savedOrderIDs == nil
+                ? Self.baselineColumns.normalized(avoiding: visibleReaderColumn)
+                : HomeColumnLayout.seeded(from: order, hidden: hidden, readerColumn: visibleReaderColumn))
 
         return (order, hidden, columns)
     }

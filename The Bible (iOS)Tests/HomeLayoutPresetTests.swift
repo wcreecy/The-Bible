@@ -3,14 +3,15 @@ import Testing
 
 struct HomeLayoutPresetTests {
     @Test
-    func minimalPresetShowsOnlyContinueReadingOnIPhone() {
-        #expect(HomeLayoutPreset.minimal.visibleCards(usesDashboard: false) == [.resumeReading])
+    func minimalPresetShowsTheVerseAndContinueReadingOnIPhone() {
+        #expect(HomeLayoutPreset.minimal.visibleCards(usesDashboard: false) == [.verseOfDay, .resumeReading])
+        #expect(HomeLayoutPreset.minimal.visibleCards(usesDashboard: true).isEmpty)
         #expect(HomeLayoutPreset.minimal.showsTodayReadingPanel == false)
     }
 
     @Test
-    func readingPresetPrioritizesReadingAndEnablesTheReadingPanel() {
-        #expect(HomeLayoutPreset.reading.preferredOrder.prefix(2) == [.verseOfDay, .resumeReading])
+    func readingPresetLeadsWithThePlanAndYourPlace() {
+        #expect(HomeLayoutPreset.reading.preferredOrder.prefix(2) == [.readingPlan, .resumeReading])
         #expect(HomeLayoutPreset.reading.showsTodayReadingPanel)
     }
 
@@ -18,9 +19,10 @@ struct HomeLayoutPresetTests {
     func readingPresetUsesTheRequestedDashboardColumns() {
         let layout = HomeLayoutPreset.reading.dashboardColumns
 
-        #expect(layout.verseOfDayWidth == .allColumns)
-        #expect(layout.left.prefix(2) == [.verseOfDay, .resumeReading])
-        #expect(layout.middle.prefix(2) == [.streaks, .dailyFocus])
+        #expect(layout.verseOfDayWidth == .oneColumn)
+        // Hidden cards follow in the columns, ready to be shown again.
+        #expect(layout.left.prefix(2) == [.readingPlan, .resumeReading])
+        #expect(layout.middle.prefix(3) == [.verseOfDay, .streaks, .savedVerses])
         #expect(HomeLayoutPreset.reading.showsTodayReadingPanel)
     }
 
@@ -28,9 +30,9 @@ struct HomeLayoutPresetTests {
     func studyPresetUsesTheRequestedDashboardColumns() {
         let layout = HomeLayoutPreset.study.dashboardColumns
 
-        #expect(layout.verseOfDayWidth == .leftTwoColumns)
-        #expect(layout.left.prefix(2) == [.verseOfDay, .study])
-        #expect(layout.middle.prefix(2) == [.resumeReading, .savedVerses])
+        #expect(layout.verseOfDayWidth == .oneColumn)
+        #expect(layout.left.prefix(2) == [.study, .timer])
+        #expect(layout.middle.prefix(3) == [.resumeReading, .savedVerses, .verseOfDay])
         #expect(HomeLayoutPreset.study.showsTodayReadingPanel)
     }
 
@@ -39,9 +41,9 @@ struct HomeLayoutPresetTests {
         let layout = HomeLayoutPreset.dailyPractice.dashboardColumns
 
         #expect(layout.verseOfDayWidth == .allColumns)
-        #expect(layout.left.prefix(3) == [.verseOfDay, .resumeReading, .timer])
-        #expect(layout.middle.first == .dailyFocus)
-        #expect(layout.right.first == .today)
+        #expect(layout.left.prefix(2) == [.verseOfDay, .readingPlan])
+        #expect(layout.middle.prefix(2) == [.today, .streaks])
+        #expect(layout.right.prefix(2) == [.timer, .dailyFocus])
         #expect(!HomeLayoutPreset.dailyPractice.showsTodayReadingPanel)
     }
 

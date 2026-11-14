@@ -24,4 +24,7 @@ struct TodayChallenge: Identifiable, Codable, Equatable {
     /// these and treat the task as an ordinary chapter.
     var planID: String? = nil
     var planDay: Int? = nil
+
+    /// The monthly "start a reading plan" suggestion: a plan without a day.
+    var isStartReadingPlan: Bool { planID != nil && planDay == nil }
 }

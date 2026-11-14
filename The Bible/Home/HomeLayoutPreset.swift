@@ -20,10 +20,10 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
 
     var detail: String {
         switch self {
-        case .reading: return "Pick up reading and stay consistent."
-        case .study: return "Study tools, your reading place, and saved verses."
-        case .dailyPractice: return "A focused daily rhythm of reading, prayer, and challenges."
-        case .minimal: return "Just the essentials."
+        case .reading: return "Pick up where you left off and keep your plan on track."
+        case .study: return "Prepare a chapter, study with a timer, and keep what you find."
+        case .dailyPractice: return "A daily rhythm of Scripture, prayer, and small steps."
+        case .minimal: return "Today's verse and your place in the Bible."
         }
     }
 
@@ -40,13 +40,15 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
     var preferredOrder: [HomeCardID] {
         switch self {
         case .reading:
-            [.verseOfDay, .resumeReading, .readingPlan, .streaks, .dailyFocus, .savedVerses]
+            // Reading first: the plan and your place lead, the verse follows.
+            [.readingPlan, .resumeReading, .verseOfDay, .streaks, .savedVerses]
         case .study:
-            [.verseOfDay, .study, .resumeReading, .savedVerses]
+            [.study, .resumeReading, .savedVerses, .timer, .verseOfDay]
         case .dailyPractice:
-            [.verseOfDay, .readingPlan, .resumeReading, .timer, .dailyFocus, .today]
+            // Built around the day: the verse, the checklist, the plan, then prayer and focus.
+            [.verseOfDay, .today, .readingPlan, .timer, .dailyFocus, .streaks]
         case .minimal:
-            [.resumeReading]
+            [.verseOfDay, .resumeReading]
         }
     }
 
@@ -71,24 +73,25 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
 
         switch self {
         case .reading:
+            // The Today's Reading panel takes the right column.
             layout = HomeColumnLayout(
-                left: [.verseOfDay, .resumeReading],
-                middle: [.streaks, .dailyFocus, .readingPlan],
+                left: [.readingPlan, .resumeReading],
+                middle: [.verseOfDay, .streaks, .savedVerses],
                 right: [],
-                verseOfDayWidth: .allColumns
+                verseOfDayWidth: .oneColumn
             )
         case .study:
             layout = HomeColumnLayout(
-                left: [.verseOfDay, .study],
-                middle: [.resumeReading, .savedVerses],
+                left: [.study, .timer],
+                middle: [.resumeReading, .savedVerses, .verseOfDay],
                 right: [],
-                verseOfDayWidth: .leftTwoColumns
+                verseOfDayWidth: .oneColumn
             )
         case .dailyPractice:
             layout = HomeColumnLayout(
-                left: [.verseOfDay, .resumeReading, .timer],
-                middle: [.dailyFocus, .readingPlan],
-                right: [.today],
+                left: [.verseOfDay, .readingPlan],
+                middle: [.today, .streaks],
+                right: [.timer, .dailyFocus],
                 verseOfDayWidth: .allColumns
             )
         case .minimal:

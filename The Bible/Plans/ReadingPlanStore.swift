@@ -128,6 +128,20 @@ final class ReadingPlanStore {
         }
     }
 
+    /// Catalog plans to suggest starting: not finished and not running. A series offers only
+    /// its first unfinished part, so parts are read in order. Empty once everything is done.
+    var plansToSuggest: [ReadingPlan] {
+        func isFinished(_ plan: ReadingPlan) -> Bool { document.enrollments[plan.id]?.finishedAt != nil }
+        var seriesOffered = Set<String>()
+        return catalog.filter { plan in
+            guard !isFinished(plan), enrollment(for: plan.id)?.isActive != true else { return false }
+            guard let series = plan.series else { return true }
+            // Only the earliest unfinished part of a series, and only once.
+            let firstUnfinished = plans(inSeries: series).first { !isFinished($0) }
+            return firstUnfinished?.id == plan.id && seriesOffered.insert(series).inserted
+        }
+    }
+
     /// A series' plans, in catalog order.
     func plans(inSeries series: String) -> [ReadingPlan] {
         catalog.filter { $0.series == series }
