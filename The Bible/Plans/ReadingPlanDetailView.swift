@@ -10,6 +10,11 @@ struct ReadingPlanDetailView: View {
     @State private var confirmsStop = false
     @State private var confirmsDelete = false
     @State private var celebration: ReadingPlanStore.Completion?
+    @State private var showsReadDays = false
+
+    /// Fewer finished days than this stay listed; more fold into one row so the next day
+    /// is near the top.
+    private static let foldThreshold = 3
 
     var body: some View {
         Group {
@@ -49,14 +54,27 @@ struct ReadingPlanDetailView: View {
             .listRowBackground(HeroCardListRowBackground())
 
             Section("Days") {
-                ForEach(plan.days) { day in
-                    DayRow(
-                        plan: plan,
-                        day: day,
-                        isCurrent: enrollment?.isActive == true && store.currentDay(of: plan)?.day == day.day,
-                        canCheck: enrollment != nil,
-                        store: store
-                    )
+                let current = enrollment?.isActive == true ? store.currentDay(of: plan)?.day : nil
+                // Every day before the next one is read; fold them once there are a few.
+                let readDays = current.map { next in plan.days.filter { $0.day < next } } ?? []
+                let foldsReadDays = readDays.count >= Self.foldThreshold
+
+                if foldsReadDays {
+                    DisclosureGroup(isExpanded: $showsReadDays) {
+                        ForEach(readDays) { day in
+                            dayRow(day, plan: plan, current: current, enrollment: enrollment)
+                        }
+                    } label: {
+                        Label(
+                            readDays.count == 1 ? "Day 1 read" : "Days 1–\(readDays.count) read",
+                            systemImage: "checkmark.circle.fill"
+                        )
+                        .foregroundStyle(.secondary)
+                    }
+                }
+
+                ForEach(foldsReadDays ? plan.days.filter { $0.day >= current ?? 0 } : plan.days) { day in
+                    dayRow(day, plan: plan, current: current, enrollment: enrollment)
                 }
             }
             .listRowBackground(HeroCardListRowBackground())
@@ -100,12 +118,41 @@ struct ReadingPlanDetailView: View {
         }
     }
 
+    private func dayRow(_ day: PlanDay, plan: ReadingPlan, current: Int?, enrollment: PlanEnrollment?) -> some View {
+        DayRow(
+            plan: plan,
+            day: day,
+            isCurrent: current == day.day,
+            canCheck: enrollment != nil,
+            store: store
+        )
+    }
+
+    /// "FRUIT OF THE SPIRIT · PART 3 OF 9" for a plan in a series, otherwise its category.
+    private func eyebrow(for plan: ReadingPlan) -> String {
+        if let series = plan.series, let position = store.seriesPosition(of: plan) {
+            return "\(series) · Part \(position.position) of \(position.count)".uppercased()
+        }
+        return plan.category.uppercased()
+    }
+
+    /// "Last read today", "Last read yesterday", "Last read 3 days ago".
+    private func lastReadText(_ date: Date, now: Date = Date()) -> String {
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: calendar.startOfDay(for: now)).day ?? 0
+        switch days {
+        case ...0: return "Last read today"
+        case 1: return "Last read yesterday"
+        default: return "Last read \(days) days ago"
+        }
+    }
+
     @ViewBuilder
     private func header(_ plan: ReadingPlan, enrollment: PlanEnrollment?) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 14) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(plan.category.uppercased())
+                    Text(eyebrow(for: plan))
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Color.accentColor)
                     Text(plan.title)
@@ -138,6 +185,13 @@ struct ReadingPlanDetailView: View {
                     .foregroundStyle(.secondary)
             }
 
+            // Only once something has been read; a just-started plan has nothing to report.
+            if let enrollment, enrollment.isActive, let lastRead = enrollment.lastDayCompletedAt {
+                Label(lastReadText(lastRead), systemImage: "clock")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
             primaryAction(plan, enrollment: enrollment)
         }
         .padding(.vertical, 6)
@@ -149,8 +203,18 @@ struct ReadingPlanDetailView: View {
             Label("Plan complete", systemImage: "checkmark.seal.fill")
                 .font(.headline)
                 .foregroundStyle(.green)
+            if let next = store.nextInSeries(after: plan) {
+                NavigationLink(value: Route.readingPlan(id: next.id)) {
+                    Label("Next in Series: \(next.title)", systemImage: "arrow.right.circle.fill")
+                        .font(.headline)
+                }
+            }
             Button("Read It Again") { store.restart(plan.id) }
                 .buttonStyle(.bordered)
+                .disabled(!store.canStart(plan.id))
+            if !store.canStart(plan.id) {
+                PlanLimitNote(message: store.limitMessage)
+            }
         } else if enrollment != nil, let day = store.currentDay(of: plan) {
             Button {
                 store.continuePlan(plan.id)
@@ -170,6 +234,10 @@ struct ReadingPlanDetailView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .disabled(!store.canStart(plan.id))
+            if !store.canStart(plan.id) {
+                PlanLimitNote(message: store.limitMessage)
+            }
         }
     }
 }
@@ -255,5 +323,16 @@ struct PlanFinishedView: View {
         }
         .padding(28)
         .onAppear { Haptics.success() }
+    }
+}
+
+/// Why a plan can't be started right now.
+struct PlanLimitNote: View {
+    let message: String
+
+    var body: some View {
+        Label(message, systemImage: "info.circle")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
     }
 }

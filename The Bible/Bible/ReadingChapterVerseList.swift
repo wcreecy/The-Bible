@@ -31,6 +31,8 @@ struct ReadingChapterVerseList: View {
     let onOpenNote: (Verse) -> Void
     let onOpenCrossReferences: (Verse) -> Void
     let onVerseActionFeedback: (VerseActionFeedback) -> Void
+    /// A reading plan's reading ends after this verse; its panel follows it.
+    let planReadingEndVerse: Int?
 
     init(
         bookName: String,
@@ -44,7 +46,8 @@ struct ReadingChapterVerseList: View {
         showsFullReferences: Bool,
         onOpenNote: @escaping (Verse) -> Void,
         onOpenCrossReferences: @escaping (Verse) -> Void,
-        onVerseActionFeedback: @escaping (VerseActionFeedback) -> Void
+        onVerseActionFeedback: @escaping (VerseActionFeedback) -> Void,
+        planReadingEndVerse: Int? = nil
     ) {
         self.bookName = bookName
         self.chapterNumber = chapterNumber
@@ -58,6 +61,7 @@ struct ReadingChapterVerseList: View {
         self.onOpenNote = onOpenNote
         self.onOpenCrossReferences = onOpenCrossReferences
         self.onVerseActionFeedback = onVerseActionFeedback
+        self.planReadingEndVerse = planReadingEndVerse
 
         // Rebuilt whenever the reader moves to another chapter, which re-creates this view.
         _favorites = Query(filter: #Predicate<Favorite> {
@@ -165,6 +169,10 @@ struct ReadingChapterVerseList: View {
                 .padding(.horizontal)
                 .padding(.bottom, 6)
                 .transition(.opacity)
+            }
+
+            if verse.number == planReadingEndVerse {
+                ReadingPlanReaderPanel(bookName: bookName, chapterNumber: chapterNumber, afterVerse: verse.number)
             }
 
             if verse.number != verses.count {

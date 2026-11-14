@@ -10,6 +10,7 @@ enum Route: Hashable {
     case readingPlan(id: String)
     case readingPlanDay(planID: String, day: Int)
     case customReadingPlanBuilder
+    case readingPlanSeries(String)
 }
 
 struct BibleReaderLocation: Hashable {

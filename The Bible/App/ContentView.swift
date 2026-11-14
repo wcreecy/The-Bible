@@ -268,6 +268,10 @@ struct ContentView: View {
             DispatchQueue.main.async {
                 homeCoordinator.path = planID.map { [.readingPlans, .readingPlan(id: $0)] } ?? [.readingPlans]
             }
+        case let .readingPlanReading(planID, day, location):
+            openReadingPlanReading(planID: planID, day: day, location: location)
+        case let .readingPlanDay(planID, day):
+            openReadingPlanDay(planID: planID, day: day)
         case .scripturePreview:
             // Shown by the open note editor.
             break
@@ -328,6 +332,55 @@ struct ContentView: View {
             }
         case nil:
             break
+        }
+    }
+
+    /// Opens a plan reading in the Bible tab. Reading there keeps verse and time tracking
+    /// running, and on iPhone the plan and day sit behind the reader so Back returns to them.
+    /// A plan screen already in the Bible tab just gains the reader; a reader for the day's
+    /// previous reading is replaced.
+    private func openReadingPlanReading(planID: String, day: Int, location: BibleReaderLocation) {
+        guard !usesWideLayout,
+              let book = bibleStore.books.first(where: { $0.name == location.bookName }),
+              let chapter = book.chapters.first(where: { $0.number == location.chapterNumber }) else {
+            openBibleReference(location)
+            return
+        }
+        let reader = Route.reader(book: book, chapter: chapter, startVerse: location.verseNumber)
+        let dayRoute = Route.readingPlanDay(planID: planID, day: day)
+
+        var path = selectedTab == .bible ? bibleCoordinator.path : []
+        if case .reader = path.last { path.removeLast() }
+        if !path.contains(dayRoute) && !path.contains(.readingPlan(id: planID)) {
+            path = [.readingPlan(id: planID), dayRoute]
+        }
+        path.append(reader)
+
+        selectedTab = .bible
+        DispatchQueue.main.async {
+            var transaction = Transaction()
+            transaction.disablesAnimations = path.count > bibleCoordinator.path.count + 1
+            withTransaction(transaction) {
+                bibleCoordinator.path = path
+            }
+        }
+    }
+
+    /// Returns to a plan day: popping back to it when it's behind the Bible tab's reader,
+    /// otherwise opening it in the Home tab.
+    private func openReadingPlanDay(planID: String, day: Int) {
+        let dayRoute = Route.readingPlanDay(planID: planID, day: day)
+        if !usesWideLayout, selectedTab == .bible, let index = bibleCoordinator.path.firstIndex(of: dayRoute) {
+            bibleCoordinator.path = Array(bibleCoordinator.path.prefix(through: index))
+            return
+        }
+        if !usesWideLayout, selectedTab == .bible {
+            bibleCoordinator.path.append(dayRoute)
+            return
+        }
+        selectedTab = .home
+        DispatchQueue.main.async {
+            homeCoordinator.path = [.readingPlans, .readingPlan(id: planID), dayRoute]
         }
     }
 

@@ -286,3 +286,142 @@ struct ReadingPlanStoreTests {
         #expect(AppDeepLink(url: list) == .readingPlan(id: nil, opensReading: false))
     }
 }
+
+@MainActor
+struct ReadingPlanLimitAndSessionTests {
+    private static func plan(_ id: String, series: String? = nil, days: [PlanDay]? = nil) -> ReadingPlan {
+        ReadingPlan(
+            id: id,
+            title: id.capitalized,
+            description: "",
+            category: "Testing",
+            series: series,
+            difficulty: nil,
+            planType: "guided",
+            durationDays: days?.count ?? 1,
+            days: days ?? [PlanDay(day: 1, title: "One", readings: [PlanReading(book: "Test", chapter: 1)])]
+        )
+    }
+
+    private static let longDay = PlanDay(day: 1, title: "Long", readings: [
+        PlanReading(book: "Test", chapter: 1, endChapter: 3),
+        PlanReading(book: "Test", chapter: 4, startVerse: 1, endVerse: 5)
+    ])
+
+    private static let catalog = [
+        plan("a"), plan("b"), plan("c"), plan("d"),
+        plan("long", days: [longDay]),
+        plan("part-1", series: "Fruit"), plan("part-2", series: "Fruit"), plan("part-3", series: "Fruit")
+    ]
+
+    private func makeStore(defaults: UserDefaults? = nil) -> ReadingPlanStore {
+        let defaults = defaults ?? UserDefaults(suiteName: "ReadingPlanLimitTests-\(UUID().uuidString)")!
+        let store = ReadingPlanStore(defaults: defaults, catalog: Self.catalog, publishesChanges: false)
+        store.verseCountsForBook = { _ in [10, 10, 10, 10] }
+        return store
+    }
+
+    @Test
+    func noMoreThanThreePlansRunAtOnce() {
+        let store = makeStore()
+        #expect(store.start("a"))
+        #expect(store.start("b"))
+        #expect(store.start("c"))
+        #expect(!store.canStartAnotherPlan)
+        #expect(!store.start("d"))
+        #expect(store.enrollment(for: "d") == nil)
+        // A running plan can still start over.
+        #expect(store.restart("a"))
+        // Stopping one makes room.
+        store.stop("b")
+        #expect(store.start("d"))
+    }
+
+    @Test
+    func customPlansStopAtTheLimit() {
+        let store = makeStore()
+        var created: [String] = []
+        for _ in 0..<ReadingPlanStore.maximumCustomPlans {
+            guard let id = store.createCustomPlan(bookName: "Test", dayCount: 2, style: .inOrder) else { break }
+            created.append(id)
+            store.stop(id)
+        }
+        #expect(created.count == ReadingPlanStore.maximumCustomPlans)
+        #expect(!store.canCreateCustomPlan)
+        #expect(store.createCustomPlan(bookName: "Test", dayCount: 2, style: .inOrder) == nil)
+    }
+
+    @Test
+    func deletedCustomPlansKeepOnlyASmallRecord() throws {
+        let store = makeStore()
+        let id = try #require(store.createCustomPlan(bookName: "Test", dayCount: 4, style: .inOrder))
+        store.deleteCustomPlan(id)
+        let record = try #require(store.document.customPlans[id])
+        #expect(record.isDeleted)
+        #expect(record.days.isEmpty)
+        #expect(store.plan(id: id) == nil)
+    }
+
+    @Test
+    func theOpenReadingIsRememberedAcrossLaunches() {
+        let defaults = UserDefaults(suiteName: "ReadingPlanLimitTests-\(UUID().uuidString)")!
+        let store = makeStore(defaults: defaults)
+        store.start("long")
+        store.beginReading(1, day: 1, of: "long")
+
+        let reopened = makeStore(defaults: defaults)
+        #expect(reopened.session == ReadingPlanStore.Session(planID: "long", day: 1, readingIndex: 1))
+    }
+
+    @Test
+    func theReaderKnowsWhereItIsInALongReading() throws {
+        let store = makeStore()
+        store.start("long")
+        store.beginReading(0, day: 1, of: "long")
+
+        let middle = try #require(store.sessionContext(atBook: "Test", chapter: 2))
+        #expect(middle.chapterPosition == 2)
+        #expect(middle.chapterCount == 3)
+        #expect(!middle.isLastChapter)
+        #expect(middle.endsAfterVerse == nil)
+        #expect(store.sessionContext(atBook: "Test", chapter: 4) == nil)
+    }
+
+    @Test
+    func aPartialReadingEndsAfterItsLastVerse() throws {
+        let store = makeStore()
+        store.start("long")
+        store.beginReading(1, day: 1, of: "long")
+
+        let context = try #require(store.sessionContext(atBook: "Test", chapter: 4))
+        #expect(context.isLastChapter)
+        #expect(context.endsAfterVerse == 5)
+    }
+
+    @Test
+    func checkingThingsOffIsAnnounced() {
+        let store = makeStore()
+        store.start("long")
+        store.setReading(0, day: 1, of: "long", complete: true)
+        #expect(store.latestEvent?.kind == .readingCompleted("Test 1–3"))
+        store.setReading(1, day: 1, of: "long", complete: true)
+        #expect(store.latestEvent?.kind == .planFinished("Long"))
+    }
+
+    @Test
+    func seriesKeepTheirOrder() throws {
+        let store = makeStore()
+        let first = try #require(store.plan(id: "part-1"))
+        #expect(store.plans(inSeries: "Fruit").map(\.id) == ["part-1", "part-2", "part-3"])
+        #expect(store.seriesPosition(of: first)?.position == 1)
+        #expect(store.seriesPosition(of: first)?.count == 3)
+        #expect(store.nextInSeries(after: first)?.id == "part-2")
+        #expect(store.nextInSeries(after: try #require(store.plan(id: "part-3"))) == nil)
+    }
+
+    @Test
+    func theBundledFruitOfTheSpiritSeriesIsComplete() {
+        let catalog = ReadingPlanStore.loadCatalog()
+        #expect(catalog.filter { $0.series == "Fruit of the Spirit" }.count == 9)
+    }
+}

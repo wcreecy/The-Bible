@@ -18,11 +18,39 @@ final class ReadingPlanStore {
     static let shared = ReadingPlanStore()
     static let storageKey = "readingPlansV1"
 
-    /// A plan reading opened in the reader, so the reader can offer the next one.
-    struct Session: Equatable {
+    /// A plan reading opened in the reader, so the reader can show where it fits in the plan
+    /// and offer the next one. Kept on this device only, across launches.
+    struct Session: Codable, Equatable {
         let planID: String
         let day: Int
         let readingIndex: Int
+    }
+
+    /// Where the reader is within the session's reading, for the chapter on screen.
+    struct SessionContext {
+        let session: Session
+        let plan: ReadingPlan
+        let day: PlanDay
+        let reading: PlanReading
+        /// 1-based position of this chapter within the reading, and how many chapters it spans.
+        let chapterPosition: Int
+        let chapterCount: Int
+        /// Set when the reading stops partway through this chapter, after this verse.
+        let endsAfterVerse: Int?
+
+        var isLastChapter: Bool { chapterPosition == chapterCount }
+    }
+
+    /// Something worth a brief note in the reader, such as a reading checked off.
+    struct Event: Equatable, Identifiable {
+        enum Kind: Equatable {
+            case readingCompleted(String)
+            case dayCompleted(day: Int, planTitle: String)
+            case planFinished(String)
+        }
+
+        let id = UUID()
+        let kind: Kind
     }
 
     /// A day just finished, shown briefly by whatever screen is open.
@@ -35,8 +63,18 @@ final class ReadingPlanStore {
 
     private(set) var catalog: [ReadingPlan] = []
     private(set) var document = ReadingPlansDocument()
-    private(set) var session: Session?
+    private(set) var session: Session? {
+        didSet { saveSession() }
+    }
     var latestCompletion: Completion?
+    private(set) var latestEvent: Event?
+
+    /// At most this many plans run at once; it keeps the synced progress small and the Home
+    /// card readable.
+    static let maximumActivePlans = 3
+    /// Custom plans keep every day's readings, so only this many are kept.
+    static let maximumCustomPlans = 10
+    private static let sessionKey = "readingPlanSessionV1"
 
     /// A reading counts as read once this share of its verses has been on screen, including
     /// its last verse. Verses skimmed past quickly aren't recorded, so it isn't all of them.
@@ -57,6 +95,8 @@ final class ReadingPlanStore {
         self.publishesChanges = publishesChanges
         self.catalog = catalog ?? Self.loadCatalog()
         document = Self.decode(defaults.data(forKey: Self.storageKey)) ?? ReadingPlansDocument()
+        session = defaults.data(forKey: Self.sessionKey)
+            .flatMap { try? JSONDecoder().decode(Session.self, from: $0) }
     }
 
     // MARK: - Plans
@@ -72,6 +112,27 @@ final class ReadingPlanStore {
             .filter { !$0.isDeleted }
             .sorted { $0.createdAt > $1.createdAt }
             .map(\.plan)
+    }
+
+    /// A series' plans, in catalog order.
+    func plans(inSeries series: String) -> [ReadingPlan] {
+        catalog.filter { $0.series == series }
+    }
+
+    /// Where a plan falls in its series: 1-based position and the series length.
+    func seriesPosition(of plan: ReadingPlan) -> (position: Int, count: Int)? {
+        guard let series = plan.series else { return nil }
+        let parts = plans(inSeries: series)
+        guard let index = parts.firstIndex(where: { $0.id == plan.id }) else { return nil }
+        return (index + 1, parts.count)
+    }
+
+    /// The plan after this one in its series.
+    func nextInSeries(after plan: ReadingPlan) -> ReadingPlan? {
+        guard let series = plan.series else { return nil }
+        let parts = plans(inSeries: series)
+        guard let index = parts.firstIndex(where: { $0.id == plan.id }) else { return nil }
+        return parts[safe: index + 1]
     }
 
     func plan(id: String) -> ReadingPlan? {
@@ -144,15 +205,42 @@ final class ReadingPlanStore {
         }
     }
 
+    // MARK: - Limits
+
+    /// Whether another plan can be started now.
+    var canStartAnotherPlan: Bool { activePlans.count < Self.maximumActivePlans }
+
+    /// Whether `planID` can be started or restarted: it's already running, or there's room.
+    func canStart(_ planID: String) -> Bool {
+        enrollment(for: planID)?.isActive == true || canStartAnotherPlan
+    }
+
+    var canCreateCustomPlan: Bool {
+        canStartAnotherPlan && customPlans.count < Self.maximumCustomPlans
+    }
+
+    /// Why a plan can't be started or created, for the screens that offer it.
+    var limitMessage: String {
+        if !canStartAnotherPlan {
+            return "You can follow up to \(Self.maximumActivePlans) plans at a time. Finish or stop one to start another."
+        }
+        return "You can keep up to \(Self.maximumCustomPlans) plans of your own. Delete one to make another."
+    }
+
     // MARK: - Changing progress
 
-    func start(_ planID: String, now: Date = Date()) {
+    /// Starts `planID` from day 1. Returns false when the active plan limit is reached.
+    @discardableResult
+    func start(_ planID: String, now: Date = Date()) -> Bool {
+        guard canStart(planID) else { return false }
         document.enrollments[planID] = PlanEnrollment(planID: planID, startedAt: now)
         save()
+        return true
     }
 
     /// Starts over from day 1.
-    func restart(_ planID: String, now: Date = Date()) {
+    @discardableResult
+    func restart(_ planID: String, now: Date = Date()) -> Bool {
         start(planID, now: now)
     }
 
@@ -186,6 +274,9 @@ final class ReadingPlanStore {
         document.enrollments[planID] = enrollment
         if complete {
             latestCompletion = Completion(planID: planID, day: day, finishedPlan: finishedPlan)
+            latestEvent = Event(kind: finishedPlan
+                ? .planFinished(plan.title)
+                : .dayCompleted(day: day, planTitle: plan.title))
         }
         save()
     }
@@ -212,6 +303,9 @@ final class ReadingPlanStore {
         if complete, enrollment.completedReadings[day]?.isSuperset(of: planDay.readings.indices) == true {
             setDay(day, of: planID, complete: true, now: now)
         } else {
+            if complete, let reading = planDay.readings[safe: index] {
+                latestEvent = Event(kind: .readingCompleted(reading.title))
+            }
             save()
         }
     }
@@ -238,9 +332,11 @@ final class ReadingPlanStore {
         return highlights
     }
 
-    /// Builds a plan for `bookName`, saves it, and starts it. Returns its ID.
+    /// Builds a plan for `bookName`, saves it, and starts it. Returns its ID, or nil when a
+    /// limit is reached (see `canCreateCustomPlan`).
     @discardableResult
-    func createCustomPlan(bookName: String, dayCount: Int, style: CustomPlanStyle, now: Date = Date()) -> String {
+    func createCustomPlan(bookName: String, dayCount: Int, style: CustomPlanStyle, now: Date = Date()) -> String? {
+        guard canCreateCustomPlan else { return nil }
         let days = CustomPlanGenerator.makeDays(
             bookName: bookName,
             verseCounts: verseCountsForBook(bookName),
@@ -266,6 +362,7 @@ final class ReadingPlanStore {
     func deleteCustomPlan(_ id: String, now: Date = Date()) {
         guard var record = document.customPlans[id] else { return }
         record.isDeleted = true
+        record.days = []
         record.updatedAt = now
         document.customPlans[id] = record
         if var enrollment = document.enrollments[id] {
@@ -283,39 +380,70 @@ final class ReadingPlanStore {
 
     // MARK: - Reading
 
-    /// Opens a plan reading in the reader and remembers it, so the reader can offer the next.
-    func openReading(_ index: Int, day: Int, of planID: String) {
-        guard let reading = plan(id: planID)?.day(day)?.readings[safe: index] else { return }
+    /// Remembers a plan reading as the one being read and returns it, for the caller to open.
+    @discardableResult
+    func beginReading(_ index: Int, day: Int, of planID: String) -> PlanReading? {
+        guard let reading = plan(id: planID)?.day(day)?.readings[safe: index] else { return nil }
         session = Session(planID: planID, day: day, readingIndex: index)
         if var enrollment = enrollment(for: planID) {
             enrollment.lastActivityAt = Date()
             document.enrollments[planID] = enrollment
             saveLocally()
         }
-        AppRouter.shared.openBibleReference(book: reading.book, chapter: reading.chapter, verse: reading.firstVerse)
+        return reading
     }
 
-    /// Opens the plan's current day at its first unread reading.
-    func continuePlan(_ planID: String) {
-        guard let plan = plan(id: planID), let day = currentDay(of: plan) else { return }
+    /// Opens a plan reading in the Bible tab's reader, with the plan and day behind it so Back
+    /// returns to them (see `ContentView.openReadingPlanReading`).
+    func openReading(_ index: Int, day: Int, of planID: String) {
+        guard let reading = beginReading(index, day: day, of: planID) else { return }
+        AppRouter.shared.open(.readingPlanReading(
+            planID: planID,
+            day: day,
+            location: BibleReaderLocation(bookName: reading.book, chapterNumber: reading.chapter, verseNumber: reading.firstVerse)
+        ))
+    }
+
+    /// The plan's current day and its first unread reading.
+    func nextReading(of planID: String) -> (day: Int, index: Int)? {
+        guard let plan = plan(id: planID), let day = currentDay(of: plan) else { return nil }
         let index = day.readings.indices.first { !isReadingComplete($0, day: day.day, planID: planID) } ?? 0
-        openReading(index, day: day.day, of: planID)
+        return (day.day, index)
     }
 
-    /// The session's reading when the reader is at its last chapter, where the reader offers
-    /// what comes next.
-    func sessionReading(atBook bookName: String, chapter: Int) -> (session: Session, plan: ReadingPlan, day: PlanDay, reading: PlanReading)? {
+    /// Opens the plan's current day at its first unread reading, from outside the plan screens.
+    func continuePlan(_ planID: String) {
+        guard let next = nextReading(of: planID) else { return }
+        openReading(next.index, day: next.day, of: planID)
+    }
+
+    /// Where the chapter on screen sits in the session's reading, or nil when it isn't part of it.
+    func sessionContext(atBook bookName: String, chapter: Int) -> SessionContext? {
         guard let session,
               let plan = plan(id: session.planID),
               enrollment(for: session.planID) != nil,
               let day = plan.day(session.day),
               let reading = day.readings[safe: session.readingIndex],
               reading.book == bookName,
-              reading.lastChapter == chapter else { return nil }
-        return (session, plan, day, reading)
+              reading.contains(chapter: chapter) else { return nil }
+
+        let verseCount = verseCountsForBook(bookName)[safe: chapter - 1] ?? 0
+        var endsAfterVerse: Int?
+        if chapter == reading.lastChapter, let end = reading.endVerse, end < verseCount {
+            endsAfterVerse = end
+        }
+        return SessionContext(
+            session: session,
+            plan: plan,
+            day: day,
+            reading: reading,
+            chapterPosition: chapter - reading.chapter + 1,
+            chapterCount: reading.lastChapter - reading.chapter + 1,
+            endsAfterVerse: endsAfterVerse
+        )
     }
 
-    /// Marks the session's reading read and opens the day's next reading.
+    /// Marks the session's reading read and opens the day's next reading in its place.
     func advanceSession() {
         guard let session, let day = plan(id: session.planID)?.day(session.day) else { return }
         setReading(session.readingIndex, day: session.day, of: session.planID, complete: true)
@@ -409,6 +537,14 @@ final class ReadingPlanStore {
     }
 
     // MARK: - Saving
+
+    private func saveSession() {
+        if let session, let data = try? JSONEncoder().encode(session) {
+            defaults.set(data, forKey: Self.sessionKey)
+        } else {
+            defaults.removeObject(forKey: Self.sessionKey)
+        }
+    }
 
     private func save() {
         saveLocally()

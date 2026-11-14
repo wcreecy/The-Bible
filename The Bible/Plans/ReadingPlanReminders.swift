@@ -34,30 +34,40 @@ enum ReadingPlanReminderScheduler {
         }
 
         let store = ReadingPlanStore.shared
-        guard let (plan, _) = store.activePlans.first, let today = store.currentDay(of: plan) else { return }
+        let plans = store.activePlans.compactMap { item in
+            store.currentDay(of: item.plan).map { (plan: item.plan, day: $0) }
+        }
+        guard !plans.isEmpty else { return }
 
         let hour = defaults.object(forKey: hourKey) as? Int ?? defaultHour
         let minute = defaults.object(forKey: minuteKey) as? Int ?? 0
         let calendar = Calendar.autoupdatingCurrent
         let startOfToday = calendar.startOfDay(for: now)
-        let readToday = store.completedADay(of: plan.id, on: now, calendar: calendar)
+        // Today's reminder names only the plans not read yet today, and is skipped once all are.
+        let unreadToday = plans.filter { !store.completedADay(of: $0.plan.id, on: now, calendar: calendar) }
 
         for offset in 0..<daysAhead {
             guard let day = calendar.date(byAdding: .day, value: offset, to: startOfToday),
                   let fireDate = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: day),
                   fireDate > now else { continue }
-            if offset == 0 && readToday { continue }
+            let due = offset == 0 ? unreadToday : plans
+            guard !due.isEmpty else { continue }
 
             let content = UNMutableNotificationContent()
-            content.title = plan.title
-            if offset == 0 || (offset == 1 && readToday) {
-                // The next day's reading is known for the next reminder.
-                content.body = String(localized: "Day \(today.day): \(today.readingSummary)")
+            if due.count == 1, let only = due.first {
+                content.title = only.plan.title
+                content.body = offset <= 1
+                    ? String(localized: "Day \(only.day.day): \(only.day.readingSummary)")
+                    : String(localized: "Your next reading is ready.")
             } else {
-                content.body = String(localized: "Your next reading is ready.")
+                content.title = String(localized: "Today's Readings")
+                content.body = due.map { "\($0.plan.title) · Day \($0.day.day)" }.joined(separator: "\n")
             }
             content.sound = .default
-            content.userInfo = ["destination": destination, "planID": plan.id]
+            // One plan opens directly; several open the list of plans.
+            content.userInfo = due.count == 1
+                ? ["destination": destination, "planID": due[0].plan.id]
+                : ["destination": destination]
 
             let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
             let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
@@ -95,6 +105,8 @@ enum ReadingPlanWidgetMirror {
         let bookName: String
         let chapter: Int
         let verse: Int
+        /// The other plans in progress, such as "Growing in Peace · Day 2".
+        var others: [String]? = nil
     }
 
     static func update(from store: ReadingPlanStore) {
@@ -125,7 +137,10 @@ enum ReadingPlanWidgetMirror {
                 isFinished: false,
                 bookName: reading.book,
                 chapter: reading.chapter,
-                verse: reading.firstVerse
+                verse: reading.firstVerse,
+                others: store.activePlans.dropFirst().compactMap { other in
+                    store.currentDay(of: other.plan).map { "\(other.plan.title) · Day \($0.day)" }
+                }
             )
         }
         // A plan just finished: show it until another is started.

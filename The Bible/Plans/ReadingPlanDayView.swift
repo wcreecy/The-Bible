@@ -101,6 +101,9 @@ struct ReadingPlanDayView: View {
                     .tint(isComplete ? .green : .accentColor)
                     .controlSize(.large)
                 } else {
+                    if !store.canStart(plan.id) {
+                        PlanLimitNote(message: store.limitMessage)
+                    }
                     Button {
                         store.start(plan.id)
                     } label: {
@@ -109,6 +112,7 @@ struct ReadingPlanDayView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
+                    .disabled(!store.canStart(plan.id))
                 }
 
                 if let next = plan.day(day.day + 1) {

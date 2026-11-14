@@ -40,6 +40,10 @@ final class AppRouter {
         case gameStart
         /// Reading plans in the Home tab: one plan when an ID is given, otherwise all of them.
         case readingPlan(String?)
+        /// A plan reading in the Bible tab's reader, with its plan and day behind it.
+        case readingPlanReading(planID: String, day: Int, location: BibleReaderLocation)
+        /// A plan day, back from the reader when it's open behind it.
+        case readingPlanDay(planID: String, day: Int)
 
         /// The tab this destination lives in, or nil when it doesn't change tabs.
         var targetTab: AppTab? {
@@ -49,6 +53,8 @@ final class AppRouter {
             case .bibleReference, .bibleSearch, .bibleStudy, .bibleStudyDestination: .bible
             case .gameStart: .games
             case .readingPlan: .home
+            case .readingPlanReading: .bible
+            case .readingPlanDay: nil
             case .verseOfDayNotification, .scripturePreview: nil
             }
         }

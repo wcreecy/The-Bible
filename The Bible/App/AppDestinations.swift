@@ -51,6 +51,9 @@ extension View {
 
                 case .customReadingPlanBuilder:
                     CustomPlanBuilderView()
+
+                case .readingPlanSeries(let series):
+                    ReadingPlanSeriesView(series: series)
                 }
             }
     }

@@ -290,6 +290,7 @@ struct HomeView: View {
         }
         contextualHomeTip
             .frame(maxWidth: .infinity)
+        ReadingPlansNewTip(onBrowse: { coordinator.push(.readingPlans) })
 
         ForEach(layout.visibleOrder) { cardID in
             card(for: cardID)
@@ -323,6 +324,7 @@ struct HomeView: View {
                 HomeEditHint()
             } else {
                 contextualHomeTip
+                ReadingPlansNewTip(onBrowse: { coordinator.push(.readingPlans) })
             }
 
             dashboardColumns(width: width)

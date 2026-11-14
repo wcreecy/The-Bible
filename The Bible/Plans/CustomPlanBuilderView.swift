@@ -100,7 +100,7 @@ struct CustomPlanBuilderView: View {
 
             Section {
                 Button {
-                    let id = store.createCustomPlan(bookName: bookName, dayCount: dayCount, style: style)
+                    guard let id = store.createCustomPlan(bookName: bookName, dayCount: dayCount, style: style) else { return }
                     Haptics.success()
                     if coordinator.path.last == .customReadingPlanBuilder {
                         coordinator.path.removeLast()
@@ -113,6 +113,11 @@ struct CustomPlanBuilderView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .disabled(!store.canCreateCustomPlan)
+            } footer: {
+                if !store.canCreateCustomPlan {
+                    Text(store.limitMessage)
+                }
             }
             .listRowBackground(Color.clear)
         }

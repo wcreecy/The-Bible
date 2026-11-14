@@ -77,7 +77,7 @@ struct HomeLayoutStore {
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
             // Keep the first iPad dashboard focused on Welcome, Today, and the timer.
-            return [.resumeReading, .readingPlan, .savedVerses, .study, .streaks, .dailyFocus]
+            return [.resumeReading, .savedVerses, .study, .streaks, .dailyFocus]
         }
         // Keep the first iPhone home screen focused on Welcome, Verse of the Day, and reading.
         return [.today, .savedVerses, .study, .streaks, .timer, .dailyFocus]

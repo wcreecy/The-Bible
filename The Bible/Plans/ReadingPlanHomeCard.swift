@@ -115,6 +115,56 @@ struct ReadingPlanHomeCard: View {
 
                 Spacer(minLength: 0)
             }
+
+            // The other plans in progress, each a tap from its next reading.
+            let others = Array(store.activePlans.dropFirst())
+            if !others.isEmpty {
+                Divider()
+                ForEach(others, id: \.plan.id) { other in
+                    otherPlanRow(other.plan, enrollment: other.enrollment)
+                }
+            }
+        }
+    }
+
+    private func otherPlanRow(_ plan: ReadingPlan, enrollment: PlanEnrollment) -> some View {
+        HStack(spacing: 12) {
+            Button {
+                onOpenPlan(plan.id)
+            } label: {
+                HStack(spacing: 10) {
+                    ProgressRing(progress: store.progress(of: plan), lineWidth: 3, size: 30) {
+                        EmptyView()
+                    }
+                    .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(plan.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                        if let day = store.currentDay(of: plan) {
+                            Text("Day \(day.day) of \(plan.days.count) · \(day.readingSummary)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityHint(Self.progressLabel(read: enrollment.completedDays.count, of: plan.days.count))
+
+            Button("Read") {
+                store.continuePlan(plan.id)
+            }
+            .font(.subheadline.weight(.semibold))
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .controlSize(.small)
+            .accessibilityLabel("Read \(plan.title)")
         }
     }
 
@@ -190,5 +240,53 @@ struct ReadingPlanHomeCard: View {
     private var suggestedPlans: [ReadingPlan] {
         let finished = Set(store.finishedPlans.map(\.plan.id))
         return Array(store.catalog.filter { !finished.contains($0.id) && $0.durationDays <= 14 }.prefix(2))
+    }
+}
+
+/// A one-time note on Home introducing reading plans, until the reader dismisses it or
+/// starts a plan.
+struct ReadingPlansNewTip: View {
+    let onBrowse: () -> Void
+
+    @AppStorage("readingPlansNewTipDismissed") private var isDismissed = false
+    @State private var store = ReadingPlanStore.shared
+
+    var body: some View {
+        if !isDismissed && store.document.enrollments.isEmpty {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "calendar.badge.checkmark")
+                    .font(.title2)
+                    .foregroundStyle(Color.accentColor)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("New: Reading Plans")
+                        .font(.headline)
+                    Text("Read through a book or a topic a day at a time, or build your own plan.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button("Browse Plans", action: onBrowse)
+                        .font(.subheadline.weight(.semibold))
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+                        .controlSize(.small)
+                }
+
+                Spacer(minLength: 0)
+
+                Button {
+                    withAnimation { isDismissed = true }
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .padding(6)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Dismiss")
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .heroCardSurface()
+        }
     }
 }

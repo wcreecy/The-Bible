@@ -14,6 +14,8 @@ struct ReadingPlanWidgetSnapshot: Codable, Equatable {
     let bookName: String
     let chapter: Int
     let verse: Int
+    /// The other plans in progress, such as "Growing in Peace · Day 2".
+    var others: [String]? = nil
 }
 
 struct ReadingPlanEntry: TimelineEntry {
@@ -121,6 +123,17 @@ struct ReadingPlanWidgetEntryView: View {
         }
 
         Spacer(minLength: 0)
+
+        if isLarge, let others = snapshot.others, !others.isEmpty {
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(others, id: \.self) { other in
+                    Label(other, systemImage: "calendar")
+                        .font(.subheadline)
+                        .foregroundStyle(secondaryTextColor)
+                        .lineLimit(1)
+                }
+            }
+        }
 
         VStack(alignment: .leading, spacing: 4) {
             if !isSmall {

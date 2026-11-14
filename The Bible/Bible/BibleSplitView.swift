@@ -133,6 +133,15 @@ struct BibleSplitView: View {
                 .accessibilityHint("Switches to \(sortAlphabetically ? "canonical" : "alphabetical") order")
                     .frame(width: 44, height: 44)
 
+                // Reading plans live in Home; this opens them there.
+                Button {
+                    AppRouter.shared.open(.readingPlan(nil))
+                } label: {
+                    Image(systemName: "calendar.badge.checkmark")
+                }
+                .accessibilityLabel("Reading plans")
+                .frame(width: 44, height: 44)
+
                 Spacer()
 
                 Text("Books")

@@ -203,6 +203,22 @@ struct ReadingView: View {
                     viewModel.onTabChanged(tab.rawValue)
                 }
             }
+            // Readings check themselves off as they're read; say so.
+            .onChange(of: ReadingPlanStore.shared.latestEvent) { _, event in
+                guard let event else { return }
+                favoriteToastSymbol = "checkmark.circle.fill"
+                favoriteToastTint = .green
+                switch event.kind {
+                case .readingCompleted(let title):
+                    favoriteToastText = "\(title) read"
+                case let .dayCompleted(day, planTitle):
+                    favoriteToastText = "Day \(day) of \(planTitle) complete"
+                case .planFinished(let title):
+                    favoriteToastSymbol = "checkmark.seal.fill"
+                    favoriteToastText = "You finished \(title)!"
+                }
+                withAnimation(.spring()) { showFavoriteToast = true }
+            }
             .onChange(of: isFocusModePresented) { _, isPresented in
                 viewModel.setFocusModeActive(isPresented)
             }
@@ -499,6 +515,12 @@ struct ReadingView: View {
                         readerTips
                     }
 
+                    // Opened from a reading plan: where this chapter falls in the day.
+                    ReadingPlanReaderPill(
+                        bookName: viewModel.currentBook.name,
+                        chapterNumber: viewModel.currentChapter.number
+                    )
+
                     ReadingChapterVerseList(
                         bookName: viewModel.currentBook.name,
                         chapterNumber: viewModel.currentChapter.number,
@@ -513,10 +535,15 @@ struct ReadingView: View {
                         showsFullReferences: showsFullReferences,
                         onOpenNote: { verse in noteEditorVerse = verse },
                         onOpenCrossReferences: { verse in crossReferenceVerse = verse },
-                        onVerseActionFeedback: handleVerseActionFeedback
+                        onVerseActionFeedback: handleVerseActionFeedback,
+                        planReadingEndVerse: ReadingPlanStore.shared.sessionContext(
+                            atBook: viewModel.currentBook.name,
+                            chapter: viewModel.currentChapter.number
+                        )?.endsAfterVerse
                     )
 
-                    // Opened from a reading plan: the way to the plan's next reading.
+                    // Opened from a reading plan: the way to the plan's next reading, when the
+                    // reading runs to the end of the chapter.
                     ReadingPlanReaderPanel(
                         bookName: viewModel.currentBook.name,
                         chapterNumber: viewModel.currentChapter.number

@@ -78,6 +78,9 @@ nonisolated struct ReadingPlan: Codable, Hashable, Sendable, Identifiable {
     let title: String
     let description: String
     let category: String
+    /// Plans meant to be read together in order, such as "Fruit of the Spirit". The library
+    /// shows a series as one entry.
+    var series: String?
     var difficulty: String?
     /// "guided" (with notes for each day) or "reading_schedule" (readings only).
     let planType: String
@@ -200,7 +203,8 @@ nonisolated struct CustomPlanRecord: Codable, Equatable, Sendable {
     let bookName: String
     let dayCount: Int
     let style: CustomPlanStyle
-    let days: [PlanDay]
+    /// Emptied when the plan is deleted, so the record that carries the deletion stays small.
+    var days: [PlanDay]
     let createdAt: Date
     var updatedAt: Date
     var isDeleted = false
@@ -211,6 +215,7 @@ nonisolated struct CustomPlanRecord: Codable, Equatable, Sendable {
             title: "\(bookName) in \(dayCount == 1 ? "1 Day" : "\(dayCount) Days")",
             description: "\(style.title): \(style.summary)",
             category: ReadingPlan.customCategory,
+            series: nil,
             difficulty: nil,
             planType: "custom",
             durationDays: days.count,
