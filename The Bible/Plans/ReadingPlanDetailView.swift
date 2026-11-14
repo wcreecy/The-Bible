@@ -4,7 +4,7 @@ import SwiftUI
 struct ReadingPlanDetailView: View {
     let planID: String
 
-    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(\.planNavigation) private var navigation
     @State private var store = ReadingPlanStore.shared
     @State private var confirmsRestart = false
     @State private var confirmsStop = false
@@ -111,9 +111,7 @@ struct ReadingPlanDetailView: View {
         .confirmationDialog("Delete this plan?", isPresented: $confirmsDelete, titleVisibility: .visible) {
             Button("Delete Plan", role: .destructive) {
                 store.deleteCustomPlan(plan.id)
-                if coordinator.path.last == .readingPlan(id: plan.id) {
-                    coordinator.path.removeLast()
-                }
+                navigation?.popLast()
             }
         }
     }

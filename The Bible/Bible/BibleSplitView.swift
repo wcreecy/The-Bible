@@ -7,10 +7,18 @@ struct BibleSplitView: View {
     let studyRequestID: Int
     let studyDestination: AppRouter.StudyDestination?
     let initialReaderLocation: BibleReaderLocation?
+    var planRequest: PlanRequest? = nil
+
+    /// Asks the detail pane to show a reading plan screen. Each request is distinct.
+    struct PlanRequest: Equatable {
+        let id = UUID()
+        let route: Route
+    }
 
     @State private var handledSearchRequestID: Int = 0
     @State private var handledStudyRequestID: Int = 0
     @State private var handledInitialReaderLocation: BibleReaderLocation?
+    @State private var handledPlanRequestID: UUID?
     @State private var selectedBook: Book?
     @State private var sidebarSearch: String = ""
     @State private var detailPath = NavigationPath()
@@ -57,10 +65,44 @@ struct BibleSplitView: View {
         } detail: {
             detailView
         }
-        .onAppear(perform: openStudyIfRequested)
+        .onAppear {
+            openStudyIfRequested()
+            openPlanIfRequested()
+        }
         .onChange(of: studyRequestID) { _, _ in
             openStudyIfRequested()
         }
+        .onChange(of: planRequest) { _, _ in
+            openPlanIfRequested()
+        }
+    }
+
+    private func openPlanIfRequested() {
+        guard let planRequest, planRequest.id != handledPlanRequestID else { return }
+        handledPlanRequestID = planRequest.id
+        openPlanScreen(planRequest.route)
+    }
+
+    /// Shows a reading plan screen in the detail pane, over what's there, so Back returns to it.
+    private func openPlanScreen(_ route: Route) {
+        searchModel.query = ""
+        if columnVisibility == .detailOnly {
+            columnVisibility = .all
+        }
+        detailPath.append(route)
+    }
+
+    private var planNavigation: PlanNavigation {
+        PlanNavigation(
+            push: { detailPath.append($0) },
+            replaceLast: { route in
+                if !detailPath.isEmpty { detailPath.removeLast() }
+                detailPath.append(route)
+            },
+            popLast: {
+                if !detailPath.isEmpty { detailPath.removeLast() }
+            }
+        )
     }
 
     private func openStudyIfRequested() {
@@ -133,15 +175,6 @@ struct BibleSplitView: View {
                 .accessibilityHint("Switches to \(sortAlphabetically ? "canonical" : "alphabetical") order")
                     .frame(width: 44, height: 44)
 
-                // Reading plans live in Home; this opens them there.
-                Button {
-                    AppRouter.shared.open(.readingPlan(nil))
-                } label: {
-                    Image(systemName: "calendar.badge.checkmark")
-                }
-                .accessibilityLabel("Reading plans")
-                .frame(width: 44, height: 44)
-
                 Spacer()
 
                 Text("Books")
@@ -172,6 +205,14 @@ struct BibleSplitView: View {
                 .accessibilityIdentifier("studyBibleSidebarCard")
                 .accessibilityAddTraits(isStudyMode ? .isSelected : [])
                 .accessibilityHint(isStudyMode ? "Turns off Study mode so books open for reading" : "Books open their study pages until you turn it off")
+
+                Button {
+                    openPlanScreen(.readingPlans)
+                } label: {
+                    ReadingPlansEntryCard(compact: true)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens reading plans")
             }
             .padding(.horizontal, 12)
             .padding(.top, 8)
@@ -312,6 +353,10 @@ struct BibleSplitView: View {
                 .navigationDestination(for: ReadingRoute.self) { route in
                     readingDestination(for: route)
                 }
+                .navigationDestination(for: Route.self) { route in
+                    ReadingPlanDestination(route: route)
+                }
+                .environment(\.planNavigation, planNavigation)
         }
         .background(AppBackgroundView(tab: .bible))
         // Changing modes, or choosing another book to read, starts the detail stack

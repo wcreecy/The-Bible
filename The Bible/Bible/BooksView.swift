@@ -16,6 +16,14 @@ struct BooksView: View {
             LazyVStack(alignment: .leading, spacing: 16) {
                 StudyBibleEntryCard(books: books)
 
+                Button {
+                    coordinator.push(.readingPlans)
+                } label: {
+                    ReadingPlansEntryCard()
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens reading plans")
+
                 if let match = scriptureReference {
                     BibleReferenceJumpRow(reference: match.reference, action: openScriptureReference)
                 }
@@ -48,13 +56,6 @@ struct BooksView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    coordinator.push(.readingPlans)
-                } label: {
-                    Image(systemName: "calendar.badge.checkmark")
-                }
-                .accessibilityLabel("Reading plans")
-
                 Button {
                     coordinator.push(.search)
                 } label: {

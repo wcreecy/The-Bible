@@ -114,6 +114,20 @@ final class ReadingPlanStore {
             .map(\.plan)
     }
 
+    /// Catalog plans that read mostly `bookName`, such as The Gospel of John for John.
+    func plans(readingMostly bookName: String, share: Double = 0.75) -> [ReadingPlan] {
+        catalog.filter { plan in
+            var inBook = 0
+            var total = 0
+            for reading in plan.days.flatMap(\.readings) {
+                let count = reading.verses(verseCounts: verseCountsForBook(reading.book)).count
+                total += count
+                if reading.book == bookName { inBook += count }
+            }
+            return total > 0 && Double(inBook) / Double(total) >= share
+        }
+    }
+
     /// A series' plans, in catalog order.
     func plans(inSeries series: String) -> [ReadingPlan] {
         catalog.filter { $0.series == series }

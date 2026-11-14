@@ -57,9 +57,6 @@ struct ReadingPlansEntryCard: View {
 struct BookPlansSection: View {
     let bookName: String
 
-    /// Present in the iPhone Bible tab; the iPad Study pages have their own navigation, so
-    /// plans open in Home there instead.
-    @Environment(NavigationCoordinator.self) private var coordinator: NavigationCoordinator?
     @State private var store = ReadingPlanStore.shared
 
     var body: some View {
@@ -112,19 +109,63 @@ struct BookPlansSection: View {
         }
     }
 
+    // Opens in the Bible tab: on iPhone in place of the Study pages (which are pushed as views,
+    // not routes), so Back returns to the book list; on iPad in the detail pane.
     private func open(_ plan: ReadingPlan) {
-        if let coordinator {
-            coordinator.push(.readingPlan(id: plan.id))
-        } else {
-            AppRouter.shared.open(.readingPlan(plan.id))
-        }
+        AppRouter.shared.open(.readingPlanInBible(.readingPlan(id: plan.id)))
     }
 
     private func createPlan() {
-        if let coordinator {
-            coordinator.push(.customReadingPlanBuilder(book: bookName))
-        } else {
-            AppRouter.shared.open(.readingPlanBuilder(book: bookName))
+        AppRouter.shared.open(.readingPlanInBible(.customReadingPlanBuilder(book: bookName)))
+    }
+}
+
+/// How plan screens move between each other, in whichever navigation stack they're in: the
+/// iPhone tabs' route stacks, or the iPad Bible tab's detail pane.
+struct PlanNavigation {
+    let push: @MainActor (Route) -> Void
+    /// Replaces the top screen, such as the plan builder with the plan it made.
+    let replaceLast: @MainActor (Route) -> Void
+    let popLast: @MainActor () -> Void
+}
+
+extension PlanNavigation {
+    init(_ coordinator: NavigationCoordinator) {
+        self.init(
+            push: { coordinator.push($0) },
+            replaceLast: { route in
+                if !coordinator.path.isEmpty { coordinator.path.removeLast() }
+                coordinator.push(route)
+            },
+            popLast: {
+                if !coordinator.path.isEmpty { coordinator.path.removeLast() }
+            }
+        )
+    }
+}
+
+extension EnvironmentValues {
+    @Entry var planNavigation: PlanNavigation? = nil
+}
+
+/// The screen for a reading plan route.
+struct ReadingPlanDestination: View {
+    let route: Route
+
+    var body: some View {
+        switch route {
+        case .readingPlans:
+            ReadingPlansView()
+        case .readingPlan(let id):
+            ReadingPlanDetailView(planID: id)
+        case let .readingPlanDay(planID, day):
+            ReadingPlanDayView(planID: planID, dayNumber: day)
+        case .customReadingPlanBuilder(let book):
+            CustomPlanBuilderView(initialBook: book)
+        case .readingPlanSeries(let series):
+            ReadingPlanSeriesView(series: series)
+        default:
+            EmptyView()
         }
     }
 }

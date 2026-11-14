@@ -44,6 +44,11 @@ final class AppRouter {
         case readingPlanReading(planID: String, day: Int, location: BibleReaderLocation)
         /// A plan day, back from the reader when it's open behind it.
         case readingPlanDay(planID: String, day: Int)
+        /// The custom plan builder in the Home tab, with a book chosen.
+        case readingPlanBuilder(book: String?)
+        /// A reading plan screen in the Bible tab, such as from a book's Study page, so Back
+        /// returns to the Bible tab.
+        case readingPlanInBible(Route)
 
         /// The tab this destination lives in, or nil when it doesn't change tabs.
         var targetTab: AppTab? {
@@ -55,6 +60,8 @@ final class AppRouter {
             case .readingPlan: .home
             case .readingPlanReading: .bible
             case .readingPlanDay: nil
+            case .readingPlanBuilder: .home
+            case .readingPlanInBible: .bible
             case .verseOfDayNotification, .scripturePreview: nil
             }
         }

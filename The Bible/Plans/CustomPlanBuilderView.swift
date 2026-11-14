@@ -2,12 +2,17 @@ import SwiftUI
 
 /// Builds a plan for one book: choose the book, how to read it, and how many days.
 struct CustomPlanBuilderView: View {
-    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(\.planNavigation) private var navigation
     @State private var store = ReadingPlanStore.shared
 
-    @State private var bookName = "John"
+    @State private var bookName: String
     @State private var style: CustomPlanStyle = .inOrder
     @State private var dayCount = 21
+
+    /// Opens with `initialBook` chosen, such as the book being studied.
+    init(initialBook: String? = nil) {
+        _bookName = State(initialValue: initialBook ?? "John")
+    }
 
     private var verseCounts: [Int] { ReadingPlanStore.verseCounts(forBook: bookName) }
     private var highlights: [CustomPlanGenerator.Highlight] { store.highlights(forBook: bookName) }
@@ -102,10 +107,8 @@ struct CustomPlanBuilderView: View {
                 Button {
                     guard let id = store.createCustomPlan(bookName: bookName, dayCount: dayCount, style: style) else { return }
                     Haptics.success()
-                    if coordinator.path.last == .customReadingPlanBuilder {
-                        coordinator.path.removeLast()
-                    }
-                    coordinator.push(.readingPlan(id: id))
+                    // The new plan takes the builder's place, so Back skips the builder.
+                    navigation?.replaceLast(.readingPlan(id: id))
                 } label: {
                     // Text only: inside a list row, a filled button's icon takes the button's own color.
                     Text("Create and Start Plan")

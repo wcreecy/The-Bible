@@ -9,7 +9,7 @@ enum Route: Hashable {
     case readingPlans
     case readingPlan(id: String)
     case readingPlanDay(planID: String, day: Int)
-    case customReadingPlanBuilder
+    case customReadingPlanBuilder(book: String?)
     case readingPlanSeries(String)
 }
 

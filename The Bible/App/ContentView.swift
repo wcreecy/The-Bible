@@ -30,6 +30,8 @@ struct ContentView: View {
     @State private var bibleSearchRequestID: Int = 0
     @State private var bibleStudyRequestID: Int = 0
     @State private var bibleStudyDestination: AppRouter.StudyDestination?
+    /// A plan screen for the iPad Bible tab to show, from a Study page.
+    @State private var biblePlanRequest: BibleSplitView.PlanRequest?
     @State private var launchBibleLocation: BibleReaderLocation?
     
     @AppStorage(AppStorageKey.colorSchemePreference) private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
@@ -73,7 +75,8 @@ struct ContentView: View {
                     searchRequestID: bibleSearchRequestID,
                     studyRequestID: bibleStudyRequestID,
                     studyDestination: bibleStudyDestination,
-                    initialReaderLocation: launchBibleLocation
+                    initialReaderLocation: launchBibleLocation,
+                    planRequest: biblePlanRequest
                 )
                     .tabItem { Label("Bible", systemImage: "book") }
                     .tag(AppTab.bible)
@@ -272,6 +275,21 @@ struct ContentView: View {
             openReadingPlanReading(planID: planID, day: day, location: location)
         case let .readingPlanDay(planID, day):
             openReadingPlanDay(planID: planID, day: day)
+        case .readingPlanInBible(let route):
+            selectedTab = .bible
+            if usesWideLayout {
+                biblePlanRequest = BibleSplitView.PlanRequest(route: route)
+            } else {
+                // In place of what was open, so Back returns to the book list.
+                DispatchQueue.main.async {
+                    bibleCoordinator.path = [route]
+                }
+            }
+        case .readingPlanBuilder(let book):
+            selectedTab = .home
+            DispatchQueue.main.async {
+                homeCoordinator.path = [.readingPlans, .customReadingPlanBuilder(book: book)]
+            }
         case .scripturePreview:
             // Shown by the open note editor.
             break

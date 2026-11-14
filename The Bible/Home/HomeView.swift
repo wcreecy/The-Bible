@@ -413,7 +413,7 @@ struct HomeView: View {
                 usesCompactLayout: !isPad,
                 onOpenLibrary: { coordinator.push(.readingPlans) },
                 onOpenPlan: { id in coordinator.push(.readingPlan(id: id)) },
-                onCreatePlan: { coordinator.push(.customReadingPlanBuilder) }
+                onCreatePlan: { coordinator.push(.customReadingPlanBuilder(book: nil)) }
             )
         case .savedVerses:
             SavedVersesHomeCardContainer(

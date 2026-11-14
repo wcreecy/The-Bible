@@ -66,6 +66,8 @@ struct BookOverviewView: View {
                     ConnectionsSection(connections: overview.connections)
                 }
 
+                BookPlansSection(bookName: bookName)
+
                 StartReadingButton(bookName: bookName)
             }
             .padding()

@@ -27,7 +27,7 @@ struct ReadingPlansView: View {
 
                 section(ReadingPlan.customCategory, detail: store.customPlans.isEmpty ? nil : "(\(store.customPlans.count))") {
                     cardRow {
-                        NavigationLink(value: Route.customReadingPlanBuilder) {
+                        NavigationLink(value: Route.customReadingPlanBuilder(book: nil)) {
                             CreatePlanCard()
                         }
                         .buttonStyle(.plain)
