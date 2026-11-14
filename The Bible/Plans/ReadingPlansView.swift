@@ -165,45 +165,57 @@ struct PlanCard: View {
     let plan: ReadingPlan
     let status: Status
 
-    static let size = CGSize(width: 250, height: 168)
+    static let size = CGSize(width: 250, height: 214)
+    static let artworkHeight: CGFloat = 78
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .top) {
+        VStack(alignment: .leading, spacing: 0) {
+            PlanArtwork(plan: plan)
+                .frame(height: Self.artworkHeight)
+                // Top-leading, clear of the plan's symbol on the trailing side.
+                .overlay(alignment: .topLeading) { statusBadge.padding(8) }
+                .planCardTopCorners()
+
+            VStack(alignment: .leading, spacing: 5) {
                 Text(plan.title)
                     .font(.headline)
                     .foregroundStyle(.primary)
                     .lineLimit(2)
-                Spacer(minLength: 4)
-                statusBadge
+                Text(plan.description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                Spacer(minLength: 0)
+                Text(plan.metadataText)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(Color.accentColor)
+                    .lineLimit(1)
             }
-            Text(plan.description)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(3)
-            Spacer(minLength: 0)
-            Text(plan.metadataText)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(Color.accentColor)
+            .multilineTextAlignment(.leading)
+            .padding(12)
         }
-        .multilineTextAlignment(.leading)
-        .padding(14)
         .frame(width: Self.size.width, height: Self.size.height, alignment: .topLeading)
         .heroCardSurface()
         .accessibilityElement(children: .combine)
     }
 
+    /// Sits on the artwork, so it gets its own backing to stay visible on any colors.
     @ViewBuilder
     private var statusBadge: some View {
         switch status {
         case .notStarted:
             EmptyView()
         case .inProgress(let progress):
-            ProgressRing(progress: progress, lineWidth: 3, size: 24) { EmptyView() }
+            ProgressRing(progress: progress, lineWidth: 3, size: 22, tint: .white, track: .white.opacity(0.35)) { EmptyView() }
+                .padding(4)
+                .background(.black.opacity(0.25), in: Circle())
                 .accessibilityLabel("In progress")
         case .finished:
             Image(systemName: "checkmark.seal.fill")
-                .foregroundStyle(.green)
+                .font(.title3)
+                .foregroundStyle(.white, .green)
+                .padding(4)
+                .background(.black.opacity(0.25), in: Circle())
                 .accessibilityLabel("Finished")
         }
     }
@@ -217,29 +229,37 @@ private struct SeriesCard: View {
 
     var body: some View {
         let finished = plans.filter { store.enrollment(for: $0.id)?.finishedAt != nil }.count
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Image(systemName: "square.stack.3d.up.fill")
-                    .foregroundStyle(Color.accentColor)
-                Text("SERIES")
-                    .font(.caption.weight(.semibold))
+        VStack(alignment: .leading, spacing: 0) {
+            PlanArtwork(style: .forSeries(name, category: plans.first?.category ?? ""))
+                .frame(height: PlanCard.artworkHeight)
+                .overlay(alignment: .topLeading) {
+                    Label("SERIES", systemImage: "square.stack.3d.up.fill")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.black.opacity(0.25), in: Capsule())
+                        .padding(8)
+                }
+                .planCardTopCorners()
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text(name)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                Text(plans.map(\.title).joined(separator: " · "))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                Spacer(minLength: 0)
+                Text(finished > 0 ? "\(plans.count) plans · \(finished) finished" : "\(plans.count) plans")
+                    .font(.caption.weight(.medium))
                     .foregroundStyle(Color.accentColor)
             }
-            Text(name)
-                .font(.headline)
-                .foregroundStyle(.primary)
-                .lineLimit(2)
-            Text(plans.map(\.title).joined(separator: " · "))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-            Spacer(minLength: 0)
-            Text(finished > 0 ? "\(plans.count) plans · \(finished) finished" : "\(plans.count) plans")
-                .font(.caption.weight(.medium))
-                .foregroundStyle(Color.accentColor)
+            .multilineTextAlignment(.leading)
+            .padding(12)
         }
-        .multilineTextAlignment(.leading)
-        .padding(14)
         .frame(width: PlanCard.size.width, height: PlanCard.size.height, alignment: .topLeading)
         .heroCardSurface()
         .accessibilityElement(children: .combine)
@@ -346,6 +366,8 @@ private struct ActivePlanRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
+            PlanArtworkTile(plan: plan, size: 44)
+
             ProgressRing(progress: store.progress(of: plan), lineWidth: 5, size: 44) {
                 Text("\(store.enrollment(for: plan.id)?.completedDays.count ?? 0)/\(plan.days.count)")
                     .font(.caption2.weight(.semibold))

@@ -41,9 +41,7 @@ struct ReadingPlanHomeCard: View {
                 HStack(alignment: .center, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 8) {
-                            Image(systemName: "calendar.badge.checkmark")
-                                .font(.title3)
-                                .foregroundStyle(Color.accentColor)
+                            PlanArtworkTile(plan: plan, size: 26)
                             Text(plan.title)
                                 .font(.headline)
                                 .bold()
@@ -133,10 +131,7 @@ struct ReadingPlanHomeCard: View {
                 onOpenPlan(plan.id)
             } label: {
                 HStack(spacing: 10) {
-                    ProgressRing(progress: store.progress(of: plan), lineWidth: 3, size: 30) {
-                        EmptyView()
-                    }
-                    .accessibilityHidden(true)
+                    PlanArtworkTile(plan: plan, size: 34)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(plan.title)
                             .font(.subheadline.weight(.semibold))

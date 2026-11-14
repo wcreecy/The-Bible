@@ -5,6 +5,10 @@ import UIKit
 struct PlanArtworkStyle {
     let colors: [Color]
     let symbol: String
+    /// A small symbol scattered faintly behind the main one; the category's symbol.
+    var motif: String? = nil
+    /// Varies where the motif falls, so cards in a row don't look stamped from one mold.
+    var seed: Int = 0
 
     /// Each category has its own gradient and symbol, so a row of cards reads as a group.
     static func forCategory(_ category: String) -> PlanArtworkStyle {
@@ -41,12 +45,26 @@ struct PlanArtworkStyle {
         }
     }
 
+    /// SF Symbols has no Christian cross (`cross` is the medical plus sign), so this name
+    /// draws one instead.
+    static let latinCross = "latin.cross"
+
+    static func isDrawable(_ symbol: String) -> Bool {
+        symbol == latinCross || UIImage(systemName: symbol) != nil
+    }
+
     /// The plan's own symbol over its category's colors. Fruit of the Spirit parts share the
     /// series colors so they read as a set.
     static func forPlan(_ plan: ReadingPlan) -> PlanArtworkStyle {
         let base = plan.series.map { forSeries($0, category: plan.category) } ?? forCategory(plan.category)
-        guard let symbol = plan.symbol, UIImage(systemName: symbol) != nil else { return base }
-        return PlanArtworkStyle(colors: base.colors, symbol: symbol)
+        let symbol = plan.symbol.flatMap { isDrawable($0) ? $0 : nil } ?? base.symbol
+        let motif = forCategory(plan.category).symbol
+        return PlanArtworkStyle(
+            colors: base.colors,
+            symbol: symbol,
+            motif: motif == symbol ? nil : motif,
+            seed: plan.id.unicodeScalars.reduce(0) { ($0 &* 31 &+ Int($1.value)) & 0xFFFF }
+        )
     }
 }
 
@@ -75,6 +93,10 @@ struct PlanArtwork: View {
                 } else {
                     LinearGradient(colors: style.colors, startPoint: .topLeading, endPoint: .bottomTrailing)
 
+                    if let motif = style.motif {
+                        motifPattern(motif, in: proxy.size)
+                    }
+
                     // A large, partly cropped symbol on the trailing side, with a soft glow
                     // behind it, so the band reads as art rather than an icon.
                     Circle()
@@ -82,8 +104,7 @@ struct PlanArtwork: View {
                         .frame(width: proxy.size.height * 1.6)
                         .offset(x: proxy.size.width * 0.32, y: proxy.size.height * 0.2)
 
-                    Image(systemName: style.symbol)
-                        .font(.system(size: proxy.size.height * 0.62, weight: .semibold))
+                    PlanSymbol(name: style.symbol, size: proxy.size.height * 0.62)
                         .foregroundStyle(.white.opacity(0.92))
                         .shadow(color: .black.opacity(0.15), radius: 6, y: 3)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
@@ -94,6 +115,28 @@ struct PlanArtwork: View {
             .clipped()
         }
         .accessibilityHidden(true)
+    }
+}
+
+private extension PlanArtwork {
+    /// A few faint copies of the motif across the leading side, placed by the style's seed.
+    func motifPattern(_ motif: String, in size: CGSize) -> some View {
+        let spots: [(x: Double, y: Double, scale: Double)] = (0..<5).map { index in
+            let value = (style.seed &* (index + 7) &* 2_654_435_761) & 0xFFFF
+            let x = 0.06 + Double(value % 100) / 100 * 0.52
+            let y = 0.12 + Double((value / 100) % 100) / 100 * 0.76
+            let scale = 0.16 + Double((value / 10_000) % 4) * 0.04
+            return (x, y, scale)
+        }
+        return ZStack {
+            ForEach(spots.indices, id: \.self) { index in
+                Image(systemName: motif)
+                    .font(.system(size: size.height * spots[index].scale, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.13))
+                    .rotationEffect(.degrees(Double((style.seed + index * 37) % 50) - 25))
+                    .position(x: size.width * spots[index].x, y: size.height * spots[index].y)
+            }
+        }
     }
 }
 
@@ -111,14 +154,47 @@ struct PlanArtworkTile: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                Image(systemName: style.symbol)
-                    .font(.system(size: size * 0.45, weight: .semibold))
+                PlanSymbol(name: style.symbol, size: size * 0.45)
                     .foregroundStyle(.white)
             }
         }
         .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: size * 0.26, style: .continuous))
         .accessibilityHidden(true)
+    }
+}
+
+/// An SF Symbol, or the drawn Latin cross.
+private struct PlanSymbol: View {
+    let name: String
+    let size: CGFloat
+
+    var body: some View {
+        if name == PlanArtworkStyle.latinCross {
+            LatinCross()
+                .frame(width: size * 0.62, height: size)
+        } else {
+            Image(systemName: name)
+                .font(.system(size: size, weight: .semibold))
+        }
+    }
+}
+
+/// A Latin cross: the crossbar a third of the way down, arms shorter than the upright.
+private struct LatinCross: Shape {
+    func path(in rect: CGRect) -> Path {
+        let beam = rect.width * 0.26
+        let barY = rect.height * 0.24
+        var path = Path()
+        path.addRoundedRect(
+            in: CGRect(x: rect.midX - beam / 2, y: rect.minY, width: beam, height: rect.height),
+            cornerSize: CGSize(width: beam * 0.2, height: beam * 0.2)
+        )
+        path.addRoundedRect(
+            in: CGRect(x: rect.minX, y: rect.minY + barY, width: rect.width, height: beam),
+            cornerSize: CGSize(width: beam * 0.2, height: beam * 0.2)
+        )
+        return path
     }
 }
 
@@ -130,5 +206,17 @@ extension View {
             topTrailingRadius: AppDesignMetrics.cardCornerRadius,
             style: .continuous
         ))
+    }
+}
+
+#Preview("Plan cards") {
+    let plans = ReadingPlanStore.loadCatalog()
+    ScrollView {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 250), spacing: 12)], spacing: 12) {
+            ForEach(plans) { plan in
+                PlanCard(plan: plan, status: plan.id == "gospel-of-john" ? .inProgress(0.4) : .notStarted)
+            }
+        }
+        .padding()
     }
 }

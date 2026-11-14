@@ -150,6 +150,10 @@ struct ReadingPlanDetailView: View {
     @ViewBuilder
     private func header(_ plan: ReadingPlan, enrollment: PlanEnrollment?) -> some View {
         VStack(alignment: .leading, spacing: 12) {
+            PlanArtwork(plan: plan)
+                .frame(height: 120)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
             HStack(alignment: .top, spacing: 14) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(eyebrow(for: plan))
@@ -307,10 +311,16 @@ struct PlanFinishedView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 64))
-                .foregroundStyle(.green)
-                .symbolEffect(.bounce, options: .nonRepeating)
+            PlanArtwork(plan: plan)
+                .frame(height: 110)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(alignment: .bottomLeading) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 48))
+                        .foregroundStyle(.white, .green)
+                        .symbolEffect(.bounce, options: .nonRepeating)
+                        .padding(12)
+                }
             Text("Plan Complete!")
                 .font(.title.weight(.bold))
             Text("You finished \(plan.title): \(plan.durationText) in God's Word.")

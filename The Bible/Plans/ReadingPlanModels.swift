@@ -81,6 +81,10 @@ nonisolated struct ReadingPlan: Codable, Hashable, Sendable, Identifiable {
     /// Plans meant to be read together in order, such as "Fruit of the Spirit". The library
     /// shows a series as one entry.
     var series: String?
+    /// An SF Symbol for the plan's artwork; the category's is used when missing or unknown.
+    var symbol: String?
+    /// An image in the asset catalog to show instead of the drawn artwork, when there is one.
+    var image: String?
     var difficulty: String?
     /// "guided" (with notes for each day) or "reading_schedule" (readings only).
     let planType: String
