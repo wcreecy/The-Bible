@@ -16,36 +16,28 @@ struct ReadingPlansEntryCard: View {
     }
 
     var body: some View {
-        HStack(spacing: compact ? 10 : 14) {
-            if let plan = store.activePlans.first?.plan {
-                PlanArtworkTile(plan: plan, size: compact ? 28 : 44)
-            } else {
-                Image(systemName: "calendar.badge.checkmark")
-                    .font(compact ? .body : .title2)
-                    .foregroundStyle(.tint)
-                    .frame(width: compact ? 28 : 44, height: compact ? 28 : 44)
-                    .background(Color.accentColor.opacity(0.12), in: Circle())
-            }
-
-            VStack(alignment: .leading, spacing: compact ? 2 : 3) {
-                Text("Reading Plans")
-                    .font(compact ? .subheadline.weight(.semibold) : .headline)
-                    .foregroundStyle(.primary)
-                Text(subtitle)
-                    .font(compact ? .caption : .subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(compact ? 1 : 2)
-            }
-
-            Spacer(minLength: 0)
-
-            Image(systemName: "chevron.right")
-                .font(compact ? .caption.weight(.semibold) : .subheadline.weight(.semibold))
-                .foregroundStyle(.tertiary)
-                .accessibilityHidden(true)
+        if compact {
+            compactRow
+        } else {
+            // The current plan's art, or the plans' own when none is running.
+            let active = store.activePlans.first?.plan
+            FeatureTile(
+                style: active.map(PlanArtworkStyle.forPlan) ?? .readingPlans,
+                title: "Reading Plans",
+                subtitle: subtitle,
+                progress: active.map { store.progress(of: $0) }
+            )
         }
-        .padding(compact ? 12 : AppDesignMetrics.cardPadding)
-        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var compactRow: some View {
+        let active = store.activePlans.first?.plan
+        return SidebarFeatureCard(
+            style: active.map(PlanArtworkStyle.forPlan) ?? .readingPlans,
+            title: "Reading Plans",
+            subtitle: subtitle,
+            progress: active.map { store.progress(of: $0) }
+        )
         .heroCardSurface()
         .contentShape(.rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
         .accessibilityElement(children: .combine)

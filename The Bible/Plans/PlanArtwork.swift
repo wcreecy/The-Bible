@@ -220,3 +220,184 @@ extension View {
         .padding()
     }
 }
+
+extension PlanArtworkStyle {
+    /// Bible Study's tile on the Bible tab.
+    static let bibleStudy = PlanArtworkStyle(
+        colors: [Color(red: 0.27, green: 0.47, blue: 0.85), Color(red: 0.42, green: 0.30, blue: 0.78)],
+        symbol: "graduationcap.fill",
+        motif: "book.fill",
+        seed: 7
+    )
+
+    /// Reading Plans' tile when no plan is in progress.
+    static let readingPlans = PlanArtworkStyle(
+        colors: [Color(red: 0.36, green: 0.72, blue: 0.47), Color(red: 0.13, green: 0.52, blue: 0.56)],
+        symbol: "calendar.badge.checkmark",
+        motif: "book.closed.fill",
+        seed: 11
+    )
+}
+
+/// A small square of artwork for any style, for compact rows.
+struct ArtworkSquare: View {
+    let style: PlanArtworkStyle
+    var size: CGFloat = 28
+
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: style.colors, startPoint: .topLeading, endPoint: .bottomTrailing)
+            Image(systemName: style.symbol)
+                .font(.system(size: size * 0.48, weight: .semibold))
+                .foregroundStyle(.white)
+        }
+        .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: size * 0.26, style: .continuous))
+        .accessibilityHidden(true)
+    }
+}
+
+/// A half-width card with an artwork band, used side by side on the Bible tab.
+struct FeatureTile: View {
+    let style: PlanArtworkStyle
+    let title: String
+    let subtitle: String
+    /// Shown as a bar under the subtitle, such as a plan's progress.
+    var progress: Double? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PlanArtwork(style: style)
+                .frame(height: 64)
+                .planCardTopCorners()
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+                if let progress {
+                    ProgressView(value: progress)
+                        .tint(.accentColor)
+                        .padding(.top, 2)
+                }
+            }
+            .multilineTextAlignment(.leading)
+            .padding(12)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .heroCardSurface()
+        .contentShape(.rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// A sidebar card with its artwork in a strip down the leading edge, for the iPad Books
+/// sidebar where cards are too narrow for a band across the top. The caller adds the surface.
+struct SidebarFeatureCard: View {
+    let style: PlanArtworkStyle
+    let title: String
+    let subtitle: String
+    var progress: Double? = nil
+    /// Marks the strip with a checkmark, such as while Study mode is on.
+    var isOn = false
+    var trailingSymbol = "chevron.right"
+
+    /// Fixed rather than a share of the width, so the strip stays modest in a wide sidebar.
+    static let stripWidth: CGFloat = 64
+
+    var body: some View {
+        HStack(spacing: 0) {
+            strip
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                if let progress {
+                    ProgressView(value: progress)
+                        .tint(.accentColor)
+                        .padding(.top, 2)
+                }
+            }
+            .padding(.vertical, 12)
+            .padding(.leading, 12)
+
+            Spacer(minLength: 8)
+
+            Image(systemName: trailingSymbol)
+                .font(isOn ? .body : .caption.weight(.semibold))
+                .foregroundStyle(isOn ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
+                .padding(.trailing, 12)
+                .accessibilityHidden(true)
+        }
+        .frame(maxWidth: .infinity, minHeight: 60, alignment: .leading)
+        // Sized by the text; the strip then fills that height rather than growing the card.
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var strip: some View {
+        ZStack {
+            LinearGradient(colors: style.colors, startPoint: .topLeading, endPoint: .bottomTrailing)
+            Image(systemName: style.symbol)
+                .font(.system(size: 24, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.95))
+                .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+        }
+        .frame(width: Self.stripWidth)
+        .frame(maxHeight: .infinity)
+        .overlay(alignment: .topTrailing) {
+            if isOn {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white, Color.accentColor)
+                    .padding(5)
+            }
+        }
+        .clipShape(UnevenRoundedRectangle(
+            topLeadingRadius: AppDesignMetrics.cardCornerRadius,
+            bottomLeadingRadius: AppDesignMetrics.cardCornerRadius,
+            style: .continuous
+        ))
+        .accessibilityHidden(true)
+    }
+}
+
+#Preview("Sidebar cards") {
+    VStack(spacing: 12) {
+        SidebarFeatureCard(style: .bibleStudy, title: "Bible Study", subtitle: "Overviews and insights")
+            .heroCardSurface()
+        SidebarFeatureCard(
+            style: .bibleStudy,
+            title: "Studying",
+            subtitle: "Books open their study pages",
+            isOn: true,
+            trailingSymbol: "xmark.circle.fill"
+        )
+        .heroCardSurface()
+        SidebarFeatureCard(style: .readingPlans, title: "Reading Plans", subtitle: "A day at a time")
+            .heroCardSurface()
+        SidebarFeatureCard(
+            style: .readingPlans,
+            title: "Reading Plans",
+            subtitle: "The Gospel of John · Day 6 of 21",
+            progress: 0.24
+        )
+        .heroCardSurface()
+    }
+    .padding()
+    .frame(width: 320)
+}

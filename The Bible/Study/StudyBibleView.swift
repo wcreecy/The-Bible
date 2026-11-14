@@ -8,31 +8,11 @@ struct StudyBibleEntryCard: View {
         NavigationLink {
             StudyBibleView(books: books)
         } label: {
-            HStack(spacing: 14) {
-                Image(systemName: "graduationcap.fill")
-                    .font(.title2)
-                    .foregroundStyle(.tint)
-                    .frame(width: 44, height: 44)
-                    .background(Color.accentColor.opacity(0.12), in: Circle())
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Bible Study")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    Text("Explore book overviews, chapter insights, and Scripture connections")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer(minLength: 0)
-
-                Image(systemName: "chevron.right")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(AppDesignMetrics.cardPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .heroCardSurface()
+            FeatureTile(
+                style: .bibleStudy,
+                title: "Bible Study",
+                subtitle: "Book overviews, chapter insights, and connections"
+            )
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("studyBibleEntryCard")

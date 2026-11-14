@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BooksView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let books: [Book]
     @State private var searchText: String = ""
     // Shared preference across devices
@@ -14,15 +15,7 @@ struct BooksView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 16) {
-                StudyBibleEntryCard(books: books)
-
-                Button {
-                    coordinator.push(.readingPlans)
-                } label: {
-                    ReadingPlansEntryCard()
-                }
-                .buttonStyle(.plain)
-                .accessibilityHint("Opens reading plans")
+                featureTiles
 
                 if let match = scriptureReference {
                     BibleReferenceJumpRow(reference: match.reference, action: openScriptureReference)
@@ -73,6 +66,27 @@ struct BooksView: View {
                 .accessibilityHint("Switches to \(sortAlphabetically ? "canonical" : "alphabetical") order")
             }
         }
+    }
+
+    /// Bible Study and Reading Plans side by side, matched in height; stacked when the text is
+    /// large enough that half a row would crowd it.
+    @ViewBuilder
+    private var featureTiles: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: 12))
+            : AnyLayout(HStackLayout(alignment: .top, spacing: 12))
+        layout {
+            StudyBibleEntryCard(books: books)
+
+            Button {
+                coordinator.push(.readingPlans)
+            } label: {
+                ReadingPlansEntryCard()
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("Opens reading plans")
+        }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private func openScriptureReference() {

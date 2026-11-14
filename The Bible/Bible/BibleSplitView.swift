@@ -517,30 +517,13 @@ private struct StudyBibleSidebarCard: View {
     let isActive: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "graduationcap.fill")
-                .foregroundStyle(isActive ? AnyShapeStyle(.white) : AnyShapeStyle(.tint))
-                .frame(width: 28, height: 28)
-                .background(isActive ? Color.accentColor : .clear, in: Circle())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(isActive ? "Studying" : "Bible Study")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                Text(isActive ? "Books open their study pages" : "Overviews and insights")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer(minLength: 0)
-
-            Image(systemName: isActive ? "xmark.circle.fill" : "chevron.right")
-                .font(isActive ? .body : .caption.weight(.semibold))
-                .foregroundStyle(isActive ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
-                .accessibilityHidden(true)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        SidebarFeatureCard(
+            style: .bibleStudy,
+            title: isActive ? "Studying" : "Bible Study",
+            subtitle: isActive ? "Books open their study pages" : "Overviews and insights",
+            isOn: isActive,
+            trailingSymbol: isActive ? "xmark.circle.fill" : "chevron.right"
+        )
         .modifier(SurfaceStyle(isActive: isActive))
         .contentShape(.rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
         .accessibilityElement(children: .ignore)
