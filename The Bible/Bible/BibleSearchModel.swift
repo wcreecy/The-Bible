@@ -38,7 +38,7 @@ final class BibleSearchModel {
     private static let recentSearchesKey = AppStorageKey.bibleRecentSearches
     private static let recentSearchLimit = 6
 
-    let suggestedSearches = ["love", "faith", "peace", "John 3:16", "Psalm 23", "G3056"]
+    let suggestedSearches = ["Lord's Prayer", "Sermon on the Mount", "love", "faith", "John 3:16", "Psalm 23", "G3056"]
 
     var query = "" {
         didSet {
@@ -82,6 +82,8 @@ final class BibleSearchModel {
     private(set) var strongsMatch: StrongsSearchMatch?
     /// Named topics and events the query matches ("Lord's Prayer"), shown above the verses.
     private(set) var termMatches: [BibleTerm] = []
+    /// The book scope currently applied to topic references; nil means the whole Bible.
+    private(set) var allowedBookNames: Set<String>?
     private(set) var recentSearches: [String] = []
 
     private var searchTask: Task<Void, Never>?
@@ -107,8 +109,21 @@ final class BibleSearchModel {
         let translation = BibleRepository.shared.activeTranslation.abbreviation
         if isSearching { return "Searching \(translation)…" }
         guard canSearch else { return "Ready to search \(translation)" }
-        if hasMoreResults { return "Showing the first \(Self.maxResults) \(translation) results" }
-        return results.count == 1 ? "1 \(translation) result" : "\(results.count) \(translation) results"
+
+        let topicCount = termMatches.count
+        let verseSummary = results.count == 1
+            ? "1 \(translation) result"
+            : "\(results.count) \(translation) results"
+        if hasMoreResults {
+            return topicCount == 0
+                ? "Showing the first \(Self.maxResults) \(translation) results"
+                : "\(topicCount) \(topicCount == 1 ? "topic" : "topics") · showing the first \(Self.maxResults) \(translation) results"
+        }
+        if topicCount == 0 { return verseSummary }
+        if results.isEmpty {
+            return topicCount == 1 ? "1 topic · no verses" : "\(topicCount) topics · no verses"
+        }
+        return "\(topicCount) \(topicCount == 1 ? "topic" : "topics") · \(verseSummary)"
     }
 
     /// The single verse a reference query names, if any (e.g. "John 3:16").
@@ -166,6 +181,7 @@ final class BibleSearchModel {
             hasMoreResults = false
             strongsMatch = nil
             termMatches = []
+            allowedBookNames = nil
             isSearching = false
             return
         }
@@ -188,7 +204,8 @@ final class BibleSearchModel {
             let matchedTerms = await terms
             guard !Task.isCancelled, let self else { return }
             let queryTokens = BibleSearchTokenizer.tokens(in: query)
-            termMatches = matchedTerms
+            allowedBookNames = outcome.allowedBookNames
+            termMatches = BibleTermMatcher.filtered(matchedTerms, to: outcome.allowedBookNames)
             results = outcome.results
             // A Hebrew or Greek word isn't in the English text, so there is nothing to highlight.
             highlightedResults = outcome.strongsMatch == nil
@@ -208,29 +225,39 @@ final class BibleSearchModel {
         query: String,
         scope: BibleSearchScope,
         scopeBookName: String?
-    ) async -> (results: [SearchResult], hasMore: Bool, strongsMatch: StrongsSearchMatch?) {
+    ) async -> (
+        results: [SearchResult],
+        hasMore: Bool,
+        strongsMatch: StrongsSearchMatch?,
+        allowedBookNames: Set<String>?
+    ) {
         // Waits for the corpus so an early search never runs against an empty Bible.
         let books = await BibleRepository.shared.loadAllBooks()
 
-        if let referenceResults = BibleReferenceParser.results(for: query, in: books) {
-            return (referenceResults, false, nil)
-        }
-
         let matthewIndex = books.firstIndex { $0.name == "Matthew" } ?? books.count
         let allowedBookIndices: Range<Int>?
+        let allowedBookNames: Set<String>?
         switch scope {
         case .all:
             allowedBookIndices = nil
+            allowedBookNames = nil
         case .ot:
             allowedBookIndices = 0..<matthewIndex
+            allowedBookNames = Set(books[..<matthewIndex].map(\.name))
         case .nt:
             allowedBookIndices = matthewIndex..<books.count
+            allowedBookNames = Set(books[matthewIndex...].map(\.name))
         case .book:
             guard let scopeBookName,
                   let index = books.firstIndex(where: { $0.name == scopeBookName }) else {
-                return ([], false, nil)
+                return ([], false, nil, [])
             }
             allowedBookIndices = index..<(index + 1)
+            allowedBookNames = [scopeBookName]
+        }
+
+        if let referenceResults = BibleReferenceParser.results(for: query, in: books) {
+            return (referenceResults, false, nil, allowedBookNames)
         }
 
         // A Strong's number or a word in Greek or Hebrew letters can't be an English search.
@@ -243,7 +270,7 @@ final class BibleSearchModel {
             allowedBookIndices: allowedBookIndices,
             maxResults: maxResults
         ) {
-            return (strongs.results, strongs.hasMore, strongs.match)
+            return (strongs.results, strongs.hasMore, strongs.match, allowedBookNames)
         }
 
         // One extra result reveals whether the list was cut off.
@@ -262,9 +289,9 @@ final class BibleSearchModel {
             allowedBookIndices: allowedBookIndices,
             maxResults: maxResults
         ) {
-            return (strongs.results, strongs.hasMore, strongs.match)
+            return (strongs.results, strongs.hasMore, strongs.match, allowedBookNames)
         }
-        return (Array(found.prefix(maxResults)), found.count > maxResults, nil)
+        return (Array(found.prefix(maxResults)), found.count > maxResults, nil, allowedBookNames)
     }
 
 }
@@ -363,7 +390,7 @@ struct BibleSearchResultsView: View {
         let visibleTerms = showsAllTerms ? terms : Array(terms.prefix(Self.collapsedTermCount))
         return Section {
             ForEach(visibleTerms) { term in
-                BibleTermRow(term: term)
+                BibleTermRow(term: term, allowedBookNames: model.allowedBookNames)
             }
 
             if terms.count > Self.collapsedTermCount {
@@ -432,17 +459,25 @@ struct BibleSearchResultsView: View {
 /// below previews that passage.
 struct BibleTermRow: View {
     let term: BibleTerm
+    let allowedBookNames: Set<String>?
 
     /// Handled by `scripturePassagePreviews()` on the list, which shows the passage sheet.
     @Environment(\.openURL) private var openURL
 
+    private var visiblePassages: [PassageReference] {
+        guard let allowedBookNames else { return term.passages }
+        return term.passages.filter { allowedBookNames.contains($0.bookName) }
+    }
+
     var body: some View {
+        let primaryPassage = visiblePassages.first
+
         // Separate styled buttons (not nested) so the list routes each tap to the one touched
         // instead of treating the whole row as one button.
         VStack(alignment: .leading, spacing: 10) {
             Button {
-                if let passage = term.primaryPassage {
-                    openURL(passage.url)
+                if let primaryPassage {
+                    openURL(primaryPassage.url)
                 }
             } label: {
                 HStack(spacing: 12) {
@@ -458,6 +493,7 @@ struct BibleTermRow: View {
                         Text(term.description)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                            .lineLimit(3)
                     }
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -470,9 +506,15 @@ struct BibleTermRow: View {
             }
             // Plain, not borderless: a borderless button tints its whole label with the accent color.
             .buttonStyle(.plain)
-            .accessibilityHint("Shows a preview of the main passage")
+            .disabled(term.primaryPassage == nil)
+            .accessibilityLabel("\(term.term), \(term.category)")
+            .accessibilityHint(
+                term.primaryPassage == nil
+                    ? "No passage is available"
+                    : "Shows a preview of the main passage"
+            )
 
-            BibleTermPassageChips(term: term) { passage in
+            BibleTermPassageChips(term: term, allowedBookNames: allowedBookNames) { passage in
                 openURL(passage.url)
             }
         }
@@ -483,11 +525,27 @@ struct BibleTermRow: View {
 /// One tappable chip per passage of a topic, wrapping onto more lines as needed.
 struct BibleTermPassageChips: View {
     let term: BibleTerm
+    let allowedBookNames: Set<String>?
     let onSelect: (PassageReference) -> Void
+
+    init(
+        term: BibleTerm,
+        allowedBookNames: Set<String>? = nil,
+        onSelect: @escaping (PassageReference) -> Void
+    ) {
+        self.term = term
+        self.allowedBookNames = allowedBookNames
+        self.onSelect = onSelect
+    }
+
+    private var visiblePassages: [PassageReference] {
+        guard let allowedBookNames else { return term.passages }
+        return term.passages.filter { allowedBookNames.contains($0.bookName) }
+    }
 
     var body: some View {
         PassageFlowLayout(spacing: 8) {
-            ForEach(term.passages) { passage in
+            ForEach(visiblePassages) { passage in
                 Button {
                     onSelect(passage)
                 } label: {
@@ -502,6 +560,7 @@ struct BibleTermPassageChips: View {
                         .background(Color.accentColor.opacity(0.12), in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(passage.displayTitle)
                 .accessibilityHint("Shows a preview of this passage")
             }
         }

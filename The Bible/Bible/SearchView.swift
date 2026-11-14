@@ -8,6 +8,7 @@ struct SearchView: View {
     // Specific book picker state
     @State private var showBookPicker: Bool = false
     @State private var bookQuery: String = ""
+    @State private var previewedPassage: PassageReference?
 
     // Books for the popover list (filtered by bookQuery)
     private var filteredBooksForPicker: [Book] {
@@ -22,8 +23,8 @@ struct SearchView: View {
             if contextualTipsEnabled {
                 ContextualTipView(
                     id: "search.references",
-                    title: "Search words or references",
-                    message: "Search for words such as love or faith, or enter a reference such as John 3:16. Use the scope controls to narrow the results.",
+                    title: "Search words, topics, or references",
+                    message: "Search for words such as love or faith, named topics such as the Lord's Prayer, or a reference such as John 3:16. Use the scope controls to narrow the results.",
                     systemImage: "magnifyingglass"
                 )
                 .padding(.horizontal)
@@ -43,6 +44,9 @@ struct SearchView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             isSearchFieldFocused = true
+        }
+        .sheet(item: $previewedPassage) { reference in
+            ScripturePassageSheet(reference: reference)
         }
         // Popover for selecting a specific book (searchable & scrollable)
         .popover(isPresented: $showBookPicker, arrowEdge: .top) {
@@ -112,7 +116,7 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
 
-            TextField("Search words or a reference", text: $model.query)
+            TextField("Search words, topics, or a reference", text: $model.query)
                 .focused($isSearchFieldFocused)
                 .textInputAutocapitalization(.sentences)
                 .autocorrectionDisabled(true)
@@ -226,6 +230,9 @@ struct SearchView: View {
         model.saveRecentSearch()
         if let directResult = model.directReferenceResult() {
             openInBibleTab(directResult)
+        } else if let term = model.termMatches.first,
+                  BibleTermMatcher.isExactMatch(term, for: model.trimmedQuery) {
+            previewedPassage = term.primaryPassage
         }
     }
 }

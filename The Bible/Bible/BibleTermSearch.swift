@@ -167,4 +167,18 @@ nonisolated enum BibleTermMatcher {
             .sorted { ($0.rank, $0.nameLength, $0.order) < ($1.rank, $1.nameLength, $1.order) }
             .map(\.term)
     }
+
+    /// Keeps a topic visible when at least one of its references belongs to the requested scope.
+    /// A nil set means the search covers the whole Bible.
+    static func filtered(_ terms: [BibleTerm], to allowedBookNames: Set<String>?) -> [BibleTerm] {
+        guard let allowedBookNames else { return terms }
+        return terms.filter { term in
+            term.references.contains { reference in
+                allowedBookNames.contains { bookName in
+                    reference.reference == bookName
+                        || reference.reference.hasPrefix(bookName + " ")
+                }
+            }
+        }
+    }
 }

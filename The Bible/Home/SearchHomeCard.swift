@@ -74,7 +74,7 @@ struct SearchHomeCard: View {
             .accessibilityLabel("Open Search")
             .accessibilityHint("Opens the full Bible search page")
 
-            TextField("Search words or a reference", text: $query)
+            TextField("Search words, topics, or a reference", text: $query)
                 .textFieldStyle(.plain)
                 .autocorrectionDisabled(true)
                 .textInputAutocapitalization(.never)
