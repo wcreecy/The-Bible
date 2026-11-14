@@ -7694,6 +7694,2700 @@
           ]
         }
       ]
+    },
+    {
+      "id": "the-power-of-forgiveness",
+      "title": "The Power of Forgiveness",
+      "description": "Seven days exploring God's forgiveness, releasing resentment, and extending mercy to others.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "A Heart That Needs Forgiveness",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 51,
+              "startVerse": 1,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "After his sin is exposed, David confesses his wrongdoing and asks God for mercy and a clean heart.",
+          "reflectionQuestions": [
+            "What does David's prayer teach you about honest confession and repentance?"
+          ],
+          "takeaway": "Seeking forgiveness begins with acknowledging sin and turning to God."
+        },
+        {
+          "day": 2,
+          "title": "God's Promise to Forgive",
+          "readings": [
+            {
+              "book": "1 John",
+              "chapter": 1,
+              "startVerse": 5,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "John teaches that walking in the light involves honesty about sin and trust in God's faithful forgiveness.",
+          "reflectionQuestions": [
+            "Why is confessing sin different from pretending we have none?"
+          ],
+          "takeaway": "We can confess our sins knowing God is faithful and just to forgive."
+        },
+        {
+          "day": 3,
+          "title": "The Father's Open Arms",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 15,
+              "startVerse": 11,
+              "endVerse": 24
+            }
+          ],
+          "introduction": "In Jesus' parable, a younger son returns after squandering his inheritance, and his father welcomes him with compassion.",
+          "reflectionQuestions": [
+            "What do the son's return and the father's response reveal about repentance and mercy?"
+          ],
+          "takeaway": "God's mercy is greater than the shame that can keep us from returning to him."
+        },
+        {
+          "day": 4,
+          "title": "How Often Should We Forgive?",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 18,
+              "startVerse": 21,
+              "endVerse": 35
+            }
+          ],
+          "introduction": "Jesus answers Peter's question about repeated forgiveness with a parable contrasting enormous mercy received and mercy withheld.",
+          "reflectionQuestions": [
+            "How should remembering the mercy we have received affect the way we treat others?"
+          ],
+          "takeaway": "Those who receive mercy are called to extend mercy."
+        },
+        {
+          "day": 5,
+          "title": "Letting Go of Bitterness",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 4,
+              "startVerse": 25,
+              "endVerse": 32
+            },
+            {
+              "book": "Colossians",
+              "chapter": 3,
+              "startVerse": 12,
+              "endVerse": 15
+            }
+          ],
+          "introduction": "Paul urges believers to put away bitterness and anger and to practice kindness, patience, and forgiveness toward one another.",
+          "reflectionQuestions": [
+            "Which attitude or action in these passages would help you respond differently to a hurt?"
+          ],
+          "takeaway": "Forgiveness is expressed through kindness, patience, and a willingness to release bitterness."
+        },
+        {
+          "day": 6,
+          "title": "Forgiveness Instead of Revenge",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 23,
+              "startVerse": 32,
+              "endVerse": 43
+            },
+            {
+              "book": "Romans",
+              "chapter": 12,
+              "startVerse": 17,
+              "endVerse": 21
+            }
+          ],
+          "introduction": "Jesus prays for those crucifying him, while Paul teaches believers to refuse revenge and overcome evil with good.",
+          "reflectionQuestions": [
+            "What is the difference between refusing revenge and pretending a wrong was acceptable?"
+          ],
+          "takeaway": "We can entrust justice to God rather than repay evil with evil."
+        },
+        {
+          "day": 7,
+          "title": "Joseph's Example of Forgiveness",
+          "readings": [
+            {
+              "book": "Genesis",
+              "chapter": 50,
+              "startVerse": 15,
+              "endVerse": 21
+            }
+          ],
+          "introduction": "Joseph acknowledges the evil his brothers intended yet reassures them and provides for their families instead of seeking retaliation.",
+          "reflectionQuestions": [
+            "How does Joseph acknowledge the wrong without letting it dictate his response?"
+          ],
+          "takeaway": "Forgiveness can acknowledge real harm while choosing mercy over revenge."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-love",
+      "title": "Walking in Love",
+      "description": "Seven days learning to reflect God’s love in our words, relationships, and actions.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Love Begins with God",
+          "readings": [
+            {
+              "book": "1 John",
+              "chapter": 4,
+              "startVerse": 7,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "John teaches that love comes from God and is displayed in his sending of his Son.",
+          "reflectionQuestions": [
+            "How does God’s initiative shape your understanding of love?"
+          ],
+          "takeaway": "We learn to love because God first loved us."
+        },
+        {
+          "day": 2,
+          "title": "The Greatest Commandments",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 22,
+              "startVerse": 34,
+              "endVerse": 40
+            }
+          ],
+          "introduction": "Jesus places love for God and love for neighbor at the heart of the commandments.",
+          "reflectionQuestions": [
+            "How might love for God affect how you treat people this week?"
+          ],
+          "takeaway": "Love for God and neighbor belongs at the center of discipleship."
+        },
+        {
+          "day": 3,
+          "title": "What Love Looks Like",
+          "readings": [
+            {
+              "book": "1 Corinthians",
+              "chapter": 13,
+              "startVerse": 1,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "Paul describes love through patient, generous actions rather than impressive words or gifts.",
+          "reflectionQuestions": [
+            "Which characteristic of love is most challenging to practice?"
+          ],
+          "takeaway": "Love is shown through our choices and conduct."
+        },
+        {
+          "day": 4,
+          "title": "Love Your Enemies",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 6,
+              "startVerse": 27,
+              "endVerse": 36
+            }
+          ],
+          "introduction": "Jesus calls his disciples to love even those who oppose or mistreat them.",
+          "reflectionQuestions": [
+            "What does Jesus ask his followers to do that goes beyond ordinary kindness?"
+          ],
+          "takeaway": "Christlike love is not limited to those who love us back."
+        },
+        {
+          "day": 5,
+          "title": "Love in Action",
+          "readings": [
+            {
+              "book": "1 John",
+              "chapter": 3,
+              "startVerse": 16,
+              "endVerse": 18
+            }
+          ],
+          "introduction": "John links the example of Christ’s sacrifice to practical care for people in need.",
+          "reflectionQuestions": [
+            "What need could you respond to with practical help?"
+          ],
+          "takeaway": "Genuine love acts as well as speaks."
+        },
+        {
+          "day": 6,
+          "title": "Love One Another",
+          "readings": [
+            {
+              "book": "John",
+              "chapter": 13,
+              "startVerse": 31,
+              "endVerse": 35
+            }
+          ],
+          "introduction": "Jesus gives his disciples a command to love one another as he has loved them.",
+          "reflectionQuestions": [
+            "How should others recognize Jesus’ disciples?"
+          ],
+          "takeaway": "Our love for one another points people toward Jesus."
+        },
+        {
+          "day": 7,
+          "title": "Continue in Love",
+          "readings": [
+            {
+              "book": "John",
+              "chapter": 15,
+              "startVerse": 9,
+              "endVerse": 17
+            }
+          ],
+          "introduction": "Jesus calls his disciples to abide in his love and bear fruit in loving obedience.",
+          "reflectionQuestions": [
+            "What connection does Jesus make between his love and our actions?"
+          ],
+          "takeaway": "Lasting love grows from remaining close to Christ."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-joy",
+      "title": "Living with Joy",
+      "description": "Seven days discovering lasting joy in God through celebration, obedience, and hardship.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "The Joy of Salvation",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 15,
+              "startVerse": 1,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "Jesus tells stories of a lost sheep and a lost coin to reveal joy when sinners repent.",
+          "reflectionQuestions": [
+            "What do these parables teach about what brings joy in heaven?"
+          ],
+          "takeaway": "God rejoices when the lost are found."
+        },
+        {
+          "day": 2,
+          "title": "Joy in God’s Presence",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 16,
+              "startVerse": 7,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "The psalmist finds hope and fullness of joy in the Lord’s presence.",
+          "reflectionQuestions": [
+            "Where does the psalm locate lasting joy?"
+          ],
+          "takeaway": "Deep joy is grounded in fellowship with God."
+        },
+        {
+          "day": 3,
+          "title": "Joy That Remains",
+          "readings": [
+            {
+              "book": "John",
+              "chapter": 15,
+              "startVerse": 9,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "Jesus connects abiding in his love and keeping his commandments with fullness of joy.",
+          "reflectionQuestions": [
+            "How does Jesus describe the path to enduring joy?"
+          ],
+          "takeaway": "Joy grows as we remain in Christ’s love."
+        },
+        {
+          "day": 4,
+          "title": "Joy in Hardship",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 2,
+              "endVerse": 4
+            }
+          ],
+          "introduction": "James urges believers to count trials as joy because tested faith can produce steadfastness.",
+          "reflectionQuestions": [
+            "How is joy during a trial different from enjoying the trial itself?"
+          ],
+          "takeaway": "Joy can rest in God’s work even when circumstances are painful."
+        },
+        {
+          "day": 5,
+          "title": "The Joy of the Lord",
+          "readings": [
+            {
+              "book": "Nehemiah",
+              "chapter": 8,
+              "startVerse": 8,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "After hearing God’s law, the people are encouraged to rejoice, share food, and draw strength from the Lord.",
+          "reflectionQuestions": [
+            "Why does Nehemiah direct the people toward joy and generosity?"
+          ],
+          "takeaway": "God’s joy can strengthen his people."
+        },
+        {
+          "day": 6,
+          "title": "Rejoice in the Lord",
+          "readings": [
+            {
+              "book": "Philippians",
+              "chapter": 4,
+              "startVerse": 4,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "Paul calls believers to rejoice, pray with thanksgiving, and dwell on what is good.",
+          "reflectionQuestions": [
+            "Which instruction could help redirect your thoughts today?"
+          ],
+          "takeaway": "Rejoicing in the Lord can accompany prayer and trust."
+        },
+        {
+          "day": 7,
+          "title": "Joy No One Can Take",
+          "readings": [
+            {
+              "book": "John",
+              "chapter": 16,
+              "startVerse": 16,
+              "endVerse": 24
+            }
+          ],
+          "introduction": "Jesus promises that the disciples’ sorrow will turn to joy after his departure and return.",
+          "reflectionQuestions": [
+            "How does Jesus compare present sorrow with future joy?"
+          ],
+          "takeaway": "Christ gives hope that sorrow does not have the final word."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-peace",
+      "title": "Growing in Peace",
+      "description": "Seven days exploring peace with God, peace in the heart, and peace with others.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Peace with God",
+          "readings": [
+            {
+              "book": "Romans",
+              "chapter": 5,
+              "startVerse": 1,
+              "endVerse": 5
+            }
+          ],
+          "introduction": "Paul says justification by faith brings peace with God through Jesus Christ.",
+          "reflectionQuestions": [
+            "How is peace with God different from a calm day?"
+          ],
+          "takeaway": "Our deepest peace begins with reconciliation to God."
+        },
+        {
+          "day": 2,
+          "title": "The Peace Jesus Gives",
+          "readings": [
+            {
+              "book": "John",
+              "chapter": 14,
+              "startVerse": 25,
+              "endVerse": 27
+            }
+          ],
+          "introduction": "Jesus promises his disciples peace that is different from what the world gives.",
+          "reflectionQuestions": [
+            "What makes Jesus’ peace distinct from temporary comfort?"
+          ],
+          "takeaway": "Christ’s peace can sustain us in uncertainty."
+        },
+        {
+          "day": 3,
+          "title": "Trust Instead of Worry",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 6,
+              "startVerse": 25,
+              "endVerse": 34
+            }
+          ],
+          "introduction": "Jesus points to the Father’s care while telling disciples not to be consumed by tomorrow’s worries.",
+          "reflectionQuestions": [
+            "What examples does Jesus give of God’s provision?"
+          ],
+          "takeaway": "Peace grows as we seek God’s kingdom and trust his care."
+        },
+        {
+          "day": 4,
+          "title": "Peace Through Prayer",
+          "readings": [
+            {
+              "book": "Philippians",
+              "chapter": 4,
+              "startVerse": 4,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "Paul invites believers to bring concerns to God with thanksgiving and describes God’s guarding peace.",
+          "reflectionQuestions": [
+            "What burden can you bring to God in prayer?"
+          ],
+          "takeaway": "Prayer opens our anxieties to God’s peace."
+        },
+        {
+          "day": 5,
+          "title": "Pursue Peace with Others",
+          "readings": [
+            {
+              "book": "Romans",
+              "chapter": 12,
+              "startVerse": 14,
+              "endVerse": 21
+            }
+          ],
+          "introduction": "Paul instructs believers to bless, refuse retaliation, and live peaceably as far as it depends on them.",
+          "reflectionQuestions": [
+            "What is within your control when a relationship is strained?"
+          ],
+          "takeaway": "Peacemaking involves our choices, not control over others."
+        },
+        {
+          "day": 6,
+          "title": "The Spirit and Peace",
+          "readings": [
+            {
+              "book": "Galatians",
+              "chapter": 5,
+              "startVerse": 16,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "Paul contrasts works of the flesh with the fruit produced by the Spirit, including peace.",
+          "reflectionQuestions": [
+            "What attitudes threaten peace in your relationships?"
+          ],
+          "takeaway": "Peace is part of the Spirit’s work in our character."
+        },
+        {
+          "day": 7,
+          "title": "The God of Peace",
+          "readings": [
+            {
+              "book": "Colossians",
+              "chapter": 3,
+              "startVerse": 12,
+              "endVerse": 17
+            }
+          ],
+          "introduction": "Paul urges believers to forgive, love, and let Christ’s peace rule in their hearts.",
+          "reflectionQuestions": [
+            "What practices help peace shape life in a community?"
+          ],
+          "takeaway": "Christ’s peace should guide how we live together."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-long-suffering",
+      "title": "Practicing Long-Suffering",
+      "description": "Seven days learning biblical patience with people, trials, and God’s timing.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "God Is Patient",
+          "readings": [
+            {
+              "book": "Exodus",
+              "chapter": 34,
+              "startVerse": 5,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "God declares himself merciful, gracious, and longsuffering, while remaining just.",
+          "reflectionQuestions": [
+            "How does God describe his patience alongside his other attributes?"
+          ],
+          "takeaway": "Patience reflects the character of a merciful and holy God."
+        },
+        {
+          "day": 2,
+          "title": "The Lord Is Slow to Anger",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 103,
+              "startVerse": 8,
+              "endVerse": 14
+            }
+          ],
+          "introduction": "The psalmist praises God’s compassion, mercy, and slowness to anger.",
+          "reflectionQuestions": [
+            "How does remembering God’s compassion affect your response to others?"
+          ],
+          "takeaway": "We can practice patience because God has shown patience to us."
+        },
+        {
+          "day": 3,
+          "title": "Patience with People",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 4,
+              "startVerse": 1,
+              "endVerse": 6
+            }
+          ],
+          "introduction": "Paul calls believers to humility, gentleness, longsuffering, and bearing with one another in love.",
+          "reflectionQuestions": [
+            "Where might patience protect unity in a relationship?"
+          ],
+          "takeaway": "Patience makes room for people to grow."
+        },
+        {
+          "day": 4,
+          "title": "Slow to Speak and Anger",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 19,
+              "endVerse": 21
+            }
+          ],
+          "introduction": "James urges believers to listen quickly, speak carefully, and be slow to wrath.",
+          "reflectionQuestions": [
+            "Which part of James’ instruction is hardest when you are frustrated?"
+          ],
+          "takeaway": "Patient listening can prevent harmful reactions."
+        },
+        {
+          "day": 5,
+          "title": "Wait for the Lord",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 37,
+              "startVerse": 1,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "David warns against fretting over evildoers and calls for trust and patient waiting.",
+          "reflectionQuestions": [
+            "What does this psalm recommend instead of anger and fretting?"
+          ],
+          "takeaway": "Patience trusts God rather than rushing toward resentment."
+        },
+        {
+          "day": 6,
+          "title": "The Farmer’s Patience",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 5,
+              "startVerse": 7,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "James uses the farmer and the prophets to encourage perseverance until the Lord’s coming.",
+          "reflectionQuestions": [
+            "How does the farmer illustrate patient endurance?"
+          ],
+          "takeaway": "Longsuffering stays faithful when results take time."
+        },
+        {
+          "day": 7,
+          "title": "Clothe Yourself in Patience",
+          "readings": [
+            {
+              "book": "Colossians",
+              "chapter": 3,
+              "startVerse": 12,
+              "endVerse": 15
+            }
+          ],
+          "introduction": "Paul tells God’s chosen people to practice patience, forbearance, and forgiveness.",
+          "reflectionQuestions": [
+            "What would patient forgiveness look like in one relationship?"
+          ],
+          "takeaway": "Spirit-shaped patience shows itself in merciful relationships."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-gentleness",
+      "title": "Growing in Gentleness",
+      "description": "Seven days practicing God-shaped kindness, tenderheartedness, and gentle speech.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Kindness Reflects God",
+          "readings": [
+            {
+              "book": "Titus",
+              "chapter": 3,
+              "startVerse": 3,
+              "endVerse": 7
+            }
+          ],
+          "introduction": "Paul contrasts humanity’s former way of life with the kindness and love of God our Savior.",
+          "reflectionQuestions": [
+            "How did God show kindness toward people who had not earned it?"
+          ],
+          "takeaway": "Our kindness is rooted in God’s mercy."
+        },
+        {
+          "day": 2,
+          "title": "A Gentle Answer",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 15,
+              "startVerse": 1,
+              "endVerse": 4
+            }
+          ],
+          "introduction": "Proverbs contrasts a soft answer with harsh words that stir up anger.",
+          "reflectionQuestions": [
+            "How could a gentler response change a difficult conversation?"
+          ],
+          "takeaway": "Gentle speech can turn conflict away from anger."
+        },
+        {
+          "day": 3,
+          "title": "Jesus Welcomes the Vulnerable",
+          "readings": [
+            {
+              "book": "Mark",
+              "chapter": 10,
+              "startVerse": 13,
+              "endVerse": 16
+            }
+          ],
+          "introduction": "Jesus welcomes children when his disciples try to send them away.",
+          "reflectionQuestions": [
+            "What does Jesus’ response teach about making room for others?"
+          ],
+          "takeaway": "Gentleness treats people with dignity and care."
+        },
+        {
+          "day": 4,
+          "title": "Be Kind to One Another",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 4,
+              "startVerse": 29,
+              "endVerse": 32
+            }
+          ],
+          "introduction": "Paul tells believers to speak helpfully and to show kindness, tenderheartedness, and forgiveness.",
+          "reflectionQuestions": [
+            "Do your words tend to build others up or wear them down?"
+          ],
+          "takeaway": "Kindness is expressed through speech and actions."
+        },
+        {
+          "day": 5,
+          "title": "Gentle Restoration",
+          "readings": [
+            {
+              "book": "Galatians",
+              "chapter": 6,
+              "startVerse": 1,
+              "endVerse": 5
+            }
+          ],
+          "introduction": "Paul calls spiritual believers to restore someone caught in sin with a spirit of meekness and self-examination.",
+          "reflectionQuestions": [
+            "Why does helping someone require humility and care?"
+          ],
+          "takeaway": "Correction should aim to restore rather than humiliate."
+        },
+        {
+          "day": 6,
+          "title": "Kindness to the Overlooked",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 10,
+              "startVerse": 25,
+              "endVerse": 37
+            }
+          ],
+          "introduction": "In the parable of the good Samaritan, a stranger gives practical help to a wounded man.",
+          "reflectionQuestions": [
+            "What acts of mercy make the Samaritan a neighbor?"
+          ],
+          "takeaway": "Gentleness and kindness notice suffering and respond."
+        },
+        {
+          "day": 7,
+          "title": "The Servant’s Manner",
+          "readings": [
+            {
+              "book": "2 Timothy",
+              "chapter": 2,
+              "startVerse": 22,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "Paul instructs the Lord’s servant to avoid quarrels, teach patiently, and correct with gentleness.",
+          "reflectionQuestions": [
+            "How can you defend truth without becoming argumentative?"
+          ],
+          "takeaway": "A gentle spirit can be firm without being harsh."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-goodness",
+      "title": "Living in Goodness",
+      "description": "Seven days learning to reflect God’s goodness through integrity and good works.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "What Is Good?",
+          "readings": [
+            {
+              "book": "Micah",
+              "chapter": 6,
+              "startVerse": 6,
+              "endVerse": 8
+            }
+          ],
+          "introduction": "Micah summarizes what the Lord requires: justice, mercy, and humble walking with God.",
+          "reflectionQuestions": [
+            "How does this passage define a life that pleases God?"
+          ],
+          "takeaway": "Goodness joins right conduct with humility and mercy."
+        },
+        {
+          "day": 2,
+          "title": "God Is Good",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 34,
+              "startVerse": 1,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "David praises the Lord and invites others to experience his goodness and care.",
+          "reflectionQuestions": [
+            "Where does David direct people to look for goodness?"
+          ],
+          "takeaway": "God’s goodness is the foundation for ours."
+        },
+        {
+          "day": 3,
+          "title": "Let Your Light Shine",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 5,
+              "startVerse": 13,
+              "endVerse": 16
+            }
+          ],
+          "introduction": "Jesus calls his followers salt and light so others may see their good works and glorify the Father.",
+          "reflectionQuestions": [
+            "What good deed might point someone toward God rather than yourself?"
+          ],
+          "takeaway": "Goodness is visible in actions that honor God."
+        },
+        {
+          "day": 4,
+          "title": "Do Good to All",
+          "readings": [
+            {
+              "book": "Galatians",
+              "chapter": 6,
+              "startVerse": 7,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "Paul urges believers not to grow weary of doing good and to use opportunities to help others.",
+          "reflectionQuestions": [
+            "What makes it difficult to keep doing good without immediate results?"
+          ],
+          "takeaway": "Goodness continues even when service feels tiring."
+        },
+        {
+          "day": 5,
+          "title": "A Life Full of Good Works",
+          "readings": [
+            {
+              "book": "Acts",
+              "chapter": 9,
+              "startVerse": 36,
+              "endVerse": 42
+            }
+          ],
+          "introduction": "Tabitha is remembered for the good works and charitable acts she did for others.",
+          "reflectionQuestions": [
+            "What do the people’s responses reveal about Tabitha’s life?"
+          ],
+          "takeaway": "Consistent acts of care can bless an entire community."
+        },
+        {
+          "day": 6,
+          "title": "Overcome Evil with Good",
+          "readings": [
+            {
+              "book": "Romans",
+              "chapter": 12,
+              "startVerse": 9,
+              "endVerse": 21
+            }
+          ],
+          "introduction": "Paul describes sincere love and urges believers not to repay evil with evil.",
+          "reflectionQuestions": [
+            "Where could you choose an honorable response instead of retaliation?"
+          ],
+          "takeaway": "Goodness answers evil without imitating it."
+        },
+        {
+          "day": 7,
+          "title": "Ready for Every Good Work",
+          "readings": [
+            {
+              "book": "Titus",
+              "chapter": 3,
+              "startVerse": 1,
+              "endVerse": 8
+            }
+          ],
+          "introduction": "Paul connects God’s saving mercy with believers’ responsibility to be ready for good works.",
+          "reflectionQuestions": [
+            "Why must good works be understood as a response to grace?"
+          ],
+          "takeaway": "God’s grace leads us into lives of active goodness."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-faith",
+      "title": "Growing in Faith and Faithfulness",
+      "description": "Seven days exploring trust in God and a steady, faithful life.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Faith Begins with Trust",
+          "readings": [
+            {
+              "book": "Hebrews",
+              "chapter": 11,
+              "startVerse": 1,
+              "endVerse": 6
+            }
+          ],
+          "introduction": "Hebrews describes faith as confidence in God and what he has promised.",
+          "reflectionQuestions": [
+            "What does this passage say is necessary when approaching God?"
+          ],
+          "takeaway": "Faith starts with trusting God’s character and promises."
+        },
+        {
+          "day": 2,
+          "title": "Faithful in Small Things",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 16,
+              "startVerse": 10,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "Jesus teaches that trustworthiness in small responsibilities matters.",
+          "reflectionQuestions": [
+            "How do everyday decisions reveal whether you are faithful?"
+          ],
+          "takeaway": "Faithfulness is practiced in ordinary responsibilities."
+        },
+        {
+          "day": 3,
+          "title": "God Is Faithful",
+          "readings": [
+            {
+              "book": "Lamentations",
+              "chapter": 3,
+              "startVerse": 19,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "Amid grief, the writer recalls God’s enduring mercies and great faithfulness.",
+          "reflectionQuestions": [
+            "What truth helps the writer find hope amid suffering?"
+          ],
+          "takeaway": "God’s faithfulness gives us a reason to keep trusting."
+        },
+        {
+          "day": 4,
+          "title": "Stewards Who Are Faithful",
+          "readings": [
+            {
+              "book": "1 Corinthians",
+              "chapter": 4,
+              "startVerse": 1,
+              "endVerse": 5
+            }
+          ],
+          "introduction": "Paul says those entrusted with a stewardship should be found faithful, while final judgment belongs to the Lord.",
+          "reflectionQuestions": [
+            "Whose approval matters most when you are entrusted with a task?"
+          ],
+          "takeaway": "Faithfulness means serving responsibly before God."
+        },
+        {
+          "day": 5,
+          "title": "Faith That Acts",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 2,
+              "startVerse": 14,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "James shows that living faith becomes visible through action.",
+          "reflectionQuestions": [
+            "How do the examples in this passage connect belief and obedience?"
+          ],
+          "takeaway": "Genuine faith expresses itself through faithful actions."
+        },
+        {
+          "day": 6,
+          "title": "Holding Fast to Hope",
+          "readings": [
+            {
+              "book": "Hebrews",
+              "chapter": 10,
+              "startVerse": 19,
+              "endVerse": 25
+            }
+          ],
+          "introduction": "Believers are encouraged to hold fast their confession because the One who promised is faithful.",
+          "reflectionQuestions": [
+            "How does God’s faithfulness encourage your perseverance?"
+          ],
+          "takeaway": "We remain faithful by relying on the faithful God."
+        },
+        {
+          "day": 7,
+          "title": "Faithful to the End",
+          "readings": [
+            {
+              "book": "2 Timothy",
+              "chapter": 4,
+              "startVerse": 6,
+              "endVerse": 8
+            }
+          ],
+          "introduction": "Near the end of his ministry, Paul looks back on having fought the good fight and kept the faith.",
+          "reflectionQuestions": [
+            "What would it mean for you to finish your course faithfully?"
+          ],
+          "takeaway": "Faithfulness is a lifelong commitment, not a single moment."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-meekness",
+      "title": "The Strength of Meekness",
+      "description": "Seven days learning humility, teachability, and strength under God’s direction.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Learn from Jesus",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 11,
+              "startVerse": 25,
+              "endVerse": 30
+            }
+          ],
+          "introduction": "Jesus describes himself as meek and lowly in heart and invites the weary to find rest in him.",
+          "reflectionQuestions": [
+            "How does Jesus’ character differ from worldly ideas of greatness?"
+          ],
+          "takeaway": "Meekness is strength expressed through humility and care."
+        },
+        {
+          "day": 2,
+          "title": "The Meek Are Blessed",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 5,
+              "startVerse": 1,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "In the Beatitudes, Jesus calls the meek blessed and promises they will inherit the earth.",
+          "reflectionQuestions": [
+            "What kind of character does Jesus honor in these blessings?"
+          ],
+          "takeaway": "God values humility rather than self-importance."
+        },
+        {
+          "day": 3,
+          "title": "Moses and Meekness",
+          "readings": [
+            {
+              "book": "Numbers",
+              "chapter": 12,
+              "startVerse": 1,
+              "endVerse": 15
+            }
+          ],
+          "introduction": "When Miriam and Aaron speak against Moses, God defends his servant; the account describes Moses as very meek.",
+          "reflectionQuestions": [
+            "How does Moses respond when Miriam faces judgment?"
+          ],
+          "takeaway": "Meekness does not require self-promotion or retaliation."
+        },
+        {
+          "day": 4,
+          "title": "Receive the Word Humbly",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 19,
+              "endVerse": 25
+            }
+          ],
+          "introduction": "James instructs believers to put away wickedness and receive the implanted word with meekness.",
+          "reflectionQuestions": [
+            "What attitudes help you receive correction from Scripture?"
+          ],
+          "takeaway": "A meek heart remains teachable before God."
+        },
+        {
+          "day": 5,
+          "title": "Restore with Meekness",
+          "readings": [
+            {
+              "book": "Galatians",
+              "chapter": 6,
+              "startVerse": 1,
+              "endVerse": 5
+            }
+          ],
+          "introduction": "Paul calls believers to restore the fallen gently while considering their own vulnerability.",
+          "reflectionQuestions": [
+            "Why is self-examination important when correcting another person?"
+          ],
+          "takeaway": "Meekness offers help without superiority."
+        },
+        {
+          "day": 6,
+          "title": "Answer with Gentleness",
+          "readings": [
+            {
+              "book": "1 Peter",
+              "chapter": 3,
+              "startVerse": 13,
+              "endVerse": 17
+            }
+          ],
+          "introduction": "Peter tells believers to give a reason for their hope with meekness and fear, keeping a good conscience.",
+          "reflectionQuestions": [
+            "How can you explain your faith with conviction and respect?"
+          ],
+          "takeaway": "Meekness can speak truth without aggression."
+        },
+        {
+          "day": 7,
+          "title": "The Humility of Christ",
+          "readings": [
+            {
+              "book": "Philippians",
+              "chapter": 2,
+              "startVerse": 1,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "Paul urges believers to put others first and points to Christ’s humility and obedience.",
+          "reflectionQuestions": [
+            "Which attitude of Christ challenges your pride?"
+          ],
+          "takeaway": "Meekness grows as we follow Jesus’ humble example."
+        }
+      ]
+    },
+    {
+      "id": "fruit-of-the-spirit-temperance",
+      "title": "Practicing Temperance",
+      "description": "Seven days learning Spirit-led self-control over desires, words, and actions.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "The Spirit Produces Self-Control",
+          "readings": [
+            {
+              "book": "Galatians",
+              "chapter": 5,
+              "startVerse": 16,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "Paul contrasts the desires of the flesh with the fruit of the Spirit, ending with temperance.",
+          "reflectionQuestions": [
+            "What contrast do you see between impulses and life led by the Spirit?"
+          ],
+          "takeaway": "Self-control is a fruit of walking by the Spirit."
+        },
+        {
+          "day": 2,
+          "title": "Guard Your Reactions",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 16,
+              "startVerse": 32,
+              "endVerse": 32
+            }
+          ],
+          "introduction": "Proverbs places control over one’s spirit above strength in battle.",
+          "reflectionQuestions": [
+            "Why might mastering your temper require greater strength than winning a fight?"
+          ],
+          "takeaway": "Controlling our reactions is a form of real strength."
+        },
+        {
+          "day": 3,
+          "title": "A City Without Walls",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 25,
+              "startVerse": 28,
+              "endVerse": 28
+            },
+            {
+              "book": "Proverbs",
+              "chapter": 25,
+              "startVerse": 16,
+              "endVerse": 16
+            }
+          ],
+          "introduction": "Proverbs compares a person without self-control to a city without walls and warns against excess.",
+          "reflectionQuestions": [
+            "How do these images illustrate the danger of unrestrained desires?"
+          ],
+          "takeaway": "Healthy limits protect our choices and character."
+        },
+        {
+          "day": 4,
+          "title": "Run with Discipline",
+          "readings": [
+            {
+              "book": "1 Corinthians",
+              "chapter": 9,
+              "startVerse": 24,
+              "endVerse": 27
+            }
+          ],
+          "introduction": "Paul compares the Christian life to athletes who train with restraint toward a lasting goal.",
+          "reflectionQuestions": [
+            "What habits might need training rather than a quick decision?"
+          ],
+          "takeaway": "Self-control develops through purposeful discipline."
+        },
+        {
+          "day": 5,
+          "title": "Watch Your Words",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 3,
+              "startVerse": 1,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "James explains the great power of the tongue and the damage uncontrolled speech can cause.",
+          "reflectionQuestions": [
+            "When are your words hardest to restrain?"
+          ],
+          "takeaway": "Self-control includes careful, truthful speech."
+        },
+        {
+          "day": 6,
+          "title": "Resist Temptation",
+          "readings": [
+            {
+              "book": "1 Corinthians",
+              "chapter": 10,
+              "startVerse": 12,
+              "endVerse": 13
+            },
+            {
+              "book": "Matthew",
+              "chapter": 4,
+              "startVerse": 1,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "Paul teaches that God is faithful amid temptation, while Jesus answers temptation with Scripture.",
+          "reflectionQuestions": [
+            "How did Jesus respond to temptation, and what help does Paul promise?"
+          ],
+          "takeaway": "Temptation calls for vigilance, reliance on God, and wise action."
+        },
+        {
+          "day": 7,
+          "title": "Train for Godliness",
+          "readings": [
+            {
+              "book": "2 Peter",
+              "chapter": 1,
+              "startVerse": 3,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "Peter urges believers to add temperance to knowledge as part of growing spiritual maturity.",
+          "reflectionQuestions": [
+            "How does self-control fit among the qualities Peter calls believers to develop?"
+          ],
+          "takeaway": "Temperance belongs to a growing and fruitful Christian life."
+        }
+      ]
+    },
+    {
+      "id": "overcoming-temptation",
+      "title": "Overcoming Temptation",
+      "description": "Seven days learning to recognize temptation, resist deception, and rely on God when faced with difficult choices.",
+      "category": "Life Challenges",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Understanding Temptation",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 12,
+              "endVerse": 18
+            }
+          ],
+          "introduction": "James distinguishes testing, which can produce endurance, from temptation arising through sinful desire. God does not entice people to evil.",
+          "reflectionQuestions": [
+            "How does James describe the progression from desire to sin?"
+          ],
+          "takeaway": "Recognize temptation early instead of allowing desire to take control."
+        },
+        {
+          "day": 2,
+          "title": "The First Deception",
+          "readings": [
+            {
+              "book": "Genesis",
+              "chapter": 3,
+              "startVerse": 1,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "The serpent questions God’s words, and Adam and Eve choose disobedience despite God’s command.",
+          "reflectionQuestions": [
+            "How does the serpent distort what God said?"
+          ],
+          "takeaway": "Compare tempting claims with what God has actually said."
+        },
+        {
+          "day": 3,
+          "title": "Jesus Resists Temptation",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 4,
+              "startVerse": 1,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "In the wilderness Jesus faces the tempter and answers each challenge with Scripture.",
+          "reflectionQuestions": [
+            "What does Jesus’ response teach about knowing and applying God’s Word?"
+          ],
+          "takeaway": "Use Scripture to answer lies and choose obedience."
+        },
+        {
+          "day": 4,
+          "title": "Watch and Pray",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 26,
+              "startVerse": 36,
+              "endVerse": 46
+            }
+          ],
+          "introduction": "In Gethsemane Jesus urges the disciples to watch and pray even as they struggle to stay awake.",
+          "reflectionQuestions": [
+            "Why is watchfulness necessary when our intentions are stronger than our resolve?"
+          ],
+          "takeaway": "Prayer and alertness help prepare us for moments of weakness."
+        },
+        {
+          "day": 5,
+          "title": "God Provides a Way to Endure",
+          "readings": [
+            {
+              "book": "1 Corinthians",
+              "chapter": 10,
+              "startVerse": 1,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "Paul warns against overconfidence and reminds believers that God is faithful amid temptation.",
+          "reflectionQuestions": [
+            "What does Paul warn against in verse 12, and promise in verse 13?"
+          ],
+          "takeaway": "Do not rely on confidence alone; look for the way to endure or escape temptation."
+        },
+        {
+          "day": 6,
+          "title": "Flee and Pursue",
+          "readings": [
+            {
+              "book": "2 Timothy",
+              "chapter": 2,
+              "startVerse": 19,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "Paul tells Timothy to flee youthful lusts and pursue righteousness, faith, love, and peace with others who call on the Lord.",
+          "reflectionQuestions": [
+            "What can you actively pursue instead of simply trying not to sin?"
+          ],
+          "takeaway": "Replace harmful patterns with godly pursuits and supportive company."
+        },
+        {
+          "day": 7,
+          "title": "Walk in the Spirit",
+          "readings": [
+            {
+              "book": "Galatians",
+              "chapter": 5,
+              "startVerse": 16,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "Paul contrasts the works of the flesh with the fruit of the Spirit and calls believers to live by the Spirit.",
+          "reflectionQuestions": [
+            "Which Spirit-produced quality could shape a temptation you face?"
+          ],
+          "takeaway": "Lasting resistance grows from a life directed by the Spirit."
+        }
+      ]
+    },
+    {
+      "id": "dealing-with-anger",
+      "title": "Dealing with Anger",
+      "description": "Seven days on understanding anger, responding wisely, avoiding destructive speech, and pursuing peace.",
+      "category": "Life Challenges",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Slow to Anger",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 19,
+              "endVerse": 27
+            }
+          ],
+          "introduction": "James urges believers to listen quickly, speak slowly, and be slow to wrath because human anger does not produce God’s righteousness.",
+          "reflectionQuestions": [
+            "How might listening first change a recent disagreement?"
+          ],
+          "takeaway": "Make room to listen before reacting."
+        },
+        {
+          "day": 2,
+          "title": "A Gentle Answer",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 15,
+              "startVerse": 1,
+              "endVerse": 4
+            },
+            {
+              "book": "Proverbs",
+              "chapter": 15,
+              "startVerse": 18,
+              "endVerse": 18
+            }
+          ],
+          "introduction": "Proverbs contrasts speech that calms conflict with harsh words that stir it up.",
+          "reflectionQuestions": [
+            "What kind of words tend to escalate conflict, and what words might calm it?"
+          ],
+          "takeaway": "Choose words that reduce heat instead of adding to it."
+        },
+        {
+          "day": 3,
+          "title": "Anger Without Sin",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 4,
+              "startVerse": 25,
+              "endVerse": 32
+            }
+          ],
+          "introduction": "Paul acknowledges anger but forbids letting it lead to sin, bitterness, or harmful speech.",
+          "reflectionQuestions": [
+            "What steps does Paul give for dealing with anger before it takes root?"
+          ],
+          "takeaway": "Address anger truthfully and promptly without using it to harm others."
+        },
+        {
+          "day": 4,
+          "title": "What Comes from the Heart",
+          "readings": [
+            {
+              "book": "Mark",
+              "chapter": 7,
+              "startVerse": 14,
+              "endVerse": 23
+            }
+          ],
+          "introduction": "Jesus teaches that harmful actions flow from the heart, not merely from external circumstances.",
+          "reflectionQuestions": [
+            "What inner attitude might be influencing your response to a frustrating situation?"
+          ],
+          "takeaway": "Notice what your reactions reveal about the heart."
+        },
+        {
+          "day": 5,
+          "title": "Restrain Your Words",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 29,
+              "startVerse": 11,
+              "endVerse": 11
+            },
+            {
+              "book": "Proverbs",
+              "chapter": 29,
+              "startVerse": 20,
+              "endVerse": 22
+            }
+          ],
+          "introduction": "Proverbs contrasts a fool who vents every feeling with the wisdom of restraint and warns about hasty speech.",
+          "reflectionQuestions": [
+            "What could you do before speaking when you feel provoked?"
+          ],
+          "takeaway": "Restraint gives wisdom room to guide a response."
+        },
+        {
+          "day": 6,
+          "title": "Leave Revenge to God",
+          "readings": [
+            {
+              "book": "Romans",
+              "chapter": 12,
+              "startVerse": 17,
+              "endVerse": 21
+            }
+          ],
+          "introduction": "Paul calls believers to resist retaliation, seek peace when possible, and overcome evil with good.",
+          "reflectionQuestions": [
+            "How is seeking peace different from pretending a wrong never happened?"
+          ],
+          "takeaway": "Refuse revenge and pursue what is good without excusing harm."
+        },
+        {
+          "day": 7,
+          "title": "Put on Compassion",
+          "readings": [
+            {
+              "book": "Colossians",
+              "chapter": 3,
+              "startVerse": 12,
+              "endVerse": 17
+            }
+          ],
+          "introduction": "Paul calls believers to clothe themselves in compassion, humility, patience, forgiveness, and love.",
+          "reflectionQuestions": [
+            "Which practice from this passage could change how you handle conflict this week?"
+          ],
+          "takeaway": "Cultivate habits of compassion that outlast a moment of anger."
+        }
+      ]
+    },
+    {
+      "id": "learning-to-trust-god",
+      "title": "Learning to Trust God",
+      "description": "Seven days exploring God’s faithfulness, trusting him when the way is unclear, and responding with prayer and obedience.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Trust Beyond Understanding",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 3,
+              "startVerse": 1,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "Proverbs calls us to trust the Lord with all our heart and acknowledge him in our ways rather than treating our own understanding as final.",
+          "reflectionQuestions": [
+            "Where do you find it hardest to trust God instead of your own judgment?"
+          ],
+          "takeaway": "Trust God while seeking to walk wisely in his ways."
+        },
+        {
+          "day": 2,
+          "title": "God Keeps His Promises",
+          "readings": [
+            {
+              "book": "Genesis",
+              "chapter": 15,
+              "startVerse": 1,
+              "endVerse": 6
+            }
+          ],
+          "introduction": "Abram receives God’s promise in an uncertain situation and believes the Lord.",
+          "reflectionQuestions": [
+            "What did Abram have to trust before he could see the outcome?"
+          ],
+          "takeaway": "God’s promises invite faith even when the outcome is not yet visible."
+        },
+        {
+          "day": 3,
+          "title": "Trust in Fear",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 56,
+              "startVerse": 1,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "The psalmist acknowledges fear and repeatedly turns toward trust in God.",
+          "reflectionQuestions": [
+            "How can the words “what time I am afraid” change how you think about faith?"
+          ],
+          "takeaway": "Trust does not require pretending fear is absent."
+        },
+        {
+          "day": 4,
+          "title": "God Is Present in Trouble",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 46
+            }
+          ],
+          "introduction": "The psalm describes God as refuge and strength amid upheaval, then calls his people to recognize his sovereignty.",
+          "reflectionQuestions": [
+            "Which image from this psalm encourages you during uncertainty?"
+          ],
+          "takeaway": "God remains a refuge when circumstances are unstable."
+        },
+        {
+          "day": 5,
+          "title": "Bring Every Concern to God",
+          "readings": [
+            {
+              "book": "Philippians",
+              "chapter": 4,
+              "startVerse": 4,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "Paul urges believers to pray with thanksgiving and directs their thoughts toward what is true and worthy of praise.",
+          "reflectionQuestions": [
+            "What concern could you bring honestly to God in prayer today?"
+          ],
+          "takeaway": "Trust expresses itself in prayer and thoughtful obedience."
+        },
+        {
+          "day": 6,
+          "title": "Trust Jesus in the Storm",
+          "readings": [
+            {
+              "book": "Mark",
+              "chapter": 4,
+              "startVerse": 35,
+              "endVerse": 41
+            }
+          ],
+          "introduction": "When a storm threatens the disciples, Jesus calms the wind and sea and challenges their fear.",
+          "reflectionQuestions": [
+            "What do the disciples learn about Jesus from this event?"
+          ],
+          "takeaway": "Our confidence rests in who Jesus is, not in perfect circumstances."
+        },
+        {
+          "day": 7,
+          "title": "Walk by Faith",
+          "readings": [
+            {
+              "book": "2 Corinthians",
+              "chapter": 5,
+              "startVerse": 1,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "Paul looks beyond present troubles toward the life God promises and says believers walk by faith, not by sight.",
+          "reflectionQuestions": [
+            "How does future hope shape the choices Paul describes for the present?"
+          ],
+          "takeaway": "Keep living to please God even when you cannot see the whole path."
+        }
+      ]
+    },
+    {
+      "id": "strengthening-your-marriage",
+      "title": "Strengthening Your Marriage",
+      "description": "Seven days on covenant commitment, sacrificial love, wise communication, forgiveness, and serving one another in marriage.",
+      "category": "Relationships",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "God’s Design for Marriage",
+          "readings": [
+            {
+              "book": "Genesis",
+              "chapter": 2,
+              "startVerse": 18,
+              "endVerse": 25
+            },
+            {
+              "book": "Matthew",
+              "chapter": 19,
+              "startVerse": 4,
+              "endVerse": 6
+            }
+          ],
+          "introduction": "Genesis describes the first union of husband and wife, and Jesus affirms the seriousness of their one-flesh bond.",
+          "reflectionQuestions": [
+            "What do companionship and commitment contribute to marriage?"
+          ],
+          "takeaway": "Treat marriage as a committed partnership worthy of care."
+        },
+        {
+          "day": 2,
+          "title": "Love That Serves",
+          "readings": [
+            {
+              "book": "1 Corinthians",
+              "chapter": 13,
+              "startVerse": 1,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "Paul describes love as patient, kind, truthful, enduring, and free from selfishness; these qualities also matter in marriage.",
+          "reflectionQuestions": [
+            "Which description of love most challenges how you treat your spouse?"
+          ],
+          "takeaway": "Express love through consistent actions, not merely feelings."
+        },
+        {
+          "day": 3,
+          "title": "Mutual Care and Honor",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 5,
+              "startVerse": 21,
+              "endVerse": 33
+            }
+          ],
+          "introduction": "Paul begins with mutual submission in reverence for Christ and calls spouses to sacrificial love and respect.",
+          "reflectionQuestions": [
+            "What would sacrificial care and genuine respect look like in your daily routines?"
+          ],
+          "takeaway": "Seek your spouse’s good with love, dignity, and honor."
+        },
+        {
+          "day": 4,
+          "title": "Listening Before Speaking",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 19,
+              "endVerse": 20
+            },
+            {
+              "book": "Proverbs",
+              "chapter": 18,
+              "startVerse": 13,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "James emphasizes attentive listening and restraint, while Proverbs warns against answering before hearing.",
+          "reflectionQuestions": [
+            "What could change if you listened to understand rather than to respond?"
+          ],
+          "takeaway": "Healthy communication begins with patient listening."
+        },
+        {
+          "day": 5,
+          "title": "Forgiveness and Repair",
+          "readings": [
+            {
+              "book": "Colossians",
+              "chapter": 3,
+              "startVerse": 12,
+              "endVerse": 15
+            }
+          ],
+          "introduction": "Paul urges believers to bear with one another, forgive grievances, and put on love. Forgiveness does not remove the need for honesty, repentance, or rebuilding trust.",
+          "reflectionQuestions": [
+            "Is there a hurt that needs a sincere conversation, accountability, or forgiveness?"
+          ],
+          "takeaway": "Practice mercy while taking responsibility for harm and rebuilding trust wisely."
+        },
+        {
+          "day": 6,
+          "title": "Build Each Other Up",
+          "readings": [
+            {
+              "book": "1 Thessalonians",
+              "chapter": 5,
+              "startVerse": 11,
+              "endVerse": 15
+            },
+            {
+              "book": "Proverbs",
+              "chapter": 16,
+              "startVerse": 24,
+              "endVerse": 24
+            }
+          ],
+          "introduction": "The apostles call believers to encourage and seek one another’s good, and Proverbs praises gracious words.",
+          "reflectionQuestions": [
+            "How could you offer specific encouragement to your spouse this week?"
+          ],
+          "takeaway": "Use your words and actions to strengthen, not diminish, one another."
+        },
+        {
+          "day": 7,
+          "title": "A Partnership That Prays",
+          "readings": [
+            {
+              "book": "Ecclesiastes",
+              "chapter": 4,
+              "startVerse": 9,
+              "endVerse": 12
+            },
+            {
+              "book": "Philippians",
+              "chapter": 4,
+              "startVerse": 4,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "Ecclesiastes celebrates the practical strength of companionship, and Paul urges prayer and thanksgiving in every circumstance.",
+          "reflectionQuestions": [
+            "What shared concern or gratitude could you bring to God together?"
+          ],
+          "takeaway": "Make space for partnership, gratitude, and prayer through life’s seasons."
+        }
+      ]
+    },
+    {
+      "id": "parenting-with-biblical-wisdom",
+      "title": "Parenting with Biblical Wisdom",
+      "description": "Seven days exploring how to guide children with love, wise instruction, patient discipline, and a faithful example.",
+      "category": "Relationships",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Children Are a Gift",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 127,
+              "startVerse": 3,
+              "endVerse": 5
+            },
+            {
+              "book": "Mark",
+              "chapter": 10,
+              "startVerse": 13,
+              "endVerse": 16
+            }
+          ],
+          "introduction": "Scripture describes children as a gift, and Jesus welcomes them with personal attention and care.",
+          "reflectionQuestions": [
+            "How might seeing children as people to cherish shape the way you parent today?"
+          ],
+          "takeaway": "Receive the responsibility of parenting with gratitude and care."
+        },
+        {
+          "day": 2,
+          "title": "Teach Along the Way",
+          "readings": [
+            {
+              "book": "Deuteronomy",
+              "chapter": 6,
+              "startVerse": 4,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "Israelite parents are called to speak of God’s commands throughout ordinary daily life.",
+          "reflectionQuestions": [
+            "What everyday moment could become an opportunity for a simple conversation about God?"
+          ],
+          "takeaway": "Faith is taught through consistent, everyday conversations."
+        },
+        {
+          "day": 3,
+          "title": "Lead by Example",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 20,
+              "startVerse": 7,
+              "endVerse": 7
+            },
+            {
+              "book": "1 Timothy",
+              "chapter": 4,
+              "startVerse": 12,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "A parent’s actions can give weight to the values they teach; Paul also commends an example in conduct, love, faith, and purity.",
+          "reflectionQuestions": [
+            "What behavior would you like your child to learn by watching you?"
+          ],
+          "takeaway": "Model the character you hope to nurture."
+        },
+        {
+          "day": 4,
+          "title": "Correct with Care",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 6,
+              "startVerse": 1,
+              "endVerse": 4
+            },
+            {
+              "book": "Colossians",
+              "chapter": 3,
+              "startVerse": 20,
+              "endVerse": 21
+            }
+          ],
+          "introduction": "Children are told to honor their parents, while parents are warned not to provoke or discourage them.",
+          "reflectionQuestions": [
+            "How can you correct a child while protecting their dignity and encouraging growth?"
+          ],
+          "takeaway": "Discipline should instruct and guide, not crush or humiliate."
+        },
+        {
+          "day": 5,
+          "title": "Listen Before You Speak",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 19,
+              "endVerse": 20
+            },
+            {
+              "book": "Proverbs",
+              "chapter": 15,
+              "startVerse": 1,
+              "endVerse": 4
+            }
+          ],
+          "introduction": "Scripture connects listening and gentle speech with wisdom, especially when emotions rise.",
+          "reflectionQuestions": [
+            "How could you respond differently the next time your child is upset or makes a mistake?"
+          ],
+          "takeaway": "Patient listening can open the door to wise instruction."
+        },
+        {
+          "day": 6,
+          "title": "Pray for Wisdom",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 5,
+              "endVerse": 8
+            },
+            {
+              "book": "Philippians",
+              "chapter": 4,
+              "startVerse": 4,
+              "endVerse": 7
+            }
+          ],
+          "introduction": "Parents do not have every answer. James encourages asking God for wisdom, and Paul urges believers to bring concerns to God.",
+          "reflectionQuestions": [
+            "What specific parenting decision or concern can you bring to God in prayer?"
+          ],
+          "takeaway": "Seek wisdom rather than relying only on your own instincts."
+        },
+        {
+          "day": 7,
+          "title": "Entrust Their Growth to God",
+          "readings": [
+            {
+              "book": "Proverbs",
+              "chapter": 22,
+              "startVerse": 6,
+              "endVerse": 6
+            },
+            {
+              "book": "1 Corinthians",
+              "chapter": 3,
+              "startVerse": 5,
+              "endVerse": 7
+            }
+          ],
+          "introduction": "Scripture values teaching the young while reminding us that growth ultimately belongs to God; wisdom sayings are not guarantees about every child’s future.",
+          "reflectionQuestions": [
+            "What faithful action is yours to take, and what outcome must you leave in God’s hands?"
+          ],
+          "takeaway": "Parent faithfully, remembering that you cannot control every outcome."
+        }
+      ]
+    },
+    {
+      "id": "overcoming-worry-and-anxiety",
+      "title": "Overcoming Worry and Anxiety",
+      "description": "Seven days of Scripture about bringing fears to God, receiving his care, and facing uncertain days with wisdom and support.",
+      "category": "Life Challenges",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "God Knows Your Needs",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 6,
+              "startVerse": 25,
+              "endVerse": 34
+            }
+          ],
+          "introduction": "Jesus points to birds and flowers to teach his followers about the Father’s care and the limits of worrying about tomorrow.",
+          "reflectionQuestions": [
+            "Which concern most often pulls your thoughts into tomorrow?"
+          ],
+          "takeaway": "Focus on today’s responsibilities while trusting God with tomorrow."
+        },
+        {
+          "day": 2,
+          "title": "Bring Your Concerns to God",
+          "readings": [
+            {
+              "book": "Philippians",
+              "chapter": 4,
+              "startVerse": 4,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "Paul invites believers to make their requests known to God with thanksgiving and directs their minds toward what is worthy.",
+          "reflectionQuestions": [
+            "What worry could you put into words in an honest prayer today?"
+          ],
+          "takeaway": "Prayer is a place to bring anxiety, not a demand to pretend it is absent."
+        },
+        {
+          "day": 3,
+          "title": "When Fear Is Real",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 56,
+              "startVerse": 1,
+              "endVerse": 13
+            }
+          ],
+          "introduction": "The psalmist names his fear directly and chooses to turn toward God in the middle of danger.",
+          "reflectionQuestions": [
+            "How does this psalm make room for both fear and faith?"
+          ],
+          "takeaway": "Feeling afraid does not prevent you from trusting God."
+        },
+        {
+          "day": 4,
+          "title": "You Are Not Forgotten",
+          "readings": [
+            {
+              "book": "1 Peter",
+              "chapter": 5,
+              "startVerse": 6,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "Peter encourages humble reliance on God and says believers can cast their cares upon him because he cares for them.",
+          "reflectionQuestions": [
+            "Which burden have you been trying to carry alone?"
+          ],
+          "takeaway": "God’s care invites you to bring him what weighs on you."
+        },
+        {
+          "day": 5,
+          "title": "Strength for the Present",
+          "readings": [
+            {
+              "book": "Lamentations",
+              "chapter": 3,
+              "startVerse": 19,
+              "endVerse": 26
+            }
+          ],
+          "introduction": "In a book shaped by suffering, the writer remembers God’s compassion and mercy amid grief.",
+          "reflectionQuestions": [
+            "What does it mean to look for God’s mercy while circumstances remain difficult?"
+          ],
+          "takeaway": "Hope can coexist with sorrow and unanswered questions."
+        },
+        {
+          "day": 6,
+          "title": "You Do Not Have to Carry It Alone",
+          "readings": [
+            {
+              "book": "Galatians",
+              "chapter": 6,
+              "startVerse": 1,
+              "endVerse": 5
+            },
+            {
+              "book": "Ecclesiastes",
+              "chapter": 4,
+              "startVerse": 9,
+              "endVerse": 12
+            }
+          ],
+          "introduction": "Scripture encourages mutual support as well as personal responsibility, reminding us that companionship matters during difficulty.",
+          "reflectionQuestions": [
+            "Who is a trustworthy person you could ask to listen or help with a practical need?"
+          ],
+          "takeaway": "Seeking support can be an expression of wisdom and humility."
+        },
+        {
+          "day": 7,
+          "title": "Rest in God’s Faithfulness",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 121
+            },
+            {
+              "book": "John",
+              "chapter": 14,
+              "startVerse": 25,
+              "endVerse": 27
+            }
+          ],
+          "introduction": "The psalm celebrates God’s watchful care, and Jesus comforts his disciples with the peace he gives.",
+          "reflectionQuestions": [
+            "Which promise or truth from this week would you like to remember when anxiety returns?"
+          ],
+          "takeaway": "Return to God’s care one day at a time."
+        }
+      ]
+    },
+    {
+      "id": "finding-your-purpose",
+      "title": "Finding Your Purpose",
+      "description": "Seven days examining God’s creation, our calling in Christ, the gifts we receive, and faithful service in ordinary life.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Created with Meaning",
+          "readings": [
+            {
+              "book": "Genesis",
+              "chapter": 1,
+              "startVerse": 26,
+              "endVerse": 31
+            },
+            {
+              "book": "Psalms",
+              "chapter": 8,
+              "startVerse": 3,
+              "endVerse": 9
+            }
+          ],
+          "introduction": "Human beings bear God’s image and have been given dignity and responsibility within creation.",
+          "reflectionQuestions": [
+            "How does being made in God’s image affect your understanding of your worth?"
+          ],
+          "takeaway": "Your value begins with the Creator, not with your achievements."
+        },
+        {
+          "day": 2,
+          "title": "Created for Good Works",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 2,
+              "startVerse": 8,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "Paul teaches that salvation is God’s gift and that believers are created in Christ Jesus for good works.",
+          "reflectionQuestions": [
+            "What good work is already in front of you today?"
+          ],
+          "takeaway": "Purpose includes responding to grace through faithful action."
+        },
+        {
+          "day": 3,
+          "title": "Seek First God’s Kingdom",
+          "readings": [
+            {
+              "book": "Matthew",
+              "chapter": 6,
+              "startVerse": 19,
+              "endVerse": 34
+            }
+          ],
+          "introduction": "Jesus redirects his disciples from competing treasures and anxious striving toward the priorities of God’s kingdom.",
+          "reflectionQuestions": [
+            "What priority competes most with seeking God’s kingdom?"
+          ],
+          "takeaway": "A meaningful life begins with rightly ordered priorities."
+        },
+        {
+          "day": 4,
+          "title": "Use the Gifts You Have",
+          "readings": [
+            {
+              "book": "1 Peter",
+              "chapter": 4,
+              "startVerse": 7,
+              "endVerse": 11
+            },
+            {
+              "book": "Romans",
+              "chapter": 12,
+              "startVerse": 3,
+              "endVerse": 8
+            }
+          ],
+          "introduction": "Believers receive different gifts to use in serving others; no single gift defines a person’s worth.",
+          "reflectionQuestions": [
+            "What ability or opportunity could you use to benefit someone else?"
+          ],
+          "takeaway": "Your gifts are opportunities for service."
+        },
+        {
+          "day": 5,
+          "title": "Be Faithful in Ordinary Work",
+          "readings": [
+            {
+              "book": "Colossians",
+              "chapter": 3,
+              "startVerse": 17,
+              "endVerse": 24
+            }
+          ],
+          "introduction": "Paul calls believers to do their work sincerely as service rendered to the Lord.",
+          "reflectionQuestions": [
+            "How might your attitude change if you viewed a routine responsibility as service to God?"
+          ],
+          "takeaway": "Ordinary tasks can be done with extraordinary faithfulness."
+        },
+        {
+          "day": 6,
+          "title": "Love Your Neighbor",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 10,
+              "startVerse": 25,
+              "endVerse": 37
+            }
+          ],
+          "introduction": "Jesus’ parable of the good Samaritan makes neighbor-love practical and costly rather than merely theoretical.",
+          "reflectionQuestions": [
+            "Who near you has a need you can respond to this week?"
+          ],
+          "takeaway": "Purpose is often revealed through loving the person in front of you."
+        },
+        {
+          "day": 7,
+          "title": "Walk Humbly and Faithfully",
+          "readings": [
+            {
+              "book": "Micah",
+              "chapter": 6,
+              "startVerse": 6,
+              "endVerse": 8
+            },
+            {
+              "book": "Philippians",
+              "chapter": 1,
+              "startVerse": 3,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "Micah emphasizes justice, mercy, and humility, while Paul prays for love and discernment as believers grow.",
+          "reflectionQuestions": [
+            "What simple, faithful next step can you take without knowing every detail of the future?"
+          ],
+          "takeaway": "You can live with purpose without seeing the whole path ahead."
+        }
+      ]
+    },
+    {
+      "id": "the-power-of-prayer",
+      "title": "The Power of Prayer",
+      "description": "Seven days exploring prayer through Scripture: access to God, confession, intercession, persistence, and dependence on his will.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "Come Boldly to God",
+          "readings": [
+            {
+              "book": "Hebrews",
+              "chapter": 4,
+              "startVerse": 14,
+              "endVerse": 16
+            }
+          ],
+          "introduction": "Because Jesus is our great high priest, believers are invited to approach God’s throne for mercy and help.",
+          "reflectionQuestions": [
+            "What does this passage say makes it possible to approach God with confidence?"
+          ],
+          "takeaway": "Prayer begins with the access Jesus provides."
+        },
+        {
+          "day": 2,
+          "title": "Pray According to God’s Will",
+          "readings": [
+            {
+              "book": "1 John",
+              "chapter": 5,
+              "startVerse": 13,
+              "endVerse": 15
+            },
+            {
+              "book": "Matthew",
+              "chapter": 26,
+              "startVerse": 36,
+              "endVerse": 46
+            }
+          ],
+          "introduction": "John connects confidence in prayer with God’s will, and Jesus models honest requests joined to surrender in Gethsemane.",
+          "reflectionQuestions": [
+            "How can you pray honestly about what you want while remaining open to God’s will?"
+          ],
+          "takeaway": "Confident prayer is not the same as controlling the outcome."
+        },
+        {
+          "day": 3,
+          "title": "Confession and Renewal",
+          "readings": [
+            {
+              "book": "Psalms",
+              "chapter": 32,
+              "startVerse": 1,
+              "endVerse": 7
+            },
+            {
+              "book": "1 John",
+              "chapter": 1,
+              "startVerse": 5,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "David celebrates the relief of acknowledged sin, while John calls believers to walk in the light and confess their sins.",
+          "reflectionQuestions": [
+            "Is there anything you need to bring into the light before God?"
+          ],
+          "takeaway": "Confession is a response to God’s mercy and truth."
+        },
+        {
+          "day": 4,
+          "title": "Intercede for Others",
+          "readings": [
+            {
+              "book": "1 Timothy",
+              "chapter": 2,
+              "startVerse": 1,
+              "endVerse": 6
+            },
+            {
+              "book": "Ephesians",
+              "chapter": 6,
+              "startVerse": 18,
+              "endVerse": 20
+            }
+          ],
+          "introduction": "Paul urges prayers for all people, including leaders, and asks believers to pray for his own ministry.",
+          "reflectionQuestions": [
+            "Whom could you pray for specifically today, beyond your immediate needs?"
+          ],
+          "takeaway": "Prayer expands our concern beyond ourselves."
+        },
+        {
+          "day": 5,
+          "title": "Keep Asking and Seeking",
+          "readings": [
+            {
+              "book": "Luke",
+              "chapter": 18,
+              "startVerse": 1,
+              "endVerse": 8
+            }
+          ],
+          "introduction": "Jesus tells the parable of the persistent widow to encourage his disciples to pray and not lose heart.",
+          "reflectionQuestions": [
+            "What is the difference between persistent prayer and demanding your own timetable?"
+          ],
+          "takeaway": "Persistence in prayer expresses ongoing dependence on God."
+        },
+        {
+          "day": 6,
+          "title": "Prayer in the Church",
+          "readings": [
+            {
+              "book": "Acts",
+              "chapter": 12,
+              "startVerse": 1,
+              "endVerse": 17
+            }
+          ],
+          "introduction": "As Peter is imprisoned, the church prays earnestly for him; the account shows a community bringing urgent needs before God.",
+          "reflectionQuestions": [
+            "How could you participate more intentionally in praying with or for other believers?"
+          ],
+          "takeaway": "Prayer is part of the shared life of the church."
+        },
+        {
+          "day": 7,
+          "title": "Pray and Live Faithfully",
+          "readings": [
+            {
+              "book": "James",
+              "chapter": 5,
+              "startVerse": 13,
+              "endVerse": 18
+            },
+            {
+              "book": "1 Thessalonians",
+              "chapter": 5,
+              "startVerse": 16,
+              "endVerse": 24
+            }
+          ],
+          "introduction": "James calls for prayer in suffering and sickness, while Paul commends ongoing prayer and thanksgiving.",
+          "reflectionQuestions": [
+            "What simple practice would help prayer become a regular part of your life?"
+          ],
+          "takeaway": "Keep praying through every season, trusting God’s faithfulness."
+        }
+      ]
+    },
+    {
+      "id": "the-power-of-the-word",
+      "title": "The Power of the Word",
+      "description": "Seven days discovering the truth, power, and reliability of God’s Word—and learning to see yourself and your circumstances through what Scripture actually promises.",
+      "category": "Spiritual Growth",
+      "difficulty": "beginner",
+      "planType": "guided",
+      "durationDays": 7,
+      "days": [
+        {
+          "day": 1,
+          "title": "God Cannot Lie",
+          "readings": [
+            {
+              "book": "Hebrews",
+              "chapter": 6,
+              "startVerse": 13,
+              "endVerse": 20
+            },
+            {
+              "book": "Numbers",
+              "chapter": 23,
+              "startVerse": 19,
+              "endVerse": 19
+            }
+          ],
+          "introduction": "God’s promises are dependable because his character is truthful and unchanging. Hebrews points believers to the certainty of God’s promise and oath as an anchor of hope.",
+          "reflectionQuestions": [
+            "How does knowing that God cannot lie change the way you respond to his promises?"
+          ],
+          "takeaway": "God’s trustworthy character gives us a sure foundation for hope."
+        },
+        {
+          "day": 2,
+          "title": "The Word That Creates and Accomplishes",
+          "readings": [
+            {
+              "book": "Genesis",
+              "chapter": 1,
+              "startVerse": 1,
+              "endVerse": 5
+            },
+            {
+              "book": "Psalms",
+              "chapter": 33,
+              "startVerse": 6,
+              "endVerse": 9
+            },
+            {
+              "book": "Isaiah",
+              "chapter": 55,
+              "startVerse": 8,
+              "endVerse": 11
+            }
+          ],
+          "introduction": "God speaks and creation responds. Isaiah compares his word to rain that accomplishes his purposes. Scripture shows the authority and effectiveness of God’s word without suggesting that God could speak falsely.",
+          "reflectionQuestions": [
+            "What do creation and Isaiah’s promise reveal about the power and purpose of God’s word?"
+          ],
+          "takeaway": "What God speaks is powerful and accomplishes his purposes."
+        },
+        {
+          "day": 3,
+          "title": "Written for Our Instruction",
+          "readings": [
+            {
+              "book": "2 Timothy",
+              "chapter": 3,
+              "startVerse": 14,
+              "endVerse": 17
+            },
+            {
+              "book": "Psalms",
+              "chapter": 119,
+              "startVerse": 9,
+              "endVerse": 16
+            },
+            {
+              "book": "Romans",
+              "chapter": 3,
+              "startVerse": 3,
+              "endVerse": 4
+            }
+          ],
+          "introduction": "People can be mistaken or unreliable, but Scripture equips believers with truth, correction, and instruction. Instead of letting every outside voice define reality, we can test what we hear against God’s word.",
+          "reflectionQuestions": [
+            "Which voices most shape how you think, and how can Scripture help you evaluate their claims?"
+          ],
+          "takeaway": "Let God’s truth guide what you believe and how you live."
+        },
+        {
+          "day": 4,
+          "title": "Who Does God Say You Are?",
+          "readings": [
+            {
+              "book": "John",
+              "chapter": 1,
+              "startVerse": 10,
+              "endVerse": 13
+            },
+            {
+              "book": "Romans",
+              "chapter": 8,
+              "startVerse": 14,
+              "endVerse": 17
+            },
+            {
+              "book": "1 Peter",
+              "chapter": 2,
+              "startVerse": 9,
+              "endVerse": 10
+            }
+          ],
+          "introduction": "Those who receive Christ are described as God’s children. Believers are also called to live as his people, showing his praises. These truths give an identity rooted in grace rather than the labels others assign.",
+          "reflectionQuestions": [
+            "Which description of believers in these passages most challenges the way you see yourself?"
+          ],
+          "takeaway": "In Christ, your identity rests on God’s grace, not other people’s judgments."
+        },
+        {
+          "day": 5,
+          "title": "Redeemed and Made Right with God",
+          "readings": [
+            {
+              "book": "Romans",
+              "chapter": 3,
+              "startVerse": 21,
+              "endVerse": 26
+            },
+            {
+              "book": "2 Corinthians",
+              "chapter": 5,
+              "startVerse": 17,
+              "endVerse": 21
+            },
+            {
+              "book": "Ephesians",
+              "chapter": 1,
+              "startVerse": 3,
+              "endVerse": 7
+            }
+          ],
+          "introduction": "Our standing before God is not earned by self-improvement. Through Christ, believers receive redemption and are made right with God by faith. Grace also calls us into a changed life.",
+          "reflectionQuestions": [
+            "How is being made right with God through Christ different from trying to prove your own worth?"
+          ],
+          "takeaway": "Righteousness and redemption are gifts of God’s grace in Christ."
+        },
+        {
+          "day": 6,
+          "title": "More Than Conquerors in Christ",
+          "readings": [
+            {
+              "book": "Romans",
+              "chapter": 8,
+              "startVerse": 31,
+              "endVerse": 39
+            },
+            {
+              "book": "Philippians",
+              "chapter": 4,
+              "startVerse": 10,
+              "endVerse": 13
+            },
+            {
+              "book": "Mark",
+              "chapter": 4,
+              "startVerse": 35,
+              "endVerse": 41
+            }
+          ],
+          "introduction": "Jesus has authority even over the storm, and Paul describes strength to endure both need and abundance through Christ. Romans assures believers that hardship cannot separate them from God’s love; it does not promise a trouble-free life.",
+          "reflectionQuestions": [
+            "When circumstances feel overwhelming, what do these passages actually promise you about Christ’s presence and love?"
+          ],
+          "takeaway": "Hardship is real, but Christ sustains his people and God’s love remains secure."
+        },
+        {
+          "day": 7,
+          "title": "Whose Report Will You Believe?",
+          "readings": [
+            {
+              "book": "Ephesians",
+              "chapter": 6,
+              "startVerse": 10,
+              "endVerse": 17
+            },
+            {
+              "book": "Hebrews",
+              "chapter": 4,
+              "startVerse": 12,
+              "endVerse": 13
+            },
+            {
+              "book": "James",
+              "chapter": 1,
+              "startVerse": 19,
+              "endVerse": 25
+            }
+          ],
+          "introduction": "Scripture calls God’s word a sword and describes it as living and discerning. Knowing its truth matters, but so does receiving it humbly and putting it into practice. The question is not whether our words can control circumstances, but whether we will trust and obey God’s word.",
+          "reflectionQuestions": [
+            "What is one false label, fearful assumption, or unhelpful belief you can bring under the light of Scripture—and what action will follow?"
+          ],
+          "takeaway": "Believe God’s word, learn it carefully, and live by its truth."
+        }
+      ]
     }
   ]
 }
