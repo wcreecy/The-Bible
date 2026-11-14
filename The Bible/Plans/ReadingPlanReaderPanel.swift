@@ -1,28 +1,37 @@
 import SwiftUI
 
-/// Shown at the end of a plan reading in the reader: where the reader is in the day, and the
-/// way to the next reading or to finishing the day.
+/// Shown where a plan reading ends in the reader: right after its last verse when it stops
+/// partway through a chapter, otherwise at the end of the chapter. Offers the next reading or
+/// finishing the day.
 struct ReadingPlanReaderPanel: View {
     let bookName: String
     let chapterNumber: Int
+    /// The verse this panel follows, or nil for the end of the chapter.
+    var afterVerse: Int? = nil
 
     @State private var store = ReadingPlanStore.shared
 
     var body: some View {
-        if let context = store.sessionReading(atBook: bookName, chapter: chapterNumber) {
+        if let context = store.sessionContext(atBook: bookName, chapter: chapterNumber),
+           context.isLastChapter,
+           context.endsAfterVerse == afterVerse {
             content(context)
         }
     }
 
-    private func content(
-        _ context: (session: ReadingPlanStore.Session, plan: ReadingPlan, day: PlanDay, reading: PlanReading)
-    ) -> some View {
+    private func content(_ context: ReadingPlanStore.SessionContext) -> some View {
         let session = context.session
         let readings = context.day.readings
         let isDayComplete = store.isDayComplete(session.day, planID: session.planID)
         let next = readings[safe: session.readingIndex + 1]
 
         return VStack(alignment: .leading, spacing: 10) {
+            if afterVerse != nil {
+                Label("End of today's reading", systemImage: "flag.checkered")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.accentColor)
+            }
+
             HStack(spacing: 8) {
                 Image(systemName: "calendar.badge.checkmark")
                     .foregroundStyle(Color.accentColor)
@@ -47,11 +56,11 @@ struct ReadingPlanReaderPanel: View {
                 .font(.headline)
                 .foregroundStyle(.green)
 
-                if let following = store.plan(id: session.planID).flatMap({ store.currentDay(of: $0) }) {
+                if let following = store.nextReading(of: session.planID) {
                     Button {
-                        store.openReading(0, day: following.day, of: session.planID)
+                        store.openReading(following.index, day: following.day, of: session.planID)
                     } label: {
-                        Label("Keep Going: Day \(following.day)", systemImage: "arrow.right")
+                        Text("Keep Going: Day \(following.day)")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -60,7 +69,7 @@ struct ReadingPlanReaderPanel: View {
                 Button {
                     store.advanceSession()
                 } label: {
-                    Label("Next: \(next.title)", systemImage: "arrow.right")
+                    Text("Next: \(next.title)")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -70,7 +79,7 @@ struct ReadingPlanReaderPanel: View {
                     store.finishSessionDay()
                     Haptics.success()
                 } label: {
-                    Label("Finish Day \(session.day)", systemImage: "checkmark")
+                    Text("Finish Day \(session.day)")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -81,5 +90,54 @@ struct ReadingPlanReaderPanel: View {
         .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .padding(.vertical, 12)
         .animation(.snappy, value: isDayComplete)
+    }
+}
+
+/// A slim reminder at the top of the reader that this chapter is part of a plan, and where
+/// it falls in the day. Tapping it returns to the plan day.
+struct ReadingPlanReaderPill: View {
+    let bookName: String
+    let chapterNumber: Int
+
+    @State private var store = ReadingPlanStore.shared
+
+    var body: some View {
+        if let context = store.sessionContext(atBook: bookName, chapter: chapterNumber) {
+            Button {
+                AppRouter.shared.open(.readingPlanDay(planID: context.session.planID, day: context.session.day))
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "calendar.badge.checkmark")
+                    Text("\(context.plan.title) · Day \(context.session.day)")
+                        .lineLimit(1)
+                    if let detail = detail(context) {
+                        Text("· \(detail)")
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Color.accentColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(Color.accentColor.opacity(0.1), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.bottom, 10)
+            .accessibilityHint("Returns to this day of the plan")
+        }
+    }
+
+    /// "Chapter 1 of 3" within a long reading, otherwise "Reading 1 of 2" within the day.
+    private func detail(_ context: ReadingPlanStore.SessionContext) -> String? {
+        if context.chapterCount > 1 {
+            return "Chapter \(context.chapterPosition) of \(context.chapterCount)"
+        }
+        let readings = context.day.readings.count
+        return readings > 1 ? "Reading \(context.session.readingIndex + 1) of \(readings)" : nil
     }
 }
