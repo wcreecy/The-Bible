@@ -60,12 +60,15 @@ struct CustomPlanGeneratorTests {
             bookName: "Test", verseCounts: verseCounts, highlights: highlights, style: .skipAround, dayCount: 8
         )
         #expect(plan.count == 8)
-        #expect(plan.first?.title == "Opening" || plan.first?.title.hasPrefix("Opening") == true)
+        // Overview days are titled by their passages; the rest are titled by their chapters.
+        let restDays = plan.filter { $0.title.hasPrefix("Test ") }
+        let overviewDays = plan.filter { !$0.title.hasPrefix("Test ") }
+        #expect(overviewDays.first?.title.hasPrefix("Opening") == true)
+        #expect(overviewDays.map(\.day).max()! < restDays.map(\.day).min()!)
         // Every verse is read, including the rest of the chapters after the overview.
         #expect(Set(coverage(plan)).count == verseCounts.reduce(0, +))
         // Chapter 4 is a key passage in full, so it isn't read again.
-        let restReadings = plan.drop { $0.readings.contains { $0.startVerse != nil || $0.chapter == 4 } }
-        #expect(!restReadings.contains { $0.readings.contains { $0.contains(chapter: 4) } })
+        #expect(!restDays.contains { $0.readings.contains { $0.contains(chapter: 4) } })
     }
 
     @Test

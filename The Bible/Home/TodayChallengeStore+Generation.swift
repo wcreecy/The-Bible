@@ -154,6 +154,23 @@ extension TodayChallengeStore {
     }
 
     private func makeReadingChallenge(using picker: inout FreshPicker) -> TodayChallenge {
+        // Someone following a reading plan reads its next passage instead of a random chapter.
+        if let (plan, day, reading) = ReadingPlanStore.shared.todaysReading() {
+            return TodayChallenge(
+                id: UUID(),
+                kind: .readChapter,
+                title: "Read \(reading.title)",
+                detail: "Day \(day.day) of \(plan.title).",
+                bookName: reading.book,
+                chapterNumber: reading.chapter,
+                gameName: nil,
+                minimumMinutes: nil,
+                isCompleted: false,
+                planID: plan.id,
+                planDay: day.day
+            )
+        }
+
         let (bookName, chapter) = pickChapter(using: &picker)
 
         return TodayChallenge(

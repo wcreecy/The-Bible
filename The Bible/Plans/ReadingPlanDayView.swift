@@ -93,11 +93,9 @@ struct ReadingPlanDayView: View {
                         }
                         if !isComplete { Haptics.success() }
                     } label: {
-                        Label(
-                            isComplete ? "Day Complete" : "Mark Day Complete",
-                            systemImage: isComplete ? "checkmark.circle.fill" : "checkmark.circle"
-                        )
-                        .frame(maxWidth: .infinity)
+                        // Text only: inside a list row, a filled button's icon takes the button's own color.
+                        Text(isComplete ? "Day Complete ✓" : "Mark Day Complete")
+                            .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(isComplete ? .green : .accentColor)
@@ -106,7 +104,7 @@ struct ReadingPlanDayView: View {
                     Button {
                         store.start(plan.id)
                     } label: {
-                        Label("Start This Plan", systemImage: "play.fill")
+                        Text("Start This Plan")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)

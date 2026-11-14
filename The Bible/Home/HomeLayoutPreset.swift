@@ -40,11 +40,11 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
     var preferredOrder: [HomeCardID] {
         switch self {
         case .reading:
-            [.verseOfDay, .resumeReading, .streaks, .dailyFocus, .savedVerses]
+            [.verseOfDay, .resumeReading, .readingPlan, .streaks, .dailyFocus, .savedVerses]
         case .study:
             [.verseOfDay, .study, .resumeReading, .savedVerses]
         case .dailyPractice:
-            [.verseOfDay, .resumeReading, .timer, .dailyFocus, .today]
+            [.verseOfDay, .readingPlan, .resumeReading, .timer, .dailyFocus, .today]
         case .minimal:
             [.resumeReading]
         }
@@ -73,7 +73,7 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
         case .reading:
             layout = HomeColumnLayout(
                 left: [.verseOfDay, .resumeReading],
-                middle: [.streaks, .dailyFocus],
+                middle: [.streaks, .dailyFocus, .readingPlan],
                 right: [],
                 verseOfDayWidth: .allColumns
             )
@@ -87,7 +87,7 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
         case .dailyPractice:
             layout = HomeColumnLayout(
                 left: [.verseOfDay, .resumeReading, .timer],
-                middle: [.dailyFocus],
+                middle: [.dailyFocus, .readingPlan],
                 right: [.today],
                 verseOfDayWidth: .allColumns
             )

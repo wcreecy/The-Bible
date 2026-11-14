@@ -263,6 +263,11 @@ struct ContentView: View {
         case .gameStart:
             // GamesView opens the requested game once it sees this request.
             selectedTab = .games
+        case .readingPlan(let planID):
+            selectedTab = .home
+            DispatchQueue.main.async {
+                homeCoordinator.path = planID.map { [.readingPlans, .readingPlan(id: $0)] } ?? [.readingPlans]
+            }
         case .scripturePreview:
             // Shown by the open note editor.
             break
@@ -315,6 +320,12 @@ struct ContentView: View {
             selectedTab = .home
         case let .open(book, chapter, verse):
             router.openBibleReference(book: book, chapter: chapter, verse: verse)
+        case let .readingPlan(planID, opensReading):
+            if opensReading, let planID, ReadingPlanStore.shared.enrollment(for: planID)?.isActive == true {
+                ReadingPlanStore.shared.continuePlan(planID)
+            } else {
+                router.open(.readingPlan(planID))
+            }
         case nil:
             break
         }

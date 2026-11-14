@@ -152,6 +152,8 @@ nonisolated struct PlanEnrollment: Codable, Equatable, Sendable {
     /// Readings finished on days that aren't complete yet, by day.
     var completedReadings: [Int: Set<Int>] = [:]
     var lastActivityAt: Date
+    /// When a day was last checked off, so the reminder can skip days already read.
+    var lastDayCompletedAt: Date?
     var finishedAt: Date?
     /// Set when the plan is stopped; kept so the stop reaches other devices.
     var isStopped = false
@@ -184,6 +186,7 @@ nonisolated struct PlanEnrollment: Codable, Equatable, Sendable {
         }
         merged.completedReadings = readings.filter { !merged.completedDays.contains($0.key) }
         merged.lastActivityAt = max(a.lastActivityAt, b.lastActivityAt)
+        merged.lastDayCompletedAt = [a.lastDayCompletedAt, b.lastDayCompletedAt].compactMap { $0 }.max()
         merged.finishedAt = [a.finishedAt, b.finishedAt].compactMap { $0 }.min()
         merged.updatedAt = max(a.updatedAt, b.updatedAt)
         return merged

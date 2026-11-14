@@ -58,6 +58,10 @@ struct HomeTodayCard: View {
         .onAppear {
             store.refresh()
         }
+        // A reading-plan task completes with its plan day.
+        .onChange(of: ReadingPlanStore.shared.document) {
+            store.refresh()
+        }
         .task {
             await refreshAtNextDayBoundary()
         }
@@ -91,6 +95,10 @@ struct HomeTodayCard: View {
     private func perform(_ challenge: TodayChallenge) {
         switch challenge.kind {
         case .readChapter:
+            if let planID = challenge.planID, ReadingPlanStore.shared.enrollment(for: planID)?.isActive == true {
+                ReadingPlanStore.shared.continuePlan(planID)
+                return
+            }
             guard let bookName = challenge.bookName, let chapter = challenge.chapterNumber else { return }
             Haptics.selection()
             AppRouter.shared.openBibleReference(book: bookName, chapter: chapter, verse: 1)

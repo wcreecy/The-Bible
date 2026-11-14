@@ -11,6 +11,7 @@ extension iCloudSyncCoordinator {
             bibleStatsKeys
             + sessionKeys
             + prayerStatsKeys
+            + readingPlanKeys
             + missedQuestionKeys
             + settingsKeys
             + gamePlayTimeCounterKeys

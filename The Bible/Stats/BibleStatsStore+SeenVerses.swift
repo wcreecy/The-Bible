@@ -53,6 +53,8 @@ extension BibleStatsStore {
             (1...$0.totalVerses).contains($0.verse)
         }
         guard !validUpdates.isEmpty else { return }
+        // Plans count verses read again too, so this comes before the already-seen check.
+        ReadingPlanStore.shared.versesRead(validUpdates)
 
         ensureSeenVerseCacheLoaded()
         var seenMap = cacheSeenVersesByChapter ?? [:]

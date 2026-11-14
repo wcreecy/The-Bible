@@ -75,6 +75,11 @@ nonisolated enum BibleTermMatcher {
     }
 
     static func loadIndex(bundle: Bundle = .main) -> [IndexedTerm] {
+        index(loadTerms(bundle: bundle))
+    }
+
+    /// Every term in `BibleTerms.json`, in catalog order.
+    static func loadTerms(bundle: Bundle = .main) -> [BibleTerm] {
         guard let url = bundle.url(forResource: "BibleTerms", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let catalog = PersistedDecoding.decode(Catalog.self, from: data, name: "BibleTerms.json") else {
@@ -82,7 +87,7 @@ nonisolated enum BibleTermMatcher {
             assertionFailure("BibleTerms.json is missing or invalid.")
             return []
         }
-        return index(catalog.entries)
+        return catalog.entries
     }
 
     static func index(_ terms: [BibleTerm]) -> [IndexedTerm] {

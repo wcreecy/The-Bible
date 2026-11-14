@@ -71,9 +71,8 @@ struct CustomPlanBuilderView: View {
                     HStack(spacing: 8) {
                         ForEach(presets, id: \.self) { preset in
                             Button("\(preset)") { dayCount = preset }
-                                .buttonStyle(.bordered)
-                                .buttonBorderShape(.capsule)
-                                .tint(dayCount == preset ? .accentColor : .secondary)
+                                .buttonStyle(PresetButtonStyle(isSelected: dayCount == preset))
+                                .accessibilityAddTraits(dayCount == preset ? .isSelected : [])
                         }
                     }
                 }
@@ -108,7 +107,8 @@ struct CustomPlanBuilderView: View {
                     }
                     coordinator.push(.readingPlan(id: id))
                 } label: {
-                    Label("Create and Start Plan", systemImage: "checkmark")
+                    // Text only: inside a list row, a filled button's icon takes the button's own color.
+                    Text("Create and Start Plan")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -183,7 +183,11 @@ struct CustomPlanBuilderView: View {
         let chapters = verseCounts.count
         let verses = verseCounts.reduce(0, +)
         let chapterText = chapters == 1 ? "1 chapter" : "\(chapters) chapters"
-        let highlightText = highlights.isEmpty ? "" : " · \(highlights.count) key passages"
+        let highlightText = switch highlights.count {
+        case 0: ""
+        case 1: " · 1 key passage"
+        default: " · \(highlights.count) key passages"
+        }
         return "\(chapterText) · \(verses) verses\(highlightText)"
     }
 
@@ -208,5 +212,21 @@ struct CustomPlanBuilderView: View {
 
     private func resetDays() {
         dayCount = CustomPlanGenerator.suggestedDays(for: style, verseCounts: verseCounts, highlights: highlights)
+    }
+}
+
+/// A day-count shortcut: outlined, or filled when it's the current length.
+private struct PresetButtonStyle: ButtonStyle {
+    let isSelected: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline.weight(.semibold))
+            .monospacedDigit()
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .foregroundStyle(isSelected ? Color.white : Color.accentColor)
+            .background(isSelected ? Color.accentColor : Color.accentColor.opacity(0.12), in: Capsule())
+            .opacity(configuration.isPressed ? 0.7 : 1)
     }
 }

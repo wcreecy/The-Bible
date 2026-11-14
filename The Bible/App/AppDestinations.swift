@@ -39,6 +39,18 @@ extension View {
                         books: BibleData.books,
                         requestedDestination: destination
                     )
+
+                case .readingPlans:
+                    ReadingPlansView()
+
+                case .readingPlan(let id):
+                    ReadingPlanDetailView(planID: id)
+
+                case .readingPlanDay(let planID, let day):
+                    ReadingPlanDayView(planID: planID, dayNumber: day)
+
+                case .customReadingPlanBuilder:
+                    CustomPlanBuilderView()
                 }
             }
     }

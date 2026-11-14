@@ -47,6 +47,7 @@ struct The_Bible_WidgetsBundle: WidgetBundle {
     var body: some Widget {
         VerseWidget()
         LastReadWidget()
+        ReadingPlanWidget()
         PinnedVerseWidget()        // <- existing pinned verse widget
         RandomVerseLockScreenWidget() // Lock Screen random verse
         PrayerTimerLiveActivity()

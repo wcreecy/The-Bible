@@ -87,10 +87,15 @@ private struct ActivePlanRow: View {
     var body: some View {
         HStack(spacing: 14) {
             ProgressRing(progress: store.progress(of: plan), lineWidth: 5, size: 44) {
-                Text("\(Int((store.progress(of: plan) * 100).rounded()))%")
+                Text("\(store.enrollment(for: plan.id)?.completedDays.count ?? 0)/\(plan.days.count)")
                     .font(.caption2.weight(.semibold))
                     .monospacedDigit()
+                    .minimumScaleFactor(0.6)
             }
+            .accessibilityLabel(ReadingPlanHomeCard.progressLabel(
+                read: store.enrollment(for: plan.id)?.completedDays.count ?? 0,
+                of: plan.days.count
+            ))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(plan.title)
@@ -99,7 +104,7 @@ private struct ActivePlanRow: View {
                     Text("Day \(day.day) of \(plan.days.count) · \(day.title)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
                 }
                 if let pace = store.paceDescription(for: plan) {
                     Text(pace)

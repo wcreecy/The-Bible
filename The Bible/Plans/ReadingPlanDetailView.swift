@@ -121,7 +121,10 @@ struct ReadingPlanDetailView: View {
                             .font(.caption.weight(.semibold))
                             .monospacedDigit()
                     }
-                    .accessibilityLabel("\(enrollment?.completedDays.count ?? 0) of \(plan.days.count) days read")
+                    .accessibilityLabel(ReadingPlanHomeCard.progressLabel(
+                        read: enrollment?.completedDays.count ?? 0,
+                        of: plan.days.count
+                    ))
                 }
             }
 
@@ -152,7 +155,8 @@ struct ReadingPlanDetailView: View {
             Button {
                 store.continuePlan(plan.id)
             } label: {
-                Label("Read Day \(day.day): \(day.readingSummary)", systemImage: "book.fill")
+                // Text only: inside a list row, a filled button's icon takes the button's own color.
+                Text("Read Day \(day.day): \(day.readingSummary)")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
@@ -161,7 +165,7 @@ struct ReadingPlanDetailView: View {
             Button {
                 store.start(plan.id)
             } label: {
-                Label("Start Plan", systemImage: "play.fill")
+                Text("Start Plan")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)

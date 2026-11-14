@@ -38,6 +38,8 @@ final class AppRouter {
         case scripturePreview(URL)
         /// Starts the game stored in `GameLaunchRequest`.
         case gameStart
+        /// Reading plans in the Home tab: one plan when an ID is given, otherwise all of them.
+        case readingPlan(String?)
 
         /// The tab this destination lives in, or nil when it doesn't change tabs.
         var targetTab: AppTab? {
@@ -46,6 +48,7 @@ final class AppRouter {
             case .favorites, .settings, .stats: .more
             case .bibleReference, .bibleSearch, .bibleStudy, .bibleStudyDestination: .bible
             case .gameStart: .games
+            case .readingPlan: .home
             case .verseOfDayNotification, .scripturePreview: nil
             }
         }

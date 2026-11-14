@@ -36,6 +36,10 @@ extension iCloudSyncCoordinator {
             mirrorPrayerStatsKeyToKVS(key)
             return
         }
+        if Self.readingPlanKeys.contains(key) {
+            mirrorReadingPlansKeyToKVS(key)
+            return
+        }
         if Self.missedQuestionKeys.contains(key) {
             mirrorMissedQuestionsKeyToKVS(key)
             return

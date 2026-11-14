@@ -20,4 +20,8 @@ struct TodayChallenge: Identifiable, Codable, Equatable {
     let gameName: String?
     let minimumMinutes: Int?
     var isCompleted: Bool
+    /// Set for a reading-plan task: the plan and day it completes with. Older versions ignore
+    /// these and treat the task as an ordinary chapter.
+    var planID: String? = nil
+    var planDay: Int? = nil
 }

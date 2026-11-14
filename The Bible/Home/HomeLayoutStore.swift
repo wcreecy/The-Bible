@@ -55,7 +55,8 @@ struct HomeLayoutStore {
                 .streaks,
                 .timer,
                 .dailyFocus,
-                .resumeReading
+                .resumeReading,
+                .readingPlan
             ]
         }
 
@@ -64,6 +65,7 @@ struct HomeLayoutStore {
             .setup,
             .verseOfDay,
             .resumeReading,
+            .readingPlan,
             .today,
             .savedVerses,
             .study,
@@ -75,7 +77,7 @@ struct HomeLayoutStore {
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
             // Keep the first iPad dashboard focused on Welcome, Today, and the timer.
-            return [.resumeReading, .savedVerses, .study, .streaks, .dailyFocus]
+            return [.resumeReading, .readingPlan, .savedVerses, .study, .streaks, .dailyFocus]
         }
         // Keep the first iPhone home screen focused on Welcome, Verse of the Day, and reading.
         return [.today, .savedVerses, .study, .streaks, .timer, .dailyFocus]
@@ -94,7 +96,7 @@ struct HomeLayoutStore {
             return HomeColumnLayout(
                 left: [.verseOfDay, .setup, .savedVerses, .study],
                 middle: [.today, .streaks, .dailyFocus],
-                right: [.timer, .resumeReading],
+                right: [.timer, .resumeReading, .readingPlan],
                 verseOfDayWidth: .allColumns
             )
         }

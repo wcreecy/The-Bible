@@ -45,6 +45,11 @@ final class BibleAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificatio
             Task { @MainActor in
                 AppRouter.shared.open(.tab(.home))
             }
+        } else if destination == ReadingPlanReminderScheduler.destination {
+            let planID = request.content.userInfo["planID"] as? String
+            Task { @MainActor in
+                AppRouter.shared.open(.readingPlan(planID))
+            }
         }
 
         completionHandler()
@@ -277,10 +282,13 @@ struct The_Bible__iOS_App: App {
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                         Task { await cloudKitManager.refresh() }
                         Task { await StreakReminderScheduler.refresh() }
+                        Task { await ReadingPlanReminderScheduler.refresh() }
+                        ReadingPlanWidgetMirror.update(from: .shared)
                     case .background:
                         // iCloudSyncCoordinator pushes its own keys when the app enters the background.
                         // Drops today's reminder if reading in this session met the goal.
                         Task { await StreakReminderScheduler.refresh() }
+                        Task { await ReadingPlanReminderScheduler.refresh() }
                     default:
                         break
                     }

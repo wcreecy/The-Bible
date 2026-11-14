@@ -23,6 +23,18 @@ struct ReadingPlanHomeCard: View {
 
     private func activeContent(plan: ReadingPlan, enrollment: PlanEnrollment, day: PlanDay) -> some View {
         VStack(alignment: .leading, spacing: usesCompactLayout ? 10 : 12) {
+            // The plans list sits up here, so the action buttons below keep their room.
+            HStack {
+                Text("READING PLAN")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("All Plans", action: onOpenLibrary)
+                    .font(.subheadline.weight(.semibold))
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.accentColor)
+            }
+
             Button {
                 onOpenPlan(plan.id)
             } label: {
@@ -66,7 +78,7 @@ struct ReadingPlanHomeCard: View {
                             .monospacedDigit()
                             .minimumScaleFactor(0.6)
                     }
-                    .accessibilityLabel("\(enrollment.completedDays.count) of \(plan.days.count) days read")
+                    .accessibilityLabel(Self.progressLabel(read: enrollment.completedDays.count, of: plan.days.count))
                 }
                 .contentShape(Rectangle())
             }
@@ -88,22 +100,27 @@ struct ReadingPlanHomeCard: View {
                     }
                     Haptics.success()
                 } label: {
-                    Label("Mark Read", systemImage: "checkmark")
-                        .font(.subheadline.weight(.semibold))
+                    Label {
+                        Text("Mark Read")
+                    } icon: {
+                        // The checkmark symbol reads as "Selected" to VoiceOver; the text says it.
+                        Image(systemName: "checkmark").accessibilityHidden(true)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
                 }
+                .accessibilityLabel("Mark day \(day.day) read")
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
 
                 Spacer(minLength: 0)
-
-                if store.activePlans.count > 1 {
-                    Button("All Plans", action: onOpenLibrary)
-                        .font(.subheadline)
-                        .buttonStyle(.plain)
-                        .foregroundStyle(Color.accentColor)
-                }
             }
         }
+    }
+
+    /// "3 of 21 days read", "0 of 1 day read".
+    static func progressLabel(read: Int, of total: Int) -> String {
+        total == 1 ? "\(read) of 1 day read" : "\(read) of \(total) days read"
     }
 
     // MARK: - No plan in progress

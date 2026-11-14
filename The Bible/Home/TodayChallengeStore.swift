@@ -156,8 +156,11 @@ final class TodayChallengeStore {
 
     private func syncCompletedReadingChallenges() {
         updateChallenges { challenge in
-            guard challenge.kind == .readChapter,
-                  let bookName = challenge.bookName,
+            guard challenge.kind == .readChapter else { return false }
+            if let planID = challenge.planID, let planDay = challenge.planDay {
+                return ReadingPlanStore.shared.isDayComplete(planDay, planID: planID)
+            }
+            guard let bookName = challenge.bookName,
                   let chapterNumber = challenge.chapterNumber,
                   let book = BibleData.books.first(where: { $0.name == bookName }),
                   let chapter = book.chapters.first(where: { $0.number == chapterNumber }) else {

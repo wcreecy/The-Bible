@@ -406,6 +406,13 @@ struct HomeView: View {
                     openBibleReference(book: bookName, chapter: chapterNumber, verse: verseNumber)
                 }
             )
+        case .readingPlan:
+            ReadingPlanHomeCard(
+                usesCompactLayout: !isPad,
+                onOpenLibrary: { coordinator.push(.readingPlans) },
+                onOpenPlan: { id in coordinator.push(.readingPlan(id: id)) },
+                onCreatePlan: { coordinator.push(.customReadingPlanBuilder) }
+            )
         case .savedVerses:
             SavedVersesHomeCardContainer(
                 onOpenSavedVerses: { AppRouter.shared.open(.favorites) },

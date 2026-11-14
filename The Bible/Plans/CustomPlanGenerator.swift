@@ -17,6 +17,9 @@ nonisolated enum CustomPlanGenerator {
     static let maximumDays = 365
     /// A day is at least about this many verses when a book is split finer than its chapters.
     static let minimumVersesPerDay = 5
+    /// "Skip Around" gives its overview days no more key passages than this, when it can.
+    static let maximumHighlightsPerDay = 3
+    private static let passageOverheadVerses = 10
 
     // MARK: - Choices
 
@@ -38,7 +41,9 @@ nonisolated enum CustomPlanGenerator {
             let rest = remainingChapters(verseCounts: verseCounts, highlights: highlights)
             let restVerses = rest.reduce(0) { $0 + $1.verseCount }
             let restFinest = rest.isEmpty ? 0 : max(rest.count, restVerses / minimumVersesPerDay)
-            return 1...max(1, min(maximumDays, highlights.count + restFinest))
+            // At least one day for the key passages and one for the rest of the book.
+            let fewest = rest.isEmpty ? 1 : 2
+            return fewest...max(fewest, min(maximumDays, highlights.count + restFinest))
         }
     }
 
@@ -136,8 +141,7 @@ nonisolated enum CustomPlanGenerator {
 
     /// Parses "Book C", "Book C-C", "Book C:V", "Book C:V-V", or "Book C:V-C:V".
     static func parse(_ reference: String) -> PlanReading? {
-        let pattern = #"^(.+?) (\d+)(?::(\d+))?(?:[-–](\d+)(?::(\d+))?)?$"#
-        guard let regex = try? NSRegularExpression(pattern: pattern),
+        guard let regex = referencePattern,
               let match = regex.firstMatch(in: reference, range: NSRange(reference.startIndex..., in: reference)) else {
             return nil
         }
@@ -162,6 +166,10 @@ nonisolated enum CustomPlanGenerator {
             return PlanReading(book: book, chapter: chapter)
         }
     }
+
+    private static let referencePattern = try? NSRegularExpression(
+        pattern: #"^(.+?) (\d+)(?::(\d+))?(?:[-–](\d+)(?::(\d+))?)?$"#
+    )
 
     // MARK: - Splitting
 
@@ -198,6 +206,9 @@ nonisolated enum CustomPlanGenerator {
 
         let share = Double(highlightVerses) / Double(max(1, highlightVerses + restVerses))
         var highlightDays = Int((Double(dayCount) * share).rounded())
+        // Key passages are short but each one is a jump to a new place, so a day holds only a few.
+        let fewestForPassages = (highlights.count + maximumHighlightsPerDay - 1) / maximumHighlightsPerDay
+        highlightDays = max(highlightDays, fewestForPassages)
         highlightDays = min(max(highlightDays, 1), highlights.count, dayCount - 1)
         // Give the rest no more days than it can be split into.
         highlightDays = max(highlightDays, dayCount - restCapacity)
@@ -211,7 +222,9 @@ nonisolated enum CustomPlanGenerator {
         verseCounts: [Int]
     ) -> [(title: String?, readings: [PlanReading])] {
         guard dayCount > 0, !highlights.isEmpty else { return [] }
-        let weights = highlights.map { Double($0.reading.verses(verseCounts: verseCounts).count) }
+        // Each passage counts a few extra verses for finding a new place, so short passages
+        // spread across days instead of piling into one.
+        let weights = highlights.map { Double($0.reading.verses(verseCounts: verseCounts).count + passageOverheadVerses) }
         let cuts = balancedCuts(weights: weights, groups: min(dayCount, highlights.count), prefersCut: { _ in true })
         return ranges(from: cuts, count: highlights.count).map { range in
             let group = Array(highlights[range])

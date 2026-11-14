@@ -6,6 +6,10 @@ enum Route: Hashable {
     case reader(book: Book, chapter: Chapter, startVerse: Int)
     case search
     case study(AppRouter.StudyDestination?)
+    case readingPlans
+    case readingPlan(id: String)
+    case readingPlanDay(planID: String, day: Int)
+    case customReadingPlanBuilder
 }
 
 struct BibleReaderLocation: Hashable {

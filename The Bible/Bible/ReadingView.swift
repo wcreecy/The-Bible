@@ -516,6 +516,12 @@ struct ReadingView: View {
                         onVerseActionFeedback: handleVerseActionFeedback
                     )
 
+                    // Opened from a reading plan: the way to the plan's next reading.
+                    ReadingPlanReaderPanel(
+                        bookName: viewModel.currentBook.name,
+                        chapterNumber: viewModel.currentChapter.number
+                    )
+
                     // The way forward at the end of a chapter, without a swipe or the small arrows.
                     if let nextTitle = viewModel.nextChapterTitle {
                         Divider()

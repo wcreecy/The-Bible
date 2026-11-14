@@ -1,7 +1,6 @@
 import Foundation
 import Observation
 import OSLog
-import WidgetKit
 
 private let readingPlanLogger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
@@ -46,10 +45,16 @@ final class ReadingPlanStore {
     /// Verses seen for each plan reading this launch, keyed by `readingKey`.
     @ObservationIgnored private var viewedVerses: [String: Set<String>] = [:]
     @ObservationIgnored private var cachedTerms: [BibleTerm]?
+    @ObservationIgnored private var cachedHighlights: [String: [CustomPlanGenerator.Highlight]] = [:]
     @ObservationIgnored private let defaults: UserDefaults
+    /// Off in tests, which shouldn't sync, reload widgets, or schedule notifications.
+    @ObservationIgnored private let publishesChanges: Bool
+    /// Each chapter's verse count for a book. Tests supply their own instead of the corpus.
+    @ObservationIgnored var verseCountsForBook: (String) -> [Int] = { ReadingPlanStore.verseCounts(forBook: $0) }
 
-    init(defaults: UserDefaults = .standard, catalog: [ReadingPlan]? = nil) {
+    init(defaults: UserDefaults = .standard, catalog: [ReadingPlan]? = nil, publishesChanges: Bool = true) {
         self.defaults = defaults
+        self.publishesChanges = publishesChanges
         self.catalog = catalog ?? Self.loadCatalog()
         document = Self.decode(defaults.data(forKey: Self.storageKey)) ?? ReadingPlansDocument()
     }
@@ -165,6 +170,7 @@ final class ReadingPlanStore {
         if complete {
             guard enrollment.completedDays.insert(day).inserted else { return }
             enrollment.completedReadings[day] = nil
+            enrollment.lastDayCompletedAt = now
         } else {
             guard enrollment.completedDays.remove(day) != nil else { return }
             enrollment.finishedAt = nil
@@ -214,18 +220,22 @@ final class ReadingPlanStore {
 
     /// The key passages of a book, for "Major Points" and "Skip Around".
     func highlights(forBook bookName: String) -> [CustomPlanGenerator.Highlight] {
+        if let cached = cachedHighlights[bookName] { return cached }
+        let verseCounts = verseCountsForBook(bookName)
+        // Wait for the corpus; an empty book has no passages to find yet.
+        guard !verseCounts.isEmpty else { return [] }
+
         let terms = cachedTerms ?? BibleTermMatcher.loadTerms()
         cachedTerms = terms
+        let prefix = bookName + " "
         let references = terms.flatMap { term in
             term.references
-                .filter { $0.type == "primary" }
+                .filter { $0.type == "primary" && $0.reference.hasPrefix(prefix) }
                 .map { (title: term.term, reference: $0.reference) }
         }
-        return CustomPlanGenerator.highlights(
-            from: references,
-            bookName: bookName,
-            verseCounts: Self.verseCounts(forBook: bookName)
-        )
+        let highlights = CustomPlanGenerator.highlights(from: references, bookName: bookName, verseCounts: verseCounts)
+        cachedHighlights[bookName] = highlights
+        return highlights
     }
 
     /// Builds a plan for `bookName`, saves it, and starts it. Returns its ID.
@@ -233,7 +243,7 @@ final class ReadingPlanStore {
     func createCustomPlan(bookName: String, dayCount: Int, style: CustomPlanStyle, now: Date = Date()) -> String {
         let days = CustomPlanGenerator.makeDays(
             bookName: bookName,
-            verseCounts: Self.verseCounts(forBook: bookName),
+            verseCounts: verseCountsForBook(bookName),
             highlights: highlights(forBook: bookName),
             style: style,
             dayCount: dayCount
@@ -337,7 +347,7 @@ final class ReadingPlanStore {
                 let matching = updates.filter { $0.bookName == reading.book && reading.contains(chapter: $0.chapter) }
                 guard !matching.isEmpty else { continue }
 
-                let required = reading.verses(verseCounts: Self.verseCounts(forBook: reading.book))
+                let required = reading.verses(verseCounts: verseCountsForBook(reading.book))
                 guard let last = required.last else { continue }
                 let requiredKeys = Set(required.map { "\($0.chapter):\($0.verse)" })
                 let key = Self.readingKey(planID: plan.id, startedAt: enrollment.startedAt, day: day.day, index: index)
@@ -369,11 +379,10 @@ final class ReadingPlanStore {
         return (plan, day, reading)
     }
 
-    /// Whether a day of `planID` was finished on `date`'s calendar day.
-    func finishedADay(of planID: String, on date: Date, calendar: Calendar = .current) -> Bool {
-        guard let enrollment = document.enrollments[planID] else { return false }
-        return calendar.isDate(enrollment.lastActivityAt, inSameDayAs: date) && !enrollment.completedDays.isEmpty
-            && enrollment.completedReadings.isEmpty
+    /// Whether a day of `planID` was checked off on `date`'s calendar day.
+    func completedADay(of planID: String, on date: Date, calendar: Calendar = .current) -> Bool {
+        guard let completedAt = enrollment(for: planID)?.lastDayCompletedAt else { return false }
+        return calendar.isDate(completedAt, inSameDayAs: date)
     }
 
     // MARK: - Sync
@@ -403,6 +412,7 @@ final class ReadingPlanStore {
 
     private func save() {
         saveLocally()
+        guard publishesChanges else { return }
         iCloudSyncCoordinator.shared.pushKey(Self.storageKey)
         afterChange()
     }
@@ -416,6 +426,7 @@ final class ReadingPlanStore {
     }
 
     private func afterChange() {
+        guard publishesChanges else { return }
         ReadingPlanWidgetMirror.update(from: self)
         Task { await ReadingPlanReminderScheduler.refresh() }
     }

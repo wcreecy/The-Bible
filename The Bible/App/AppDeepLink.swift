@@ -7,6 +7,8 @@ enum AppDeepLink: Equatable {
     case home
     /// `thebible://open?book=Name&chapter=Int&verse=Int`
     case open(book: String, chapter: Int, verse: Int)
+    /// `thebible://plan?id=PlanID&read=1`: a reading plan, or with `read=1` its next reading.
+    case readingPlan(id: String?, opensReading: Bool)
 
     init?(url: URL) {
         guard url.scheme?.lowercased() == "thebible" else { return nil }
@@ -17,10 +19,17 @@ enum AppDeepLink: Equatable {
             return
         }
 
-        guard host == "open" else { return nil }
         guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         var params: [String: String] = [:]
         comps.queryItems?.forEach { params[$0.name.lowercased()] = $0.value ?? "" }
+
+        if host == "plan" {
+            let id = params["id"].flatMap { $0.isEmpty ? nil : $0 }
+            self = .readingPlan(id: id, opensReading: params["read"] == "1")
+            return
+        }
+
+        guard host == "open" else { return nil }
         guard
             let book = params["book"], !book.isEmpty,
             let chapStr = params["chapter"], let chapter = Int(chapStr),

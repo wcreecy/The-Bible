@@ -49,6 +49,13 @@ struct BooksView: View {
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
+                    coordinator.push(.readingPlans)
+                } label: {
+                    Image(systemName: "calendar.badge.checkmark")
+                }
+                .accessibilityLabel("Reading plans")
+
+                Button {
                     coordinator.push(.search)
                 } label: {
                     Image(systemName: "magnifyingglass")

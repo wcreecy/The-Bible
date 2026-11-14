@@ -26,6 +26,10 @@ extension iCloudSyncCoordinator {
             mergePrayerStatsIncoming(forKey: key)
             return
         }
+        if Self.readingPlanKeys.contains(key) {
+            mergeReadingPlansIncoming(forKey: key)
+            return
+        }
         if Self.missedQuestionKeys.contains(key) {
             mergeMissedQuestionsIncoming(forKey: key)
             return
