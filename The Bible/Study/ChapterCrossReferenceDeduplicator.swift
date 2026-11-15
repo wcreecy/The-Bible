@@ -10,6 +10,7 @@ enum ChapterCrossReferenceDeduplicator {
     ) -> ChapterInsights {
         ChapterInsights(
             overallSummary: insights.overallSummary,
+            briefSummary: insights.briefSummary,
             readingContext: insights.readingContext,
             keyFigures: insights.keyFigures,
             keyThemes: insights.keyThemes,

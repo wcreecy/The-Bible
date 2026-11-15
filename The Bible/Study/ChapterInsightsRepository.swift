@@ -3,6 +3,8 @@ import SQLite3
 
 struct ChapterInsights: Equatable, Sendable {
     let overallSummary: String
+    /// A one-sentence answer to "what is this chapter about?"; nil until one is written.
+    var briefSummary: String? = nil
     let readingContext: ChapterReadingContext?
     let keyFigures: [ChapterKeyFigure]
     let keyThemes: [ChapterKeyTheme]
@@ -210,7 +212,7 @@ actor ChapterInsightsRepository {
     func insights(forBookNamed bookName: String, chapterNumber: Int) -> ChapterInsights? {
         withDatabase { database in
             let query = """
-            SELECT overall_summary
+            SELECT overall_summary, brief_summary
             FROM chapter_insights
             WHERE book_name = ? AND chapter_number = ?
             LIMIT 1;
@@ -230,6 +232,7 @@ actor ChapterInsightsRepository {
 
             return ChapterInsights(
                 overallSummary: Self.columnText(statement, at: 0),
+                briefSummary: Self.optionalColumnText(statement, at: 1),
                 readingContext: loadReadingContext(
                     forBookNamed: bookName,
                     chapterNumber: chapterNumber,

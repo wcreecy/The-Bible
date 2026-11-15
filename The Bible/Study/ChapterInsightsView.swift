@@ -71,6 +71,15 @@ struct ChapterInsightsView: View {
             VStack(alignment: .leading, spacing: 20) {
                 WhereWeAreSection(narrativePlacement: content.narrativePlacement)
 
+
+                if let brief = insights.briefSummary {
+                    HeroCard(title: "In Brief", icon: "text.quote") {
+                        Text(brief)
+                            .font(.body)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
                 ChapterSummaryCard(
                     bookName: bookName,
                     chapterNumber: chapterNumber,
