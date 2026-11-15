@@ -4,6 +4,7 @@ struct BookOverviewView: View {
     let bookName: String
 
     @State private var overview: BibleBookOverview?
+    @State private var chapterBriefs: [Int: String] = [:]
     @State private var isLoading = true
     @State private var studyTimeSourceID = UUID()
 
@@ -58,6 +59,8 @@ struct BookOverviewView: View {
                     BookStructureSection(bookName: bookName, sections: overview.story)
                 }
 
+                ChapterByChapterSection(bookName: bookName, briefs: chapterBriefs)
+
                 if !overview.keyFigures.isEmpty {
                     KeyFiguresSection(keyFigures: overview.keyFigures)
                 }
@@ -95,7 +98,64 @@ struct BookOverviewView: View {
         guard overview?.name != bookName else { return }
         isLoading = true
         overview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
+        chapterBriefs = await ChapterInsightsRepository.shared.briefSummaries(forBookNamed: bookName)
         isLoading = false
+    }
+}
+
+/// A taste of the book's chapter-by-chapter summaries, with a way into the full list.
+private struct ChapterByChapterSection: View {
+    let bookName: String
+    let briefs: [Int: String]
+
+    /// Short books show every chapter here; longer ones show the first few and link to the rest.
+    private static let previewCount = 3
+    private static let showAllLimit = 4
+
+    private var chapterNumbers: [Int] {
+        briefs.keys.sorted()
+    }
+
+    private var previewNumbers: [Int] {
+        chapterNumbers.count <= Self.showAllLimit
+            ? chapterNumbers
+            : Array(chapterNumbers.prefix(Self.previewCount))
+    }
+
+    var body: some View {
+        if !briefs.isEmpty {
+            HeroCard(title: "Chapter by Chapter", icon: "list.bullet.rectangle") {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(previewNumbers, id: \.self) { number in
+                        NavigationLink {
+                            ChapterInsightsView(bookName: bookName, chapterNumber: number)
+                                .studySheetDoneButton()
+                        } label: {
+                            ChapterBriefRow(chapterNumber: number, brief: briefs[number] ?? "")
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint("Opens chapter \(number) insights")
+
+                        if number != previewNumbers.last {
+                            Divider()
+                        }
+                    }
+
+                    if previewNumbers.count < chapterNumbers.count {
+                        NavigationLink {
+                            BookChapterBriefsView(bookName: bookName)
+                        } label: {
+                            Label("See All \(chapterNumbers.count) Chapters", systemImage: "list.bullet")
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 4)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
 }
 

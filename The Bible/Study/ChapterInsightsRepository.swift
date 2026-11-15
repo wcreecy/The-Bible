@@ -333,6 +333,34 @@ actor ChapterInsightsRepository {
         }
     }
 
+    /// Every chapter's brief summary in a book, keyed by chapter number, for reading a
+    /// book's chapters at a glance. Chapters without a brief yet are left out.
+    func briefSummaries(forBookNamed bookName: String) -> [Int: String] {
+        withDatabase { database in
+            let query = """
+            SELECT chapter_number, brief_summary
+            FROM chapter_insights
+            WHERE book_name = ?
+            ORDER BY chapter_number;
+            """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+                  let statement else {
+                return nil
+            }
+            defer { sqlite3_finalize(statement) }
+
+            sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+
+            var briefs: [Int: String] = [:]
+            while sqlite3_step(statement) == SQLITE_ROW {
+                guard let brief = Self.optionalColumnText(statement, at: 1) else { continue }
+                briefs[Int(sqlite3_column_int(statement, 0))] = brief
+            }
+            return briefs
+        } ?? [:]
+    }
+
     /// Every chapter's key theme names in a book, in order, keyed by chapter number, for
     /// previewing chapters in a list.
     func themeNames(forBookNamed bookName: String) -> [Int: [String]] {

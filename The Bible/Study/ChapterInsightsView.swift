@@ -74,9 +74,26 @@ struct ChapterInsightsView: View {
 
                 if let brief = insights.briefSummary {
                     HeroCard(title: "In Brief", icon: "text.quote") {
-                        Text(brief)
-                            .font(.body)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(brief)
+                                .font(.body)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            // Choosing a chapter from the list changes this page in place.
+                            NavigationLink {
+                                BookChapterBriefsView(
+                                    bookName: bookName,
+                                    currentChapter: chapterNumber,
+                                    onSelectChapter: { number in
+                                        location = ChapterLocation(bookName: bookName, chapterNumber: number)
+                                    }
+                                )
+                            } label: {
+                                Label("See all chapters in \(bookName)", systemImage: "list.bullet")
+                                    .font(.subheadline.weight(.semibold))
+                            }
+                            .accessibilityHint("Shows a one-sentence summary of every chapter in \(bookName)")
+                        }
                     }
                 }
 
