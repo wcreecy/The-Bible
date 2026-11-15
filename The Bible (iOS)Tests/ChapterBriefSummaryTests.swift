@@ -3,7 +3,7 @@ import Testing
 
 struct ChapterBriefSummaryTests {
     /// Chapters with a brief line so far; widen as more books are written.
-    private static let writtenBooks = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "John"]
+    private static let writtenBooks = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "John"]
 
     @Test
     func writtenBooksHaveOneSentenceBriefsForEveryChapter() async throws {
@@ -23,7 +23,7 @@ struct ChapterBriefSummaryTests {
 
     @Test
     func chaptersWithoutABriefShowNone() async {
-        let insights = await ChapterInsightsRepository.shared.insights(forBookNamed: "Joshua", chapterNumber: 1)
+        let insights = await ChapterInsightsRepository.shared.insights(forBookNamed: "Ruth", chapterNumber: 1)
         #expect(insights?.briefSummary == nil)
     }
 }
