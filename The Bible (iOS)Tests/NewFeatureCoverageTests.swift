@@ -141,7 +141,8 @@ struct ReadingPlanCatalogTests {
     func everySymbolAndImageExists() {
         for plan in catalog {
             if let symbol = plan.symbol {
-                #expect(UIImage(systemName: symbol) != nil, "\(plan.id): no SF Symbol \"\(symbol)\"")
+                // The artwork draws a few names itself, such as the Latin cross.
+                #expect(PlanArtworkStyle.isDrawable(symbol), "\(plan.id): no SF Symbol \"\(symbol)\"")
             }
             if let image = plan.image {
                 #expect(UIImage(named: image) != nil, "\(plan.id): no image \"\(image)\" in the asset catalog")

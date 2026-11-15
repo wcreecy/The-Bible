@@ -195,7 +195,7 @@ final class WordStudyUITests: XCTestCase {
 
     @MainActor
     private func searchHome(for text: String) {
-        let field = app.textFields["Search words or a reference"].firstMatch
+        let field = app.textFields["Search words, topics, or a reference"].firstMatch
         XCTAssertTrue(field.waitForExistence(timeout: 8))
         for _ in 0..<10 where !field.isHittable {
             app.swipeUp()
@@ -213,7 +213,7 @@ final class WordStudyUITests: XCTestCase {
         }
         open.tap()
 
-        let field = app.textFields["Search words or a reference"].firstMatch
+        let field = app.textFields["Search words, topics, or a reference"].firstMatch
         XCTAssertTrue(field.waitForExistence(timeout: 8))
         field.tap()
         field.typeText(text)

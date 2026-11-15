@@ -350,10 +350,22 @@ extension TodayChallengeStore {
     /// The plan suggestion is due once a month, from its own day on, while there's room for
     /// another plan.
     private func isReadingPlanTaskDue(in history: TodayChallengeHistory, on date: Date) -> Bool {
-        guard ReadingPlanStore.shared.canStartAnotherPlan else { return false }
+        Self.isReadingPlanTaskDue(
+            in: history,
+            on: date,
+            canStartAnotherPlan: ReadingPlanStore.shared.canStartAnotherPlan
+        )
+    }
+
+    static func isReadingPlanTaskDue(
+        in history: TodayChallengeHistory,
+        on date: Date,
+        canStartAnotherPlan: Bool
+    ) -> Bool {
+        guard canStartAnotherPlan else { return false }
         let calendar = Calendar.autoupdatingCurrent
         guard let month = calendar.dateInterval(of: .month, for: date) else { return false }
-        let monthStartKey = dayKey(for: month.start)
+        let monthStartKey = GameStats.localDayKey(for: month.start)
         let taskKey = HistoryKey.reflection(Self.readingPlanTaskTitle)
         let wasShownThisMonth = history.days.contains { day, keys in
             day >= monthStartKey && keys.contains(taskKey)
