@@ -25,6 +25,13 @@ struct MoreView: View {
             .listRowBackground(HeroCardListRowBackground())
         }
         .scrollContentBackground(.hidden)
+        // Pinned to the bottom; inside the tab bar clearance, so on iPhone it sits just
+        // above the floating tab bar.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            ShareAppFooterCard()
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+        }
         .tabBarContentClearance()
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("More")

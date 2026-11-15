@@ -15,14 +15,25 @@ enum AppShare {
         UserDefaults.standard.object(forKey: includesLinkKey) as? Bool ?? true
     }
 
-    /// The line added to shared text: "Shared from The Bible app: <link>".
+    /// The link without "https://", as people see it in the line below.
+    static var displayLink: String {
+        (url.host() ?? "apps.apple.com") + url.path()
+    }
+
+    /// The line added to shared text. The link sits mid-line and without "https://":
+    /// Messages turns a message that ends in a full link into a large App Store preview, while
+    /// a link inside a sentence stays a small inline link.
     static var attributionLine: String {
-        "Shared from The Bible app: \(url.absoluteString)"
+        "Shared via The Bible app · \(displayLink) · iPhone & iPad"
     }
 
     /// `text` with the app's link on its own line, when that's turned on.
     static func withAttribution(_ text: String) -> String {
-        includesLink ? "\(text)\n\n\(attributionLine)" : text
+        withAttribution(text, includingLink: includesLink)
+    }
+
+    static func withAttribution(_ text: String, includingLink: Bool) -> String {
+        includingLink ? "\(text)\n\n\(attributionLine)" : text
     }
 
     /// A QR code for the App Store link, sharp at any size.
@@ -150,5 +161,81 @@ struct ShareAttributionToggle: View {
             }
         }
         .accessibilityIdentifier("shareAttributionToggle")
+    }
+}
+
+/// A slim card pinned to the bottom of the More tab: Share and a QR code, side by side.
+struct ShareAppFooterCard: View {
+    @State private var showsQRCode = false
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "book.closed.fill")
+                .font(.title3)
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Enjoying The Bible?")
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(2)
+                Text("Help others find it.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+            .layoutPriority(1)
+
+            Spacer(minLength: 8)
+
+            ShareLink(
+                item: AppShare.url,
+                subject: Text("The Bible"),
+                message: Text(AppShare.message),
+                preview: SharePreview("The Bible", image: Image(systemName: "book.closed.fill"))
+            ) {
+                // Icon and word when there's room, otherwise just the icon; never wrapped.
+                ViewThatFits(in: .horizontal) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                        .lineLimit(1)
+                        .fixedSize()
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .font(.subheadline.weight(.semibold))
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .accessibilityLabel("Share The Bible")
+            .accessibilityIdentifier("shareAppLink")
+
+            Button {
+                showsQRCode = true
+            } label: {
+                Image(systemName: "qrcode")
+                    .font(.subheadline.weight(.semibold))
+            }
+            // Filled like Share, so the two read as a matched pair.
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .accessibilityLabel("Show QR code")
+            .accessibilityIdentifier("shareAppQRCode")
+        }
+        .padding(14)
+        .frame(maxWidth: 600)
+        .heroCardSurface()
+        .sheet(isPresented: $showsQRCode) {
+            AppQRCodeView()
+                .presentationDetents([.medium, .large])
+        }
+    }
+}
+
+/// The "Include App Link" switch shown where something is shared, so the link can be left off
+/// before sending. It's the same setting as the one in Settings.
+struct IncludeAppLinkToggle: View {
+    @AppStorage(AppShare.includesLinkKey) private var includesLink = true
+
+    var body: some View {
+        Toggle("Include App Link", systemImage: "link", isOn: $includesLink)
     }
 }

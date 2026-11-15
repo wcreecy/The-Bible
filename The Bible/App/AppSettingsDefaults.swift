@@ -10,6 +10,7 @@ enum AppSettingsDefaults {
     static var preferences: [String: Any] {
         [
             "colorSchemePreference": "system",
+            AppShare.includesLinkKey: true,
             "dailyGoalMinutes": 30,
             StreakReminderScheduler.enabledKey: false,
             StreakReminderScheduler.hourKey: StreakReminderScheduler.defaultHour,

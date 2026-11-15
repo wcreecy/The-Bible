@@ -92,6 +92,13 @@ struct VerseImageComposerView: View {
             .tint(.orange)
         }
         .font(.headline)
+        // The link is sent as text beside the image; this leaves it off.
+        .safeAreaInset(edge: .bottom, spacing: 8) {
+            IncludeAppLinkToggle()
+                .font(.subheadline)
+                .tint(.orange)
+                .fixedSize()
+        }
         .disabled(isExporting)
         .opacity(isExporting ? 0.4 : 1)
         .overlay {
@@ -378,7 +385,9 @@ private struct VerseImageShareSheet: UIViewControllerRepresentable {
     let image: UIImage
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        // The link goes alongside the picture as text, where it can be tapped.
+        let items: [Any] = AppShare.includesLink ? [image, AppShare.attributionLine] : [image]
+        return UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}

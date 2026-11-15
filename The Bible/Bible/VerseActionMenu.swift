@@ -11,6 +11,8 @@ struct VerseShareMenu<MenuLabel: View>: View {
     let onCreateImage: () -> Void
     @ViewBuilder let label: () -> MenuLabel
 
+    @AppStorage(AppShare.includesLinkKey) private var includesLink = true
+
     var body: some View {
         Menu {
             if let onCopy {
@@ -19,7 +21,7 @@ struct VerseShareMenu<MenuLabel: View>: View {
                 }
             }
 
-            ShareLink(item: verse.shareText) {
+            ShareLink(item: AppShare.withAttribution(verse.shareText, includingLink: includesLink)) {
                 Label("Share Verse", systemImage: "text.quote")
             }
 
@@ -27,6 +29,11 @@ struct VerseShareMenu<MenuLabel: View>: View {
                 onCreateImage()
             } label: {
                 Label("Create Verse Image", systemImage: "photo.on.rectangle.angled")
+            }
+
+            // Lets the link be left off right here, before sharing.
+            Section {
+                IncludeAppLinkToggle()
             }
         } label: {
             label()

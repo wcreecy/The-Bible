@@ -575,7 +575,7 @@ struct WordleView: View {
             resultCard()
 
             HStack(spacing: 12) {
-                ShareLink(item: shareText) {
+                ShareLink(item: AppShare.withAttribution(shareText)) {
                     Label("Share", systemImage: "square.and.arrow.up")
                 }
                 .buttonStyle(ModernPillButtonStyle(tint: .mint))
