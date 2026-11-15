@@ -35,8 +35,6 @@ enum AppSettingsDefaults {
             ReaderDisplaySettings.showsPinnedVerseMarkerKey: true,
             "focusReadingEnabled": false,
             "homeCustomizeButtonVisible": true,
-            "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,
-            HomeLayoutStore.keyBibleReaderColumn: HomeLayoutStore.defaultBibleReaderColumn.rawValue,
             "noteEditorTextSizeStep": 0,
             "notesTabSortField": "modified",
             "notesTabSortAscending": false,

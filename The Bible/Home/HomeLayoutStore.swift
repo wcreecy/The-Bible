@@ -9,52 +9,54 @@ struct HomeLayoutStore {
     // Keys (kept identical to existing usage)
     private static let keyOrder = "homeCardOrder"
     private static let keyHidden = "homeCardHidden"
-    private static let keyBibleReaderVisible = "homeBibleReaderVisible"
     private static let keyFavOrder = "homeCardFavoriteOrder"
     private static let keyFavHidden = "homeCardFavoriteHidden"
-    private static let keyFavBibleReaderVisible = "homeCardFavoriteBibleReaderVisible"
     private static let keyFavSavedAt = "homeCardFavoriteSavedAt"
     private static let keyTodayVisibilityMigrated = "homeTodayVisibilityMigratedV1"
     private static let keyFavoriteTodayVisibilityMigrated = "homeFavoriteTodayVisibilityMigratedV1"
     static let keyColumns = "homeDashboardColumns"
     static let keyFavColumns = "homeCardFavoriteDashboardColumns"
-    static let keyBibleReaderColumn = "homeBibleReaderColumn"
-    static let keyFavBibleReaderColumn = "homeCardFavoriteBibleReaderColumn"
-    // Replaced by the column keys above; read once to carry over a left-side choice.
-    static let legacyKeyBibleReaderOnLeft = "homeBibleReaderOnLeft"
-    static let legacyKeyFavBibleReaderOnLeft = "homeCardFavoriteBibleReaderOnLeft"
-    static let defaultBibleReaderColumn: HomeColumn = .right
+    static let keyReaderPanelRemovalMigrated = "homeReaderPanelRemovalMigratedV1"
+    /// Settings for the iPad Today's Reading panel, since removed. Read once to rearrange
+    /// layouts built around it, then deleted.
+    static let retiredReaderPanelKeys = [
+        "homeBibleReaderVisible",
+        "homeCardFavoriteBibleReaderVisible",
+        "homeBibleReaderColumn",
+        "homeCardFavoriteBibleReaderColumn",
+        "homeBibleReaderOnLeft",
+        "homeCardFavoriteBibleReaderOnLeft",
+        "homeReaderSource",
+        "homeBibleReaderContentHeight"
+    ]
 
     // Underlying storage
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
     @AppStorage(Self.keyHidden) private var hiddenRaw: String = ""
-    @AppStorage(Self.keyBibleReaderVisible) private var bibleReaderVisible: Bool = Self.defaultBibleReaderVisible
     @AppStorage(Self.keyFavOrder) private var favOrderRaw: String = ""
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
-    @AppStorage(Self.keyFavBibleReaderVisible) private var favBibleReaderVisible: Bool = Self.defaultBibleReaderVisible
     // Seconds since 1970 when "My Layout" was last saved; 0 for layouts saved before dates were kept.
     @AppStorage(Self.keyFavSavedAt) private var favSavedAt: Double = 0
     @AppStorage(Self.keyTodayVisibilityMigrated) private var todayVisibilityMigrated = false
     @AppStorage(Self.keyFavoriteTodayVisibilityMigrated) private var favoriteTodayVisibilityMigrated = false
     @AppStorage(Self.keyColumns) private var columnsRaw: String = ""
     @AppStorage(Self.keyFavColumns) private var favColumnsRaw: String = ""
-    @AppStorage(Self.keyBibleReaderColumn) private var bibleReaderColumn: HomeColumn = Self.defaultBibleReaderColumn
-    @AppStorage(Self.keyFavBibleReaderColumn) private var favBibleReaderColumn: HomeColumn = Self.defaultBibleReaderColumn
+    @AppStorage(Self.keyReaderPanelRemovalMigrated) private var readerPanelRemovalMigrated = false
 
     // Baseline hidden set used when no hidden config exists
     static var baselineOrder: [HomeCardID] {
-        // iPad: `baselineColumns` read row by row (left, then middle), the order narrow
-        // widths use. The Today's Reading panel takes the right column.
+        // iPad: `baselineColumns` in the order narrow widths use: the full-width verse,
+        // then the columns row by row (left, middle, right).
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [
-                .setup,
-                .readingPlan,
                 .verseOfDay,
-                .today,
+                .setup,
                 .resumeReading,
+                .today,
                 .timer,
-                .savedVerses,
+                .readingPlan,
                 .streaks,
+                .savedVerses,
                 .study,
                 .dailyFocus
             ]
@@ -77,16 +79,12 @@ struct HomeLayoutStore {
     }
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            // Welcome, the verse, the plan, Today, and the timer beside the Today's Reading
-            // panel. Continue Reading is left off: the panel already opens your place.
-            return [.resumeReading, .savedVerses, .study, .streaks, .dailyFocus]
+            // Welcome, Continue Reading, the verse, the plan, Today, and the timer.
+            return [.savedVerses, .study, .streaks, .dailyFocus]
         }
         // Welcome, Verse of the Day, Continue Reading, Reading Plan, and Today.
         return [.savedVerses, .study, .streaks, .timer, .dailyFocus]
     }
-    // The iPad Today's Reading panel; iPhone does not show it.
-    static let defaultBibleReaderVisible = true
-
     /// Only iPad saves its own column arrangement. Elsewhere (such as a large iPhone in
     /// landscape) the dashboard columns follow the single card order.
     static var storesColumns: Bool {
@@ -95,40 +93,62 @@ struct HomeLayoutStore {
 
     static var baselineColumns: HomeColumnLayout {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            // Hidden cards sit at the ends of the columns, ready to be shown.
+            // Verse of the Day heads the page at full width. Below it the columns end at
+            // about the same height once Welcome is dismissed: the timer beside your place
+            // and plan, and Today. Hidden cards sit at the ends of the columns, ready to be shown.
             return HomeColumnLayout(
-                left: [.setup, .verseOfDay, .resumeReading, .savedVerses, .study],
-                middle: [.readingPlan, .today, .timer, .streaks, .dailyFocus],
-                right: [],
-                verseOfDayWidth: .oneColumn
+                left: [.verseOfDay, .setup, .timer, .savedVerses],
+                middle: [.resumeReading, .readingPlan, .study],
+                right: [.today, .streaks, .dailyFocus],
+                verseOfDayWidth: .allColumns
             )
         }
 
-        return HomeColumnLayout.seeded(
-            from: baselineOrder,
-            hidden: baselineHidden,
-            readerColumn: nil
-        )
+        return HomeColumnLayout.seeded(from: baselineOrder, hidden: baselineHidden)
     }
 
-    /// The column the Today's Reading panel occupies, or nil when it's hidden.
-    private var visibleReaderColumn: HomeColumn? {
-        bibleReaderVisible ? bibleReaderColumn : nil
-    }
-
-    /// Carries a Left/Right reader choice saved before the panel could use any column.
-    private func migrateReaderSideIfNeeded() {
+    /// The iPad Today's Reading panel kept its column clear of cards. Layouts saved while it
+    /// was showing, and now left with a column of no shown cards, spread their cards across
+    /// all three columns once. Then the panel's settings are deleted.
+    private func migrateRemovedReaderPanelIfNeeded() {
+        guard !readerPanelRemovalMigrated else { return }
+        readerPanelRemovalMigrated = true
         let defaults = UserDefaults.standard
-        for (legacyKey, newKey) in [
-            (Self.legacyKeyBibleReaderOnLeft, Self.keyBibleReaderColumn),
-            (Self.legacyKeyFavBibleReaderOnLeft, Self.keyFavBibleReaderColumn)
-        ] where defaults.object(forKey: legacyKey) != nil {
-            if defaults.object(forKey: newKey) == nil {
-                let column: HomeColumn = defaults.bool(forKey: legacyKey) ? .left : .right
-                defaults.set(column.rawValue, forKey: newKey)
+
+        func rebalancedIfPanelWasShowing(
+            columnsRaw: String,
+            hiddenRaw: String,
+            visibleKey: String
+        ) -> String? {
+            // The panel was on unless it had been turned off.
+            guard Self.storesColumns,
+                  defaults.object(forKey: visibleKey) as? Bool ?? true,
+                  let columns = HomeColumnLayout(storageString: columnsRaw) else { return nil }
+            let hidden = Set(
+                (PersistedDecoding.decode([String].self, fromText: hiddenRaw, key: Self.keyHidden) ?? [])
+                    .compactMap(HomeCardID.init(rawValue:))
+            )
+            let leavesAColumnEmpty = HomeColumn.allCases.contains { column in
+                columns.stackedCards(in: column).allSatisfy(hidden.contains)
             }
-            defaults.removeObject(forKey: legacyKey)
+            return leavesAColumnEmpty ? columns.rebalanced(hidden: hidden).storageString : nil
         }
+
+        if let rebalanced = rebalancedIfPanelWasShowing(
+            columnsRaw: columnsRaw,
+            hiddenRaw: hiddenRaw,
+            visibleKey: "homeBibleReaderVisible"
+        ) {
+            columnsRaw = rebalanced
+        }
+        if let rebalanced = rebalancedIfPanelWasShowing(
+            columnsRaw: favColumnsRaw,
+            hiddenRaw: favHiddenRaw,
+            visibleKey: "homeCardFavoriteBibleReaderVisible"
+        ) {
+            favColumnsRaw = rebalanced
+        }
+        Self.retiredReaderPanelKeys.forEach(defaults.removeObject(forKey:))
     }
 
     init() {}
@@ -136,7 +156,7 @@ struct HomeLayoutStore {
     // MARK: - Core load/save
 
     func load() -> (order: [HomeCardID], hidden: Set<HomeCardID>, columns: HomeColumnLayout) {
-        migrateReaderSideIfNeeded()
+        migrateRemovedReaderPanelIfNeeded()
 
         // Decode order
         let savedOrderIDs = PersistedDecoding.decode([String].self, fromText: orderRaw, key: Self.keyOrder)
@@ -169,12 +189,12 @@ struct HomeLayoutStore {
         // Nothing saved yet: iPad starts from the default columns; elsewhere the columns
         // follow the order.
         let savedColumns = Self.storesColumns
-            ? HomeColumnLayout(storageString: columnsRaw, readerColumn: visibleReaderColumn)
+            ? HomeColumnLayout(storageString: columnsRaw)
             : nil
         let columns = savedColumns
             ?? (Self.storesColumns && savedOrderIDs == nil
-                ? Self.baselineColumns.normalized(avoiding: visibleReaderColumn)
-                : HomeColumnLayout.seeded(from: order, hidden: hidden, readerColumn: visibleReaderColumn))
+                ? Self.baselineColumns.normalized()
+                : HomeColumnLayout.seeded(from: order, hidden: hidden))
 
         return (order, hidden, columns)
     }
@@ -223,8 +243,7 @@ struct HomeLayoutStore {
     func saveFavorite(
         order: [HomeCardID],
         hidden: Set<HomeCardID>,
-        columns: HomeColumnLayout,
-        bibleReaderVisible: Bool
+        columns: HomeColumnLayout
     ) {
         // Encode order
         do {
@@ -244,22 +263,15 @@ struct HomeLayoutStore {
             // Keep prior value on failure
         }
 
-        favBibleReaderVisible = bibleReaderVisible
         favSavedAt = Date().timeIntervalSince1970
         favoriteTodayVisibilityMigrated = true
         if Self.storesColumns {
             favColumnsRaw = columns.storageString
-            favBibleReaderColumn = bibleReaderColumn
         }
     }
 
-    func loadFavorite() -> (
-        order: [HomeCardID],
-        hidden: Set<HomeCardID>,
-        columns: HomeColumnLayout,
-        bibleReaderVisible: Bool,
-        bibleReaderColumn: HomeColumn
-    )? {
+    func loadFavorite() -> (order: [HomeCardID], hidden: Set<HomeCardID>, columns: HomeColumnLayout)? {
+        migrateRemovedReaderPanelIfNeeded()
         guard let orderIDs = PersistedDecoding.decode([String].self, fromText: favOrderRaw, key: Self.keyFavOrder) else {
             return nil
         }
@@ -281,18 +293,14 @@ struct HomeLayoutStore {
             favoriteTodayVisibilityMigrated = true
         }
         // Layouts saved before columns existed are arranged from their order.
-        migrateReaderSideIfNeeded()
-        let favReaderColumn = favBibleReaderVisible ? favBibleReaderColumn : nil
-        let columns = (Self.storesColumns ? HomeColumnLayout(storageString: favColumnsRaw, readerColumn: favReaderColumn) : nil)
-            ?? HomeColumnLayout.seeded(from: order, hidden: hidden, readerColumn: favReaderColumn)
-        return (order, hidden, columns, favBibleReaderVisible, favBibleReaderColumn)
+        let columns = (Self.storesColumns ? HomeColumnLayout(storageString: favColumnsRaw) : nil)
+            ?? HomeColumnLayout.seeded(from: order, hidden: hidden)
+        return (order, hidden, columns)
     }
 
     // Applies favorite to current layout and notifies listeners
     func applyFavoriteIfAvailable() {
         guard let fav = loadFavorite() else { return }
-        bibleReaderVisible = fav.bibleReaderVisible
-        bibleReaderColumn = fav.bibleReaderColumn
         save(order: fav.order, hidden: fav.hidden, columns: fav.columns)
     }
 

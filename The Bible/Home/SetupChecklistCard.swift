@@ -329,8 +329,13 @@ private struct OnboardingStepRow: View {
     let action: () -> Void
     let skipAction: (() -> Void)?
 
+    /// The checkmark and step icon columns plus their spacing, so Skip lines up with the text.
+    private static let textLeadingInset: CGFloat = 22 + 10 + 22 + 10
+
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        // Skip sits under the step's description rather than beside it, so the text keeps the
+        // card's full width in narrow columns (such as iPad portrait).
+        VStack(alignment: .leading, spacing: 6) {
             Button(action: action) {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: isComplete ? "checkmark.circle.fill" : "circle")
@@ -371,6 +376,7 @@ private struct OnboardingStepRow: View {
                     .font(.caption.weight(.semibold))
                     .buttonStyle(.bordered)
                     .controlSize(.small)
+                    .padding(.leading, Self.textLeadingInset)
                     .accessibilityHint("Marks this optional step complete")
             }
         }

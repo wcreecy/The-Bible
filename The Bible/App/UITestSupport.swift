@@ -24,6 +24,8 @@ enum UITestSupport {
             // Every Home card visible.
             "homeCardHidden": "[]",
             "homeTodayVisibilityMigratedV1": true,
+            // The search bar above the cards, which the Minimal layout turns off.
+            "homeQuickSearchVisible": true,
             // No tips or permission prompts in the way.
             "contextualTipsEnabled": false,
             "didRequestNotifications": true,

@@ -55,8 +55,7 @@ enum HomeCardWidth: String, CaseIterable {
     var spansColumns: Bool { self != .oneColumn }
 }
 
-/// The iPad dashboard's cards, top to bottom in each of three columns. The Today's Reading
-/// panel, when shown, sits above the cards in its chosen column.
+/// The iPad dashboard's cards, top to bottom in each of three columns.
 ///
 /// Every card appears exactly once, hidden ones included, so a card that is shown again
 /// returns to the place it was hidden from.
@@ -130,18 +129,12 @@ struct HomeColumnLayout: Equatable {
     /// Builds columns from a single order the way the old self-balancing grid placed cards
     /// of similar height, so the first column layout matches what people already saw.
     ///
-    /// Cards fill the columns other than `readerColumn` (the Today's Reading panel's column,
-    /// or nil when it's hidden). Verse of the Day, which spanned the top of the old grid,
-    /// heads the first card column; then each visible card goes to the card column with the
-    /// fewest visible cards, leftmost first.
-    static func seeded(
-        from order: [HomeCardID],
-        hidden: Set<HomeCardID>,
-        readerColumn: HomeColumn?
-    ) -> HomeColumnLayout {
-        let cardColumns = HomeColumn.allCases.filter { $0 != readerColumn }
+    /// Verse of the Day, which spanned the top of the old grid, heads the left column; then
+    /// each visible card goes to the column with the fewest visible cards, leftmost first.
+    static func seeded(from order: [HomeCardID], hidden: Set<HomeCardID>) -> HomeColumnLayout {
+        let cardColumns = HomeColumn.allCases
         var layout = HomeColumnLayout(left: [], right: [])
-        guard let firstColumn = cardColumns.first else { return layout }
+        let firstColumn = HomeColumn.left
 
         if order.contains(.verseOfDay) {
             layout[firstColumn].append(.verseOfDay)
@@ -161,13 +154,21 @@ struct HomeColumnLayout: Equatable {
                 visibleCounts[column, default: 0] += 1
             }
         }
-        return layout.normalized(avoiding: readerColumn)
+        return layout.normalized()
+    }
+
+    /// Spreads the cards across all three columns again, keeping their reading order and
+    /// Verse of the Day's width. Used once for layouts arranged around the removed Today's
+    /// Reading panel, which kept a whole column clear of cards.
+    func rebalanced(hidden: Set<HomeCardID>) -> HomeColumnLayout {
+        var layout = HomeColumnLayout.seeded(from: flatOrder, hidden: hidden)
+        layout.verseOfDayWidth = verseOfDayWidth
+        return layout
     }
 
     /// Removes duplicates and appends any card missing from every column (for example, a
-    /// card added in an app update) to the shortest column, avoiding the reader's column
-    /// when there is a choice.
-    func normalized(avoiding readerColumn: HomeColumn? = nil) -> HomeColumnLayout {
+    /// card added in an app update) to the shortest column.
+    func normalized() -> HomeColumnLayout {
         var seen: Set<HomeCardID> = []
         var layout = HomeColumnLayout(
             left: left.filter { seen.insert($0).inserted },
@@ -175,9 +176,8 @@ struct HomeColumnLayout: Equatable {
             right: right.filter { seen.insert($0).inserted },
             verseOfDayWidth: verseOfDayWidth
         )
-        let candidates = HomeColumn.allCases.filter { $0 != readerColumn }
         for id in HomeCardID.allCases where !seen.contains(id) {
-            let column = candidates.min { layout[$0].count < layout[$1].count } ?? .left
+            let column = HomeColumn.allCases.min { layout[$0].count < layout[$1].count } ?? .left
             layout[column].append(id)
         }
         return layout
@@ -254,9 +254,8 @@ struct HomeColumnLayout: Equatable {
     }
 
     /// Sets Verse of the Day to cover 1, 2, or 3 columns. Widening to two columns covers
-    /// the side it's already on; from the middle, the side away from the Today's Reading
-    /// panel, so the panel keeps its full height.
-    mutating func setVerseOfDayColumnCount(_ count: Int, readerColumn: HomeColumn?) {
+    /// the side it's already on; from the middle, the left two columns.
+    mutating func setVerseOfDayColumnCount(_ count: Int) {
         switch count {
         case ...1:
             verseOfDayWidth = .oneColumn
@@ -265,7 +264,7 @@ struct HomeColumnLayout: Equatable {
             switch column(of: .verseOfDay) {
             case .left: verseOfDayWidth = .leftTwoColumns
             case .right: verseOfDayWidth = .rightTwoColumns
-            default: verseOfDayWidth = readerColumn == .left ? .rightTwoColumns : .leftTwoColumns
+            default: verseOfDayWidth = .leftTwoColumns
             }
         default:
             verseOfDayWidth = .allColumns
@@ -288,10 +287,9 @@ struct HomeColumnLayout: Equatable {
 
     /// Decodes a stored layout; returns nil when nothing valid is stored.
     ///
-    /// Layouts saved before the middle column existed had two card columns beside the
-    /// reader panel. Their cards move into the two columns the reader isn't in, so the
-    /// dashboard looks the same.
-    init?(storageString: String, readerColumn: HomeColumn?) {
+    /// Layouts saved before the middle column existed had two card columns; they load into
+    /// the left and middle columns.
+    init?(storageString: String) {
         guard let raw = PersistedDecoding.decode([String: [String]].self, fromText: storageString, key: "homeColumnLayout") else {
             return nil
         }
@@ -300,14 +298,11 @@ struct HomeColumnLayout: Equatable {
         }
 
         if raw["middle"] == nil {
-            let cardColumns = HomeColumn.allCases.filter { $0 != (readerColumn ?? .right) }
-            self.init(left: [], right: [])
-            self[cardColumns[0]] = cards("left")
-            self[cardColumns[1]] = cards("right")
+            self.init(left: cards("left"), middle: cards("right"), right: [])
         } else {
             self.init(left: cards("left"), middle: cards("middle"), right: cards("right"))
         }
         verseOfDayWidth = raw[Self.verseOfDayWidthKey]?.first.flatMap(HomeCardWidth.init(rawValue:)) ?? .oneColumn
-        self = normalized(avoiding: readerColumn)
+        self = normalized()
     }
 }

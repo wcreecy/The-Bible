@@ -70,11 +70,8 @@ enum DeveloperSettingsReset {
             "homeCardFavoriteMain",
             "homeCardFavoriteShowMoreVisible",
             HomeLayoutStore.keyColumns,
-            HomeLayoutStore.keyFavColumns,
-            HomeLayoutStore.keyFavBibleReaderColumn,
-            HomeLayoutStore.legacyKeyBibleReaderOnLeft,
-            HomeLayoutStore.legacyKeyFavBibleReaderOnLeft
-        ]
+            HomeLayoutStore.keyFavColumns
+        ] + HomeLayoutStore.retiredReaderPanelKeys
         homeLayoutKeys.forEach(defaults.removeObject(forKey:))
 
         for tab in AppTab.allCases {

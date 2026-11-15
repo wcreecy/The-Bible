@@ -112,8 +112,6 @@ struct HomeView: View {
     @State private var editHomeCueArrowProgress: CGFloat = 0
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeQuickSearchVisible") private var quickSearchVisible = true
-    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
-    @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
 
     // MARK: - Body
     // Built in stages (layout and toolbar, presentations, lifecycle) so each stage is
@@ -335,7 +333,6 @@ struct HomeView: View {
         HomeCardColumnsView(
             columns: layout.columns,
             hiddenCards: layout.hidden,
-            readerColumn: bibleReaderVisible ? bibleReaderColumn : nil,
             isEditing: isEditingLayout,
             width: width,
             columnSpacing: 16,
@@ -349,26 +346,11 @@ struct HomeView: View {
             onToggleHidden: toggleCardHidden,
             onSetVerseOfDayColumnCount: { count in
                 updateColumns {
-                    $0.setVerseOfDayColumnCount(count, readerColumn: bibleReaderVisible ? bibleReaderColumn : nil)
+                    $0.setVerseOfDayColumnCount(count)
                 }
             }
         ) { cardID in
             card(for: cardID)
-        } reader: {
-            // While editing, the panel moves down so its controls sit above its title.
-            HomeBibleReaderCard(
-                verseOfDay: votdVM.verse,
-                onVerseAction: handleVerseActionFeedback
-            )
-            .padding(.top, isEditingLayout ? HomeCardEditChrome.barHeight : 0)
-            .overlay(alignment: .top) {
-                if isEditingLayout {
-                    HomeBibleReaderEditControls(
-                        column: $bibleReaderColumn,
-                        isVisible: $bibleReaderVisible
-                    )
-                }
-            }
         }
     }
 
@@ -535,7 +517,7 @@ struct HomeView: View {
     }
 
     private var showsMinimalHome: Bool {
-        isPad && layout.hidesEveryCard && !bibleReaderVisible
+        isPad && layout.hidesEveryCard
     }
 
     @ViewBuilder
@@ -566,7 +548,7 @@ struct HomeView: View {
             columns: $layout.columns,
             usesDashboard: usesDashboard,
             onDone: { layout.save() },
-            onSaveFavorite: { layout.saveFavorite(bibleReaderVisible: bibleReaderVisible) },
+            onSaveFavorite: { layout.saveFavorite() },
             onResetToFavorite: { layout.applyFavorite() }
         )
     }

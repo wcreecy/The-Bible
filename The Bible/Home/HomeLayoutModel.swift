@@ -11,7 +11,7 @@ final class HomeLayoutModel {
     var hidden: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     var columns: HomeColumnLayout = HomeLayoutStore.baselineColumns
 
-    /// Every card is hidden, so only the reader panel (if shown) is left.
+    /// Every card is hidden.
     var hidesEveryCard: Bool {
         hidden.isSuperset(of: HomeCardID.allCases)
     }
@@ -47,13 +47,8 @@ final class HomeLayoutModel {
         save()
     }
 
-    func saveFavorite(bibleReaderVisible: Bool) {
-        HomeLayoutStore().saveFavorite(
-            order: order,
-            hidden: hidden,
-            columns: columns,
-            bibleReaderVisible: bibleReaderVisible
-        )
+    func saveFavorite() {
+        HomeLayoutStore().saveFavorite(order: order, hidden: hidden, columns: columns)
     }
 
     func applyFavorite() {

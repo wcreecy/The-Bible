@@ -7,29 +7,25 @@ struct HomeColumnLayoutTests {
     private let defaultHidden: Set<HomeCardID> = [.resumeReading, .setup]
 
     @Test
-    func seedingMatchesTheOldDashboardPlacement() {
-        // The iPad default: Verse of the Day spanned the top, then visible cards filled
-        // the two card columns row by row, with Today's Reading on the right.
+    func seedingSpreadsVisibleCardsRowByRow() {
+        // Verse of the Day heads the left column, then visible cards fill the three columns
+        // row by row; hidden cards only need a place for when they are shown again.
         let order: [HomeCardID] = [.verseOfDay, .today, .savedVerses, .streaks, .timer, .dailyFocus, .resumeReading, .setup]
-        let layout = HomeColumnLayout.seeded(
-            from: order,
-            hidden: defaultHidden,
-            readerColumn: .right
-        )
+        let layout = HomeColumnLayout.seeded(from: order, hidden: defaultHidden)
         // Cards added since (left out of `order`) are appended by normalizing; only the seeded ones are checked.
         func seededVisible(_ cards: [HomeCardID]) -> [HomeCardID] {
             cards.filter { order.contains($0) && !defaultHidden.contains($0) }
         }
 
-        #expect(seededVisible(layout.left) == [.verseOfDay, .today, .streaks, .dailyFocus])
-        #expect(seededVisible(layout.middle) == [.savedVerses, .timer])
-        #expect(layout.right.isEmpty)
+        #expect(seededVisible(layout.left) == [.verseOfDay, .today, .timer])
+        #expect(seededVisible(layout.middle) == [.savedVerses, .dailyFocus])
+        #expect(seededVisible(layout.right) == [.streaks])
         #expect(Set(layout.left + layout.middle + layout.right) == Set(HomeCardID.allCases))
     }
 
     @Test
-    func seedingUsesAllThreeColumnsWhenTheReaderIsHidden() {
-        let layout = HomeColumnLayout.seeded(from: [.verseOfDay, .today, .savedVerses, .streaks], hidden: [], readerColumn: nil)
+    func seedingUsesAllThreeColumns() {
+        let layout = HomeColumnLayout.seeded(from: [.verseOfDay, .today, .savedVerses, .streaks], hidden: [])
         #expect(layout.left.first == .verseOfDay)
         #expect(layout.left.contains(.today))
         #expect(layout.middle.first == .savedVerses)
@@ -37,14 +33,15 @@ struct HomeColumnLayoutTests {
     }
 
     @Test
-    func normalizingRemovesDuplicatesAndAvoidsTheReaderColumn() {
-        let layout = HomeColumnLayout(left: [.savedVerses, .savedVerses, .timer], right: [.timer]).normalized(avoiding: .right)
+    func normalizingRemovesDuplicatesAndSpreadsMissingCards() {
+        let layout = HomeColumnLayout(left: [.savedVerses, .savedVerses, .timer], right: [.timer]).normalized()
 
         let all = layout.left + layout.middle + layout.right
         #expect(all.count == HomeCardID.allCases.count)
         #expect(Set(all) == Set(HomeCardID.allCases))
         #expect(layout.left.prefix(2) == [.savedVerses, .timer])
-        #expect(layout.right.isEmpty)
+        // Missing cards go to the shortest columns, so none is left empty.
+        #expect(HomeColumn.allCases.allSatisfy { !layout[$0].isEmpty })
     }
 
     @Test
@@ -91,15 +88,14 @@ struct HomeColumnLayoutTests {
 
     @Test
     func storageRoundTripsAndRejectsInvalidData() {
-        let layout = HomeColumnLayout.seeded(from: HomeCardID.allCases, hidden: [], readerColumn: nil)
-        #expect(HomeColumnLayout(storageString: layout.storageString, readerColumn: nil) == layout)
-        #expect(HomeColumnLayout(storageString: "", readerColumn: .right) == nil)
-        #expect(HomeColumnLayout(storageString: "not json", readerColumn: .right) == nil)
+        let layout = HomeColumnLayout.seeded(from: HomeCardID.allCases, hidden: [])
+        #expect(HomeColumnLayout(storageString: layout.storageString) == layout)
+        #expect(HomeColumnLayout(storageString: "") == nil)
+        #expect(HomeColumnLayout(storageString: "not json") == nil)
 
         // Unknown card names from a newer version are dropped, and the rest still load.
         let decoded = HomeColumnLayout(
-            storageString: #"{"left":["savedVerses","futureCard"],"middle":["today"],"right":["timer"]}"#,
-            readerColumn: nil
+            storageString: #"{"left":["savedVerses","futureCard"],"middle":["today"],"right":["timer"]}"#
         )
         #expect(decoded?.left.first == .savedVerses)
         #expect(decoded?.middle.first == .today)
@@ -107,51 +103,66 @@ struct HomeColumnLayoutTests {
     }
 
     @Test
-    func twoColumnLayoutsMoveBesideTheReader() {
+    func twoColumnLayoutsLoadIntoTheLeftAndMiddleColumns() {
         let legacy = #"{"left":["verseOfDay","today"],"right":["savedVerses","timer"]}"#
 
-        // Reader on the right: the old two card columns become left and middle.
-        let readerRight = HomeColumnLayout(storageString: legacy, readerColumn: .right)
-        #expect(readerRight?.left.prefix(2) == [.verseOfDay, .today])
-        #expect(readerRight?.middle.prefix(2) == [.savedVerses, .timer])
-        #expect(readerRight?.right.isEmpty == true)
+        let layout = HomeColumnLayout(storageString: legacy)
+        #expect(layout?.left.prefix(2) == [.verseOfDay, .today])
+        #expect(layout?.middle.prefix(2) == [.savedVerses, .timer])
+    }
 
-        // Reader on the left: they become middle and right.
-        let readerLeft = HomeColumnLayout(storageString: legacy, readerColumn: .left)
-        #expect(readerLeft?.left.isEmpty == true)
-        #expect(readerLeft?.middle.prefix(2) == [.verseOfDay, .today])
-        #expect(readerLeft?.right.prefix(2) == [.savedVerses, .timer])
+    @Test
+    func rebalancingFillsTheColumnTheReadingPanelKeptClear() {
+        // A layout saved beside the removed Today's Reading panel: every card in two columns.
+        let hidden: Set<HomeCardID> = [.savedVerses, .study, .streaks, .dailyFocus]
+        var saved = HomeColumnLayout(
+            left: [.setup, .verseOfDay, .resumeReading, .savedVerses, .study],
+            middle: [.readingPlan, .today, .timer, .streaks, .dailyFocus],
+            right: []
+        ).normalized()
+        saved.verseOfDayWidth = .leftTwoColumns
+
+        let layout = saved.rebalanced(hidden: hidden)
+
+        let all = layout.left + layout.middle + layout.right
+        #expect(all.count == HomeCardID.allCases.count)
+        #expect(Set(all) == Set(HomeCardID.allCases))
+        #expect(HomeColumn.allCases.allSatisfy { column in
+            layout.stackedCards(in: column).contains { !hidden.contains($0) }
+        })
+        #expect(layout.verseOfDayWidth == .leftTwoColumns)
     }
 
     // MARK: - Wide Verse of the Day
 
     @Test
-    func widenedVerseOfDayCoversItsOwnSideOrTheSideAwayFromTheReader() {
+    func widenedVerseOfDayCoversItsOwnSide() {
         var layout = HomeColumnLayout(left: [.verseOfDay, .today], middle: [.savedVerses], right: [.timer]).normalized()
-        layout.setVerseOfDayColumnCount(2, readerColumn: .right)
+        layout.setVerseOfDayColumnCount(2)
         #expect(layout.verseOfDayWidth == .leftTwoColumns)
 
         var fromRight = HomeColumnLayout(left: [.today], middle: [.savedVerses], right: [.verseOfDay]).normalized()
-        fromRight.setVerseOfDayColumnCount(2, readerColumn: nil)
+        fromRight.setVerseOfDayColumnCount(2)
         #expect(fromRight.verseOfDayWidth == .rightTwoColumns)
 
-        // From the middle, it leaves the reader's column its full height.
+        // From the middle, it covers the left two columns.
         var fromMiddle = HomeColumnLayout(left: [.today], middle: [.verseOfDay], right: [.timer]).normalized()
-        fromMiddle.setVerseOfDayColumnCount(2, readerColumn: .left)
-        #expect(fromMiddle.verseOfDayWidth == .rightTwoColumns)
+        fromMiddle.setVerseOfDayColumnCount(2)
+        #expect(fromMiddle.verseOfDayWidth == .leftTwoColumns)
 
         // Already two columns wide, it stays on its side.
-        fromMiddle.setVerseOfDayColumnCount(2, readerColumn: .right)
+        fromMiddle.moveAcross(.verseOfDay, by: 1)
+        fromMiddle.setVerseOfDayColumnCount(2)
         #expect(fromMiddle.verseOfDayWidth == .rightTwoColumns)
 
-        fromMiddle.setVerseOfDayColumnCount(3, readerColumn: .right)
+        fromMiddle.setVerseOfDayColumnCount(3)
         #expect(fromMiddle.verseOfDayWidth == .allColumns)
     }
 
     @Test
     func wideVerseOfDayStaysOnTopAndKeepsItsColumnPlace() {
         var layout = HomeColumnLayout(left: [.today, .verseOfDay, .streaks], middle: [.savedVerses], right: [.timer]).normalized()
-        layout.setVerseOfDayColumnCount(2, readerColumn: nil)
+        layout.setVerseOfDayColumnCount(2)
 
         #expect(layout.stackedCards(in: .left).prefix(2) == [.today, .streaks])
         #expect(!layout.canMove(.verseOfDay, by: -1))
@@ -167,10 +178,10 @@ struct HomeColumnLayoutTests {
         layout.moveAcross(.verseOfDay, by: 1)
         #expect(layout.verseOfDayWidth == .rightTwoColumns)
         #expect(layout.column(of: .verseOfDay) == .left)
-        layout.setVerseOfDayColumnCount(3, readerColumn: nil)
+        layout.setVerseOfDayColumnCount(3)
         #expect(!layout.canMoveAcross(.verseOfDay, by: -1) && !layout.canMoveAcross(.verseOfDay, by: 1))
 
-        layout.setVerseOfDayColumnCount(1, readerColumn: nil)
+        layout.setVerseOfDayColumnCount(1)
         #expect(layout.stackedCards(in: .left).prefix(3) == [.streaks, .verseOfDay, .today])
     }
 
@@ -197,17 +208,17 @@ struct HomeColumnLayoutTests {
         #expect(layout.flatOrder == [.verseOfDay, .today, .savedVerses, .timer, .streaks])
 
         let normalized = layout.normalized()
-        #expect(HomeColumnLayout(storageString: normalized.storageString, readerColumn: nil) == normalized)
+        #expect(HomeColumnLayout(storageString: normalized.storageString) == normalized)
 
         // Every width survives saving.
         for width in HomeCardWidth.allCases {
             var saved = normalized
             saved.verseOfDayWidth = width
-            #expect(HomeColumnLayout(storageString: saved.storageString, readerColumn: nil)?.verseOfDayWidth == width)
+            #expect(HomeColumnLayout(storageString: saved.storageString)?.verseOfDayWidth == width)
         }
 
         // Layouts saved before widths existed load at one column.
-        let legacy = HomeColumnLayout(storageString: #"{"left":["verseOfDay"],"middle":[],"right":[]}"#, readerColumn: nil)
+        let legacy = HomeColumnLayout(storageString: #"{"left":["verseOfDay"],"middle":[],"right":[]}"#)
         #expect(legacy?.verseOfDayWidth == .oneColumn)
     }
 }

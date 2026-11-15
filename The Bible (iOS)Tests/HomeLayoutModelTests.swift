@@ -9,8 +9,11 @@ struct HomeLayoutModelTests {
         "homeCardOrder",
         "homeCardHidden",
         HomeLayoutStore.keyColumns,
-        "homeTodayVisibilityMigratedV1"
-    ]
+        "homeTodayVisibilityMigratedV1",
+        "homeCardFavoriteHidden",
+        HomeLayoutStore.keyFavColumns,
+        HomeLayoutStore.keyReaderPanelRemovalMigrated
+    ] + HomeLayoutStore.retiredReaderPanelKeys
 
     private func withRestoredDefaults(_ body: () throws -> Void) rethrows {
         let defaults = UserDefaults.standard
@@ -54,6 +57,52 @@ struct HomeLayoutModelTests {
     }
 
     @Test
+    func layoutsBuiltAroundTheRemovedReadingPanelAreRearrangedOnce() {
+        withRestoredDefaults {
+            let defaults = UserDefaults.standard
+            // Saved while the panel was showing (never turned off): the right column held no cards.
+            let panelEra = HomeColumnLayout(
+                left: [.setup, .verseOfDay, .resumeReading, .savedVerses, .study],
+                middle: [.readingPlan, .today, .timer, .streaks, .dailyFocus],
+                right: []
+            )
+            defaults.set(panelEra.storageString, forKey: HomeLayoutStore.keyColumns)
+            defaults.set(#"["savedVerses","study","streaks","dailyFocus"]"#, forKey: "homeCardHidden")
+            defaults.set(true, forKey: "homeTodayVisibilityMigratedV1")
+            defaults.removeObject(forKey: HomeLayoutStore.keyFavColumns)
+            defaults.removeObject(forKey: HomeLayoutStore.keyReaderPanelRemovalMigrated)
+            HomeLayoutStore.retiredReaderPanelKeys.forEach(defaults.removeObject(forKey:))
+            defaults.set("right", forKey: "homeBibleReaderColumn")
+            defaults.set("bookmark", forKey: "homeReaderSource")
+
+            let loaded = HomeLayoutStore().load()
+
+            // The panel's settings are gone either way.
+            for key in HomeLayoutStore.retiredReaderPanelKeys {
+                #expect(defaults.object(forKey: key) == nil, "\(key) was kept")
+            }
+            #expect(defaults.bool(forKey: HomeLayoutStore.keyReaderPanelRemovalMigrated))
+
+            // Only iPad keeps its own columns; there, every column now shows a card.
+            guard HomeLayoutStore.storesColumns else { return }
+            #expect(HomeColumn.allCases.allSatisfy { column in
+                loaded.columns.stackedCards(in: column).contains { !loaded.hidden.contains($0) }
+            })
+
+            // It happens once: a column emptied on purpose afterward stays empty.
+            defaults.set(panelEra.storageString, forKey: HomeLayoutStore.keyColumns)
+            #expect(HomeLayoutStore().load().columns.right.isEmpty)
+        }
+    }
+
+    @Test
+    func theDefaultOrderReadsLikeTheDefaultColumns() {
+        // Narrow widths use the order, so it should match the columns read row by row.
+        guard HomeLayoutStore.storesColumns else { return }
+        #expect(HomeLayoutStore.baselineOrder == HomeLayoutStore.baselineColumns.flatOrder)
+    }
+
+    @Test
     func everyCardHiddenIsDetected() {
         let model = HomeLayoutModel()
         model.hidden = Set(HomeCardID.allCases)
@@ -92,8 +141,7 @@ struct HomeLayoutModelTests {
     @Test
     func retiredCardsDropOutOfSavedColumns() {
         let decoded = HomeColumnLayout(
-            storageString: #"{"left":["search","verseOfDay"],"middle":["bibleStats","today"],"right":["timer"]}"#,
-            readerColumn: nil
+            storageString: #"{"left":["search","verseOfDay"],"middle":["bibleStats","today"],"right":["timer"]}"#
         )
         #expect(decoded?.left.first == .verseOfDay)
         #expect(decoded?.middle.first == .today)

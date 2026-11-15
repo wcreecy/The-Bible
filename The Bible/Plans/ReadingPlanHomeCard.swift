@@ -82,37 +82,19 @@ struct ReadingPlanHomeCard: View {
             }
             .buttonStyle(.plain)
 
-            HStack(spacing: 10) {
-                Button {
-                    store.continuePlan(plan.id)
-                } label: {
-                    Label("Start Reading", systemImage: "book.fill")
-                        .font(.subheadline.weight(.semibold))
+            // Side by side when both labels fit on one line; stacked in narrow columns (such
+            // as iPad portrait) or at large text sizes, rather than wrapping a label.
+            // No trailing Spacer in the row: its spacing would count against the fit.
+            ViewThatFits(in: .horizontal) {
+                // Tight enough that both fit in an iPad portrait column.
+                HStack(spacing: 6) {
+                    planButtons(plan: plan, day: day.day)
                 }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-
-                Button {
-                    withAnimation(.snappy) {
-                        store.setDay(day.day, of: plan.id, complete: true)
-                    }
-                    Haptics.success()
-                } label: {
-                    Label {
-                        Text("Mark Read")
-                    } icon: {
-                        // The checkmark symbol reads as "Selected" to VoiceOver; the text says it.
-                        Image(systemName: "checkmark").accessibilityHidden(true)
-                    }
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 8) {
+                    planButtons(plan: plan, day: day.day)
                 }
-                .accessibilityLabel("Mark day \(day.day) read")
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.capsule)
-
-                Spacer(minLength: 0)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             // The other plans in progress, each a tap from its next reading.
             let others = Array(store.activePlans.dropFirst())
@@ -123,6 +105,41 @@ struct ReadingPlanHomeCard: View {
                 }
             }
         }
+    }
+
+    /// Start Reading and Mark Read for the plan's current day, each kept to one line.
+    @ViewBuilder
+    private func planButtons(plan: ReadingPlan, day: Int) -> some View {
+        Button {
+            store.continuePlan(plan.id)
+        } label: {
+            Label("Start Reading", systemImage: "book.fill")
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+        }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.capsule)
+        .fixedSize()
+
+        Button {
+            withAnimation(.snappy) {
+                store.setDay(day, of: plan.id, complete: true)
+            }
+            Haptics.success()
+        } label: {
+            Label {
+                Text("Mark Read")
+            } icon: {
+                // The checkmark symbol reads as "Selected" to VoiceOver; the text says it.
+                Image(systemName: "checkmark").accessibilityHidden(true)
+            }
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+        }
+        .accessibilityLabel("Mark day \(day) read")
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .fixedSize()
     }
 
     private func otherPlanRow(_ plan: ReadingPlan, enrollment: PlanEnrollment) -> some View {

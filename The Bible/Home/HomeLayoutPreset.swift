@@ -61,44 +61,39 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
         return Set(preferredOrder)
     }
 
-    var showsTodayReadingPanel: Bool {
-        self == .reading || self == .study
-    }
-
-    /// The curated three-column arrangement used on iPad. Hidden cards remain in the
-    /// layout so people can reveal and customize them later.
+    /// The curated three-column arrangement used on iPad, balanced so the columns end at
+    /// about the same height (Your Progress is much the tallest card, so it stands alone).
+    /// Hidden cards remain in the layout so people can reveal and customize them later.
     var dashboardColumns: HomeColumnLayout {
-        let readerColumn: HomeColumn? = showsTodayReadingPanel ? .right : nil
         var layout: HomeColumnLayout
 
         switch self {
         case .reading:
-            // The Today's Reading panel takes the right column.
             layout = HomeColumnLayout(
-                left: [.readingPlan, .resumeReading],
-                middle: [.verseOfDay, .streaks, .savedVerses],
-                right: [],
+                left: [.readingPlan, .savedVerses],
+                middle: [.resumeReading, .verseOfDay],
+                right: [.streaks],
                 verseOfDayWidth: .oneColumn
             )
         case .study:
             layout = HomeColumnLayout(
-                left: [.study, .timer],
-                middle: [.resumeReading, .savedVerses, .verseOfDay],
-                right: [],
+                left: [.study],
+                middle: [.resumeReading, .verseOfDay],
+                right: [.timer, .savedVerses],
                 verseOfDayWidth: .oneColumn
             )
         case .dailyPractice:
             layout = HomeColumnLayout(
-                left: [.verseOfDay, .readingPlan],
-                middle: [.today, .streaks],
-                right: [.timer, .dailyFocus],
+                left: [.verseOfDay, .today, .timer],
+                middle: [.readingPlan, .dailyFocus],
+                right: [.streaks],
                 verseOfDayWidth: .allColumns
             )
         case .minimal:
             layout = HomeColumnLayout(left: [], middle: [], right: [])
         }
 
-        return layout.normalized(avoiding: readerColumn)
+        return layout.normalized()
     }
 
     func orderedCards() -> [HomeCardID] {

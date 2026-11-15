@@ -1,7 +1,7 @@
 import SwiftUI
 
-// Pieces of the iPad Home dashboard that sit around the cards: the Edit Home hint, the
-// Today's Reading edit controls, and the quick actions shown when every card is hidden.
+// Pieces of the iPad Home dashboard that sit around the cards: the Edit Home hint and the
+// quick actions shown when every card is hidden.
 
 /// Instructions shown above the columns while Edit Home is on.
 struct HomeEditHint: View {
@@ -18,51 +18,7 @@ struct HomeEditHint: View {
     }
 }
 
-/// Edit Home controls for the Today's Reading panel: move it to another column or hide it.
-struct HomeBibleReaderEditControls: View {
-    @Binding var column: HomeColumn
-    @Binding var isVisible: Bool
-
-    var body: some View {
-        HStack(spacing: 8) {
-            HomeEditControlButton(
-                systemImage: "arrow.left",
-                label: "Move Today's Reading left",
-                disabled: column.neighbor(by: -1) == nil
-            ) {
-                move(by: -1)
-            }
-
-            Button {
-                withAnimation(.snappy) { isVisible = false }
-                Haptics.selection()
-            } label: {
-                Label("Hide", systemImage: "eye.slash")
-                    .font(.subheadline.weight(.semibold))
-            }
-            .buttonStyle(.glass)
-            .accessibilityLabel("Hide Today's Reading")
-
-            HomeEditControlButton(
-                systemImage: "arrow.right",
-                label: "Move Today's Reading right",
-                disabled: column.neighbor(by: 1) == nil
-            ) {
-                move(by: 1)
-            }
-        }
-        .frame(height: HomeCardEditChrome.barHeight)
-    }
-
-    /// Moves the Today's Reading panel to the neighboring column; cards there stay below it.
-    private func move(by offset: Int) {
-        guard let destination = column.neighbor(by: offset) else { return }
-        withAnimation(.snappy) { column = destination }
-        Haptics.selection()
-    }
-}
-
-/// The three large actions shown on iPad when every card and the reader are hidden.
+/// The three large actions shown on iPad when every card is hidden.
 struct HomeMinimalQuickActions: View {
     /// The bookmarked verse, or the chapter last read (approximate, so no verse).
     private var continueMessage: String {

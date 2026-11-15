@@ -6,7 +6,6 @@ struct SettingsHomeLayoutSection: View {
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenSet: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var columns: HomeColumnLayout = HomeLayoutStore.baselineColumns
-    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
 
     private let layoutStore = HomeLayoutStore()
 
@@ -22,12 +21,7 @@ struct SettingsHomeLayoutSection: View {
     }
 
     private func saveFavoriteLayout() {
-        layoutStore.saveFavorite(
-            order: layoutOrder,
-            hidden: hiddenSet,
-            columns: columns,
-            bibleReaderVisible: bibleReaderVisible
-        )
+        layoutStore.saveFavorite(order: layoutOrder, hidden: hiddenSet, columns: columns)
     }
 
     private func applyFavoriteLayout() {

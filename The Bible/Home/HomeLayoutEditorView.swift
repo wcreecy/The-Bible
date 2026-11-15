@@ -5,7 +5,7 @@ struct HomeLayoutEditorView: View {
     @Binding var hiddenSet: Set<HomeCardID>
     /// The iPad dashboard's three columns; edited instead of `order` when `usesDashboard`.
     @Binding var columns: HomeColumnLayout
-    /// iPad arranges cards in three columns, with the Today's Reading panel atop one of them.
+    /// iPad arranges cards in three columns.
     let usesDashboard: Bool
     var onDone: () -> Void
 
@@ -17,8 +17,6 @@ struct HomeLayoutEditorView: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeQuickSearchVisible") private var quickSearchVisible = true
-    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
-    @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
     @State private var highlightedCards: Set<HomeCardID> = []
     @State private var confirmation: String?
     @State private var reorderFeedbackTask: Task<Void, Never>?
@@ -51,22 +49,18 @@ struct HomeLayoutEditorView: View {
         columns = HomeLayoutStore.baselineColumns
         customizeButtonVisible = true
         quickSearchVisible = true
-        bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
-        bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
         onDone()
         confirm("Default layout restored")
     }
 
     private func showAll() {
         hiddenSet.removeAll()
-        bibleReaderVisible = true
         onDone()
         confirm("All cards shown")
     }
 
     private func hideAllCards() {
         hiddenSet = Set(HomeCardID.allCases)
-        bibleReaderVisible = false
         onDone()
         confirm("All cards hidden")
     }
@@ -108,15 +102,13 @@ struct HomeLayoutEditorView: View {
     }
 
     private var isMinimalHome: Bool {
-        hiddenSet.isSuperset(of: Set(HomeCardID.allCases)) && !bibleReaderVisible
+        hiddenSet.isSuperset(of: Set(HomeCardID.allCases))
     }
 
     private func apply(_ preset: HomeLayoutPreset) {
         let orderedCards = preset.orderedCards()
         let visibleCards = preset.visibleCards(usesDashboard: usesDashboard)
         let hiddenCards = Set(HomeCardID.allCases).subtracting(visibleCards)
-        let readerVisible = preset.showsTodayReadingPanel
-        let readerColumn: HomeColumn? = readerVisible ? HomeLayoutStore.defaultBibleReaderColumn : nil
 
         withAnimation(.snappy) {
             order = orderedCards
@@ -124,15 +116,9 @@ struct HomeLayoutEditorView: View {
             if preset == .minimal {
                 quickSearchVisible = false
             }
-            bibleReaderVisible = readerVisible
-            bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
             columns = usesDashboard
                 ? preset.dashboardColumns
-                : HomeColumnLayout.seeded(
-                    from: orderedCards,
-                    hidden: hiddenCards,
-                    readerColumn: readerColumn
-                )
+                : HomeColumnLayout.seeded(from: orderedCards, hidden: hiddenCards)
             highlightedCards = visibleCards
         }
 
@@ -250,7 +236,7 @@ struct HomeLayoutEditorView: View {
         } set: { count in
             let title = HomeCardWidthOption(columnCount: count).title.lowercased()
             changeColumns(highlighting: [.verseOfDay], confirmation: "Verse of the Day set to \(title)") {
-                $0.setVerseOfDayColumnCount(count, readerColumn: bibleReaderVisible ? bibleReaderColumn : nil)
+                $0.setVerseOfDayColumnCount(count)
             }
         }
     }
@@ -407,46 +393,15 @@ struct HomeLayoutEditorView: View {
         }
     }
 
-    /// iPad-only panel settings, shown after the card arrangement controls.
-    @ViewBuilder
-    private var dashboardOptionSections: some View {
-        Section {
-            Toggle(
-                "Today's Reading",
-                systemImage: "book.pages",
-                isOn: $bibleReaderVisible
-            )
-
-            Picker("Column", selection: $bibleReaderColumn) {
-                ForEach(HomeColumn.allCases, id: \.self) { column in
-                    Text(column.shortTitle).tag(column)
-                }
-            }
-            .pickerStyle(.segmented)
-            .disabled(!bibleReaderVisible)
-            .accessibilityLabel("Today's Reading column")
-        } header: {
-            Label("Today's Reading Panel", systemImage: "book.pages")
-        } footer: {
-            Text("A full-height reading panel at the top of its column; any cards in that column appear below it. It shows your bookmark, or the Verse of the Day in its chapter.")
-        }
-    }
-
     @ViewBuilder
     private var dashboardSections: some View {
         ForEach(HomeColumn.allCases, id: \.self) { column in
             Section {
-                // A wide Verse of the Day heads the columns it covers, the reader panel included.
+                // A wide Verse of the Day heads the columns it covers.
                 if isVisible(.verseOfDay), columns.verseOfDayWidth.coveredColumns.contains(column) {
                     Label("Below Verse of the Day", systemImage: "arrow.up.to.line")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                }
-
-                if bibleReaderVisible && bibleReaderColumn == column {
-                    Label("Today's Reading panel", systemImage: "book.pages")
-                        .foregroundStyle(.secondary)
-                        .accessibilityHint("Choose its column in Today's Reading Panel above")
                 }
 
                 ForEach(Array(columns.stackedCards(in: column).filter(isVisible).enumerated()), id: \.element) { index, id in
@@ -728,10 +683,6 @@ struct HomeLayoutEditorView: View {
                         Text("These cards are hidden from Home. Show a card to make it available there.")
                     }
                 }
-            }
-
-            if usesDashboard {
-                dashboardOptionSections
             }
 
             startFromSection

@@ -1,8 +1,7 @@
 import SwiftUI
 
-/// The iPad Home dashboard's three equal columns. The Today's Reading panel, when shown,
-/// sits above the cards in its column. A wide Verse of the Day sits above the columns it
-/// covers (see `HomeCardWidth`).
+/// The iPad Home dashboard's three equal columns. A wide Verse of the Day sits above the
+/// columns it covers (see `HomeCardWidth`).
 ///
 /// In Edit Home mode, cards stop responding to taps and show controls to hide them or move
 /// them up, down, left, or right; hidden cards appear as compact tiles so they can be shown
@@ -10,11 +9,9 @@ import SwiftUI
 ///
 /// System drag-to-reorder (`reorderable(collectionID:)`) isn't used: on iOS 27.0 it crashed
 /// at lift ("Unexpected identifier type") once items had real card content.
-struct HomeCardColumnsView<Card: View, Reader: View>: View {
+struct HomeCardColumnsView<Card: View>: View {
     let columns: HomeColumnLayout
     let hiddenCards: Set<HomeCardID>
-    /// The Today's Reading panel's column, or nil when it's hidden.
-    let readerColumn: HomeColumn?
     let isEditing: Bool
     /// The width of all three columns together; each gets exactly a third so wide card
     /// content can't push the columns past the page margins.
@@ -27,7 +24,6 @@ struct HomeCardColumnsView<Card: View, Reader: View>: View {
     /// Sets how many columns Verse of the Day covers: 1, 2, or 3.
     let onSetVerseOfDayColumnCount: (Int) -> Void
     @ViewBuilder let card: (HomeCardID) -> Card
-    @ViewBuilder let reader: () -> Reader
 
     private var columnWidth: CGFloat {
         let count = CGFloat(HomeColumn.allCases.count)
@@ -82,15 +78,11 @@ struct HomeCardColumnsView<Card: View, Reader: View>: View {
     private func columnStack(_ column: HomeColumn) -> some View {
         let ids = cards(in: column)
         return VStack(spacing: cardSpacing) {
-            if readerColumn == column {
-                reader()
-            }
-
             ForEach(ids, id: \.self) { id in
                 item(for: id, in: column)
             }
 
-            if isEditing && ids.isEmpty && readerColumn != column {
+            if isEditing && ids.isEmpty {
                 emptyColumnPlaceholder
             }
         }
