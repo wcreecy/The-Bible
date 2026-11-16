@@ -4,6 +4,7 @@ import SwiftUI
 /// Home header shared by iPhone and iPad with a time-of-day greeting and date.
 struct TitleCardView: View {
     let isPad: Bool
+    var isLandscape = false
     var date: Date = .now
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -60,6 +61,11 @@ struct TitleCardView: View {
 
     private var greeting: String { greetingScene.greeting }
 
+    private var morningImageOffset: CGFloat {
+        guard isPad, greetingScene == .sunrise else { return 0 }
+        return isLandscape ? -44 : -20
+    }
+
     var body: some View {
         topRow
         // Keep a generous header while allowing it to expand for larger text sizes.
@@ -75,6 +81,7 @@ struct TitleCardView: View {
             Image(greetingScene.imageName)
                 .resizable()
                 .scaledToFill()
+                .offset(y: morningImageOffset)
                 .overlay {
                     LinearGradient(
                         colors: [.black.opacity(0.58), .black.opacity(0.18)],

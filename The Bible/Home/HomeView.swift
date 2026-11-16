@@ -21,6 +21,7 @@ struct HomeView: View {
     @State private var verseActionToastSymbol: String = "doc.on.doc"
     @State private var verseActionToastText: String = "Copied to Clipboard"
     @State private var verseActionToastTint: Color = .accentColor
+    @State private var isLandscape = false
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -195,6 +196,9 @@ struct HomeView: View {
                 }
             )
         }
+        .onGeometryChange(for: Bool.self) { proxy in
+            proxy.size.width > proxy.size.height
+        } action: { isLandscape = $0 }
         .onGeometryChange(for: Bool.self) { proxy in
             isPad && proxy.size.width >= 700 && !dynamicTypeSize.isAccessibilitySize
         } action: { showsDashboard in
@@ -522,7 +526,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private func homeHeader() -> some View {
-        TitleCardView(isPad: isPad)
+        TitleCardView(isPad: isPad, isLandscape: isLandscape)
     }
 
     @ViewBuilder
