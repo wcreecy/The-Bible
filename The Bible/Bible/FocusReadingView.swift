@@ -151,21 +151,11 @@ struct FocusReadingView: View {
             )
         }
         .sheet(isPresented: $chapterInsightsDismissal.isPresented) {
-            NavigationStack {
-                ChapterInsightsView(
-                    bookName: currentLocation.bookName,
-                    chapterNumber: currentLocation.chapterNumber,
-                    openedFromReader: true
-                )
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Done") {
-                            chapterInsightsDismissal.dismiss()
-                        }
-                    }
-                }
-            }
-            .environment(\.studySheetDismissal, chapterInsightsDismissal)
+            ReaderChapterInsightsSheet(
+                bookName: currentLocation.bookName,
+                chapterNumber: currentLocation.chapterNumber,
+                dismissal: chapterInsightsDismissal
+            )
         }
     }
 

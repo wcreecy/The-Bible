@@ -8,7 +8,7 @@ struct GamesOverviewCardView: View {
 
     @Environment(\.horizontalSizeClass) private var hSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @AppStorage("statsSelectedGame") private var selectedGame: String = "All Games"
+    @AppStorage(AppStorageKey.statsSelectedGame) private var selectedGame: String = "All Games"
 
     @State private var wordScope: Int = 2
 

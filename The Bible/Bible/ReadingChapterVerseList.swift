@@ -103,8 +103,8 @@ struct ReadingChapterVerseList: View {
                 isSelected: viewModel.selectedVerse == verse.number,
                 isFavorite: chapterStatus.favoriteVerseNumbers.contains(verse.number),
                 hasNote: chapterStatus.hasNote(verse.number),
-                isPinned: chapterStatus.bookmarkedVerseNumbers.contains(verse.number),
-                isCurrentlyPinned: pinnedStore.isPinned(
+                isBookmarked: chapterStatus.bookmarkedVerseNumbers.contains(verse.number),
+                isPinnedToWidget: pinnedStore.isPinned(
                     bookName: bookName,
                     chapter: chapterNumber,
                     verse: verse.number

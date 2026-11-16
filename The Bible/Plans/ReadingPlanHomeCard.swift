@@ -232,7 +232,7 @@ struct ReadingPlanHomeCard: View {
 struct ReadingPlansNewTip: View {
     let onBrowse: () -> Void
 
-    @AppStorage("readingPlansNewTipDismissed") private var isDismissed = false
+    @AppStorage(AppStorageKey.readingPlansNewTipDismissed) private var isDismissed = false
     @State private var store = ReadingPlanStore.shared
 
     var body: some View {

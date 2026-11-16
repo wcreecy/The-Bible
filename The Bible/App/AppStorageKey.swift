@@ -79,6 +79,15 @@ enum AppStorageKey {
     static let verseOfDayRefreshNotificationsEnabled = "votdRefreshNotificationsEnabled"
     static let timerSoundSelection = "timerSoundSelection"
     static let favoritesSortOrder = "favoritesSortOrder"
+    static let verseOfDayRefresh1Hour = "votdRefresh1Hour"
+    static let verseOfDayRefresh1Minute = "votdRefresh1Minute"
+    static let verseOfDayRefresh2Hour = "votdRefresh2Hour"
+    static let verseOfDayRefresh2Minute = "votdRefresh2Minute"
+    static let verseOfDaySpecificBook = "verseOfDaySpecificBook"
+    static let verseOfDayPaused = "verseOfDayPaused"
+    static let liveActivitiesEnabled = "liveActivitiesEnabled"
+    static let healthKitMindfulMinutesEnabled = "healthKitMindfulMinutesEnabled"
+    static let didRequestNotifications = "didRequestNotifications"
 
     // Games
     static let debugAutoWinEnabled = "debugAutoWinEnabled"
@@ -140,4 +149,38 @@ enum AppStorageKey {
     static let gameStatsLastSeenResetEpoch = "gameStatsLastSeenResetEpoch"
     static let gameStatsLedgerInstallationID = "gameStatsLedgerInstallationID"
     static let gameStatsLedgerInstallationVendorID = "gameStatsLedgerInstallationVendorID"
+
+    // Home
+    static let homeCardOrder = "homeCardOrder"
+    static let homeQuickSearchVisible = "homeQuickSearchVisible"
+    static let homeCustomizeButtonVisible = "homeCustomizeButtonVisible"
+    static let homeSavedVersePinID = "homeSavedVersePinID"
+    static let homeSavedVersePinDay = "homeSavedVersePinDay"
+    static let streakCelebratedMilestone = "streakCelebratedMilestone"
+    static let readingPlansNewTipDismissed = "readingPlansNewTipDismissed"
+    static let focusLiveActivitiesHintDismissed = "focusLiveActivitiesHintDismissed"
+
+    // Notes
+    static let notesTabSortField = "notesTabSortField"
+    static let notesTabSortAscending = "notesTabSortAscending"
+    static let notesTabListColumnFraction = "notesTabListColumnFraction"
+
+    // Stats
+    static let statsSelectedGame = "statsSelectedGame"
+    static let prayerStatsSelectedKind = "prayerStatsSelectedKind"
+
+    // Prayer & Study Timer
+    static let prayerTimerActiveKind = "prayerTimerActiveKind"
+    static let prayerTimerRunning = "prayerTimerRunning"
+    static let prayerTimerPaused = "prayerTimerPaused"
+    static let prayerTimerStartDate = "prayerTimerStartDate"
+    static let prayerTimerEndDate = "prayerTimerEndDate"
+    static let prayerTimerTotalSeconds = "prayerTimerTotalSeconds"
+    static let prayerTimerRemainingWhenPaused = "prayerTimerRemainingWhenPaused"
+    static let prayerTimerVerseSource = "prayerTimerVerseSource"
+    static let prayerSessionSeconds = "prayerSessionSeconds"
+    static let prayerSegmentStartDate = "prayerSegmentStartDate"
+
+    // Debug
+    static let debugForcedStoreMode = "debugForcedStoreMode"
 }

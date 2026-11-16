@@ -19,7 +19,7 @@ struct DailyFocusCard: View {
     @FocusState private var focusedField: Field?
 
     /// The Live Activities reminder appears after a save while they are off, until dismissed once.
-    @AppStorage("focusLiveActivitiesHintDismissed") private var liveActivitiesHintDismissed = false
+    @AppStorage(AppStorageKey.focusLiveActivitiesHintDismissed) private var liveActivitiesHintDismissed = false
 
     private var showsSavedFocus: Bool { focus.hasSaved && !isEditing }
 

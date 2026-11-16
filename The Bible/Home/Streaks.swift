@@ -15,7 +15,7 @@ struct StreaksCard: View {
     @State private var todayStudySeconds = 0
     @State private var todayGameSeconds = 0
     /// The highest milestone already celebrated for the current streak.
-    @AppStorage("streakCelebratedMilestone") private var celebratedMilestone = 0
+    @AppStorage(AppStorageKey.streakCelebratedMilestone) private var celebratedMilestone = 0
 
     var body: some View {
         // Reading this redraws the card when reading stats change.

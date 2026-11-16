@@ -394,7 +394,7 @@ private struct PrayerMeditationVerse: View {
     let verseOfDay: HomeVerseRef?
     let tint: Color
 
-    @AppStorage("prayerTimerVerseSource") private var sourceRaw = PrayerVerseSource.verseOfDay.rawValue
+    @AppStorage(AppStorageKey.prayerTimerVerseSource) private var sourceRaw = PrayerVerseSource.verseOfDay.rawValue
     @Query(sort: [SortDescriptor(\Favorite.createdAt)]) private var favorites: [Favorite]
 
     private var source: PrayerVerseSource {

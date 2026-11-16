@@ -72,3 +72,21 @@ final class FocusViewModel {
         return s.unicodeScalars.contains { letters.contains($0) }
     }
 }
+
+extension PrayerTimerActivityController {
+    /// Shows the saved Daily Focus as a Live Activity when one isn't already running, so it
+    /// returns after the system ends it. The widget extension shares this controller but not
+    /// the app's storage keys, so this lives in the app.
+    func ensureSavedFocusIfNeeded() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        let title = shared.string(forKey: AppStorageKey.focusTitle)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let body = shared.string(forKey: AppStorageKey.focusBody)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let hasContent = (!(title?.isEmpty ?? true) || !(body?.isEmpty ?? true))
+        if hasContent {
+            ensureFocusIfNone(
+                title: (title?.isEmpty ?? true) ? nil : title,
+                body: (body?.isEmpty ?? true) ? nil : body
+            )
+        }
+    }
+}

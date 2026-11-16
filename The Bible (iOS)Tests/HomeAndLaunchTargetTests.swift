@@ -16,7 +16,7 @@ struct BibleLaunchPositionTests {
 
     @Test
     func opensTheSavedPlace() throws {
-        let saved = BibleReaderLocation(bookName: "John", chapterNumber: 3, verseNumber: 7)
+        let saved = (bookName: "John", chapterNumber: 3, verseNumber: 7)
         let start = try #require(BibleLaunchPosition.resolve(in: books, saved: saved))
         #expect(start.book.name == "John")
         #expect(start.chapter.number == 3)
@@ -25,7 +25,7 @@ struct BibleLaunchPositionTests {
 
     @Test
     func aSavedPlaceNotInTheBibleOpensGenesisOne() throws {
-        let saved = BibleReaderLocation(bookName: "John", chapterNumber: 3, verseNumber: 99)
+        let saved = (bookName: "John", chapterNumber: 3, verseNumber: 99)
         let start = try #require(BibleLaunchPosition.resolve(in: books, saved: saved))
         #expect(start.book.name == "Genesis")
         #expect(start.chapter.number == 1)

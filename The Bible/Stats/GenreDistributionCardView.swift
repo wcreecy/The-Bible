@@ -18,7 +18,7 @@ struct GenreDistributionCardView: View {
     let formatSeconds: (Int) -> String
 
     @Environment(\.colorScheme) private var colorScheme
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
 
     private var segmentedTint: Color {
         colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor

@@ -8,7 +8,7 @@ import UIKit
 final class UserActivityMonitor {
     static let shared = UserActivityMonitor()
 
-    static let idleTimeout: TimeInterval = 300
+    nonisolated static let idleTimeout: TimeInterval = 300
 
     /// The most recent touch anywhere in the app.
     private(set) var lastInteraction = Date()

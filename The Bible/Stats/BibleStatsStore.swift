@@ -57,13 +57,6 @@ final class BibleStatsStore {
         let chapterCompletionDates: [String: Date]
     }
 
-    struct HomeStatisticsSnapshot {
-        let dailyTotals: [String: Int]
-        let perBookTotals: [String: Int]
-        let visitedChapters: Set<String>
-        let lastRead: LastRead?
-    }
-
     // MARK: - In-memory caches
 
     // All caches are loaded lazily on first read and kept in memory.
@@ -100,15 +93,6 @@ final class BibleStatsStore {
             lastRead: loadLastRead(),
             seenVersesByChapter: loadSeenVersesByChapter(),
             chapterCompletionDates: loadChapterCompletionDates()
-        )
-    }
-
-    func homeStatisticsSnapshot() -> HomeStatisticsSnapshot {
-        HomeStatisticsSnapshot(
-            dailyTotals: loadDailyTotals(),
-            perBookTotals: loadTotals(),
-            visitedChapters: loadVisitedChapters(),
-            lastRead: loadLastRead()
         )
     }
 

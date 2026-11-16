@@ -2,7 +2,7 @@ import SwiftUI
 import AVFAudio
 
 struct SettingsTimerSection: View {
-    @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
+    @AppStorage(AppStorageKey.timerSoundSelection) private var timerSoundSelection: String = TimerSound.default.rawValue
     @State private var previewPlayer = TimerSoundPreviewPlayer()
 
     var body: some View {

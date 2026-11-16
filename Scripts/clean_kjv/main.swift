@@ -1,6 +1,6 @@
 // Pre-cleans the Bible text the app bundles, so it doesn't clean every verse at launch.
 //
-// Reads the raw source (`The Bible/kjv.json`, which the other scripts edit) and writes
+// Reads the raw source (`The Bible (iOS)Tests/TranslationSources/kjv.json`, which the other scripts edit) and writes
 // `The Bible/KJVText.json`. Run from the repo root after changing kjv.json:
 //
 //   swiftc -O "The Bible/Bible/KJVTextCleaner.swift" Scripts/clean_kjv/main.swift -o /tmp/clean_kjv && /tmp/clean_kjv
@@ -19,7 +19,7 @@ struct SourceBook: Decodable {
 }
 
 let arguments = CommandLine.arguments.dropFirst()
-let inputURL = URL(fileURLWithPath: arguments.first ?? "The Bible/kjv.json")
+let inputURL = URL(fileURLWithPath: arguments.first ?? "The Bible (iOS)Tests/TranslationSources/kjv.json")
 let outputURL = URL(fileURLWithPath: arguments.dropFirst().first ?? "The Bible/KJVText.json")
 
 func flattened(_ ranges: [Range<Int>]) -> [Int] {

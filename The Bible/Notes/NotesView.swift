@@ -9,10 +9,10 @@ struct NotesView: View {
     @Query private var scriptureNotes: [VerseNote]
     @Query private var userNotes: [UserNote]
 
-    @AppStorage("notesTabSortField") private var sortFieldRawValue = NotesTabSort.modified.rawValue
-    @AppStorage("notesTabSortAscending") private var sortAscending = NotesTabSort.modified.defaultAscending
-    @AppStorage("notesTabListColumnFraction") private var listColumnFraction = 0.4
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.notesTabSortField) private var sortFieldRawValue = NotesTabSort.modified.rawValue
+    @AppStorage(AppStorageKey.notesTabSortAscending) private var sortAscending = NotesTabSort.modified.defaultAscending
+    @AppStorage(AppStorageKey.notesTabListColumnFraction) private var listColumnFraction = 0.4
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
     @State private var filters = NotesFilters()
     @State private var isSearchPresented = false
     @State private var selectedID: NotesListItem.ID?

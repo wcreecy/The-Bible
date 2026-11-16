@@ -10,7 +10,7 @@ struct SettingsDeveloperToolsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.persistenceStoreMode) private var persistenceStoreMode
     @Environment(CloudKitManager.self) private var cloudKitManager
-    @AppStorage("debugForcedStoreMode") private var forcedStoreMode = ""
+    @AppStorage(AppStorageKey.debugForcedStoreMode) private var forcedStoreMode = ""
     @AppStorage(DeveloperTools.resumeReadingPreviewKey) private var resumeReadingPreview = DeveloperTools.ResumeReadingPreview.actual.rawValue
 
     @State private var streak = StreakTracker.summary()

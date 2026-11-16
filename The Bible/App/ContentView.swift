@@ -202,7 +202,7 @@ struct ContentView: View {
         Task { @MainActor in
             await Task.yield()
             if selectedTab == .home {
-                ensureSavedFocusLiveActivityIfNeeded()
+                PrayerTimerActivityController.shared.ensureSavedFocusIfNeeded()
             }
         }
 
@@ -328,7 +328,7 @@ struct ContentView: View {
         if newValue == .home {
             Task { @MainActor in
                 await Task.yield()
-                ensureSavedFocusLiveActivityIfNeeded()
+                PrayerTimerActivityController.shared.ensureSavedFocusIfNeeded()
             }
         }
         // Update previousTab for next transition detection
@@ -491,10 +491,7 @@ struct ContentView: View {
 
         Task {
             let books = await BibleRepository.shared.loadAllBooks()
-            guard selectedTab == .bible,
-                  let genesis = books.first(where: { $0.name == "Genesis" }) ?? books.first,
-                  let genesisOne = genesis.chapters.first(where: { $0.number == 1 }) ?? genesis.chapters.first
-            else { return }
+            guard selectedTab == .bible else { return }
 
             // The same place Continue Reading on Home goes: the bookmark, or the chapter last
             // read once the reader has moved on from it.
@@ -505,42 +502,15 @@ struct ContentView: View {
                 bookmark: bookmark.map(ContinueReadingTarget.BookmarkPoint.init),
                 reading: ReadingPositionStore.shared.current.map(ContinueReadingTarget.ReadingPoint.init)
             )?.destination
-            let savedBook = savedLocation.flatMap { location in
-                books.first(where: { $0.name == location.bookName })
-            }
-            let savedChapter = savedLocation.flatMap { location in
-                savedBook?.chapters.first(where: { $0.number == location.chapterNumber })
-            }
-            let savedVerse = savedLocation.flatMap { location in
-                savedChapter?.verses.first(where: { $0.number == location.verseNumber })?.number
-            }
-
-            let book: Book
-            let chapter: Chapter
-            let verse: Int
-            if let savedBook, let savedChapter, let savedVerse {
-                book = savedBook
-                chapter = savedChapter
-                verse = savedVerse
-            } else {
-                book = genesis
-                chapter = genesisOne
-                verse = 1
-            }
-
-            let location = BibleReaderLocation(
-                bookName: book.name,
-                chapterNumber: chapter.number,
-                verseNumber: verse
-            )
+            guard let start = BibleLaunchPosition.resolve(in: books, saved: savedLocation) else { return }
 
             if usesWideLayout {
-                launchBibleLocation = location
+                launchBibleLocation = start.location
             } else {
                 bibleCoordinator.reset()
-                bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verse))
-                ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)
-                ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: chapter.number)
+                bibleCoordinator.push(.reader(book: start.book, chapter: start.chapter, startVerse: start.verse))
+                ReadingTimeTracker.shared.start(bookName: start.book.name, chapter: start.chapter.number)
+                ReadingTimeTracker.shared.setCurrentLocation(bookName: start.book.name, chapter: start.chapter.number)
                 ReadingTimeTracker.shared.resume()
             }
         }
@@ -667,20 +637,6 @@ struct ContentView: View {
     private func clearAppIconBadge() {
         Task {
             try? await UNUserNotificationCenter.current().setBadgeCount(0)
-        }
-    }
-
-    @MainActor
-    private func ensureSavedFocusLiveActivityIfNeeded() {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
-        let title = shared.string(forKey: AppStorageKey.focusTitle)?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let body = shared.string(forKey: AppStorageKey.focusBody)?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let hasContent = (!(title?.isEmpty ?? true) || !(body?.isEmpty ?? true))
-        if hasContent {
-            PrayerTimerActivityController.shared.ensureFocusIfNone(
-                title: (title?.isEmpty ?? true) ? nil : title,
-                body: (body?.isEmpty ?? true) ? nil : body
-            )
         }
     }
 }

@@ -70,10 +70,10 @@ struct SetupChecklistCard: View {
     @AppStorage(Self.skippedStepsKey) private var skippedStepsRaw = ""
     @AppStorage(Self.readStartedKey) private var readStarted = false
     @AppStorage(Self.dailyGoalReviewedKey) private var dailyGoalReviewed = false
-    @AppStorage("homeCardOrder") private var homeCardOrderRaw = ""
-    @AppStorage("verseOfDayBook") private var verseOfDayBook = ""
-    @AppStorage("verseOfDayChapter") private var verseOfDayChapter = 0
-    @AppStorage("verseOfDayNumber") private var verseOfDayNumber = 0
+    @AppStorage(AppStorageKey.homeCardOrder) private var homeCardOrderRaw = ""
+    @AppStorage(AppStorageKey.verseOfDayBook) private var verseOfDayBook = ""
+    @AppStorage(AppStorageKey.verseOfDayChapter) private var verseOfDayChapter = 0
+    @AppStorage(AppStorageKey.verseOfDayNumber) private var verseOfDayNumber = 0
     @AppStorage(Self.savedVerseBaselineKey) private var savedVerseBaseline = 0
     @AppStorage(Self.highlightBaselineKey) private var highlightBaseline = 0
     @AppStorage(Self.gameBaselineKey) private var gameBaseline = 0

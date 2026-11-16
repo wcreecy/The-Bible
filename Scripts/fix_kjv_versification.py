@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-KJV = ROOT / "The Bible" / "kjv.json"
+KJV = ROOT / "The Bible (iOS)Tests" / "TranslationSources" / "kjv.json"
 REVIEW = ROOT / "Scripts" / "kjv_fixes_review.md"
 
 RED_START = "\ue000"
@@ -163,7 +163,7 @@ def main() -> int:
 
     REVIEW.write_text(
         "# KJV text fixes — review sheet\n\n"
-        f"`The Bible/kjv.json` now has **{total:,} verses**, matching the standard KJV (31,102).\n\n"
+        f"`The Bible (iOS)Tests/TranslationSources/kjv.json` now has **{total:,} verses**, matching the standard KJV (31,102).\n\n"
         "Fixed by `Scripts/fix_kjv_versification.py`. Every chapter was compared against an independent "
         "KJV text ([aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv)); these were the only "
         "places where verse numbering differed.\n\n"

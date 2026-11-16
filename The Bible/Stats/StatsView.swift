@@ -110,7 +110,7 @@ struct StatsView: View {
     }
 
     // Persist the selected mode so the user’s choice sticks
-    @AppStorage("statsSelectedMode") private var statsSelectedModeRaw: String = StatsMode.bible.rawValue
+    @AppStorage(AppStorageKey.statsSelectedMode) private var statsSelectedModeRaw: String = StatsMode.bible.rawValue
     private var statsSelectedMode: StatsMode {
         get { StatsMode(rawValue: statsSelectedModeRaw) ?? .bible }
         set { statsSelectedModeRaw = newValue.rawValue }

@@ -7,7 +7,7 @@ and supplied-word markup. Every other translation goes through this script:
     python3 Scripts/build_translation.py asv            # build The Bible/ASVText.json
     python3 Scripts/build_translation.py asv --check    # validate only; writes nothing
 
-The source is the same shape as `The Bible/kjv.json`: [{ abbrev, name, chapters: [[verse]] }].
+The source is the same shape as `The Bible (iOS)Tests/TranslationSources/kjv.json`: [{ abbrev, name, chapters: [[verse]] }].
 The script applies the translation's known source fixes, then checks it against the bundled
 KJV: the same 66 book names in the same order, and the same number of chapters and verses
 in every chapter. The app keys bookmarks, notes, highlights, and reading progress by book,

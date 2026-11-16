@@ -517,3 +517,43 @@ private extension String {
             .padding()
     }
 }
+
+extension StudyHomeCard {
+    /// The chapter the Study card prepares for: the bookmarked one, so it matches Continue
+    /// Reading, else the Verse of the Day's, else Genesis 1. Read opens at the bookmarked verse.
+    struct Target: Equatable {
+        let bookName: String
+        let chapterNumber: Int
+        let verseNumber: Int
+        let verseText: String?
+        let source: Source
+
+        init(bookmark: HomeVerseRef?, verseOfDay: HomeVerseRef?, verseOfDayTitle: String) {
+            if let bookmark {
+                self.init(bookmark, source: .bookmark)
+            } else if let verseOfDay {
+                self.init(verseOfDay, source: .verseOfDay(title: verseOfDayTitle))
+            } else {
+                self.init(bookName: "Genesis", chapterNumber: 1, verseNumber: 1, verseText: nil, source: .startingPoint)
+            }
+        }
+
+        private init(_ verse: HomeVerseRef, source: Source) {
+            self.init(
+                bookName: verse.bookName,
+                chapterNumber: verse.chapterNumber,
+                verseNumber: verse.verseNumber,
+                verseText: verse.verseText,
+                source: source
+            )
+        }
+
+        private init(bookName: String, chapterNumber: Int, verseNumber: Int, verseText: String?, source: Source) {
+            self.bookName = bookName
+            self.chapterNumber = chapterNumber
+            self.verseNumber = verseNumber
+            self.verseText = verseText
+            self.source = source
+        }
+    }
+}

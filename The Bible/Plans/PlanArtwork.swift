@@ -239,24 +239,6 @@ extension PlanArtworkStyle {
     )
 }
 
-/// A small square of artwork for any style, for compact rows.
-struct ArtworkSquare: View {
-    let style: PlanArtworkStyle
-    var size: CGFloat = 28
-
-    var body: some View {
-        ZStack {
-            LinearGradient(colors: style.colors, startPoint: .topLeading, endPoint: .bottomTrailing)
-            Image(systemName: style.symbol)
-                .font(.system(size: size * 0.48, weight: .semibold))
-                .foregroundStyle(.white)
-        }
-        .frame(width: size, height: size)
-        .clipShape(RoundedRectangle(cornerRadius: size * 0.26, style: .continuous))
-        .accessibilityHidden(true)
-    }
-}
-
 /// A half-width card with an artwork band, used side by side on the Bible tab.
 struct FeatureTile: View {
     let style: PlanArtworkStyle

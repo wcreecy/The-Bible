@@ -157,10 +157,10 @@ struct OriginalWordUsage: Equatable, Sendable {
 /// The Hebrew and Greek words behind each verse, from OriginalWords.sqlite. The data comes
 /// from STEPBible.org and Tyndale House Cambridge (CC BY 4.0); Scripts/build_original_words.py
 /// builds the database and Scripts/data/README.md describes the sources.
-actor OriginalWordsRepository {
+actor OriginalWordsRepository: BundledSQLiteReading {
     static let shared = OriginalWordsRepository()
 
-    private let databaseResourceName = "OriginalWords"
+    private let database = BundledSQLiteDatabase(resourceName: "OriginalWords")
 
     /// The words of a verse, in order. Empty when the verse has none or the database is missing.
     ///
@@ -354,33 +354,7 @@ actor OriginalWordsRepository {
     }
 
     func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {
-        guard let databaseURL = Bundle.main.url(forResource: databaseResourceName, withExtension: "sqlite") else {
-            return nil
-        }
-
-        var database: OpaquePointer?
-        guard sqlite3_open_v2(databaseURL.path, &database, SQLITE_OPEN_READONLY, nil) == SQLITE_OK,
-              let database else {
-            return nil
-        }
-        defer { sqlite3_close(database) }
-
-        return operation(database)
-    }
-
-    nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {
-        unsafeBitCast(-1, to: sqlite3_destructor_type.self)
-    }
-
-    static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
-        guard let text = sqlite3_column_text(statement, index) else { return "" }
-        return String(cString: text)
-    }
-
-    static func optionalColumnText(_ statement: OpaquePointer, at index: Int32) -> String? {
-        guard let text = sqlite3_column_text(statement, index) else { return nil }
-        let value = String(cString: text)
-        return value.isEmpty ? nil : value
+        database.withConnection(operation)
     }
 }
 

@@ -6,8 +6,8 @@ import SwiftData
 struct SavedVersesHomeCardContainer: View {
     @Query private var favorites: [Favorite]
     @Query(filter: #Predicate<VerseNote> { $0.highlightColor != "" }) private var highlights: [VerseNote]
-    @AppStorage("homeSavedVersePinID") private var savedVersePinID = ""
-    @AppStorage("homeSavedVersePinDay") private var savedVersePinDay = 0
+    @AppStorage(AppStorageKey.homeSavedVersePinID) private var savedVersePinID = ""
+    @AppStorage(AppStorageKey.homeSavedVersePinDay) private var savedVersePinDay = 0
     @State private var previewOffset = 0
 
     let onOpenSavedVerses: () -> Void

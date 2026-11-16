@@ -103,8 +103,8 @@ struct NotificationAccessRow: View {
 struct SettingsPrayerTimerAccessSection: View {
     @Environment(\.scenePhase) private var scenePhase
 
-    @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
-    @AppStorage("healthKitMindfulMinutesEnabled") private var mindfulMinutesEnabled: Bool = false
+    @AppStorage(AppStorageKey.liveActivitiesEnabled) private var liveActivitiesEnabled: Bool = true
+    @AppStorage(AppStorageKey.healthKitMindfulMinutesEnabled) private var mindfulMinutesEnabled: Bool = false
 
     @State private var mindfulMinutesStatus: HKAuthorizationStatus?
     @State private var areSystemLiveActivitiesEnabled = true

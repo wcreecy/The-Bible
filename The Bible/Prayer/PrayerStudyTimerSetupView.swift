@@ -5,7 +5,7 @@ struct PrayerStudyTimerSetupView: View {
     let onStart: (Int) -> Void
 
     @State private var selectedMinutes: Int = 15
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
     @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
     @AppStorage(PrayerTimerKind.preferenceKey) private var kindRaw = PrayerTimerKind.prayer.rawValue
 

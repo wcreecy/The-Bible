@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-KJV = ROOT / "The Bible" / "kjv.json"
+KJV = ROOT / "The Bible (iOS)Tests" / "TranslationSources" / "kjv.json"
 OUT_REVIEW = ROOT / "Scripts" / "word_game_words_review.md"
 
 # Mirrors BookNames in BibleData.swift.

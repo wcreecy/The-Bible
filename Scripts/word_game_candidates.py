@@ -9,7 +9,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-KJV = ROOT / "The Bible" / "kjv.json"
+KJV = ROOT / "The Bible (iOS)Tests" / "TranslationSources" / "kjv.json"
 
 
 def clean(raw: str) -> str:

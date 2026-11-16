@@ -11,7 +11,7 @@ struct HomeView: View {
 
     private var timerController = PrayerTimerController.shared
 
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
 
@@ -85,11 +85,11 @@ struct HomeView: View {
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
-    @AppStorage("votdRefreshFrequency") private var votdRefreshFrequency: String = VOTDRefreshFrequency.custom.rawValue
-    @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
-    @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
-    @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
-    @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
+    @AppStorage(AppStorageKey.verseOfDayRefreshFrequency) private var votdRefreshFrequency: String = VOTDRefreshFrequency.custom.rawValue
+    @AppStorage(AppStorageKey.verseOfDayRefresh1Hour) private var votdRefresh1Hour: Int = 6
+    @AppStorage(AppStorageKey.verseOfDayRefresh1Minute) private var votdRefresh1Minute: Int = 0
+    @AppStorage(AppStorageKey.verseOfDayRefresh2Hour) private var votdRefresh2Hour: Int = 18
+    @AppStorage(AppStorageKey.verseOfDayRefresh2Minute) private var votdRefresh2Minute: Int = 0
 
     // Bible store for async/on-demand loading
     private var bibleStore = BibleStore.shared
@@ -98,7 +98,7 @@ struct HomeView: View {
     @State private var focusVM = FocusViewModel()
 
     // Bind Live Activities setting directly so Home tracks Settings in real time.
-    @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
+    @AppStorage(AppStorageKey.liveActivitiesEnabled) private var liveActivitiesEnabled: Bool = true
 
     /// Standard Live Activities move to the Dynamic Island after the app leaves the
     /// foreground. Keep the same timer visible in Home while the app is active.
@@ -117,8 +117,8 @@ struct HomeView: View {
     @State private var isEditHomeCueDismissalEnabled = false
     @State private var editHomeCueCircleProgress: CGFloat = 0
     @State private var editHomeCueArrowProgress: CGFloat = 0
-    @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
-    @AppStorage("homeQuickSearchVisible") private var quickSearchVisible = true
+    @AppStorage(AppStorageKey.homeCustomizeButtonVisible) private var customizeButtonVisible = true
+    @AppStorage(AppStorageKey.homeQuickSearchVisible) private var quickSearchVisible = true
 
     // MARK: - Body
     // Built in stages (layout and toolbar, presentations, lifecycle) so each stage is
@@ -496,34 +496,20 @@ struct HomeView: View {
         )
     }
 
-    /// The chapter the Study card prepares for: the bookmarked one, so it matches Continue
-    /// Reading, else the Verse of the Day's, else Genesis 1. Read opens at the bookmarked verse.
-    private var studyTarget: (
-        bookName: String,
-        chapterNumber: Int,
-        verseNumber: Int,
-        verseText: String?,
-        source: StudyHomeCard.Source
-    ) {
-        if let bookmark {
-            return (
-                bookmark.bookName,
-                bookmark.chapterNumber,
-                bookmark.verseNumber,
-                bookmark.verseText,
-                .bookmark
-            )
-        }
-        if let verse = votdVM.verse {
-            return (
-                verse.bookName,
-                verse.chapterNumber,
-                verse.verseNumber,
-                verse.verseText,
-                .verseOfDay(title: verseCardTitle)
-            )
-        }
-        return ("Genesis", 1, 1, nil, .startingPoint)
+    /// The chapter the Study card prepares for; see `StudyHomeCard.Target`.
+    private var studyTarget: StudyHomeCard.Target {
+        StudyHomeCard.Target(
+            bookmark: bookmark.map {
+                HomeVerseRef(
+                    bookName: $0.bookName,
+                    chapterNumber: $0.chapterNumber,
+                    verseNumber: $0.verseNumber,
+                    verseText: $0.verseText
+                )
+            },
+            verseOfDay: votdVM.verse,
+            verseOfDayTitle: verseCardTitle
+        )
     }
 
     private var showsMinimalHome: Bool {

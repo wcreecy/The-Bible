@@ -5,8 +5,8 @@ struct ContextualTipView: View {
     let message: LocalizedStringResource
     let systemImage: String
 
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
-    @AppStorage("contextualTipsResetGeneration") private var resetGeneration = 0
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.contextualTipsResetGeneration) private var resetGeneration = 0
     @AppStorage private var dismissedGeneration: Int
     @State private var isShowingTipOptions = false
 

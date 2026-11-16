@@ -90,8 +90,7 @@ struct ReadingView: View {
             book: book,
             chapter: chapter,
             startVerse: startVerse,
-            pinnedStore: pinned,
-            inactivitySeconds: 300
+            pinnedStore: pinned
         ))
     }
 
@@ -418,7 +417,11 @@ struct ReadingView: View {
                 }
             }
             .sheet(isPresented: $chapterInsightsDismissal.isPresented) {
-                chapterInsightsSheet
+                ReaderChapterInsightsSheet(
+                    bookName: viewModel.currentBook.name,
+                    chapterNumber: viewModel.currentChapter.number,
+                    dismissal: chapterInsightsDismissal
+                )
             }
             .sheet(item: $crossReferenceVerse) { verse in
                 crossReferencesSheet(for: verse)
@@ -448,24 +451,6 @@ struct ReadingView: View {
                 isFocusModePresented = false
             }
         )
-    }
-
-    private var chapterInsightsSheet: some View {
-        NavigationStack {
-            ChapterInsightsView(
-                bookName: viewModel.currentBook.name,
-                chapterNumber: viewModel.currentChapter.number,
-                openedFromReader: true
-            )
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
-                        chapterInsightsDismissal.dismiss()
-                    }
-                }
-            }
-        }
-        .environment(\.studySheetDismissal, chapterInsightsDismissal)
     }
 
     private func crossReferencesSheet(for verse: Verse) -> some View {
@@ -513,7 +498,7 @@ struct ReadingView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     if contextualTipsEnabled {
-                        readerTips
+                        ReaderTips(usesFullToolbar: usesFullToolbar)
                     }
 
                     // Opened from a reading plan: where this chapter falls in the day.
@@ -552,8 +537,12 @@ struct ReadingView: View {
 
                     // The way forward at the end of a chapter, without a swipe or the small arrows.
                     if viewModel.previousChapterTitle != nil || viewModel.nextChapterTitle != nil {
-                        chapterLinks
-                            .padding(.top, 8)
+                        ReaderChapterLinks(
+                            previousTitle: viewModel.previousChapterTitle,
+                            nextTitle: viewModel.nextChapterTitle,
+                            onSelect: { forward in changeChapter(forward: forward) }
+                        )
+                        .padding(.top, 8)
                     }
                 }
                 // Lets an opening verse menu push the text below it down smoothly.
@@ -633,79 +622,6 @@ struct ReadingView: View {
                     viewModel.markActivity()
                 }
         )
-    }
-
-    @ViewBuilder
-    private var readerTips: some View {
-        if BibleTranslation.available.count > 1 {
-            ContextualTipView(
-                id: "reader.translations",
-                title: "Choose a translation",
-                message: usesFullToolbar
-                    ? "Tap the translation button at the top left to read another version. Your saved verses keep the translation they were saved in."
-                    : "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in.",
-                systemImage: "character.book.closed"
-            )
-            .padding(.bottom, 12)
-        }
-
-        ContextualTipView(
-            id: "reader.shortcuts",
-            title: "Reader shortcuts",
-            message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
-            systemImage: "hand.draw"
-        )
-        .padding(.bottom, 12)
-
-        ContextualTipView(
-            id: "reader.statusIcons",
-            title: "Understand verse icons",
-            message: "Icons beside a verse's reference show your bookmark, favorites, notes, and Scripture connections. Tap a note or Scripture connection icon to open it. Change this in Settings › Bible Reader.",
-            systemImage: "info.circle"
-        )
-        .padding(.bottom, 12)
-
-        Divider()
-    }
-
-    /// Quiet links to the chapters either side, named so it's clear where each goes.
-    private var chapterLinks: some View {
-        HStack(spacing: 12) {
-            if let previousTitle = viewModel.previousChapterTitle {
-                chapterLink(title: previousTitle, forward: false)
-            }
-            Spacer(minLength: 0)
-            if let nextTitle = viewModel.nextChapterTitle {
-                chapterLink(title: nextTitle, forward: true)
-            }
-        }
-    }
-
-    private func chapterLink(title: String, forward: Bool) -> some View {
-        Button {
-            changeChapter(forward: forward)
-        } label: {
-            HStack(spacing: 4) {
-                if !forward {
-                    Image(systemName: "chevron.left")
-                        .font(.caption.weight(.semibold))
-                        .accessibilityHidden(true)
-                }
-                Text(title)
-                if forward {
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .accessibilityHidden(true)
-                }
-            }
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .frame(minHeight: 44)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(forward ? "Continue to \(title)" : "Back to \(title)")
-        .accessibilityHint(forward ? "Opens the next chapter" : "Opens the previous chapter")
     }
 
     // MARK: - Actions

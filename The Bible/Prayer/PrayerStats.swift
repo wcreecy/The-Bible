@@ -302,7 +302,7 @@ func prayerMinutesText(_ seconds: Int) -> String {
 struct PrayerStatsCard: View {
     private let weekdaySymbols = ["S", "M", "T", "W", "Th", "F", "Sa"]
 
-    @AppStorage("prayerStatsSelectedKind") private var selectedKindRaw = PrayerTimerKind.prayer.rawValue
+    @AppStorage(AppStorageKey.prayerStatsSelectedKind) private var selectedKindRaw = PrayerTimerKind.prayer.rawValue
 
     private var kind: PrayerTimerKind {
         PrayerTimerKind(rawValue: selectedKindRaw) ?? .prayer

@@ -28,21 +28,21 @@ final class VerseOfDayViewModel {
     }
 
     // AppStorage-backed settings/state (same keys as HomeView used)
-    @ObservationIgnored @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
-    @ObservationIgnored @AppStorage("verseOfDayBook") private var storedVerseBook: String = ""
-    @ObservationIgnored @AppStorage("verseOfDayChapter") private var storedVerseChapter: Int = 0
-    @ObservationIgnored @AppStorage("verseOfDayNumber") private var storedVerseNumber: Int = 0
-    @ObservationIgnored @AppStorage("verseOfDayText") private var storedVerseText: String = ""
-    @ObservationIgnored @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
-    @ObservationIgnored @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayPaused) private var verseOfDayPaused: Bool = false
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayBook) private var storedVerseBook: String = ""
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayChapter) private var storedVerseChapter: Int = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayNumber) private var storedVerseNumber: Int = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayText) private var storedVerseText: String = ""
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayScope) private var verseScopeRaw: String = "whole"
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDaySpecificBook) private var verseSpecificBook: String = ""
 
     // Refresh schedule (same keys)
-    @ObservationIgnored @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
-    @ObservationIgnored @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
-    @ObservationIgnored @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
-    @ObservationIgnored @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
-    @ObservationIgnored @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
-    @ObservationIgnored @AppStorage("votdRefreshNotificationsEnabled") private var refreshNotificationsEnabled: Bool = false
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayRefreshFrequency) private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayRefresh1Hour) private var votdRefresh1Hour: Int = 6
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayRefresh1Minute) private var votdRefresh1Minute: Int = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayRefresh2Hour) private var votdRefresh2Hour: Int = 18
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayRefresh2Minute) private var votdRefresh2Minute: Int = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var refreshNotificationsEnabled: Bool = false
 
     // One-shot timer for next auto refresh
     @ObservationIgnored nonisolated(unsafe) private var nextRefreshTimer: Timer?

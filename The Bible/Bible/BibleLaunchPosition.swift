@@ -12,7 +12,11 @@ struct BibleLaunchPosition {
     }
 
     /// Nil only when `books` is empty, such as when the Bible text failed to load.
-    static func resolve(in books: [Book], saved: BibleReaderLocation?) -> BibleLaunchPosition? {
+    /// `saved` is a place such as `ContinueReadingTarget.destination`.
+    static func resolve(
+        in books: [Book],
+        saved: (bookName: String, chapterNumber: Int, verseNumber: Int)?
+    ) -> BibleLaunchPosition? {
         if let saved,
            let book = books.first(where: { $0.name == saved.bookName }),
            let chapter = book.chapters.first(where: { $0.number == saved.chapterNumber }),

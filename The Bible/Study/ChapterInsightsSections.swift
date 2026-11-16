@@ -528,21 +528,6 @@ struct ChapterInsightBullets: View {
     }
 }
 
-struct ChapterInsightList<Content: View>: View {
-    let title: String
-    let icon: String
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        HeroCard(title: title, icon: icon) {
-            VStack(alignment: .leading, spacing: 16) {
-                content
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
 private extension String {
     /// Splits off a closing citation such as " (Judges 4:17–24)." and returns the sentence
     /// without it, or nil when the sentence doesn't end in a reference.

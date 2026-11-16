@@ -204,10 +204,10 @@ enum CrossReferenceConnectionType: String, CaseIterable, Identifiable, Sendable 
     }
 }
 
-actor ChapterInsightsRepository {
+actor ChapterInsightsRepository: BundledSQLiteReading {
     static let shared = ChapterInsightsRepository()
 
-    private let databaseResourceName = "BibleInsights"
+    private let database = BundledSQLiteDatabase(resourceName: "BibleInsights")
 
     func insights(forBookNamed bookName: String, chapterNumber: Int) -> ChapterInsights? {
         // The connection rows read this catalog while drawing; load it here, off the main thread.
@@ -464,18 +464,7 @@ actor ChapterInsightsRepository {
     }
 
     private func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {
-        guard let databaseURL = Bundle.main.url(forResource: databaseResourceName, withExtension: "sqlite") else {
-            return nil
-        }
-
-        var database: OpaquePointer?
-        guard sqlite3_open_v2(databaseURL.path, &database, SQLITE_OPEN_READONLY, nil) == SQLITE_OK,
-              let database else {
-            return nil
-        }
-        defer { sqlite3_close(database) }
-
-        return operation(database)
+        database.withConnection(operation)
     }
 
     private func loadKeyFigures(
@@ -609,20 +598,5 @@ actor ChapterInsightsRepository {
             return [reference]
         }
         return []
-    }
-
-    private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
-        guard let text = sqlite3_column_text(statement, index) else { return "" }
-        return String(cString: text)
-    }
-
-    private static func optionalColumnText(_ statement: OpaquePointer, at index: Int32) -> String? {
-        guard let text = sqlite3_column_text(statement, index) else { return nil }
-        let value = String(cString: text)
-        return value.isEmpty ? nil : value
-    }
-
-    private nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {
-        unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     }
 }

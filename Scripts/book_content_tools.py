@@ -25,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "Scripts" / "book_content"
-KJV = ROOT / "The Bible" / "kjv.json"
+KJV = ROOT / "The Bible (iOS)Tests" / "TranslationSources" / "kjv.json"
 
 WHEN_WHERE_FIELDS = {
     "When it happened": "when_it_happened",

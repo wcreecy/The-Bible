@@ -71,7 +71,7 @@ struct The_Bible__iOS_App: App {
     private let persistenceStoreMode: PersistenceStoreMode
     #if DEBUG
     /// Set from Settings > Developer Tools to preview the store fallback banner.
-    @AppStorage("debugForcedStoreMode") private var debugForcedStoreMode = ""
+    @AppStorage(AppStorageKey.debugForcedStoreMode) private var debugForcedStoreMode = ""
     #endif
 
     /// The launch store, or a fallback being simulated in debug builds.

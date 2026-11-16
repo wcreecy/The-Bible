@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLED_DATABASE = ROOT / "The Bible (iOS)" / "BibleInsights.sqlite"
 DATABASE = Path(os.environ.get("BIBLE_INSIGHTS_DATABASE", BUNDLED_DATABASE))
-KJV = ROOT / "The Bible" / "kjv.json"
+KJV = ROOT / "The Bible (iOS)Tests" / "TranslationSources" / "kjv.json"
 
 # OSIS abbreviations used by the OpenBible.info cross-reference dataset, in canonical order.
 OSIS_BOOKS = [

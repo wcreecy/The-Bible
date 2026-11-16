@@ -7,7 +7,7 @@ import UIKit
 @MainActor
 struct HomeLayoutStore {
     // Keys (kept identical to existing usage)
-    private static let keyOrder = "homeCardOrder"
+    private static let keyOrder = AppStorageKey.homeCardOrder
     private static let keyHidden = "homeCardHidden"
     private static let keyFavOrder = "homeCardFavoriteOrder"
     private static let keyFavHidden = "homeCardFavoriteHidden"

@@ -2,7 +2,7 @@ import SwiftUI
 import UserNotifications
 
 struct SettingsDailyGoalSection: View {
-    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+    @AppStorage(AppStorageKey.dailyGoalMinutes) private var dailyGoalMinutes: Int = 30
 
     @State private var isDailyGoalSheetPresented: Bool = false
 
@@ -192,7 +192,7 @@ enum StreakReminderScheduler {
 
 struct DailyGoalEditorView: View {
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+    @AppStorage(AppStorageKey.dailyGoalMinutes) private var dailyGoalMinutes: Int = 30
 
     @State private var selectedMinutes: Int = 30
 

@@ -5,16 +5,16 @@ import UserNotifications
 struct SettingsVOTDSection: View {
     @Environment(\.scenePhase) private var scenePhase
 
-    @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
-    @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
+    @AppStorage(AppStorageKey.verseOfDayScope) private var verseScopeRaw: String = "whole"
+    @AppStorage(AppStorageKey.verseOfDaySpecificBook) private var verseSpecificBook: String = ""
 
-    @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
-    @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
-    @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
-    @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
-    @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
-    @AppStorage("votdRefreshNotificationsEnabled") private var notificationsEnabled: Bool = false
-    @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
+    @AppStorage(AppStorageKey.verseOfDayRefreshFrequency) private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
+    @AppStorage(AppStorageKey.verseOfDayRefresh1Hour) private var votdRefresh1Hour: Int = 6
+    @AppStorage(AppStorageKey.verseOfDayRefresh1Minute) private var votdRefresh1Minute: Int = 0
+    @AppStorage(AppStorageKey.verseOfDayRefresh2Hour) private var votdRefresh2Hour: Int = 18
+    @AppStorage(AppStorageKey.verseOfDayRefresh2Minute) private var votdRefresh2Minute: Int = 0
+    @AppStorage(AppStorageKey.verseOfDayRefreshNotificationsEnabled) private var notificationsEnabled: Bool = false
+    @AppStorage(AppStorageKey.verseOfDayPaused) private var verseOfDayPaused: Bool = false
     @State private var notificationAuthorizationStatus: UNAuthorizationStatus = .notDetermined
 
     private var refresh1DateBinding: Binding<Date> {

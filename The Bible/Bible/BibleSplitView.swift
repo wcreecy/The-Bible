@@ -30,7 +30,7 @@ struct BibleSplitView: View {
     @State private var isStudyMode = false
 
     // Shared preference for sort mode across iPhone/iPad
-    @AppStorage("bibleBooksSortAlphabetical") private var sortAlphabetically: Bool = false
+    @AppStorage(AppStorageKey.bibleBooksSortAlphabetical) private var sortAlphabetically: Bool = false
     private struct ReadingRoute: Hashable {
         let bookName: String
         let chapterNumber: Int

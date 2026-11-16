@@ -80,10 +80,10 @@ struct BibleBookKeyFigure: Identifiable, Equatable, Sendable {
     let description: String
 }
 
-actor BibleBookOverviewRepository {
+actor BibleBookOverviewRepository: BundledSQLiteReading {
     static let shared = BibleBookOverviewRepository()
 
-    private let databaseResourceName = "BibleInsights"
+    private let database = BundledSQLiteDatabase(resourceName: "BibleInsights")
 
     func overview(forBookNamed bookName: String) -> BibleBookOverview? {
         withDatabase { database in
@@ -135,18 +135,7 @@ actor BibleBookOverviewRepository {
     }
 
     private func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {
-        guard let databaseURL = Bundle.main.url(forResource: databaseResourceName, withExtension: "sqlite") else {
-            return nil
-        }
-
-        var database: OpaquePointer?
-        guard sqlite3_open_v2(databaseURL.path, &database, SQLITE_OPEN_READONLY, nil) == SQLITE_OK,
-              let database else {
-            return nil
-        }
-        defer { sqlite3_close(database) }
-
-        return operation(database)
+        database.withConnection(operation)
     }
 
     private func loadMovements(forBookNamed bookName: String, database: OpaquePointer) -> [BibleBookMovement] {
@@ -321,14 +310,5 @@ actor BibleBookOverviewRepository {
             )
         }
         return connections
-    }
-
-    private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
-        guard let text = sqlite3_column_text(statement, index) else { return "" }
-        return String(cString: text)
-    }
-
-    private nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {
-        unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     }
 }

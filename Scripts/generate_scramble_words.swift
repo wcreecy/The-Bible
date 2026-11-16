@@ -132,7 +132,7 @@ private func writeCatalog(_ catalog: [ScrambleWord], to outputURL: URL) throws {
 }
 
 let arguments = CommandLine.arguments.dropFirst()
-let inputPath = arguments.first ?? "The Bible/kjv.json"
+let inputPath = arguments.first ?? "The Bible (iOS)Tests/TranslationSources/kjv.json"
 let outputPath = arguments.dropFirst().first ?? "The Bible/ScrambleWords.json"
 let inputURL = URL(fileURLWithPath: inputPath)
 let outputURL = URL(fileURLWithPath: outputPath)

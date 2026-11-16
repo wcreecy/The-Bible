@@ -40,7 +40,7 @@ had a full review, add it to `quality_reviewed_books.json`; from then on any iss
 book fails the build.
 
 Each step can also be run on its own; they all write to the database `insights_common.py`
-names. Every content file is checked against `The Bible/kjv.json`: references must exist and
+names. Every content file is checked against `The Bible (iOS)Tests/TranslationSources/kjv.json`: references must exist and
 double-quoted text must match the KJV wording.
 
 Every table in the database is built from these files, so the database is purely a build

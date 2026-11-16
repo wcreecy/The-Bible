@@ -2,7 +2,7 @@
 """Builds `The Bible Widgets/LockScreenVerses.json`: the lock-screen widget's verses and the
 app's well-known verses (Verse Match, Word Search). The one file belongs to both targets.
 
-Verse text is copied exactly from the bundled KJV (`The Bible/kjv.json`), so nothing is
+Verse text is copied exactly from the bundled KJV (`The Bible (iOS)Tests/TranslationSources/kjv.json`), so nothing is
 retyped by hand. Each other bundled translation (`The Bible/<ABBR>Text.json`, from
 build_translation.py) adds its text under "texts", keyed by its lowercased abbreviation, for
 the widget to show in the translation chosen in the app. The list is shuffled once with a
@@ -18,7 +18,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-KJV = ROOT / "The Bible" / "kjv.json"
+KJV = ROOT / "The Bible (iOS)Tests" / "TranslationSources" / "kjv.json"
 OUTPUT = ROOT / "The Bible Widgets" / "LockScreenVerses.json"
 SEED = 2026
 

@@ -49,7 +49,7 @@ final class ReadingViewModel {
 
     // Kept free of side effects: SwiftUI may build and discard extra instances when
     // the reader's parent redraws. Work that should happen once goes in `onAppear()`.
-    init(book: Book, chapter: Chapter, startVerse: Int, pinnedStore: PinnedVerseStore, inactivitySeconds: TimeInterval = 300) {
+    init(book: Book, chapter: Chapter, startVerse: Int, pinnedStore: PinnedVerseStore, inactivitySeconds: TimeInterval = UserActivityMonitor.idleTimeout) {
         self.currentBook = book
         self.currentChapterIndex = max(0, chapter.number - 1)
         self.currentVerse = startVerse

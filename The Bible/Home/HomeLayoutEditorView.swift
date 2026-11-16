@@ -14,9 +14,9 @@ struct HomeLayoutEditorView: View {
     /// Replaces the current arrangement with "My Layout".
     var onResetToFavorite: () -> Void
 
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
-    @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
-    @AppStorage("homeQuickSearchVisible") private var quickSearchVisible = true
+    @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
+    @AppStorage(AppStorageKey.homeCustomizeButtonVisible) private var customizeButtonVisible = true
+    @AppStorage(AppStorageKey.homeQuickSearchVisible) private var quickSearchVisible = true
     @State private var highlightedCards: Set<HomeCardID> = []
     @State private var confirmation: String?
     @State private var reorderFeedbackTask: Task<Void, Never>?

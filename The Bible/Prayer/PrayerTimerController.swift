@@ -40,13 +40,13 @@ final class PrayerTimerController {
 
     // Persistence only; the UI reads the properties above. Keep the same keys HomeView
     // used so behavior remains compatible across launches.
-    @ObservationIgnored @AppStorage("prayerTimerEndDate") private var storedEndDate: Double = 0
-    @ObservationIgnored @AppStorage("prayerTimerRunning") private var storedRunning: Bool = false
-    @ObservationIgnored @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
-    @ObservationIgnored @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
-    @ObservationIgnored @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
-    @ObservationIgnored @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
-    @ObservationIgnored @AppStorage("prayerTimerActiveKind") private var storedActiveKind: String = PrayerTimerKind.prayer.rawValue
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerTimerEndDate) private var storedEndDate: Double = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerTimerRunning) private var storedRunning: Bool = false
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerTimerPaused) private var storedPaused: Bool = false
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerTimerRemainingWhenPaused) private var storedRemainingWhenPaused: Int = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerTimerTotalSeconds) private var storedTotalSeconds: Int = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerTimerStartDate) private var storedStartDate: Double = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerTimerActiveKind) private var storedActiveKind: String = PrayerTimerKind.prayer.rawValue
     /// The kind chosen for the next session; the Home card and setup sheet change it. Read
     /// from UserDefaults each time, because an `@AppStorage` copy kept here can lag behind
     /// the views that change it.
@@ -57,14 +57,14 @@ final class PrayerTimerController {
         }
         set { UserDefaults.standard.set(newValue.rawValue, forKey: PrayerTimerKind.preferenceKey) }
     }
-    @ObservationIgnored @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
-    @ObservationIgnored @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
+    @ObservationIgnored @AppStorage(AppStorageKey.timerSoundSelection) private var timerSoundSelection: String = TimerSound.default.rawValue
+    @ObservationIgnored @AppStorage(AppStorageKey.didRequestNotifications) private var didRequestNotifications: Bool = false
     /// The most recent duration started, offered as a preset on the card.
     @ObservationIgnored @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
     /// Start of the current counting-down stretch, for prayer stats. 0 while paused or stopped.
-    @ObservationIgnored @AppStorage("prayerSegmentStartDate") private var prayerSegmentStartDate: Double = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerSegmentStartDate) private var prayerSegmentStartDate: Double = 0
     /// Active seconds so far in this session, across pauses.
-    @ObservationIgnored @AppStorage("prayerSessionSeconds") private var prayerSessionSeconds: Int = 0
+    @ObservationIgnored @AppStorage(AppStorageKey.prayerSessionSeconds) private var prayerSessionSeconds: Int = 0
 
     static let lastMinutesKey = "prayerTimerLastMinutes"
 

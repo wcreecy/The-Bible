@@ -22,8 +22,9 @@ struct ReadingVerseRow: View {
     let isSelected: Bool
     let isFavorite: Bool
     let hasNote: Bool
-    let isPinned: Bool
-    let isCurrentlyPinned: Bool
+    let isBookmarked: Bool
+    /// The verse shown on the Pinned Verse widget.
+    let isPinnedToWidget: Bool
     let hasCrossReferences: Bool
     let isRead: Bool
     /// Master switch for markers beside the reference.
@@ -170,12 +171,12 @@ struct ReadingVerseRow: View {
                 .foregroundStyle(.red)
                 .accessibilityHidden(true)
         }
-        if showsBookmarkMarker && isPinned {
+        if showsBookmarkMarker && isBookmarked {
             Image(systemName: "bookmark.fill")
                 .foregroundStyle(Color.bookmarkTint)
                 .accessibilityHidden(true)
         }
-        if showsPinnedVerseMarker && isCurrentlyPinned {
+        if showsPinnedVerseMarker && isPinnedToWidget {
             Image(systemName: "pin.fill")
                 .foregroundStyle(.orange)
                 .accessibilityHidden(true)
@@ -192,8 +193,8 @@ struct ReadingVerseRow: View {
     private var accessibilityStatus: String {
         var statuses: [String] = []
         // Saved markers are always announced, even when hidden on screen.
-        if isPinned { statuses.append("Bookmarked") }
-        if isCurrentlyPinned { statuses.append("Pinned") }
+        if isBookmarked { statuses.append("Bookmarked") }
+        if isPinnedToWidget { statuses.append("Pinned") }
         if isFavorite { statuses.append("Favorite") }
         if hasNote { statuses.append("Has note") }
         if hasCrossReferences { statuses.append("Has Scripture connections") }

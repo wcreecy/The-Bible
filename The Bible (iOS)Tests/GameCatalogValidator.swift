@@ -1,4 +1,7 @@
 import Foundation
+@testable import Bible
+
+// Checks the bundled game catalogs. Only the tests use it, so it lives in the test target.
 
 struct GameCatalogValidationIssue: Hashable, Sendable {
     let identifier: String
