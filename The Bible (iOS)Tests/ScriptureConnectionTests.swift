@@ -94,10 +94,13 @@ struct ScriptureConnectionTests {
 
     @Test
     func takeawaysMoveIntoNotesOnce() async throws {
-        let container = try ModelContainer(
-            for: SavedCrossReference.self, UserNote.self,
-            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        let schema = Schema([SavedCrossReference.self, UserNote.self])
+        let configuration = ModelConfiguration(
+            "ScriptureConnectionTests-\(UUID().uuidString)",
+            schema: schema,
+            isStoredInMemoryOnly: true
         )
+        let container = try ModelContainer(for: schema, configurations: [configuration])
         let context = ModelContext(container)
         let entry = try #require(await CrossReferenceExplorerEntry.loadAll().first)
 
