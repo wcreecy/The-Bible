@@ -359,14 +359,14 @@ private struct OverviewActions: View {
                 BookStoryView(bookName: bookName, story: story)
                     .studySheetDoneButton()
             } label: {
-                Label("Story of \(bookName)", systemImage: "book.pages")
+                Label("Plain-English Retelling", systemImage: "book.pages")
                     .font(.headline)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.vertical, 6)
             }
             .buttonStyle(.bordered)
-            .accessibilityHint("Opens a narrative retelling of \(bookName)")
+            .accessibilityHint("Opens a plain-English retelling of \(bookName)")
         }
     }
 }

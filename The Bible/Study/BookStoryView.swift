@@ -112,7 +112,7 @@ func bookRetellingTitle(for bookName: String) -> String {
     case "Revelation":
         "Revelation: Jesus Wins and Makes All Things New"
     default:
-        "The Story of \(bookName)"
+        "\(bookName): A Plain-English Retelling"
     }
 }
 
@@ -204,7 +204,7 @@ private struct BookStoryNavigation: View {
                 } label: {
                     Label("Previous: \(previousBookName)", systemImage: "chevron.left")
                 }
-                .accessibilityHint("Opens the story of \(previousBookName)")
+                .accessibilityHint("Opens the retelling of \(previousBookName)")
             }
 
             Spacer(minLength: 0)
@@ -216,7 +216,7 @@ private struct BookStoryNavigation: View {
                     Label("Next: \(nextBookName)", systemImage: "chevron.right")
                         .labelStyle(.titleAndIcon)
                 }
-                .accessibilityHint("Opens the story of \(nextBookName)")
+                .accessibilityHint("Opens the retelling of \(nextBookName)")
             }
         }
         .font(.subheadline.weight(.semibold))
@@ -242,7 +242,7 @@ private struct BookStoryDestinationView: View {
                 ContentUnavailableView(
                     "Story Unavailable",
                     systemImage: "book.closed",
-                    description: Text("The story of \(bookName) could not be found.")
+                    description: Text("The retelling of \(bookName) could not be found.")
                 )
             }
         }

@@ -488,7 +488,7 @@ struct AboutBookLink: View {
                     Text("About \(bookName)")
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    Text("Who wrote it, when and where, and the story of the whole book")
+                    Text("Who wrote it, when and where, and a plain-English retelling of the whole book")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
