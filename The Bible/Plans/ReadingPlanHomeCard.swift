@@ -47,24 +47,15 @@ struct ReadingPlanHomeCard: View {
                                 .bold()
                                 .lineLimit(1)
                         }
-                        Text("Day \(day.day) of \(plan.days.count)")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.accentColor)
                         Text(day.title)
                             .font(.title3.weight(.bold))
                             .foregroundStyle(.primary)
                             .lineLimit(2)
-                        if day.title != day.readingSummary {
-                            Text(day.readingSummary)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
-                        }
-                        if let pace = store.paceDescription(for: plan) {
-                            Text(pace)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        // The day number and the reading together; the pace lives on the plan's page.
+                        Text(dayDetail(plan: plan, day: day))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
                     }
                     .multilineTextAlignment(.leading)
 
@@ -96,15 +87,34 @@ struct ReadingPlanHomeCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // The other plans in progress, each a tap from its next reading.
-            let others = Array(store.activePlans.dropFirst())
-            if !others.isEmpty {
+            // Other plans in progress are one line, so the card stays the same size however
+            // many plans there are; each has room in the plans list.
+            let otherCount = store.activePlans.count - 1
+            if otherCount > 0 {
                 Divider()
-                ForEach(others, id: \.plan.id) { other in
-                    otherPlanRow(other.plan, enrollment: other.enrollment)
+                Button(action: onOpenLibrary) {
+                    HStack {
+                        Text(otherCount == 1 ? "1 more plan in progress" : "\(otherCount) more plans in progress")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                            .accessibilityHidden(true)
+                    }
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens your reading plans")
             }
         }
+    }
+
+    /// "Day 3 of 21 · Genesis 1–2", or just the day when the title already is the reading.
+    private func dayDetail(plan: ReadingPlan, day: PlanDay) -> String {
+        let position = "Day \(day.day) of \(plan.days.count)"
+        return day.title == day.readingSummary ? position : "\(position) · \(day.readingSummary)"
     }
 
     /// Start Reading and Mark Read for the plan's current day, each kept to one line.
@@ -140,44 +150,6 @@ struct ReadingPlanHomeCard: View {
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
         .fixedSize()
-    }
-
-    private func otherPlanRow(_ plan: ReadingPlan, enrollment: PlanEnrollment) -> some View {
-        HStack(spacing: 12) {
-            Button {
-                onOpenPlan(plan.id)
-            } label: {
-                HStack(spacing: 10) {
-                    PlanArtworkTile(plan: plan, size: 34)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(plan.title)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                        if let day = store.currentDay(of: plan) {
-                            Text("Day \(day.day) of \(plan.days.count) · \(day.readingSummary)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        }
-                    }
-                    Spacer(minLength: 0)
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityElement(children: .combine)
-            .accessibilityHint(Self.progressLabel(read: enrollment.completedDays.count, of: plan.days.count))
-
-            Button("Read") {
-                store.continuePlan(plan.id)
-            }
-            .font(.subheadline.weight(.semibold))
-            .buttonStyle(.bordered)
-            .buttonBorderShape(.capsule)
-            .controlSize(.small)
-            .accessibilityLabel("Read \(plan.title)")
-        }
     }
 
     /// "3 of 21 days read", "0 of 1 day read".
