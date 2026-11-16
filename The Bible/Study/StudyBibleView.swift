@@ -36,6 +36,7 @@ struct StudyBibleView: View {
     @State private var requestedBookOverview: StudyBookOverviewRequest?
     @State private var studyTimeSourceID = UUID()
     @State private var searchText = ""
+    @State private var continuedBrief: String?
     @State private var testamentFilter: StudyTestamentFilter = .all
     @AppStorage(AppStorageKey.studyBooksSortAlphabetical) private var sortAlphabetically = false
 
@@ -82,13 +83,17 @@ struct StudyBibleView: View {
         GeometryReader { geometry in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 12) {
-                    StudyBibleHeader()
-
                     if let book = continuedBook, let chapterNumber = continuedChapter {
-                        ContinueStudyingCard(book: book, chapterNumber: chapterNumber)
+                        ContinueStudyingCard(book: book, chapterNumber: chapterNumber, brief: continuedBrief)
                     }
 
-                    CrossReferenceExplorerEntryCard()
+                    StudyToolsSection(isCompact: horizontalSizeClass == .compact)
+
+                    StudySectionHeader(
+                        title: "Books",
+                        subtitle: "An overview and chapter insights for every book."
+                    )
+                    .padding(.top, 8)
 
                     LazyVGrid(
                         columns: bookColumns(for: geometry.size.width - 32),
@@ -99,13 +104,6 @@ struct StudyBibleView: View {
                             StudyBookTile(book: book, onSelect: onSelectBook)
                         }
                     }
-
-                    // Each translation has its own wording, so its own word counts.
-                    Text("Word counts are for the \(BibleRepository.shared.activeTranslation.name).")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 4)
                 }
                 .padding()
             }
@@ -114,6 +112,13 @@ struct StudyBibleView: View {
             .accessibilityIdentifier("studyBibleView")
             .navigationTitle("Bible Study")
             .navigationBarTitleDisplayMode(.inline)
+            .task(id: "\(lastStudiedBook) \(lastStudiedChapter)") {
+                guard let book = continuedBook, let chapter = continuedChapter else {
+                    continuedBrief = nil
+                    return
+                }
+                continuedBrief = await ChapterInsightsRepository.shared.briefSummaries(forBookNamed: book.name)[chapter]
+            }
             .searchable(
                 text: $searchText,
                 placement: .navigationBarDrawer(displayMode: .always),
@@ -183,6 +188,7 @@ private struct StudyBookOverviewRequest: Hashable, Identifiable {
 private struct ContinueStudyingCard: View {
     let book: Book
     let chapterNumber: Int
+    var brief: String?
 
     var body: some View {
         NavigationLink {
@@ -200,6 +206,12 @@ private struct ContinueStudyingCard: View {
                     Text("\(book.name) \(chapterNumber)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    if let brief {
+                        Text(brief)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
                 }
 
                 Spacer(minLength: 0)
@@ -214,17 +226,98 @@ private struct ContinueStudyingCard: View {
     }
 }
 
-private struct StudyBibleHeader: View {
+/// The study tools that work across the whole Bible rather than one book.
+private struct StudyToolsSection: View {
+    let isCompact: Bool
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Explore Scripture")
-                .font(.title2.weight(.bold))
-            Text("Choose a book to study, or explore Scripture connections.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 10) {
+            StudySectionHeader(title: "Study Tools", subtitle: nil)
+
+            // Side by side on wider screens; stacked on iPhone, where each needs the full width.
+            let layout = isCompact ? AnyLayout(VStackLayout(spacing: 10)) : AnyLayout(HStackLayout(alignment: .top, spacing: 10))
+            layout {
+                StudyToolCard(
+                    title: "Scripture Connections",
+                    subtitle: "Curated links between passages",
+                    icon: "arrow.triangle.branch",
+                    hint: "Opens curated Scripture connections"
+                ) {
+                    CrossReferenceExplorerView()
+                }
+
+                StudyToolCard(
+                    title: "Word Study",
+                    subtitle: "The Hebrew and Greek behind the text",
+                    icon: "character.book.closed",
+                    hint: "Explains word study and searches original words"
+                ) {
+                    WordStudyGuideView()
+                }
+            }
+        }
+    }
+}
+
+private struct StudyToolCard<Destination: View>: View {
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
+    let icon: String
+    let hint: LocalizedStringKey
+    @ViewBuilder let destination: () -> Destination
+
+    var body: some View {
+        NavigationLink {
+            destination()
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(.tint)
+                    .frame(width: 44, height: 44)
+                    .background(Color.accentColor.opacity(0.12), in: Circle())
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Image(systemName: "chevron.right")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
+            .padding(AppDesignMetrics.cardPadding)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .heroCardSurface()
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint(hint)
+    }
+}
+
+private struct StudySectionHeader: View {
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.headline)
+                .accessibilityAddTraits(.isHeader)
+            if let subtitle {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.bottom, 4)
     }
 }
 
@@ -233,10 +326,10 @@ private struct StudyBookTile: View {
     let onSelect: ((Book) -> Void)?
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    private var verseCount: Int {
-        book.chapters.reduce(into: 0) { count, chapter in
-            count += chapter.verses.count
-        }
+    /// The book's name with a leading number held to the name ("1 Corinthians").
+    private var tileName: String {
+        guard let first = book.name.first, first.isNumber else { return book.name }
+        return book.name.replacingOccurrences(of: " ", with: "\u{00A0}", options: [], range: book.name.range(of: " "))
     }
 
     private var chapterCountLabel: String {
@@ -257,7 +350,7 @@ private struct StudyBookTile: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("studyBookTile-\(book.name)")
-        .accessibilityLabel("\(book.name), \(chapterCountLabel), \(verseCount) verses, \(book.wordCount) words")
+        .accessibilityLabel("\(book.name), \(chapterCountLabel)")
     }
 
     private var tile: some View {
@@ -266,24 +359,24 @@ private struct StudyBookTile: View {
                 BookChapterEmblem(theme: theme, size: 32)
             }
 
-            Text(book.name)
+            Text(tileName)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.leading)
+                // Names that can't wrap between words (Deuteronomy, 1 Thessalonians) shrink a
+                // little to stay on one line rather than break mid-word or strand the number.
+                .lineLimit(tileName.contains(" ") ? 2 : 1)
+                .minimumScaleFactor(0.75)
 
             Spacer(minLength: 0)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(chapterCountLabel)
-                Text("\(verseCount) verses")
-                Text("\(book.wordCount) words")
-            }
-            .font(.caption2)
-            .foregroundStyle(.secondary)
+            Text(chapterCountLabel)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
         .frame(
             maxWidth: .infinity,
-            minHeight: dynamicTypeSize.isAccessibilitySize ? nil : 154,
+            minHeight: dynamicTypeSize.isAccessibilitySize ? nil : 118,
             alignment: .topLeading
         )
         .padding(12)
@@ -291,187 +384,18 @@ private struct StudyBookTile: View {
     }
 }
 
-/// A book's study page: its overview and its chapters, each opening Chapter Insights.
+/// A book's study page. It is the same page as the book overview: its chapters, what to
+/// know before reading, and where it fits.
 struct StudyBookView: View {
     let book: Book
 
-    @AppStorage(ChapterListLayout.storageKey) private var chapterLayout: ChapterListLayout = .detailed
-    @State private var details = ChapterOutlineDetails()
-    @State private var overallTheme: String?
-    @State private var isShowingOverview = false
-    @State private var headerHeight: CGFloat = 0
-    @State private var isHeaderScrolledAway = false
-    @State private var studyTimeSourceID = UUID()
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    private let columns = [GridItem(.adaptive(minimum: 52), spacing: 10)]
-
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                StudyBookHeader(bookName: book.name, overallTheme: overallTheme, onOpenOverview: openOverview)
-                    .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
-
-                HeroCard(title: "Chapter Insights", icon: "lightbulb.max") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(chapterLayout.helperText)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-
-                        switch chapterLayout {
-                        case .simple: numberGrid
-                        case .detailed: themedChapters
-                        }
-                    }
-                }
-            }
-            .padding()
-        }
-        .accessibilityIdentifier("studyBookScrollView")
-        // Once most of the full header has scrolled out of view, a compact bar takes
-        // its place. It floats over the content rather than insetting it, so showing
-        // or hiding it never shifts the scroll position.
-        .onScrollGeometryChange(for: Bool.self) { geometry in
-            let scrolled = geometry.contentOffset.y + geometry.contentInsets.top
-            return headerHeight > 0 && scrolled > headerHeight * 0.75
-        } action: { _, isScrolledAway in
-            withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .smooth(duration: 0.25)) {
-                isHeaderScrolledAway = isScrolledAway
-            }
-        }
-        .tabBarContentClearance()
-        .overlay(alignment: .top) {
-            if isHeaderScrolledAway {
-                CompactStudyBookHeader(bookName: book.name, onOpenOverview: openOverview)
-                    .padding(.horizontal)
-                    .padding(.top, 8)
-                    .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
-            }
-        }
-        .background(AppBackgroundView(tab: .bible))
-        .navigationTitle(book.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                ChapterLayoutMenu(layout: $chapterLayout)
-            }
-        }
-        .navigationDestination(isPresented: $isShowingOverview) {
-            BookOverviewView(bookName: book.name)
-        }
-        .onAppear {
-            StudyTimeTracker.shared.start(studyTimeSourceID)
-        }
-        .onDisappear {
-            StudyTimeTracker.shared.stop(studyTimeSourceID)
-        }
-        .task(id: book.name) {
-            details = await ChapterOutlineDetails.load(for: book)
-        }
-        .task(id: book.name) {
-            overallTheme = await BibleBookOverviewRepository.shared
-                .overview(forBookNamed: book.name)?
-                .overallTheme
-        }
-    }
-
-    private func openOverview() {
-        isShowingOverview = true
-    }
-
-    private var numberGrid: some View {
-        LazyVGrid(columns: columns, spacing: 10) {
-            ForEach(book.chapters) { chapter in
-                NavigationLink {
-                    ChapterInsightsView(
-                        bookName: book.name,
-                        chapterNumber: chapter.number
-                    )
-                } label: {
-                    Text(chapter.number, format: .number)
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-                }
-                .accessibilityLabel("Chapter \(chapter.number) insights")
-            }
-        }
-
-    }
-
-    private var themedChapters: some View {
-        ChapterOutlineList(chapterNumbers: book.chapters.map(\.number), sections: details.sections) { number in
-            NavigationLink {
-                ChapterInsightsView(bookName: book.name, chapterNumber: number)
-            } label: {
-                ChapterThemeRow(number: number, themes: details.themeNames[number] ?? [])
-            }
-            .buttonStyle(.plain)
-        }
+        BookOverviewView(bookName: book.name)
     }
 }
 
-/// The top of a book's study page: the book's emblem and title, a taste of its
-/// overall theme, and a prominent button into the full book overview.
-private struct StudyBookHeader: View {
-    let bookName: String
-    let overallTheme: String?
-    let onOpenOverview: () -> Void
-
-    private var theme: BookChapterTheme? {
-        BookChapterTheme.themes[bookName]
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 14) {
-                if let theme {
-                    BookChapterEmblem(theme: theme, size: 56)
-                }
-
-                Text(bookName)
-                    .font(.system(.largeTitle, design: .serif, weight: .bold))
-                    .foregroundStyle(titleStyle)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.7)
-                    .accessibilityAddTraits(.isHeader)
-            }
-
-            if let overallTheme, !overallTheme.isEmpty {
-                Text(overallTheme)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Button(action: onOpenOverview) {
-                Label("View \(bookName) Overview", systemImage: "book.closed.fill")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 4)
-            }
-            .buttonStyle(.borderedProminent)
-            .accessibilityHint("Who wrote \(bookName), when and where, and the story of the whole book")
-        }
-        .padding(AppDesignMetrics.cardPadding)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .heroCardSurface()
-    }
-
-    private var titleStyle: AnyShapeStyle {
-        if let theme {
-            AnyShapeStyle(LinearGradient(colors: theme.colors, startPoint: .leading, endPoint: .trailing))
-        } else {
-            AnyShapeStyle(.primary)
-        }
-    }
-}
-
-/// A one-row version of StudyBookHeader that stays pinned once the full header
-/// scrolls away, keeping the book overview one tap away. Also used by ChaptersView.
+/// A one-row header that stays pinned once the reading chapter list's full header
+/// scrolls away, keeping the book overview one tap away. Used by ChaptersView.
 struct CompactStudyBookHeader: View {
     let bookName: String
     let onOpenOverview: () -> Void

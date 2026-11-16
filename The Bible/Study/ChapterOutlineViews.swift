@@ -3,16 +3,20 @@ import SwiftUI
 /// A book's chapter themes and sections, loaded for the detailed chapter layout.
 struct ChapterOutlineDetails: Equatable {
     var themeNames: [Int: [String]] = [:]
+    /// Each chapter's one-sentence summary, where one has been written.
+    var briefs: [Int: String] = [:]
     var sections: [StudyChapterSection] = []
 
     static func load(for book: Book) async -> ChapterOutlineDetails {
         let bookName = book.name
         let chapterCount = book.chapters.count
         async let themes = ChapterInsightsRepository.shared.themeNames(forBookNamed: bookName)
+        async let briefs = ChapterInsightsRepository.shared.briefSummaries(forBookNamed: bookName)
         async let movements = BibleBookOverviewRepository.shared.movements(forBookNamed: bookName)
 
         return ChapterOutlineDetails(
             themeNames: await themes,
+            briefs: await briefs,
             sections: StudyChapterOutline.sections(
                 bookName: bookName,
                 movements: await movements.map { ($0.title, $0.keyPassages) },
@@ -79,12 +83,20 @@ private struct ChapterSectionHeader: View {
 }
 
 /// A chapter with its first key themes, so a book can be scanned by what each chapter is about.
+/// A chapter in a book's study list: its brief summary, or its key themes until a brief is
+/// written.
 struct ChapterThemeRow: View {
     let number: Int
     let themes: [String]
+    var brief: String?
 
     private var themeSummary: String {
         themes.prefix(2).joined(separator: " · ")
+    }
+
+    private var summary: String {
+        if let brief { return brief }
+        return themeSummary.isEmpty ? "Chapter \(number)" : themeSummary
     }
 
     var body: some View {
@@ -96,10 +108,12 @@ struct ChapterThemeRow: View {
                 .frame(minWidth: 40, minHeight: 40)
                 .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
 
-            Text(themeSummary.isEmpty ? "Chapter \(number)" : themeSummary)
+            Text(summary)
                 .font(.subheadline)
                 .foregroundStyle(.primary)
-                .lineLimit(2)
+                // A brief is one sentence and is shown whole; theme names are a preview.
+                .lineLimit(brief == nil ? 2 : nil)
+                .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -112,8 +126,13 @@ struct ChapterThemeRow: View {
         .background(Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .contentShape(.rect(cornerRadius: 12))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(themeSummary.isEmpty ? "Chapter \(number) insights" : "Chapter \(number): \(themes.prefix(2).joined(separator: ", "))")
+        .accessibilityLabel(accessibilityLabel)
         .accessibilityHint("Opens chapter insights")
+    }
+
+    private var accessibilityLabel: String {
+        if let brief { return "Chapter \(number): \(brief)" }
+        return themeSummary.isEmpty ? "Chapter \(number) insights" : "Chapter \(number): \(themes.prefix(2).joined(separator: ", "))"
     }
 }
 

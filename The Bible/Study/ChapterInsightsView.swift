@@ -69,33 +69,13 @@ struct ChapterInsightsView: View {
 
         return ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                WhereWeAreSection(narrativePlacement: content.narrativePlacement)
-
-
                 if let brief = insights.briefSummary {
-                    HeroCard(title: "In Brief", icon: "text.quote") {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(brief)
-                                .font(.body)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            // Choosing a chapter from the list changes this page in place.
-                            NavigationLink {
-                                BookChapterBriefsView(
-                                    bookName: bookName,
-                                    currentChapter: chapterNumber,
-                                    onSelectChapter: { number in
-                                        location = ChapterLocation(bookName: bookName, chapterNumber: number)
-                                    }
-                                )
-                            } label: {
-                                Label("See all chapters in \(bookName)", systemImage: "list.bullet")
-                                    .font(.subheadline.weight(.semibold))
-                            }
-                            .accessibilityHint("Shows a one-sentence summary of every chapter in \(bookName)")
-                        }
+                    ChapterBriefHeader(brief: brief, bookName: bookName, chapterNumber: chapterNumber) { number in
+                        location = ChapterLocation(bookName: bookName, chapterNumber: number)
                     }
                 }
+
+                WhereWeAreSection(narrativePlacement: content.narrativePlacement)
 
                 ChapterSummaryCard(
                     bookName: bookName,
@@ -103,45 +83,14 @@ struct ChapterInsightsView: View {
                     summary: insights.overallSummary
                 )
 
-                if !insights.keyFigures.isEmpty {
-                    ChapterInsightList(title: "Key People", icon: "person.2.fill") {
-                        ForEach(insights.keyFigures) { figure in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(figure.name)
-                                    .font(.headline)
-                                LinkedScriptureText(figure.roleAndSignificance)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                }
+                ChapterPeopleAndThemesCard(
+                    figures: insights.keyFigures,
+                    themes: insights.keyThemes,
+                    bookName: bookName,
+                    chapterNumber: chapterNumber
+                )
 
                 ChapterBackgroundSection(rows: content.backgroundRows)
-
-                if !insights.keyThemes.isEmpty {
-                    ChapterInsightList(title: "Key Themes", icon: "sparkles") {
-                        ForEach(insights.keyThemes) { theme in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(theme.theme)
-                                    .font(.headline)
-                                if !theme.explanation.isEmpty {
-                                    LinkedScriptureText(theme.explanation)
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                if !theme.scriptureReferences.isEmpty {
-                                    PassageReferenceChips(
-                                        references: theme.scriptureReferences,
-                                        book: bookName,
-                                        chapter: chapterNumber
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
 
                 if !insights.relatedVerses.isEmpty {
                     ChapterCrossReferencesPreview(

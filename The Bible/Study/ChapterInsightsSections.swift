@@ -44,18 +44,130 @@ struct ChapterContentFilter {
     }
 }
 
-/// Where the chapter falls in the book's story. The text itself recalls the chapter before,
-/// so the link to it sits with the other chapter navigation at the bottom of the page.
+/// A quiet recap of where the chapter falls in the book's story, closed until wanted. The
+/// text itself recalls the chapter before, so the link to it sits with the other navigation.
 struct WhereWeAreSection: View {
     let narrativePlacement: String
 
+    @State private var isExpanded = false
+
     var body: some View {
         if !narrativePlacement.isEmpty {
-            HeroCard(title: "Where We Are", icon: "mappin.and.ellipse") {
-                LinkedScriptureText(narrativePlacement)
-                    .font(.body)
+            VStack(alignment: .leading, spacing: 8) {
+                Button {
+                    withAnimation(.snappy) { isExpanded.toggle() }
+                } label: {
+                    HStack(spacing: 8) {
+                        Label("Previously", systemImage: "arrow.uturn.backward")
+                            .font(.subheadline.weight(.semibold))
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                            .accessibilityHidden(true)
+                    }
                     .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+                .accessibilityHint("Where this chapter falls in the book's story")
+
+                if isExpanded {
+                    LinkedScriptureText(narrativePlacement)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .padding(.horizontal, 4)
+        }
+    }
+}
+
+/// The brief as a line under the title, with the way to the whole book's chapters.
+struct ChapterBriefHeader: View {
+    let brief: String
+    let bookName: String
+    let chapterNumber: Int
+    let onSelectChapter: (Int) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(brief)
+                .font(.title3.weight(.medium))
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Choosing a chapter from the list changes this page in place.
+            NavigationLink {
+                BookChapterBriefsView(
+                    bookName: bookName,
+                    currentChapter: chapterNumber,
+                    onSelectChapter: onSelectChapter
+                )
+            } label: {
+                Label("See all chapters in \(bookName)", systemImage: "list.bullet")
+                    .font(.subheadline.weight(.semibold))
+            }
+            .accessibilityHint("Shows a one-sentence summary of every chapter in \(bookName)")
+        }
+        .padding(.horizontal, 4)
+    }
+}
+
+/// The people in the chapter and its themes, together, since both follow from the summary.
+struct ChapterPeopleAndThemesCard: View {
+    let figures: [ChapterKeyFigure]
+    let themes: [ChapterKeyTheme]
+    let bookName: String
+    let chapterNumber: Int
+
+    var body: some View {
+        if !figures.isEmpty || !themes.isEmpty {
+            HeroCard(title: "People & Themes", icon: "sparkles") {
+                VStack(alignment: .leading, spacing: 16) {
+                    if !figures.isEmpty {
+                        Label("People", systemImage: "person.2.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.tint)
+                        ForEach(figures) { figure in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(figure.name).font(.headline)
+                                LinkedScriptureText(figure.roleAndSignificance)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+
+                    if !figures.isEmpty && !themes.isEmpty {
+                        Divider()
+                    }
+
+                    if !themes.isEmpty {
+                        Label("Themes", systemImage: "sparkles")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.tint)
+                        ForEach(themes) { theme in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(theme.theme).font(.headline)
+                                if !theme.explanation.isEmpty {
+                                    LinkedScriptureText(theme.explanation)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
+                                if !theme.scriptureReferences.isEmpty {
+                                    PassageReferenceChips(
+                                        references: theme.scriptureReferences,
+                                        book: bookName,
+                                        chapter: chapterNumber
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -201,10 +313,34 @@ struct ChapterBackgroundSection: View {
 
     let rows: [Row]
 
+    @State private var isExpanded = false
+
     var body: some View {
         if !rows.isEmpty {
             HeroCard(title: "Historical & Cultural Background", icon: "building.columns") {
                 VStack(alignment: .leading, spacing: 12) {
+                    Button {
+                        withAnimation(.snappy) { isExpanded.toggle() }
+                    } label: {
+                        HStack {
+                            Text(rows.map(\.title).joined(separator: " · "))
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(isExpanded ? 0 : 2)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                                .accessibilityHidden(true)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+
+                    if isExpanded {
                     ForEach(rows) { row in
                         VStack(alignment: .leading, spacing: 6) {
                             Label(row.title, systemImage: row.icon)
@@ -229,6 +365,7 @@ struct ChapterBackgroundSection: View {
                         if row.id != rows.last?.id {
                             Divider()
                         }
+                    }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

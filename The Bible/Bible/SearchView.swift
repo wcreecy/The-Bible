@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct SearchView: View {
+    /// Searched for as soon as the page opens, such as a word chosen in the Word Study guide.
+    var initialQuery = ""
+
     @State private var model = BibleSearchModel()
     @FocusState private var isSearchFieldFocused: Bool
     @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
@@ -43,7 +46,12 @@ struct SearchView: View {
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            isSearchFieldFocused = true
+            if !initialQuery.isEmpty && model.query.isEmpty {
+                // Show the results rather than raising the keyboard over them.
+                model.query = initialQuery
+            } else {
+                isSearchFieldFocused = true
+            }
         }
         .sheet(item: $previewedPassage) { reference in
             ScripturePassageSheet(reference: reference)

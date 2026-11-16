@@ -1,30 +1,76 @@
 import SwiftUI
 
+/// A book's one page: its title and ways in, then three tabs. Chapters lists each chapter in
+/// brief under the book's movements; About is what to know before reading; Where It Fits
+/// links the book to the rest of the Bible.
 struct BookOverviewView: View {
     let bookName: String
 
+    private enum Tab: String, CaseIterable, Identifiable {
+        case chapters = "Chapters"
+        case about = "About"
+        case whereItFits = "Where It Fits"
+
+        var id: Self { self }
+    }
+
     @State private var overview: BibleBookOverview?
-    @State private var chapterBriefs: [Int: String] = [:]
     @State private var isLoading = true
+    @State private var tab: Tab = .chapters
+    @State private var details = ChapterOutlineDetails()
+    @AppStorage(ChapterListLayout.storageKey) private var chapterLayout: ChapterListLayout = .detailed
     @State private var studyTimeSourceID = UUID()
 
+    private var book: Book? {
+        BibleData.books.first { $0.name == bookName }
+    }
+
+    private var theme: BookChapterTheme? {
+        BookChapterTheme.themes[bookName]
+    }
+
     var body: some View {
-        Group {
-            if isLoading {
-                ProgressView("Loading overview…")
-            } else if let overview {
-                overviewContent(overview)
-            } else {
-                ContentUnavailableView(
-                    "Overview Unavailable",
-                    systemImage: "book.closed",
-                    description: Text("An overview for \(bookName) could not be found.")
-                )
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                header
+
+                if overview != nil || isLoading {
+                    Picker("Section", selection: $tab) {
+                        ForEach(Tab.allCases) { tab in
+                            Text(tab.rawValue).tag(tab)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                switch tab {
+                case .chapters: chaptersTab
+                case .about: aboutTab
+                case .whereItFits: whereItFitsTab
+                }
+            }
+            .padding()
+        }
+        .accessibilityIdentifier("studyBookScrollView")
+        .tabBarContentClearance()
+        .background(AppBackgroundView(tab: .bible))
+        .environment(\.scriptureContextBook, bookName)
+        .scripturePassagePreviews()
+        .navigationTitle(bookName)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if tab == .chapters {
+                ToolbarItem(placement: .primaryAction) {
+                    ChapterLayoutMenu(layout: $chapterLayout)
+                }
             }
         }
-        .navigationTitle("\(bookName) Overview")
-        .navigationBarTitleDisplayMode(.inline)
         .task(id: bookName, loadOverview)
+        .task(id: bookName) {
+            if let book {
+                details = await ChapterOutlineDetails.load(for: book)
+            }
+        }
         .onAppear {
             StudyTimeTracker.shared.start(studyTimeSourceID)
         }
@@ -33,19 +79,75 @@ struct BookOverviewView: View {
         }
     }
 
-    private func overviewContent(_ overview: BibleBookOverview) -> some View {
-        ScrollView {
-            // Ordered to build context before reading: what the book is (with the way into
-            // its full story), who wrote it and why, the world it came from, how to approach
-            // it, what's inside, and how it fits the rest of the Bible.
-            VStack(alignment: .leading, spacing: 20) {
-                AtAGlanceSection(overview: overview)
+    // MARK: - Header
 
-                if !overview.story.isEmpty {
-                    BookStoryOverviewButton(bookName: bookName, story: overview.story)
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                if let theme {
+                    BookChapterEmblem(theme: theme, size: 56)
                 }
+                Text(bookName)
+                    .font(.system(.largeTitle, design: .serif, weight: .bold))
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.7)
+                    .accessibilityAddTraits(.isHeader)
+            }
 
-                LabeledRowsSection(title: "Background", icon: "person.2.fill", rows: [
+            if let theme = overview?.overallTheme, !theme.isEmpty {
+                LinkedScriptureText(theme)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            OverviewActions(bookName: bookName, story: overview?.story ?? [])
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .heroCardSurface()
+    }
+
+    // MARK: - Tabs
+
+    @ViewBuilder
+    private var chaptersTab: some View {
+        if let book {
+            switch chapterLayout {
+            case .simple:
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 52), spacing: 10)], spacing: 10) {
+                    ForEach(book.chapters) { chapter in
+                        NavigationLink {
+                            ChapterInsightsView(bookName: bookName, chapterNumber: chapter.number)
+                        } label: {
+                            Text(chapter.number, format: .number)
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                        }
+                        .accessibilityLabel("Chapter \(chapter.number) insights")
+                    }
+                }
+            case .detailed:
+                ChapterOutlineList(chapterNumbers: book.chapters.map(\.number), sections: details.sections) { number in
+                    NavigationLink {
+                        ChapterInsightsView(bookName: bookName, chapterNumber: number)
+                    } label: {
+                        ChapterThemeRow(number: number, themes: details.themeNames[number] ?? [], brief: details.briefs[number])
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var aboutTab: some View {
+        if let overview {
+            VStack(alignment: .leading, spacing: 20) {
+                InBriefSection(overview: overview)
+
+                LabeledRowsSection(title: "Author & Purpose", icon: "pencil.line", rows: [
                     .init(title: "Author", icon: "pencil.line", content: overview.traditionalAuthorOrAttribution),
                     .init(title: "Original Audience", icon: "person.3.fill", content: overview.originalAudience),
                     .init(title: "Why It Was Written", icon: "target", content: overview.purpose)
@@ -55,30 +157,40 @@ struct BookOverviewView: View {
 
                 BookReadingGuideSection(bookName: bookName, tips: overview.readingTips)
 
-                if !overview.story.isEmpty {
-                    BookStructureSection(bookName: bookName, sections: overview.story)
-                }
-
-                ChapterByChapterSection(bookName: bookName, briefs: chapterBriefs)
-
                 if !overview.keyFigures.isEmpty {
-                    KeyFiguresSection(keyFigures: overview.keyFigures)
+                    KeyPeopleSection(keyFigures: overview.keyFigures)
                 }
+            }
+        } else if isLoading {
+            ProgressView("Loading…").frame(maxWidth: .infinity)
+        } else {
+            unavailable
+        }
+    }
 
+    @ViewBuilder
+    private var whereItFitsTab: some View {
+        if let overview {
+            VStack(alignment: .leading, spacing: 20) {
                 if !overview.connections.isEmpty {
                     ConnectionsSection(connections: overview.connections)
                 }
 
                 BookPlansSection(bookName: bookName)
-
-                StartReadingButton(bookName: bookName)
             }
-            .padding()
+        } else if isLoading {
+            ProgressView("Loading…").frame(maxWidth: .infinity)
+        } else {
+            unavailable
         }
-        .tabBarContentClearance()
-        .background(AppBackgroundView(tab: .bible))
-        .environment(\.scriptureContextBook, bookName)
-        .scripturePassagePreviews()
+    }
+
+    private var unavailable: some View {
+        ContentUnavailableView(
+            "Overview Unavailable",
+            systemImage: "book.closed",
+            description: Text("An overview for \(bookName) could not be found.")
+        )
     }
 
     private func settingRows(_ overview: BibleBookOverview) -> [LabeledRowsSection.Row] {
@@ -98,73 +210,16 @@ struct BookOverviewView: View {
         guard overview?.name != bookName else { return }
         isLoading = true
         overview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
-        chapterBriefs = await ChapterInsightsRepository.shared.briefSummaries(forBookNamed: bookName)
         isLoading = false
     }
 }
 
-/// A taste of the book's chapter-by-chapter summaries, with a way into the full list.
-private struct ChapterByChapterSection: View {
-    let bookName: String
-    let briefs: [Int: String]
-
-    /// Short books show every chapter here; longer ones show the first few and link to the rest.
-    private static let previewCount = 3
-    private static let showAllLimit = 4
-
-    private var chapterNumbers: [Int] {
-        briefs.keys.sorted()
-    }
-
-    private var previewNumbers: [Int] {
-        chapterNumbers.count <= Self.showAllLimit
-            ? chapterNumbers
-            : Array(chapterNumbers.prefix(Self.previewCount))
-    }
-
-    var body: some View {
-        if !briefs.isEmpty {
-            HeroCard(title: "Chapter by Chapter", icon: "list.bullet.rectangle") {
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(previewNumbers, id: \.self) { number in
-                        NavigationLink {
-                            ChapterInsightsView(bookName: bookName, chapterNumber: number)
-                                .studySheetDoneButton()
-                        } label: {
-                            ChapterBriefRow(chapterNumber: number, brief: briefs[number] ?? "")
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityHint("Opens chapter \(number) insights")
-
-                        if number != previewNumbers.last {
-                            Divider()
-                        }
-                    }
-
-                    if previewNumbers.count < chapterNumbers.count {
-                        NavigationLink {
-                            BookChapterBriefsView(bookName: bookName)
-                        } label: {
-                            Label("See All \(chapterNumbers.count) Chapters", systemImage: "list.bullet")
-                                .font(.subheadline.weight(.semibold))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 4)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
-}
-
 /// The book in brief: its one-line theme, summary, and key verse.
-private struct AtAGlanceSection: View {
+private struct InBriefSection: View {
     let overview: BibleBookOverview
 
     var body: some View {
-        HeroCard(title: "At a Glance", icon: "book.closed") {
+        HeroCard(title: "In Brief", icon: "text.quote") {
             VStack(alignment: .leading, spacing: 8) {
                 if !overview.overallTheme.isEmpty {
                     LinkedScriptureText(overview.overallTheme)
@@ -234,7 +289,7 @@ private struct ConnectionsSection: View {
     }
 
     var body: some View {
-        HeroCard(title: "Connections Across the Bible", icon: "point.3.connected.trianglepath.dotted") {
+        HeroCard(title: "Builds On & Looks Ahead", icon: "point.3.connected.trianglepath.dotted") {
             VStack(alignment: .leading, spacing: 16) {
                 if !looksBack.isEmpty {
                     group(title: "Builds On", icon: "arrow.uturn.backward", connections: looksBack)
@@ -270,96 +325,77 @@ private struct ConnectionsSection: View {
     }
 }
 
-/// A detailed outline of the book, one entry per part of its story.
-private struct BookStructureSection: View {
-    let bookName: String
-    let sections: [BibleBookStorySection]
-
-    var body: some View {
-        HeroCard(title: "Book Structure", icon: "list.number") {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(sections.enumerated()), id: \.element.id) { index, section in
-                    let outline = OutlineEntry(passage: section.passage)
-
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Text(index + 1, format: .number)
-                            .font(.subheadline.weight(.semibold).monospacedDigit())
-                            .foregroundStyle(.tint)
-                            .frame(minWidth: 20, alignment: .trailing)
-
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(outline.title)
-                                .font(.headline)
-                            if let reference = outline.reference {
-                                PassageReferenceChips(references: [reference], book: bookName)
-                            }
-                        }
-                    }
-
-                    if section.id != sections.last?.id {
-                        Divider()
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    /// Splits a story label such as "Sin Enters the World (Genesis 3:1–5:32)" into its title and reference.
-    private struct OutlineEntry {
-        let title: String
-        let reference: String?
-
-        init(passage: String) {
-            guard passage.hasSuffix(")"),
-                  let open = passage.range(of: " (", options: .backwards) else {
-                title = passage
-                reference = nil
-                return
-            }
-            title = String(passage[..<open.lowerBound])
-            reference = String(passage[open.upperBound..<passage.index(before: passage.endIndex)])
-        }
-    }
-}
-
-/// A prominent path from a book's introduction to its full narrative retelling.
-private struct BookStoryOverviewButton: View {
+/// The ways into the book, right under its summary: reading it, and its full story.
+private struct OverviewActions: View {
     let bookName: String
     let story: [BibleBookStorySection]
 
     var body: some View {
-        NavigationLink {
-            BookStoryView(bookName: bookName, story: story)
-                .studySheetDoneButton()
-        } label: {
-            Label("Story of \(bookName)", systemImage: "book.pages")
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
+        // Side by side at equal widths when each label fits in its share; stacked in narrow
+        // widths, for long book names, or at large text sizes.
+        ViewThatFits(in: .horizontal) {
+            EqualWidthHStack(spacing: 10) { buttons }
+            VStack(spacing: 10) { buttons }
         }
-        .buttonStyle(.borderedProminent)
-        .accessibilityHint("Opens a narrative retelling of \(bookName)")
     }
-}
 
-/// Opens the book at its first chapter.
-private struct StartReadingButton: View {
-    let bookName: String
-
-    var body: some View {
+    @ViewBuilder
+    private var buttons: some View {
         Button {
             AppRouter.shared.openBibleReference(book: bookName, chapter: 1, verse: 1)
         } label: {
-            Label("Start Reading \(bookName)", systemImage: "book.fill")
+            Label("Start Reading", systemImage: "book.fill")
                 .font(.headline)
-                .frame(maxWidth: .infinity)
+                .lineLimit(1)
+                // Full height too, so side-by-side buttons match even if their icons differ.
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.vertical, 6)
         }
         .buttonStyle(.borderedProminent)
         .accessibilityHint("Opens \(bookName) chapter 1")
+
+        if !story.isEmpty {
+            NavigationLink {
+                BookStoryView(bookName: bookName, story: story)
+                    .studySheetDoneButton()
+            } label: {
+                Label("Story of \(bookName)", systemImage: "book.pages")
+                    .font(.headline)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.vertical, 6)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityHint("Opens a narrative retelling of \(bookName)")
+        }
+    }
+}
+
+/// Children side by side at equal widths. Its ideal width is the widest child's times the
+/// count, so `ViewThatFits` only picks it when every child fits in an equal share.
+private struct EqualWidthHStack: Layout {
+    var spacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard !subviews.isEmpty else { return .zero }
+        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+        let gaps = spacing * CGFloat(subviews.count - 1)
+        let idealWidth = (sizes.map(\.width).max() ?? 0) * CGFloat(subviews.count) + gaps
+        return CGSize(width: proposal.width ?? idealWidth, height: sizes.map(\.height).max() ?? 0)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        guard !subviews.isEmpty else { return }
+        let gaps = spacing * CGFloat(subviews.count - 1)
+        let width = max(0, (bounds.width - gaps) / CGFloat(subviews.count))
+        var x = bounds.minX
+        for subview in subviews {
+            subview.place(
+                at: CGPoint(x: x, y: bounds.minY),
+                proposal: ProposedViewSize(width: width, height: bounds.height)
+            )
+            x += width + spacing
+        }
     }
 }
 
@@ -394,12 +430,12 @@ private struct KeyScriptureView: View {
     }
 }
 
-private struct KeyFiguresSection: View {
+private struct KeyPeopleSection: View {
     let keyFigures: [BibleBookKeyFigure]
 
     var body: some View {
         HeroCard(
-            title: "Key Figures",
+            title: "Key People",
             icon: "person.2.fill"
         ) {
             VStack(alignment: .leading, spacing: 12) {

@@ -175,16 +175,16 @@ final class The_Bible__iOS_UITests: XCTestCase {
         XCTAssertTrue(tile.isHittable, "The full book title must remain tappable at accessibility text sizes.")
         tile.tap()
 
+        // The book page leads with its title and ways in; they must stay reachable.
         let studyScrollView = app.scrollViews["studyBookScrollView"]
         XCTAssertTrue(studyScrollView.waitForExistence(timeout: 8))
-        for _ in 0..<3 where !app.buttons["compactStudyBookOverviewButton"].exists {
+        let startReading = app.buttons["Start Reading"].firstMatch
+        XCTAssertTrue(startReading.waitForExistence(timeout: 5))
+        for _ in 0..<3 where !startReading.isHittable {
             studyScrollView.swipeUp()
         }
-
-        let overviewButton = app.buttons["compactStudyBookOverviewButton"]
-        XCTAssertTrue(overviewButton.waitForExistence(timeout: 5))
-        XCTAssertTrue(overviewButton.isHittable, "The compact overview action must remain tappable at accessibility text sizes.")
-        assertFullyContained(overviewButton)
+        XCTAssertTrue(startReading.isHittable, "Start Reading must remain tappable at accessibility text sizes.")
+        assertFullyContained(startReading)
     }
 
     @MainActor

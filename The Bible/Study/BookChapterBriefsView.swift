@@ -32,7 +32,7 @@ struct BookChapterBriefsView: View {
                 briefList
             }
         }
-        .navigationTitle("\(bookName) Chapter by Chapter")
+        .navigationTitle("\(bookName) in Brief")
         .navigationBarTitleDisplayMode(.inline)
         .background(AppBackgroundView(tab: .bible))
         .studySheetDoneButton()

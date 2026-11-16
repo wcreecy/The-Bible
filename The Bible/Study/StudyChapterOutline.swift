@@ -4,7 +4,7 @@ import Foundation
 enum ChapterListLayout: String, CaseIterable, Identifiable {
     /// A compact grid of chapter numbers.
     case simple
-    /// A row per chapter with its key themes, grouped under the book's sections.
+    /// A row per chapter with its brief summary, grouped under the book's sections.
     case detailed
 
     static let storageKey = AppStorageKey.chapterListLayout
@@ -14,7 +14,7 @@ enum ChapterListLayout: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .simple: "Chapter Grid"
-        case .detailed: "By Theme"
+        case .detailed: "Detail View"
         }
     }
 
@@ -23,7 +23,7 @@ enum ChapterListLayout: String, CaseIterable, Identifiable {
         case .simple:
             "Quickly jump to a chapter number."
         case .detailed:
-            "Browse chapters by key themes and book sections."
+            "Each chapter in brief, grouped by the book's sections."
         }
     }
 

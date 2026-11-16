@@ -50,7 +50,7 @@ struct WordStudyGuideView: View {
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
 
-                        HStack(spacing: 8) {
+                        PassageFlowLayout(spacing: 8) {
                             ForEach(Self.examples, id: \.query) { example in
                                 Button {
                                     searchedWord = example.query

@@ -1,44 +1,6 @@
 import SwiftUI
 import SwiftData
 
-/// An entry point from the Study screen into the global connection index.
-struct CrossReferenceExplorerEntryCard: View {
-    var body: some View {
-        NavigationLink {
-            CrossReferenceExplorerView()
-        } label: {
-            HStack(spacing: 14) {
-                Image(systemName: "arrow.triangle.branch")
-                    .font(.title2)
-                    .foregroundStyle(.tint)
-                    .frame(width: 44, height: 44)
-                    .background(Color.accentColor.opacity(0.12), in: Circle())
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Scripture Connections")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    Text("Explore curated links between passages")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer(minLength: 0)
-
-                Image(systemName: "chevron.right")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(AppDesignMetrics.cardPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .heroCardSurface()
-        }
-        .buttonStyle(.plain)
-        .accessibilityHint("Opens curated Scripture connections")
-    }
-}
-
-/// A searchable index of editorially curated connections across Scripture.
 struct CrossReferenceExplorerView: View {
     @Query(sort: \SavedCrossReference.savedAt, order: .reverse) private var savedConnections: [SavedCrossReference]
 
