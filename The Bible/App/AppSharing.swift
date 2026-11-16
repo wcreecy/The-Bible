@@ -20,11 +20,10 @@ enum AppShare {
         (url.host() ?? "apps.apple.com") + url.path()
     }
 
-    /// The line added to shared text. The link sits mid-line and without "https://":
-    /// Messages turns a message that ends in a full link into a large App Store preview, while
-    /// a link inside a sentence stays a small inline link.
+    /// The standalone App Store URL added to shared text. Receiving apps can present it as a
+    /// tappable link and may generate their own rich App Store preview.
     static var attributionLine: String {
-        "Shared via The Bible app · \(displayLink) · iPhone & iPad"
+        url.absoluteString
     }
 
     /// `text` with the app's link on its own line, when that's turned on.
@@ -224,11 +223,12 @@ struct AppLinkShareSheet: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Preview")
                     .font(.headline)
+                    .foregroundStyle(.black)
 
                 ScrollView {
                     Text(preparedText)
                         .font(.body)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.black)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
                         .accessibilityIdentifier("shareTextPreviewText")
@@ -242,9 +242,10 @@ struct AppLinkShareSheet: View {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Include App Link")
                             .font(.body.weight(.semibold))
+                            .foregroundStyle(.black)
                         Text("Adds a link to The Bible on the App Store")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.black)
                     }
                 }
                 .accessibilityIdentifier("includeAppLinkToggle")
