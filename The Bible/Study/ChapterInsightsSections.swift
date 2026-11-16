@@ -295,7 +295,7 @@ struct ChapterEvent: Identifiable {
 
             let firstVerse = passage.startChapter == chapterNumber ? passage.startVerse ?? 1 : 1
             let lastVerse = passage.endChapter == chapterNumber ? passage.endVerse ?? .max : .max
-            return (firstVerse...lastVerse).contains(verseNumber)
+            return firstVerse <= verseNumber && verseNumber <= lastVerse
         }
     }
 }

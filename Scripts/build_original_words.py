@@ -715,6 +715,14 @@ CREATE TABLE lexicon (
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;
 """
 
+# Built after the rows are in, which is faster than updating them on every insert. Word
+# Study looks words up by Strong's number (how often a word is used, and where); without
+# these each lookup reads all 445,000 words.
+INDEXES = """
+CREATE INDEX forms_strongs ON forms(strongs);
+CREATE INDEX words_form ON words(form);
+"""
+
 
 def main():
     check_only = "--check" in sys.argv
@@ -874,6 +882,7 @@ def main():
             [(*entry, search_key(entry[2]), search_key(entry[3])) for entry in used_lexicon],
         )
         database.executemany("INSERT INTO meta VALUES (?,?)", sorted(meta.items()))
+        database.executescript(INDEXES)
         database.commit()
         database.execute("VACUUM")
         database.close()

@@ -92,8 +92,8 @@ struct The_Bible__iOS_App: App {
         // Re-bucket old GMT daily keys before any screen reads stats or iCloud sync starts
         // (sync starts in ContentView's onAppear). It runs once and is local only.
         BibleStatsStore.shared.migrateDailyKeysFromGMTToLocalIfNeeded()
-        // Start decoding the bundled corpus while SwiftData initializes. The Home mini reader
-        // shares this load, so it can present its first chapter sooner on a cold launch.
+        // Start decoding the bundled corpus while SwiftData initializes. Later callers share
+        // this load, so the Bible tab and search have the text sooner on a cold launch.
         Task.detached(priority: .userInitiated) {
             _ = await BibleRepository.shared.loadAllBooks()
         }

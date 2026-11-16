@@ -222,7 +222,7 @@ struct ContentView: View {
     }
 
     /// SwiftData cleanup can fetch every saved record. It is important for data quality,
-    /// but should not compete with first-launch content such as Home's mini reader.
+    /// but should not compete with the first screen's content on launch.
     private func scheduleInitialDataMaintenance() {
         Task { @MainActor in
             await Task.yield()
@@ -459,9 +459,9 @@ struct ContentView: View {
             // Returning to the app counts as activity, so time counts before the first touch.
             UserActivityMonitor.shared.recordInteraction()
             // Pull and merge stats changed on other devices while the app was away.
-            iCloudSyncCoordinator.shared.refreshNow()
-
-            SwiftDataDeduplicator.run(in: modelContext)
+            iCloudSyncCoordinator.shared.refreshAfterReturningToForeground()
+            // Duplicates only arrive with CloudKit imports, which post
+            // NSPersistentStoreRemoteChange; that runs the deduplicator off this path.
             updateGameTimeTracking()
             updateMindfulMinutesTracking()
         case .inactive:

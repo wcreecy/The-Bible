@@ -131,8 +131,8 @@ final class ReadingViewModel {
         }
     }
 
-    func onTabChanged(_ tab: Int) {
-        if tab == 1 {
+    func onTabChanged(_ tab: AppTab) {
+        if tab == .bible {
             verseReadingTracker.setActive(true)
             ReadingTimeTracker.shared.resume()
             markActivity()

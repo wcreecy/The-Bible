@@ -38,8 +38,14 @@ struct HomeView: View {
     /// A landscape iPhone can report a regular horizontal size class, but the customizable
     /// three-column dashboard is designed for iPad's wider canvas.
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
-    // Newest first; synced devices can briefly hold more than one bookmark.
-    @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
+    /// Synced devices can briefly hold more than one bookmark; Home shows only the newest,
+    /// so it fetches just that one.
+    private static var newestBookmarkDescriptor: FetchDescriptor<Bookmark> {
+        var descriptor = FetchDescriptor<Bookmark>(sortBy: [SortDescriptor(\Bookmark.createdAt, order: .reverse)])
+        descriptor.fetchLimit = 1
+        return descriptor
+    }
+    @Query(HomeView.newestBookmarkDescriptor) private var bookmarks: [Bookmark]
     @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
 
     #if DEBUG

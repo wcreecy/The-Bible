@@ -312,6 +312,10 @@ private enum ScriptureCrossReferenceLoader {
         relatedVerses: [ChapterRelatedVerse]
     ) async -> [ScriptureCrossReference] {
         let books = await BibleRepository.shared.loadAllBooks()
+        // Each row reads the editorial catalog; decode it off the main thread first.
+        await Task.detached(priority: .userInitiated) {
+            ChapterCrossReferenceEditorialCatalog.prepare()
+        }.value
 
         return relatedVerses.flatMap { relatedVerse in
             let sourceReference = PassageReference(

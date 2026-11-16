@@ -25,6 +25,10 @@ final class ReadingTimeTracker {
     private var lastPersist: Date = .distantPast
 
     private(set) var isPaused = false
+    /// True while a study screen is open (see `StudyTimeTracker`). That time counts as study,
+    /// so reading stops counting without changing `isPaused`; reading picks up again when the
+    /// study screen closes, unless something paused it meanwhile.
+    private(set) var isHeldForStudy = false
 
     private init() {}
 
@@ -84,6 +88,20 @@ final class ReadingTimeTracker {
         beginActiveSegment()
     }
 
+    /// Stops or restarts counting for a study screen, so time is never counted as both
+    /// reading and study.
+    func setHeldForStudy(_ held: Bool) {
+        guard held != isHeldForStudy else { return }
+        if held {
+            closeActiveSegment()
+            stopTicker()
+            isHeldForStudy = true
+        } else {
+            isHeldForStudy = false
+            beginActiveSegment()
+        }
+    }
+
     private func changeLocation(to bookName: String, chapter: Int?) {
         let wasActive = !isPaused
         closeActiveSegment()
@@ -96,7 +114,7 @@ final class ReadingTimeTracker {
     }
 
     private func beginActiveSegment(at date: Date = Date()) {
-        guard currentBook != nil, !isPaused else { return }
+        guard currentBook != nil, !isPaused, !isHeldForStudy else { return }
         segmentStartDate = date
         checkpointDate = date
         checkpointInstant = clock.now
@@ -109,7 +127,7 @@ final class ReadingTimeTracker {
     }
 
     private func startTickerIfNeeded() {
-        guard tickerTask == nil, !isPaused else { return }
+        guard tickerTask == nil, !isPaused, !isHeldForStudy else { return }
         let clock = clock
         tickerTask = Task { [weak self] in
             while !Task.isCancelled {

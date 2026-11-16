@@ -19,6 +19,41 @@ enum ChapterCrossReferenceEditorialCatalog {
 
     nonisolated static let entries: [Entry] = loadEntries()
 
+    /// One verse pair in either direction, for the lookup below.
+    private nonisolated struct PairKey: Hashable, Sendable {
+        let bookName: String
+        let chapterNumber: Int
+        let sourceVerse: Int
+        let targetBookName: String
+        let targetChapterNumber: Int
+        let targetVerse: Int
+    }
+
+    /// Descriptions by verse pair. Scripture Connections rows look these up while drawing,
+    /// so a scan of every entry for each row would be too slow. The first entry for a pair wins.
+    private nonisolated static let descriptions: [PairKey: String] = Dictionary(
+        entries.map {
+            (
+                PairKey(
+                    bookName: $0.bookName,
+                    chapterNumber: $0.chapterNumber,
+                    sourceVerse: $0.sourceVerse,
+                    targetBookName: $0.targetBookName,
+                    targetChapterNumber: $0.targetChapterNumber,
+                    targetVerse: $0.targetVerse
+                ),
+                $0.relationshipDescription
+            )
+        },
+        uniquingKeysWith: { first, _ in first }
+    )
+
+    /// Loads the catalog now. Call off the main thread before a screen needs it, so the
+    /// first lookup doesn't decode the file while drawing.
+    nonisolated static func prepare() {
+        _ = descriptions
+    }
+
     nonisolated static func relationshipDescription(
         bookName: String,
         chapterNumber: Int,
@@ -27,21 +62,22 @@ enum ChapterCrossReferenceEditorialCatalog {
         targetChapterNumber: Int,
         targetVerse: Int
     ) -> String? {
-        entries.first {
-            $0.bookName == bookName &&
-            $0.chapterNumber == chapterNumber &&
-            $0.sourceVerse == sourceVerse &&
-            $0.targetBookName == targetBookName &&
-            $0.targetChapterNumber == targetChapterNumber &&
-            $0.targetVerse == targetVerse
-        }?.relationshipDescription ?? entries.first {
-            $0.bookName == targetBookName &&
-            $0.chapterNumber == targetChapterNumber &&
-            $0.sourceVerse == targetVerse &&
-            $0.targetBookName == bookName &&
-            $0.targetChapterNumber == chapterNumber &&
-            $0.targetVerse == sourceVerse
-        }?.relationshipDescription
+        // An entry for the pair as written, then for the same pair read the other way.
+        descriptions[PairKey(
+            bookName: bookName,
+            chapterNumber: chapterNumber,
+            sourceVerse: sourceVerse,
+            targetBookName: targetBookName,
+            targetChapterNumber: targetChapterNumber,
+            targetVerse: targetVerse
+        )] ?? descriptions[PairKey(
+            bookName: targetBookName,
+            chapterNumber: targetChapterNumber,
+            sourceVerse: targetVerse,
+            targetBookName: bookName,
+            targetChapterNumber: chapterNumber,
+            targetVerse: sourceVerse
+        )]
     }
 
     // MARK: - Loading

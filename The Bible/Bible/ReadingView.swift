@@ -200,7 +200,7 @@ struct ReadingView: View {
             // Pause reading tracking when the app is sent to another tab.
             .onChange(of: AppRouter.shared.latest) { _, request in
                 if let tab = request?.destination.targetTab {
-                    viewModel.onTabChanged(tab.rawValue)
+                    viewModel.onTabChanged(tab)
                 }
             }
             // Readings check themselves off as they're read; say so.

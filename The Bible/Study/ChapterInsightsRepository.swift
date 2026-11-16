@@ -210,7 +210,9 @@ actor ChapterInsightsRepository {
     private let databaseResourceName = "BibleInsights"
 
     func insights(forBookNamed bookName: String, chapterNumber: Int) -> ChapterInsights? {
-        withDatabase { database in
+        // The connection rows read this catalog while drawing; load it here, off the main thread.
+        ChapterCrossReferenceEditorialCatalog.prepare()
+        return withDatabase { database in
             let query = """
             SELECT overall_summary, brief_summary
             FROM chapter_insights
@@ -259,7 +261,8 @@ actor ChapterInsightsRepository {
 
     /// Loads the complete, reviewed collection used by the Cross-Reference Explorer.
     func allCrossReferences() -> [CrossReferenceExplorerEntry] {
-        withDatabase { database in
+        ChapterCrossReferenceEditorialCatalog.prepare()
+        return withDatabase { database in
             let query = """
             SELECT related.id, related.book_name, related.chapter_number,
                    related.source_verse, related.related_reference, connection.explanation

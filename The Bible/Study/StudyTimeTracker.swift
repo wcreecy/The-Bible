@@ -29,7 +29,10 @@ final class StudyTimeTracker {
 
     func start(_ source: UUID) {
         guard activeSources.insert(source).inserted else { return }
-        guard isApplicationActive, activeSources.count == 1 else { return }
+        guard activeSources.count == 1 else { return }
+        // A study sheet over the reader would otherwise count as reading too.
+        ReadingTimeTracker.shared.setHeldForStudy(true)
+        guard isApplicationActive else { return }
         beginSession()
     }
 
@@ -37,6 +40,7 @@ final class StudyTimeTracker {
         guard activeSources.remove(source) != nil else { return }
         guard activeSources.isEmpty else { return }
         endSession()
+        ReadingTimeTracker.shared.setHeldForStudy(false)
     }
 
     func setApplicationActive(_ isActive: Bool) {

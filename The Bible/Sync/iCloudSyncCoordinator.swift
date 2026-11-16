@@ -62,6 +62,11 @@ final class iCloudSyncCoordinator {
 
     // Ensure start() is performed once per app run
     private var didStart = false
+    /// When returning to the app last pulled and merged, so quick app switches skip it.
+    private var lastForegroundRefresh: Date?
+    /// Values changed elsewhere also arrive through `didChangeExternallyNotification`, so a
+    /// full merge on every return to the app is only a safety net.
+    private let foregroundRefreshInterval: TimeInterval = 60
 
     // MARK: - Reset epoch for Bible stats/sessions
 
@@ -154,6 +159,16 @@ final class iCloudSyncCoordinator {
             BibleStatsStore.shared.compactReadingHistoryIfNeeded()
             updateStoreMetrics()
         }
+    }
+
+    /// Pulls and merges changes from other devices when the app returns to the foreground,
+    /// at most once a minute. A full merge decodes every synced value on the main thread.
+    func refreshAfterReturningToForeground(now: Date = Date()) {
+        if let last = lastForegroundRefresh, now.timeIntervalSince(last) < foregroundRefreshInterval {
+            return
+        }
+        lastForegroundRefresh = now
+        refreshNow()
     }
 
     private func completeInitialDownload() {

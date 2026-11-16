@@ -63,12 +63,18 @@ struct PassageReference: Identifiable, Hashable {
         guard let book = value("book"),
               let fromChapter = value("fromChapter").flatMap(Int.init),
               let toChapter = value("toChapter").flatMap(Int.init) else { return nil }
+        let fromVerse = value("fromVerse").flatMap(Int.init)
+        let toVerse = value("toVerse").flatMap(Int.init)
+        // A link can be typed by hand. One that runs backward opens just its start, so code
+        // that builds `start...end` ranges from the reference can't trap.
+        let runsBackward = toChapter < fromChapter
+            || (toChapter == fromChapter && (fromVerse ?? 0) > (toVerse ?? .max))
         self.init(
             bookName: book,
             startChapter: fromChapter,
-            startVerse: value("fromVerse").flatMap(Int.init),
-            endChapter: toChapter,
-            endVerse: value("toVerse").flatMap(Int.init)
+            startVerse: fromVerse,
+            endChapter: runsBackward ? fromChapter : toChapter,
+            endVerse: runsBackward ? fromVerse : toVerse
         )
     }
 }

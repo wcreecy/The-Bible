@@ -5,6 +5,16 @@ import Testing
 @MainActor
 struct StatsBoundaryTests {
     @Test
+    func openStudyScreenHoldsReadingTime() {
+        let source = UUID()
+        StudyTimeTracker.shared.start(source)
+        #expect(ReadingTimeTracker.shared.isHeldForStudy)
+
+        StudyTimeTracker.shared.stop(source)
+        #expect(!ReadingTimeTracker.shared.isHeldForStudy)
+    }
+
+    @Test
     func daylightSavingTransitionsPreserveAllTrackedSeconds() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = try #require(TimeZone(identifier: "America/New_York"))

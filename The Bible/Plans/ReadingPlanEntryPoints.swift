@@ -22,7 +22,7 @@ struct ReadingPlansEntryCard: View {
             // The current plan's art, or the plans' own when none is running.
             let active = store.activePlans.first?.plan
             FeatureTile(
-                style: active.map(PlanArtworkStyle.forPlan) ?? .readingPlans,
+                style: active.map { PlanArtworkStyle.forPlan($0) } ?? .readingPlans,
                 title: "Reading Plans",
                 subtitle: subtitle,
                 progress: active.map { store.progress(of: $0) }
@@ -33,7 +33,7 @@ struct ReadingPlansEntryCard: View {
     private var compactRow: some View {
         let active = store.activePlans.first?.plan
         return SidebarFeatureCard(
-            style: active.map(PlanArtworkStyle.forPlan) ?? .readingPlans,
+            style: active.map { PlanArtworkStyle.forPlan($0) } ?? .readingPlans,
             title: "Reading Plans",
             subtitle: subtitle,
             progress: active.map { store.progress(of: $0) }
