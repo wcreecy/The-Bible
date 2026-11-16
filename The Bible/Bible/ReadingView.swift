@@ -550,9 +550,9 @@ struct ReadingView: View {
                     )
 
                     // The way forward at the end of a chapter, without a swipe or the small arrows.
-                    if let nextTitle = viewModel.nextChapterTitle {
-                        Divider()
-                        continueButton(nextTitle: nextTitle)
+                    if viewModel.previousChapterTitle != nil || viewModel.nextChapterTitle != nil {
+                        chapterLinks
+                            .padding(.top, 8)
                     }
                 }
                 // Lets an opening verse menu push the text below it down smoothly.
@@ -667,24 +667,44 @@ struct ReadingView: View {
         Divider()
     }
 
-    private func continueButton(nextTitle: String) -> some View {
-        Button {
-            changeChapter(forward: true)
-        } label: {
-            HStack {
-                Text("Continue to \(nextTitle)")
-                    .font(.headline)
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
+    /// Quiet links to the chapters either side, named so it's clear where each goes.
+    private var chapterLinks: some View {
+        HStack(spacing: 12) {
+            if let previousTitle = viewModel.previousChapterTitle {
+                chapterLink(title: previousTitle, forward: false)
             }
-            .padding(.horizontal)
-            .frame(minHeight: 52)
+            Spacer(minLength: 0)
+            if let nextTitle = viewModel.nextChapterTitle {
+                chapterLink(title: nextTitle, forward: true)
+            }
+        }
+    }
+
+    private func chapterLink(title: String, forward: Bool) -> some View {
+        Button {
+            changeChapter(forward: forward)
+        } label: {
+            HStack(spacing: 4) {
+                if !forward {
+                    Image(systemName: "chevron.left")
+                        .font(.caption.weight(.semibold))
+                        .accessibilityHidden(true)
+                }
+                Text(title)
+                if forward {
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .accessibilityHidden(true)
+                }
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .frame(minHeight: 44)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityHint("Opens the next chapter")
+        .accessibilityLabel(forward ? "Continue to \(title)" : "Back to \(title)")
+        .accessibilityHint(forward ? "Opens the next chapter" : "Opens the previous chapter")
     }
 
     // MARK: - Actions

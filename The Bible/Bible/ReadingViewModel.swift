@@ -278,6 +278,19 @@ final class ReadingViewModel {
         return "\(orderedBookNames[bookIdx + 1]) 1"
     }
 
+    /// The chapter `previousChapter()` opens, for the link at the end of a chapter.
+    /// Nil before the first chapter of the first book.
+    var previousChapterTitle: String? {
+        if currentChapterIndex > 0 {
+            return "\(currentBook.name) \(currentBook.chapters[currentChapterIndex - 1].number)"
+        }
+        guard let bookIdx = indexOfCurrentBookInCanonical(),
+              orderedBookNames.indices.contains(bookIdx - 1),
+              let previousBook = BibleData.books.first(where: { $0.name == orderedBookNames[bookIdx - 1] }),
+              let last = previousBook.chapters.last else { return nil }
+        return "\(previousBook.name) \(last.number)"
+    }
+
     func show(location: FocusVerseLocation) {
         guard let book = BibleData.books.first(where: { $0.name == location.bookName }),
               let chapterIndex = book.chapters.firstIndex(where: { $0.number == location.chapterNumber }) else {
