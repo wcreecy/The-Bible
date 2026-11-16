@@ -40,11 +40,31 @@ enum AppShare {
     static func qrCode() -> UIImage? {
         let filter = CIFilter.qrCodeGenerator()
         filter.message = Data(url.absoluteString.utf8)
-        filter.correctionLevel = "M"
+        // High correction keeps the code reliable with the centered app icon.
+        filter.correctionLevel = "H"
         guard let output = filter.outputImage else { return nil }
         let scaled = output.transformed(by: CGAffineTransform(scaleX: 12, y: 12))
         guard let cgImage = CIContext().createCGImage(scaled, from: scaled.extent) else { return nil }
         return UIImage(cgImage: cgImage)
+    }
+
+    /// The primary icon embedded in the app bundle.
+    static func appIcon() -> UIImage? {
+        let iconDictionaries = ["CFBundleIcons", "CFBundleIcons~ipad"]
+
+        for dictionaryKey in iconDictionaries {
+            guard
+                let icons = Bundle.main.object(forInfoDictionaryKey: dictionaryKey) as? [String: Any],
+                let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String: Any],
+                let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String],
+                let iconName = iconFiles.last,
+                let icon = UIImage(named: iconName)
+            else { continue }
+
+            return icon
+        }
+
+        return UIImage(named: "AppIcon")
     }
 }
 
@@ -106,6 +126,7 @@ struct ShareAppRows: View {
 struct AppQRCodeView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var image = AppShare.qrCode()
+    private let appIcon = AppShare.appIcon()
 
     var body: some View {
         NavigationStack {
@@ -115,15 +136,32 @@ struct AppQRCodeView: View {
                     .multilineTextAlignment(.center)
 
                 if let image {
-                    Image(uiImage: image)
-                        .interpolation(.none)
-                        .resizable()
-                        .scaledToFit()
-                        .padding(16)
-                        // Always on white, so the code scans in dark mode too.
-                        .background(.white, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                        .frame(maxWidth: 280)
-                        .accessibilityLabel("QR code for The Bible on the App Store")
+                    ZStack {
+                        Image(uiImage: image)
+                            .interpolation(.none)
+                            .resizable()
+                            .scaledToFit()
+
+                        if let appIcon {
+                            Image(uiImage: appIcon)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 44, height: 44)
+                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                .padding(5)
+                                .background(
+                                    .white,
+                                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                )
+                                .accessibilityHidden(true)
+                        }
+                    }
+                    .padding(16)
+                    // Always on white, so the code scans in dark mode too.
+                    .background(.white, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .frame(maxWidth: 280)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("QR code for The Bible on the App Store")
                 }
 
                 Text("Point the camera at the code to open the App Store.")
