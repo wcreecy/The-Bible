@@ -218,6 +218,55 @@ final class The_Bible__iOS_UITests: XCTestCase {
     }
 
     @MainActor
+    func testShareVerseShowsPreviewAndContextualAppLinkToggle() throws {
+        app.launch()
+
+        let home = app.otherElements["homeView"]
+        XCTAssertTrue(home.waitForExistence(timeout: 8))
+
+        let shareMenu = app.buttons["Share"].firstMatch
+        for _ in 0..<8 where !(shareMenu.exists && shareMenu.isHittable) {
+            app.swipeUp()
+        }
+        XCTAssertTrue(shareMenu.waitForExistence(timeout: 8), "Expected a share menu on the verse-of-the-day card.")
+        XCTAssertTrue(shareMenu.isHittable)
+        shareMenu.tap()
+
+        let shareVerse = app.buttons["Share Verse"].firstMatch
+        XCTAssertTrue(shareVerse.waitForExistence(timeout: 5))
+        shareVerse.tap()
+
+        XCTAssertTrue(app.navigationBars["Share Verse"].waitForExistence(timeout: 5))
+
+        let preview = app.staticTexts["shareTextPreviewText"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        XCTAssertFalse(preview.label.isEmpty, "The share sheet must preview the verse being shared.")
+
+        let includeLink = app.switches["includeAppLinkToggle"]
+        XCTAssertTrue(includeLink.waitForExistence(timeout: 5))
+        let initialValue = try XCTUnwrap(includeLink.value as? String)
+        let initiallyIncludesLink = initialValue == "1"
+        XCTAssertEqual(preview.label.contains("apps.apple.com"), initiallyIncludesLink)
+
+        includeLink.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+
+        let toggledValue = initiallyIncludesLink ? "0" : "1"
+        let switchChanges = NSPredicate(format: "value == %@", toggledValue)
+        expectation(for: switchChanges, evaluatedWith: includeLink)
+        waitForExpectations(timeout: 3)
+
+        let previewUpdates = initiallyIncludesLink
+            ? NSPredicate(format: "NOT label CONTAINS %@", "apps.apple.com")
+            : NSPredicate(format: "label CONTAINS %@", "apps.apple.com")
+        expectation(for: previewUpdates, evaluatedWith: preview)
+        waitForExpectations(timeout: 3)
+
+        let continueButton = app.buttons["continueToShareButton"]
+        XCTAssertTrue(continueButton.exists)
+        XCTAssertTrue(continueButton.isEnabled)
+    }
+
+    @MainActor
     private func launchAtAccessibilityTextSize() {
         app.launchArguments.append(contentsOf: [
             "-UIPreferredContentSizeCategoryName",

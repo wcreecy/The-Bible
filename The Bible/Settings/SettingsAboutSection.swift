@@ -16,8 +16,6 @@ struct SettingsAboutSection: View {
 
             ShareAppRows()
 
-            ShareAttributionToggle()
-
             if let url = URL(string: "https://apps.apple.com/app/id6756133350?action=write-review") {
                 SettingsExternalLinkRow(
                     url: url,

@@ -185,20 +185,88 @@ struct AppQRCodeView: View {
     }
 }
 
-/// The setting for adding the app's link to shared verses and results.
-struct ShareAttributionToggle: View {
-    @AppStorage(AppShare.includesLinkKey) private var includesLink = true
+/// Opens a compact preparation sheet before the system share sheet so the app-link choice
+/// is visible as a real switch at the moment of sharing.
+struct AppLinkShareButton<Label: View>: View {
+    let title: LocalizedStringResource
+    let text: String
+    @ViewBuilder let label: () -> Label
+
+    @State private var showsShareOptions = false
 
     var body: some View {
-        Toggle(isOn: $includesLink) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Include App Link When Sharing")
-                Text("Adds the App Store link to verses and results you share")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+        Button {
+            showsShareOptions = true
+        } label: {
+            label()
+        }
+        .sheet(isPresented: $showsShareOptions) {
+            AppLinkShareSheet(title: title, text: text)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+        }
+    }
+}
+
+struct AppLinkShareSheet: View {
+    let title: LocalizedStringResource
+    let text: String
+
+    @Environment(\.dismiss) private var dismiss
+    @AppStorage(AppShare.includesLinkKey) private var includesLink = true
+
+    private var preparedText: String {
+        AppShare.withAttribution(text, includingLink: includesLink)
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Preview")
+                    .font(.headline)
+
+                ScrollView {
+                    Text(preparedText)
+                        .font(.body)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .textSelection(.enabled)
+                        .accessibilityIdentifier("shareTextPreviewText")
+                        .padding(16)
+                }
+                .frame(maxHeight: 180)
+                .accessibilityIdentifier("shareTextPreview")
+                .background(.secondary.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                Toggle(isOn: $includesLink) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Include App Link")
+                            .font(.body.weight(.semibold))
+                        Text("Adds a link to The Bible on the App Store")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityIdentifier("includeAppLinkToggle")
+
+                ShareLink(item: preparedText) {
+                    Label("Continue to Share", systemImage: "square.and.arrow.up")
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .accessibilityIdentifier("continueToShareButton")
+            }
+            .padding(24)
+            .navigationTitle(Text(title))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
             }
         }
-        .accessibilityIdentifier("shareAttributionToggle")
     }
 }
 
@@ -268,8 +336,7 @@ struct ShareAppFooterCard: View {
     }
 }
 
-/// The "Include App Link" switch shown where something is shared, so the link can be left off
-/// before sending. It's the same setting as the one in Settings.
+/// The contextual app-link switch shown before sharing an image.
 struct IncludeAppLinkToggle: View {
     @AppStorage(AppShare.includesLinkKey) private var includesLink = true
 

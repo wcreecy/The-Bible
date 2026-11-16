@@ -11,7 +11,7 @@ struct VerseShareMenu<MenuLabel: View>: View {
     let onCreateImage: () -> Void
     @ViewBuilder let label: () -> MenuLabel
 
-    @AppStorage(AppShare.includesLinkKey) private var includesLink = true
+    @State private var showsShareOptions = false
 
     var body: some View {
         Menu {
@@ -21,7 +21,9 @@ struct VerseShareMenu<MenuLabel: View>: View {
                 }
             }
 
-            ShareLink(item: AppShare.withAttribution(verse.shareText, includingLink: includesLink)) {
+            Button {
+                showsShareOptions = true
+            } label: {
                 Label("Share Verse", systemImage: "text.quote")
             }
 
@@ -31,12 +33,14 @@ struct VerseShareMenu<MenuLabel: View>: View {
                 Label("Create Verse Image", systemImage: "photo.on.rectangle.angled")
             }
 
-            // Lets the link be left off right here, before sharing.
-            Section {
-                IncludeAppLinkToggle()
-            }
         } label: {
             label()
+        }
+        .accessibilityIdentifier("verseShareMenu-\(verse.bookName)-\(verse.chapterNumber)-\(verse.verseNumber)")
+        .sheet(isPresented: $showsShareOptions) {
+            AppLinkShareSheet(title: "Share Verse", text: verse.shareText)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
 }

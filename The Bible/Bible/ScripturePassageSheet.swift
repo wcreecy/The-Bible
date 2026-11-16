@@ -4,7 +4,6 @@ import UIKit
 
 /// Preview of a cited passage with Copy, Share, and Open in Bible.
 struct ScripturePassageSheet: View {
-    @AppStorage(AppShare.includesLinkKey) private var includesLink = true
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
@@ -151,14 +150,7 @@ struct ScripturePassageSheet: View {
                     .accessibilityLabel(didCopy ? "Copied" : "Copy scripture")
                     .disabled(sections.isEmpty)
 
-                    Menu {
-                        ShareLink(item: AppShare.withAttribution(shareText, includingLink: includesLink)) {
-                            Label("Share Scripture", systemImage: "square.and.arrow.up")
-                        }
-                        Section {
-                            IncludeAppLinkToggle()
-                        }
-                    } label: {
+                    AppLinkShareButton(title: "Share Scripture", text: shareText) {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .accessibilityLabel("Share scripture")
