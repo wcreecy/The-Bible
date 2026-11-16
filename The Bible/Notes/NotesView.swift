@@ -267,7 +267,6 @@ struct NotesView: View {
             hasAnyNotes: !library.allItems.isEmpty,
             showsClearFiltersAction: filters.isActive,
             clearFiltersAction: clearFilters,
-            createFirstNoteAction: { createNote(category: .personal) },
             selectAction: selectAction,
             editAction: { item in
                 selectedID = item.id

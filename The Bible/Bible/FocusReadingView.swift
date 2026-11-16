@@ -136,6 +136,7 @@ struct FocusReadingView: View {
         .sheet(isPresented: $isLocationPickerPresented) {
             ReaderBookPickerSheet(
                 searchText: $locationSearchText,
+                currentBookName: currentLocation.bookName,
                 onSelectBook: { book in
                     go(to: FocusVerseLocation(bookName: book.name, chapterNumber: book.chapters.first?.number ?? 1, verseNumber: 0))
                 },

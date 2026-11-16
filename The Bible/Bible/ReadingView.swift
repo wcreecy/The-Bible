@@ -498,6 +498,7 @@ struct ReadingView: View {
     private var bookPickerSheet: some View {
         ReaderBookPickerSheet(
             searchText: $bookPickerSearchText,
+            currentBookName: viewModel.currentBook.name,
             onSelectBook: { book in open(book: book) },
             onSelectReference: { reference in open(reference: reference) },
             onCancel: { isBookPickerPresented = false }

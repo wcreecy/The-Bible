@@ -168,7 +168,6 @@ struct NotesListCard: View {
     let hasAnyNotes: Bool
     let showsClearFiltersAction: Bool
     let clearFiltersAction: () -> Void
-    let createFirstNoteAction: () -> Void
     let selectAction: (NotesListItem) -> Void
     let editAction: (NotesListItem) -> Void
     let deleteAction: (NotesListItem) -> Void
@@ -267,9 +266,6 @@ struct NotesListCard: View {
                 Label("No Notes Yet", systemImage: "note.text")
             } description: {
                 Text("Tap + to write a note, or press and hold a verse in the Bible to add a note to it.")
-            } actions: {
-                Button("New Note", systemImage: "plus", action: createFirstNoteAction)
-                    .buttonStyle(.borderedProminent)
             }
         }
     }
