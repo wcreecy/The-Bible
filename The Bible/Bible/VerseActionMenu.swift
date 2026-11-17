@@ -77,15 +77,19 @@ struct VerseActionMenu: View {
     var onFeedback: ((VerseActionFeedback) -> Void)?
     /// Adds Chapter Insights to the Focus Mode menu.
     var onShowChapterInsights: (() -> Void)?
+    /// Whether `.buttons` starts with the one-tap highlight colors.
+    var showsHighlightColors = true
 
     init(
         verse: VerseActionReference,
         presentation: VerseActionPresentation = .menu,
+        showsHighlightColors: Bool = true,
         onFeedback: ((VerseActionFeedback) -> Void)? = nil,
         onShowChapterInsights: (() -> Void)? = nil
     ) {
         self.verse = verse
         self.presentation = presentation
+        self.showsHighlightColors = showsHighlightColors
         self.onFeedback = onFeedback
         self.onShowChapterInsights = onShowChapterInsights
 
@@ -112,6 +116,7 @@ struct VerseActionMenu: View {
                 bookmarks: bookmarks
             ),
             presentation: presentation,
+            showsHighlightColors: showsHighlightColors,
             onFeedback: onFeedback,
             onShowChapterInsights: onShowChapterInsights
         )
@@ -134,6 +139,8 @@ struct VerseActionMenuContent: View {
     let verse: VerseActionReference
     let saved: SavedVerseCollections
     var presentation: VerseActionPresentation = .menu
+    /// Whether `.buttons` starts with the one-tap highlight colors.
+    var showsHighlightColors = true
     var onFeedback: ((VerseActionFeedback) -> Void)?
     var onShowChapterInsights: (() -> Void)?
 
@@ -243,7 +250,9 @@ struct VerseActionMenuContent: View {
             // One-tap highlight colors, then the most-used actions: the three ways to keep a
             // verse and Share. The rest are in More, with text labels.
             VStack(spacing: 4) {
-                highlightColorStrip
+                if showsHighlightColors {
+                    highlightColorStrip
+                }
 
                 HStack(spacing: 0) {
                     Button(action: { isShowingNoteEditor = true }) {

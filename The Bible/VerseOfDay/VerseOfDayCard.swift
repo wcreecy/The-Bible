@@ -117,6 +117,8 @@ struct VerseOfDayCard: View {
                                 verseText: v.verseText
                             ),
                             presentation: verseActionPresentation,
+                            // The color strip is for the reader; Home keeps the card calm.
+                            showsHighlightColors: false,
                             onFeedback: onVerseActionFeedback
                         )
                         .help("Verse actions")
