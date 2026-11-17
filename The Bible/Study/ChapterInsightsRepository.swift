@@ -589,7 +589,7 @@ actor ChapterInsightsRepository: BundledSQLiteReading {
     }
 
     /// Most rows store a JSON array of references, but some store a single JSON string.
-    private static func decodeReferences(_ json: String) -> [String] {
+    nonisolated private static func decodeReferences(_ json: String) -> [String] {
         let data = Data(json.utf8)
         if let references = try? JSONDecoder().decode([String].self, from: data) {
             return references

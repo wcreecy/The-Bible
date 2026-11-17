@@ -274,7 +274,7 @@ actor OriginalWordsRepository: BundledSQLiteReading {
     }
 
     /// The words using one Strong's number, in the Greek text the translation follows.
-    static let usageFilter = "form.strongs = ?1 AND (form.strongs NOT LIKE 'G%' OR instr(form.source, ?2) > 0)"
+    nonisolated static let usageFilter = "form.strongs = ?1 AND (form.strongs NOT LIKE 'G%' OR instr(form.source, ?2) > 0)"
 
     /// How often a word is used. Greek words count only where the translation's Greek text has
     /// them, so the KJV and the ASV can differ by a few.
@@ -317,7 +317,7 @@ actor OriginalWordsRepository: BundledSQLiteReading {
         } ?? []
     }
 
-    private static func verseLocations(
+    nonisolated private static func verseLocations(
         using strongsNumber: String,
         greekSource: String,
         limit: Int32,

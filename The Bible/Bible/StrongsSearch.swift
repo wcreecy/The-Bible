@@ -93,7 +93,7 @@ nonisolated enum StrongsSearch {
     ) async -> Outcome? {
         guard let query = parse(text, allowingTransliteration: allowingTransliteration) else { return nil }
 
-        let repository = OriginalWordsRepository.shared
+        let repository = await OriginalWordsRepository.shared
         let entries: [StrongsEntry]
         switch query {
         case .number(let prefix):
