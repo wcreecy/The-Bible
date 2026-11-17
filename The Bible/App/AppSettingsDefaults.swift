@@ -29,10 +29,17 @@ enum AppSettingsDefaults {
             "healthKitMindfulMinutesEnabled": false,
             AppStorageKey.contextualTipsEnabled: true,
             "readerFontSize": 17.0,
-            AppStorageKey.readerShowsFullReferences: true,
+            // Verse rows start quiet: a short "Verse 1" label, with only the note and Scripture
+            // connection icons, which open something when tapped. Installs from before this
+            // keep their previous look (see `keepPreviousReaderDefaultsIfNeeded`).
+            AppStorageKey.readerShowsFullReferences: false,
             ReaderDisplaySettings.showsReadProgressKey: false,
             ReaderDisplaySettings.showsVerseMarkersKey: true,
-            ReaderDisplaySettings.showsPinnedVerseMarkerKey: true,
+            ReaderDisplaySettings.showsNoteMarkersKey: true,
+            ReaderDisplaySettings.showsCrossReferenceMarkersKey: true,
+            ReaderDisplaySettings.showsBookmarkMarkersKey: false,
+            ReaderDisplaySettings.showsFavoriteMarkersKey: false,
+            ReaderDisplaySettings.showsPinnedVerseMarkerKey: false,
             "focusReadingEnabled": false,
             "homeCustomizeButtonVisible": true,
             "noteEditorTextSizeStep": 0,
@@ -58,7 +65,39 @@ enum AppSettingsDefaults {
         ]
     }
 
-    static func register(in defaults: UserDefaults = .standard) {
+    /// `domainName` is where `defaults` stores its values: the app's bundle identifier for
+    /// `.standard`, or the suite name for a suite.
+    static func register(
+        in defaults: UserDefaults = .standard,
+        domainName: String? = Bundle.main.bundleIdentifier
+    ) {
+        keepPreviousReaderDefaultsIfNeeded(in: defaults, domainName: domainName)
         defaults.register(defaults: preferences)
+    }
+
+    /// The reader's verse row defaults before they were made quieter. Registered defaults
+    /// apply to anyone who never changed a setting, so without this, existing readers would
+    /// see their verse rows change too.
+    static let previousReaderDefaults: [String: Bool] = [
+        AppStorageKey.readerShowsFullReferences: true,
+        ReaderDisplaySettings.showsBookmarkMarkersKey: true,
+        ReaderDisplaySettings.showsFavoriteMarkersKey: true,
+        ReaderDisplaySettings.showsPinnedVerseMarkerKey: true
+    ]
+
+    /// Once, on an install that has opened the app before, saves the previous verse row
+    /// defaults for any setting the person never changed, so only new installs get the
+    /// quieter defaults. Only values stored on the device count as a choice; registered
+    /// defaults are shared by the whole process, so they're ignored.
+    static func keepPreviousReaderDefaultsIfNeeded(in defaults: UserDefaults, domainName: String?) {
+        guard !defaults.bool(forKey: AppStorageKey.didKeepPreviousReaderDefaultsV1) else { return }
+        defaults.set(true, forKey: AppStorageKey.didKeepPreviousReaderDefaultsV1)
+
+        // Set the first time the app opens, so a new install hasn't set it yet.
+        guard defaults.bool(forKey: AppStorageKey.didCleanupAppTimeKeys) else { return }
+        let stored = domainName.flatMap(defaults.persistentDomain(forName:)) ?? [:]
+        for (key, value) in previousReaderDefaults where stored[key] == nil {
+            defaults.set(value, forKey: key)
+        }
     }
 }

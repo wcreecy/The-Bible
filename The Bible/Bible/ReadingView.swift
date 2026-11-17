@@ -51,7 +51,7 @@ struct ReadingView: View {
     @State private var isBookPickerPresented = false
     @State private var bookPickerSearchText = ""
     @State private var isDisplayOptionsPresented = false
-    @AppStorage(AppStorageKey.readerShowsFullReferences) private var showsFullReferences = true
+    @AppStorage(AppStorageKey.readerShowsFullReferences) private var showsFullReferences = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 

@@ -75,7 +75,7 @@ struct NotesLibrary {
 
         var sections: [NotesListSection] = []
         if !favorites.isEmpty {
-            sections.append(NotesListSection(id: "favorites", title: String(localized: "Favorites"), systemImage: "star.fill", items: favorites))
+            sections.append(NotesListSection(id: "favorites", title: String(localized: "Pinned"), systemImage: "pin.fill", items: favorites))
         }
         var groups = Self.grouped(others, by: sort, now: now, calendar: calendar)
         // A list with no groupings still needs a heading under Favorites.

@@ -213,10 +213,10 @@ struct NoteDetailHeader: View {
                 }
 
                 Button(action: favoriteAction) {
-                    Image(systemName: isFavorite ? "star.fill" : "star")
+                    Image(systemName: isFavorite ? "pin.fill" : "pin")
                 }
-                .foregroundStyle(isFavorite ? .yellow : .primary)
-                .accessibilityLabel(isFavorite ? "Remove favorite" : "Favorite")
+                .foregroundStyle(isFavorite ? .orange : .primary)
+                .accessibilityLabel(isFavorite ? "Unpin" : "Pin to Top")
 
                 ShareLink(item: shareText) {
                     Image(systemName: "square.and.arrow.up")

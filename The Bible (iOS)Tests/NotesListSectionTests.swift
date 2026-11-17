@@ -157,14 +157,14 @@ struct NotesListSectionTests {
         #expect(headings(plain) == [nil])
 
         let withFavorite = library([], [userNote(title: "B"), userNote(title: "A", favorite: true)], sort: .title)
-        #expect(headings(withFavorite) == ["Favorites", "Notes"])
+        #expect(headings(withFavorite) == ["Pinned", "Notes"])
 
         let grouped = library(
             [],
             [userNote(title: "Starred", favorite: true, updated: date(2026, 1, 1)), userNote(title: "Recent", updated: date(2026, 10, 15))],
             sort: .modified
         )
-        #expect(headings(grouped) == ["Favorites", "Today"])
+        #expect(headings(grouped) == ["Pinned", "Today"])
         #expect(library([], [], sort: .modified).sections.isEmpty)
     }
 

@@ -21,8 +21,13 @@ struct ContextualTipView: View {
         self.systemImage = systemImage
         _dismissedGeneration = AppStorage(
             wrappedValue: -1,
-            "contextualTipDismissedGeneration.\(id)"
+            Self.dismissedGenerationKey(for: id)
         )
+    }
+
+    /// Where a tip records the reset generation it was dismissed in.
+    static func dismissedGenerationKey(for id: String) -> String {
+        "contextualTipDismissedGeneration.\(id)"
     }
 
     var body: some View {

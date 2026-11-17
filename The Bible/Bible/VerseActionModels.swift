@@ -48,8 +48,8 @@ enum VerseActionFeedback {
         case .removedFavorite: "heart.slash"
         case .bookmarked: "bookmark.fill"
         case .removedBookmark: "bookmark"
-        case .pinned: "pin.fill"
-        case .unpinned: "pin"
+        case .pinned: "widget.small"
+        case .unpinned: "rectangle.slash"
         case .copied: "doc.on.doc"
         }
     }
@@ -60,8 +60,8 @@ enum VerseActionFeedback {
         case .removedFavorite: String(localized: "Removed Favorite")
         case .bookmarked: String(localized: "Bookmarked")
         case .removedBookmark: String(localized: "Removed Bookmark")
-        case .pinned: String(localized: "Pinned to Widget")
-        case .unpinned: String(localized: "Unpinned from Widget")
+        case .pinned: String(localized: "Showing on Widget")
+        case .unpinned: String(localized: "Removed from Widget")
         case .copied: String(localized: "Copied to Clipboard")
         }
     }

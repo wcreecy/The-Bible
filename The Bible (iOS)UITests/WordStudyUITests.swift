@@ -174,8 +174,14 @@ final class WordStudyUITests: XCTestCase {
         XCTAssertTrue(menu.isHittable, "Expected a verse's action menu in the results.")
         menu.tap()
 
+        // The study actions follow Keep and Share in the menu, so at accessibility sizes
+        // they can sit below the first screen of a scrolling menu.
         let words = app.buttons["Hebrew Words"].firstMatch
-        XCTAssertTrue(words.waitForExistence(timeout: 5), "Expected Hebrew Words in the verse menu.")
+        _ = words.waitForExistence(timeout: 3)
+        for _ in 0..<4 where !words.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(words.isHittable, "Expected Hebrew Words in the verse menu.")
         words.tap()
 
         // Whichever verse's menu was used, it uses the word.

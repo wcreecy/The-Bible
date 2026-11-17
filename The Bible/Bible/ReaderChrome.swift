@@ -108,41 +108,79 @@ struct ReaderChapterArrows: View {
     }
 }
 
-/// The reader's contextual tips, shown above the text while tips are turned on.
+/// The reader's contextual tips, shown above the text while tips are turned on. Only one
+/// shows at a time, so the chapter isn't pushed down by a stack of them: the first one not
+/// yet dismissed. Dismissing it brings up the next.
 struct ReaderTips: View {
     /// Whether the translation control sits in the toolbar rather than the "…" menu.
     let usesFullToolbar: Bool
 
+    private enum Tip: String, CaseIterable {
+        case translations = "reader.translations"
+        case shortcuts = "reader.shortcuts"
+        case statusIcons = "reader.statusIcons"
+    }
+
+    // Each tip's dismissal, watched so the next tip shows once the current one is dismissed.
+    @AppStorage(AppStorageKey.contextualTipsResetGeneration) private var resetGeneration = 0
+    @AppStorage(ContextualTipView.dismissedGenerationKey(for: Tip.translations.rawValue))
+    private var translationsDismissed = -1
+    @AppStorage(ContextualTipView.dismissedGenerationKey(for: Tip.shortcuts.rawValue))
+    private var shortcutsDismissed = -1
+    @AppStorage(ContextualTipView.dismissedGenerationKey(for: Tip.statusIcons.rawValue))
+    private var statusIconsDismissed = -1
+
+    private var currentTip: Tip? {
+        Tip.allCases.first { tip in
+            switch tip {
+            // Only useful when there's more than one translation to choose from.
+            case .translations:
+                BibleTranslation.available.count > 1 && translationsDismissed != resetGeneration
+            case .shortcuts:
+                shortcutsDismissed != resetGeneration
+            case .statusIcons:
+                statusIconsDismissed != resetGeneration
+            }
+        }
+    }
+
     var body: some View {
-        if BibleTranslation.available.count > 1 {
+        if let tip = currentTip {
+            tipView(tip)
+                .id(tip)
+                .padding(.bottom, 12)
+
+            Divider()
+        }
+    }
+
+    @ViewBuilder
+    private func tipView(_ tip: Tip) -> some View {
+        switch tip {
+        case .translations:
             ContextualTipView(
-                id: "reader.translations",
+                id: tip.rawValue,
                 title: "Choose a translation",
                 message: usesFullToolbar
                     ? "Tap the translation button at the top left to read another version. Your saved verses keep the translation they were saved in."
                     : "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in.",
                 systemImage: "character.book.closed"
             )
-            .padding(.bottom, 12)
+        case .shortcuts:
+            ContextualTipView(
+                id: tip.rawValue,
+                title: "Reader shortcuts",
+                message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
+                systemImage: "hand.draw"
+            )
+        case .statusIcons:
+            ContextualTipView(
+                id: tip.rawValue,
+                title: "Understand verse icons",
+                message: "Icons beside a verse's reference show your bookmark, favorites, notes, and Scripture connections. Tap a note or Scripture connection icon to open it. Change this in Settings › Bible Reader.",
+                systemImage: "info.circle"
+            )
         }
-
-        ContextualTipView(
-            id: "reader.shortcuts",
-            title: "Reader shortcuts",
-            message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
-            systemImage: "hand.draw"
-        )
-        .padding(.bottom, 12)
-
-        ContextualTipView(
-            id: "reader.statusIcons",
-            title: "Understand verse icons",
-            message: "Icons beside a verse's reference show your bookmark, favorites, notes, and Scripture connections. Tap a note or Scripture connection icon to open it. Change this in Settings › Bible Reader.",
-            systemImage: "info.circle"
-        )
-        .padding(.bottom, 12)
-
-        Divider()
     }
 }
 

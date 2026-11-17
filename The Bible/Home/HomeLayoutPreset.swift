@@ -45,7 +45,7 @@ enum HomeLayoutPreset: CaseIterable, Identifiable, Equatable {
         case .study:
             [.study, .resumeReading, .savedVerses, .timer, .verseOfDay]
         case .dailyPractice:
-            // Built around the day: the verse, the checklist, the plan, then prayer and focus.
+            // Built around the day: the verse, the checklist, the plan, then prayer and the day's intention.
             [.verseOfDay, .today, .readingPlan, .timer, .dailyFocus, .streaks]
         case .minimal:
             [.verseOfDay, .resumeReading]

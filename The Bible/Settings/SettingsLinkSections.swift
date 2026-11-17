@@ -158,7 +158,7 @@ struct SettingsReadingAndPrayerLinksSection: View {
 
     private var bibleReaderSummary: LocalizedStringResource {
         if focusReadingEnabled {
-            "Focus Reading on"
+            "Opens in Focus Mode"
         } else if showsReadProgress {
             "Reading progress on"
         } else {
@@ -196,9 +196,9 @@ struct SettingsReadingProgressSection: View {
         self.highlightFocusReading = highlightFocusReading
     }
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
-    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers = true
-    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker = true
-    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers = false
+    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker = false
+    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers = false
     @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers = true
     @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers = true
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
@@ -236,8 +236,8 @@ struct SettingsReadingProgressSection: View {
             Toggle(isOn: $focusReadingEnabled) {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Focus Reading")
-                        Text("Open the reader with one verse on screen")
+                        Text("Open in Focus Mode")
+                        Text("Start the reader in Focus Mode, one verse at a time")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

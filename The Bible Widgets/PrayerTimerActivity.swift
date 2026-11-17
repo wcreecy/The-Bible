@@ -110,7 +110,7 @@ struct PrayerTimerLiveActivity: Widget {
                                     .lineLimit(2)
                                     .multilineTextAlignment(.center)
                             } else {
-                                Text("Focus")
+                                Text("Today's Intention")
                                     .font(.headline)
                                     .multilineTextAlignment(.center)
                             }

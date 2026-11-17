@@ -74,7 +74,7 @@ final class FocusViewModel {
 }
 
 extension PrayerTimerActivityController {
-    /// Shows the saved Daily Focus as a Live Activity when one isn't already running, so it
+    /// Shows the saved Today's Intention as a Live Activity when one isn't already running, so it
     /// returns after the system ends it. The widget extension shares this controller but not
     /// the app's storage keys, so this lives in the app.
     func ensureSavedFocusIfNeeded() {

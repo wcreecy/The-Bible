@@ -121,6 +121,7 @@ enum AppStorageKey {
     // One-time migrations and maintenance
     static let didMigrateReadingPositionV1 = "didMigrateReadingPositionV1"
     static let didCleanSavedVerseTextV1 = "didCleanSavedVerseTextV1"
+    static let didKeepPreviousReaderDefaultsV1 = "didKeepPreviousReaderDefaultsV1"
 
     // Reading statistics
     static let bookReadingTimes = "bookReadingTimes"

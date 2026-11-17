@@ -240,78 +240,62 @@ struct VerseActionMenuContent: View {
     private var actionPresentation: some View {
         switch presentation {
         case .buttons:
-            // The most-used actions: the three ways to keep a verse, then Share. The rest are in
-            // More, with text labels.
-            HStack(spacing: 0) {
-                Button(action: { isShowingNoteEditor = true }) {
-                    Image(systemName: "highlighter")
-                        .foregroundStyle(existingNote == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
-                }
-                .accessibilityLabel(noteActionTitle)
-                .frame(maxWidth: .infinity)
+            // One-tap highlight colors, then the most-used actions: the three ways to keep a
+            // verse and Share. The rest are in More, with text labels.
+            VStack(spacing: 4) {
+                highlightColorStrip
 
-                Button(action: toggleFavorite) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart")
-                        .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
-                }
-                .accessibilityLabel(favoriteActionTitle)
-                .frame(maxWidth: .infinity)
+                HStack(spacing: 0) {
+                    Button(action: { isShowingNoteEditor = true }) {
+                        Image(systemName: "highlighter")
+                            .foregroundStyle(existingNote == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
+                    }
+                    .accessibilityLabel(noteActionTitle)
+                    .frame(maxWidth: .infinity)
 
-                // The one bookmark: where the reader stopped, shown first by Continue Reading.
-                Button(action: bookmark) {
-                    Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                        .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.bookmarkTint) : AnyShapeStyle(.primary))
-                }
-                .accessibilityLabel(bookmarkActionTitle)
-                .frame(maxWidth: .infinity)
+                    Button(action: toggleFavorite) {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
+                    }
+                    .accessibilityLabel(favoriteActionTitle)
+                    .frame(maxWidth: .infinity)
 
-                VerseShareMenu(verse: verse, onCopy: copy, onCreateImage: showImageComposer) {
-                    Image(systemName: "square.and.arrow.up")
-                        .frame(minWidth: 40, minHeight: 44)
-                        .contentShape(Rectangle())
-                }
-                .foregroundStyle(Color.accentColor)
-                .accessibilityLabel("Share")
-                .frame(maxWidth: .infinity)
+                    // The one bookmark: where the reader stopped, shown first by Continue Reading.
+                    Button(action: bookmark) {
+                        Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                            .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.bookmarkTint) : AnyShapeStyle(.primary))
+                    }
+                    .accessibilityLabel(bookmarkActionTitle)
+                    .frame(maxWidth: .infinity)
 
-                Menu {
-                    compareMenuButton
-                    wordStudyMenuButton
-                    mentionsButton
-                    pinMenuButton
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .frame(minWidth: 40, minHeight: 44)
-                        .contentShape(Rectangle())
+                    VerseShareMenu(verse: verse, onCopy: copy, onCreateImage: showImageComposer) {
+                        Image(systemName: "square.and.arrow.up")
+                            .frame(minWidth: 40, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .foregroundStyle(Color.accentColor)
+                    .accessibilityLabel("Share")
+                    .frame(maxWidth: .infinity)
+
+                    Menu {
+                        menuItems(omitting: [.note, .favorite, .bookmark, .copy, .share])
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .frame(minWidth: 40, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .foregroundStyle(Color.accentColor)
+                    .accessibilityLabel("More verse actions")
+                    .frame(maxWidth: .infinity)
                 }
-                .foregroundStyle(Color.accentColor)
-                .accessibilityLabel("More verse actions")
-                .frame(maxWidth: .infinity)
+                .font(.title3)
+                .buttonStyle(VerseActionButtonStyle())
             }
-            .font(.title3)
-            .buttonStyle(VerseActionButtonStyle())
 
         case .focus:
             // One menu keeps Focus Mode's bar to a few controls.
             Menu {
-                favoriteMenuButton
-                noteMenuButton
-                mentionsButton
-                bookmarkMenuButton
-
-                compareMenuButton
-                wordStudyMenuButton
-                if let onShowChapterInsights {
-                    Button(action: onShowChapterInsights) {
-                        Label("Chapter Insights", systemImage: "lightbulb")
-                    }
-                }
-
-                Divider()
-
-                copyMenuButton
-                shareMenuButton
-                pinMenuButton
+                menuItems()
             } label: {
                 Image(systemName: "ellipsis.circle")
             }
@@ -335,13 +319,7 @@ struct VerseActionMenuContent: View {
                 .accessibilityLabel("Share")
 
                 Menu {
-                    noteMenuButton
-                    mentionsButton
-                    bookmarkMenuButton
-                    pinMenuButton
-                    compareMenuButton
-                    wordStudyMenuButton
-                    copyMenuButton
+                    menuItems(omitting: [.favorite, .share])
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .frame(minWidth: 40, minHeight: 44)
@@ -354,15 +332,7 @@ struct VerseActionMenuContent: View {
 
         case .menu:
             Menu {
-                noteMenuButton
-                mentionsButton
-                favoriteMenuButton
-                bookmarkMenuButton
-                pinMenuButton
-                compareMenuButton
-                wordStudyMenuButton
-                copyMenuButton
-                shareMenuButton
+                menuItems()
             } label: {
                 Image(systemName: "ellipsis.circle")
                     .font(.title3)
@@ -371,7 +341,127 @@ struct VerseActionMenuContent: View {
         }
     }
 
+    // MARK: Highlight colors
+
+    private var currentHighlight: VerseHighlightColor? {
+        existingNote.flatMap { VerseHighlightColor(rawValue: $0.highlightColor) }
+    }
+
+    /// The highlight colors, tapped to highlight the verse at once. Tapping the current color
+    /// again removes it. Notes still open from the note button.
+    private var highlightColorStrip: some View {
+        HStack(spacing: 14) {
+            ForEach(VerseHighlightColor.allCases) { color in
+                let isSelected = currentHighlight == color
+                Button {
+                    setHighlight(isSelected ? nil : color)
+                } label: {
+                    Circle()
+                        .fill(color.color.opacity(0.75))
+                        .frame(width: 26, height: 26)
+                        .overlay {
+                            if isSelected {
+                                Image(systemName: "checkmark")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                        .overlay(Circle().strokeBorder(.primary.opacity(isSelected ? 0.5 : 0.15), lineWidth: 1))
+                        .frame(minWidth: 40, minHeight: 40)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("Highlight \(Text(color.name))"))
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+                .accessibilityHint(isSelected ? "Removes the highlight" : "")
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    /// Highlights the verse in `color`, or removes its highlight when `color` is nil. The
+    /// highlight lives on the verse's note, as it does from the note editor: a new verse gets
+    /// a highlight-only note, and removing the highlight from one deletes it.
+    private func setHighlight(_ color: VerseHighlightColor?) {
+        let note = existingNote
+        let addsHighlight = color != nil && (note?.highlightColor.isEmpty ?? true)
+
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                if let note {
+                    if color == nil && !Self.hasWrittenText(note) {
+                        modelContext.delete(note)
+                    } else {
+                        note.highlightColor = color?.rawValue ?? ""
+                        note.updatedAt = Date()
+                    }
+                } else if let color {
+                    let newNote = VerseNote(
+                        bookName: verse.bookName,
+                        chapterNumber: verse.chapterNumber,
+                        verseNumber: verse.verseNumber,
+                        verseText: verse.verseText,
+                        highlightColor: color.rawValue
+                    )
+                    newNote.translation = verse.translation.rawValue
+                    modelContext.insert(newNote)
+                } else {
+                    return
+                }
+                try modelContext.save()
+            },
+            onSuccess: {
+                if addsHighlight {
+                    TodayChallengeStore.shared.recordVerseHighlightSaved()
+                }
+                Haptics.selection()
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
+    }
+
+    /// Whether a note has writing of its own, beyond the highlight and the verse reference.
+    private static func hasWrittenText(_ note: VerseNote) -> Bool {
+        let title = note.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let content = note.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !title.isEmpty || (!content.isEmpty && content != note.reference)
+    }
+
     // MARK: Shared action titles and menu items
+
+    /// Actions that some presentations show as buttons beside the menu instead of in it.
+    nonisolated enum InlineAction: Hashable {
+        case note, favorite, bookmark, copy, share
+    }
+
+    /// Every verse action, in the one order all verse menus share: keeping the verse, sharing
+    /// it, studying it, then the widget. Actions already shown as buttons are left out.
+    @ViewBuilder
+    private func menuItems(omitting shown: Set<InlineAction> = []) -> some View {
+        Section {
+            if !shown.contains(.note) { noteMenuButton }
+            if !shown.contains(.favorite) { favoriteMenuButton }
+            if !shown.contains(.bookmark) { bookmarkMenuButton }
+        }
+        Section {
+            if !shown.contains(.copy) { copyMenuButton }
+            if !shown.contains(.share) { shareMenuButton }
+        }
+        Section {
+            compareMenuButton
+            wordStudyMenuButton
+            mentionsButton
+            if let onShowChapterInsights {
+                Button(action: onShowChapterInsights) {
+                    Label("Chapter Insights", systemImage: "lightbulb")
+                }
+            }
+        }
+        Section {
+            pinMenuButton
+        }
+    }
 
     private var noteActionTitle: LocalizedStringKey {
         existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight"
@@ -386,7 +476,7 @@ struct VerseActionMenuContent: View {
     }
 
     private var pinActionTitle: LocalizedStringKey {
-        isPinned ? "Unpin from Widget" : "Pin to Widget"
+        isPinned ? "Remove from Widget" : "Show on Widget"
     }
 
     private var noteMenuButton: some View {
@@ -411,7 +501,7 @@ struct VerseActionMenuContent: View {
 
     private var pinMenuButton: some View {
         Button(action: togglePin) {
-            Label(pinActionTitle, systemImage: isPinned ? "pin.fill" : "pin")
+            Label(pinActionTitle, systemImage: isPinned ? "rectangle.slash" : "widget.small")
         }
     }
 

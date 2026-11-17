@@ -347,8 +347,8 @@ struct NotesListRow: View {
             item.toggleFavorite(in: modelContext)
         } label: {
             Label(
-                item.isFavorite ? "Unfavorite" : "Favorite",
-                systemImage: item.isFavorite ? "star.slash" : "star"
+                item.isFavorite ? "Unpin" : "Pin to Top",
+                systemImage: item.isFavorite ? "pin.slash" : "pin"
             )
         }
     }
@@ -409,58 +409,37 @@ struct NotesMoreMenu: View {
 
     var body: some View {
         Menu {
-            Menu {
-                ForEach(NotesTabSort.allCases) { option in
-                    Menu {
-                        Button {
-                            applySort(option, ascending: false)
-                        } label: {
-                            sortOrderLabel(for: option, ascending: false)
-                        }
-
-                        Button {
-                            applySort(option, ascending: true)
-                        } label: {
-                            sortOrderLabel(for: option, ascending: true)
-                        }
-                    } label: {
-                        Label(option.title, systemImage: option.systemImage)
+            // The sort field and its order sit directly in this menu, each with a checkmark on
+            // the current choice. Choosing a field also picks its natural order.
+            Section("Sort By") {
+                Picker("Sort By", selection: $sortField) {
+                    ForEach(NotesTabSort.allCases) { option in
+                        Label(option.title, systemImage: option.systemImage).tag(option)
                     }
                 }
-            } label: {
-                Label {
-                    Text("Sort By")
-                    Text(sortField.title)
-                } icon: {
-                    Image(systemName: "arrow.up.arrow.down")
-                }
+                .pickerStyle(.inline)
             }
 
-            if let manageTagsAction {
-                Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
+            Section("Order") {
+                Picker("Order", selection: $sortAscending) {
+                    Text(sortField.orderTitle(ascending: sortField.defaultAscending))
+                        .tag(sortField.defaultAscending)
+                    Text(sortField.orderTitle(ascending: !sortField.defaultAscending))
+                        .tag(!sortField.defaultAscending)
+                }
+                .pickerStyle(.inline)
             }
 
             Section {
+                if let manageTagsAction {
+                    Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
+                }
                 Button("Export All Notes…", systemImage: "square.and.arrow.up", action: exportAction)
             }
         } label: {
             Image(systemName: "ellipsis")
         }
         .accessibilityLabel("More")
-    }
-
-    private func applySort(_ field: NotesTabSort, ascending: Bool) {
-        sortField = field
-        sortAscending = ascending
-    }
-
-    @ViewBuilder
-    private func sortOrderLabel(for field: NotesTabSort, ascending: Bool) -> some View {
-        if sortField == field && sortAscending == ascending {
-            Label(field.orderTitle(ascending: ascending), systemImage: "checkmark")
-        } else {
-            Text(field.orderTitle(ascending: ascending))
-        }
     }
 }
 
@@ -517,7 +496,7 @@ struct NotesTitleButton: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityValue(isFavorite ? Text("Favorite") : Text(""))
+        .accessibilityValue(isFavorite ? Text("Pinned") : Text(""))
     }
 }
 

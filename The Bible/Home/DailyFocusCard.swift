@@ -38,7 +38,7 @@ struct DailyFocusCard: View {
 
     var body: some View {
         HeroCard(
-            title: "Daily Focus",
+            title: "Today's Intention",
             subtitle: nil,
             icon: "target",
             tint: .purple,
@@ -56,8 +56,8 @@ struct DailyFocusCard: View {
                 }
             }
         }
-        .confirmationDialog("Clear your focus?", isPresented: $isConfirmingClear, titleVisibility: .visible) {
-            Button("Clear Focus", role: .destructive, action: clear)
+        .confirmationDialog("Clear your intention?", isPresented: $isConfirmingClear, titleVisibility: .visible) {
+            Button("Clear Intention", role: .destructive, action: clear)
         } message: {
             Text("It will also be removed from the Lock Screen.")
         }
@@ -73,7 +73,7 @@ struct DailyFocusCard: View {
                     .buttonStyle(.bordered)
                     .controlSize(.small)
                     .tint(.purple)
-                    .accessibilityLabel("Edit Focus")
+                    .accessibilityLabel("Edit Intention")
 
                 Button("Clear", role: .destructive) {
                     isConfirmingClear = true
@@ -81,7 +81,7 @@ struct DailyFocusCard: View {
                 .buttonStyle(.bordered)
                 .controlSize(.small)
                 .tint(.red)
-                .accessibilityLabel("Clear Focus")
+                .accessibilityLabel("Clear Intention")
             }
         }
     }
@@ -103,7 +103,7 @@ struct DailyFocusCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Today's focus")
+        .accessibilityLabel("Today's intention")
         .accessibilityValue([focus.title, focus.body].filter { !$0.isEmpty }.joined(separator: ". "))
     }
 
@@ -112,7 +112,7 @@ struct DailyFocusCard: View {
             Image(systemName: "livephoto.slash")
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
-            Text("Turn on Live Activities to see your focus on the Lock Screen.")
+            Text("Turn on Live Activities to see your intention on the Lock Screen.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -139,7 +139,7 @@ struct DailyFocusCard: View {
 
     private var editor: some View {
         VStack(alignment: .leading, spacing: 10) {
-            TextField("What's your focus today?", text: $draftTitle)
+            TextField("What's your intention for today?", text: $draftTitle)
                 .textFieldStyle(.roundedBorder)
                 .submitLabel(.done)
                 .focused($focusedField, equals: .title)
@@ -164,7 +164,7 @@ struct DailyFocusCard: View {
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                         )
-                        .accessibilityLabel("Focus Notes")
+                        .accessibilityLabel("Intention Notes")
                 }
             }
 
@@ -192,12 +192,12 @@ struct DailyFocusCard: View {
                         .buttonStyle(ModernPillButtonStyle(tint: .purple))
                         .controlSize(.regular)
                         .disabled(!canSave)
-                        .accessibilityLabel("Save Focus")
+                        .accessibilityLabel("Save Intention")
                 }
             }
 
             if liveActivitiesEnabled {
-                Text("Your saved focus appears on the Lock Screen and in the Dynamic Island.")
+                Text("Your saved intention appears on the Lock Screen and in the Dynamic Island.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

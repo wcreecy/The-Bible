@@ -63,6 +63,8 @@ struct SetupChecklistCard: View {
     private static let homeOrderBaselineKey = "homeOnboardingHomeOrderBaselineV2"
     private static let completionBaselineCapturedKey = "homeOnboardingCompletionBaselineCapturedV1"
     private static let gameNameKey = "homeOnboardingGameNameV1"
+    private static let completedDayKey = "homeOnboardingCompletedDayV1"
+    private static let didAutoHideKey = "homeOnboardingDidAutoHideV1"
 
     @Query private var favorites: [Favorite]
     @Query private var verseNotes: [VerseNote]
@@ -80,6 +82,10 @@ struct SetupChecklistCard: View {
     @AppStorage(Self.homeOrderBaselineKey) private var homeOrderBaseline = ""
     @AppStorage(Self.completionBaselineCapturedKey) private var completionBaselineCaptured = false
     @AppStorage(Self.gameNameKey) private var gameName = ""
+    /// The day every step was first done (`yyyy-MM-dd`), or empty while steps remain.
+    @AppStorage(Self.completedDayKey) private var completedDay = ""
+    /// Set once the finished card has left Home on its own, so it only ever does that once.
+    @AppStorage(Self.didAutoHideKey) private var didAutoHide = false
 
     @State private var isShowingDailyGoal = false
     @State private var isShowingResetConfirmation = false
@@ -182,6 +188,9 @@ struct SetupChecklistCard: View {
             establishCompletionBaselineIfNeeded()
             chooseGameIfNeeded()
         }
+        .onChange(of: isAllComplete, initial: true) { _, isComplete in
+            updateAutomaticDismissal(isComplete: isComplete)
+        }
         .sheet(isPresented: $isShowingDailyGoal, onDismiss: { dailyGoalReviewed = true }) {
             NavigationStack {
                 SettingsDailyGoalDetailView()
@@ -219,7 +228,9 @@ struct SetupChecklistCard: View {
 
     private var footer: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text("You can show this card again in Customize Home.")
+            Text(leavesHomeTomorrow
+                 ? "This card leaves Home tomorrow. You can show it again in Customize Home."
+                 : "You can show this card again in Customize Home.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -229,6 +240,29 @@ struct SetupChecklistCard: View {
                 .font(.subheadline.weight(.semibold))
                 .tint(isAllComplete ? .green : .orange)
                 .accessibilityHint("Removes the Welcome card from Home")
+        }
+    }
+
+    /// Whether the finished card will leave Home on its own the next day.
+    private var leavesHomeTomorrow: Bool {
+        isAllComplete && !didAutoHide
+    }
+
+    /// A finished card shows its completion message for the rest of the day, then leaves Home
+    /// the next time it appears. It does this once: a card shown again from Customize Home
+    /// stays until it's dismissed.
+    private func updateAutomaticDismissal(isComplete: Bool, now: Date = Date()) {
+        guard !didAutoHide else { return }
+        guard isComplete else {
+            completedDay = ""
+            return
+        }
+        let today = BibleStatsStore.isoDateString(now)
+        if completedDay.isEmpty {
+            completedDay = today
+        } else if completedDay < today {
+            didAutoHide = true
+            onDismiss()
         }
     }
 
