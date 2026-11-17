@@ -3,27 +3,23 @@ import SwiftUI
 struct GameInsightsCardView: View {
     private var stats = GameStats.shared
 
-    private var entries: [GameStats.GameBreakdown.Entry] {
-        stats.breakdownSnapshot().entries
+    // Each insight reads from one breakdown and one activity series per redraw, instead of
+    // asking GameStats for its own copy.
+
+    private func favoriteGame(in entries: [GameStats.GameBreakdown.Entry]) -> String? {
+        entries.filter { $0.answered > 0 }.max { $0.answered < $1.answered }?.name
     }
 
-    private var playedEntries: [GameStats.GameBreakdown.Entry] {
-        entries.filter { $0.answered > 0 }
-    }
-
-    private var favoriteGame: String? {
-        playedEntries.max { $0.answered < $1.answered }?.name
-    }
-
-    private var suggestedGame: String? {
+    private func suggestedGame(in entries: [GameStats.GameBreakdown.Entry]) -> String? {
         entries.min {
             if $0.answered == $1.answered { return $0.name < $1.name }
             return $0.answered < $1.answered
         }?.name
     }
 
-    private var mostImproved: (name: String, delta: Int)? {
-        entries.compactMap { entry -> (String, Int)? in
+    /// Only games played at least 5 times in each of the last two weeks can be compared.
+    private func mostImproved(in entries: [GameStats.GameBreakdown.Entry]) -> (name: String, delta: Int)? {
+        entries.filter { $0.answered >= 10 }.compactMap { entry -> (String, Int)? in
             let series = stats.dailySeriesLast(days: 14, forDisplayName: entry.name)
             let previous = series.prefix(7)
             let current = series.suffix(7)
@@ -38,48 +34,34 @@ struct GameInsightsCardView: View {
         .max { $0.1 < $1.1 }
     }
 
-    private var nextMilestone: (remaining: Int, target: Int) {
-        let correct = stats.breakdownSnapshot().totalCorrect
+    private func nextMilestone(totalCorrect correct: Int) -> (remaining: Int, target: Int) {
         let target = max(25, ((correct / 25) + 1) * 25)
         return (target - correct, target)
-    }
-
-    private var dailyChallenge: String {
-        let challenges = [
-            "Get 5 correct answers in any game.",
-            "Try a game you have played the least.",
-            "Play 3 different games.",
-            "Earn 80% accuracy across 10 attempts.",
-            "Improve your best streak by one."
-        ]
-        let day = Calendar.autoupdatingCurrent.ordinality(of: .day, in: .year, for: Date()) ?? 0
-        return challenges[day % challenges.count]
-    }
-
-    private var activity: [(date: Date, answered: Int, correct: Int)] {
-        stats.dailySeriesLast(days: 84)
     }
 
     var body: some View {
         HeroCard(title: "Game Insights", icon: "sparkles", tint: .purple) {
             let _ = stats.version
+            let breakdown = stats.breakdownSnapshot()
+            let entries = breakdown.entries
+            let activity = stats.dailySeriesLast(days: 84)
+            let milestone = nextMilestone(totalCorrect: breakdown.totalCorrect)
             VStack(alignment: .leading, spacing: 16) {
                 MetricChip(
                     title: "Next Milestone",
-                    value: "\(nextMilestone.remaining) correct \(nextMilestone.remaining == 1 ? "answer" : "answers") to reach \(nextMilestone.target)",
+                    value: "\(milestone.remaining) correct \(milestone.remaining == 1 ? "answer" : "answers") to reach \(milestone.target)",
                     tint: .orange,
                     fillsWidth: true,
                     scrollsValue: true
                 )
 
-                insightRow(icon: "scope", title: "Daily Challenge", detail: dailyChallenge)
-                if let favoriteGame {
+                if let favoriteGame = favoriteGame(in: entries) {
                     insightRow(icon: "heart.fill", title: "Favorite Game", detail: favoriteGame)
                 }
-                if let suggestedGame {
+                if let suggestedGame = suggestedGame(in: entries) {
                     insightRow(icon: "shuffle", title: "Try Something Different", detail: suggestedGame)
                 }
-                if let mostImproved {
+                if let mostImproved = mostImproved(in: entries) {
                     insightRow(icon: "chart.line.uptrend.xyaxis", title: "Most Improved", detail: "\(mostImproved.name) (+\(mostImproved.delta) pts)")
                 }
 
@@ -88,17 +70,13 @@ struct GameInsightsCardView: View {
                     insightRow(icon: "flame", title: "Streak Grace", detail: "Play today to keep your \(streak.current)-day streak going.")
                 }
 
-                activityHeatMap
-                BookMasterySection(
-                    strongestBooks: stats.bookMastery(),
-                    weakestBooks: stats.weakBookMastery()
-                )
+                activityHeatMap(activity)
                 difficultySection
             }
         }
     }
 
-    private var activityHeatMap: some View {
+    private func activityHeatMap(_ activity: [(date: Date, answered: Int, correct: Int)]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Game Activity · 12 Weeks")
                 .font(.subheadline.weight(.semibold))
@@ -157,66 +135,5 @@ struct GameInsightsCardView: View {
         case 6...9: return Color.purple.opacity(0.75)
         default: return .purple
         }
-    }
-}
-
-private struct BookMasterySection: View {
-    let strongestBooks: [(book: String, answered: Int, correct: Int, pct: Double)]
-    let weakestBooks: [(book: String, answered: Int, correct: Int, pct: Double)]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Book Mastery")
-                .font(.subheadline.weight(.semibold))
-
-            if strongestBooks.isEmpty {
-                Text("Answer at least 5 book-based questions to see your strongest and weakest books.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            } else {
-                BookMasteryRanking(
-                    title: "Strongest Books",
-                    icon: "trophy.fill",
-                    tint: .green,
-                    books: Array(strongestBooks.prefix(3))
-                )
-                BookMasteryRanking(
-                    title: "Keep Practicing",
-                    icon: "arrow.down.circle.fill",
-                    tint: .orange,
-                    books: Array(weakestBooks.prefix(3))
-                )
-            }
-        }
-    }
-}
-
-private struct BookMasteryRanking: View {
-    let title: LocalizedStringKey
-    let icon: String
-    let tint: Color
-    let books: [(book: String, answered: Int, correct: Int, pct: Double)]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Label(title, systemImage: icon)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(tint)
-
-            ForEach(books, id: \.book) { book in
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(book.book)
-                        .font(.caption.weight(.semibold))
-
-                    Spacer(minLength: 8)
-
-                    Text("\(Int(book.pct.rounded()))% · \(book.answered) attempts")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.trailing)
-                }
-            }
-        }
-        .accessibilityElement(children: .combine)
     }
 }

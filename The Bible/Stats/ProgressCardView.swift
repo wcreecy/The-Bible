@@ -4,7 +4,9 @@ struct ProgressCardView: View {
     // Inputs
     let booksCompleted: Int
     let totalBooks: Int
-    let visitedCount: Int
+    let chaptersCompleted: Int
+    /// Chapters read partway, shown under the chapter count so partial reading is visible.
+    let chaptersInProgress: Int
     let totalChapters: Int
     let completedVerses: Int
     let totalVerses: Int
@@ -30,7 +32,7 @@ struct ProgressCardView: View {
     }
     private var chaptersPercent: Int {
         let denom = max(1, totalChapters)
-        let pct = Int(round((Double(visitedCount) / Double(denom)) * 100.0))
+        let pct = Int(round((Double(chaptersCompleted) / Double(denom)) * 100.0))
         return max(0, min(100, pct))
     }
     private var versesPercent: Int {
@@ -105,7 +107,7 @@ struct ProgressCardView: View {
     /// top of the card jump.
     private var headerView: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Books and chapters count once every verse in them is viewed.")
+            Text("A book or chapter counts as read once you've read every verse in it.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -132,6 +134,7 @@ struct ProgressCardView: View {
         let total: Int
         let percent: Int
         let tint: Color
+        var detail: String? = nil
 
         var id: String { title }
     }
@@ -139,7 +142,14 @@ struct ProgressCardView: View {
     private var metrics: [Metric] {
         [
             Metric(title: "Books", count: booksCompleted, total: totalBooks, percent: booksPercent, tint: .green),
-            Metric(title: "Chapters", count: visitedCount, total: totalChapters, percent: chaptersPercent, tint: .blue),
+            Metric(
+                title: "Chapters",
+                count: chaptersCompleted,
+                total: totalChapters,
+                percent: chaptersPercent,
+                tint: .blue,
+                detail: chaptersInProgress > 0 ? "\(formatInt(chaptersInProgress)) in progress" : nil
+            ),
             Metric(title: "Verses", count: completedVerses, total: totalVerses, percent: versesPercent, tint: .accentColor)
         ]
     }
@@ -166,6 +176,12 @@ struct ProgressCardView: View {
             Text("\(formatInt(metric.count))/\(formatInt(metric.total))")
                 .font(.footnote.weight(.semibold))
                 .monospacedDigit()
+            if let detail = metric.detail {
+                Text(detail)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
         }
         .lineLimit(1)
 
@@ -194,7 +210,7 @@ struct ProgressCardView: View {
                 .stroke(Color.black.opacity(0.06), lineWidth: 1)
         )
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(metric.title) fully viewed: \(metric.count) of \(metric.total), \(metric.percent) percent")
+        .accessibilityLabel("\(metric.title) read: \(metric.count) of \(metric.total), \(metric.percent) percent\(metric.detail.map { ", \($0)" } ?? "")")
         .allowsHitTesting(false) // the tile never steals the header tap
     }
 
@@ -248,7 +264,7 @@ struct ProgressCardView: View {
                             Text(name)
                                 .font(.subheadline)
                                 .lineLimit(1)
-                            Text("\(formatInt(prog.read))/\(formatInt(prog.total)) chapters")
+                            Text("\(formatInt(prog.read))/\(formatInt(prog.total)) chapters read")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                                 .monospacedDigit()
@@ -266,7 +282,7 @@ struct ProgressCardView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("\(name) \(prog.read) of \(prog.total) chapters")
+                .accessibilityLabel("\(name): \(prog.read) of \(prog.total) chapters read, \(Int(round(prog.fraction * 100))) percent of verses")
             }
         }
     }

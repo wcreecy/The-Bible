@@ -13,6 +13,14 @@ struct AllGamesComparisonCardView: View {
     }
     @State private var sort: Sort = .played
 
+    /// Compare ranks attempts and accuracy; the stat sheet adds each game's best streak.
+    fileprivate enum Display: String, CaseIterable, Identifiable {
+        case chart = "Compare"
+        case table = "Stat Sheet"
+        var id: String { rawValue }
+    }
+    @State private var display: Display = .chart
+
     // Typed row model to simplify the chart builder
     fileprivate struct Row: Identifiable, Equatable {
         var id: String { name }
@@ -31,7 +39,25 @@ struct AllGamesComparisonCardView: View {
     private static let minimumChartWidth: CGFloat = 460
 
     var body: some View {
-        HeroCard(title: "All Games Comparison", icon: "chart.bar.xaxis", tint: .blue) {
+        HeroCard(title: "All Games", icon: "chart.bar.xaxis", tint: .blue) {
+            VStack(alignment: .leading, spacing: 12) {
+                Picker("Display", selection: $display) {
+                    ForEach(Display.allCases) { option in
+                        Text(option.rawValue).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                switch display {
+                case .chart: comparison
+                case .table: PlayerStatSheetTable()
+                }
+            }
+        }
+    }
+
+    private var comparison: some View {
+        Group {
             // Build a small, explicitly-typed data model first
             let breakdown = GameStats.shared.breakdownSnapshot()
             let entries = breakdown.entries

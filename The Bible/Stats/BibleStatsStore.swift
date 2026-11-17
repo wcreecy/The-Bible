@@ -69,7 +69,21 @@ final class BibleStatsStore {
     typealias SeenMap = [String: Set<Int>]
     var cacheSeenVersesByChapter: SeenMap?
     var cacheChapterCompletionDates: [String: Date]?
-    var cacheReadingContributions: [String: [String: [String: Int]]]?
+    /// Setting this, from any writer, drops the totals derived from it.
+    var cacheReadingContributions: [String: [String: [String: Int]]]? {
+        didSet {
+            cacheDerivedDailyTotalsByBook = nil
+            cacheDerivedDailyTotals = nil
+            cacheHasReadingContributions = nil
+        }
+    }
+    // Totals derived from the contributions, which are rebuilt only when those change.
+    var cacheDerivedDailyTotalsByBook: [String: [String: Int]]?
+    var cacheDerivedDailyTotals: [String: Int]?
+    /// Whether contributions are saved at all, which decides where totals come from.
+    var cacheHasReadingContributions: Bool?
+    /// The decoded archive; `.some(nil)` means there is none.
+    var cacheReadingHistoryArchive: ReadingHistoryArchive??
 
     // MARK: - Cache reset for external updates
 
@@ -82,6 +96,16 @@ final class BibleStatsStore {
         cacheSeenVersesByChapter = nil
         cacheChapterCompletionDates = nil
         cacheReadingContributions = nil
+        cacheReadingHistoryArchive = nil
+    }
+
+    /// Whether per-device reading contributions are saved. Checked once and cached, since
+    /// reading the key loads the whole record.
+    var hasReadingContributions: Bool {
+        if let cached = cacheHasReadingContributions { return cached }
+        let exists = Defaults.provider.object(forKey: Defaults.keyReadingContributions) != nil
+        cacheHasReadingContributions = exists
+        return exists
     }
 
     func statisticsSnapshot() -> StatisticsSnapshot {

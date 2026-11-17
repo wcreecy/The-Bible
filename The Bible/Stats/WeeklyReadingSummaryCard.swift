@@ -10,20 +10,13 @@ struct WeeklyReadingSummaryCard: View {
     private var weekSeconds: Int { max(0, thisWeekSeconds) }
     private var previousWeekSeconds: Int { max(0, lastWeekSeconds) }
     private var comparisonPercent: Int? {
-        guard previousWeekSeconds > 0 else {
-            return weekSeconds > 0 ? 100 : nil
-        }
-
-        return Int(
-            ((Double(weekSeconds - previousWeekSeconds) / Double(previousWeekSeconds)) * 100)
-                .rounded()
-        )
+        ReadingInsights.comparisonPercent(recent: weekSeconds, previous: previousWeekSeconds)
     }
 
     var body: some View {
         HeroCard(
             title: "Your Week",
-            subtitle: "A quick reading summary",
+            subtitle: "Your last 7 days of reading",
             icon: "sparkles",
             tint: .teal
         ) {
@@ -50,7 +43,7 @@ struct WeeklyReadingSummaryCard: View {
     private var summaryHeadline: some View {
         VStack(alignment: .leading, spacing: 4) {
             if weekSeconds > 0 {
-                Text("You read \(formatSeconds(weekSeconds)) this week.")
+                Text("You read \(formatSeconds(weekSeconds)) in the last 7 days.")
                     .font(.title3.weight(.bold))
                     .monospacedDigit()
 
@@ -72,7 +65,7 @@ struct WeeklyReadingSummaryCard: View {
         WeeklyReadingMetric(
             title: "Active Days",
             value: "\(activeDays)",
-            detail: activeDays == 1 ? "day this week" : "days this week",
+            detail: "of the last 7 days",
             systemImage: "calendar",
             tint: .blue
         )
@@ -82,7 +75,7 @@ struct WeeklyReadingSummaryCard: View {
         WeeklyReadingMetric(
             title: "Most Read",
             value: topBook ?? "—",
-            detail: topBook == nil ? "Keep reading to see it" : "this week",
+            detail: topBook == nil ? "Keep reading to see it" : "last 7 days",
             systemImage: "book.closed.fill",
             tint: .orange
         )
@@ -92,7 +85,7 @@ struct WeeklyReadingSummaryCard: View {
         let comparison = comparisonPercent
 
         return WeeklyReadingMetric(
-            title: "Compared to Last Week",
+            title: "Vs. Previous 7 Days",
             value: comparisonValue(for: comparison),
             detail: comparisonDetail(for: comparison),
             systemImage: comparisonSystemImage(for: comparison),
@@ -115,8 +108,8 @@ struct WeeklyReadingSummaryCard: View {
 
     private func comparisonDetail(for comparison: Int?) -> String {
         guard let comparison else { return "No previous activity" }
-        if comparison == 0 { return "same as last week" }
-        return comparison > 0 ? "more than last week" : "less than last week"
+        if comparison == 0 { return "same as before" }
+        return comparison > 0 ? "more reading" : "less reading"
     }
 
     private func comparisonSystemImage(for comparison: Int?) -> String {

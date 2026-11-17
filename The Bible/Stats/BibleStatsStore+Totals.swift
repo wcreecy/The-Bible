@@ -5,7 +5,7 @@ extension BibleStatsStore {
     // MARK: - Per-book totals (all-time)
 
     func loadTotals() -> [String: Int] {
-        if Defaults.provider.data(forKey: Defaults.keyReadingContributions) != nil {
+        if hasReadingContributions {
             // Reading older than the retention cutoff lives in the archive.
             var totals = archivedBookTotals()
             for books in derivedDailyTotalsByBook().values {

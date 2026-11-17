@@ -10,13 +10,13 @@ final class StatsViewModel {
     var perBookLast7Totals: [String: Int] = [:]           // sessions in last 7 days
 
     // Derived
-    var todaySeconds: Int = 0
     var thisWeekSeconds: Int = 0
     var lastWeekSeconds: Int = 0
-    var lastReadBookChapter: String = "—"
-    var lastReadEntry: BibleStatsStore.LastRead? = nil
 
-    var visitedCount: Int = 0
+    /// Chapters with every verse read.
+    var chaptersCompleted: Int = 0
+    /// Chapters with some verses read but not all of them yet.
+    var chaptersInProgress: Int = 0
     var booksCompleted: Int = 0
     var totalBooks: Int = 0
     var totalChapters: Int = 0
@@ -25,19 +25,14 @@ final class StatsViewModel {
     var totalVerses: Int = 0
     var completedVerses: Int = 0
 
-    // Per-book progress (chapters read / total)
+    // Per-book progress: chapters read of the total, and the share of its verses read
     var bookProgress: [String: (read: Int, total: Int, fraction: Double)] = [:]
 
     // Charts datasets and consistency
     var last7Daily: [(date: Date, seconds: Int)] = []
     var dailyAverageSessionsLast7: [(date: Date, seconds: Int)] = []
-    private(set) var refreshRevision: Int = 0
     var avgSessionSecondsLast7: Int = 0
 
-    // This Month metrics
-
-    // Last session length (seconds)
-    var lastSessionSeconds: Int = 0
     var readingInsights = ReadingInsights()
 
     // MARK: - Card scopes and the series behind them
@@ -155,7 +150,6 @@ final class StatsViewModel {
             now: now,
             calendar: calendar
         )
-        refreshRevision &+= 1
         recomputeScopedCards()
     }
 
@@ -168,9 +162,6 @@ final class StatsViewModel {
     ) {
         let dailyTotals = snapshot.dailyTotals
         let startOfToday = calendar.startOfDay(for: now)
-        // Today from synced totals
-        let todayKey = BibleStatsStore.isoDateString(startOfToday, calendar: calendar)
-        todaySeconds = max(0, dailyTotals[todayKey, default: 0])
 
         // This week (rolling 7 local days including today) from synced daily totals
         do {
@@ -195,15 +186,6 @@ final class StatsViewModel {
             }
             lastWeekSeconds = total
         }
-
-        if let last = snapshot.lastRead {
-            lastReadEntry = last
-            lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
-        } else {
-            lastReadEntry = nil
-            lastReadBookChapter = "—"
-        }
-
     }
 
     private func refreshChartsAndMonth(
@@ -237,9 +219,6 @@ final class StatsViewModel {
             now: now,
             calendar: calendar
         )
-
-        lastSessionSeconds = sessions.max(by: { $0.end < $1.end })
-            .map(ReadingSessionsStore.duration(of:)) ?? 0
     }
 
     private func refreshSessionScopedPerBook(
@@ -405,6 +384,7 @@ final class StatsViewModel {
 
         var completedBooks = 0
         var completedChapters = 0
+        var startedChapters = 0
         var verseCount = 0
         var completedVerseCount = 0
         var progress: [String: (read: Int, total: Int, fraction: Double)] = [:]
@@ -412,6 +392,8 @@ final class StatsViewModel {
         for book in books {
             var allChaptersComplete = true
             var completedChaptersInBook = 0
+            var versesInBook = 0
+            var readVersesInBook = 0
             for chap in book.chapters {
                 let chapterVerseCount = chap.verses.count
                 let key = "\(book.name):\(chap.number)"
@@ -423,24 +405,29 @@ final class StatsViewModel {
 
                 verseCount += chapterVerseCount
                 completedVerseCount += min(chapterVerseCount, validSeenCount)
+                versesInBook += chapterVerseCount
+                readVersesInBook += min(chapterVerseCount, validSeenCount)
                 if isComplete {
                     completedChapters += 1
                     completedChaptersInBook += 1
                 } else {
                     allChaptersComplete = false
+                    if validSeenCount > 0 { startedChapters += 1 }
                 }
             }
             if allChaptersComplete { completedBooks += 1 }
 
+            // The ring follows verses, so a book read partway through doesn't show as 0%.
             let chapterCount = max(1, book.chapters.count)
             progress[book.name] = (
                 completedChaptersInBook,
                 chapterCount,
-                Double(completedChaptersInBook) / Double(chapterCount)
+                versesInBook > 0 ? Double(readVersesInBook) / Double(versesInBook) : 0
             )
         }
 
-        visitedCount = completedChapters
+        chaptersCompleted = completedChapters
+        chaptersInProgress = startedChapters
         booksCompleted = completedBooks
 
         // Ensure placeholder entries for any missing books

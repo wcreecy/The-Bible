@@ -17,6 +17,7 @@ struct SettingsDeveloperToolsView: View {
     @State private var translationReports: [TranslationReport] = []
     @State private var libraryCounts: [(title: String, count: Int)] = []
     @State private var syncSnapshotID = 0
+    @State private var largestCloudValues: [(key: String, bytes: Int)] = []
     @State private var toastText = ""
     @State private var isShowingToast = false
     @State private var isConfirmingRemoveSeededNotes = false
@@ -341,6 +342,16 @@ struct SettingsDeveloperToolsView: View {
             LabeledContent("Last push", value: dateText(coordinator.lastPushDate))
             LabeledContent("Last merge", value: dateText(coordinator.lastMergeDate))
             LabeledContent("Cloud keys", value: "\(coordinator.cloudKeyCount) (\(coordinator.approximateCloudBytes / 1024) KB)")
+            LabeledContent("Of the 1 MB limit", value: cloudUsagePercentText(coordinator.approximateCloudBytes))
+            if !largestCloudValues.isEmpty {
+                DisclosureGroup("Largest keys") {
+                    ForEach(largestCloudValues, id: \.key) { item in
+                        LabeledContent(item.key, value: "\(item.bytes / 1024) KB")
+                            .font(.footnote)
+                            .monospacedDigit()
+                    }
+                }
+            }
             if let error = coordinator.lastErrorMessage {
                 Text(error)
                     .font(.footnote)
@@ -369,6 +380,16 @@ struct SettingsDeveloperToolsView: View {
             Text("Status is read when this page opens or you tap Refresh. It covers the key-value channel for stats and settings; notes and favorites sync through CloudKit.")
         }
         .id(syncSnapshotID)
+        .task(id: syncSnapshotID) {
+            largestCloudValues = await Task.detached(priority: .utility) {
+                iCloudSyncCoordinator.largestCloudValues()
+            }.value
+        }
+    }
+
+    private func cloudUsagePercentText(_ bytes: Int) -> String {
+        let fraction = Double(bytes) / Double(iCloudSyncCoordinator.keyValueStoreLimitBytes)
+        return fraction.formatted(.percent.precision(.fractionLength(1)))
     }
 
     private func dateText(_ date: Date?) -> String {

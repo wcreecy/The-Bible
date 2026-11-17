@@ -23,8 +23,6 @@ struct ReadingInsightsCardView: View {
                            accessibilityTitle: "Usual reading time")
                 }
 
-                comparison
-
                 Divider()
 
                 AverageSessionSection(
@@ -44,31 +42,6 @@ struct ReadingInsightsCardView: View {
         guard insights.evaluatedGoalDays > 0 else { return "—" }
         let percent = Int((Double(insights.goalDaysMet) / Double(insights.evaluatedGoalDays) * 100).rounded())
         return "\(percent)% (\(insights.goalDaysMet)/\(insights.evaluatedGoalDays))"
-    }
-
-    private var comparison: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Last 7 days vs previous 7")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            HStack {
-                Text(formatSeconds(insights.recentSeconds))
-                    .font(.title3.weight(.semibold))
-                    .monospacedDigit()
-                Spacer()
-                if let percent = insights.comparisonPercent {
-                    Label("\(abs(percent))% \(percent >= 0 ? "more" : "less")", systemImage: percent >= 0 ? "arrow.up.right" : "arrow.down.right")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(percent >= 0 ? Color.green : Color.orange)
-                } else {
-                    Text("No previous activity")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-        .padding(10)
-        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
     }
 
     /// A short label over its value. `accessibilityTitle` is the full name VoiceOver reads.

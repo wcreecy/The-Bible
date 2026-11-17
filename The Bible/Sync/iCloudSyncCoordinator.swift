@@ -478,16 +478,29 @@ final class iCloudSyncCoordinator {
         }
     }
 
+    /// iCloud key-value storage allows 1 MB in total across all keys.
+    nonisolated static let keyValueStoreLimitBytes = 1_048_576
+
     private nonisolated static func measureStore() -> (keyCount: Int, bytes: Int) {
-        let representation = NSUbiquitousKeyValueStore.default.dictionaryRepresentation
-        let bytes = representation.values.reduce(0) { partial, value in
-            partial + ((try? PropertyListSerialization.data(
+        let sizes = valueSizes()
+        return (sizes.count, sizes.reduce(0) { $0 + $1.bytes })
+    }
+
+    /// The largest values in iCloud key-value storage, biggest first, to see which data is
+    /// using the space. Slow, so call it off the main thread.
+    nonisolated static func largestCloudValues(limit: Int = 8) -> [(key: String, bytes: Int)] {
+        Array(valueSizes().sorted { $0.bytes > $1.bytes }.prefix(limit))
+    }
+
+    private nonisolated static func valueSizes() -> [(key: String, bytes: Int)] {
+        NSUbiquitousKeyValueStore.default.dictionaryRepresentation.map { key, value in
+            let bytes = (try? PropertyListSerialization.data(
                 fromPropertyList: value,
                 format: .binary,
                 options: 0
-            ).count) ?? 0)
+            ).count) ?? 0
+            return (key, bytes)
         }
-        return (representation.count, bytes)
     }
 }
 

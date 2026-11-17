@@ -76,13 +76,12 @@ private struct GameStatsSections: View {
                 HStack(alignment: .top, spacing: 16) {
                     VStack(spacing: 16) {
                         GamesOverviewCardView()
-                        GameInsightsCardView()
                     }
                     .frame(maxWidth: StatsLayoutWidth.column, alignment: .topLeading)
 
                     VStack(spacing: 16) {
                         AllGamesComparisonCardView()
-                        PlayerStatSheetCardView()
+                        GameInsightsCardView()
                     }
                     .frame(maxWidth: StatsLayoutWidth.column, alignment: .topLeading)
                 }
@@ -92,7 +91,6 @@ private struct GameStatsSections: View {
                     GamesOverviewCardView()
                     GameInsightsCardView()
                     AllGamesComparisonCardView()
-                    PlayerStatSheetCardView()
                 }
                 .frame(maxWidth: StatsLayoutWidth.column)
             }
@@ -207,7 +205,7 @@ struct StatsView: View {
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // A refresh recomputes the cards through `refreshRevision` below.
+            // A refresh recomputes the scoped cards itself; otherwise bring them up to date.
             if !model.start() {
                 model.recomputeScopedCards()
             }
@@ -336,7 +334,8 @@ struct StatsView: View {
         ProgressCardView(
             booksCompleted: model.booksCompleted,
             totalBooks: model.totalBooks,
-            visitedCount: model.visitedCount,
+            chaptersCompleted: model.chaptersCompleted,
+            chaptersInProgress: model.chaptersInProgress,
             totalChapters: model.totalChapters,
             completedVerses: model.completedVerses,
             totalVerses: model.totalVerses,
@@ -389,7 +388,6 @@ struct StatsView: View {
             otSeconds: model.otSeconds,
             ntSeconds: model.ntSeconds,
             selectedGenre: $selectedGenre,
-            onSelectGenre: { _ in },
             genreColor: { genreColor($0) },
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )

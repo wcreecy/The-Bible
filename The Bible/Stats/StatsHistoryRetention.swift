@@ -145,18 +145,22 @@ struct ReadingHistoryArchive: Codable, Equatable {
 @MainActor
 extension BibleStatsStore {
     func loadReadingHistoryArchive() -> ReadingHistoryArchive? {
+        if let cached = cacheReadingHistoryArchive { return cached }
         let archive = loadJSON(key: Defaults.keyReadingHistoryArchive, default: ReadingHistoryArchive())
-        return archive.isEmpty ? nil : archive
+        let loaded = archive.isEmpty ? nil : archive
+        cacheReadingHistoryArchive = .some(loaded)
+        return loaded
     }
 
     func saveReadingHistoryArchive(_ archive: ReadingHistoryArchive) {
+        cacheReadingHistoryArchive = .some(archive.isEmpty ? nil : archive)
         saveJSON(archive, key: Defaults.keyReadingHistoryArchive)
     }
 
     /// Folds reading history older than the retention cutoff into the archive and syncs
     /// both records if anything moved. Safe to call often; it only does work once a month.
     func compactReadingHistoryIfNeeded(now: Date = Date()) {
-        guard Defaults.provider.data(forKey: Defaults.keyReadingContributions) != nil else { return }
+        guard hasReadingContributions else { return }
         var contributions = loadReadingContributions()
         var archive = loadReadingHistoryArchive() ?? ReadingHistoryArchive()
         guard archive.fold(&contributions, upTo: StatsHistoryRetention.cutoffDayKey(now: now)) else { return }

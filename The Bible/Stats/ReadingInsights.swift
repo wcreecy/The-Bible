@@ -3,15 +3,17 @@ import Foundation
 struct ReadingInsights: Equatable {
     var currentStreak: Int = 0
     var bestStreak: Int = 0
-    var recentSeconds: Int = 0
-    var previousSeconds: Int = 0
     var goalDaysMet: Int = 0
     var evaluatedGoalDays: Int = 0
     var consistentTimeLabel: String = "Not enough data"
 
-    var comparisonPercent: Int? {
-        guard previousSeconds > 0 else { return recentSeconds > 0 ? 100 : nil }
-        return Int(((Double(recentSeconds - previousSeconds) / Double(previousSeconds)) * 100).rounded())
+    /// The change from `previous` to `recent` as a whole percent: 100 when there was nothing
+    /// before, and nil when there's nothing in either.
+    static func comparisonPercent(recent: Int, previous: Int) -> Int? {
+        let recent = max(0, recent)
+        let previous = max(0, previous)
+        guard previous > 0 else { return recent > 0 ? 100 : nil }
+        return Int(((Double(recent - previous) / Double(previous)) * 100).rounded())
     }
 }
 
@@ -35,13 +37,6 @@ enum ReadingInsightsCalculator {
         var cal = calendar
         cal.timeZone = TimeZone.autoupdatingCurrent
         let today = cal.startOfDay(for: now)
-
-        func seconds(daysAgo range: Range<Int>) -> Int {
-            range.reduce(0) { total, offset in
-                guard let date = cal.date(byAdding: .day, value: -offset, to: today) else { return total }
-                return total + max(0, dailyTotals[BibleStatsStore.isoDateString(date, calendar: cal), default: 0])
-            }
-        }
 
         var goalDaysMet = 0
         var evaluatedGoalDays = 0
@@ -68,8 +63,6 @@ enum ReadingInsightsCalculator {
         return ReadingInsights(
             currentStreak: StreakTracker.currentStreak(dailyTotals: dailyTotals, now: now, calendar: cal),
             bestStreak: StreakTracker.bestStreak(dailyTotals: dailyTotals, now: now, calendar: cal),
-            recentSeconds: seconds(daysAgo: 0..<7),
-            previousSeconds: seconds(daysAgo: 7..<14),
             goalDaysMet: goalDaysMet,
             evaluatedGoalDays: evaluatedGoalDays,
             consistentTimeLabel: consistentTimeLabel

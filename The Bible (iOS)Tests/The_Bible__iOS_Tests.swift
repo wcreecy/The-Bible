@@ -255,10 +255,10 @@ struct The_Bible__iOS_Tests {
 
     @Test
     func readingComparisonHandlesGrowthDeclineAndNoBaseline() {
-        #expect(ReadingInsights(recentSeconds: 900, previousSeconds: 600).comparisonPercent == 50)
-        #expect(ReadingInsights(recentSeconds: 300, previousSeconds: 600).comparisonPercent == -50)
-        #expect(ReadingInsights(recentSeconds: 300, previousSeconds: 0).comparisonPercent == 100)
-        #expect(ReadingInsights(recentSeconds: 0, previousSeconds: 0).comparisonPercent == nil)
+        #expect(ReadingInsights.comparisonPercent(recent: 900, previous: 600) == 50)
+        #expect(ReadingInsights.comparisonPercent(recent: 300, previous: 600) == -50)
+        #expect(ReadingInsights.comparisonPercent(recent: 300, previous: 0) == 100)
+        #expect(ReadingInsights.comparisonPercent(recent: 0, previous: 0) == nil)
     }
 
     @Test

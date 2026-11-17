@@ -126,7 +126,7 @@ struct GameWeekSummaryCardView: View {
     private var headline: some View {
         VStack(alignment: .leading, spacing: 4) {
             if thisWeek.answered > 0 {
-                Text("You answered \(thisWeek.answered) questions at \(thisWeekAccuracy)% accuracy this week.")
+                Text("You answered \(thisWeek.answered) questions at \(thisWeekAccuracy)% accuracy in the last 7 days.")
                     .font(.title3.weight(.bold))
                     .monospacedDigit()
 
@@ -166,18 +166,18 @@ struct GameWeekSummaryCardView: View {
 
     private var momentumDetail: String {
         guard let momentumPercent else {
-            return "No previous week to compare yet."
+            return "Nothing from the previous 7 days to compare yet."
         }
 
         if momentumPercent == 0 {
-            return "You matched last week's pace."
+            return "You matched the previous 7 days' pace."
         }
 
         if momentumPercent > 0 {
-            return "That's \(momentumPercent)% more activity than last week."
+            return "That's \(momentumPercent)% more activity than the previous 7 days."
         }
 
-        return "That's \(abs(momentumPercent))% less activity than last week."
+        return "That's \(abs(momentumPercent))% less activity than the previous 7 days."
     }
 }
 

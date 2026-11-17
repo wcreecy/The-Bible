@@ -5,7 +5,7 @@ extension BibleStatsStore {
     // MARK: - Per-day per-book totals (for time-windowed top books)
 
     func loadDailyTotalsByBook() -> [String: [String: Int]] {
-        if Defaults.provider.data(forKey: Defaults.keyReadingContributions) != nil {
+        if hasReadingContributions {
             return derivedDailyTotalsByBook()
         }
         if let cached = cacheDailyTotalsByBook { return cached }

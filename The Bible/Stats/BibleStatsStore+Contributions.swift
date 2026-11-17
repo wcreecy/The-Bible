@@ -38,19 +38,30 @@ extension BibleStatsStore {
         contributions[day, default: [:]][bookName, default: [:]][installationID, default: 0] += seconds
         cacheReadingContributions = contributions
         saveJSON(contributions, key: Defaults.keyReadingContributions)
+        cacheHasReadingContributions = true
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyReadingContributions)
         AppDataChanges.shared.bibleStatsChanged()
     }
 
+    /// Seconds per book per day, summed across devices. Cached until the contributions change.
     func derivedDailyTotalsByBook() -> [String: [String: Int]] {
-        loadReadingContributions().mapValues { books in
+        let contributions = loadReadingContributions()
+        if let cached = cacheDerivedDailyTotalsByBook { return cached }
+        let totals = contributions.mapValues { books in
             books.mapValues { devices in devices.values.reduce(0) { $0 + max(0, $1) } }
         }
+        cacheDerivedDailyTotalsByBook = totals
+        return totals
     }
 
+    /// Seconds per day, summed across books and devices. Cached until the contributions change.
     func derivedDailyTotals() -> [String: Int] {
-        derivedDailyTotalsByBook().mapValues { books in
+        let byBook = derivedDailyTotalsByBook()
+        if let cached = cacheDerivedDailyTotals { return cached }
+        let totals = byBook.mapValues { books in
             books.values.reduce(0) { $0 + max(0, $1) }
         }
+        cacheDerivedDailyTotals = totals
+        return totals
     }
 }

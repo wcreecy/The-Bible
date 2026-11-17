@@ -13,7 +13,6 @@ struct GenreDistributionCardView: View {
     let otSeconds: Int
     let ntSeconds: Int
     @Binding var selectedGenre: StatsSeriesBuilder.Genre?
-    let onSelectGenre: (StatsSeriesBuilder.Genre) -> Void
     let genreColor: (String) -> Color
     let formatSeconds: (Int) -> String
 
@@ -51,7 +50,6 @@ struct GenreDistributionCardView: View {
                         Button {
                             if let g = StatsSeriesBuilder.Genre(rawValue: item.genre) {
                                 selectedGenre = g
-                                onSelectGenre(g)
                             }
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {
