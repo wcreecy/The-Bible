@@ -36,7 +36,7 @@ nonisolated struct CrosswordGenerator: Sendable {
         }
     }
 
-    static let supportedSizes = [9, 11, 13]
+    static let supportedSizes = [9, 11, 13, 15]
     static let answerLengths = 4...10
 
     /// Generates a board at `preferredSize`, falling back to smaller sizes and then to relaxed

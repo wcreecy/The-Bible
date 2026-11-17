@@ -52,6 +52,7 @@ struct CrosswordGameViewModelTests {
         let (vm, _) = makeViewModel()
         vm.select(Cell(row: 0, col: 2))
         #expect(vm.direction == .across)
+        #expect(vm.canToggleDirection)
         vm.select(Cell(row: 0, col: 2))
         #expect(vm.direction == .down)
         #expect(vm.currentEntry?.answer == "ARK")
@@ -61,12 +62,43 @@ struct CrosswordGameViewModelTests {
         let (vm, _) = makeViewModel()
         vm.select(Cell(row: 1, col: 2))
         #expect(vm.direction == .down)
+        #expect(!vm.canToggleDirection)
+
+        vm.toggleDirection()
+        #expect(vm.direction == .down)
     }
 
     @Test func blackSquaresCannotBeSelected() {
         let (vm, _) = makeViewModel()
         vm.select(Cell(row: 1, col: 0))
         #expect(vm.selectedCell == Cell(row: 0, col: 0))
+    }
+
+    @Test func spatialMovementFollowsPlayableSquaresAndDirection() {
+        let (vm, _) = makeViewModel()
+
+        vm.moveSelection(rowDelta: 0, columnDelta: 1)
+        #expect(vm.selectedCell == Cell(row: 0, col: 1))
+        #expect(vm.direction == .across)
+
+        vm.moveSelection(rowDelta: 0, columnDelta: 1)
+        vm.moveSelection(rowDelta: 1, columnDelta: 0)
+        #expect(vm.selectedCell == Cell(row: 1, col: 2))
+        #expect(vm.direction == .down)
+
+        // The cursor stays put when the adjacent square is blocked.
+        vm.moveSelection(rowDelta: 0, columnDelta: 1)
+        #expect(vm.selectedCell == Cell(row: 1, col: 2))
+    }
+
+    @Test func typingReplacesTheSelectedLetterAndAdvances() {
+        let (vm, _) = makeViewModel()
+        vm.type("X")
+        vm.select(Cell(row: 0, col: 0))
+        vm.type("N")
+
+        #expect(vm.guesses[Cell(row: 0, col: 0)] == "N")
+        #expect(vm.selectedCell == Cell(row: 0, col: 1))
     }
 
     @Test func deleteClearsThenStepsBack() {
@@ -112,6 +144,22 @@ struct CrosswordGameViewModelTests {
         vm.select(Cell(row: 0, col: 1))
         vm.type("O")
         #expect(vm.wrongCells.isEmpty)
+    }
+
+    @Test func removingWrongLettersPreservesCorrectLetters() {
+        let (vm, _) = makeViewModel()
+        vm.type("N")
+        vm.type("X")
+        vm.type("A")
+        #expect(vm.checkPuzzle() == 1)
+
+        vm.removeAllWrongLetters()
+
+        #expect(vm.guesses[Cell(row: 0, col: 0)] == "N")
+        #expect(vm.guesses[Cell(row: 0, col: 1)] == nil)
+        #expect(vm.guesses[Cell(row: 0, col: 2)] == "A")
+        #expect(vm.wrongCells.isEmpty)
+        #expect(vm.selectedCell == Cell(row: 0, col: 1))
     }
 
     @Test func solvingWinsAndBuildsTheStreak() {
@@ -186,6 +234,21 @@ struct CrosswordGameViewModelTests {
             #expect(clues.filter { used.contains($0.id) }.allSatisfy { difficulty.clueDifficulties.contains($0.difficulty) })
             defaults.removePersistentDomain(forName: suite)
         }
+    }
+
+    @Test func largeBoardOptionBuildsAFifteenByFifteenPuzzle() async {
+        let suite = "CrosswordGameViewModelTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let vm = CrosswordGameViewModel(defaults: defaults, recordsStats: false)
+        vm.difficulty = .hard
+        vm.usesLargeBoard = true
+        await vm.start()
+
+        #expect(vm.targetBoardSize == 15)
+        #expect(vm.phase == .playing)
+        #expect(vm.puzzle?.size == 15)
     }
 
     // MARK: - Saved boards and best times

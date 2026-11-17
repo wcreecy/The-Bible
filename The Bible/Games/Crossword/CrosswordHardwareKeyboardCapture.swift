@@ -57,6 +57,8 @@ final class CrosswordHardwareKeyboardResponder: UIView, UIKeyInput {
     var onCheck: () -> Void = {}
     var onEscape: () -> Void = {}
 
+    private var lastDeleteTime: TimeInterval = 0
+
     override var canBecomeFirstResponder: Bool { true }
     var hasText: Bool { true }
 
@@ -88,6 +90,9 @@ final class CrosswordHardwareKeyboardResponder: UIView, UIKeyInput {
     }
 
     func deleteBackward() {
+        let now = ProcessInfo.processInfo.systemUptime
+        guard now - lastDeleteTime > 0.08 else { return }
+        lastDeleteTime = now
         onDelete()
     }
 

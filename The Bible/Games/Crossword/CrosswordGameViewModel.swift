@@ -73,6 +73,7 @@ final class CrosswordGameViewModel {
     }
 
     private static let difficultyKey = "crosswordDifficulty"
+    private static let largeBoardKey = "crosswordUsesLargeBoard"
     /// Answers from the player's last few puzzles, kept on this device only.
     static let recentAnswersKey = "crosswordRecentAnswers"
     /// How many recent puzzles' answers are kept out of the next board.
@@ -85,6 +86,15 @@ final class CrosswordGameViewModel {
 
     var difficulty: Difficulty {
         didSet { defaults.set(difficulty.rawValue, forKey: Self.difficultyKey) }
+    }
+
+    /// An explicit iPad option for a longer puzzle; the view decides where it is offered.
+    var usesLargeBoard: Bool {
+        didSet { defaults.set(usesLargeBoard, forKey: Self.largeBoardKey) }
+    }
+
+    var targetBoardSize: Int {
+        usesLargeBoard ? 15 : difficulty.boardSize
     }
 
     private(set) var phase: Phase = .setup
@@ -121,6 +131,7 @@ final class CrosswordGameViewModel {
         self.recordsStats = recordsStats
         self.loadClues = loadClues
         difficulty = defaults.string(forKey: Self.difficultyKey).flatMap(Difficulty.init(rawValue:)) ?? .normal
+        usesLargeBoard = defaults.bool(forKey: Self.largeBoardKey)
         currentStreak = defaults.integer(forKey: Self.currentStreakKey)
     }
 
@@ -139,7 +150,7 @@ final class CrosswordGameViewModel {
         }
         let levels = difficulty.clueDifficulties
         let pool = (clues ?? []).filter { levels.contains($0.difficulty.lowercased()) }
-        let size = difficulty.boardSize
+        let size = targetBoardSize
         // Shared across difficulties, since Normal and Hard also draw from easier clues.
         let recentAnswers = Set(recentPuzzleAnswers.joined())
         // Building takes a few milliseconds per attempt; keep it off the main actor.
@@ -212,8 +223,12 @@ final class CrosswordGameViewModel {
         let direction: Direction
     }
 
-    /// True when Start would resume an unfinished board at this difficulty.
+    /// True when Start would resume an unfinished board at this difficulty and size.
     var hasSavedRound: Bool { savedRound(for: difficulty) != nil }
+
+    private var savedRoundKey: String {
+        "\(difficulty.rawValue)-\(targetBoardSize)"
+    }
 
     /// Saves the board in play. Called when the player leaves and when the app goes to the background.
     func saveProgress(at now: Date = Date()) {
@@ -230,7 +245,7 @@ final class CrosswordGameViewModel {
             direction: direction
         )
         var rounds = savedRounds
-        rounds[difficulty.rawValue] = round
+        rounds[savedRoundKey] = round
         storeSavedRounds(rounds)
     }
 
@@ -247,13 +262,18 @@ final class CrosswordGameViewModel {
     }
 
     private func savedRound(for difficulty: Difficulty) -> SavedRound? {
-        guard let round = savedRounds[difficulty.rawValue], !round.puzzle.entries.isEmpty else { return nil }
+        let rounds = savedRounds
+        let round = rounds[savedRoundKey]
+            ?? (!usesLargeBoard ? rounds[difficulty.rawValue] : nil)
+        guard let round, !round.puzzle.entries.isEmpty else { return nil }
         return round
     }
 
     private func clearSavedRound() {
         var rounds = savedRounds
-        guard rounds.removeValue(forKey: difficulty.rawValue) != nil else { return }
+        let removedCurrent = rounds.removeValue(forKey: savedRoundKey)
+        let removedLegacy = usesLargeBoard ? nil : rounds.removeValue(forKey: difficulty.rawValue)
+        guard removedCurrent != nil || removedLegacy != nil else { return }
         storeSavedRounds(rounds)
     }
 
@@ -322,9 +342,13 @@ final class CrosswordGameViewModel {
         }
     }
 
+    var canToggleDirection: Bool {
+        guard let puzzle, let selectedCell else { return false }
+        return puzzle.entry(containing: selectedCell, direction: direction.other) != nil
+    }
+
     func toggleDirection() {
-        guard let puzzle, let selectedCell,
-              puzzle.entry(containing: selectedCell, direction: direction.other) != nil else { return }
+        guard canToggleDirection else { return }
         direction = direction.other
     }
 
@@ -343,6 +367,32 @@ final class CrosswordGameViewModel {
         select(entries[next])
     }
 
+    /// Moves one playable square in the requested spatial direction. Horizontal movement selects
+    /// Across and vertical movement selects Down when that direction exists at the destination.
+    func moveSelection(rowDelta: Int, columnDelta: Int) {
+        guard phase == .playing, let puzzle else { return }
+        guard let selectedCell else {
+            if let first = puzzle.entries.first?.cells.first {
+                select(first)
+            }
+            return
+        }
+
+        let destination = Cell(
+            row: selectedCell.row + rowDelta,
+            col: selectedCell.col + columnDelta
+        )
+        guard puzzle.letter(at: destination) != nil else { return }
+
+        self.selectedCell = destination
+        let preferredDirection: CrosswordPuzzle.Direction = rowDelta == 0 ? .across : .down
+        if puzzle.entry(containing: destination, direction: preferredDirection) != nil {
+            direction = preferredDirection
+        } else if puzzle.entry(containing: destination, direction: direction) == nil {
+            direction = direction.other
+        }
+    }
+
     // MARK: - Typing
 
     func type(_ letter: Character) {
@@ -356,15 +406,21 @@ final class CrosswordGameViewModel {
         checkForCompletion()
     }
 
-    /// Clears the selected square, or if it's already empty, steps back and clears that one.
+    /// Clears one editable square and leaves the selection one position earlier in the answer.
     func deleteBackward() {
         guard phase == .playing, let selectedCell, let entry = currentEntry else { return }
+        let cells = entry.cells
+        guard let index = cells.firstIndex(of: selectedCell) else { return }
+
         if guesses[selectedCell] != nil, !revealedCells.contains(selectedCell) {
             clear(selectedCell)
+            if index > 0 {
+                self.selectedCell = cells[index - 1]
+            }
             return
         }
-        let cells = entry.cells
-        guard let index = cells.firstIndex(of: selectedCell), index > 0 else { return }
+
+        guard index > 0 else { return }
         let previous = cells[index - 1]
         self.selectedCell = previous
         if !revealedCells.contains(previous) {
@@ -464,6 +520,25 @@ final class CrosswordGameViewModel {
         return wrongCells.count
     }
 
+    /// Clears every letter currently marked wrong by Check, preserving correct and revealed cells.
+    func removeAllWrongLetters() {
+        guard phase == .playing, !wrongCells.isEmpty else { return }
+        let cellsToClear = wrongCells.filter { !revealedCells.contains($0) }
+        for cell in cellsToClear {
+            guesses[cell] = nil
+        }
+        wrongCells = []
+
+        if let selectedCell, cellsToClear.contains(selectedCell) {
+            return
+        }
+        if let first = cellsToClear.sorted(by: {
+            $0.row == $1.row ? $0.col < $1.col : $0.row < $1.row
+        }).first {
+            select(first)
+        }
+    }
+
     /// Fills in the whole board and ends the round as a loss.
     func revealPuzzle() {
         guard phase == .playing, let puzzle else { return }
@@ -527,9 +602,14 @@ final class CrosswordGameViewModel {
         )
     }
 
-    /// Fastest solved time at the current difficulty, if there is one.
+    private var currentBestTimeKey: String {
+        let base = Self.bestTimeKey(for: difficulty)
+        return usesLargeBoard ? "\(base)_15" : base
+    }
+
+    /// Fastest solved time at the current difficulty and board size, if there is one.
     var savedBestTime: Int? {
-        let value = defaults.integer(forKey: Self.bestTimeKey(for: difficulty))
+        let value = defaults.integer(forKey: currentBestTimeKey)
         return value > 0 ? value : nil
     }
 
@@ -539,7 +619,7 @@ final class CrosswordGameViewModel {
         let previousBest = savedBestTime
         bestTimeComparison = GameBestTimeComparison(seconds: elapsedSeconds, previousBest: previousBest, isSolved: solved)
         if solved, previousBest.map({ elapsedSeconds < $0 }) ?? true {
-            defaults.set(elapsedSeconds, forKey: Self.bestTimeKey(for: difficulty))
+            defaults.set(elapsedSeconds, forKey: currentBestTimeKey)
         }
     }
 

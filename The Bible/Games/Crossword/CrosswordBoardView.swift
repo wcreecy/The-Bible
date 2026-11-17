@@ -13,6 +13,7 @@ struct CrosswordBoardView: View {
     /// Wrong letters found by Check, marked with a red slash.
     var wrongCells: Set<CrosswordPuzzle.Cell> = []
     var tint: Color = .accentColor
+    var hasKeyboardFocus = false
     let onTapCell: (CrosswordPuzzle.Cell) -> Void
 
     /// The cells of the word the selected cell belongs to, in the selected direction.
@@ -75,7 +76,16 @@ struct CrosswordBoardView: View {
                 }
             }
             .frame(width: size, height: size)
-            .overlay(Rectangle().stroke(Color.primary.opacity(0.35), lineWidth: 0.5))
+            .overlay {
+                Rectangle()
+                    .stroke(
+                        cell == selectedCell
+                            ? tint.opacity(hasKeyboardFocus ? 1 : 0.8)
+                            : Color.primary.opacity(0.35),
+                        lineWidth: cell == selectedCell ? max(2, size * 0.07) : 0.5
+                    )
+                    .padding(cell == selectedCell ? 1 : 0)
+            }
             .contentShape(Rectangle())
             .onTapGesture { onTapCell(cell) }
             .accessibilityElement(children: .ignore)
