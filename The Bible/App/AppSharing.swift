@@ -259,12 +259,11 @@ struct AppLinkShareSheet: View {
         AppShare.withAttribution(text, includingLink: includesLink)
     }
 
-    /// The link goes as its own item rather than inside the text, so Messages uses the app's
-    /// own preview instead of fetching an App Store screenshot.
+    /// Keep the share payload to the intended text. The App Store URL is included as text
+    /// rather than a separate URL item, which prevents Messages from adding an unrelated
+    /// rich-link screenshot as another attachment.
     private var shareItems: [Any] {
-        // Messages trims trailing line breaks, so a zero-width space after them keeps a blank
-        // line between the text and the link card.
-        includesLink ? [text + "\n\u{200B}", AppLinkActivityItem()] : [text]
+        [preparedText]
     }
 
     var body: some View {
