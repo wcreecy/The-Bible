@@ -11,14 +11,15 @@ extension View {
                 switch route {
                 case .book(let book):
                     ChaptersView(book: book) { chapter in
-                        coordinator.push(.reader(book: book, chapter: chapter, startVerse: 1))
+                        coordinator.push(.reader(book: book, chapter: chapter, startVerse: 1, highlightsStartVerse: false))
                     }
 
-                case .reader(let book, let chapter, let startVerse):
+                case .reader(let book, let chapter, let startVerse, let highlightsStartVerse, let requestID):
                     ReadingView(
                         book: book,
                         chapter: chapter,
                         startVerse: startVerse,
+                        highlightsStartVerse: highlightsStartVerse,
                         onNavigateBack: { currentBook in
                             coordinator.navigateBackFromReader(book: currentBook)
                         },
@@ -29,7 +30,8 @@ extension View {
                             coordinator.push(.reader(book: book, chapter: chapter, startVerse: verse))
                         }
                     )
-                        .id("\(book.name)-\(chapter.number)-\(startVerse)")
+                        // A new request for the same passage gets a new reader; see `Route.reader`.
+                        .id("\(book.name)-\(chapter.number)-\(startVerse)-\(requestID?.uuidString ?? "")")
 
                 case .search:
                     SearchView()

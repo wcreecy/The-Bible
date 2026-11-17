@@ -441,7 +441,12 @@ struct ContentView: View {
                 var transaction = Transaction()
                 transaction.disablesAnimations = true
                 withTransaction(transaction) {
-                    bibleCoordinator.path = [.reader(book: book, chapter: chapter, startVerse: verseNum)]
+                    bibleCoordinator.path = [.reader(
+                        book: book,
+                        chapter: chapter,
+                        startVerse: verseNum,
+                        requestID: location.id
+                    )]
                 }
                 // Safety net: Ensure the reading tracker is running even if the inner view's onAppear is delayed.
                 ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)

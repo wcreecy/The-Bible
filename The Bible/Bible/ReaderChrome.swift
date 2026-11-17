@@ -170,7 +170,7 @@ struct ReaderTips: View {
             ContextualTipView(
                 id: tip.rawValue,
                 title: "Reader shortcuts",
-                message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
+                message: "Tap a verse to keep your place. Tap it again for notes, highlights, favorites, and more. Swipe left or right to change chapters.",
                 systemImage: "hand.draw"
             )
         case .statusIcons:

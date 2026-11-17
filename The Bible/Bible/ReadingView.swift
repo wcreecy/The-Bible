@@ -69,6 +69,7 @@ struct ReadingView: View {
         book: Book,
         chapter: Chapter,
         startVerse: Int,
+        highlightsStartVerse: Bool = true,
         onSearch: (() -> Void)? = nil,
         onNavigateBack: ((Book) -> Void)? = nil,
         onBookSelected: ((Book) -> Void)? = nil,
@@ -86,12 +87,15 @@ struct ReadingView: View {
         let pinned = PinnedVerseStore.shared
         _pinnedStore = State(initialValue: pinned)
         _isInitialPositionReady = State(initialValue: startVerse <= 1)
-        _viewModel = State(initialValue: ReadingViewModel(
+        let viewModel = ReadingViewModel(
             book: book,
             chapter: chapter,
             startVerse: startVerse,
             pinnedStore: pinned
-        ))
+        )
+        // A chapter picked from the list opens at its top; only a jump to a verse is marked.
+        viewModel.highlightOnAppear = highlightsStartVerse
+        _viewModel = State(initialValue: viewModel)
     }
 
     private var currentChapter: Chapter { viewModel.currentChapter }

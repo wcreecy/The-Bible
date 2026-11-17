@@ -3,7 +3,18 @@ import Foundation
 // Central app navigation routes
 enum Route: Hashable {
     case book(Book)
-    case reader(book: Book, chapter: Chapter, startVerse: Int)
+    /// `highlightsStartVerse` briefly marks `startVerse` so the eye lands on it. It's off when
+    /// a chapter is picked from the chapter list, which simply opens at the top.
+    /// `requestID` is the app-wide request that opened this reader (`BibleReaderLocation.id`).
+    /// Each request is distinct, so asking again for the passage already open (such as the
+    /// Verse of the Day, twice) opens it afresh: scrolled back to the verse and marked again.
+    case reader(
+        book: Book,
+        chapter: Chapter,
+        startVerse: Int,
+        highlightsStartVerse: Bool = true,
+        requestID: UUID? = nil
+    )
     case search
     case study(AppRouter.StudyDestination?)
     case readingPlans

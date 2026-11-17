@@ -35,6 +35,10 @@ struct BibleSplitView: View {
         let bookName: String
         let chapterNumber: Int
         let verseNumber: Int
+        /// Off when a chapter is picked from the chapter list; see `Route.reader`.
+        var highlightsStartVerse = true
+        /// The app-wide request that opened this reader, so a repeat request opens it afresh.
+        var requestID: UUID? = nil
     }
 
     private struct SearchRoute: Hashable {}
@@ -314,7 +318,12 @@ struct BibleSplitView: View {
             ChaptersView(
                 book: book,
                 onSelectChapter: { chapter in
-                    detailPath.append(ReadingRoute(bookName: book.name, chapterNumber: chapter.number, verseNumber: 1))
+                    detailPath.append(ReadingRoute(
+                        bookName: book.name,
+                        chapterNumber: chapter.number,
+                        verseNumber: 1,
+                        highlightsStartVerse: false
+                    ))
                 },
                 onSelectOverview: {
                     detailPath.append(OverviewRoute(bookName: book.name))
@@ -406,7 +415,8 @@ struct BibleSplitView: View {
             detailPath.append(ReadingRoute(
                 bookName: location.bookName,
                 chapterNumber: location.chapterNumber,
-                verseNumber: location.verseNumber
+                verseNumber: location.verseNumber,
+                requestID: location.id
             ))
         }
         // App-wide requests to open a verse arrive through `initialReaderLocation`,
@@ -421,6 +431,7 @@ struct BibleSplitView: View {
                 book: book,
                 chapter: chapter,
                 startVerse: route.verseNumber,
+                highlightsStartVerse: route.highlightsStartVerse,
                 onSearch: {
                     detailPath.append(SearchRoute())
                 },

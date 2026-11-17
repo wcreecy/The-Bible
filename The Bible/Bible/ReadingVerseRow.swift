@@ -19,7 +19,9 @@ struct ReadingVerseRow: View {
     let verse: Verse
     let bookName: String
     let chapterNumber: Int
+    /// Briefly true when the reader opens at this verse, so the eye lands on it.
     let isHighlighted: Bool
+    /// The verse the reader tapped to keep their place.
     let isSelected: Bool
     let isFavorite: Bool
     let hasNote: Bool
@@ -117,8 +119,25 @@ struct ReadingVerseRow: View {
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(rowBackground)
+        // "You are here" after opening at this verse: an orange glow that fades. Orange marks
+        // the reader's place and is never a highlight color, so neither is mistaken for one.
+        .overlay {
+            if isHighlighted {
+                Rectangle()
+                    .fill(Self.placeColor.opacity(0.18))
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+        }
         .overlay(alignment: .leading) {
-            if showsReadProgress && isRead {
+            if isSelected {
+                // The kept place: a soft bar down the edge, like a finger on the page.
+                Capsule()
+                    .fill(Self.placeColor.opacity(0.55))
+                    .frame(width: 4)
+                    .padding(.vertical, 4)
+                    .accessibilityHidden(true)
+            } else if showsReadProgress && isRead {
                 Capsule()
                     .fill(Color.green.opacity(0.4))
                     .frame(width: 3)
@@ -187,15 +206,22 @@ struct ReadingVerseRow: View {
         }
     }
 
+    /// The color of "your place": the verse the reader opened at, and the verse tapped to keep
+    /// one's place. None of the highlight colors is orange.
+    static let placeColor = Color.orange
+
+    /// A saved highlight keeps its color. Otherwise the kept place gets a light gray tint,
+    /// which no highlight color uses.
     private var rowBackground: Color {
-        if isHighlighted || isSelected {
-            return Color.yellow.opacity(0.25)
+        if let savedHighlightColor {
+            return savedHighlightColor.opacity(0.24)
         }
-        return savedHighlightColor?.opacity(0.24) ?? .clear
+        return isSelected ? Color.secondary.opacity(0.12) : .clear
     }
 
     private var accessibilityStatus: String {
         var statuses: [String] = []
+        if isSelected { statuses.append("Marked") }
         // Saved markers are always announced, even when hidden on screen.
         if isBookmarked { statuses.append("Bookmarked") }
         if isPinnedToWidget { statuses.append("Pinned") }
