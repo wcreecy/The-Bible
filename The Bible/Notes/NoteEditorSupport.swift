@@ -4,11 +4,13 @@ import UIKit
 
 // Pieces shared by the Scripture note editor and the personal note editor.
 
+/// Every color picker lists these in case order. Raw values are stored on notes, so
+/// reordering is safe but renaming isn't.
 enum VerseHighlightColor: String, CaseIterable, Identifiable {
+    case pink
     case yellow
     case green
     case blue
-    case pink
     case purple
 
     var id: String { rawValue }
