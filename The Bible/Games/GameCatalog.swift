@@ -79,14 +79,14 @@ enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         switch self {
         case .quiz: "Test your knowledge"
         case .hangman: "People, places & books"
-        case .beatTheClock: "Select the correct answer before time runs out"
+        case .beatTheClock: "Answer before time runs out"
         case .bookOrder: "Order the books of the Bible"
         case .wordSearch: "Find the hidden words"
         case .scramble: "Unscramble words found in the Bible"
         case .crossword: "Solve clues about the Bible"
-        case .whoAmI: "Identify the person listed from the description"
+        case .whoAmI: "Identify the person from the description"
         case .wordle: "5 letters, 6 tries"
-        case .trivia: "How well do you know Bible events & people"
+        case .trivia: "Bible events & people"
         case .reviewRound: "Previously missed questions"
         }
     }
