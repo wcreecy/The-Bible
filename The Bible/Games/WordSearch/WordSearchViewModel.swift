@@ -102,7 +102,13 @@ final class WordSearchViewModel {
     // Hints
     /// The cell currently flashing as a hint (the first letter of an unfound word).
     private(set) var hintCell: (row: Int, col: Int)?
+    private(set) var hintCellKeys: Set<String> = []
+    private(set) var hintMessage: String?
+    private var hintWord: String?
+    private var hintStage = 0
     private(set) var hintsUsed: Int = 0
+    private(set) var lastFoundWord: String?
+    private(set) var invalidSelectionCount = 0
     @ObservationIgnored private var hintClearTask: Task<Void, Never>?
 
     /// Set when adding or removing a favorite couldn't be saved.
@@ -184,6 +190,21 @@ final class WordSearchViewModel {
 
     var hidesWordList: Bool { isBlindMode && !showBlindWordList && !roundOver }
 
+    var currentSelectionText: String {
+        guard let start = selectionStart, let end = selectionEnd else { return "" }
+        return engine.selectionCells(from: start, to: end)
+            .map { String(grid[$0.row][$0.col]) }
+            .joined()
+    }
+
+    var hintButtonTitle: String {
+        switch hintStage {
+        case 1: "Show Direction"
+        case 2: "Show Word"
+        default: "Hint"
+        }
+    }
+
     // MARK: - Intents
 
     func start() {
@@ -224,18 +245,57 @@ final class WordSearchViewModel {
         showBlindWordList = true
     }
 
-    /// Briefly highlights the first letter of a word that hasn't been found yet.
+    /// Progressively reveals a starting letter, direction, then the full word.
     func hint() {
         guard !roundOver,
-              let word = placed.filter({ !foundWords.contains($0.originalWord) }).randomElement(),
+              let word = hintTarget(),
               let first = engine.cellsForPlacedWord(word).first else { return }
         hintsUsed += 1
+        hintWord = word.originalWord
+        hintStage = hintStage % 3 + 1
         hintCell = first
+        let cells = engine.cellsForPlacedWord(word)
+        switch hintStage {
+        case 1:
+            hintCellKeys = [keyFor(row: first.row, col: first.col)]
+            hintMessage = "Start with \(grid[first.row][first.col])."
+        case 2:
+            let directionCell = cells.count > 1 ? cells[1] : first
+            hintCellKeys = Set([first, directionCell].map { keyFor(row: $0.row, col: $0.col) })
+            hintMessage = "The word continues \(directionName(dr: word.dr, dc: word.dc))."
+        default:
+            hintCellKeys = Set(cells.map { keyFor(row: $0.row, col: $0.col) })
+            hintMessage = "The word is \(word.originalWord)."
+        }
         hintClearTask?.cancel()
         hintClearTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(2.5))
             guard !Task.isCancelled else { return }
             self?.hintCell = nil
+            self?.hintCellKeys.removeAll()
+            self?.hintMessage = nil
+        }
+    }
+
+    private func hintTarget() -> WordSearchEngine.PlacedWord? {
+        if let hintWord,
+           let existing = placed.first(where: { $0.originalWord == hintWord && !foundWords.contains($0.originalWord) }) {
+            return existing
+        }
+        hintStage = 0
+        return placed.filter { !foundWords.contains($0.originalWord) }.randomElement()
+    }
+
+    private func directionName(dr: Int, dc: Int) -> String {
+        switch (dr, dc) {
+        case (0, 1): "to the right"
+        case (0, -1): "to the left"
+        case (1, 0): "down"
+        case (-1, 0): "up"
+        case (1, 1): "down and to the right"
+        case (1, -1): "down and to the left"
+        case (-1, 1): "up and to the right"
+        default: "up and to the left"
         }
     }
 
@@ -272,6 +332,11 @@ final class WordSearchViewModel {
     func dragEnded() {
         guard !roundOver else { return }
         validateSelection()
+        clearSelection()
+    }
+
+    /// Clears an in-progress drag or two-tap selection.
+    func cancelSelection() {
         clearSelection()
     }
 
@@ -451,7 +516,13 @@ final class WordSearchViewModel {
         showBlindWordList = false
         hintClearTask?.cancel()
         hintCell = nil
+        hintCellKeys.removeAll()
+        hintMessage = nil
+        hintWord = nil
+        hintStage = 0
         hintsUsed = 0
+        lastFoundWord = nil
+        invalidSelectionCount = 0
         timeUp = false
         didWin = false
         roundOver = false
@@ -570,7 +641,15 @@ final class WordSearchViewModel {
         guard let start = selectionStart, let end = selectionEnd else { return }
         let result = engine.validateSelection(grid: grid, placed: placed, start: start, end: end)
         guard let originalWord = result.matchedWordOriginal, !result.matchedPath.isEmpty,
-              !foundWords.contains(originalWord) else { return }
+              !foundWords.contains(originalWord) else {
+            if start.row != end.row || start.col != end.col {
+                invalidSelectionCount += 1
+                #if canImport(UIKit)
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
+                #endif
+            }
+            return
+        }
 
         for cell in result.matchedPath {
             let key = keyFor(row: cell.row, col: cell.col)
@@ -578,7 +657,14 @@ final class WordSearchViewModel {
             colorIndexForCell[key] = colorIndexForWord[originalWord]
         }
         foundWords.insert(originalWord)
+        lastFoundWord = originalWord
         revealedWords.remove(originalWord)
+        hintWord = nil
+        hintStage = 0
+
+        #if canImport(UIKit)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        #endif
 
         if foundWords.count == targetWords.count {
             finishRound(.won)

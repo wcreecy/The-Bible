@@ -7,6 +7,8 @@ import UIKit
 /// than every one saved.
 struct ReadingChapterVerseList: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @Query private var favorites: [Favorite]
     @Query private var verseNotes: [VerseNote]
     @Query private var bookmarks: [Bookmark]
@@ -17,6 +19,7 @@ struct ReadingChapterVerseList: View {
     @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers: Bool = true
+    @State private var pencilHoveredVerse: Int?
 
     let bookName: String
     let chapterNumber: Int
@@ -148,6 +151,13 @@ struct ReadingChapterVerseList: View {
                 },
                 onOpenCrossReferences: {
                     onOpenCrossReferences(verse)
+                },
+                onPencilHoverChange: { isHovering in
+                    if isHovering {
+                        pencilHoveredVerse = verse.number
+                    } else if pencilHoveredVerse == verse.number {
+                        pencilHoveredVerse = nil
+                    }
                 }
             )
             .id(viewModel.rowID(for: verse.number))
@@ -178,6 +188,17 @@ struct ReadingChapterVerseList: View {
             if verse.number != verses.count {
                 Divider()
             }
+        }
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore,
+                  let verseNumber = pencilHoveredVerse ?? viewModel.selectedVerse else { return }
+            viewModel.handleVerseLongPress(verseNumber: verseNumber)
+        }
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore,
+                  case .ended = phase,
+                  let verseNumber = pencilHoveredVerse ?? viewModel.selectedVerse else { return }
+            viewModel.handleVerseLongPress(verseNumber: verseNumber)
         }
     }
 }

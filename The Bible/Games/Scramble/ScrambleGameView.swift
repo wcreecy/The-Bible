@@ -1,11 +1,14 @@
 import SwiftUI
 
 struct ScrambleGameView: View {
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
     @State private var selectedPassage: PassageReference?
     @State private var isRevealConfirmationPresented = false
     @State private var vm: ScrambleGameViewModel
+    @State private var showsPencilActions = false
 
     init(reviewQuestionIDs: Set<String> = []) {
         _vm = State(initialValue: ScrambleGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
@@ -147,6 +150,31 @@ struct ScrambleGameView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("The word will be marked incorrect, then the next word will begin.")
+        }
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore,
+                  vm.phase == .playing, !vm.isPaused, !vm.isCurrentWordResolved else { return }
+            vm.removeLastLetter()
+        }
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore,
+                  vm.phase == .playing, !vm.isPaused,
+                  case .ended = phase else { return }
+            showsPencilActions = true
+        }
+        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+            if !vm.isCurrentWordResolved {
+                Button("Remove Last Letter", systemImage: "delete.backward") {
+                    vm.removeLastLetter()
+                }
+                Button("Check Answer", systemImage: "checkmark.circle") {
+                    vm.checkAnswer()
+                }
+                Button("Reveal Answer", systemImage: "eye", role: .destructive) {
+                    isRevealConfirmationPresented = true
+                }
+            }
+            Button("Cancel", role: .cancel) {}
         }
         .onAppear {
             vm.session.syncSavedBest(from: vm.persistentStreak)

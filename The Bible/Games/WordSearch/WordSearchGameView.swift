@@ -4,10 +4,14 @@ import SwiftData
 struct WordSearchGameView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @Query private var favorites: [Favorite]
     @State private var vm = WordSearchViewModel()
     @State private var didBindVM = false
     @State private var confirmReveal = false
+    @State private var pencilActionsPresented = false
+    @State private var pencilActionsAnchor: PopoverAttachmentAnchor = .point(.center)
     /// Width available to the phone layout, used to size the grid.
     @State private var phoneContentWidth: CGFloat = 0
 
@@ -79,6 +83,8 @@ struct WordSearchGameView: View {
                                 grid: vm.grid,
                                 selectionCells: vm.selectionCellKeys,
                                 foundCells: vm.foundCells,
+                                selectionStart: vm.selectionStart,
+                                selectionEnd: vm.selectionEnd,
                                 revealedWords: vm.revealedWords,
                                 backgroundColorForCell: backgroundColorForCell,
                                 onTapCell: { r, c in vm.handleTap(row: r, col: c) },
@@ -93,11 +99,15 @@ struct WordSearchGameView: View {
                                 colorForWord: colorForWord,
 
                                 roundOver: vm.roundOver,
+                                hintTitle: vm.hintButtonTitle,
                                 onHint: { vm.hint() },
                                 onReveal: { confirmReveal = true },
                                 onShowWordList: { vm.showWordList() },
                                 onNewPuzzle: { vm.newPuzzle() },
                                 onChangeSettings: { vm.changeSettings() },
+                                selectionText: vm.currentSelectionText,
+                                hintMessage: vm.hintMessage,
+                                lastFoundWord: vm.lastFoundWord,
                                 summary: summaryCard
                             )
                         } else {
@@ -108,6 +118,7 @@ struct WordSearchGameView: View {
                 .padding()
                 .id(Self.scrollTopID)
             }
+            .scrollDisabled(isPad && vm.started && !vm.isPaused)
             // Each new puzzle (and the start screen) begins at the top, rather than keeping
             // the scroll position from the start screen or the previous round's summary.
             .onChange(of: vm.started) { proxy.scrollTo(Self.scrollTopID, anchor: .top) }
@@ -152,6 +163,45 @@ struct WordSearchGameView: View {
         } message: {
             Text("This shows every word and counts the puzzle as unfinished.")
         }
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore,
+                  vm.started, !vm.roundOver, !vm.isPaused else { return }
+            if vm.selectionStart != nil {
+                vm.cancelSelection()
+            } else {
+                vm.hint()
+            }
+        }
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore,
+                  vm.started, !vm.roundOver, !vm.isPaused,
+                  case let .ended(value) = phase else { return }
+            if let anchor = value.hoverPose?.anchor {
+                pencilActionsAnchor = .point(anchor)
+            }
+            pencilActionsPresented = true
+        }
+        .popover(
+            isPresented: $pencilActionsPresented,
+            attachmentAnchor: pencilActionsAnchor
+        ) {
+            PencilQuickActions(
+                canClearSelection: vm.selectionStart != nil,
+                onHint: {
+                    pencilActionsPresented = false
+                    vm.hint()
+                },
+                onClearSelection: {
+                    pencilActionsPresented = false
+                    vm.cancelSelection()
+                },
+                onReveal: {
+                    pencilActionsPresented = false
+                    confirmReveal = true
+                }
+            )
+            .presentationCompactAdaptation(.popover)
+        }
         .persistenceFailureAlert(failure: $vm.favoriteSaveFailure)
         // The clock pauses while the game is off screen and picks up where it left off.
         .onAppear { vm.resumeTimer() }
@@ -176,6 +226,8 @@ struct WordSearchGameView: View {
                 grid: vm.grid,
                 selectionCells: vm.selectionCellKeys,
                 foundCells: vm.foundCells,
+                selectionStart: vm.selectionStart,
+                selectionEnd: vm.selectionEnd,
                 backgroundColorForCell: backgroundColorForCell,
                 onTapCell: { r, c in vm.handleTap(row: r, col: c) },
                 onDragChanged: { cell in vm.dragChanged(to: cell) },
@@ -183,6 +235,8 @@ struct WordSearchGameView: View {
                 dynamicGridHeight: dynamicGridHeightForLayout(availableWidth: phoneContentWidth)
             )
             .frame(maxWidth: .infinity)
+
+            selectionFeedback
 
             // Word list, controls, and the end-of-round summary sit under the grid.
             wordListAndControlsPhone
@@ -228,6 +282,7 @@ struct WordSearchGameView: View {
     private var phoneControlsBar: some View {
         WordSearchControlsBar(
             roundOver: vm.roundOver,
+            hintTitle: vm.hintButtonTitle,
             canShowWordList: vm.hidesWordList,
             onHint: { vm.hint() },
             onReveal: { confirmReveal = true },
@@ -240,6 +295,25 @@ struct WordSearchGameView: View {
         .padding(.horizontal)
         .padding(.vertical, 10)
         .background(.bar)
+    }
+
+    @ViewBuilder
+    private var selectionFeedback: some View {
+        if !vm.currentSelectionText.isEmpty {
+            Text(vm.currentSelectionText)
+                .font(.headline.monospaced())
+                .accessibilityLabel("Selected letters: \(vm.currentSelectionText)")
+        } else if let hintMessage = vm.hintMessage {
+            Label(hintMessage, systemImage: "lightbulb.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.orange)
+                .transition(.opacity)
+        } else if let lastFoundWord = vm.lastFoundWord, !vm.roundOver {
+            Label("\(lastFoundWord) found", systemImage: "checkmark.circle.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.green)
+                .transition(.scale.combined(with: .opacity))
+        }
     }
 
     @ViewBuilder
@@ -296,7 +370,7 @@ struct WordSearchGameView: View {
 
     private func backgroundColorForCell(row: Int, col: Int) -> Color {
         let key = "\(row),\(col)"
-        if let hint = vm.hintCell, hint.row == row, hint.col == col {
+        if vm.hintCellKeys.contains(key) {
             return Color.yellow.opacity(0.75)
         }
         if vm.foundCells.contains(key) {
@@ -309,6 +383,32 @@ struct WordSearchGameView: View {
             return Color.blue.opacity(0.35)
         }
         return Color(.secondarySystemBackground)
+    }
+}
+
+private struct PencilQuickActions: View {
+    let canClearSelection: Bool
+    let onHint: () -> Void
+    let onClearSelection: () -> Void
+    let onReveal: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Apple Pencil", systemImage: "applepencil")
+                .font(.headline)
+
+            Button("Hint", systemImage: "lightbulb", action: onHint)
+
+            Button("Clear Selection", systemImage: "xmark.circle", action: onClearSelection)
+                .disabled(!canClearSelection)
+
+            Divider()
+
+            Button("Reveal Words", systemImage: "eye", role: .destructive, action: onReveal)
+        }
+        .buttonStyle(.bordered)
+        .padding()
+        .frame(minWidth: 220)
     }
 }
 

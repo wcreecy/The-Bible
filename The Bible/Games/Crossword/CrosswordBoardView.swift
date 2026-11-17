@@ -87,6 +87,7 @@ struct CrosswordBoardView: View {
                     .padding(cell == selectedCell ? 1 : 0)
             }
             .contentShape(Rectangle())
+            .hoverEffect(.highlight)
             .onTapGesture { onTapCell(cell) }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(accessibilityLabel(for: cell, guess: guess))

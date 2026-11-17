@@ -7,6 +7,8 @@ struct CrosswordGameView: View {
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var vm = CrosswordGameViewModel()
     @State private var confirmReveal = false
     @State private var checkMessage: String?
@@ -15,6 +17,7 @@ struct CrosswordGameView: View {
     @State private var keyboardFocusRequestID = 0
     @State private var showsClueList = true
     @State private var showsTouchKeyboard = true
+    @State private var showsPencilActions = false
 
     private static let scrollTopID = "crosswordTop"
 
@@ -66,6 +69,38 @@ struct CrosswordGameView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This fills in every answer and counts this puzzle as a loss.")
+        }
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore,
+                  vm.phase == .playing, vm.canToggleDirection else { return }
+            vm.toggleDirection()
+            restoreBoardFocus()
+        }
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore,
+                  vm.phase == .playing, case .ended = phase else { return }
+            showsPencilActions = true
+        }
+        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+            Button("Letter Hint", systemImage: "character.cursor.ibeam") {
+                vm.revealLetter()
+                restoreBoardFocus()
+            }
+            Button("Word Hint", systemImage: "text.cursor") {
+                vm.revealWord()
+                restoreBoardFocus()
+            }
+            Button("Check", systemImage: "checkmark.circle.fill") {
+                checkPuzzle()
+                restoreBoardFocus()
+            }
+            if !vm.wrongCells.isEmpty {
+                Button("Remove All Wrong Letters", systemImage: "eraser.fill") {
+                    vm.removeAllWrongLetters()
+                    restoreBoardFocus()
+                }
+            }
+            Button("Cancel", role: .cancel) { restoreBoardFocus() }
         }
         .sheet(item: $previewRef, onDismiss: restoreBoardFocus) { ref in
             CrosswordReferenceSheet(ref: ref)

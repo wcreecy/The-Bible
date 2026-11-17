@@ -59,6 +59,7 @@ struct WordSearchStartScreen: View {
                 GameLobbyPreview(kind: .wordSearch)
             } configuration: {
                 WordSearchSetupControls(
+                    difficulty: $difficulty,
                     verseSource: $verseSource,
                     isBlindMode: $isBlindMode,
                     isTimedMode: $isTimedMode,
@@ -69,7 +70,7 @@ struct WordSearchStartScreen: View {
                     GameSplashFacts(
                     first: ("puzzlepiece.extension", "1 puzzle", "This session"),
                     second: ("square.grid.3x3", "\(gridSize)×\(gridSize)", "Grid · \(wordCountRange.lowerBound)–\(wordCountRange.upperBound) target words"),
-                    third: ("eye", isBlindMode ? "Blind" : "Visible", "Verse and word list"),
+                    third: ("eye", isBlindMode ? "Hidden" : "Visible", "Verse and word list"),
                     fourth: isTimedMode ? ("timer", totalTime, "Time to solve") : nil
                     )
 
@@ -91,13 +92,30 @@ struct WordSearchStartScreen: View {
 }
 
 private struct WordSearchSetupControls: View {
+    @Binding var difficulty: WordSearchEngine.Difficulty
     @Binding var verseSource: WordSearchViewModel.VerseSource
     @Binding var isBlindMode: Bool
     @Binding var isTimedMode: Bool
     let eligibleFavoriteCount: Int
 
+    private var isExpert: Binding<Bool> {
+        Binding(
+            get: { difficulty == .expert },
+            set: { difficulty = $0 ? .expert : .hard }
+        )
+    }
+
     var body: some View {
         GameSettingsGroup {
+            if difficulty == .hard || difficulty == .expert {
+                GameToggleSetting(
+                    title: "Expert Mode",
+                    detail: "Adds convincing decoy letter patterns.",
+                    systemImage: "flame.fill",
+                    tint: .orange,
+                    isOn: isExpert
+                )
+            }
             GameChoiceSetting(
                 title: "Verses",
                 systemImage: "text.quote",
@@ -115,8 +133,8 @@ private struct WordSearchSetupControls: View {
             )
 
             GameToggleSetting(
-                title: "Blind Mode",
-                detail: "Hide the verse and word list.",
+                title: "Hidden Words",
+                detail: "Hide the verse and word list for a mystery challenge.",
                 systemImage: "eye.slash",
                 tint: .green,
                 isOn: $isBlindMode

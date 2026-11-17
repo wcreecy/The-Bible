@@ -1,12 +1,15 @@
 import SwiftUI
 
 struct BookOrderGameView: View {
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var vm = BookOrderGameViewModel()
     @State private var elapsedSeconds: Int = 0
     /// The solve clock only runs while the app is in front, so time away doesn't count.
     @State private var roundClock = GameActiveClock()
     @State private var isAppActive = true
     @State private var isTimerHidden: Bool = false
+    @State private var showsPencilActions = false
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -99,6 +102,25 @@ struct BookOrderGameView: View {
                 }
             }
         }
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore,
+                  vm.started else { return }
+            showsPencilActions = true
+        }
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore,
+                  vm.started, case .ended = phase else { return }
+            showsPencilActions = true
+        }
+        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+            if !vm.showResult {
+                Button("Check Order", systemImage: "checkmark.circle", action: checkOrder)
+            } else {
+                Button("Next Puzzle", systemImage: "arrow.right.circle", action: advanceToNextRound)
+            }
+            Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
+            Button("Cancel", role: .cancel) {}
+        }
         .task(id: vm.started && !vm.showResult && isAppActive) {
             guard vm.started, !vm.showResult, isAppActive else { return }
 
@@ -166,6 +188,7 @@ struct BookOrderGameView: View {
                     )
                     .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                     .listRowBackground(rowBackground(for: item))
+                    .hoverEffect(.lift)
                     .moveDisabled(vm.showResult)
                 }
                 .onMove(perform: vm.move)
@@ -236,6 +259,7 @@ struct BookOrderGameView: View {
                     .padding(.horizontal, 14)
                     .frame(minHeight: 46)
                     .glassEffect(answerGlass(for: item), in: .rect(cornerRadius: 12))
+                    .hoverEffect(.lift)
                     .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)

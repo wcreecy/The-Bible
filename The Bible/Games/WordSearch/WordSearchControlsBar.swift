@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WordSearchControlsBar: View {
     let roundOver: Bool
+    let hintTitle: String
     /// Blind round whose word list is still hidden.
     let canShowWordList: Bool
 
@@ -15,7 +16,7 @@ struct WordSearchControlsBar: View {
     var body: some View {
         HStack(spacing: 12) {
             if !roundOver {
-                Button("Hint", systemImage: "lightbulb", action: onHint)
+                Button(hintTitle, systemImage: "lightbulb", action: onHint)
                     .buttonStyle(ModernPillButtonStyle(tint: .orange))
                     .accessibilityHint("Briefly highlights the first letter of a word you haven't found")
 

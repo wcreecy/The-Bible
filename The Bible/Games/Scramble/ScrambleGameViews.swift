@@ -383,6 +383,7 @@ struct ScrambleLetterTray: View {
                         .frame(width: 48, height: 48)
                 }
                 .buttonStyle(ScrambleLetterTileStyle())
+                .hoverEffect(.lift)
                 .accessibilityLabel("\(String(letters[index])), available")
                 .accessibilityHint("Double tap to add this letter.")
             }

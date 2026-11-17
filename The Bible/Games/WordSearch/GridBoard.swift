@@ -6,6 +6,8 @@ struct GridBoard: View {
     let grid: [[Character]]
     let selectionCells: Set<String>
     let foundCells: Set<String>
+    let selectionStart: (row: Int, col: Int)?
+    let selectionEnd: (row: Int, col: Int)?
     let backgroundColorForCell: (_ row: Int, _ col: Int) -> Color
     let onTapCell: (_ row: Int, _ col: Int) -> Void
     let onDragChanged: (_ cell: (row: Int, col: Int)) -> Void
@@ -60,9 +62,27 @@ struct GridBoard: View {
                                         .stroke(strokeColorForCell(r, c), lineWidth: 1.5)
                                 )
                                 .contentShape(Rectangle())
+                                .hoverEffect(.highlight)
                                 .onTapGesture { onTapCell(r, c) }
+                                .accessibilityLabel("Row \(r + 1), column \(c + 1), letter \(String(ch))")
+                                .accessibilityHint("Selects this letter as the start or end of a word")
+                                .accessibilityAddTraits(.isButton)
                         }
                     }
+                }
+            }
+            .overlay {
+                if let start = selectionStart, let end = selectionEnd {
+                    let step = cellSize + spacing
+                    Path { path in
+                        path.move(to: CGPoint(x: CGFloat(start.col) * step + cellSize / 2,
+                                              y: CGFloat(start.row) * step + cellSize / 2))
+                        path.addLine(to: CGPoint(x: CGFloat(end.col) * step + cellSize / 2,
+                                                y: CGFloat(end.row) * step + cellSize / 2))
+                    }
+                    .stroke(Color.blue.opacity(0.5), style: StrokeStyle(lineWidth: cellSize * 0.68, lineCap: .round))
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
                 }
             }
             .frame(width: totalSize, height: totalSize, alignment: .topLeading)
@@ -72,7 +92,15 @@ struct GridBoard: View {
             .gesture(
                 DragGesture(minimumDistance: 0, coordinateSpace: .local)
                     .onChanged { value in
-                        let p = value.location
+                        // The grid is horizontally centered in this GeometryReader. Convert
+                        // the gesture from container coordinates into the grid's local
+                        // coordinates before resolving a cell. Without this subtraction,
+                        // Pencil input is shifted right by the grid's leading inset.
+                        let gridOriginX = (geo.size.width - totalSize) / 2
+                        let p = CGPoint(
+                            x: value.location.x - gridOriginX,
+                            y: value.location.y
+                        )
                         if let cell = hitCellNearestCenter(from: p, cellSize: cellSize, spacing: spacing) {
                             onDragChanged(cell)
                         }

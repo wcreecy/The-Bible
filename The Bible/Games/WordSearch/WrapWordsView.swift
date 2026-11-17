@@ -37,7 +37,7 @@ struct WrapWordsView: View {
 /// A capsule-styled word label colored by whether the word was found, revealed, or is still pending.
 /// Colors are resolved in explicitly typed helpers to keep SwiftUI type-checking fast.
 struct WordChip: View {
-    enum State {
+    enum State: Equatable {
         case found, revealed, pending
     }
 
@@ -58,6 +58,8 @@ struct WordChip: View {
             .background(Capsule(style: .continuous).fill(fillColor))
             .overlay(Capsule(style: .continuous).stroke(strokeColor, lineWidth: 1))
             .foregroundStyle(.primary)
+            .scaleEffect(state == .found ? 1.03 : 1)
+            .animation(.snappy, value: state)
             .accessibilityValue(accessibilityState)
     }
 

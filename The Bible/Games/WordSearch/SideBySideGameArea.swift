@@ -5,6 +5,8 @@ struct SideBySideGameArea<Summary: View>: View {
     let grid: [[Character]]
     let selectionCells: Set<String>
     let foundCells: Set<String>
+    let selectionStart: (row: Int, col: Int)?
+    let selectionEnd: (row: Int, col: Int)?
     let revealedWords: Set<String>
     let backgroundColorForCell: (_ row: Int, _ col: Int) -> Color
     let onTapCell: (_ row: Int, _ col: Int) -> Void
@@ -19,11 +21,15 @@ struct SideBySideGameArea<Summary: View>: View {
     let colorForWord: (String) -> Color
 
     let roundOver: Bool
+    let hintTitle: String
     let onHint: () -> Void
     let onReveal: () -> Void
     let onShowWordList: () -> Void
     let onNewPuzzle: () -> Void
     let onChangeSettings: () -> Void
+    let selectionText: String
+    let hintMessage: String?
+    let lastFoundWord: String?
     /// Shown above the word list once the round ends.
     let summary: Summary
 
@@ -49,13 +55,30 @@ struct SideBySideGameArea<Summary: View>: View {
                 grid: grid,
                 selectionCells: selectionCells,
                 foundCells: foundCells,
+                selectionStart: selectionStart,
+                selectionEnd: selectionEnd,
                 backgroundColorForCell: backgroundColorForCell,
                 onTapCell: onTapCell,
                 onDragChanged: onDragChanged,
                 onDragEnded: onDragEnded,
-                dynamicGridHeight: min(dynamicGridHeight, 620)
+                dynamicGridHeight: min(dynamicGridHeight, 500)
             )
             .frame(maxWidth: .infinity)
+
+            if !selectionText.isEmpty {
+                Text(selectionText)
+                    .font(.headline.monospaced())
+                    .frame(maxWidth: .infinity)
+                    .accessibilityLabel("Selected letters: \(selectionText)")
+            } else if let hintMessage {
+                Label(hintMessage, systemImage: "lightbulb.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.orange)
+            } else if let lastFoundWord, !roundOver {
+                Label("\(lastFoundWord) found", systemImage: "checkmark.circle.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.green)
+            }
         }
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
@@ -69,15 +92,20 @@ struct SideBySideGameArea<Summary: View>: View {
                 progressHeader
             }
 
-            if hidesWordList {
-                SideBlindCountColumn(count: words.count, foundCount: foundCount)
-            } else {
-                SideWordsColumn(words: words, found: foundWords, revealed: revealedWords, colorForWord: colorForWord)
+            ScrollView {
+                if hidesWordList {
+                    SideBlindCountColumn(count: words.count, foundCount: foundCount)
+                } else {
+                    SideWordsColumn(words: words, found: foundWords, revealed: revealedWords, colorForWord: colorForWord)
+                }
             }
+            .scrollIndicators(.visible)
+            .frame(maxHeight: 360)
 
             Spacer(minLength: 12)
             WordSearchControlsBar(
                 roundOver: roundOver,
+                hintTitle: hintTitle,
                 canShowWordList: hidesWordList,
                 onHint: onHint,
                 onReveal: onReveal,
@@ -88,7 +116,7 @@ struct SideBySideGameArea<Summary: View>: View {
             )
         }
         .padding(AppDesignMetrics.cardPadding)
-        .frame(minHeight: min(dynamicGridHeight, 620) + 57, alignment: .top)
+        .frame(minHeight: min(dynamicGridHeight, 500) + 57, alignment: .top)
         .heroCardSurface()
     }
 

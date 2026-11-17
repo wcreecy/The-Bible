@@ -52,6 +52,7 @@ struct ReadingVerseRow: View {
     let onOpenNote: () -> Void
     /// Opens the Scripture connections associated with this verse.
     let onOpenCrossReferences: () -> Void
+    let onPencilHoverChange: (Bool) -> Void
 
     var body: some View {
         if verse.isOmitted {
@@ -142,6 +143,8 @@ struct ReadingVerseRow: View {
         .onScrollVisibilityChange(threshold: 0.6, onVisibilityChange)
         .onLongPressGesture(minimumDuration: 0.5) { onLongPress(verse.number) }
         .contentShape(Rectangle())
+        .hoverEffect(.highlight)
+        .onHover(perform: onPencilHoverChange)
         .onTapGesture { onTap(verse) }
     }
 
