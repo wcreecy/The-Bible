@@ -75,6 +75,6 @@ extension Favorite {
     /// Same format as sharing a verse from the reader.
     @MainActor
     var shareText: String {
-        "\(currentVerseText)\n\(reference) \(translationAbbreviation)"
+        VerseActionReference.shareText(verse: currentVerseText, reference: "\(reference) \(translationAbbreviation)")
     }
 }

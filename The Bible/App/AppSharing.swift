@@ -1,5 +1,7 @@
 import CoreImage.CIFilterBuiltins
+import LinkPresentation
 import SwiftUI
+import UIKit
 
 /// Sharing the app itself: its App Store link, a QR code for sharing in person, and the
 /// optional link added to shared verses.
@@ -65,6 +67,44 @@ enum AppShare {
 
         return UIImage(named: "AppIcon")
     }
+}
+
+/// The App Store link as a share sheet item. Left alone, Messages fetches the App Store page
+/// and previews the link with an App Store screenshot; supplying the preview here keeps it
+/// to the app's name and icon, with no picture.
+final class AppLinkActivityItem: NSObject, UIActivityItemSource {
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        AppShare.url
+    }
+
+    func activityViewController(
+        _ activityViewController: UIActivityViewController,
+        itemForActivityType activityType: UIActivity.ActivityType?
+    ) -> Any? {
+        AppShare.url
+    }
+
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let metadata = LPLinkMetadata()
+        metadata.originalURL = AppShare.url
+        metadata.url = AppShare.url
+        metadata.title = "The Bible"
+        if let icon = AppShare.appIcon() {
+            metadata.iconProvider = NSItemProvider(object: icon)
+        }
+        return metadata
+    }
+}
+
+/// The system share sheet for a list of items.
+struct ActivityShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 /// "Share The Bible": the share sheet with the App Store link, and a QR code to scan in person.
@@ -213,9 +253,18 @@ struct AppLinkShareSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppShare.includesLinkKey) private var includesLink = true
+    @State private var showsShareSheet = false
 
     private var preparedText: String {
         AppShare.withAttribution(text, includingLink: includesLink)
+    }
+
+    /// The link goes as its own item rather than inside the text, so Messages uses the app's
+    /// own preview instead of fetching an App Store screenshot.
+    private var shareItems: [Any] {
+        // Messages trims trailing line breaks, so a zero-width space after them keeps a blank
+        // line between the text and the link card.
+        includesLink ? [text + "\n\u{200B}", AppLinkActivityItem()] : [text]
     }
 
     var body: some View {
@@ -250,7 +299,9 @@ struct AppLinkShareSheet: View {
                 }
                 .accessibilityIdentifier("includeAppLinkToggle")
 
-                ShareLink(item: preparedText) {
+                Button {
+                    showsShareSheet = true
+                } label: {
                     Label("Continue to Share", systemImage: "square.and.arrow.up")
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -258,6 +309,9 @@ struct AppLinkShareSheet: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .accessibilityIdentifier("continueToShareButton")
+            }
+            .sheet(isPresented: $showsShareSheet) {
+                ActivityShareSheet(items: shareItems)
             }
             .padding(24)
             .navigationTitle(Text(title))

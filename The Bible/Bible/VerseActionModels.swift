@@ -14,7 +14,12 @@ struct VerseActionReference: Hashable, Identifiable {
     }
 
     var shareText: String {
-        "\(verseText)\n\(bookName) \(chapterNumber):\(verseNumber) \(translation.abbreviation)"
+        Self.shareText(verse: verseText, reference: "\(bookName) \(chapterNumber):\(verseNumber) \(translation.abbreviation)")
+    }
+
+    /// The verse in quotes, with its reference on the next line after a dash.
+    static func shareText(verse: String, reference: String) -> String {
+        "\u{201C}\(verse)\u{201D}\n\u{2014} \(reference)"
     }
 }
 

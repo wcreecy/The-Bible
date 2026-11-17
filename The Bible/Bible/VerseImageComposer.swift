@@ -485,7 +485,7 @@ private struct VerseImageShareSheet: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
         // The link goes alongside the picture as text, where it can be tapped.
-        let items: [Any] = AppShare.includesLink ? [image, AppShare.attributionLine] : [image]
+        let items: [Any] = AppShare.includesLink ? [image, AppLinkActivityItem()] : [image]
         return UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
 

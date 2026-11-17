@@ -291,7 +291,7 @@ struct BibleTranslationTests {
             verseText: "For God so loved the world",
             translation: .asv
         )
-        #expect(verse.shareText == "For God so loved the world\nJohn 3:16 ASV")
+        #expect(verse.shareText == "\u{201C}For God so loved the world\u{201D}\n\u{2014} John 3:16 ASV")
     }
 
     @Test

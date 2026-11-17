@@ -60,6 +60,7 @@ struct FavoritesView: View {
     @State private var toastMessage: ToastMessage?
     @State private var persistenceFailure: PersistenceFailure?
     @State private var imageComposerVerse: VerseActionReference?
+    @State private var shareTextVerse: VerseActionReference?
     /// Prepared only when saved content, search text, or sort order changes—not for every
     /// unrelated SwiftUI body update (toolbar, toast, sheet presentation, and so on).
     @State private var visibleFavoriteSections: [FavoriteSection] = []
@@ -128,6 +129,11 @@ struct FavoritesView: View {
         .persistenceFailureAlert(failure: $persistenceFailure)
         .fullScreenCover(item: $imageComposerVerse) { verse in
             VerseImageComposerView(verse: verse)
+        }
+        .sheet(item: $shareTextVerse) { verse in
+            AppLinkShareSheet(title: "Share Verse", text: verse.shareText)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         .onAppear { refreshVisibleContent() }
         // Compare the saved items themselves, not how many there are: a sync can swap one
@@ -267,7 +273,8 @@ struct FavoritesView: View {
             Button("Copy", systemImage: "doc.on.doc") { copy(favorite) }
             VerseShareMenu(
                 verse: shareReference(for: favorite),
-                onCreateImage: { imageComposerVerse = shareReference(for: favorite) }
+                onCreateImage: { imageComposerVerse = shareReference(for: favorite) },
+                onShareText: { shareTextVerse = shareReference(for: favorite) }
             ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
@@ -277,7 +284,8 @@ struct FavoritesView: View {
         .swipeActions(edge: .leading) {
             VerseShareMenu(
                 verse: shareReference(for: favorite),
-                onCreateImage: { imageComposerVerse = shareReference(for: favorite) }
+                onCreateImage: { imageComposerVerse = shareReference(for: favorite) },
+                onShareText: { shareTextVerse = shareReference(for: favorite) }
             ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }

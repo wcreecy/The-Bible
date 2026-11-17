@@ -110,6 +110,7 @@ struct SavedHighlightsView: View {
     @State private var isShowingRemovalToast = false
     @State private var library = HighlightsLibrary.empty
     @State private var imageComposerVerse: VerseActionReference?
+    @State private var shareTextVerse: VerseActionReference?
 
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -170,6 +171,11 @@ struct SavedHighlightsView: View {
         }
         .fullScreenCover(item: $imageComposerVerse) { verse in
             VerseImageComposerView(verse: verse)
+        }
+        .sheet(item: $shareTextVerse) { verse in
+            AppLinkShareSheet(title: "Share Verse", text: verse.shareText)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         .appToast(
             isPresented: $isShowingRemovalToast,
@@ -305,7 +311,8 @@ struct SavedHighlightsView: View {
             }
             VerseShareMenu(
                 verse: shareReference(for: note),
-                onCreateImage: { imageComposerVerse = shareReference(for: note) }
+                onCreateImage: { imageComposerVerse = shareReference(for: note) },
+                onShareText: { shareTextVerse = shareReference(for: note) }
             ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
@@ -315,7 +322,8 @@ struct SavedHighlightsView: View {
         .swipeActions(edge: .leading) {
             VerseShareMenu(
                 verse: shareReference(for: note),
-                onCreateImage: { imageComposerVerse = shareReference(for: note) }
+                onCreateImage: { imageComposerVerse = shareReference(for: note) },
+                onShareText: { shareTextVerse = shareReference(for: note) }
             ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
