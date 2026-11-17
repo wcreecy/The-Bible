@@ -146,6 +146,8 @@ enum AppStorageKey {
     static let gameStatsLedgerOwnPayloadV1 = "gameStatsLedgerOwnPayload_v1"
     static let gameStatsLedgerOwnInstallationV1 = "gameStatsLedgerOwnInstallation_v1"
     static let gameStatsLedgerSnapshotV1 = "gameStatsLedgerSnapshot_v1"
+    /// When this device last saw each other installation's game ledger change.
+    static let gameStatsLedgerActivityV1 = "gameStatsLedgerActivity_v1"
     static let gameStatsResetEpoch = "gameStatsResetEpoch"
     static let gameStatsLastSeenResetEpoch = "gameStatsLastSeenResetEpoch"
     static let gameStatsLedgerInstallationID = "gameStatsLedgerInstallationID"

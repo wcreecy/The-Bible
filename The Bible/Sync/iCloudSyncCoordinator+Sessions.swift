@@ -5,7 +5,9 @@ extension iCloudSyncCoordinator {
     // Reading sessions key(s)
     static let sessionKeys: [String] = ["readingSessions"]
     static let maximumCloudSessions = 2_000
-    static let maximumCloudSessionBytes = 256 * 1_024
+    /// Sessions only feed the 7-day session averages and the usual reading time, so a
+    /// few months of history is plenty and leaves room for other synced data.
+    static let maximumCloudSessionBytes = 64 * 1_024
 
     // Cached formatter for stable session identity
     private static let isoFormatter: ISO8601DateFormatter = {

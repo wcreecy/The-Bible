@@ -33,6 +33,9 @@ final class GameStatsLedger {
         var baseline: Section
         /// Increments recorded on this installation since it joined the ledger.
         var contributions: Section
+        /// Set only on the retired ledger: the installations folded into it. Older app
+        /// versions ignore this and read the retired ledger as one more device.
+        var retiredInstallations: [String]? = nil
     }
 
     struct Diagnostics: Equatable {
@@ -47,10 +50,16 @@ final class GameStatsLedger {
     }
 
     static let kvsKeyPrefix = "gameStatsLedger_v1_"
+    /// Ledgers from installations that stopped changing (usually deleted or replaced
+    /// apps) are folded into this one, so each old install doesn't keep its own key.
+    static let retiredKVSKey = kvsKeyPrefix + "retired"
+    /// How long a ledger has to stay unchanged before it counts as inactive.
+    static let inactivityInterval: TimeInterval = 365 * 24 * 60 * 60
 
     private let ownPayloadKey = AppStorageKey.gameStatsLedgerOwnPayloadV1
     private let ownInstallationKey = AppStorageKey.gameStatsLedgerOwnInstallationV1
     private let snapshotKey = AppStorageKey.gameStatsLedgerSnapshotV1
+    private let activityKey = AppStorageKey.gameStatsLedgerActivityV1
     private let resetEpochKVSKey = AppStorageKey.gameStatsResetEpoch
     private let lastSeenEpochKey = AppStorageKey.gameStatsLastSeenResetEpoch
 
@@ -157,10 +166,13 @@ final class GameStatsLedger {
 
         let cutoff = StatsHistoryRetention.cutoffDayKey()
         var own = loadOrCreateOwnPayload(epoch: epoch)
+        // Before capturing new plays, so the plays already folded in aren't counted twice.
+        acknowledgeRetirementIfNeeded(of: &own, epoch: epoch)
         captureLocalChanges(into: &own.contributions)
         own.baseline = Self.trimmed(own.baseline, before: cutoff)
         own.contributions = Self.trimmed(own.contributions, before: cutoff)
         saveOwnPayload(own)
+        retireInactiveLedgers(epoch: epoch, cutoff: cutoff)
 
         let totals = computeTotals(own: own, epoch: epoch, cutoff: cutoff)
         let changed = apply(totals)
@@ -177,7 +189,7 @@ final class GameStatsLedger {
         let payload = loadOrCreateOwnPayload(epoch: epoch)
         let contributionCount = Self.contributionCount(in: payload.contributions)
         let ledgerCount = kvs.dictionaryRepresentation.keys.count {
-            $0.hasPrefix(Self.kvsKeyPrefix)
+            $0.hasPrefix(Self.kvsKeyPrefix) && $0 != Self.retiredKVSKey
         }
         return Diagnostics(
             installationID: installationID,
@@ -216,6 +228,7 @@ final class GameStatsLedger {
         let own = Payload(epoch: epoch, baseline: Section(), contributions: Section())
         saveOwnPayload(own)
         saveSnapshot(Section())
+        defaults.removeObject(forKey: activityKey)
 
         // Rebuild totals so any ledgers already recorded under this epoch are kept.
         if iCloudSyncCoordinator.shared.isInitialDownloadComplete {
@@ -224,6 +237,153 @@ final class GameStatsLedger {
             saveSnapshot(totals)
         }
         AppDataChanges.shared.gameStatsChanged()
+    }
+
+    // MARK: - Retiring inactive ledgers
+
+    private struct LedgerActivity: Codable {
+        /// A checksum of the ledger as last seen, to notice when it changes.
+        var fingerprint: UInt64
+        /// When this device first saw the ledger as it is now.
+        var since: Date
+    }
+
+    /// A ledger this installation published before being retired was folded into the
+    /// retired ledger. Start its contributions over and take it off the retired list.
+    private func acknowledgeRetirementIfNeeded(of own: inout Payload, epoch: Double) {
+        let installation = LedgerInstallationIdentity.current
+        guard var retired = decodePayload(kvs.data(forKey: Self.retiredKVSKey)),
+              retired.epoch >= epoch,
+              let installations = retired.retiredInstallations,
+              installations.contains(installation) else { return }
+
+        own.contributions = Section()
+        retired.retiredInstallations = installations.filter { $0 != installation }
+        writeRetired(retired)
+    }
+
+    /// Folds ledgers that haven't changed in a year into the retired ledger and removes
+    /// their keys. Totals don't change: the retired ledger holds the same counts.
+    ///
+    /// Only the active installation with the lowest identifier does this, so two devices
+    /// don't fold at the same time and overwrite each other's retired ledger.
+    private func retireInactiveLedgers(epoch: Double, cutoff: String, now: Date = Date()) {
+        let ownKey = ownKVSKey
+        var activity = loadActivity()
+        var activeInstallations: Set<String> = [LedgerInstallationIdentity.current]
+        var inactive: [(key: String, installation: String, payload: Payload)] = []
+        var seenKeys: Set<String> = []
+
+        for (key, value) in kvs.dictionaryRepresentation where key.hasPrefix(Self.kvsKeyPrefix) {
+            guard key != ownKey, key != Self.retiredKVSKey, let data = value as? Data else { continue }
+            seenKeys.insert(key)
+            let fingerprint = Self.fingerprint(of: data)
+            if activity[key]?.fingerprint != fingerprint {
+                activity[key] = LedgerActivity(fingerprint: fingerprint, since: now)
+            }
+            let installation = String(key.dropFirst(Self.kvsKeyPrefix.count))
+            let unchangedFor = now.timeIntervalSince(activity[key]?.since ?? now)
+            if unchangedFor < Self.inactivityInterval {
+                activeInstallations.insert(installation)
+            } else if let payload = decodePayload(data), payload.epoch >= epoch {
+                inactive.append((key, installation, payload))
+            }
+        }
+
+        // Forget ledgers that are gone, so the record doesn't grow.
+        activity = activity.filter { seenKeys.contains($0.key) }
+        saveActivity(activity)
+
+        guard !inactive.isEmpty,
+              activeInstallations.min() == LedgerInstallationIdentity.current else { return }
+
+        var retired = decodePayload(kvs.data(forKey: Self.retiredKVSKey))
+            .flatMap { $0.epoch >= epoch ? $0 : nil }
+            ?? Payload(epoch: epoch, baseline: Section(), contributions: Section(), retiredInstallations: [])
+        var installations = retired.retiredInstallations ?? []
+        for ledger in inactive.sorted(by: { $0.key < $1.key }) {
+            retired = Self.folding(ledger.payload, into: retired)
+            if !installations.contains(ledger.installation) {
+                installations.append(ledger.installation)
+            }
+        }
+        retired.epoch = epoch
+        retired.retiredInstallations = installations
+        retired.baseline = Self.trimmed(retired.baseline, before: cutoff)
+        retired.contributions = Self.trimmed(retired.contributions, before: cutoff)
+
+        // The retired ledger is written before the old keys go, so no counts are dropped.
+        writeRetired(retired)
+        for ledger in inactive {
+            kvs.removeObject(forKey: ledger.key)
+            activity[ledger.key] = nil
+        }
+        saveActivity(activity)
+        iCloudSyncCoordinator.shared.requestSynchronize()
+    }
+
+    /// Combines `payload` into `retired` the way `mergedTotals` would count them apart:
+    /// baselines by maximum, and contributions summed (or by maximum for best streaks and
+    /// other max values).
+    static func folding(_ payload: Payload, into retired: Payload) -> Payload {
+        var result = retired
+        result.baseline = combined(retired.baseline, payload.baseline, summing: false)
+        result.contributions = combined(retired.contributions, payload.contributions, summing: true)
+        return result
+    }
+
+    private static func combined(_ lhs: Section, _ rhs: Section, summing: Bool) -> Section {
+        var result = lhs
+        for (key, value) in rhs.counters {
+            let current = result.counters[key] ?? 0
+            let sums = summing && counterKind(key) == .sum
+            result.counters[key] = sums ? current + max(0, value) : max(current, max(0, value))
+        }
+        for (key, map) in rhs.maps {
+            let sums = summing && !maxMapKeys.contains(key)
+            var merged = result.maps[key] ?? [:]
+            for (entry, value) in map {
+                let current = merged[entry] ?? 0
+                merged[entry] = sums ? current + max(0, value) : max(current, max(0, value))
+            }
+            result.maps[key] = merged
+        }
+        for (key, nested) in rhs.nestedMaps {
+            var merged = result.nestedMaps[key] ?? [:]
+            for (outer, inner) in nested {
+                var mergedInner = merged[outer] ?? [:]
+                for (entry, value) in inner {
+                    let current = mergedInner[entry] ?? 0
+                    mergedInner[entry] = summing ? current + max(0, value) : max(current, max(0, value))
+                }
+                merged[outer] = mergedInner
+            }
+            result.nestedMaps[key] = merged
+        }
+        return result
+    }
+
+    private func writeRetired(_ retired: Payload) {
+        guard let data = try? JSONEncoder().encode(retired),
+              kvs.data(forKey: Self.retiredKVSKey) != data else { return }
+        kvs.set(data, forKey: Self.retiredKVSKey)
+        iCloudSyncCoordinator.shared.requestSynchronize()
+    }
+
+    private func loadActivity() -> [String: LedgerActivity] {
+        guard let data = defaults.data(forKey: activityKey) else { return [:] }
+        return PersistedDecoding.decode([String: LedgerActivity].self, from: data, name: "gameStatsLedgerActivity") ?? [:]
+    }
+
+    private func saveActivity(_ activity: [String: LedgerActivity]) {
+        guard let data = try? JSONEncoder().encode(activity),
+              defaults.data(forKey: activityKey) != data else { return }
+        defaults.set(data, forKey: activityKey)
+    }
+
+    /// A checksum that stays the same across launches (FNV-1a), unlike `hashValue`.
+    private static func fingerprint(of data: Data) -> UInt64 {
+        data.reduce(14_695_981_039_346_656_037) { ($0 ^ UInt64($1)) &* 1_099_511_628_211 }
     }
 
     // MARK: - Own payload

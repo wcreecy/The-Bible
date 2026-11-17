@@ -340,4 +340,52 @@ struct TwoDeviceSyncScenarioTests {
         #expect(payload.entries.count <= 300)
         #expect(size < 120 * 1_024)
     }
+
+    /// Folding inactive installations into the retired ledger must leave every total as it
+    /// was: sums still add up, best streaks and solved days keep their maximum, and the
+    /// shared pre-ledger baseline isn't counted twice.
+    @Test
+    func retiringInactiveLedgersKeepsEveryTotal() throws {
+        let day = "2026-10-18"
+        let streakKey = try #require(GameStatsLedger.counterKeys.sorted().first { $0.contains("BestStreak") })
+        let solvedKey = try #require(GameStatsLedger.maxMapKeys.sorted().first)
+        let nestedKey = try #require(GameStatsLedger.nestedMapKeys.sorted().first)
+
+        func ledger(answered: Int, streak: Int, solved: Int, books: Int, baseline: Int) -> GameStatsLedger.Payload {
+            GameStatsLedger.Payload(
+                epoch: gameEpoch,
+                baseline: .init(counters: ["quizAllTimeAnswered_all": baseline]),
+                contributions: .init(
+                    counters: ["quizAllTimeAnswered_all": answered, streakKey: streak],
+                    maps: ["gamesDailyAnswered": [day: answered], solvedKey: [day: solved]],
+                    nestedMaps: [nestedKey: [day: ["John": books]]]
+                )
+            )
+        }
+
+        let active = ledger(answered: 4, streak: 3, solved: 1, books: 2, baseline: 10)
+        let oldPhone = ledger(answered: 6, streak: 7, solved: 1, books: 5, baseline: 12)
+        let oldTablet = ledger(answered: 2, streak: 5, solved: 0, books: 1, baseline: 8)
+
+        let before = GameStatsLedger.mergedTotals(
+            payloads: [active, oldPhone, oldTablet],
+            epoch: gameEpoch,
+            cutoff: cutoff
+        )
+
+        let empty = GameStatsLedger.Payload(
+            epoch: gameEpoch,
+            baseline: .init(),
+            contributions: .init(),
+            retiredInstallations: []
+        )
+        let retired = GameStatsLedger.folding(oldTablet, into: GameStatsLedger.folding(oldPhone, into: empty))
+        let after = GameStatsLedger.mergedTotals(payloads: [active, retired], epoch: gameEpoch, cutoff: cutoff)
+
+        #expect(after == before)
+        #expect(after.counters["quizAllTimeAnswered_all"] == 12 + 4 + 6 + 2)
+        #expect(after.counters[streakKey] == 7)
+        #expect(after.maps[solvedKey]?[day] == 1)
+        #expect(after.nestedMaps[nestedKey]?[day]?["John"] == 8)
+    }
 }
