@@ -25,6 +25,7 @@ final class VerseImageComposerModel {
         let textAlignment: VerseImageTextAlignment
         let showsReference: Bool
         let showsBranding: Bool
+        let inkStrokes: [InkStroke]
     }
 
     let verse: VerseActionReference
@@ -58,6 +59,17 @@ final class VerseImageComposerModel {
     var textAlignment: VerseImageTextAlignment = .center { willSet { recordUndoSnapshot() } }
     var showsReference = true { willSet { recordUndoSnapshot() } }
     var showsBranding = true { willSet { recordUndoSnapshot() } }
+
+    /// Pen strokes drawn over the finished image. Each stroke is one undo step.
+    var inkStrokes: [InkStroke] = [] { willSet { recordUndoSnapshot() } }
+    /// While on, dragging the preview draws instead of moving the text or photo.
+    var isMarkingUp = false
+    var inkColor = Color.yellow
+    var inkWidth: CGFloat = 0.01
+    /// Apple Pencil always draws; this lets a finger draw too.
+    var drawsWithFinger = UserDefaults.standard.object(forKey: "verseImageInkWithFinger") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(drawsWithFinger, forKey: "verseImageInkWithFinger") }
+    }
 
     private var undoHistory: [Snapshot] = []
     private var isRestoringSnapshot = false
@@ -93,6 +105,17 @@ final class VerseImageComposerModel {
         textAlignment = snapshot.textAlignment
         showsReference = snapshot.showsReference
         showsBranding = snapshot.showsBranding
+        inkStrokes = snapshot.inkStrokes
+    }
+
+    func addInkStroke(_ points: [CGPoint]) {
+        guard !points.isEmpty else { return }
+        inkStrokes.append(InkStroke(points: points, color: inkColor, width: inkWidth))
+    }
+
+    func clearInk() {
+        guard !inkStrokes.isEmpty else { return }
+        inkStrokes = []
     }
 
     /// Records one undo step before the person starts typing in the verse field.
@@ -150,7 +173,8 @@ final class VerseImageComposerModel {
                 textColor: textColor,
                 textAlignment: textAlignment,
                 showsReference: showsReference,
-                showsBranding: showsBranding
+                showsBranding: showsBranding,
+                inkStrokes: inkStrokes
             )
         )
     }

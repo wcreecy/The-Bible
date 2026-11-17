@@ -25,13 +25,20 @@ struct VerseImageComposerView: View {
                     .padding([.horizontal, .top])
                     .padding(.bottom, 12)
 
-                ScrollView {
-                    VStack(spacing: 20) {
-                        VerseImageCanvasControls(model: model, selectedPhoto: $selectedPhoto)
-                        VerseImageTextControls(model: model)
-                        exportButtons
+                if model.isMarkingUp {
+                    // Drawing tools replace the style controls so the preview has the room.
+                    VerseImageMarkupControls(model: model)
+                        .padding()
+                    Spacer(minLength: 0)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            VerseImageCanvasControls(model: model, selectedPhoto: $selectedPhoto)
+                            VerseImageTextControls(model: model)
+                            exportButtons
+                        }
+                        .padding()
                     }
-                    .padding()
                 }
             }
             .background(Color(.systemGroupedBackground))
@@ -44,9 +51,20 @@ struct VerseImageComposerView: View {
             .navigationTitle("Share as Image")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.interactively)
+            // A downward stroke would otherwise pull the sheet away.
+            .interactiveDismissDisabled(model.isMarkingUp)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close", action: dismiss.callAsFunction)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button(
+                        "Markup",
+                        systemImage: model.isMarkingUp ? "pencil.tip.crop.circle.fill" : "pencil.tip.crop.circle"
+                    ) {
+                        model.isMarkingUp.toggle()
+                    }
+                    .accessibilityAddTraits(model.isMarkingUp ? .isSelected : [])
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("Undo", systemImage: "arrow.uturn.backward", action: model.undo)
@@ -153,6 +171,7 @@ private struct VerseImagePreview: View {
     let model: VerseImageComposerModel
     @GestureState private var photoDrag = CGSize.zero
     @GestureState private var textDrag = CGSize.zero
+    @State private var liveStroke: InkStroke?
 
     var body: some View {
         GeometryReader { proxy in
@@ -162,10 +181,46 @@ private struct VerseImagePreview: View {
                 VerseShareArtwork(
                     model: model,
                     photoTranslation: model.background == .photo ? photoDrag : .zero,
-                    textTranslation: textDrag
+                    textTranslation: textDrag,
+                    liveStroke: liveStroke
                 )
 
-                Color.clear
+                if model.isMarkingUp {
+                    InkCaptureView(
+                        allowsFinger: model.drawsWithFinger,
+                        onChange: { points in
+                            liveStroke = points.isEmpty
+                                ? nil
+                                : InkStroke(points: points, color: model.inkColor, width: model.inkWidth)
+                        },
+                        onEnd: { points in
+                            model.addInkStroke(points)
+                            liveStroke = nil
+                        }
+                    )
+                } else {
+                    moveLayers(size: size)
+                }
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(.white.opacity(0.25), lineWidth: 1)
+                    .allowsHitTesting(false)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .shadow(color: .black.opacity(0.18), radius: 14, y: 8)
+        }
+        .aspectRatio(model.format.aspectRatio, contentMode: .fit)
+        .animation(.snappy, value: model.format)
+        .accessibilityLabel("Verse image preview")
+        .accessibilityHint("Drag the verse text to reposition it. Drag a selected photo to reposition the background. The position buttons below do the same.")
+    }
+
+    /// The drag areas that reposition the photo and the text, off while drawing.
+    @ViewBuilder
+    private func moveLayers(size: CGSize) -> some View {
+        ZStack {
+            Color.clear
                     .contentShape(Rectangle())
                     .gesture(
                         DragGesture()
@@ -197,19 +252,7 @@ private struct VerseImagePreview: View {
                                 ))
                             }
                     )
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(.white.opacity(0.25), lineWidth: 1)
-                    .allowsHitTesting(false)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 18))
-            .shadow(color: .black.opacity(0.18), radius: 14, y: 8)
         }
-        .aspectRatio(model.format.aspectRatio, contentMode: .fit)
-        .animation(.snappy, value: model.format)
-        .accessibilityLabel("Verse image preview")
-        .accessibilityHint("Drag the verse text to reposition it. Drag a selected photo to reposition the background. The position buttons below do the same.")
     }
 }
 
@@ -267,6 +310,62 @@ private struct VerseImageCanvasControls: View {
                     onCenter: { model.photoOffset = .zero }
                 )
                 .disabled(model.photo == nil)
+            }
+        }
+        .padding()
+        .glassEffect(.regular, in: .rect(cornerRadius: 18))
+    }
+}
+
+private struct VerseImageMarkupControls: View {
+    let model: VerseImageComposerModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Markup").font(.headline)
+                Spacer()
+                Button("Done") { model.isMarkingUp = false }
+                    .fontWeight(.semibold)
+            }
+
+            HStack(spacing: 12) {
+                ForEach(VerseImageInk.palette, id: \.self) { ink in
+                    Button {
+                        model.inkColor = ink
+                    } label: {
+                        Circle()
+                            .fill(ink)
+                            .frame(width: 26, height: 26)
+                            .overlay(Circle().stroke(.secondary.opacity(0.5), lineWidth: 1))
+                            .overlay {
+                                if model.inkColor == ink {
+                                    Circle().stroke(.primary, lineWidth: 2.5).padding(-4)
+                                }
+                            }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text(ink.description))
+                    .accessibilityAddTraits(model.inkColor == ink ? .isSelected : [])
+                }
+            }
+
+            LabeledContent("Pen Size") {
+                Slider(value: Bindable(model).inkWidth, in: VerseImageInk.widthRange)
+            }
+
+            Toggle("Draw with Finger", isOn: Bindable(model).drawsWithFinger)
+                .tint(.orange)
+
+            HStack {
+                Text("Draw on the preview above. Undo removes the last stroke.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("Clear Drawing", role: .destructive, action: model.clearInk)
+                    .font(.footnote.weight(.semibold))
+                    .buttonStyle(.borderless)
+                    .disabled(model.inkStrokes.isEmpty)
             }
         }
         .padding()

@@ -4,6 +4,8 @@ struct VerseShareArtwork: View {
     let model: VerseImageComposerModel
     var photoTranslation = CGSize.zero
     var textTranslation = CGSize.zero
+    /// The stroke being drawn, shown before it joins the model's strokes.
+    var liveStroke: InkStroke?
 
     var body: some View {
         GeometryReader { proxy in
@@ -45,6 +47,8 @@ struct VerseShareArtwork: View {
                             .padding(.bottom, size.height * 0.035)
                     }
                 }
+
+                VerseInkLayer(strokes: liveStroke.map { model.inkStrokes + [$0] } ?? model.inkStrokes)
             }
             .clipped()
         }
