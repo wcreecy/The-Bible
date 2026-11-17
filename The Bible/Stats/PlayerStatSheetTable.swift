@@ -1,6 +1,8 @@
 import SwiftUI
 
-struct PlayerStatSheetCardView: View {
+/// Every game's attempts, accuracy and best streak in one table. Shown as the Table view of
+/// the All Games card.
+struct PlayerStatSheetTable: View {
     private var stats = GameStats.shared
     @State private var version: Int = 0
 
@@ -33,7 +35,7 @@ struct PlayerStatSheetCardView: View {
 
     /// Keeps the detailed stat table behind an opaque result boundary for the Swift type checker.
     private var cardBody: some View {
-        HeroCard(title: "Player Stat Sheet", icon: "tablecells", tint: .indigo) {
+        Group {
             let _ = stats.version
 
             let breakdown = GameStats.shared.breakdownSnapshot()
