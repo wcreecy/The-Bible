@@ -187,6 +187,7 @@ struct ShareAppRows: View {
 struct AppQRCodeView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var image = AppShare.qrCode()
+    @State private var showsShareSheet = false
     private let appIcon = AppShare.appIcon()
 
     var body: some View {
@@ -230,10 +231,16 @@ struct AppQRCodeView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
 
-                ShareLink(item: AppShare.url, message: Text(AppShare.message)) {
+                Button {
+                    showsShareSheet = true
+                } label: {
                     Label("Share Link Instead", systemImage: "square.and.arrow.up")
                 }
                 .buttonStyle(.bordered)
+                .sheet(isPresented: $showsShareSheet) {
+                    // The controlled link item keeps Messages from fetching an App Store screenshot.
+                    ActivityShareSheet(items: [AppShare.message + "\n\n", AppLinkActivityItem()])
+                }
             }
             .padding(24)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
