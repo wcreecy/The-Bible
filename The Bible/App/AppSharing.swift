@@ -259,11 +259,17 @@ struct AppLinkShareSheet: View {
         AppShare.withAttribution(text, includingLink: includesLink)
     }
 
-    /// Keep the share payload to the intended text. The App Store URL is included as text
-    /// rather than a separate URL item, which prevents Messages from adding an unrelated
-    /// rich-link screenshot as another attachment.
+    /// Keep the shared verse separate from the App Store link. Supplying the link through
+    /// `AppLinkActivityItem` gives Messages controlled metadata, rather than letting it fetch
+    /// an App Store screenshot for a URL embedded in the text.
     private var shareItems: [Any] {
-        [preparedText]
+        var items: [Any] = [text]
+
+        if includesLink {
+            items.append(AppLinkActivityItem())
+        }
+
+        return items
     }
 
     var body: some View {
