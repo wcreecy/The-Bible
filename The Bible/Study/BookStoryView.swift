@@ -222,7 +222,7 @@ private struct BookStoryNavigation: View {
 }
 
 /// Loads an adjacent book's story before displaying it.
-private struct BookStoryDestinationView: View {
+struct BookStoryDestinationView: View {
     let bookName: String
 
     @State private var story: [BibleBookStorySection]?

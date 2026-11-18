@@ -306,6 +306,7 @@ struct BibleSearchResultsView: View {
     @Query private var bookmarks: [Bookmark]
     @State private var verseToast = VerseActionToastState()
     @State private var showsAllTerms = false
+    @State private var pencilTracker = PencilHoverTracker<SearchResult.ID>()
 
     /// Topics shown before "Show All"; broad words such as "prayer" match many.
     private static let collapsedTermCount = 3
@@ -357,7 +358,8 @@ struct BibleSearchResultsView: View {
                             item: item,
                             saved: saved,
                             highlightedText: model.highlightedText(for: item),
-                            onOpen: { open(item) }
+                            onOpen: { open(item) },
+                            pencilTracker: pencilTracker
                         )
                     }
 
@@ -377,6 +379,24 @@ struct BibleSearchResultsView: View {
             .scrollContentBackground(.hidden)
             .background(Color.clear)
             .verseActionToast($verseToast)
+            // One handler presents the actions for whichever result the Pencil is hovering over.
+            .pencilPopover(for: pencilTracker) { id, dismiss in
+                if let item = model.results.first(where: { $0.id == id }) {
+                    PencilActionList(dismiss: dismiss) {
+                        Button {
+                            dismiss()
+                            open(item)
+                        } label: {
+                            Label("Open in Bible", systemImage: "book")
+                        }
+
+                        VerseActionMenuContent(
+                            verse: item.verseActionReference,
+                            saved: saved
+                        )
+                    }
+                }
+            }
             // Topic rows open a preview of their whole passage.
             .scripturePassagePreviews()
             .onChange(of: model.termMatches) {
@@ -572,6 +592,7 @@ struct BibleSearchResultRow: View {
     let saved: SavedVerseCollections
     let highlightedText: AttributedString
     let onOpen: () -> Void
+    let pencilTracker: PencilHoverTracker<SearchResult.ID>
 
     var body: some View {
         HStack(spacing: 12) {
@@ -622,6 +643,18 @@ struct BibleSearchResultRow: View {
             item.isReferenceMatch
                 ? Color.accentColor.opacity(0.08)
                 : Color.clear
+        )
+        .pencilHover(item.id, in: pencilTracker)
+    }
+}
+
+extension SearchResult {
+    var verseActionReference: VerseActionReference {
+        VerseActionReference(
+            bookName: bookName,
+            chapterNumber: chapterNumber,
+            verseNumber: verseNumber,
+            verseText: verseText
         )
     }
 }

@@ -46,6 +46,9 @@ struct GamesView: View {
     @State private var verseToRememberOffset = 0
     @State private var recommendationPromptDayKey = ""
     @State private var promptedGameRoutes: Set<String> = []
+    @State private var pencilTracker = PencilHoverTracker<GameRoute>()
+    @State private var progressRoute: GameRoute?
+    @State private var gameShareRequest: GameShareRequest?
 
     private var todayChallengeStore: TodayChallengeStore { .shared }
 
@@ -225,6 +228,12 @@ struct GamesView: View {
                 ReviewRoundView(reviewGameRawValue: rawValue)
             }
         }
+        .sheet(item: $progressRoute) { route in
+            GameProgressSheet(route: route, entry: progressEntry(for: route))
+        }
+        .sheet(item: $gameShareRequest) { request in
+            ActivityShareSheet(items: [request.text])
+        }
         .onAppear {
             todayChallengeStore.refresh()
             refreshPromptCycleIfNeeded()
@@ -275,8 +284,12 @@ struct GamesView: View {
             recommendation: cachedRecommendation,
             onSelect: present,
             onSelectReviewGame: { destination in path.append(destination) },
-            onSelectRecommendation: selectRecommendation
+            onSelectRecommendation: selectRecommendation,
+            pencilTracker: pencilTracker
         )
+        .pencilPopover(for: pencilTracker) { route, dismiss in
+            gamePencilActions(for: route, dismiss: dismiss)
+        }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
@@ -362,6 +375,47 @@ struct GamesView: View {
         path.append(route)
     }
 
+    private func gamePencilActions(for route: GameRoute, dismiss: @escaping () -> Void) -> some View {
+        PencilActionList(dismiss: dismiss) {
+            Button {
+                dismiss()
+                present(route)
+            } label: {
+                Label("Open Game", systemImage: "play.fill")
+            }
+
+            Button {
+                dismiss()
+                progressRoute = route
+            } label: {
+                Label("View Progress", systemImage: "chart.bar")
+            }
+
+            Button {
+                dismiss()
+                gameShareRequest = GameShareRequest(text: shareText(for: route))
+            } label: {
+                Label("Share Result", systemImage: "square.and.arrow.up")
+            }
+        }
+    }
+
+    private func progressEntry(for route: GameRoute) -> GameStats.GameBreakdown.Entry? {
+        GameStats.shared.breakdownSnapshot().entries.first { $0.name == route.displayName }
+    }
+
+    private func shareText(for route: GameRoute) -> String {
+        guard let entry = progressEntry(for: route), entry.answered > 0 else {
+            return String(localized: "I'm going to play \(route.visibleName) in The Bible.")
+        }
+
+        let accuracy = Int((Double(entry.correct) / Double(entry.answered) * 100).rounded())
+        let bestStreak = max(0, entry.bestStreak ?? 0)
+        return String(
+            localized: "I played \(route.visibleName) in The Bible: \(entry.correct)/\(entry.answered) correct (\(accuracy)% accuracy), with a best streak of \(bestStreak)."
+        )
+    }
+
     private func selectRecommendation(_ destination: GameRecommendationDestination) {
         switch destination {
         case .game(let route):
@@ -422,6 +476,11 @@ struct GamesView: View {
         }
         return results[GameStats.localDayKey(for: Date())]
     }
+}
+
+private struct GameShareRequest: Identifiable {
+    let id = UUID()
+    let text: String
 }
 
 #Preview {

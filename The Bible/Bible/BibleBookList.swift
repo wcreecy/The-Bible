@@ -164,6 +164,7 @@ private struct BookPencilPopover: View {
 
     private let readChapters = BibleStatsStore.shared.loadVisitedChapters()
     private let columns = [GridItem(.adaptive(minimum: 44), spacing: 8)]
+    @State private var isShowingRetelling = false
 
     /// Where reading last stopped, when that was in this book.
     private var resumePoint: (chapter: Chapter, verse: Int)? {
@@ -195,6 +196,15 @@ private struct BookPencilPopover: View {
                 action("About \(book.name)", systemImage: "info.circle") {
                     actions.openOverview(book)
                 }
+
+                Button {
+                    isShowingRetelling = true
+                } label: {
+                    Label("Retelling of \(book.name)", systemImage: "book.pages")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
             }
 
             Divider()
@@ -227,6 +237,11 @@ private struct BookPencilPopover: View {
         }
         .padding()
         .frame(width: 330)
+        .sheet(isPresented: $isShowingRetelling) {
+            NavigationStack {
+                BookStoryDestinationView(bookName: book.name)
+            }
+        }
     }
 
     private func action(_ title: String, systemImage: String, perform: @escaping () -> Void) -> some View {

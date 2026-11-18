@@ -27,6 +27,7 @@ struct SearchHomeCard: View {
     @State private var previewedPassage: PassageReference?
     @State private var searchTask: Task<Void, Never>?
     @State private var isSearching = false
+    @State private var pencilTracker = PencilHoverTracker<SearchResult.ID>()
     @FocusState private var isFieldFocused: Bool
 
     private var searchTokens: [String] {
@@ -58,6 +59,20 @@ struct SearchHomeCard: View {
         }
         .sheet(item: $previewedPassage) { reference in
             ScripturePassageSheet(reference: reference)
+        }
+        .pencilPopover(for: pencilTracker) { id, dismiss in
+            if let result = results.first(where: { $0.id == id }) {
+                PencilActionList(dismiss: dismiss) {
+                    Button {
+                        dismiss()
+                        onSelectResult(result)
+                    } label: {
+                        Label("Open in Bible", systemImage: "book")
+                    }
+
+                    VerseActionMenu(verse: result.verseActionReference)
+                }
+            }
         }
     }
 
@@ -223,6 +238,7 @@ struct SearchHomeCard: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Opens this verse in the Bible reader")
+        .pencilHover(result.id, in: pencilTracker)
     }
 
     /// A reference ("John 3:16") wins, then a topic named exactly ("Lord's Prayer"), then the

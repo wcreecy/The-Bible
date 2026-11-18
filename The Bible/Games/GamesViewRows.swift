@@ -12,6 +12,7 @@ struct GameCollectionCard: View {
     let onSelect: (GameRoute) -> Void
     let onSelectReviewGame: (ReviewRoundDestination) -> Void
     let onSelectRecommendation: (GameRecommendationDestination) -> Void
+    let pencilTracker: PencilHoverTracker<GameRoute>
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -42,6 +43,7 @@ struct GameCollectionCard: View {
                                     route: route,
                                     progress: progress(route),
                                     usesExpandedLayout: usesExpandedLayout,
+                                    pencilTracker: pencilTracker,
                                     onSelect: { onSelect(route) }
                                 )
 
@@ -196,7 +198,10 @@ struct GameNavigationRow: View {
     let route: GameRoute
     let progress: GameProgress
     let usesExpandedLayout: Bool
+    let pencilTracker: PencilHoverTracker<GameRoute>
     let onSelect: () -> Void
+
+    @State private var isHovering = false
 
     var body: some View {
         Button(action: onSelect) {
@@ -216,11 +221,67 @@ struct GameNavigationRow: View {
             // The shape belongs on the label: a plain button only responds where its label
             // draws, so on a wide iPad row the empty middle ignored taps.
             .contentShape(Rectangle())
+            .background(
+                route.tint.opacity(isHovering ? 0.14 : 0),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
         }
         .foregroundStyle(.primary)
         .buttonStyle(.plain)
+        .onHover { isHovering in
+            self.isHovering = isHovering
+            if isHovering {
+                Haptics.selection()
+            }
+            pencilTracker.hover(route, isHovering: isHovering)
+        }
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("gameRoute-\(route.rawValue)")
+    }
+}
+
+struct GameProgressSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let route: GameRoute
+    let entry: GameStats.GameBreakdown.Entry?
+
+    private var answered: Int { max(0, entry?.answered ?? 0) }
+    private var correct: Int { max(0, entry?.correct ?? 0) }
+    private var accuracy: Int {
+        guard answered > 0 else { return 0 }
+        return Int((Double(correct) / Double(answered) * 100).rounded())
+    }
+    private var bestStreak: Int { max(0, entry?.bestStreak ?? 0) }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if answered == 0 {
+                    ContentUnavailableView(
+                        "No Progress Yet",
+                        systemImage: route.systemImage,
+                        description: Text("Play \(route.visibleName) to start tracking your progress.")
+                    )
+                } else {
+                    List {
+                        Section {
+                            LabeledContent("Played", value: answered.formatted())
+                            LabeledContent("Correct", value: correct.formatted())
+                            LabeledContent("Accuracy", value: "\(accuracy)%")
+                            LabeledContent("Best Streak", value: bestStreak.formatted())
+                        }
+                    }
+                }
+            }
+            .navigationTitle(route.visibleName)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
     }
 }
 

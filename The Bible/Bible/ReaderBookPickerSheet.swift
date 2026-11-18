@@ -13,6 +13,7 @@ struct ReaderBookPickerSheet: View {
     let onSelectBook: (Book) -> Void
     let onSelectReference: (ResolvedReference) -> Void
     let onCancel: () -> Void
+    @State private var pencilTracker = PencilHoverTracker<String>()
 
     var body: some View {
         NavigationStack {
@@ -51,6 +52,18 @@ struct ReaderBookPickerSheet: View {
                     guard isBrowsing, let currentBookName else { return }
                     proxy.scrollTo(currentBookName, anchor: .center)
                 }
+                .pencilPopover(for: pencilTracker) { bookName, dismiss in
+                    if let book = BibleData.books.first(where: { $0.name == bookName }) {
+                        PencilActionList(dismiss: dismiss) {
+                            Button {
+                                dismiss()
+                                onSelectBook(book)
+                            } label: {
+                                Label("Open \(book.name)", systemImage: "book")
+                            }
+                        }
+                    }
+                }
             }
             .searchable(text: $searchText, prompt: "Book or reference")
             .onSubmit(of: .search) {
@@ -71,27 +84,13 @@ struct ReaderBookPickerSheet: View {
     // MARK: - Rows
 
     private func bookRow(_ book: Book) -> some View {
-        let isCurrent = book.name == currentBookName
-        return Button {
-            onSelectBook(book)
-        } label: {
-            HStack {
-                Text(book.name)
-                    .fontWeight(isCurrent ? .semibold : .regular)
-                    .foregroundStyle(isCurrent ? Color.accentColor : .primary)
-                Spacer(minLength: 0)
-                if isCurrent {
-                    Image(systemName: "checkmark")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Color.accentColor)
-                        .accessibilityHidden(true)
-                }
-            }
-            .contentShape(Rectangle())
-        }
+        ReaderBookPickerRow(
+            book: book,
+            isCurrent: book.name == currentBookName,
+            pencilTracker: pencilTracker,
+            onSelect: { onSelectBook(book) }
+        )
         .id(book.name)
-        .accessibilityAddTraits(isCurrent ? .isSelected : [])
-        .accessibilityHint(isCurrent ? "The book you are reading" : "")
     }
 
     private func groupHeader(_ group: PickerGroup) -> some View {
@@ -142,5 +141,43 @@ struct ReaderBookPickerSheet: View {
 
         let names = BibleBookNameMatcher.suggestions(for: query, in: BibleData.books.map(\.name))
         return names.compactMap { name in BibleData.books.first(where: { $0.name == name }) }
+    }
+}
+
+private struct ReaderBookPickerRow: View {
+    let book: Book
+    let isCurrent: Bool
+    let pencilTracker: PencilHoverTracker<String>
+    let onSelect: () -> Void
+
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack {
+                Text(book.name)
+                    .fontWeight(isCurrent ? .semibold : .regular)
+                    .foregroundStyle(isCurrent ? Color.accentColor : .primary)
+                Spacer(minLength: 0)
+                if isCurrent {
+                    Image(systemName: "checkmark")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.accentColor)
+                        .accessibilityHidden(true)
+                }
+            }
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .contentShape(Rectangle())
+            .background(
+                Color.accentColor.opacity(isHovering ? 0.14 : 0),
+                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+            )
+        }
+        .buttonStyle(.plain)
+        .pencilHover(book.name, in: pencilTracker)
+        .onHover { isHovering = $0 }
+        .accessibilityAddTraits(isCurrent ? .isSelected : [])
+        .accessibilityHint(isCurrent ? "The book you are reading" : "")
     }
 }

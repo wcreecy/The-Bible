@@ -159,6 +159,7 @@ struct ReadingChapterVerseList: View {
                 },
                 onPencilHoverChange: { isHovering in
                     if isHovering {
+                        Haptics.selection()
                         pencilHoveredVerse = verse.number
                     } else if pencilHoveredVerse == verse.number {
                         pencilHoveredVerse = nil

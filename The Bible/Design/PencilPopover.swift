@@ -112,10 +112,15 @@ private struct PencilActionButtonStyle: ButtonStyle {
 final class PencilHoverTracker<ID: Hashable> {
     private var current: ID?
     private var lastEnded: (id: ID, date: Date)?
+    private let grace: TimeInterval
+    private let now: () -> Date
 
     /// A squeeze can end the hover just before it's reported, so a hover that ended a moment
-    /// ago still counts.
-    private static var grace: TimeInterval { 1.5 }
+    /// ago still counts. `now` is injected by tests to verify the grace period deterministically.
+    init(grace: TimeInterval = 1.5, now: @escaping () -> Date = Date.init) {
+        self.grace = grace
+        self.now = now
+    }
 
     func hover(_ id: ID, isHovering: Bool) {
         if isHovering {
@@ -123,13 +128,13 @@ final class PencilHoverTracker<ID: Hashable> {
             lastEnded = nil
         } else if current == id {
             current = nil
-            lastEnded = (id, Date())
+            lastEnded = (id, now())
         }
     }
 
     var target: ID? {
         if let current { return current }
-        guard let lastEnded, Date().timeIntervalSince(lastEnded.date) < Self.grace else { return nil }
+        guard let lastEnded, now().timeIntervalSince(lastEnded.date) < grace else { return nil }
         return lastEnded.id
     }
 }
@@ -174,7 +179,7 @@ private struct PencilListPopoverModifier<ID: Hashable, PopoverContent: View>: Vi
 extension View {
     /// Reports whether the Apple Pencil is over this row or cell to `tracker`.
     func pencilHover<ID: Hashable>(_ id: ID, in tracker: PencilHoverTracker<ID>) -> some View {
-        onHover { tracker.hover(id, isHovering: $0) }
+        modifier(PencilHoverFeedbackModifier(id: id, tracker: tracker))
     }
 
     /// Opens a popover for the hovered item when the Pencil is squeezed or double-tapped over
@@ -185,5 +190,23 @@ extension View {
         @ViewBuilder content: @escaping (ID, _ dismiss: @escaping () -> Void) -> Content
     ) -> some View {
         modifier(PencilListPopoverModifier(tracker: tracker, popoverContent: content))
+    }
+}
+
+private struct PencilHoverFeedbackModifier<ID: Hashable>: ViewModifier {
+    let id: ID
+    let tracker: PencilHoverTracker<ID>
+    @State private var hoverCount = 0
+
+    func body(content: Content) -> some View {
+        content
+            .onHover { isHovering in
+                if isHovering {
+                    hoverCount += 1
+                }
+                tracker.hover(id, isHovering: isHovering)
+            }
+            // Lets iPadOS direct selection feedback to Apple Pencil Pro when it is available.
+            .sensoryFeedback(.selection, trigger: hoverCount)
     }
 }
