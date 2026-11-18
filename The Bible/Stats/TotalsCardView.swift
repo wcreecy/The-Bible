@@ -27,6 +27,8 @@ struct TotalsCardView: View {
     let formatSeconds: (Int) -> String
 
     @Environment(\.colorScheme) private var colorScheme
+    /// The date under the Apple Pencil, pointer or finger on the chart.
+    @State private var selectedDate: Date?
 
     private var segmentedTint: Color {
         colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
@@ -69,6 +71,17 @@ struct TotalsCardView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         Chart {
+                            if let selectedBar {
+                                RuleMark(x: .value("Selected", selectedBar.date, unit: currentBarUnit))
+                                    .foregroundStyle(Color.secondary.opacity(0.35))
+                                    .annotation(
+                                        position: .top,
+                                        spacing: 4,
+                                        overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
+                                    ) {
+                                        selectionLabel(for: selectedBar)
+                                    }
+                            }
                             ForEach(series, id: \.date) { item in
                                 let minutes = Double(item.seconds) / 60.0
                                 BarMark(
@@ -78,7 +91,7 @@ struct TotalsCardView: View {
                                 .foregroundStyle(Color.accentColor.opacity(0.85))
                                 .cornerRadius(3)
                                 .annotation(position: .top, alignment: .center) {
-                                    if minutes > 0, showValueLabels {
+                                    if minutes > 0, showValueLabels, selectedBar == nil {
                                         Text(minutes.formatted(.number.precision(.fractionLength(minutes < 1 ? 1 : 0))))
                                             .font(.caption2.weight(.semibold))
                                             .foregroundStyle(.secondary)
@@ -87,6 +100,8 @@ struct TotalsCardView: View {
                                 }
                             }
                         }
+                        // Hovering a bar (or touching it) shows its exact date and time.
+                        .chartXSelection(value: $selectedDate)
                         // Ensure a non-zero y-domain even when all values are zero
                         .chartYScale(domain: 0...max(1, maxMinutesInSeries))
                         .chartYAxisLabel("Minutes")
@@ -140,6 +155,35 @@ struct TotalsCardView: View {
         }
         // NOTE: Removed "entire card is tappable" gesture. It could intercept touches intended
         // for other controls (like the top mode picker) if view bounds overlap during animations.
+    }
+
+    /// The bar under the pointer: the one whose day, month or year holds the selected date.
+    private var selectedBar: (date: Date, seconds: Int)? {
+        guard let selectedDate else { return nil }
+        return series.first { Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: currentBarUnit) }
+    }
+
+    private func selectionLabel(for bar: (date: Date, seconds: Int)) -> some View {
+        VStack(spacing: 2) {
+            Text(barDateText(bar.date))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text(bar.seconds > 0 ? formatSeconds(bar.seconds) : "No reading")
+                .font(.caption.weight(.semibold))
+                .monospacedDigit()
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    /// The bar's date in the size of the bar: a day, a month, or a year.
+    private func barDateText(_ date: Date) -> String {
+        switch currentBarUnit {
+        case .year: date.formatted(.dateTime.year())
+        case .month: date.formatted(.dateTime.month(.wide).year())
+        default: date.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
+        }
     }
 
     // Max minutes helper for a safe y-domain

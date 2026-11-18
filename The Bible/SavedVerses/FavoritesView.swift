@@ -60,6 +60,7 @@ struct FavoritesView: View {
     @State private var toastMessage: ToastMessage?
     @State private var persistenceFailure: PersistenceFailure?
     @State private var imageComposerVerse: VerseActionReference?
+    @State private var pencilTracker = PencilHoverTracker<PersistentIdentifier>()
     @State private var shareTextVerse: VerseActionReference?
     /// Prepared only when saved content, search text, or sort order changes—not for every
     /// unrelated SwiftUI body update (toolbar, toast, sheet presentation, and so on).
@@ -201,6 +202,12 @@ struct FavoritesView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        // The press-and-hold actions at the Apple Pencil tip, on a squeeze or double-tap.
+        .pencilPopover(for: pencilTracker) { id, dismiss in
+            if let favorite = favorites.first(where: { $0.persistentModelID == id }) {
+                PencilActionList(dismiss: dismiss) { rowActions(for: favorite) }
+            }
+        }
     }
 
     private var flashcardsRow: some View {
@@ -268,19 +275,8 @@ struct FavoritesView: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Opens the verse in the Bible")
-        .contextMenu {
-            Button("Open in Bible", systemImage: "book") { openInBibleTab(favorite) }
-            Button("Copy", systemImage: "doc.on.doc") { copy(favorite) }
-            VerseShareMenu(
-                verse: shareReference(for: favorite),
-                onCreateImage: { imageComposerVerse = shareReference(for: favorite) },
-                onShareText: { shareTextVerse = shareReference(for: favorite) }
-            ) {
-                Label("Share", systemImage: "square.and.arrow.up")
-            }
-            Divider()
-            Button("Remove Favorite", systemImage: "heart.slash", role: .destructive) { remove([favorite]) }
-        }
+        .contextMenu { rowActions(for: favorite) }
+        .pencilHover(favorite.persistentModelID, in: pencilTracker)
         .swipeActions(edge: .leading) {
             VerseShareMenu(
                 verse: shareReference(for: favorite),
@@ -294,6 +290,22 @@ struct FavoritesView: View {
         .swipeActions(edge: .trailing) {
             Button("Remove", systemImage: "heart.slash", role: .destructive) { remove([favorite]) }
         }
+    }
+
+    /// The press-and-hold menu, which the Apple Pencil popover shows too.
+    @ViewBuilder
+    private func rowActions(for favorite: Favorite) -> some View {
+        Button("Open in Bible", systemImage: "book") { openInBibleTab(favorite) }
+        Button("Copy", systemImage: "doc.on.doc") { copy(favorite) }
+        VerseShareMenu(
+            verse: shareReference(for: favorite),
+            onCreateImage: { imageComposerVerse = shareReference(for: favorite) },
+            onShareText: { shareTextVerse = shareReference(for: favorite) }
+        ) {
+            Label("Share", systemImage: "square.and.arrow.up")
+        }
+        Divider()
+        Button("Remove Favorite", systemImage: "heart.slash", role: .destructive) { remove([favorite]) }
     }
 
     // MARK: - Filtering and grouping

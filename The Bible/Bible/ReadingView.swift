@@ -525,6 +525,7 @@ struct ReadingView: View {
                         showsFullReferences: showsFullReferences,
                         onOpenNote: { verse in noteEditorVerse = verse },
                         onOpenCrossReferences: { verse in crossReferenceVerse = verse },
+                        onShowChapterInsights: { chapterInsightsDismissal.isPresented = true },
                         onVerseActionFeedback: handleVerseActionFeedback,
                         planReadingEndVerse: ReadingPlanStore.shared.sessionContext(
                             atBook: viewModel.currentBook.name,

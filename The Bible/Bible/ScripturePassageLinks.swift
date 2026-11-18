@@ -99,6 +99,7 @@ struct PassageReferenceChips: View {
                             .background(Color.accentColor.opacity(0.12), in: Capsule())
                     }
                     .accessibilityHint("Shows a preview of the passage")
+                    .passageHoverPreview { [reference] }
                 case .text(let text):
                     Text(text)
                         .font(.caption)

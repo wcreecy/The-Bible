@@ -163,6 +163,7 @@ struct FilterChipLabel<Content: View>: View {
 }
 
 struct NotesListCard: View {
+    @State private var pencilTracker = PencilHoverTracker<NotesListItem.ID>()
     let sections: [NotesListSection]
     let selectedID: NotesListItem.ID?
     let hasAnyNotes: Bool
@@ -191,6 +192,18 @@ struct NotesListCard: View {
                     if let title = section.title {
                         groupHeader(section, title: title)
                     }
+                }
+            }
+        }
+        // The press-and-hold actions at the Apple Pencil tip, on a squeeze or double-tap.
+        .pencilPopover(for: pencilTracker) { id, dismiss in
+            if let item = sections.lazy.flatMap(\.items).first(where: { $0.id == id }) {
+                PencilActionList(dismiss: dismiss) {
+                    NotesRowActions(
+                        item: item,
+                        editAction: { editAction(item) },
+                        deleteAction: { deleteAction(item) }
+                    )
                 }
             }
         }
@@ -279,6 +292,7 @@ struct NotesListCard: View {
                 editAction: { editAction(item) },
                 deleteAction: { deleteAction(item) }
             )
+            .pencilHover(item.id, in: pencilTracker)
             .listRowBackground(rowBackground(
                 isSelected: item.id == selectedID,
                 isFirst: item.id == items.first?.id,
@@ -322,23 +336,7 @@ struct NotesListRow: View {
             deleteButton
         }
         .contextMenu {
-            favoriteButton
-
-            Button("Edit", systemImage: "pencil", action: editAction)
-
-            ShareLink(item: item.shareText) {
-                Label("Share", systemImage: "square.and.arrow.up")
-            }
-
-            if item.bibleLocation != nil {
-                Button("Open in Bible", systemImage: "book.closed") {
-                    item.openInBible()
-                }
-            }
-
-            Divider()
-
-            deleteButton
+            NotesRowActions(item: item, editAction: editAction, deleteAction: deleteAction)
         }
     }
 
@@ -354,6 +352,48 @@ struct NotesListRow: View {
     }
 
     private var deleteButton: some View {
+        Button(role: .destructive, action: deleteAction) {
+            Label {
+                Text(item.deleteTitle)
+            } icon: {
+                Image(systemName: "trash")
+            }
+        }
+    }
+}
+
+/// A note's press-and-hold menu, which the Apple Pencil popover on the notes list shows too.
+struct NotesRowActions: View {
+    @Environment(\.modelContext) private var modelContext
+
+    let item: NotesListItem
+    let editAction: () -> Void
+    let deleteAction: () -> Void
+
+    var body: some View {
+        Button {
+            item.toggleFavorite(in: modelContext)
+        } label: {
+            Label(
+                item.isFavorite ? "Unpin" : "Pin to Top",
+                systemImage: item.isFavorite ? "pin.slash" : "pin"
+            )
+        }
+
+        Button("Edit", systemImage: "pencil", action: editAction)
+
+        ShareLink(item: item.shareText) {
+            Label("Share", systemImage: "square.and.arrow.up")
+        }
+
+        if item.bibleLocation != nil {
+            Button("Open in Bible", systemImage: "book.closed") {
+                item.openInBible()
+            }
+        }
+
+        Divider()
+
         Button(role: .destructive, action: deleteAction) {
             Label {
                 Text(item.deleteTitle)
@@ -486,6 +526,10 @@ struct NotesTitleButton: View {
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
+                            // Resting the Apple Pencil on the passage shows what it says.
+                            .passageHoverPreview {
+                                PassageReferenceParser.parseList(reference, book: nil, chapter: nil)
+                            }
                     }
                 }
                 .padding(.leading, 12)

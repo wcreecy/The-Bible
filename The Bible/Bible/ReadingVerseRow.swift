@@ -29,6 +29,9 @@ struct ReadingVerseRow: View {
     /// The verse shown on the Pinned Verse widget.
     let isPinnedToWidget: Bool
     let hasCrossReferences: Bool
+    /// The passages this verse's connections point to, previewed when the Pencil hovers over the
+    /// connections marker.
+    var crossReferenceTargets: [String] = []
     let isRead: Bool
     /// Master switch for markers beside the reference.
     let showsMarkers: Bool
@@ -119,6 +122,9 @@ struct ReadingVerseRow: View {
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(rowBackground)
+        .background {
+            HighlightPreviewWash(bookName: bookName, chapterNumber: chapterNumber, verseNumber: verse.number)
+        }
         // "You are here" after opening at this verse: an orange glow that fades. Orange marks
         // the reader's place and is never a highlight color, so neither is mistaken for one.
         .overlay {
@@ -178,6 +184,11 @@ struct ReadingVerseRow: View {
             .buttonStyle(.plain)
             .contentShape(Rectangle().inset(by: -10))
             .accessibilityHidden(true)
+            .passageHoverPreview(isEnabled: !crossReferenceTargets.isEmpty) {
+                crossReferenceTargets.flatMap {
+                    PassageReferenceParser.parseList($0, book: bookName, chapter: chapterNumber)
+                }
+            }
         }
         if showsNoteMarker && hasNote {
             Button(action: onOpenNote) {

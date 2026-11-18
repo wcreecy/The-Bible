@@ -11,6 +11,18 @@ struct ChaptersView: View {
     @State private var isShowingOverview = false
     @State private var headerHeight: CGFloat = 0
     @State private var isHeaderScrolledAway = false
+    /// The chapter whose insights or Scripture connections show in a sheet, after a Pencil
+    /// squeeze on its number.
+    @State private var insightsChapter: ChapterSheetTarget?
+    @State private var connectionsChapter: ChapterSheetTarget?
+    // One squeeze / double-tap handler for the whole grid, like the reader's, rather than one
+    // per chapter: it opens the popover for the chapter the Pencil is over (or just left).
+    @Environment(\.preferredPencilDoubleTapAction) private var pencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var pencilSqueezeAction
+    @State private var hoveredChapter: Int?
+    @State private var lastHoveredChapter: (number: Int, endedAt: Date?)?
+    @State private var pencilChapter: ChapterSheetTarget?
+    @State private var pencilAnchor: PopoverAttachmentAnchor = .point(.center)
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -54,7 +66,16 @@ struct ChaptersView: View {
                         ForEach(book.chapters) { chapter in
                             ChapterNumberButton(
                                 number: chapter.number,
-                                isCompleted: completedChapters.contains("\(book.name):\(chapter.number)")
+                                isCompleted: completedChapters.contains("\(book.name):\(chapter.number)"),
+                                onHoverChange: { isHovering in
+                                    if isHovering {
+                                        hoveredChapter = chapter.number
+                                        lastHoveredChapter = (chapter.number, nil)
+                                    } else if hoveredChapter == chapter.number {
+                                        hoveredChapter = nil
+                                        lastHoveredChapter = (chapter.number, Date())
+                                    }
+                                }
                             ) {
                                 onSelectChapter(chapter)
                             }
@@ -63,6 +84,18 @@ struct ChaptersView: View {
                 }
                 .padding(AppDesignMetrics.cardPadding)
                 .heroCardSurface()
+                .onPencilDoubleTap { value in
+                    guard pencilDoubleTapAction != .ignore else { return }
+                    presentPencilPopover(at: value.hoverPose)
+                }
+                .onPencilSqueeze { phase in
+                    guard pencilSqueezeAction != .ignore, case let .ended(value) = phase else { return }
+                    presentPencilPopover(at: value.hoverPose)
+                }
+                .popover(item: $pencilChapter, attachmentAnchor: pencilAnchor) { target in
+                    chapterPencilActions(for: target.number)
+                        .presentationCompactAdaptation(.popover)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical)
@@ -87,6 +120,21 @@ struct ChaptersView: View {
         }
         .navigationDestination(isPresented: $isShowingOverview) {
             BookOverviewView(bookName: book.name)
+        }
+        .sheet(item: $insightsChapter) { target in
+            NavigationStack {
+                ChapterInsightsView(bookName: book.name, chapterNumber: target.number)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") { insightsChapter = nil }
+                        }
+                    }
+            }
+        }
+        .sheet(item: $connectionsChapter) { target in
+            ChapterConnectionsSheet(bookName: book.name, chapterNumber: target.number) {
+                connectionsChapter = nil
+            }
         }
         .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
@@ -142,6 +190,55 @@ struct ChaptersView: View {
         .heroCardSurface()
     }
 
+    /// Opens the actions for the chapter under the Pencil: the one it's over, or was over a moment ago.
+    private func presentPencilPopover(at pose: PencilHoverPose?) {
+        let number: Int?
+        if let hoveredChapter {
+            number = hoveredChapter
+        } else if let last = lastHoveredChapter,
+                  last.endedAt.map({ Date().timeIntervalSince($0) < 1.5 }) ?? true {
+            number = last.number
+        } else {
+            number = nil
+        }
+        guard let number else { return }
+        // The pose is in the grid card's space, which is where the popover is attached.
+        pencilAnchor = .point(pose?.anchor ?? .center)
+        pencilChapter = ChapterSheetTarget(number: number)
+    }
+
+    private func chapterPencilActions(for number: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("\(book.name) \(number)")
+                .font(.headline)
+            chapterAction("Open", systemImage: "book") {
+                if let chapter = book.chapters.first(where: { $0.number == number }) {
+                    onSelectChapter(chapter)
+                }
+            }
+            chapterAction("Chapter Insights", systemImage: "lightbulb") {
+                insightsChapter = ChapterSheetTarget(number: number)
+            }
+            chapterAction("Cross-References", systemImage: "arrow.triangle.branch") {
+                connectionsChapter = ChapterSheetTarget(number: number)
+            }
+        }
+        .padding()
+        .frame(width: 260)
+    }
+
+    private func chapterAction(_ title: LocalizedStringKey, systemImage: String, perform: @escaping () -> Void) -> some View {
+        Button {
+            pencilChapter = nil
+            perform()
+        } label: {
+            Label(title, systemImage: systemImage)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.large)
+    }
+
     private func refreshCompletedChapters() {
         completedChapters = BibleStatsStore.shared.loadVisitedChapters()
     }
@@ -151,6 +248,7 @@ struct ChaptersView: View {
 private struct ChapterNumberButton: View {
     let number: Int
     let isCompleted: Bool
+    let onHoverChange: (Bool) -> Void
     let action: () -> Void
 
     var body: some View {
@@ -167,12 +265,54 @@ private struct ChapterNumberButton: View {
                         .padding(.horizontal, 2)
                 }
                 .contentShape(Rectangle())
+                .hoverEffect(.highlight)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Chapter \(number)")
         .accessibilityValue(isCompleted ? "Read" : "")
         .accessibilityHint("Opens the chapter")
+        .onHover(perform: onHoverChange)
     }
+}
+
+/// Every Scripture connection in a chapter, loaded when it opens.
+private struct ChapterConnectionsSheet: View {
+    let bookName: String
+    let chapterNumber: Int
+    let onDone: () -> Void
+    @State private var relatedVerses: [ChapterRelatedVerse]?
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if let relatedVerses {
+                    ChapterCrossReferencesView(
+                        bookName: bookName,
+                        chapterNumber: chapterNumber,
+                        relatedVerses: relatedVerses
+                    )
+                } else {
+                    ProgressView()
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done", action: onDone)
+                }
+            }
+        }
+        .task {
+            relatedVerses = await ChapterInsightsRepository.shared
+                .insights(forBookNamed: bookName, chapterNumber: chapterNumber)?
+                .relatedVerses ?? []
+        }
+    }
+}
+
+/// A chapter chosen for a sheet.
+private struct ChapterSheetTarget: Identifiable {
+    let number: Int
+    var id: Int { number }
 }
 
 private struct GenesisChapterHeader: View {

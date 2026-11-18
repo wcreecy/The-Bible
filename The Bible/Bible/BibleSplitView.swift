@@ -234,7 +234,20 @@ struct BibleSplitView: View {
                         alphabetical: sortAlphabetically,
                         // On the Bible Study home, no book is open.
                         selectedBookName: isStudyMode && detailPath.isEmpty ? nil : selectedBook?.name,
-                        onSelect: select
+                        onSelect: select,
+                        pencilActions: BookPencilActions(
+                            openChapter: { book, chapter, verse in
+                                openReader(
+                                    bookName: book.name,
+                                    chapter: chapter.number,
+                                    verse: verse ?? 1,
+                                    highlightsStartVerse: verse != nil
+                                )
+                            },
+                            openOverview: { book in
+                                openOverview(of: book)
+                            }
+                        )
                     )
                 }
                 .padding(.horizontal, 12)
@@ -511,14 +524,30 @@ struct BibleSplitView: View {
         bookName: String,
         chapter: Int,
         verse: Int,
-        preservingSearchContext: Bool = false
+        preservingSearchContext: Bool = false,
+        highlightsStartVerse: Bool = true
     ) {
         selectBookForReader(named: bookName, clearingSearchContext: !preservingSearchContext)
         Task { @MainActor in
             // The book change may replace the detail stack; install the route after it.
             await Task.yield()
             detailPath = bookPath(for: bookName)
-            detailPath.append(ReadingRoute(bookName: bookName, chapterNumber: chapter, verseNumber: verse))
+            detailPath.append(ReadingRoute(
+                bookName: bookName,
+                chapterNumber: chapter,
+                verseNumber: verse,
+                highlightsStartVerse: highlightsStartVerse
+            ))
+        }
+    }
+
+    /// Shows a book's overview in the detail pane, over its chapter grid.
+    private func openOverview(of book: Book) {
+        selectBookForReader(named: book.name)
+        Task { @MainActor in
+            await Task.yield()
+            detailPath = bookPath(for: book.name)
+            detailPath.append(OverviewRoute(bookName: book.name))
         }
     }
 }

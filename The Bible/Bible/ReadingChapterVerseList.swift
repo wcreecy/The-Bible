@@ -33,6 +33,8 @@ struct ReadingChapterVerseList: View {
     let showsFullReferences: Bool
     let onOpenNote: (Verse) -> Void
     let onOpenCrossReferences: (Verse) -> Void
+    /// Opens Chapter Insights for this chapter, from a verse's action row.
+    let onShowChapterInsights: () -> Void
     let onVerseActionFeedback: (VerseActionFeedback) -> Void
     /// A reading plan's reading ends after this verse; its panel follows it.
     let planReadingEndVerse: Int?
@@ -49,6 +51,7 @@ struct ReadingChapterVerseList: View {
         showsFullReferences: Bool,
         onOpenNote: @escaping (Verse) -> Void,
         onOpenCrossReferences: @escaping (Verse) -> Void,
+        onShowChapterInsights: @escaping () -> Void,
         onVerseActionFeedback: @escaping (VerseActionFeedback) -> Void,
         planReadingEndVerse: Int? = nil
     ) {
@@ -63,6 +66,7 @@ struct ReadingChapterVerseList: View {
         self.showsFullReferences = showsFullReferences
         self.onOpenNote = onOpenNote
         self.onOpenCrossReferences = onOpenCrossReferences
+        self.onShowChapterInsights = onShowChapterInsights
         self.onVerseActionFeedback = onVerseActionFeedback
         self.planReadingEndVerse = planReadingEndVerse
 
@@ -113,6 +117,7 @@ struct ReadingChapterVerseList: View {
                     verse: verse.number
                 ),
                 hasCrossReferences: chapterStatus.crossReferenceVerseNumbers.contains(verse.number),
+                crossReferenceTargets: chapterStatus.crossReferenceTargets[verse.number] ?? [],
                 isRead: readVerseNumbers.contains(verse.number),
                 showsMarkers: showsVerseMarkers,
                 showsBookmarkMarker: showsBookmarkMarkers,
@@ -173,7 +178,12 @@ struct ReadingChapterVerseList: View {
                         verseText: verse.text
                     ),
                     presentation: .buttons,
-                    onFeedback: onVerseActionFeedback
+                    onFeedback: onVerseActionFeedback,
+                    // Both are in the row's More menu, reached after a long press or a Pencil squeeze.
+                    onShowChapterInsights: onShowChapterInsights,
+                    onShowCrossReferences: chapterStatus.crossReferenceVerseNumbers.contains(verse.number)
+                        ? { onOpenCrossReferences(verse) }
+                        : nil
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal)
@@ -209,6 +219,8 @@ struct ReadingChapterStatusIndex {
     let favoriteVerseNumbers: Set<Int>
     let bookmarkedVerseNumbers: Set<Int>
     let crossReferenceVerseNumbers: Set<Int>
+    /// The passages each verse's Scripture connections point to, as written in the study data.
+    let crossReferenceTargets: [Int: [String]]
     private let notesByVerse: [Int: [VerseNote]]
 
     init(
@@ -226,6 +238,8 @@ struct ReadingChapterStatusIndex {
             $0.bookName == bookName && $0.chapterNumber == chapterNumber ? $0.verseNumber : nil
         })
         crossReferenceVerseNumbers = Set(crossReferences.map(\.sourceVerse))
+        crossReferenceTargets = Dictionary(grouping: crossReferences, by: \.sourceVerse)
+            .mapValues { $0.map(\.relatedReference) }
 
         var indexedNotes: [Int: [VerseNote]] = [:]
         for note in notes where note.bookName == bookName && note.chapterNumber == chapterNumber {

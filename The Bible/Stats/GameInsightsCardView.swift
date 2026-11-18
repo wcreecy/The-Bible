@@ -2,6 +2,8 @@ import SwiftUI
 
 struct GameInsightsCardView: View {
     private var stats = GameStats.shared
+    /// The day under the Apple Pencil or pointer on the activity grid.
+    @State private var hoveredActivity: (date: Date, answered: Int)?
 
     // Each insight reads from one breakdown and one activity series per redraw, instead of
     // asking GameStats for its own copy.
@@ -87,11 +89,25 @@ struct GameInsightsCardView: View {
                         .aspectRatio(1, contentMode: .fit)
                         .accessibilityLabel(day.date.formatted(date: .abbreviated, time: .omitted))
                         .accessibilityValue("\(day.answered) attempts")
+                        .hoverEffect(.highlight)
+                        .onHover { isHovering in
+                            if isHovering {
+                                hoveredActivity = (day.date, day.answered)
+                            } else if hoveredActivity?.date == day.date {
+                                hoveredActivity = nil
+                            }
+                        }
                 }
             }
-            Text("Darker squares mean more attempts.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            if let hoveredActivity {
+                Text("\(hoveredActivity.date.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())) · \(hoveredActivity.answered) \(hoveredActivity.answered == 1 ? "attempt" : "attempts")")
+                    .font(.caption.weight(.semibold))
+                    .monospacedDigit()
+            } else {
+                Text("Darker squares mean more attempts.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 

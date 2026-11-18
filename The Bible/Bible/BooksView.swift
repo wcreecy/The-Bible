@@ -25,7 +25,20 @@ struct BooksView: View {
                     books: books,
                     filterText: searchText,
                     alphabetical: sortAlphabetically,
-                    onSelect: { coordinator.push(.book($0)) }
+                    onSelect: { coordinator.push(.book($0)) },
+                    pencilActions: BookPencilActions(
+                        openChapter: { book, chapter, verse in
+                            coordinator.push(.reader(
+                                book: book,
+                                chapter: chapter,
+                                startVerse: verse ?? 1,
+                                highlightsStartVerse: verse != nil
+                            ))
+                        },
+                        openOverview: { book in
+                            coordinator.push(.study(.bookOverview(bookName: book.name)))
+                        }
+                    )
                 )
             }
             .padding(.horizontal, 16)

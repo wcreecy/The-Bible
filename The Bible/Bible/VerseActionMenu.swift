@@ -77,6 +77,8 @@ struct VerseActionMenu: View {
     var onFeedback: ((VerseActionFeedback) -> Void)?
     /// Adds Chapter Insights to the Focus Mode menu.
     var onShowChapterInsights: (() -> Void)?
+    /// Adds Scripture Connections to the menu, for a verse that has some.
+    var onShowCrossReferences: (() -> Void)?
     /// Whether `.buttons` starts with the one-tap highlight colors.
     var showsHighlightColors = true
 
@@ -85,13 +87,15 @@ struct VerseActionMenu: View {
         presentation: VerseActionPresentation = .menu,
         showsHighlightColors: Bool = true,
         onFeedback: ((VerseActionFeedback) -> Void)? = nil,
-        onShowChapterInsights: (() -> Void)? = nil
+        onShowChapterInsights: (() -> Void)? = nil,
+        onShowCrossReferences: (() -> Void)? = nil
     ) {
         self.verse = verse
         self.presentation = presentation
         self.showsHighlightColors = showsHighlightColors
         self.onFeedback = onFeedback
         self.onShowChapterInsights = onShowChapterInsights
+        self.onShowCrossReferences = onShowCrossReferences
 
         // Favorites and bookmarks matter only for this verse. Notes stay unfiltered: a note
         // anywhere can mention this verse, and the mention count needs them all.
@@ -118,7 +122,8 @@ struct VerseActionMenu: View {
             presentation: presentation,
             showsHighlightColors: showsHighlightColors,
             onFeedback: onFeedback,
-            onShowChapterInsights: onShowChapterInsights
+            onShowChapterInsights: onShowChapterInsights,
+            onShowCrossReferences: onShowCrossReferences
         )
     }
 }
@@ -143,6 +148,7 @@ struct VerseActionMenuContent: View {
     var showsHighlightColors = true
     var onFeedback: ((VerseActionFeedback) -> Void)?
     var onShowChapterInsights: (() -> Void)?
+    var onShowCrossReferences: (() -> Void)?
 
     /// Reports to this menu's own handler, or else to the screen's `verseActionToast`.
     private func sendFeedback(_ feedback: VerseActionFeedback) {
@@ -277,6 +283,23 @@ struct VerseActionMenuContent: View {
                     .accessibilityLabel(bookmarkActionTitle)
                     .frame(maxWidth: .infinity)
 
+                    // The study pages for this verse's chapter, a tap away from the row.
+                    if let onShowChapterInsights {
+                        Button(action: onShowChapterInsights) {
+                            Image(systemName: "lightbulb")
+                        }
+                        .accessibilityLabel("Chapter Insights")
+                        .frame(maxWidth: .infinity)
+                    }
+
+                    if let onShowCrossReferences {
+                        Button(action: onShowCrossReferences) {
+                            Image(systemName: "arrow.triangle.branch")
+                        }
+                        .accessibilityLabel("Scripture Connections")
+                        .frame(maxWidth: .infinity)
+                    }
+
                     VerseShareMenu(verse: verse, onCopy: copy, onCreateImage: showImageComposer) {
                         Image(systemName: "square.and.arrow.up")
                             .frame(minWidth: 40, minHeight: 44)
@@ -287,7 +310,7 @@ struct VerseActionMenuContent: View {
                     .frame(maxWidth: .infinity)
 
                     Menu {
-                        menuItems(omitting: [.note, .favorite, .bookmark, .copy, .share])
+                        menuItems(omitting: [.note, .favorite, .bookmark, .copy, .share, .chapterInsights, .crossReferences])
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .frame(minWidth: 40, minHeight: 44)
@@ -380,12 +403,27 @@ struct VerseActionMenuContent: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .hoverEffect(.lift)
+                // Resting the Apple Pencil on a color shows it on the verse before it's applied.
+                .onHover { isHovering in
+                    if isHovering {
+                        HighlightPreview.shared.show(
+                            color.color,
+                            bookName: verse.bookName,
+                            chapterNumber: verse.chapterNumber,
+                            verseNumber: verse.verseNumber
+                        )
+                    } else {
+                        HighlightPreview.shared.clear()
+                    }
+                }
                 .accessibilityLabel(Text("Highlight \(Text(color.name))"))
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
                 .accessibilityHint(isSelected ? "Removes the highlight" : "")
             }
         }
         .frame(maxWidth: .infinity)
+        .onDisappear { HighlightPreview.shared.clear() }
     }
 
     /// Highlights the verse in `color`, or removes its highlight when `color` is nil. The
@@ -441,7 +479,7 @@ struct VerseActionMenuContent: View {
 
     /// Actions that some presentations show as buttons beside the menu instead of in it.
     nonisolated enum InlineAction: Hashable {
-        case note, favorite, bookmark, copy, share
+        case note, favorite, bookmark, copy, share, chapterInsights, crossReferences
     }
 
     /// Every verse action, in the one order all verse menus share: keeping the verse, sharing
@@ -461,9 +499,14 @@ struct VerseActionMenuContent: View {
             compareMenuButton
             wordStudyMenuButton
             mentionsButton
-            if let onShowChapterInsights {
+            if let onShowChapterInsights, !shown.contains(.chapterInsights) {
                 Button(action: onShowChapterInsights) {
                     Label("Chapter Insights", systemImage: "lightbulb")
+                }
+            }
+            if let onShowCrossReferences, !shown.contains(.crossReferences) {
+                Button(action: onShowCrossReferences) {
+                    Label("Scripture Connections", systemImage: "arrow.triangle.branch")
                 }
             }
         }

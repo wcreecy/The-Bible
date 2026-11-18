@@ -3,6 +3,8 @@ import SwiftUI
 struct ReadingHistoryCalendarCard: View {
     let usesCompactLayout: Bool
     @State private var monthAnchor = Date()
+    /// The day under the Apple Pencil or pointer, described below the calendar.
+    @State private var hoveredDay: Date?
 
     private var calendar: Calendar {
         var calendar = Calendar.autoupdatingCurrent
@@ -49,6 +51,7 @@ struct ReadingHistoryCalendarCard: View {
     var body: some View {
         // Loaded once per render so each day cell doesn't reload history.
         let summary = StreakTracker.summary()
+        let dailyTotals = BibleStatsStore.shared.loadDailyTotals()
 
         HeroCard(
             title: "Reading History",
@@ -97,7 +100,14 @@ struct ReadingHistoryCalendarCard: View {
                                 if let date = daysGrid[row][column] {
                                     ReadingHistoryDay(
                                         date: date,
-                                        status: StreaksViewModel.status(for: date, summary: summary, calendar: calendar)
+                                        status: StreaksViewModel.status(for: date, summary: summary, calendar: calendar),
+                                        onHoverChange: { isHovering in
+                                            if isHovering {
+                                                hoveredDay = date
+                                            } else if hoveredDay == date {
+                                                hoveredDay = nil
+                                            }
+                                        }
                                     )
                                 } else {
                                     Color.clear
@@ -108,8 +118,25 @@ struct ReadingHistoryCalendarCard: View {
                         }
                     }
                 }
+
+                if let hoveredDay {
+                    Text(hoverDescription(for: hoveredDay, dailyTotals: dailyTotals))
+                        .font(.footnote.weight(.semibold))
+                        .monospacedDigit()
+                        .frame(maxWidth: .infinity)
+                        .transition(.opacity)
+                }
             }
+            .animation(.easeInOut(duration: 0.15), value: hoveredDay)
         }
+    }
+
+    /// "Tue, Nov 17 · 12m": the date and what was read that day.
+    private func hoverDescription(for date: Date, dailyTotals: [String: Int]) -> String {
+        let key = BibleStatsStore.isoDateString(date, calendar: calendar)
+        let seconds = max(0, dailyTotals[key, default: 0])
+        let day = date.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
+        return seconds > 0 ? "\(day) · \(BibleStatsStore.shared.format(seconds))" : "\(day) · No reading"
     }
 
     private func changeMonth(by value: Int) {
@@ -120,6 +147,7 @@ struct ReadingHistoryCalendarCard: View {
 private struct ReadingHistoryDay: View {
     let date: Date
     let status: ReadingWeekStatus
+    let onHoverChange: (Bool) -> Void
 
     var body: some View {
         ZStack {
@@ -144,6 +172,8 @@ private struct ReadingHistoryDay: View {
         }
         .frame(maxWidth: .infinity)
         .aspectRatio(1, contentMode: .fit)
+        .hoverEffect(.highlight)
+        .onHover(perform: onHoverChange)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
     }

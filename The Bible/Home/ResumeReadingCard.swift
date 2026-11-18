@@ -36,6 +36,10 @@ struct ResumeReadingCard: View {
                             bookmarkRow(bookmark)
                         }
                     }
+                    // Squeezing or double-tapping the Apple Pencil on the card offers its places.
+                    .pencilPopover { dismiss in
+                        pencilActions(for: target, dismiss: dismiss)
+                    }
                 }
             } else {
                 HeroCard(
@@ -87,6 +91,57 @@ struct ResumeReadingCard: View {
                 }
             }
         }
+    }
+
+    // MARK: - Apple Pencil
+
+    private func pencilActions(for target: ContinueReadingTarget, dismiss: @escaping () -> Void) -> some View {
+        let destination = target.destination
+        return VStack(alignment: .leading, spacing: 10) {
+            Text("\(destination.bookName) \(destination.chapterNumber)")
+                .font(.headline)
+
+            pencilAction("Continue Reading", systemImage: "play.fill", dismiss: dismiss) {
+                onOpen(destination.bookName, destination.chapterNumber, destination.verseNumber)
+            }
+            if let bookmark = target.otherBookmark {
+                pencilAction(
+                    "Bookmark: \(bookmark.bookName) \(bookmark.chapterNumber):\(bookmark.verseNumber)",
+                    systemImage: "bookmark.fill",
+                    dismiss: dismiss
+                ) {
+                    onOpen(bookmark.bookName, bookmark.chapterNumber, bookmark.verseNumber)
+                }
+            }
+            pencilAction("Chapter Insights", systemImage: "lightbulb", dismiss: dismiss) {
+                AppRouter.shared.open(.bibleStudyDestination(
+                    .chapterInsights(bookName: destination.bookName, chapterNumber: destination.chapterNumber)
+                ))
+            }
+            pencilAction("About \(destination.bookName)", systemImage: "info.circle", dismiss: dismiss) {
+                AppRouter.shared.open(.bibleStudyDestination(.bookOverview(bookName: destination.bookName)))
+            }
+        }
+        .padding()
+        .frame(width: 300)
+    }
+
+    private func pencilAction(
+        _ title: String,
+        systemImage: String,
+        dismiss: @escaping () -> Void,
+        perform: @escaping () -> Void
+    ) -> some View {
+        Button {
+            dismiss()
+            perform()
+        } label: {
+            Label(title, systemImage: systemImage)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.large)
     }
 
     // MARK: - Primary place

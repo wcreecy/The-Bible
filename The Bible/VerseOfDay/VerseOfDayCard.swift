@@ -153,7 +153,87 @@ struct VerseOfDayCard: View {
                 Haptics.selection()
                 onOpenReader(v)
             }
-
+            // Squeezing or double-tapping the Apple Pencil on the verse offers the card's actions.
+            .pencilPopover { dismiss in
+                VerseOfDayPencilActions(
+                    verse: verseOfDay,
+                    isPaused: verseOfDayPaused,
+                    canUndoRefresh: canUndoRefresh,
+                    onRefresh: onRefresh,
+                    onUndoRefresh: onUndoRefresh,
+                    onTogglePaused: onTogglePaused,
+                    onOpenReader: onOpenReader,
+                    onVerseActionFeedback: onVerseActionFeedback,
+                    dismiss: dismiss
+                )
+            }
         }
+    }
+}
+
+/// The Verse of the Day card's actions, shown at the Apple Pencil tip.
+private struct VerseOfDayPencilActions: View {
+    let verse: HomeVerseRef?
+    let isPaused: Bool
+    let canUndoRefresh: Bool
+    let onRefresh: () -> Void
+    let onUndoRefresh: () -> Void
+    let onTogglePaused: () -> Void
+    let onOpenReader: (HomeVerseRef) -> Void
+    let onVerseActionFeedback: (VerseActionFeedback) -> Void
+    let dismiss: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if let verse {
+                Text("\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)")
+                    .font(.headline)
+
+                // Favorite, Share and the rest of a verse's actions.
+                VerseActionMenu(
+                    verse: VerseActionReference(
+                        bookName: verse.bookName,
+                        chapterNumber: verse.chapterNumber,
+                        verseNumber: verse.verseNumber,
+                        verseText: verse.verseText
+                    ),
+                    presentation: .cardActions,
+                    showsHighlightColors: false,
+                    onFeedback: onVerseActionFeedback
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Divider()
+            }
+
+            action("Refresh", systemImage: "arrow.clockwise", isDimmed: isPaused, perform: onRefresh)
+            if canUndoRefresh {
+                action("Previous Verse", systemImage: "arrow.uturn.backward", perform: onUndoRefresh)
+            }
+            action(isPaused ? "Unpin Verse" : "Pin Verse", systemImage: isPaused ? "pin.slash" : "pin", perform: onTogglePaused)
+            if let verse {
+                action("Open in Bible", systemImage: "book") { onOpenReader(verse) }
+            }
+        }
+        .padding()
+        .frame(width: 280)
+    }
+
+    private func action(
+        _ title: LocalizedStringKey,
+        systemImage: String,
+        isDimmed: Bool = false,
+        perform: @escaping () -> Void
+    ) -> some View {
+        Button {
+            dismiss()
+            perform()
+        } label: {
+            Label(title, systemImage: systemImage)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.large)
+        .opacity(isDimmed ? 0.6 : 1)
     }
 }

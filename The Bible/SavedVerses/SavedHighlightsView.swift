@@ -111,6 +111,7 @@ struct SavedHighlightsView: View {
     @State private var library = HighlightsLibrary.empty
     @State private var imageComposerVerse: VerseActionReference?
     @State private var shareTextVerse: VerseActionReference?
+    @State private var pencilTracker = PencilHoverTracker<PersistentIdentifier>()
 
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -155,6 +156,15 @@ struct SavedHighlightsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
+                // The press-and-hold actions at the Apple Pencil tip, on a squeeze or double-tap.
+                .pencilPopover(for: pencilTracker) { id, dismiss in
+                    if let note = notes.first(where: { $0.persistentModelID == id }) {
+                        let color = VerseHighlightColor(rawValue: note.highlightColor)
+                        PencilActionList(dismiss: dismiss) {
+                            rowActions(for: NotesListItem.scripture(note), note: note, color: color)
+                        }
+                    }
+                }
             }
         }
         .sheet(item: $openNote, onDismiss: openPendingEditor) { note in
@@ -289,36 +299,8 @@ struct SavedHighlightsView: View {
         .accessibilityElement(children: .combine)
         .accessibilityValue(Text(color.map { "\(String(localized: $0.name)) highlight" } ?? ""))
         .accessibilityHint(item.hasNoteText ? "Opens the verse and your note" : "Opens the verse")
-        .contextMenu {
-            Button("Open in Bible", systemImage: "book") { item.openInBible() }
-            Button(item.hasNoteText ? "Edit Note" : "Add Note", systemImage: "square.and.pencil") {
-                editingNote = note
-            }
-            Menu {
-                ForEach(VerseHighlightColor.allCases, id: \.self) { option in
-                    Button {
-                        setColor(option, of: note)
-                    } label: {
-                        if option == color {
-                            Label { Text(option.name) } icon: { Image(systemName: "checkmark") }
-                        } else {
-                            Text(option.name)
-                        }
-                    }
-                }
-            } label: {
-                Label("Change Color", systemImage: "paintpalette")
-            }
-            VerseShareMenu(
-                verse: shareReference(for: note),
-                onCreateImage: { imageComposerVerse = shareReference(for: note) },
-                onShareText: { shareTextVerse = shareReference(for: note) }
-            ) {
-                Label("Share", systemImage: "square.and.arrow.up")
-            }
-            Divider()
-            Button("Remove Highlight", systemImage: "highlighter", role: .destructive) { removeHighlight(note) }
-        }
+        .contextMenu { rowActions(for: item, note: note, color: color) }
+        .pencilHover(note.persistentModelID, in: pencilTracker)
         .swipeActions(edge: .leading) {
             VerseShareMenu(
                 verse: shareReference(for: note),
@@ -332,6 +314,39 @@ struct SavedHighlightsView: View {
         .swipeActions(edge: .trailing) {
             Button("Remove", systemImage: "highlighter", role: .destructive) { removeHighlight(note) }
         }
+    }
+
+    /// The press-and-hold menu, which the Apple Pencil popover shows too.
+    @ViewBuilder
+    private func rowActions(for item: NotesListItem, note: VerseNote, color: VerseHighlightColor?) -> some View {
+        Button("Open in Bible", systemImage: "book") { item.openInBible() }
+        Button(item.hasNoteText ? "Edit Note" : "Add Note", systemImage: "square.and.pencil") {
+            editingNote = note
+        }
+        Menu {
+            ForEach(VerseHighlightColor.allCases, id: \.self) { option in
+                Button {
+                    setColor(option, of: note)
+                } label: {
+                    if option == color {
+                        Label { Text(option.name) } icon: { Image(systemName: "checkmark") }
+                    } else {
+                        Text(option.name)
+                    }
+                }
+            }
+        } label: {
+            Label("Change Color", systemImage: "paintpalette")
+        }
+        VerseShareMenu(
+            verse: shareReference(for: note),
+            onCreateImage: { imageComposerVerse = shareReference(for: note) },
+            onShareText: { shareTextVerse = shareReference(for: note) }
+        ) {
+            Label("Share", systemImage: "square.and.arrow.up")
+        }
+        Divider()
+        Button("Remove Highlight", systemImage: "highlighter", role: .destructive) { removeHighlight(note) }
     }
 
     // MARK: - Actions
