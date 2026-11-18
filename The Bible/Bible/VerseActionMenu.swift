@@ -14,8 +14,7 @@ struct VerseShareMenu<MenuLabel: View>: View {
     var onShare: ((Bool) -> Void)? = nil
     @ViewBuilder let label: () -> MenuLabel
 
-    @State private var showsShareSheet = false
-    @State private var includesAppLink = false
+    @State private var shareRequest: AppLinkShareRequest?
 
     var body: some View {
         Menu {
@@ -29,39 +28,37 @@ struct VerseShareMenu<MenuLabel: View>: View {
                 Label("Share", systemImage: "text.quote")
             }
 
-            Button(action: { shareVerse(includingAppLink: true) }) {
-                Label("Share with Link", systemImage: "link")
-            }
-
             Button {
                 onCreateImage()
             } label: {
                 Label("Create Verse Image", systemImage: "photo.on.rectangle.angled")
             }
 
+            Divider()
+                .overlay(Color.primary.opacity(0.35))
+
+            Button(action: { shareVerse(includingAppLink: true) }) {
+                Label("Share with Link", systemImage: "link")
+            }
+
         } label: {
             label()
         }
         .accessibilityIdentifier("verseShareMenu-\(verse.bookName)-\(verse.chapterNumber)-\(verse.verseNumber)")
-        .sheet(isPresented: $showsShareSheet) {
-            ActivityShareSheet(items: shareItems)
+        .menuOrder(.fixed)
+        .sheet(item: $shareRequest) { request in
+            ActivityShareSheet(items: request.activityItems)
         }
-    }
-
-    private var shareItems: [Any] {
-        if includesAppLink {
-            return [verse.shareText + "\n\n", AppLinkActivityItem()]
-        }
-
-        return [verse.shareText]
     }
 
     private func shareVerse(includingAppLink: Bool) {
         if let onShare {
             onShare(includingAppLink)
         } else {
-            includesAppLink = includingAppLink
-            showsShareSheet = true
+            shareRequest = AppLinkShareRequest(
+                text: verse.shareText,
+                includesAppLink: includingAppLink
+            )
         }
     }
 }
@@ -151,8 +148,7 @@ struct VerseActionMenuContent: View {
     @State private var isShowingNoteEditor = false
     @State private var isShowingMentions = false
     @State private var imageComposerVerse: VerseActionReference?
-    @State private var isShowingShareSheet = false
-    @State private var includesAppLinkInShare = false
+    @State private var shareRequest: AppLinkShareRequest?
     @State private var isShowingCompare = false
     @State private var isShowingOriginalWords = false
 
@@ -257,8 +253,8 @@ struct VerseActionMenuContent: View {
             .fullScreenCover(item: $imageComposerVerse) { verse in
                 VerseImageComposerView(verse: verse)
             }
-            .sheet(isPresented: $isShowingShareSheet) {
-                ActivityShareSheet(items: shareItems)
+            .sheet(item: $shareRequest) { request in
+                ActivityShareSheet(items: request.activityItems)
             }
     }
 
@@ -597,20 +593,15 @@ struct VerseActionMenuContent: View {
     /// Shown inside another menu, so the share sheet is presented from here instead.
     private var shareMenuButton: some View {
         VerseShareMenu(verse: verse, onCreateImage: showImageComposer, onShare: { includingAppLink in
-            includesAppLinkInShare = includingAppLink
-            isShowingShareSheet = true
+            shareRequest = AppLinkShareRequest(
+                text: verse.shareText,
+                includesAppLink: includingAppLink
+            )
         }) {
             Label("Share", systemImage: "square.and.arrow.up")
         }
     }
 
-    private var shareItems: [Any] {
-        if includesAppLinkInShare {
-            return [verse.shareText + "\n\n", AppLinkActivityItem()]
-        }
-
-        return [verse.shareText]
-    }
 
     private func showImageComposer() {
         imageComposerVerse = verse

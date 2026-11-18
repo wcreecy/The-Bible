@@ -96,6 +96,22 @@ final class AppLinkActivityItem: NSObject, UIActivityItemSource {
     }
 }
 
+/// The complete text-share payload. Keeping the text and link choice together ensures the
+/// share sheet always receives the selection that opened it.
+struct AppLinkShareRequest: Identifiable {
+    let id = UUID()
+    let text: String
+    let includesAppLink: Bool
+
+    var activityItems: [Any] {
+        if includesAppLink {
+            return [text + "\n\n", AppLinkActivityItem()]
+        }
+
+        return [text]
+    }
+}
+
 /// The system share sheet for a list of items.
 struct ActivityShareSheet: UIViewControllerRepresentable {
     let items: [Any]

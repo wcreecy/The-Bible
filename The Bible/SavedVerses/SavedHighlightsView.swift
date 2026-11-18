@@ -110,8 +110,7 @@ struct SavedHighlightsView: View {
     @State private var isShowingRemovalToast = false
     @State private var library = HighlightsLibrary.empty
     @State private var imageComposerVerse: VerseActionReference?
-    @State private var shareTextVerse: VerseActionReference?
-    @State private var includesAppLinkInShare = false
+    @State private var shareRequest: AppLinkShareRequest?
     @State private var pencilTracker = PencilHoverTracker<PersistentIdentifier>()
 
     private var isSearching: Bool {
@@ -183,8 +182,8 @@ struct SavedHighlightsView: View {
         .fullScreenCover(item: $imageComposerVerse) { verse in
             VerseImageComposerView(verse: verse)
         }
-        .sheet(item: $shareTextVerse) { verse in
-            ActivityShareSheet(items: shareItems(for: verse))
+        .sheet(item: $shareRequest) { request in
+            ActivityShareSheet(items: request.activityItems)
         }
         .appToast(
             isPresented: $isShowingRemovalToast,
@@ -305,8 +304,10 @@ struct SavedHighlightsView: View {
                 verse: shareReference(for: note),
                 onCreateImage: { imageComposerVerse = shareReference(for: note) },
                 onShare: { includingAppLink in
-                    includesAppLinkInShare = includingAppLink
-                    shareTextVerse = shareReference(for: note)
+                    shareRequest = AppLinkShareRequest(
+                        text: shareReference(for: note).shareText,
+                        includesAppLink: includingAppLink
+                    )
                 }
             ) {
                 Label("Share", systemImage: "square.and.arrow.up")
@@ -344,8 +345,10 @@ struct SavedHighlightsView: View {
             verse: shareReference(for: note),
             onCreateImage: { imageComposerVerse = shareReference(for: note) },
             onShare: { includingAppLink in
-                includesAppLinkInShare = includingAppLink
-                shareTextVerse = shareReference(for: note)
+                shareRequest = AppLinkShareRequest(
+                    text: shareReference(for: note).shareText,
+                    includesAppLink: includingAppLink
+                )
             }
         ) {
             Label("Share", systemImage: "square.and.arrow.up")
@@ -363,14 +366,6 @@ struct SavedHighlightsView: View {
         modelContext.saveLoggingErrors()
         refreshLibrary()
         Haptics.selection()
-    }
-
-    private func shareItems(for verse: VerseActionReference) -> [Any] {
-        if includesAppLinkInShare {
-            return [verse.shareText + "\n\n", AppLinkActivityItem()]
-        }
-
-        return [verse.shareText]
     }
 
     private func shareReference(for note: VerseNote) -> VerseActionReference {
