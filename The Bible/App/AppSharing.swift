@@ -263,13 +263,11 @@ struct AppLinkShareSheet: View {
     /// `AppLinkActivityItem` gives Messages controlled metadata, rather than letting it fetch
     /// an App Store screenshot for a URL embedded in the text.
     private var shareItems: [Any] {
-        var items: [Any] = [text]
-
         if includesLink {
-            items.append(AppLinkActivityItem())
+            return [text + "\n\n", AppLinkActivityItem()]
         }
 
-        return items
+        return [text]
     }
 
     var body: some View {
