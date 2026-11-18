@@ -89,8 +89,11 @@ final class AppLinkActivityItem: NSObject, UIActivityItemSource {
         metadata.originalURL = AppShare.url
         metadata.url = AppShare.url
         metadata.title = "The Bible"
-        if let icon = AppShare.appIcon() {
-            metadata.iconProvider = NSItemProvider(object: icon)
+        if let image = AppShare.appIcon() ?? UIImage(systemName: "book.closed.fill") {
+            metadata.iconProvider = NSItemProvider(object: image)
+            // Providing a representative image prevents Messages from fetching an unrelated
+            // promotional screenshot from the App Store listing.
+            metadata.imageProvider = NSItemProvider(object: image)
         }
         return metadata
     }
@@ -126,14 +129,12 @@ struct ActivityShareSheet: UIViewControllerRepresentable {
 /// "Share The Bible": the share sheet with the App Store link, and a QR code to scan in person.
 struct ShareAppRows: View {
     @State private var showsQRCode = false
+    @State private var showsShareSheet = false
 
     var body: some View {
-        ShareLink(
-            item: AppShare.url,
-            subject: Text("The Bible"),
-            message: Text(AppShare.message),
-            preview: SharePreview("The Bible", image: Image(systemName: "book.closed.fill"))
-        ) {
+        Button {
+            showsShareSheet = true
+        } label: {
             row(
                 title: "Share The Bible",
                 subtitle: "Send the App Store link to a friend",
@@ -141,6 +142,11 @@ struct ShareAppRows: View {
             )
         }
         .accessibilityIdentifier("shareAppLink")
+        .sheet(isPresented: $showsShareSheet) {
+            // Keep a text item with the controlled link item, matching verse sharing. This stops
+            // Messages from replacing the link metadata with an App Store screenshot.
+            ActivityShareSheet(items: [AppShare.message + "\n\n", AppLinkActivityItem()])
+        }
 
         Button {
             showsQRCode = true
@@ -347,6 +353,7 @@ struct AppLinkShareSheet: View {
 /// A slim card pinned to the bottom of the More tab: Share and a QR code, side by side.
 struct ShareAppFooterCard: View {
     @State private var showsQRCode = false
+    @State private var showsShareSheet = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -368,12 +375,9 @@ struct ShareAppFooterCard: View {
 
             Spacer(minLength: 8)
 
-            ShareLink(
-                item: AppShare.url,
-                subject: Text("The Bible"),
-                message: Text(AppShare.message),
-                preview: SharePreview("The Bible", image: Image(systemName: "book.closed.fill"))
-            ) {
+            Button {
+                showsShareSheet = true
+            } label: {
                 // Icon and word when there's room, otherwise just the icon; never wrapped.
                 ViewThatFits(in: .horizontal) {
                     Label("Share", systemImage: "square.and.arrow.up")
@@ -403,6 +407,11 @@ struct ShareAppFooterCard: View {
         .padding(14)
         .frame(maxWidth: 600)
         .heroCardSurface()
+        .sheet(isPresented: $showsShareSheet) {
+            // Share through the controlled link item, like verse sharing, so Messages shows the
+            // app's name and icon instead of fetching an App Store screenshot.
+            ActivityShareSheet(items: [AppShare.message + "\n\n", AppLinkActivityItem()])
+        }
         .sheet(isPresented: $showsQRCode) {
             AppQRCodeView()
                 .presentationDetents([.medium, .large])

@@ -35,7 +35,7 @@ struct VerseShareMenu<MenuLabel: View>: View {
             }
 
             Divider()
-                .overlay(Color.primary.opacity(0.35))
+                .overlay(Color.primary.opacity(0.75))
 
             Button(action: { shareVerse(includingAppLink: true) }) {
                 Label("Share with Link", systemImage: "link")
