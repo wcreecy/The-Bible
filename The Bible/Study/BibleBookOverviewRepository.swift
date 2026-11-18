@@ -44,20 +44,6 @@ struct BibleBookStorySection: Identifiable, Equatable, Sendable {
     let id: Int
     let passage: String
     let text: String
-
-    /// The section's opening summary paragraph, when it has one ahead of the retelling.
-    /// Unlabeled continuation paragraphs are pure story, so they never have a summary.
-    var summary: String? {
-        guard !passage.isEmpty, let paragraphBreak = text.range(of: "\n\n") else { return nil }
-        return String(text[..<paragraphBreak.lowerBound])
-    }
-
-    /// The retelling that follows the section's summary.
-    var narrative: String {
-        guard summary != nil, let paragraphBreak = text.range(of: "\n\n") else { return text }
-        return String(text[paragraphBreak.upperBound...])
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-    }
 }
 
 struct BibleKeyScripture: Equatable, Sendable {

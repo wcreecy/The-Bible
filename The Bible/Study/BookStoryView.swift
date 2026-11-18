@@ -137,11 +137,7 @@ struct BookStoryView: View {
                             StorySectionHeader(passage: section.passage)
                         }
 
-                        if let summary = section.summary {
-                            StorySectionSummary(text: summary)
-                        }
-
-                        Text(section.narrative)
+                        Text(section.text)
                             .font(.body)
                             .lineSpacing(5)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -279,26 +275,6 @@ private struct StorySectionHeader: View {
         let reference = String(passage[separator.upperBound...].dropLast())
         guard !title.isEmpty, !reference.isEmpty else { return nil }
         return (title, reference)
-    }
-}
-
-/// A section's one-line overview, set apart from the retelling with a tinted rule and italics.
-private struct StorySectionSummary: View {
-    let text: String
-
-    var body: some View {
-        Text(text)
-            .font(.callout.italic())
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 12)
-            .overlay(alignment: .leading) {
-                Capsule()
-                    .fill(.tint)
-                    .frame(width: 3)
-            }
-            .padding(.vertical, 4)
-            .accessibilityLabel("Summary: \(text)")
     }
 }
 
