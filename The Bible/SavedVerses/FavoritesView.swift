@@ -62,6 +62,7 @@ struct FavoritesView: View {
     @State private var imageComposerVerse: VerseActionReference?
     @State private var pencilTracker = PencilHoverTracker<PersistentIdentifier>()
     @State private var shareTextVerse: VerseActionReference?
+    @State private var includesAppLinkInShare = false
     /// Prepared only when saved content, search text, or sort order changes—not for every
     /// unrelated SwiftUI body update (toolbar, toast, sheet presentation, and so on).
     @State private var visibleFavoriteSections: [FavoriteSection] = []
@@ -132,9 +133,7 @@ struct FavoritesView: View {
             VerseImageComposerView(verse: verse)
         }
         .sheet(item: $shareTextVerse) { verse in
-            AppLinkShareSheet(title: "Share Verse", text: verse.shareText)
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
+            ActivityShareSheet(items: shareItems(for: verse))
         }
         .onAppear { refreshVisibleContent() }
         // Compare the saved items themselves, not how many there are: a sync can swap one
@@ -281,7 +280,10 @@ struct FavoritesView: View {
             VerseShareMenu(
                 verse: shareReference(for: favorite),
                 onCreateImage: { imageComposerVerse = shareReference(for: favorite) },
-                onShareText: { shareTextVerse = shareReference(for: favorite) }
+                onShare: { includingAppLink in
+                    includesAppLinkInShare = includingAppLink
+                    shareTextVerse = shareReference(for: favorite)
+                }
             ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
@@ -300,7 +302,10 @@ struct FavoritesView: View {
         VerseShareMenu(
             verse: shareReference(for: favorite),
             onCreateImage: { imageComposerVerse = shareReference(for: favorite) },
-            onShareText: { shareTextVerse = shareReference(for: favorite) }
+            onShare: { includingAppLink in
+                includesAppLinkInShare = includingAppLink
+                shareTextVerse = shareReference(for: favorite)
+            }
         ) {
             Label("Share", systemImage: "square.and.arrow.up")
         }
@@ -369,6 +374,14 @@ struct FavoritesView: View {
         UIPasteboard.general.string = favorite.shareText
         Haptics.success()
         toastMessage = .copied
+    }
+
+    private func shareItems(for verse: VerseActionReference) -> [Any] {
+        if includesAppLinkInShare {
+            return [verse.shareText + "\n\n", AppLinkActivityItem()]
+        }
+
+        return [verse.shareText]
     }
 
     private func shareReference(for favorite: Favorite) -> VerseActionReference {

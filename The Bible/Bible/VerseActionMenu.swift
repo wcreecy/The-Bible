@@ -11,10 +11,11 @@ struct VerseShareMenu<MenuLabel: View>: View {
     let onCreateImage: () -> Void
     /// Set when the menu lives in a context menu or swipe action. Those close as soon as an
     /// item is chosen and take any sheet of their own with them, so the screen presents it.
-    var onShareText: (() -> Void)? = nil
+    var onShare: ((Bool) -> Void)? = nil
     @ViewBuilder let label: () -> MenuLabel
 
-    @State private var showsShareOptions = false
+    @State private var showsShareSheet = false
+    @State private var includesAppLink = false
 
     var body: some View {
         Menu {
@@ -24,14 +25,12 @@ struct VerseShareMenu<MenuLabel: View>: View {
                 }
             }
 
-            Button {
-                if let onShareText {
-                    onShareText()
-                } else {
-                    showsShareOptions = true
-                }
-            } label: {
-                Label("Share Verse", systemImage: "text.quote")
+            Button(action: { shareVerse(includingAppLink: false) }) {
+                Label("Share", systemImage: "text.quote")
+            }
+
+            Button(action: { shareVerse(includingAppLink: true) }) {
+                Label("Share with Link", systemImage: "link")
             }
 
             Button {
@@ -44,10 +43,25 @@ struct VerseShareMenu<MenuLabel: View>: View {
             label()
         }
         .accessibilityIdentifier("verseShareMenu-\(verse.bookName)-\(verse.chapterNumber)-\(verse.verseNumber)")
-        .sheet(isPresented: $showsShareOptions) {
-            AppLinkShareSheet(title: "Share Verse", text: verse.shareText)
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
+        .sheet(isPresented: $showsShareSheet) {
+            ActivityShareSheet(items: shareItems)
+        }
+    }
+
+    private var shareItems: [Any] {
+        if includesAppLink {
+            return [verse.shareText + "\n\n", AppLinkActivityItem()]
+        }
+
+        return [verse.shareText]
+    }
+
+    private func shareVerse(includingAppLink: Bool) {
+        if let onShare {
+            onShare(includingAppLink)
+        } else {
+            includesAppLink = includingAppLink
+            showsShareSheet = true
         }
     }
 }
@@ -137,7 +151,8 @@ struct VerseActionMenuContent: View {
     @State private var isShowingNoteEditor = false
     @State private var isShowingMentions = false
     @State private var imageComposerVerse: VerseActionReference?
-    @State private var isShowingShareText = false
+    @State private var isShowingShareSheet = false
+    @State private var includesAppLinkInShare = false
     @State private var isShowingCompare = false
     @State private var isShowingOriginalWords = false
 
@@ -242,10 +257,8 @@ struct VerseActionMenuContent: View {
             .fullScreenCover(item: $imageComposerVerse) { verse in
                 VerseImageComposerView(verse: verse)
             }
-            .sheet(isPresented: $isShowingShareText) {
-                AppLinkShareSheet(title: "Share Verse", text: verse.shareText)
-                    .presentationDetents([.medium])
-                    .presentationDragIndicator(.visible)
+            .sheet(isPresented: $isShowingShareSheet) {
+                ActivityShareSheet(items: shareItems)
             }
     }
 
@@ -583,9 +596,20 @@ struct VerseActionMenuContent: View {
 
     /// Shown inside another menu, so the share sheet is presented from here instead.
     private var shareMenuButton: some View {
-        VerseShareMenu(verse: verse, onCreateImage: showImageComposer, onShareText: { isShowingShareText = true }) {
+        VerseShareMenu(verse: verse, onCreateImage: showImageComposer, onShare: { includingAppLink in
+            includesAppLinkInShare = includingAppLink
+            isShowingShareSheet = true
+        }) {
             Label("Share", systemImage: "square.and.arrow.up")
         }
+    }
+
+    private var shareItems: [Any] {
+        if includesAppLinkInShare {
+            return [verse.shareText + "\n\n", AppLinkActivityItem()]
+        }
+
+        return [verse.shareText]
     }
 
     private func showImageComposer() {

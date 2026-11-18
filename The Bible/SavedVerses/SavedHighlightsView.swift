@@ -111,6 +111,7 @@ struct SavedHighlightsView: View {
     @State private var library = HighlightsLibrary.empty
     @State private var imageComposerVerse: VerseActionReference?
     @State private var shareTextVerse: VerseActionReference?
+    @State private var includesAppLinkInShare = false
     @State private var pencilTracker = PencilHoverTracker<PersistentIdentifier>()
 
     private var isSearching: Bool {
@@ -183,9 +184,7 @@ struct SavedHighlightsView: View {
             VerseImageComposerView(verse: verse)
         }
         .sheet(item: $shareTextVerse) { verse in
-            AppLinkShareSheet(title: "Share Verse", text: verse.shareText)
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
+            ActivityShareSheet(items: shareItems(for: verse))
         }
         .appToast(
             isPresented: $isShowingRemovalToast,
@@ -305,7 +304,10 @@ struct SavedHighlightsView: View {
             VerseShareMenu(
                 verse: shareReference(for: note),
                 onCreateImage: { imageComposerVerse = shareReference(for: note) },
-                onShareText: { shareTextVerse = shareReference(for: note) }
+                onShare: { includingAppLink in
+                    includesAppLinkInShare = includingAppLink
+                    shareTextVerse = shareReference(for: note)
+                }
             ) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
@@ -341,7 +343,10 @@ struct SavedHighlightsView: View {
         VerseShareMenu(
             verse: shareReference(for: note),
             onCreateImage: { imageComposerVerse = shareReference(for: note) },
-            onShareText: { shareTextVerse = shareReference(for: note) }
+            onShare: { includingAppLink in
+                includesAppLinkInShare = includingAppLink
+                shareTextVerse = shareReference(for: note)
+            }
         ) {
             Label("Share", systemImage: "square.and.arrow.up")
         }
@@ -358,6 +363,14 @@ struct SavedHighlightsView: View {
         modelContext.saveLoggingErrors()
         refreshLibrary()
         Haptics.selection()
+    }
+
+    private func shareItems(for verse: VerseActionReference) -> [Any] {
+        if includesAppLinkInShare {
+            return [verse.shareText + "\n\n", AppLinkActivityItem()]
+        }
+
+        return [verse.shareText]
     }
 
     private func shareReference(for note: VerseNote) -> VerseActionReference {
