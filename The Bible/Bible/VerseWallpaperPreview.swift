@@ -29,8 +29,8 @@ struct VerseLockScreenOverlay: View {
                 VerseLockScreenChrome(layout: layout)
                     .frame(width: size.width * fraction, height: size.height)
                     .frame(width: size.width, height: size.height)
-                    .behindPhotoSubject(enabled: layout.previewsDepth) {
-                        VersePhotoSubjectLayer(model: model, photoTranslation: photoTranslation)
+                    .behindPhotoSubject(model.photoSubject, enabled: layout.previewsDepth && model.hasPhotoSubject) { subject in
+                        VersePhotoLayer(image: subject, model: model, translation: photoTranslation)
                     }
 
                 if layout.showsSafeZones && fraction < 1 {
@@ -201,9 +201,9 @@ struct VerseLockScreenFullPreview: View {
 
                 VerseLockScreenChrome(layout: layout)
                     .frame(width: screen.width, height: screen.height)
-                    .behindPhotoSubject(enabled: layout.previewsDepth) {
+                    .behindPhotoSubject(model.photoSubject, enabled: layout.previewsDepth && model.hasPhotoSubject) { subject in
                         ExportSizedLayout(layoutSize: layoutSize) {
-                            VersePhotoSubjectLayer(model: model)
+                            VersePhotoLayer(image: subject, model: model)
                         }
                         .frame(width: display.width, height: display.height)
                     }
@@ -272,15 +272,25 @@ extension View {
     /// Cuts the photo's subject out of this view, so the subject seems to stand in front of it.
     /// This is how the depth effect is previewed: only the Lock Screen chrome goes behind the
     /// subject, while the verse, which is part of the wallpaper itself, stays where it was drawn.
-    func behindPhotoSubject(enabled: Bool, @ViewBuilder subject: () -> some View) -> some View {
-        mask {
-            ZStack {
-                Rectangle()
-                if enabled {
-                    subject().blendMode(.destinationOut)
+    ///
+    /// Only the cut-out's shape matters here, so it's drawn plainly rather than darkened, and
+    /// nothing is masked at all when there's no subject to cut out.
+    @ViewBuilder
+    func behindPhotoSubject(
+        _ subject: UIImage?,
+        enabled: Bool,
+        @ViewBuilder layer: (UIImage) -> some View
+    ) -> some View {
+        if enabled, let subject {
+            mask {
+                ZStack {
+                    Rectangle()
+                    layer(subject).blendMode(.destinationOut)
                 }
+                .compositingGroup()
             }
-            .compositingGroup()
+        } else {
+            self
         }
     }
 }

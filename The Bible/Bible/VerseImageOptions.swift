@@ -81,28 +81,53 @@ struct WallpaperCanvas: Equatable {
     }
 
     private static let lastScreenKey = "verseWallpaperScreenPixels"
+    /// Found once and reused: the screen doesn't change while the app runs, and the size is
+    /// read several times a frame while the verse or photo is dragged.
+    private static var cached: WallpaperCanvas?
 
     /// The device's screen. Shortcuts can run the wallpaper intent with no window open, so the last
     /// screen seen is remembered and used then.
     static var current: WallpaperCanvas {
+        if let cached { return cached }
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
-        let screen = UIApplication.shared.connectedScenes
-            .compactMap { ($0 as? UIWindowScene)?.screen }
-            .first
-        if let bounds = screen?.nativeBounds, bounds.width > 0, bounds.height > 0 {
-            // nativeBounds is always portrait-up.
-            let pixels = CGSize(width: min(bounds.width, bounds.height), height: max(bounds.width, bounds.height))
+        if let pixels = deviceScreenPixels(isPad: isPad) {
             let remembered = [Double(pixels.width), Double(pixels.height)]
             if UserDefaults.standard.array(forKey: lastScreenKey) as? [Double] != remembered {
                 UserDefaults.standard.set(remembered, forKey: lastScreenKey)
             }
-            return WallpaperCanvas(screenPixels: pixels, isSquare: isPad)
+            let canvas = WallpaperCanvas(screenPixels: pixels, isSquare: isPad)
+            cached = canvas
+            return canvas
         }
+        // Not cached, so a later call can still find the real screen once a window exists.
         if let saved = UserDefaults.standard.array(forKey: lastScreenKey) as? [Double], saved.count == 2 {
             return WallpaperCanvas(screenPixels: CGSize(width: saved[0], height: saved[1]), isSquare: isPad)
         }
         let fallback = isPad ? CGSize(width: 2064, height: 2752) : CGSize(width: 1290, height: 2796)
         return WallpaperCanvas(screenPixels: fallback, isSquare: isPad)
+    }
+
+    /// The device's own screen in portrait pixels, from the app's windows.
+    private static func deviceScreenPixels(isPad: Bool) -> CGSize? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.session.role == .windowApplication }
+            .map { portraitPixels($0.screen.nativeBounds.size) }
+            .first { isDeviceScreen($0, isPad: isPad) }
+    }
+
+    /// `nativeBounds` is portrait-up on the device's screen, but not necessarily on others.
+    static func portraitPixels(_ size: CGSize) -> CGSize {
+        CGSize(width: min(size.width, size.height), height: max(size.width, size.height))
+    }
+
+    /// UIKit can't say which screen is built in. On iPad an app window can sit on an external
+    /// display, but those are 16:9 (1.78:1) or wider, while iPad screens run from 4:3 up to
+    /// about 1.52:1 on iPad mini, so anything wider than 1.6:1 is skipped. iPhone only mirrors
+    /// to other displays, so its windows are always on its own screen.
+    static func isDeviceScreen(_ portraitPixels: CGSize, isPad: Bool) -> Bool {
+        guard portraitPixels.width > 0, portraitPixels.height > 0 else { return false }
+        return !isPad || portraitPixels.height / portraitPixels.width <= 1.6
     }
 }
 

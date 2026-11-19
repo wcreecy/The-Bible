@@ -89,12 +89,29 @@ final class VerseImageComposerModel {
     private var undoHistory: [Snapshot] = []
     private var isRestoringSnapshot = false
 
+    /// Older steps are dropped past this, which also bounds how many full-size photos and
+    /// subject cut-outs the history keeps alive.
+    static let undoLimit = 50
+    /// Changes closer together than this, like the ticks of one slider drag, are a single step.
+    static let undoCoalescingInterval: Duration = .milliseconds(500)
+    /// The clock undo steps are timed with; tests replace it.
+    @ObservationIgnored var undoClock: () -> ContinuousClock.Instant = { ContinuousClock.now }
+    @ObservationIgnored private var lastUndoChange: ContinuousClock.Instant?
+
+    /// The last photo Vision looked at and what it found, so undoing back to that photo
+    /// doesn't run Vision again.
+    @ObservationIgnored private var lastSubjectCheck: (photo: UIImage, subject: UIImage?)?
+
     var canUndo: Bool { !undoHistory.isEmpty }
+    var undoStepCount: Int { undoHistory.count }
 
     init(verse: VerseActionReference) {
         self.verse = verse
         self.editedText = verse.verseText
+        // Restoring remembered choices isn't something to undo.
+        isRestoringSnapshot = true
         loadPreferences()
+        isRestoringSnapshot = false
         formatDidChange()
     }
 
@@ -102,6 +119,8 @@ final class VerseImageComposerModel {
         guard let snapshot = undoHistory.popLast() else { return }
         isRestoringSnapshot = true
         defer { isRestoringSnapshot = false }
+        // The next change starts a new step, however soon it comes.
+        lastUndoChange = nil
 
         format = snapshot.format
         background = snapshot.background
@@ -127,7 +146,11 @@ final class VerseImageComposerModel {
 
         // The snapshot may predate Vision finishing with this photo.
         if let photo, photoSubject == nil {
-            findSubject(in: photo)
+            if let check = lastSubjectCheck, check.photo === photo {
+                photoSubject = check.subject
+            } else {
+                findSubject(in: photo)
+            }
         }
     }
 
@@ -143,17 +166,18 @@ final class VerseImageComposerModel {
 
     /// Records one undo step before the person starts typing in the verse field.
     func beginEditingText() {
-        recordUndoSnapshot()
+        recordUndoSnapshot(coalescing: false)
     }
 
     func restoreFullVerse() {
         guard isTextEdited else { return }
-        recordUndoSnapshot()
+        recordUndoSnapshot(coalescing: false)
         editedText = verse.verseText
     }
 
     func clearUndoHistory() {
         undoHistory.removeAll()
+        lastUndoChange = nil
     }
 
     /// Loads the picked photo at a size that suits the canvas. Returns false if it can't be read.
@@ -165,7 +189,7 @@ final class VerseImageComposerModel {
               let decoded = await Task.detached(priority: .userInitiated, operation: {
                   VerseImageComposerModel.decodePhoto(data, maxPixelSize: maxPixelSize)
               }).value else { return false }
-        recordUndoSnapshot()
+        recordUndoSnapshot(coalescing: false)
         isRestoringSnapshot = true
         defer { isRestoringSnapshot = false }
         photo = decoded.image
@@ -188,21 +212,32 @@ final class VerseImageComposerModel {
             }.value
             guard !Task.isCancelled else { return }
             isFindingSubject = false
-            // The person may have picked another photo, or undone this one, meanwhile.
-            guard photo === image else { return }
+            let subject: UIImage?
             switch detection {
-            case .success(let subject):
-                photoSubject = subject
+            case .success(let found):
+                subject = found
                 isSubjectDetectionUnavailable = false
             case .failure:
-                photoSubject = nil
+                subject = nil
                 isSubjectDetectionUnavailable = true
             }
+            lastSubjectCheck = (image, subject)
+            // The person may have picked another photo, or undone this one, meanwhile.
+            guard photo === image else { return }
+            photoSubject = subject
         }
     }
 
-    private func recordUndoSnapshot() {
+    /// Saves the current look as an undo step. With `coalescing`, a change that follows another
+    /// within `undoCoalescingInterval` joins its step, so a slider drag or a drag-and-pinch
+    /// undoes in one go; steps the person starts on purpose pass false.
+    private func recordUndoSnapshot(coalescing: Bool = true) {
         guard !isRestoringSnapshot else { return }
+        let now = undoClock()
+        let continuesLastChange = lastUndoChange.map { now - $0 < Self.undoCoalescingInterval } ?? false
+        lastUndoChange = now
+        if coalescing && continuesLastChange { return }
+
         undoHistory.append(
             Snapshot(
                 format: format,
@@ -228,6 +263,9 @@ final class VerseImageComposerModel {
                 inkStrokes: inkStrokes
             )
         )
+        if undoHistory.count > Self.undoLimit {
+            undoHistory.removeFirst(undoHistory.count - Self.undoLimit)
+        }
     }
 
     /// Photos are decoded at no more than the largest canvas side so a 48MP photo doesn't fill memory.
