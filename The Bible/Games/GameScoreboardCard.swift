@@ -168,6 +168,8 @@ private struct GameScoreboardCompactContent: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        // The first answer swaps "No answers yet" for the score; a crossfade would draw both at once.
+        .transaction(value: currentAnswered == 0) { $0.animation = nil }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .heroCardSurface()

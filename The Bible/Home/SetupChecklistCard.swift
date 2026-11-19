@@ -29,7 +29,7 @@ struct SetupChecklistCard: View {
         var detail: LocalizedStringResource {
             switch self {
             case .readVerse: "Open the Verse of the Day in the reader"
-            case .saveVerse: "Press and hold a verse, then highlight or favorite it"
+            case .saveVerse: "Touch and hold a verse, then highlight or favorite it"
             case .dailyGoal: "Choose how many minutes to read each day"
             case .playGame: "Answer a quick quiz question"
             case .customizeHome: "Rearrange the cards on this page"
@@ -363,25 +363,30 @@ private struct OnboardingStepRow: View {
     let action: () -> Void
     let skipAction: (() -> Void)?
 
+    /// Width of the checkmark and step icon columns. It grows with the text size so the
+    /// body-sized symbols never overlap each other or the title at large sizes.
+    @ScaledMetric(relativeTo: .body) private var iconColumnWidth: CGFloat = 22
+    private static let columnSpacing: CGFloat = 10
+
     /// The checkmark and step icon columns plus their spacing, so Skip lines up with the text.
-    private static let textLeadingInset: CGFloat = 22 + 10 + 22 + 10
+    private var textLeadingInset: CGFloat { (iconColumnWidth + Self.columnSpacing) * 2 }
 
     var body: some View {
         // Skip sits under the step's description rather than beside it, so the text keeps the
         // card's full width in narrow columns (such as iPad portrait).
         VStack(alignment: .leading, spacing: 6) {
             Button(action: action) {
-                HStack(alignment: .top, spacing: 10) {
+                HStack(alignment: .top, spacing: Self.columnSpacing) {
                     Image(systemName: isComplete ? "checkmark.circle.fill" : "circle")
                         .font(.body.weight(.semibold))
                         .foregroundStyle(isComplete ? .green : .secondary)
-                        .frame(width: 22)
+                        .frame(width: iconColumnWidth)
                         .accessibilityHidden(true)
 
                     Image(systemName: step.systemImage)
                         .font(.body.weight(.semibold))
                         .foregroundStyle(isComplete ? Color.secondary : Color.accentColor)
-                        .frame(width: 22)
+                        .frame(width: iconColumnWidth)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(title ?? String(localized: step.title))
@@ -410,7 +415,9 @@ private struct OnboardingStepRow: View {
                     .font(.caption.weight(.semibold))
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .padding(.leading, Self.textLeadingInset)
+                    // Matches the card's Hide button and progress bar.
+                    .tint(.orange)
+                    .padding(.leading, textLeadingInset)
                     .accessibilityHint("Marks this optional step complete")
             }
         }

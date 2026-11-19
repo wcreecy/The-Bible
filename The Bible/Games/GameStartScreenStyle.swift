@@ -256,16 +256,24 @@ struct GameSplashFacts: View {
         self.fourth = fourth
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
+        // At accessibility sizes the facts stack, since three or four across can't fit
+        // values like "10 questions" without cutting them off.
+        let isStacked = dynamicTypeSize.isAccessibilitySize
+        let layout = isStacked ? AnyLayout(VStackLayout(spacing: 0)) : AnyLayout(HStackLayout(spacing: 0))
+        let dividerInset: Edge.Set = isStacked ? .horizontal : .vertical
+
         // One flat strip with hairline dividers instead of three separate tiles.
-        HStack(spacing: 0) {
+        layout {
             fact(first)
-            Divider().padding(.vertical, 8)
+            Divider().padding(dividerInset, 8)
             fact(second)
-            Divider().padding(.vertical, 8)
+            Divider().padding(dividerInset, 8)
             fact(third)
             if let fourth {
-                Divider().padding(.vertical, 8)
+                Divider().padding(dividerInset, 8)
                 fact(fourth)
             }
         }
@@ -277,8 +285,9 @@ struct GameSplashFacts: View {
             Text(fact.value)
                 .font(.headline)
                 .fontDesign(.rounded)
-                .lineLimit(1)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
                 .minimumScaleFactor(0.7)
+                .multilineTextAlignment(.center)
             Text(fact.label)
                 .font(.caption2)
                 .foregroundStyle(.secondary)

@@ -246,7 +246,7 @@ private struct SavedVersesHomeCardContent: View {
                 .accessibilityHint("Opens this verse in the Bible")
             } else {
                 Label(
-                    "Long-press any verse when reading the Bible to favorite or highlight that verse.",
+                    "Touch and hold any verse when reading the Bible to favorite or highlight that verse.",
                     systemImage: "heart"
                 )
                     .font(.subheadline)

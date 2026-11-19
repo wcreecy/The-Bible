@@ -62,17 +62,12 @@ struct TranslationSettingsPicker: View {
                 Text(translation.name).tag(translation)
             }
         } label: {
-            Label {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Translation")
-                    Text("Used in the reader, search, games, and widgets")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            } icon: {
-                Image(systemName: "character.book.closed")
-                    .foregroundStyle(.tint)
-            }
+            // Laid out like the other Settings rows; a picker doesn't pick up the list's label style.
+            SettingsNavigationRow(
+                title: "Translation",
+                subtitle: "Used in the reader, search, games, and widgets",
+                systemImage: "character.book.closed"
+            )
         }
         .disabled(bibleStore.isSwitchingTranslation || translations.count < 2)
         .accessibilityIdentifier("bibleTranslationPicker")

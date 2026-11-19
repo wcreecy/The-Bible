@@ -129,6 +129,10 @@ struct DailyFocusCard: View {
                 Image(systemName: "xmark")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
+                    // About a 44-point tap area for a small glyph, without changing the layout.
+                    .padding(14)
+                    .contentShape(Rectangle())
+                    .padding(-14)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Dismiss")

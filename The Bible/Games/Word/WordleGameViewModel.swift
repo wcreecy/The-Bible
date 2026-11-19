@@ -1,7 +1,13 @@
+import OSLog
 import SwiftUI
 #if canImport(UIKit)
 import UIKit
 #endif
+
+nonisolated private let wordLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+    category: "WordGame"
+)
 
 /// The state and rules of a WORD game: the board, guesses, streaks, and the Daily and
 /// Practice words. `WordleView` lays it out and handles the keyboard.
@@ -128,7 +134,7 @@ final class WordleGameViewModel {
         guard let url = Bundle.main.url(forResource: "WORDCuratedWordList", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let entries = PersistedDecoding.decode([CuratedWord].self, from: data, name: "WORDCuratedWordList.json") else {
-            print("⚠️ WORDCuratedWordList.json could not be loaded or decoded.")
+            wordLogger.error("WORDCuratedWordList.json could not be loaded or decoded.")
             return nil
         }
 
@@ -137,7 +143,7 @@ final class WordleGameViewModel {
             let word = entry.word.uppercased()
             guard word.count == 5, word.allSatisfy({ alphabet.contains($0) }),
                   let ref = parseReference(entry.reference, text: entry.verse) else {
-                print("⚠️ WORD: skipping curated entry \(entry.word) (\(entry.reference))")
+                wordLogger.notice("Skipping curated entry \(entry.word, privacy: .public) (\(entry.reference, privacy: .public))")
                 continue
             }
             index[word] = ref

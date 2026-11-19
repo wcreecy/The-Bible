@@ -399,7 +399,8 @@ struct BackgroundEditor: View {
                     Label("Apply to All Pages", systemImage: "rectangle.on.rectangle.angled")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(ModernPillButtonStyle(tint: .purple))
+                // Same tint as the photo button above it.
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                 .accessibilityHint("Copies this page's background settings to every page")
             }
         }

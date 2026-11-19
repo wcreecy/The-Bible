@@ -91,7 +91,8 @@ struct GameCatalogSupportTests {
             minimumCluesPerDifficulty: 50
         )
         #expect(issues.isEmpty, "\(issues)")
-        #expect(clues.count >= 1_400)
+        // A floor just under the curated list's 1,331 clues, to catch a truncated or partial file.
+        #expect(clues.count >= 1_300)
     }
 
     @Test

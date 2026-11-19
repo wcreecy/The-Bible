@@ -501,6 +501,11 @@ struct ReadingView: View {
         ZStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
+                    // Scroll target for opening a chapter at its start; see `chapterTopID`.
+                    Color.clear
+                        .frame(height: 0)
+                        .id(viewModel.chapterTopID)
+
                     if contextualTipsEnabled {
                         ReaderTips(usesFullToolbar: usesFullToolbar)
                     }

@@ -16,7 +16,8 @@ struct GameCollectionCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Games")
+            // Not just "Games", which the screen's title already says.
+            Text("All Games")
                 .font(usesExpandedLayout ? .title3.weight(.bold) : .headline)
                 .padding(.bottom, usesExpandedLayout ? 12 : 8)
 
@@ -34,6 +35,7 @@ struct GameCollectionCard: View {
                             Text(group.detail)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         .padding(.bottom, 6)
 
@@ -63,6 +65,7 @@ struct GameCollectionCard: View {
                         Text("Practice questions you missed")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(.bottom, 6)
 
@@ -85,15 +88,19 @@ struct GameCollectionCard: View {
     }
 }
 
+/// The sections sit inside the All Games card, so they get a soft fill rather than a second
+/// bordered, shadowed card.
 struct GameCatalogSectionCardStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(12)
-            .heroCardSurface()
+            .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
 struct GameRecommendationRow: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     let recommendation: GameRecommendation
     let action: () -> Void
 
@@ -108,20 +115,22 @@ struct GameRecommendationRow: View {
                         .background(Color.purple.opacity(0.12), in: Circle())
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Play next")
+                        Text("Recommended")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
                         Text(recommendation.title)
                             .font(.subheadline.weight(.bold))
+                            .fixedSize(horizontal: false, vertical: true)
                         Text(recommendation.detail)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                Label("Play next", systemImage: "play.fill")
+                Label("Play", systemImage: "play.fill")
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 3)
@@ -145,21 +154,34 @@ struct ReviewRoundStatusRow: View {
 
     private var hasEligibleGame: Bool { progress.contains { $0.isReady } }
 
+    // The same icon column as the game rows above, so the titles line up.
+    @ScaledMetric(relativeTo: .title3) private var iconWidth: CGFloat = 34
+    @ScaledMetric(relativeTo: .title2) private var expandedIconWidth: CGFloat = 40
+
+    /// Says whether a round is ready, rather than one fixed line that read as "active" even
+    /// before any game had missed questions.
+    private var statusText: LocalizedStringResource {
+        hasEligibleGame
+            ? "Ready: replay the questions you missed."
+            : "Unlocks once a game has 10 missed questions."
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "arrow.clockwise.heart.fill")
                     .font(usesExpandedLayout ? .title2 : .title3)
                     .foregroundStyle(.purple)
-                    .frame(minWidth: usesExpandedLayout ? 36 : 28)
+                    .frame(width: usesExpandedLayout ? expandedIconWidth : iconWidth)
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Review Round")
                         .font(usesExpandedLayout ? .title3.weight(.semibold) : .headline)
-                    Text("Active with 10 missed questions.")
+                    Text(statusText)
                         .font(usesExpandedLayout ? .subheadline : .caption)
                         .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
@@ -333,6 +355,14 @@ struct GameAccessibilityRow: View {
                 Text(route.title)
                     .font(.headline)
                     .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 8)
+
+                // Like the standard row, so the row still reads as something to open.
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
             }
 
             Text(route.subtitle)
@@ -376,11 +406,16 @@ struct GameRowIcon: View {
     let route: GameRoute
     var usesExpandedLayout = false
 
+    // A fixed column, not a minimum, so a wide symbol (like Word's) doesn't push its title
+    // out of line with the others. It grows with the text size like the symbol does.
+    @ScaledMetric(relativeTo: .title3) private var width: CGFloat = 34
+    @ScaledMetric(relativeTo: .title2) private var expandedWidth: CGFloat = 40
+
     var body: some View {
         Image(systemName: route.systemImage)
             .font(usesExpandedLayout ? .title2 : .title3)
             .foregroundStyle(route.tint)
-            .frame(minWidth: usesExpandedLayout ? 36 : 28)
+            .frame(width: usesExpandedLayout ? expandedWidth : width)
             .accessibilityHidden(true)
     }
 }

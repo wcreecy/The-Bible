@@ -20,6 +20,7 @@ struct SettingsView: View {
                 .listRowBackground(HeroCardListRowBackground())
             #endif
         }
+        .labelStyle(.settingsRow)
         .scrollContentBackground(.hidden)
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("Settings")

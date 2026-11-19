@@ -151,7 +151,7 @@ private struct BibleTriviaSetupScreen: View {
                     GameSplashFacts(
                         first: ("number", "\(questionsPerRound) questions", "This session"),
                         second: ("timer", "\(difficulty.timerSeconds) sec", "Per question"),
-                        third: ("square.stack.3d.up", "\(eligibleQuestionCount)", "Question pool")
+                        third: ("square.stack.3d.up", eligibleQuestionCount.formatted(), "Question pool")
                     )
                 }
 
@@ -209,61 +209,75 @@ private struct BibleTriviaPlayScreen: View {
             let usesSplitLayout = geometry.size.width >= 700
 
             ZStack {
-                ScrollView {
-                    if let question {
-                        if usesSplitLayout {
-                            BibleTriviaDashboard(
-                                question: question.question,
-                                correctAnswer: question.correctAnswer,
-                                options: options,
-                                questionNumber: questionNumber,
-                                questionCount: questionCount,
-                                score: score,
-                                answered: answered,
-                                currentStreak: currentStreak,
-                                outcome: outcome,
-                                reference: question.reference,
-                                selectedAnswer: selectedAnswer,
-                                isAnswered: isAnswered,
-                                onChoose: onChoose,
-                                canGoNext: canGoNext,
-                                isLastQuestion: isLastQuestion,
-                                onAdvance: onAdvance
-                            )
-                            .frame(minHeight: geometry.size.height - 32, alignment: .top)
-                        } else {
-                            BibleTriviaCompactBoard(
-                                question: question.question,
-                                correctAnswer: question.correctAnswer,
-                                options: options,
-                                questionNumber: questionNumber,
-                                questionCount: questionCount,
-                                score: score,
-                                answered: answered,
-                                currentStreak: currentStreak,
-                                remainingSeconds: remainingSeconds,
-                                timerTint: timerTint,
-                                isTimerDisabled: isTimerDisabled,
-                                outcome: outcome,
-                                reference: question.reference,
-                                selectedAnswer: selectedAnswer,
-                                isAnswered: isAnswered,
-                                onChoose: onChoose,
-                                onToggleTimer: onToggleTimer,
-                                canGoNext: canGoNext,
-                                isLastQuestion: isLastQuestion,
-                                onAdvance: onAdvance
-                            )
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        if let question {
+                            if usesSplitLayout {
+                                BibleTriviaDashboard(
+                                    question: question.question,
+                                    correctAnswer: question.correctAnswer,
+                                    options: options,
+                                    questionNumber: questionNumber,
+                                    questionCount: questionCount,
+                                    score: score,
+                                    answered: answered,
+                                    currentStreak: currentStreak,
+                                    outcome: outcome,
+                                    reference: question.reference,
+                                    selectedAnswer: selectedAnswer,
+                                    isAnswered: isAnswered,
+                                    onChoose: onChoose,
+                                    canGoNext: canGoNext,
+                                    isLastQuestion: isLastQuestion,
+                                    onAdvance: onAdvance
+                                )
+                                .frame(minHeight: geometry.size.height - 32, alignment: .top)
+                            } else {
+                                BibleTriviaCompactBoard(
+                                    question: question.question,
+                                    correctAnswer: question.correctAnswer,
+                                    options: options,
+                                    questionNumber: questionNumber,
+                                    questionCount: questionCount,
+                                    score: score,
+                                    answered: answered,
+                                    currentStreak: currentStreak,
+                                    remainingSeconds: remainingSeconds,
+                                    timerTint: timerTint,
+                                    isTimerDisabled: isTimerDisabled,
+                                    outcome: outcome,
+                                    reference: question.reference,
+                                    selectedAnswer: selectedAnswer,
+                                    isAnswered: isAnswered,
+                                    onChoose: onChoose,
+                                    onToggleTimer: onToggleTimer,
+                                    canGoNext: canGoNext,
+                                    isLastQuestion: isLastQuestion,
+                                    onAdvance: onAdvance
+                                )
+                            }
+                        }
+                    }
+                    .tabBarContentClearance()
+                    .pinnedNextQuestionButton(
+                        isShown: !usesSplitLayout && question != nil && isAnswered,
+                        isLastQuestion: isLastQuestion,
+                        tint: .cyan,
+                        action: onAdvance
+                    )
+                    // At large text sizes the result lands below the fold, behind the pinned Next button.
+                    .onChange(of: isAnswered) { _, answered in
+                        guard answered, !usesSplitLayout else { return }
+                        Task {
+                            // Wait for the result card and the pinned button's slide-in, so the
+                            // scroll lands above the button rather than where it will be.
+                            try? await Task.sleep(for: .milliseconds(350))
+                            withAnimation(.snappy) {
+                                proxy.scrollTo(BibleTriviaAnswerReveal.scrollID, anchor: .bottom)
+                            }
                         }
                     }
                 }
-                .tabBarContentClearance()
-                .pinnedNextQuestionButton(
-                    isShown: !usesSplitLayout && question != nil && isAnswered,
-                    isLastQuestion: isLastQuestion,
-                    tint: .cyan,
-                    action: onAdvance
-                )
                 .background {
                     if usesSplitLayout {
                         Color.clear

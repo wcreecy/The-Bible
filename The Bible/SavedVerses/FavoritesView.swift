@@ -150,7 +150,7 @@ struct FavoritesView: View {
                 ContentUnavailableView(
                     "No Favorites",
                     systemImage: "heart",
-                    description: Text("Long-press a verse and tap the heart to save it here.")
+                    description: Text("Touch and hold a verse and tap the heart to save it here.")
                 )
             } else if visibleFavoriteSections.isEmpty && isSearching {
                 ContentUnavailableView(
@@ -172,7 +172,7 @@ struct FavoritesView: View {
                 ContextualTipView(
                     id: "favorites.management",
                     title: "Open and manage favorites",
-                    message: "Tap a favorite to open its verse. Long-press for Copy and Share, or swipe to share or remove it, with an option to undo.",
+                    message: "Tap a favorite to open its verse. Touch and hold for Copy and Share, or swipe to share or remove it, with an option to undo.",
                     systemImage: "heart.text.clipboard"
                 )
                 .listRowSeparator(.hidden)

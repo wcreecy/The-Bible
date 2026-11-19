@@ -187,7 +187,7 @@ struct HangmanGameView: View {
         } facts: {
             GameSplashFacts(
                 first: ("number", "\(HangmanGameViewModel.wordsPerGame) words", String(localized: "This session")),
-                second: ("xmark.octagon", "\(vm.difficulty.maxWrong)", String(localized: "Mistakes allowed")),
+                second: ("xmark.octagon", vm.difficulty.maxWrong.formatted(), String(localized: "Mistakes allowed")),
                 third: ("lightbulb", vm.difficulty.clueSummary, String(localized: "Clue"))
             )
         }
@@ -215,11 +215,9 @@ struct HangmanGameView: View {
                     didWin: vm.roundOver && vm.didWin
                 )
 
-                Text("Mistakes: \(vm.wrongGuesses)/\(vm.maxWrong)")
-                    .font(.subheadline)
-                    .foregroundStyle(vm.wrongGuesses >= vm.maxWrong - 1 ? .red : .secondary)
-
-                Text(vm.isOneGuessRemaining ? "One guess left" : "\(vm.maxWrong - vm.wrongGuesses) guesses left")
+                // One count, in the lobby's terms ("Mistakes allowed"), rather than a
+                // mistakes tally beside a separate guesses-left line.
+                Text(vm.isOneGuessRemaining ? "1 mistake left" : "\(vm.maxWrong - vm.wrongGuesses) mistakes left")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(vm.isOneGuessRemaining ? .red : .secondary)
 

@@ -67,14 +67,24 @@ final class ReaderScrollActivity {
     var isScrolling = false
 }
 
-/// Small, semi-transparent chapter arrows in the bottom corners, hidden while scrolling.
+/// Small, semi-transparent chapter arrows in the bottom corners. They hide while scrolling and
+/// fade a few seconds after it stops, since at rest they'd sit over the lines being read. They
+/// come back whenever scrolling stops, and stay put for VoiceOver and Switch Control users.
 struct ReaderChapterArrows: View {
     let scrollActivity: ReaderScrollActivity
     let onPrevious: () -> Void
     let onNext: () -> Void
 
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
+    @State private var isRestingLong = false
+
+    private static let restingDelay: Duration = .seconds(3)
+
     var body: some View {
         let isScrolling = scrollActivity.isScrolling
+        let alwaysShown = voiceOverEnabled || switchControlEnabled
+        let isHidden = isScrolling || (isRestingLong && !alwaysShown)
 
         VStack {
             Spacer()
@@ -89,9 +99,18 @@ struct ReaderChapterArrows: View {
             }
             .padding(.bottom, 10)
         }
-        .opacity(isScrolling ? 0 : 1)
-        .allowsHitTesting(!isScrolling)
+        .opacity(isHidden ? 0 : 1)
+        .allowsHitTesting(!isHidden)
         .animation(.easeInOut(duration: 0.2), value: isScrolling)
+        .animation(.easeInOut(duration: 0.4), value: isRestingLong)
+        // Restarts each time scrolling starts or stops; only a full quiet stretch hides them.
+        .task(id: isScrolling) {
+            isRestingLong = false
+            guard !isScrolling else { return }
+            try? await Task.sleep(for: Self.restingDelay)
+            guard !Task.isCancelled else { return }
+            isRestingLong = true
+        }
     }
 
     private func arrow(_ systemImage: String, label: LocalizedStringResource, action: @escaping () -> Void) -> some View {

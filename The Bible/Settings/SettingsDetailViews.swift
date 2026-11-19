@@ -105,6 +105,7 @@ struct SettingsDetailForm<Content: View>: View {
             content
                 .listRowBackground(HeroCardListRowBackground())
         }
+        .labelStyle(.settingsRow)
         .scrollContentBackground(.hidden)
         .background(AppBackgroundView(tab: .more))
         .navigationTitle(Text(title))

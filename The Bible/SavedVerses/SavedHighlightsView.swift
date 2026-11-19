@@ -123,7 +123,7 @@ struct SavedHighlightsView: View {
                 ContentUnavailableView(
                     "No Highlights",
                     systemImage: "highlighter",
-                    description: Text("Press and hold a verse in the Bible and choose a color to highlight it.")
+                    description: Text("Touch and hold a verse in the Bible and choose a color to highlight it.")
                 )
             } else {
                 List {

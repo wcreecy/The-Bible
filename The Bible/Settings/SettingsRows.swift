@@ -1,5 +1,24 @@
 import SwiftUI
 
+/// Lays a settings label out as an icon column beside its text. A list's default label style
+/// lets a multi-line subtitle wrap back under the icon at large text sizes.
+struct SettingsRowLabelStyle: LabelStyle {
+    @ScaledMetric(relativeTo: .body) private var iconWidth: CGFloat = 28
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 14) {
+            configuration.icon
+                .frame(width: iconWidth)
+            configuration.title
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+extension LabelStyle where Self == SettingsRowLabelStyle {
+    static var settingsRow: SettingsRowLabelStyle { SettingsRowLabelStyle() }
+}
+
 struct SettingsNavigationRow: View {
     let title: LocalizedStringResource
     let subtitle: LocalizedStringResource
@@ -17,6 +36,7 @@ struct SettingsNavigationRow: View {
             Image(systemName: systemImage)
                 .foregroundStyle(.tint)
         }
+        .labelStyle(.settingsRow)
     }
 }
 

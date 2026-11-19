@@ -1,6 +1,12 @@
 #if DEBUG
 import Foundation
+import OSLog
 import SwiftData
+
+private let developerSampleLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+    category: "DeveloperSampleData"
+)
 
 @MainActor
 enum DeveloperSampleData {
@@ -15,7 +21,7 @@ enum DeveloperSampleData {
         do {
             try generateStudyData(books: books, in: context)
         } catch {
-            print("Unable to save developer study samples: \(error.localizedDescription)")
+            developerSampleLogger.error("Unable to save developer study samples: \(error.localizedDescription, privacy: .public)")
         }
 
         AppDataChanges.shared.bibleStatsChanged()

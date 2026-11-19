@@ -42,17 +42,12 @@ struct SettingsAppLinksSection: View {
             }
 
             Toggle(isOn: $contextualTipsEnabled) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Contextual Tips")
-                        Text("Show helpful hints while exploring features")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "lightbulb")
-                        .foregroundStyle(.tint)
-                }
+                // Laid out like the navigation rows; a toggle doesn't pick up the list's label style.
+                SettingsNavigationRow(
+                    title: "Contextual Tips",
+                    subtitle: "Show helpful hints while exploring features",
+                    systemImage: "lightbulb"
+                )
             }
             .accessibilityIdentifier("contextualTipsToggle")
             .onChange(of: contextualTipsEnabled) { wasEnabled, isEnabled in
@@ -219,52 +214,35 @@ struct SettingsReadingProgressSection: View {
             )
 
             Toggle(isOn: $showsReadProgress) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Read Progress")
-                        Text("Mark verses you've read with a faint edge")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "checkmark.circle")
-                        .foregroundStyle(.tint)
-                }
+                SettingsNavigationRow(
+                    title: "Read Progress",
+                    subtitle: "Mark verses you've read with a faint edge",
+                    systemImage: "checkmark.circle"
+                )
             }
             .accessibilityIdentifier("readVerseCheckmarksToggle")
 
             Toggle(isOn: $focusReadingEnabled) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Open in Focus Mode")
-                        Text("Start the reader in Focus Mode, one verse at a time")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        .foregroundStyle(.tint)
-                }
+                SettingsNavigationRow(
+                    title: "Open in Focus Mode",
+                    subtitle: "Start the reader in Focus Mode, one verse at a time",
+                    systemImage: "arrow.up.left.and.arrow.down.right"
+                )
             }
             .accessibilityIdentifier("focusReadingToggle")
             .listRowBackground(HeroCardListRowBackground())
 
             Toggle(isOn: $italicizesSuppliedWords) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Supplied Words in Italics")
-                        Text("Italicize words the KJV translators added for clarity (KJV only)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "italic")
-                        .foregroundStyle(.tint)
-                }
+                SettingsNavigationRow(
+                    title: "Supplied Words in Italics",
+                    subtitle: "Italicize words the KJV translators added for clarity (KJV only)",
+                    systemImage: "italic"
+                )
             }
             .accessibilityIdentifier("suppliedWordsItalicsToggle")
         } header: {
-            Text("Bible Reader")
+            // Not "Bible Reader", which the page's title already says.
+            Text("Reading View")
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Choose which bookmark, pinned verse, favorite, note, and Scripture connection icons appear beside each verse reference. Tap a note or Scripture connection icon to open it.")
@@ -302,17 +280,11 @@ struct SettingsVerseMarkersCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Toggle(isOn: $showsVerseMarkers) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Verse Markers")
-                        Text("Show your bookmark, pinned verse, favorites, notes, and Scripture connections beside each reference")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "bookmark")
-                        .foregroundStyle(.tint)
-                }
+                SettingsNavigationRow(
+                    title: "Verse Markers",
+                    subtitle: "Show your bookmark, pinned verse, favorites, notes, and Scripture connections beside each reference",
+                    systemImage: "bookmark"
+                )
             }
             .accessibilityIdentifier("verseMarkersToggle")
 

@@ -348,6 +348,10 @@ private struct MilestoneBanner: View {
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.secondary)
                     .padding(6)
+                    // About a 44-point tap area for a small glyph, without changing the layout.
+                    .padding(10)
+                    .contentShape(Rectangle())
+                    .padding(-10)
             }
             .buttonStyle(.borderless)
             .accessibilityLabel("Dismiss celebration")

@@ -219,12 +219,12 @@ final class The_Bible__iOS_UITests: XCTestCase {
 
     @MainActor
     func testShareVerseOpensSystemShareSheet() throws {
-        assertVerseShareOpensSystemSheet(action: "Share")
+        assertVerseShareOpensSystemSheet(action: "Share Text")
     }
 
     @MainActor
     func testShareVerseWithLinkOpensSystemShareSheet() throws {
-        assertVerseShareOpensSystemSheet(action: "Share with Link")
+        assertVerseShareOpensSystemSheet(action: "Share Text with App Link")
     }
 
     @MainActor
@@ -246,10 +246,10 @@ final class The_Bible__iOS_UITests: XCTestCase {
         XCTAssertTrue(shareMenu.isHittable, file: file, line: line)
         shareMenu.tap()
 
-        // Scope to the open menu because its Share action and the menu trigger share a label.
-        let menu = app.collectionViews.containing(.button, identifier: "Share with Link").firstMatch
+        // Scope to the open menu, so its actions aren't confused with buttons elsewhere.
+        let menu = app.collectionViews.containing(.button, identifier: "Share Text with App Link").firstMatch
         XCTAssertTrue(menu.waitForExistence(timeout: 5), file: file, line: line)
-        for title in ["Share", "Create Verse Image", "Share with Link"] {
+        for title in ["Share Text", "Create Verse Image", "Share Text with App Link"] {
             XCTAssertTrue(menu.buttons[title].exists, "Expected the \(title) action.", file: file, line: line)
         }
         menu.buttons[action].tap()

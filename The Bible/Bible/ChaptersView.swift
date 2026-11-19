@@ -48,7 +48,7 @@ struct ChaptersView: View {
             LazyVStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 16) {
                     if book.name == "Genesis" {
-                        GenesisChapterHeader(chapterCount: book.chapters.count)
+                        GenesisChapterHeader()
                     } else if let theme = BookChapterTheme.themes[book.name] {
                         ThemedBookChaptersHeader(title: book.name, theme: theme)
                     }
@@ -315,9 +315,8 @@ private struct ChapterSheetTarget: Identifiable {
     var id: Int { number }
 }
 
+/// Genesis's header. The chapter count isn't repeated here; it sits above the grid, as for every book.
 private struct GenesisChapterHeader: View {
-    let chapterCount: Int
-
     var body: some View {
         HStack(spacing: 16) {
             GenesisCreationEmblem()
@@ -335,10 +334,6 @@ private struct GenesisChapterHeader: View {
 
                 Text("The beginning")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                Text("\(chapterCount) chapters")
-                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
 

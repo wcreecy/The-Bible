@@ -53,10 +53,12 @@ extension View {
     }
 }
 
+/// A list row's background. Grouped lists already round each section, so rows get a plain
+/// fill; a full card surface on every row drew each one as its own bordered, shadowed card.
 struct HeroCardListRowBackground: View {
     var body: some View {
-        Color.clear
-            .heroCardSurface()
+        Rectangle()
+            .fill(.regularMaterial)
     }
 }
 

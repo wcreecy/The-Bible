@@ -43,6 +43,7 @@ struct SettingsDeveloperToolsView: View {
             translationsSection
             diagnosticsSection
         }
+        .labelStyle(.settingsRow)
         .navigationTitle("Developer Tools")
         .navigationBarTitleDisplayMode(.inline)
         .appToast(isPresented: $isShowingToast, symbol: "checkmark.circle.fill", text: toastText, tint: .green)

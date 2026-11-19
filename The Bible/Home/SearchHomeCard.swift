@@ -103,6 +103,10 @@ struct SearchHomeCard: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
+                        // A larger tap area without making the search field taller.
+                        .padding(12)
+                        .contentShape(Rectangle())
+                        .padding(-12)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Clear search")

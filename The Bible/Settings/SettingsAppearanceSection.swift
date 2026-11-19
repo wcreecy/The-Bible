@@ -17,7 +17,8 @@ struct SettingsAppearanceSection: View {
                 .accessibilityIdentifier("appearancePicker")
             }
         } header: {
-            Text("Appearance")
+            // Not "Appearance", which the page's title already says.
+            Text("Light & Dark")
                 .foregroundStyle(.primary)
         } footer: {
             Text("Choose Light, Dark, or follow the System setting for the app's appearance.")

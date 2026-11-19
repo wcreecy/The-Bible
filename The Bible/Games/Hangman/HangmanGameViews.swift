@@ -37,7 +37,7 @@ struct HangmanRevealCard: View {
             .foregroundStyle(didWin ? Color.green : Color.red)
 
             if didWin {
-                Text("Solved with \(guessesLeft) guesses left")
+                Text(guessesLeft == 1 ? "Solved with 1 mistake to spare" : "Solved with \(guessesLeft) mistakes to spare")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.green)
             }

@@ -141,7 +141,9 @@ struct CrosswordGameView: View {
                         }
                     }
                 }
-                .padding()
+                // The lobby brings its own margins via `gameStartScreenStyle`, like the other
+                // games; padding it here too doubled them.
+                .padding(vm.phase == .setup ? 0 : 16)
                 .id(Self.scrollTopID)
             }
             .onChange(of: vm.phase) { _, phase in
@@ -203,8 +205,8 @@ struct CrosswordGameView: View {
                 GameSplashFacts(
                     first: ("stopwatch", vm.savedBestTime.map { GameTimeFormat.short(seconds: $0) } ?? "—", String(localized: "Best time")),
                     second: ("square.grid.3x3", "\(vm.targetBoardSize)×\(vm.targetBoardSize)", String(localized: "Board")),
-                    third: ("lightbulb", String(localized: "Unlimited"), String(localized: "Letter & word hints")),
-                    fourth: ("flame", "\(vm.currentStreak)", String(localized: "Current streak"))
+                    third: ("lightbulb", String(localized: "Unlimited"), String(localized: "Hints")),
+                    fourth: ("flame", vm.currentStreak.formatted(), String(localized: "Current streak"))
                 )
             }
 

@@ -81,7 +81,8 @@ enum HangmanDifficulty: String, CaseIterable, Identifiable {
     var clueSummary: String {
         switch self {
         case .easy: String(localized: "Shown")
-        case .normal: String(localized: "−1 mistake")
+        // Worded like the in-game button, "Show clue (costs 1 mistake)".
+        case .normal: String(localized: "Costs 1 mistake")
         case .hard: String(localized: "None")
         }
     }

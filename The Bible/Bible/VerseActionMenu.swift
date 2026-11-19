@@ -25,7 +25,8 @@ struct VerseShareMenu<MenuLabel: View>: View {
             }
 
             Button(action: { shareVerse(includingAppLink: false) }) {
-                Label("Share", systemImage: "text.quote")
+                // Named for what's sent, so it reads clearly beside the link version.
+                Label("Share Text", systemImage: "text.quote")
             }
 
             Button {
@@ -38,7 +39,7 @@ struct VerseShareMenu<MenuLabel: View>: View {
                 .overlay(Color.primary.opacity(0.75))
 
             Button(action: { shareVerse(includingAppLink: true) }) {
-                Label("Share with Link", systemImage: "link")
+                Label("Share Text with App Link", systemImage: "link")
             }
 
         } label: {
@@ -309,12 +310,14 @@ struct VerseActionMenuContent: View {
                         .frame(maxWidth: .infinity)
                     }
 
+                    // Every icon in this row is primary until its action is on (a red heart, a
+                    // filled bookmark), so color always means "this verse has it".
                     VerseShareMenu(verse: verse, onCopy: copy, onCreateImage: showImageComposer) {
                         Image(systemName: "square.and.arrow.up")
                             .frame(minWidth: 40, minHeight: 44)
                             .contentShape(Rectangle())
                     }
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.primary)
                     .accessibilityLabel("Share")
                     .frame(maxWidth: .infinity)
 
@@ -325,7 +328,7 @@ struct VerseActionMenuContent: View {
                             .frame(minWidth: 40, minHeight: 44)
                             .contentShape(Rectangle())
                     }
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.primary)
                     .accessibilityLabel("More verse actions")
                     .frame(maxWidth: .infinity)
                 }
@@ -366,6 +369,8 @@ struct VerseActionMenuContent: View {
                         .frame(minWidth: 40, minHeight: 44)
                         .contentShape(Rectangle())
                 }
+                // Tinted like the heart and Share beside it.
+                .foregroundStyle(Color.accentColor)
                 .accessibilityLabel("Verse actions")
             }
             .font(.title3)

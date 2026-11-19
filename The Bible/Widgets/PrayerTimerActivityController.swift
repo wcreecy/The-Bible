@@ -1,6 +1,12 @@
 import Foundation
 import ActivityKit
+import OSLog
 import SwiftUI
+
+private let liveActivityLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "The Bible",
+    category: "LiveActivity"
+)
 
 @MainActor
 final class PrayerTimerActivityController {
@@ -33,7 +39,7 @@ final class PrayerTimerActivityController {
                 activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
             }
         } catch {
-            print("Failed to start PrayerTimer Live Activity: \(error)")
+            liveActivityLogger.error("Failed to start PrayerTimer Live Activity: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -88,7 +94,7 @@ final class PrayerTimerActivityController {
                 activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
             }
         } catch {
-            print("Failed to start Focus Live Activity: \(error)")
+            liveActivityLogger.error("Failed to start Focus Live Activity: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -121,7 +127,7 @@ final class PrayerTimerActivityController {
                 self.activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
             }
         } catch {
-            print("Failed to start Focus Live Activity (ensureIfNone): \(error)")
+            liveActivityLogger.error("Failed to start Focus Live Activity (ensureIfNone): \(error.localizedDescription, privacy: .public)")
         }
     }
 

@@ -85,7 +85,7 @@ final class ReadingViewModel {
 
     /// Moves to the navigation target after the reader has received stable layout geometry.
     func positionInitialVerse() {
-        topVisibleVerseID = rowID(for: currentVerse)
+        topVisibleVerseID = scrollTargetID(for: currentVerse)
     }
 
     /// Shows the initial navigation target after its row has been laid out.
@@ -301,7 +301,7 @@ final class ReadingViewModel {
         currentBookNameIndex = orderedBookNames.firstIndex(of: book.name)
         currentChapterIndex = chapterIndex
         currentVerse = location.verseNumber
-        topVisibleVerseID = rowID(for: location.verseNumber)
+        topVisibleVerseID = scrollTargetID(for: location.verseNumber)
         ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: location.chapterNumber)
         resetInitialMarkingAfterChapterChange()
         markActivity()
@@ -322,7 +322,7 @@ final class ReadingViewModel {
         if currentChapterIndex + 1 < chapters.count {
             currentChapterIndex += 1
             currentVerse = 1
-            topVisibleVerseID = rowID(for: 1)
+            topVisibleVerseID = chapterTopID
             Haptics.selection()
             ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
             resetInitialMarkingAfterChapterChange()
@@ -338,7 +338,7 @@ final class ReadingViewModel {
         currentBookNameIndex = nextBookIdx
         currentChapterIndex = 0
         currentVerse = 1
-        topVisibleVerseID = rowID(for: 1)
+        topVisibleVerseID = chapterTopID
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
         resetInitialMarkingAfterChapterChange()
         Haptics.selection()
@@ -350,7 +350,7 @@ final class ReadingViewModel {
         if currentChapterIndex - 1 >= 0 {
             currentChapterIndex -= 1
             currentVerse = 1
-            topVisibleVerseID = rowID(for: 1)
+            topVisibleVerseID = chapterTopID
             Haptics.selection()
             ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
             resetInitialMarkingAfterChapterChange()
@@ -366,7 +366,7 @@ final class ReadingViewModel {
         currentBookNameIndex = prevBookIdx
         currentChapterIndex = max(0, prevBook.chapters.count - 1)
         currentVerse = 1
-        topVisibleVerseID = rowID(for: 1)
+        topVisibleVerseID = chapterTopID
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
         resetInitialMarkingAfterChapterChange()
         Haptics.selection()
@@ -395,6 +395,16 @@ final class ReadingViewModel {
 
     func rowID(for verseNumber: Int) -> String {
         "\(currentBook.name)-\(currentChapter.number)-\(verseNumber)"
+    }
+
+    /// The very top of the chapter, above any tip or reading-plan pill. Opening a chapter at
+    /// its first verse scrolls here, so what sits above verse 1 isn't left under the toolbar.
+    var chapterTopID: String {
+        "\(currentBook.name)-\(currentChapter.number)-top"
+    }
+
+    func scrollTargetID(for verseNumber: Int) -> String {
+        verseNumber <= 1 ? chapterTopID : rowID(for: verseNumber)
     }
 
     /// Records the verse at the top of the reader, or the current verse when none is known.

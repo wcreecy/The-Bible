@@ -53,6 +53,7 @@ struct BibleTriviaCompactBoard: View {
             if isAnswered {
                 if let outcome {
                     BibleTriviaAnswerReveal(outcome: outcome, reference: reference)
+                        .id(BibleTriviaAnswerReveal.scrollID)
                 }
             }
         }
@@ -171,16 +172,21 @@ struct BibleTriviaQuestionBoard: View {
                 )
             }
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                ForEach(options, id: \.self) { option in
-                    BibleTriviaAnswerOption(
-                        title: option,
-                        isCorrect: isAnswered && option == correctAnswer,
-                        isSelected: option == selectedAnswer,
-                        isIncorrectSelection: isAnswered && option == selectedAnswer && option != correctAnswer,
-                        isDisabled: isAnswered
-                    ) {
-                        onChoose(option)
+            // A Grid rather than a lazy grid, so both answers in a row share the taller one's height.
+            Grid(horizontalSpacing: 10, verticalSpacing: 10) {
+                ForEach(Array(stride(from: 0, to: options.count, by: 2)), id: \.self) { start in
+                    GridRow {
+                        ForEach(options[start..<min(start + 2, options.count)], id: \.self) { option in
+                            BibleTriviaAnswerOption(
+                                title: option,
+                                isCorrect: isAnswered && option == correctAnswer,
+                                isSelected: option == selectedAnswer,
+                                isIncorrectSelection: isAnswered && option == selectedAnswer && option != correctAnswer,
+                                isDisabled: isAnswered
+                            ) {
+                                onChoose(option)
+                            }
+                        }
                     }
                 }
             }
@@ -209,8 +215,8 @@ struct BibleTriviaAnswerOption: View {
             action()
         } label: {
             Text(title)
-            .frame(maxWidth: .infinity)
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .foregroundStyle(.primary)
         }
         .disabled(isDisabled)
@@ -254,6 +260,9 @@ enum BibleTriviaAnswerOutcome {
 }
 
 struct BibleTriviaAnswerReveal: View {
+    /// The game scrolls here once a question is answered, so the result is never left under the Next button.
+    static let scrollID = "triviaAnswerReveal"
+
     let outcome: BibleTriviaAnswerOutcome
     let reference: String
 
@@ -291,14 +300,18 @@ struct BibleTriviaAnswerReveal: View {
                     .foregroundStyle(outcome.tint)
 
                 if let passageReference {
+                    // Primary rather than link blue, which is hard to read on the tinted glass.
+                    // Smaller than the question, which stays the most prominent text.
                     Link(destination: passageReference.url) {
                         Label(reference, systemImage: "book")
-                            .font(.title3.weight(.bold))
+                            .font(.headline)
                     }
+                    // A link draws in its tint, whatever its label's style.
+                    .tint(.primary)
                     .accessibilityHint("Shows a preview of the passage")
                 } else if !reference.isEmpty {
                     Text(reference)
-                        .font(.title3.weight(.bold))
+                        .font(.headline)
                         .foregroundStyle(.primary)
                 }
             }
