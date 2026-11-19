@@ -53,7 +53,7 @@ struct ReaderBookPickerSheet: View {
                     proxy.scrollTo(currentBookName, anchor: .center)
                 }
                 .pencilPopover(for: pencilTracker) { bookName, dismiss in
-                    if let book = BibleData.books.first(where: { $0.name == bookName }) {
+                    if let book = BibleData.book(named: bookName) {
                         PencilActionList(dismiss: dismiss) {
                             Button {
                                 dismiss()
@@ -140,7 +140,7 @@ struct ReaderBookPickerSheet: View {
         if let reference { return [reference.book] }
 
         let names = BibleBookNameMatcher.suggestions(for: query, in: BibleData.books.map(\.name))
-        return names.compactMap { name in BibleData.books.first(where: { $0.name == name }) }
+        return names.compactMap { name in BibleData.book(named: name) }
     }
 }
 

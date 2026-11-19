@@ -12,6 +12,7 @@ private nonisolated final class BibleCorpusCache: @unchecked Sendable {
     private let lock = NSLock()
     private var active: BibleTranslation = BibleTranslation.saved
     private var storage: [BibleTranslation: [Book]] = [:]
+    private var bookIndices: [BibleTranslation: [String: Int]] = [:]
     private var failed: Set<BibleTranslation> = []
 
     var activeTranslation: BibleTranslation {
@@ -31,12 +32,26 @@ private nonisolated final class BibleCorpusCache: @unchecked Sendable {
         lock.withLock { storage[translation] ?? [] }
     }
 
+    func book(named name: String, for translation: BibleTranslation) -> Book? {
+        lock.withLock {
+            guard
+                let index = bookIndices[translation]?[name],
+                let books = storage[translation],
+                books.indices.contains(index)
+            else { return nil }
+            return books[index]
+        }
+    }
+
     func store(_ books: [Book], for translation: BibleTranslation) {
         lock.withLock {
             if books.isEmpty {
                 failed.insert(translation)
             } else {
                 storage[translation] = books
+                bookIndices[translation] = Dictionary(
+                    uniqueKeysWithValues: books.enumerated().map { ($0.element.name, $0.offset) }
+                )
                 failed.remove(translation)
             }
         }
@@ -47,6 +62,7 @@ private nonisolated final class BibleCorpusCache: @unchecked Sendable {
         lock.withLock {
             active = translation
             storage = storage.filter { $0.key == translation }
+            bookIndices = bookIndices.filter { $0.key == translation }
         }
     }
 }
@@ -64,6 +80,10 @@ actor BibleRepository {
 
     nonisolated var cachedBooks: [Book] {
         cache.books
+    }
+
+    nonisolated func cachedBook(named name: String) -> Book? {
+        cache.book(named: name, for: cache.activeTranslation)
     }
 
     /// A translation's books if they're in memory. Only the active translation stays loaded.
@@ -292,6 +312,10 @@ enum BibleData {
     // the repository is the sole owner of the corpus and publishes this snapshot.
     static var books: [Book] {
         BibleRepository.shared.cachedBooks
+    }
+
+    static func book(named name: String) -> Book? {
+        BibleRepository.shared.cachedBook(named: name)
     }
 
     /// Decodes a bundled, pre-cleaned translation such as KJVText.json.

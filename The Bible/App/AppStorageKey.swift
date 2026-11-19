@@ -34,6 +34,7 @@ enum AppStorageKey {
     /// Word Study hides articles, conjunctions, and the Hebrew object marker when on.
     static let wordStudyHidesSmallWords = "wordStudyHidesSmallWords"
     static let lastStudiedChapter = "lastStudiedChapter"
+    static let bookStoryProgress = "bookStoryProgress"
     static let statsSelectedMode = "statsSelectedMode"
     static let chapterListLayout = "chapterListLayout"
     static let noteEditorTextSizeStep = "noteEditorTextSizeStep"

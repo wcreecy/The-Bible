@@ -59,7 +59,7 @@ extension Favorite {
     @MainActor
     var currentVerseText: String {
         guard translation == BibleRepository.shared.activeTranslation.rawValue,
-              let text = BibleData.books.first(where: { $0.name == bookName })?
+              let text = BibleData.book(named: bookName)?
                 .chapters.first(where: { $0.number == chapterNumber })?
                 .verses.first(where: { $0.number == verseNumber })?
                 .text,

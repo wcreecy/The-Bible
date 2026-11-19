@@ -404,14 +404,16 @@ struct HomeLayoutEditorView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                ForEach(Array(columns.stackedCards(in: column).filter(isVisible).enumerated()), id: \.element) { index, id in
+                let visibleCards = columns.stackedCards(in: column).filter(isVisible)
+
+                ForEach(Array(visibleCards.enumerated()), id: \.element) { index, id in
                     columnRow(for: id, in: column, position: index + 1)
                 }
                 .onMove { source, destination in
                     moveVisibleInColumn(column, fromOffsets: source, toOffset: destination)
                 }
 
-                if columns.stackedCards(in: column).filter(isVisible).isEmpty {
+                if visibleCards.isEmpty {
                     Text("No cards in this column.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)

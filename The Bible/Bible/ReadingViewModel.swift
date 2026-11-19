@@ -186,7 +186,7 @@ final class ReadingViewModel {
         focusVerseTracker.resetVisibility()
         guard isFocusModeActive,
               let location,
-              let book = BibleData.books.first(where: { $0.name == location.bookName }),
+              let book = BibleData.book(named: location.bookName),
               let chapter = book.chapters.first(where: { $0.number == location.chapterNumber }) else { return }
 
         focusVerseTracker.setActive(true)
@@ -286,13 +286,13 @@ final class ReadingViewModel {
         }
         guard let bookIdx = indexOfCurrentBookInCanonical(),
               orderedBookNames.indices.contains(bookIdx - 1),
-              let previousBook = BibleData.books.first(where: { $0.name == orderedBookNames[bookIdx - 1] }),
+              let previousBook = BibleData.book(named: orderedBookNames[bookIdx - 1]),
               let last = previousBook.chapters.last else { return nil }
         return "\(previousBook.name) \(last.number)"
     }
 
     func show(location: FocusVerseLocation) {
-        guard let book = BibleData.books.first(where: { $0.name == location.bookName }),
+        guard let book = BibleData.book(named: location.bookName),
               let chapterIndex = book.chapters.firstIndex(where: { $0.number == location.chapterNumber }) else {
             return
         }
@@ -310,7 +310,7 @@ final class ReadingViewModel {
     /// Shows the same passage in the newly active translation. Row IDs are by reference,
     /// so the reader keeps its scroll position.
     func translationChanged() {
-        guard let book = BibleData.books.first(where: { $0.name == currentBook.name }) else { return }
+        guard let book = BibleData.book(named: currentBook.name) else { return }
         currentBook = book
         menuVerse = nil
         selectedVerse = nil
@@ -333,7 +333,7 @@ final class ReadingViewModel {
         let nextBookIdx = bookIdx + 1
         guard orderedBookNames.indices.contains(nextBookIdx) else { return }
         let nextBookName = orderedBookNames[nextBookIdx]
-        guard let nextBook = BibleData.books.first(where: { $0.name == nextBookName }) else { return }
+        guard let nextBook = BibleData.book(named: nextBookName) else { return }
         currentBook = nextBook
         currentBookNameIndex = nextBookIdx
         currentChapterIndex = 0
@@ -361,7 +361,7 @@ final class ReadingViewModel {
         let prevBookIdx = bookIdx - 1
         guard orderedBookNames.indices.contains(prevBookIdx) else { return }
         let prevBookName = orderedBookNames[prevBookIdx]
-        guard let prevBook = BibleData.books.first(where: { $0.name == prevBookName }) else { return }
+        guard let prevBook = BibleData.book(named: prevBookName) else { return }
         currentBook = prevBook
         currentBookNameIndex = prevBookIdx
         currentChapterIndex = max(0, prevBook.chapters.count - 1)

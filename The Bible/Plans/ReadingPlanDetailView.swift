@@ -58,6 +58,9 @@ struct ReadingPlanDetailView: View {
                 // Every day before the next one is read; fold them once there are a few.
                 let readDays = current.map { next in plan.days.filter { $0.day < next } } ?? []
                 let foldsReadDays = readDays.count >= Self.foldThreshold
+                let visibleDays = foldsReadDays
+                    ? plan.days.filter { $0.day >= current ?? 0 }
+                    : plan.days
 
                 if foldsReadDays {
                     DisclosureGroup(isExpanded: $showsReadDays) {
@@ -73,7 +76,7 @@ struct ReadingPlanDetailView: View {
                     }
                 }
 
-                ForEach(foldsReadDays ? plan.days.filter { $0.day >= current ?? 0 } : plan.days) { day in
+                ForEach(visibleDays) { day in
                     dayRow(day, plan: plan, current: current, enrollment: enrollment)
                 }
             }

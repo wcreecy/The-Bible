@@ -172,7 +172,7 @@ final class TodayChallengeStore {
             }
             guard let bookName = challenge.bookName,
                   let chapterNumber = challenge.chapterNumber,
-                  let book = BibleData.books.first(where: { $0.name == bookName }),
+                  let book = BibleData.book(named: bookName),
                   let chapter = book.chapters.first(where: { $0.number == chapterNumber }) else {
                 return false
             }

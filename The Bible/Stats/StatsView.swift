@@ -401,7 +401,7 @@ struct StatsView: View {
     }
 
     private func nextUnreadChapter(in bookName: String) -> Int? {
-        guard let b = BibleData.books.first(where: { $0.name == bookName }) else { return nil }
+        guard let b = BibleData.book(named: bookName) else { return nil }
         for c in b.chapters {
             let totalVerses = c.verses.count
             let complete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: c.number, totalVerses: totalVerses)

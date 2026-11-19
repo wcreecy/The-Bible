@@ -330,6 +330,8 @@ private struct OverviewActions: View {
     let bookName: String
     let story: [BibleBookStorySection]
 
+    @State private var hasSavedStoryPlace = false
+
     var body: some View {
         // Side by side at equal widths when each label fits in its share; stacked in narrow
         // widths, for long book names, or at large text sizes.
@@ -359,14 +361,24 @@ private struct OverviewActions: View {
                 BookStoryView(bookName: bookName, story: story)
                     .studySheetDoneButton()
             } label: {
-                Label("Plain-English Retelling", systemImage: "book.pages")
+                Label(
+                    hasSavedStoryPlace ? "Continue Retelling" : "Plain-English Retelling",
+                    systemImage: hasSavedStoryPlace ? "bookmark.fill" : "book.pages"
+                )
                     .font(.headline)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.vertical, 6)
             }
             .buttonStyle(.bordered)
-            .accessibilityHint("Opens a plain-English retelling of \(bookName)")
+            .accessibilityHint(
+                hasSavedStoryPlace
+                    ? "Continues the retelling of \(bookName) from your saved place"
+                    : "Opens a plain-English retelling of \(bookName)"
+            )
+            .onAppear {
+                hasSavedStoryPlace = BookStoryProgress.savedSectionID(for: bookName) != nil
+            }
         }
     }
 }

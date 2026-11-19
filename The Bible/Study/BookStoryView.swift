@@ -122,42 +122,63 @@ struct BookStoryView: View {
     let story: [BibleBookStorySection]
 
     @State private var canonicalBookNames: [String] = []
+    @State private var currentSectionID: Int?
+    @State private var didRestorePosition = false
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                Text(bookRetellingTitle(for: bookName))
-                    .font(.largeTitle.bold())
-                    .padding(.bottom, 4)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 18) {
+                    Text(bookRetellingTitle(for: bookName))
+                        .font(.largeTitle.bold())
+                        .padding(.bottom, 4)
 
-                ForEach(story) { section in
-                    VStack(alignment: .leading, spacing: 6) {
-                        // Continuation paragraphs have no label of their own.
-                        if !section.passage.isEmpty {
-                            StorySectionHeader(passage: section.passage)
+                    ForEach(story) { section in
+                        VStack(alignment: .leading, spacing: 6) {
+                            // Continuation paragraphs have no label of their own.
+                            if !section.passage.isEmpty {
+                                StorySectionHeader(passage: section.passage)
+                            }
+
+                            Text(section.text)
+                                .font(.body)
+                                .lineSpacing(5)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-
-                        Text(section.text)
-                            .font(.body)
-                            .lineSpacing(5)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        .id(section.id)
+                        .onAppear {
+                            currentSectionID = section.id
+                            guard didRestorePosition else { return }
+                            BookStoryProgress.save(section.id, for: bookName)
+                        }
                     }
+
+                    Text("Retold from the King James Version. Tap a passage to read it in full.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 8)
+
+                    BookStoryNavigation(
+                        bookName: bookName,
+                        canonicalBookNames: canonicalBookNames
+                    )
                 }
-
-                Text("Retold from the King James Version. Tap a passage to read it in full.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 8)
-
-                BookStoryNavigation(
-                    bookName: bookName,
-                    canonicalBookNames: canonicalBookNames
-                )
+                // Keeps lines a comfortable reading length on iPad.
+                .frame(maxWidth: 680, alignment: .leading)
+                .padding()
+                .frame(maxWidth: .infinity)
             }
-            // Keeps lines a comfortable reading length on iPad.
-            .frame(maxWidth: 680, alignment: .leading)
-            .padding()
-            .frame(maxWidth: .infinity)
+            .onAppear {
+                let savedSectionID = BookStoryProgress.savedSectionID(for: bookName)
+                currentSectionID = savedSectionID
+                Task { @MainActor in
+                    await Task.yield()
+                    if let savedSectionID {
+                        proxy.scrollTo(savedSectionID, anchor: .top)
+                    }
+                    didRestorePosition = true
+                }
+            }
         }
         .tabBarContentClearance()
         .background(AppBackgroundView(tab: .bible))
@@ -168,6 +189,27 @@ struct BookStoryView: View {
             guard canonicalBookNames.isEmpty else { return }
             canonicalBookNames = await BibleRepository.shared.loadAllBooks().map(\.name)
         }
+    }
+}
+
+/// Stores one resumable section per retelling without creating a Scripture bookmark.
+enum BookStoryProgress {
+    private static let defaults = UserDefaults.standard
+
+    static func savedSectionID(for bookName: String, defaults: UserDefaults = defaults) -> Int? {
+        guard
+            let data = defaults.data(forKey: AppStorageKey.bookStoryProgress),
+            let progress = try? JSONDecoder().decode([String: Int].self, from: data)
+        else { return nil }
+        return progress[bookName]
+    }
+
+    static func save(_ sectionID: Int, for bookName: String, defaults: UserDefaults = defaults) {
+        var progress = defaults.data(forKey: AppStorageKey.bookStoryProgress)
+            .flatMap { try? JSONDecoder().decode([String: Int].self, from: $0) } ?? [:]
+        progress[bookName] = sectionID
+        guard let data = try? JSONEncoder().encode(progress) else { return }
+        defaults.set(data, forKey: AppStorageKey.bookStoryProgress)
     }
 }
 

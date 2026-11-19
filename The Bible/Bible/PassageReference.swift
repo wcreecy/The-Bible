@@ -348,7 +348,7 @@ enum PassageReferenceParser {
     }
 
     private static func isValid(_ reference: PassageReference) -> Bool {
-        guard let book = BibleData.books.first(where: { $0.name == reference.bookName }),
+        guard let book = BibleData.book(named: reference.bookName),
               reference.startChapter >= 1,
               reference.endChapter >= reference.startChapter,
               reference.endChapter <= book.chapters.count else { return false }

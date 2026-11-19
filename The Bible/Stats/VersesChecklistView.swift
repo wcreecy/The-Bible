@@ -70,7 +70,7 @@ struct VersesChecklistView: View {
     }
 
     private func loadChapter() {
-        guard let book = BibleData.books.first(where: { $0.name == bookName }),
+        guard let book = BibleData.book(named: bookName),
               let chapter = book.chapters.first(where: { $0.number == chapterNumber }) else {
             verses = []
             totalVerses = 0

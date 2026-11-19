@@ -48,7 +48,7 @@ struct BookChaptersDetailView: View {
     @State private var refreshID: UUID = UUID()
 
     private var book: Book? {
-        BibleData.books.first(where: { $0.name == bookName })
+        BibleData.book(named: bookName)
     }
     private var chapterNumbers: [Int] {
         guard let b = book else { return [] }
