@@ -1,5 +1,6 @@
 import AppIntents
 import Foundation
+import UIKit
 import UniformTypeIdentifiers
 
 /// Renders the Verse of the Day as a wallpaper sized for this device, styled like the last verse
@@ -26,6 +27,13 @@ struct CreateVerseWallpaperIntent: AppIntent {
             _ = try await RefreshVerseOfDayIntent().perform()
         }
 
+        let data = try await MainActor.run { try Self.renderVerseOfDayWallpaper() }
+        return .result(value: IntentFile(data: data, filename: "Verse Wallpaper.png", type: .png))
+    }
+
+    /// The composer model, SwiftUI rendering, and app storage keys all live on the main actor.
+    @MainActor
+    private static func renderVerseOfDayWallpaper() throws -> Data {
         let defaults = UserDefaults.standard
         let book = defaults.string(forKey: AppStorageKey.verseOfDayBook) ?? ""
         let text = defaults.string(forKey: AppStorageKey.verseOfDayText) ?? ""
@@ -43,11 +51,10 @@ struct CreateVerseWallpaperIntent: AppIntent {
         ))
         model.format = .wallpaper
         model.formatDidChange()
-
         guard let data = model.render()?.pngData() else {
             throw CreateVerseWallpaperError.couldNotRender
         }
-        return .result(value: IntentFile(data: data, filename: "Verse Wallpaper.png", type: .png))
+        return data
     }
 }
 

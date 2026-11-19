@@ -135,10 +135,14 @@ enum StoredVerseTextCleaner {
         // Fetch only records that still contain source markup. This method runs after
         // remote-store changes, so fetching every saved record here would make sync
         // increasingly expensive as a user's library grows.
+        // Typed captures avoid resolving String.contains overloads inside the macro.
+        let openingBrace: String = "{"
+        let closingBrace: String = "}"
+        let markupMarker: String = "\u{E000}"
         let favoritePredicate = #Predicate<Favorite> { favorite in
-            favorite.verseText.contains("{")
-                || favorite.verseText.contains("}")
-                || favorite.verseText.contains("\u{E000}")
+            favorite.verseText.contains(openingBrace)
+                || favorite.verseText.contains(closingBrace)
+                || favorite.verseText.contains(markupMarker)
         }
         for favorite in (try? context.fetch(FetchDescriptor<Favorite>(predicate: favoritePredicate))) ?? [] {
             favorite.verseText = KJVTextCleaner.clean(favorite.verseText).text
@@ -146,9 +150,9 @@ enum StoredVerseTextCleaner {
         }
 
         let bookmarkPredicate = #Predicate<Bookmark> { bookmark in
-            bookmark.verseText.contains("{")
-                || bookmark.verseText.contains("}")
-                || bookmark.verseText.contains("\u{E000}")
+            bookmark.verseText.contains(openingBrace)
+                || bookmark.verseText.contains(closingBrace)
+                || bookmark.verseText.contains(markupMarker)
         }
         for bookmark in (try? context.fetch(FetchDescriptor<Bookmark>(predicate: bookmarkPredicate))) ?? [] {
             bookmark.verseText = KJVTextCleaner.clean(bookmark.verseText).text
@@ -156,9 +160,9 @@ enum StoredVerseTextCleaner {
         }
 
         let notePredicate = #Predicate<VerseNote> { note in
-            note.verseText.contains("{")
-                || note.verseText.contains("}")
-                || note.verseText.contains("\u{E000}")
+            note.verseText.contains(openingBrace)
+                || note.verseText.contains(closingBrace)
+                || note.verseText.contains(markupMarker)
         }
         for note in (try? context.fetch(FetchDescriptor<VerseNote>(predicate: notePredicate))) ?? [] {
             note.verseText = KJVTextCleaner.clean(note.verseText).text

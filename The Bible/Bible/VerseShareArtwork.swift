@@ -4,6 +4,8 @@ struct VerseShareArtwork: View {
     let model: VerseImageComposerModel
     var photoTranslation = CGSize.zero
     var textTranslation = CGSize.zero
+    /// A pinch in progress, applied on top of the saved text size until it ends.
+    var textScaleMultiplier: CGFloat = 1
     /// The stroke being drawn, shown before it joins the model's strokes.
     var liveStroke: InkStroke?
 
@@ -35,12 +37,6 @@ struct VerseShareArtwork: View {
                             .textCase(.uppercase)
                             .tracking(contentWidth * 0.002)
                     }
-
-                    // The bottom of a wallpaper is under the flashlight and camera buttons,
-                    // so the branding travels with the verse instead.
-                    if model.showsBranding && model.format == .wallpaper {
-                        brandingLabel(contentWidth: contentWidth)
-                    }
                 }
                 .foregroundStyle(model.textColor)
                 .frame(width: contentWidth * 0.82, alignment: frameAlignment)
@@ -50,10 +46,14 @@ struct VerseShareArtwork: View {
                     VersePhotoSubjectLayer(model: model, photoTranslation: photoTranslation)
                 }
 
+                // Wallpapers never carry branding.
                 if model.showsBranding && model.format != .wallpaper {
                     VStack {
                         Spacer()
-                        brandingLabel(contentWidth: contentWidth)
+                        Text("THE BIBLE")
+                            .font(.system(size: contentWidth * 0.021, weight: .bold, design: .rounded))
+                            .tracking(contentWidth * 0.004)
+                            .foregroundStyle(model.textColor.opacity(0.75))
                             .padding(.bottom, size.height * 0.035)
                     }
                 }
@@ -62,13 +62,6 @@ struct VerseShareArtwork: View {
             }
             .clipped()
         }
-    }
-
-    private func brandingLabel(contentWidth: CGFloat) -> some View {
-        Text("THE BIBLE")
-            .font(.system(size: contentWidth * 0.021, weight: .bold, design: .rounded))
-            .tracking(contentWidth * 0.004)
-            .foregroundStyle(model.textColor.opacity(0.75))
     }
 
     @ViewBuilder
@@ -110,7 +103,8 @@ struct VerseShareArtwork: View {
         case ..<200: base = 0.052
         default: base = 0.042
         }
-        return contentWidth * base * model.textScale
+        let scale = (model.textScale * textScaleMultiplier).clamped(to: VerseImageComposerModel.textScaleRange)
+        return contentWidth * base * scale
     }
 
     private var frameAlignment: Alignment {
@@ -118,6 +112,24 @@ struct VerseShareArtwork: View {
         case .leading: .leading
         case .center: .center
         case .trailing: .trailing
+        }
+    }
+}
+
+/// Lays content out at the export's size, then shrinks or grows it to fill the space it's given,
+/// so a preview wraps text and places everything exactly as the saved image does.
+struct ExportSizedLayout<Content: View>: View {
+    let layoutSize: CGSize
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GeometryReader { proxy in
+            let scale = layoutSize.width > 0 ? proxy.size.width / layoutSize.width : 1
+            content
+                .frame(width: layoutSize.width, height: layoutSize.height)
+                .scaleEffect(scale, anchor: .topLeading)
+                // Scaling doesn't change layout, so pin the full-size content to the corner it shrinks toward.
+                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
         }
     }
 }

@@ -10,6 +10,9 @@ struct VerseImageComposerView: View {
     @State private var shareImage: ShareableVerseImage?
     @State private var saveMessage: String?
     @State private var isExporting = false
+    @State private var previewLayout = WallpaperPreviewLayout()
+    @State private var showsFullScreenPreview = false
+    @State private var showsWallpaperSavedSheet = false
 
     init(verse: VerseActionReference) {
         _model = State(initialValue: VerseImageComposerModel(verse: verse))
@@ -20,7 +23,7 @@ struct VerseImageComposerView: View {
             // The preview stays above the controls so it can be dragged without fighting the
             // scroll view, and stays visible while a slider moves.
             VStack(spacing: 0) {
-                VerseImagePreview(model: model)
+                VerseImagePreview(model: model, previewLayout: previewLayout)
                     .frame(maxHeight: 320)
                     .padding([.horizontal, .top])
                     .padding(.bottom, 12)
@@ -34,6 +37,13 @@ struct VerseImageComposerView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             VerseImageCanvasControls(model: model, selectedPhoto: $selectedPhoto)
+                            if model.format == .wallpaper {
+                                VerseWallpaperControls(
+                                    model: model,
+                                    layout: $previewLayout,
+                                    onPreviewFullScreen: { showsFullScreenPreview = true }
+                                )
+                            }
                             VerseImageTextControls(model: model)
                             exportButtons
                         }
@@ -47,8 +57,8 @@ struct VerseImageComposerView: View {
                 model.clearUndoHistory()
             }
             .onChange(of: model.photoScale) { model.clampPhotoOffset() }
-            .onChange(of: model.format) { model.clampPhotoOffset() }
-            .navigationTitle("Share as Image")
+            .onChange(of: model.format) { model.formatDidChange() }
+            .navigationTitle(model.format == .wallpaper ? Text("Create Wallpaper") : Text("Share as Image"))
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.interactively)
             // A downward stroke would otherwise pull the sheet away.
@@ -82,7 +92,13 @@ struct VerseImageComposerView: View {
                 }
             }
             .sheet(item: $shareImage) { item in
-                VerseImageShareSheet(image: item.image)
+                VerseImageShareSheet(image: item.image, includesAppLink: item.includesAppLink)
+            }
+            .sheet(isPresented: $showsWallpaperSavedSheet) {
+                WallpaperSavedSheet(isPad: model.format.contentFraction < 1)
+            }
+            .fullScreenCover(isPresented: $showsFullScreenPreview) {
+                VerseLockScreenFullPreview(model: model, layout: previewLayout)
             }
             .alert("Image Export", isPresented: Binding(
                 get: { saveMessage != nil },
@@ -103,19 +119,32 @@ struct VerseImageComposerView: View {
             .buttonStyle(.glassProminent)
             .tint(.orange)
 
-            Button("Save Image", systemImage: "square.and.arrow.down") {
+            Button(action: {
                 Task { await saveToPhotos() }
+            }) {
+                Label {
+                    if model.format == .wallpaper {
+                        Text("Save Wallpaper")
+                    } else {
+                        Text("Save Image")
+                    }
+                } icon: {
+                    Image(systemName: "square.and.arrow.down")
+                }
             }
+
             .buttonStyle(.glass)
             .tint(.orange)
         }
         .font(.headline)
         // The link is sent as text beside the image; this leaves it off.
         .safeAreaInset(edge: .bottom, spacing: 8) {
-            IncludeAppLinkToggle()
-                .font(.subheadline)
-                .tint(.orange)
-                .fixedSize()
+            if model.format != .wallpaper {
+                IncludeAppLinkToggle()
+                    .font(.subheadline)
+                    .tint(.orange)
+                    .fixedSize()
+            }
         }
         .disabled(isExporting)
         .opacity(isExporting ? 0.4 : 1)
@@ -140,7 +169,10 @@ struct VerseImageComposerView: View {
             saveMessage = String(localized: "The image could not be created.")
             return
         }
-        shareImage = ShareableVerseImage(image: image)
+        shareImage = ShareableVerseImage(
+            image: image,
+            includesAppLink: model.format != .wallpaper && AppShare.includesLink
+        )
     }
 
     private func saveToPhotos() async {
@@ -160,7 +192,11 @@ struct VerseImageComposerView: View {
                 PHAssetChangeRequest.creationRequestForAsset(from: image)
             }
             Haptics.success()
-            saveMessage = String(localized: "Saved to Photos.")
+            if model.format == .wallpaper {
+                showsWallpaperSavedSheet = true
+            } else {
+                saveMessage = String(localized: "Saved to Photos.")
+            }
         } catch {
             saveMessage = String(localized: "The image could not be saved.")
         }
@@ -169,6 +205,7 @@ struct VerseImageComposerView: View {
 
 private struct VerseImagePreview: View {
     let model: VerseImageComposerModel
+    let previewLayout: WallpaperPreviewLayout
     @GestureState private var photoDrag = CGSize.zero
     @GestureState private var textDrag = CGSize.zero
     @State private var liveStroke: InkStroke?
@@ -176,14 +213,33 @@ private struct VerseImagePreview: View {
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
+            let layoutSize = model.format.layoutSize
+            // Drags are measured in preview points; the artwork is laid out at the export size.
+            let toLayout = size.width > 0 ? layoutSize.width / size.width : 1
+            let photoTranslation = model.background == .photo
+                ? CGSize(width: photoDrag.width * toLayout, height: photoDrag.height * toLayout)
+                : .zero
 
             ZStack {
-                VerseShareArtwork(
-                    model: model,
-                    photoTranslation: model.background == .photo ? photoDrag : .zero,
-                    textTranslation: textDrag,
-                    liveStroke: liveStroke
-                )
+                ExportSizedLayout(layoutSize: layoutSize) {
+                    ZStack {
+                        VerseShareArtwork(
+                            model: model,
+                            photoTranslation: photoTranslation,
+                            textTranslation: CGSize(width: textDrag.width * toLayout, height: textDrag.height * toLayout),
+                            liveStroke: liveStroke
+                        )
+
+                        // Preview chrome never enters VerseShareArtwork or the exported image.
+                        if model.format == .wallpaper && previewLayout.showsLockScreen {
+                            VerseLockScreenOverlay(
+                                model: model,
+                                layout: previewLayout,
+                                photoTranslation: photoTranslation
+                            )
+                        }
+                    }
+                }
 
                 if model.isMarkingUp {
                     InkCaptureView(
@@ -262,14 +318,17 @@ private struct VerseImageCanvasControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Canvas").font(.headline)
-
-            Picker("Format", selection: Bindable(model).format) {
-                ForEach(VerseImageFormat.allCases) { format in
-                    Text(format.title).tag(format)
+            HStack {
+                Text("Canvas").font(.headline)
+                Spacer()
+                Picker("Format", selection: Bindable(model).format) {
+                    ForEach(VerseImageFormat.allCases) { format in
+                        Text(format.title).tag(format)
+                    }
                 }
+                .pickerStyle(.menu)
+                .labelsHidden()
             }
-            .pickerStyle(.segmented)
 
             Picker("Background", selection: Bindable(model).background) {
                 ForEach(VerseImageBackground.allCases) { background in
@@ -280,10 +339,16 @@ private struct VerseImageCanvasControls: View {
 
             switch model.background {
             case .gradient:
-                Picker("Gradient", selection: Bindable(model).gradient) {
-                    ForEach(VerseImageGradient.allCases) { gradient in
-                        Text(gradient.title).tag(gradient)
+                HStack {
+                    Text("Gradient Style").font(.headline)
+                    Spacer()
+                    Picker("Gradient Style", selection: Bindable(model).gradient) {
+                        ForEach(VerseImageGradient.allCases) { gradient in
+                            Text(gradient.title).tag(gradient)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
                 }
             case .solid:
                 ColorPicker("Background Color", selection: Bindable(model).solidColor, supportsOpacity: false)
@@ -310,6 +375,28 @@ private struct VerseImageCanvasControls: View {
                     onCenter: { model.photoOffset = .zero }
                 )
                 .disabled(model.photo == nil)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    // Shown off while unavailable, so a disabled switch never looks on.
+                    Toggle("Verse Behind Subject", isOn: Binding(
+                        get: { model.verseBehindSubject && model.hasPhotoSubject },
+                        set: { model.verseBehindSubject = $0 }
+                    ))
+                    .disabled(!model.hasPhotoSubject)
+                    Group {
+                        if model.isFindingSubject {
+                            Label("Finding the photo’s subject…", systemImage: "person.crop.rectangle")
+                        } else if model.isSubjectDetectionUnavailable {
+                            Text("Finding subjects isn’t available on this device.")
+                        } else if model.photo != nil && model.photoSubject == nil {
+                            Text("No clear subject was found in this photo.")
+                        } else {
+                            Text("Tucks the verse behind the people or things in your photo.")
+                        }
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                }
             }
         }
         .padding()
@@ -422,7 +509,7 @@ private struct VerseImageTextControls: View {
             }
 
             LabeledContent("Text Size") {
-                Slider(value: Bindable(model).textScale, in: 0.65...1.6)
+                Slider(value: Bindable(model).textScale, in: VerseImageComposerModel.textScaleRange)
             }
 
             Picker("Alignment", selection: Bindable(model).textAlignment) {
@@ -447,7 +534,9 @@ private struct VerseImageTextControls: View {
             }
 
             Toggle("Show Reference", isOn: Bindable(model).showsReference)
-            Toggle("Show App Branding", isOn: Bindable(model).showsBranding)
+            if model.format != .wallpaper {
+                Toggle("Show App Branding", isOn: Bindable(model).showsBranding)
+            }
         }
         .padding()
         .glassEffect(.regular, in: .rect(cornerRadius: 18))
@@ -478,14 +567,16 @@ private struct VerseImageNudgeRow: View {
 private struct ShareableVerseImage: Identifiable {
     let id = UUID()
     let image: UIImage
+    let includesAppLink: Bool
 }
 
 private struct VerseImageShareSheet: UIViewControllerRepresentable {
     let image: UIImage
+    let includesAppLink: Bool
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
         // Leave breathing room between the image and its optional tappable App Store link.
-        let items: [Any] = AppShare.includesLink ? [image, "\n\n", AppLinkActivityItem()] : [image]
+        let items: [Any] = includesAppLink ? [image, "\n\n", AppLinkActivityItem()] : [image]
         return UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
 

@@ -1,7 +1,9 @@
+import CoreImage
 import ImageIO
 import PhotosUI
 import SwiftUI
 import UIKit
+import Vision
 
 @MainActor
 @Observable
@@ -12,6 +14,8 @@ final class VerseImageComposerModel {
         let gradient: VerseImageGradient
         let solidColor: Color
         let photo: UIImage?
+        let photoSubject: UIImage?
+        let verseBehindSubject: Bool
         let photoScale: CGFloat
         let photoOffset: CGSize
         let photoDimming: Double
@@ -45,6 +49,16 @@ final class VerseImageComposerModel {
     var gradient: VerseImageGradient = .sunrise { willSet { recordUndoSnapshot() } }
     var solidColor = Color.indigo { willSet { recordUndoSnapshot() } }
     var photo: UIImage? { willSet { recordUndoSnapshot() } }
+    /// The photo's people, pets, or other main subjects with everything else transparent, the same
+    /// size as `photo` so it lines up. Nil until Vision finishes, or when it finds no subject.
+    private(set) var photoSubject: UIImage?
+    private(set) var isFindingSubject = false
+    /// Vision couldn't run, as opposed to running and finding no subject.
+    private(set) var isSubjectDetectionUnavailable = false
+    @ObservationIgnored private var subjectTask: Task<Void, Never>?
+    /// Draws the photo's subject over the verse, so the verse looks tucked behind it.
+    var verseBehindSubject = false { willSet { recordUndoSnapshot() } }
+    var hasPhotoSubject: Bool { background == .photo && photoSubject != nil }
     var photoScale: CGFloat = 1 { willSet { recordUndoSnapshot() } }
     var photoOffset = CGSize.zero { willSet { recordUndoSnapshot() } }
     var photoDimming: Double = 0.28 { willSet { recordUndoSnapshot() } }
@@ -54,6 +68,7 @@ final class VerseImageComposerModel {
 
     var fontStyle: VerseImageFontStyle = .serif { willSet { recordUndoSnapshot() } }
     var textScale: CGFloat = 1 { willSet { recordUndoSnapshot() } }
+    static let textScaleRange: ClosedRange<CGFloat> = 0.65...1.6
     var textOffset = CGSize.zero { willSet { recordUndoSnapshot() } }
     var textColor = Color.white { willSet { recordUndoSnapshot() } }
     var textAlignment: VerseImageTextAlignment = .center { willSet { recordUndoSnapshot() } }
@@ -80,6 +95,7 @@ final class VerseImageComposerModel {
         self.verse = verse
         self.editedText = verse.verseText
         loadPreferences()
+        formatDidChange()
     }
 
     func undo() {
@@ -92,6 +108,8 @@ final class VerseImageComposerModel {
         gradient = snapshot.gradient
         solidColor = snapshot.solidColor
         photo = snapshot.photo
+        photoSubject = snapshot.photoSubject
+        verseBehindSubject = snapshot.verseBehindSubject
         photoScale = snapshot.photoScale
         photoOffset = snapshot.photoOffset
         photoDimming = snapshot.photoDimming
@@ -106,6 +124,11 @@ final class VerseImageComposerModel {
         showsReference = snapshot.showsReference
         showsBranding = snapshot.showsBranding
         inkStrokes = snapshot.inkStrokes
+
+        // The snapshot may predate Vision finishing with this photo.
+        if let photo, photoSubject == nil {
+            findSubject(in: photo)
+        }
     }
 
     func addInkStroke(_ points: [CGPoint]) {
@@ -137,19 +160,45 @@ final class VerseImageComposerModel {
     @discardableResult
     func loadPhoto(from item: PhotosPickerItem?) async -> Bool {
         guard let item else { return true }
+        let maxPixelSize = VerseImageFormat.largestPixelSide
         guard let data = try? await item.loadTransferable(type: Data.self),
               let decoded = await Task.detached(priority: .userInitiated, operation: {
-                  VerseImageComposerModel.decodePhoto(data)
+                  VerseImageComposerModel.decodePhoto(data, maxPixelSize: maxPixelSize)
               }).value else { return false }
         recordUndoSnapshot()
         isRestoringSnapshot = true
         defer { isRestoringSnapshot = false }
         photo = decoded.image
+        photoSubject = nil
         photoLuminance = decoded.luminance
         background = .photo
         photoScale = 1
         photoOffset = .zero
+        findSubject(in: decoded.image)
         return true
+    }
+
+    /// Finds the photo's subject in the background; the photo shows right away without it.
+    private func findSubject(in image: UIImage) {
+        subjectTask?.cancel()
+        isFindingSubject = true
+        subjectTask = Task {
+            let detection = await Task.detached(priority: .utility) {
+                VerseImageComposerModel.subjectCutout(of: image)
+            }.value
+            guard !Task.isCancelled else { return }
+            isFindingSubject = false
+            // The person may have picked another photo, or undone this one, meanwhile.
+            guard photo === image else { return }
+            switch detection {
+            case .success(let subject):
+                photoSubject = subject
+                isSubjectDetectionUnavailable = false
+            case .failure:
+                photoSubject = nil
+                isSubjectDetectionUnavailable = true
+            }
+        }
     }
 
     private func recordUndoSnapshot() {
@@ -161,6 +210,8 @@ final class VerseImageComposerModel {
                 gradient: gradient,
                 solidColor: solidColor,
                 photo: photo,
+                photoSubject: photoSubject,
+                verseBehindSubject: verseBehindSubject,
                 photoScale: photoScale,
                 photoOffset: photoOffset,
                 photoDimming: photoDimming,
@@ -180,12 +231,12 @@ final class VerseImageComposerModel {
     }
 
     /// Photos are decoded at no more than the largest canvas side so a 48MP photo doesn't fill memory.
-    nonisolated private static func decodePhoto(_ data: Data) -> (image: UIImage, luminance: Double)? {
+    nonisolated private static func decodePhoto(_ data: Data, maxPixelSize: CGFloat) -> (image: UIImage, luminance: Double)? {
         let options: [CFString: Any] = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
             kCGImageSourceShouldCacheImmediately: true,
-            kCGImageSourceThumbnailMaxPixelSize: 2160
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
         ]
         guard let source = CGImageSourceCreateWithData(data as CFData, nil),
               let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
@@ -213,9 +264,34 @@ final class VerseImageComposerModel {
         return (UIImage(cgImage: cgImage), luminance)
     }
 
+    /// The photo's main subjects on a transparent background, at the photo's full size.
+    /// This is the same kind of subject lifting the Lock Screen uses for its depth effect.
+    /// Succeeds with nil when the photo has no clear subject, and fails when Vision can't run,
+    /// such as in some simulators.
+    nonisolated private static func subjectCutout(of image: UIImage) -> Result<UIImage?, any Error> {
+        guard let cgImage = image.cgImage else { return .success(nil) }
+        let request = VNGenerateForegroundInstanceMaskRequest()
+        let handler = VNImageRequestHandler(cgImage: cgImage)
+        return Result {
+            try handler.perform([request])
+            guard let observation = request.results?.first, !observation.allInstances.isEmpty else { return nil }
+            let buffer = try observation.generateMaskedImage(
+                ofInstances: observation.allInstances,
+                from: handler,
+                croppedToInstancesExtent: false
+            )
+            let masked = CIImage(cvPixelBuffer: buffer)
+            guard let cutout = CIContext().createCGImage(masked, from: masked.extent) else {
+                throw CocoaError(.coderInvalidValue)
+            }
+            return UIImage(cgImage: cutout)
+        }
+    }
+
     // MARK: Placement
 
-    private static let textOffsetLimit: CGFloat = 0.35
+    /// On an iPad wallpaper the verse stays inside the square that shows in every orientation.
+    private var textOffsetLimit: CGFloat { 0.35 * format.contentFraction }
     private static let nudgeStep: CGFloat = 0.03
 
     /// How far, as a fraction of the canvas, the photo can move before an edge would show.
@@ -238,7 +314,7 @@ final class VerseImageComposerModel {
     }
 
     func clampedTextOffset(_ offset: CGSize) -> CGSize {
-        let limit = Self.textOffsetLimit
+        let limit = textOffsetLimit
         return CGSize(
             width: min(max(offset.width, -limit), limit),
             height: min(max(offset.height, -limit), limit)
@@ -252,6 +328,21 @@ final class VerseImageComposerModel {
         isRestoringSnapshot = true
         photoOffset = clampedOffset
         isRestoringSnapshot = false
+    }
+
+    /// Keeps both offsets in range for the new format, and moves a centered verse into the
+    /// Lock Screen's open middle, between the clock and the notifications.
+    func formatDidChange() {
+        clampPhotoOffset()
+        isRestoringSnapshot = true
+        defer { isRestoringSnapshot = false }
+        let clampedText = clampedTextOffset(textOffset)
+        if clampedText != textOffset {
+            textOffset = clampedText
+        }
+        if format == .wallpaper, format.contentFraction == 1, textOffset == .zero {
+            textOffset = CGSize(width: 0, height: LockScreenLayout.verseCenterOffset)
+        }
     }
 
     func movePhoto(by fraction: CGSize) {
@@ -356,7 +447,7 @@ final class VerseImageComposerModel {
         gradient = VerseImageGradient(rawValue: preferences.gradient) ?? gradient
         fontStyle = VerseImageFontStyle(rawValue: preferences.fontStyle) ?? fontStyle
         textAlignment = VerseImageTextAlignment(rawValue: preferences.textAlignment) ?? textAlignment
-        textScale = CGFloat(min(max(preferences.textScale, 0.65), 1.6))
+        textScale = CGFloat(preferences.textScale).clamped(to: Self.textScaleRange)
         showsReference = preferences.showsReference
         showsBranding = preferences.showsBranding
         if let color = Self.color(from: preferences.solidColor) { solidColor = color }
@@ -369,9 +460,9 @@ final class VerseImageComposerModel {
     }
 
     func render() -> UIImage? {
-        let size = format.pixelSize
+        let size = format.layoutSize
         let renderer = ImageRenderer(content: VerseShareArtwork(model: self).frame(width: size.width, height: size.height))
-        renderer.scale = 1
+        renderer.scale = VerseImageFormat.renderScale
         renderer.isOpaque = true
         return renderer.uiImage
     }
