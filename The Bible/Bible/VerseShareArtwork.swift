@@ -10,6 +10,9 @@ struct VerseShareArtwork: View {
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
+            // Text is sized to the part of the canvas that's always visible, which on an iPad
+            // wallpaper is the center square rather than the whole canvas.
+            let contentWidth = size.width * model.format.contentFraction
             let textOffset = textOffset(in: size)
 
             ZStack {
@@ -17,33 +20,40 @@ struct VerseShareArtwork: View {
 
                 Color.black.opacity(model.background == .photo ? model.photoDimming : 0.12)
 
-                VStack(alignment: model.textAlignment.horizontalAlignment, spacing: size.width * 0.035) {
+                VStack(alignment: model.textAlignment.horizontalAlignment, spacing: contentWidth * 0.035) {
                     Text(model.displayedText)
-                        .font(model.fontStyle.font(size: verseFontSize(for: size)))
+                        .font(model.fontStyle.font(size: verseFontSize(for: contentWidth)))
                         .fontWeight(.semibold)
                         .multilineTextAlignment(model.textAlignment.textAlignment)
                         .minimumScaleFactor(0.55)
                         .lineLimit(14)
-                        .shadow(color: .black.opacity(0.45), radius: size.width * 0.008, y: size.width * 0.004)
+                        .shadow(color: .black.opacity(0.45), radius: contentWidth * 0.008, y: contentWidth * 0.004)
 
                     if model.showsReference {
                         Text("\(model.verse.bookName) \(model.verse.chapterNumber):\(model.verse.verseNumber) \(model.verse.translation.abbreviation)")
-                            .font(.system(size: size.width * 0.032, weight: .bold, design: .rounded))
+                            .font(.system(size: contentWidth * 0.032, weight: .bold, design: .rounded))
                             .textCase(.uppercase)
-                            .tracking(size.width * 0.002)
+                            .tracking(contentWidth * 0.002)
+                    }
+
+                    // The bottom of a wallpaper is under the flashlight and camera buttons,
+                    // so the branding travels with the verse instead.
+                    if model.showsBranding && model.format == .wallpaper {
+                        brandingLabel(contentWidth: contentWidth)
                     }
                 }
                 .foregroundStyle(model.textColor)
-                .frame(width: size.width * 0.82, alignment: frameAlignment)
+                .frame(width: contentWidth * 0.82, alignment: frameAlignment)
                 .offset(x: textOffset.width * size.width, y: textOffset.height * size.height)
 
-                if model.showsBranding {
+                if model.verseBehindSubject {
+                    VersePhotoSubjectLayer(model: model, photoTranslation: photoTranslation)
+                }
+
+                if model.showsBranding && model.format != .wallpaper {
                     VStack {
                         Spacer()
-                        Text("THE BIBLE")
-                            .font(.system(size: size.width * 0.021, weight: .bold, design: .rounded))
-                            .tracking(size.width * 0.004)
-                            .foregroundStyle(model.textColor.opacity(0.75))
+                        brandingLabel(contentWidth: contentWidth)
                             .padding(.bottom, size.height * 0.035)
                     }
                 }
@@ -52,6 +62,13 @@ struct VerseShareArtwork: View {
             }
             .clipped()
         }
+    }
+
+    private func brandingLabel(contentWidth: CGFloat) -> some View {
+        Text("THE BIBLE")
+            .font(.system(size: contentWidth * 0.021, weight: .bold, design: .rounded))
+            .tracking(contentWidth * 0.004)
+            .foregroundStyle(model.textColor.opacity(0.75))
     }
 
     @ViewBuilder
@@ -63,14 +80,7 @@ struct VerseShareArtwork: View {
             model.solidColor
         case .photo:
             if let photo = model.photo {
-                let photoOffset = photoOffset(in: size)
-                Image(uiImage: photo)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: size.width, height: size.height)
-                    .scaleEffect(model.photoScale)
-                    .offset(x: photoOffset.width * size.width, y: photoOffset.height * size.height)
-                    .blur(radius: model.photoBlur * size.width / 360)
+                VersePhotoLayer(image: photo, model: model, translation: photoTranslation)
             } else {
                 LinearGradient(colors: VerseImageGradient.sunrise.colors, startPoint: .topLeading, endPoint: .bottomTrailing)
             }
@@ -85,14 +95,6 @@ struct VerseShareArtwork: View {
 
     /// The saved offset plus the drag in progress, held to the same limits as the final one
     /// so the preview doesn't jump when the drag ends.
-    private func photoOffset(in size: CGSize) -> CGSize {
-        let drag = fraction(of: photoTranslation, in: size)
-        return model.clampedPhotoOffset(CGSize(
-            width: model.photoOffset.width + drag.width,
-            height: model.photoOffset.height + drag.height
-        ))
-    }
-
     private func textOffset(in size: CGSize) -> CGSize {
         let drag = fraction(of: textTranslation, in: size)
         return model.clampedTextOffset(CGSize(
@@ -101,14 +103,14 @@ struct VerseShareArtwork: View {
         ))
     }
 
-    private func verseFontSize(for size: CGSize) -> CGFloat {
+    private func verseFontSize(for contentWidth: CGFloat) -> CGFloat {
         let base: CGFloat
         switch model.displayedText.count {
         case ..<100: base = 0.064
         case ..<200: base = 0.052
         default: base = 0.042
         }
-        return size.width * base * model.textScale
+        return contentWidth * base * model.textScale
     }
 
     private var frameAlignment: Alignment {
@@ -116,6 +118,53 @@ struct VerseShareArtwork: View {
         case .leading: .leading
         case .center: .center
         case .trailing: .trailing
+        }
+    }
+}
+
+/// The photo filling the canvas with the person's zoom, position, and blur. The photo and its
+/// subject cut-out both draw through this so they always line up.
+struct VersePhotoLayer: View {
+    let image: UIImage
+    let model: VerseImageComposerModel
+    var translation = CGSize.zero
+
+    var body: some View {
+        GeometryReader { proxy in
+            let size = proxy.size
+            let offset = photoOffset(in: size)
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: size.width, height: size.height)
+                .scaleEffect(model.photoScale)
+                .offset(x: offset.width * size.width, y: offset.height * size.height)
+                .blur(radius: model.photoBlur * size.width / 360)
+        }
+    }
+
+    /// The saved offset plus the drag in progress, held to the same limits as the final one.
+    private func photoOffset(in size: CGSize) -> CGSize {
+        guard size.width > 0, size.height > 0 else { return model.photoOffset }
+        return model.clampedPhotoOffset(CGSize(
+            width: model.photoOffset.width + translation.width / size.width,
+            height: model.photoOffset.height + translation.height / size.height
+        ))
+    }
+}
+
+/// The photo's subject, darkened like the photo beneath it. Drawn over the verse it tucks the verse
+/// behind the subject; drawn over the clock preview it imitates the Lock Screen's depth effect.
+struct VersePhotoSubjectLayer: View {
+    let model: VerseImageComposerModel
+    var photoTranslation = CGSize.zero
+
+    var body: some View {
+        if model.background == .photo, let subject = model.photoSubject {
+            let layer = VersePhotoLayer(image: subject, model: model, translation: photoTranslation)
+            layer
+                .overlay { Color.black.opacity(model.photoDimming) }
+                .mask { layer }
         }
     }
 }
