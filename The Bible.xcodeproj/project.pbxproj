@@ -557,7 +557,7 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible (iOS)/The_Bible__iOS_.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				ENABLE_CODE_COVERAGE = YES;
 				ENABLE_PREVIEWS = YES;
@@ -578,7 +578,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.4;
+				MARKETING_VERSION = 8.5;
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -warn-long-expression-type-checking=300 -Xfrontend -warn-long-function-bodies=500";
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible;
 				PRODUCT_NAME = Bible;
@@ -604,7 +604,7 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible (iOS)/The_Bible__iOS_.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				ENABLE_CODE_COVERAGE = YES;
 				ENABLE_PREVIEWS = YES;
@@ -625,7 +625,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.4;
+				MARKETING_VERSION = 8.5;
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -warn-long-expression-type-checking=300 -Xfrontend -warn-long-function-bodies=500";
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible;
 				PRODUCT_NAME = Bible;
@@ -746,7 +746,7 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible WidgetsExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible Widgets/Info.plist";
@@ -758,7 +758,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 8.4;
+				MARKETING_VERSION = 8.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible.widgetsextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -780,7 +780,7 @@
 				CODE_SIGN_ENTITLEMENTS = "The Bible WidgetsExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMPILATION_CACHE_ENABLE_CACHING = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = ZKG79M599K;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible Widgets/Info.plist";
@@ -792,7 +792,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 8.4;
+				MARKETING_VERSION = 8.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible.widgetsextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
