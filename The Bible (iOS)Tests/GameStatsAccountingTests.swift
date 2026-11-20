@@ -483,7 +483,7 @@ struct GameStatsAccountingTests {
         stats.recordHangmanCategory(category: "People", answered: 2, correct: 1)
         stats.recordBeatClockType(type: "Places", answered: 3, correct: 3)
         let hangman = stats.hangmanAccuracyByCategory()
-        #expect(hangman.map(\.category) == ["People", "Places", "Books"])
+        #expect(hangman.map(\.category) == ["People", "Places", "Bible Words", "Books", "Verses"])
         #expect(hangman.first?.answered == 2 && hangman.first?.correct == 1)
         #expect(abs((hangman.first?.pct ?? 0) - 50) < 0.001)
         let beatClock = stats.beatclockAccuracyByType()

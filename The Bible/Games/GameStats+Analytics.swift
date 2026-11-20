@@ -187,7 +187,8 @@ extension GameStats {
     func hangmanAccuracyByCategory() -> [(category: String, answered: Int, correct: Int, pct: Double)] {
         let aMap = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
         let cMap = loadJSONMap(forKey: "hangmanPerCategoryCorrectMap")
-        let order = ["People", "Places", "Books"]
+        // HangmanTheme raw values.
+        let order = ["People", "Places", "Bible Words", "Books", "Verses"]
         return order.map { cat in
             let a = max(0, aMap[cat] ?? 0)
             let c = max(0, cMap[cat] ?? 0)

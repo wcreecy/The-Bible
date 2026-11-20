@@ -57,12 +57,7 @@ final class ScrambleGameViewModel {
         case slot(Int)
     }
 
-    /// A verse shown with the puzzle: as a clue with the word blanked out, or in full once solved.
-    struct VerseDisplay: Equatable {
-        let text: String
-        let reference: String
-        let isClue: Bool
-    }
+    typealias VerseDisplay = GameVerse
 
     private struct UndoState {
         let slots: [Int?]

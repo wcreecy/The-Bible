@@ -13,6 +13,8 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
     case places = "Places"
     case bibleWords = "Bible Words"
     case books = "Books"
+    /// Bible Words, guessed from a verse with the word blanked out.
+    case verses = "Verses"
 
     var id: String { rawValue }
 
@@ -23,6 +25,7 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
         case .places: "Places"
         case .bibleWords: "Bible Words"
         case .books: "Books"
+        case .verses: "Verses"
         }
     }
 
@@ -32,6 +35,7 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
         case .places: "mappin.and.ellipse"
         case .bibleWords: "text.book.closed.fill"
         case .books: "book.fill"
+        case .verses: "text.quote"
         case .all: "square.grid.2x2.fill"
         }
     }
@@ -43,6 +47,7 @@ enum HangmanTheme: String, CaseIterable, Identifiable {
         case .places: "Bible places"
         case .bibleWords: "Familiar words from the Bible"
         case .books: "Books of the Bible"
+        case .verses: "Fill in the missing word from a verse"
         }
     }
 }
@@ -73,8 +78,8 @@ enum HangmanDifficulty: String, CaseIterable, Identifiable {
     var detail: LocalizedStringResource {
         switch self {
         case .easy: "Well-known answers, 8 mistakes, and a clue for every word."
-        case .normal: "Adds less familiar answers and allows 6 mistakes. A clue costs one mistake."
-        case .hard: "Every answer in the game, 5 mistakes, and no clues."
+        case .normal: "Adds less familiar answers and allows 6 mistakes. Clues and letter hints cost one mistake."
+        case .hard: "Every answer in the game, 5 mistakes, and only a verse clue, which costs two."
         }
     }
 
@@ -83,9 +88,21 @@ enum HangmanDifficulty: String, CaseIterable, Identifiable {
         case .easy: String(localized: "Shown")
         // Worded like the in-game button, "Show clue (costs 1 mistake)".
         case .normal: String(localized: "Costs 1 mistake")
-        case .hard: String(localized: "None")
+        case .hard: String(localized: "Verse only")
         }
     }
+
+    /// Mistakes the verse clue costs. Easy gives every clue away free.
+    var verseClueCost: Int {
+        switch self {
+        case .easy: 0
+        case .normal: 1
+        case .hard: 2
+        }
+    }
+
+    /// Hard has no letter hints; elsewhere one costs a mistake.
+    var allowsLetterHints: Bool { self != .hard }
 
     var statsDifficulty: GameStats.Difficulty {
         switch self {
@@ -129,6 +146,48 @@ struct HangmanWord {
     /// The description in parentheses in the data, e.g. "son of Jacob". Not part of the puzzle.
     let qualifier: String?
     let reference: String?
+
+    /// The answer blanked out of `text`. Names are matched as whole words (EVE, not EVEN);
+    /// other words also take their endings (PRAY in PRAYED), so the clue can't give them away.
+    /// Words of a name shorter than three letters (the I in HEROD AGRIPPA I) and joining words
+    /// are left in.
+    func blankingOut(in text: String) -> String {
+        let isName = category == .people || category == .places
+        let skipped: Set<String> = ["the", "of", "and"]
+        let parts = answer.split(whereSeparator: { !$0.isLetter && $0 != "'" })
+            .map(String.init)
+            .filter { $0.count >= 3 && !skipped.contains($0.lowercased()) }
+
+        var result = text
+        for part in parts {
+            let escaped = NSRegularExpression.escapedPattern(for: part)
+            let pattern = isName ? "\\b\(escaped)\\b" : "\\b\(escaped)[a-z]*"
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { continue }
+            let range = NSRange(result.startIndex..., in: result)
+            var updated = result
+            for match in regex.matches(in: result, range: range).reversed() {
+                guard let matchRange = Range(match.range, in: updated) else { continue }
+                updated.replaceSubrange(matchRange, with: String(repeating: "_", count: updated[matchRange].count))
+            }
+            result = updated
+        }
+        return result
+    }
+}
+
+/// A verse that may quote a Hangman answer.
+struct HangmanVerse: Equatable, Sendable {
+    let reference: String
+    let text: String
+}
+
+/// What happened when a letter was guessed.
+enum HangmanGuessResult {
+    case correct
+    case wrong
+    case alreadyGuessed
+    /// Not a letter, or the round is over.
+    case ignored
 }
 
 @MainActor
@@ -142,6 +201,10 @@ final class HangmanGameViewModel {
 
     static let wordsPerGame = 10
     private let reviewQuestionIDs: Set<String>
+    /// Where missed words are recorded; tests pass a store that never touches disk or iCloud.
+    private let missedQuestions: MissedGameQuestionStore
+    /// Looks up the verses a reference points to; tests pass fixed verses.
+    @ObservationIgnored private let loadVerses: (String) async -> [HangmanVerse]
 
     private static let themeKey = AppStorageKey.hangmanTheme
     private static let difficultyKey = AppStorageKey.hangmanDifficulty
@@ -186,12 +249,30 @@ final class HangmanGameViewModel {
     private(set) var guessedLetters: Set<Character> = []
     private(set) var wrongGuesses = 0
     private(set) var clueRevealed = false
+    /// Letters filled in by a letter hint rather than guessed.
+    private(set) var hintedLetters: Set<Character> = []
+    /// A verse quoting the answer, once loaded. Nil while loading, or when none quotes it.
+    private(set) var verse: HangmanVerse?
+    private(set) var isVerseLoaded = false
+    private(set) var isVerseClueShown = false
     private(set) var roundOver = false
     private(set) var didWin = false
     private(set) var lastCorrectGuess: Character?
 
     /// Score, streaks and best game; see `GameScore` for the rules.
     private(set) var session = GameScore()
+
+    /// `missedQuestions` and `loadVerses` default to the shared store and the Bible text. They're
+    /// resolved here rather than as default arguments, which would be evaluated outside the main actor.
+    init(
+        reviewQuestionIDs: Set<String> = [],
+        missedQuestions: MissedGameQuestionStore? = nil,
+        loadVerses: ((String) async -> [HangmanVerse])? = nil
+    ) {
+        self.reviewQuestionIDs = reviewQuestionIDs
+        self.missedQuestions = missedQuestions ?? .shared
+        self.loadVerses = loadVerses ?? { await Self.versesInBible(for: $0) }
+    }
 
     // MARK: - Derived state
 
@@ -222,31 +303,86 @@ final class HangmanGameViewModel {
         !roundOver && wrongGuesses == maxWrong - 1
     }
 
+    /// A clue or hint may cost mistakes, but never the last one.
+    private func canAfford(_ cost: Int) -> Bool {
+        !roundOver && wrongGuesses + cost < maxWrong
+    }
+
     var canRevealClue: Bool {
-        difficulty == .normal && !clueRevealed && !roundOver && wrongGuesses < maxWrong - 1
+        difficulty == .normal && !clueRevealed && canAfford(1)
     }
 
     var showsClue: Bool {
-        difficulty == .easy || clueRevealed || roundOver
+        difficulty == .easy || clueRevealed || roundOver || isVersePromptUnavailable
     }
 
-    /// Letters found so far, with blanks for the rest; spaces and punctuation always show.
-    private var displayWord: String {
-        String((current?.answer ?? "").map { ch in
-            guard ch.isLetter else { return ch }
-            let upper = Character(String(ch).uppercased())
-            return roundOver || guessedLetters.contains(upper) ? upper : "_"
-        })
+    /// A Verses word whose verse doesn't name it falls back to its description, free.
+    private var isVersePromptUnavailable: Bool {
+        isVersePrompt && isVerseLoaded && verse == nil
     }
 
-    var spacedDisplayWord: String {
-        displayWord.map { String($0) }.joined(separator: " ")
+    /// The Verses theme's words are guessed from their verse, so it's shown from the start.
+    var isVersePrompt: Bool {
+        current?.category == .verses
+    }
+
+    var canShowVerseClue: Bool {
+        verse != nil && !isVerseClueShown && !isVersePrompt && canAfford(difficulty.verseClueCost)
+    }
+
+    /// Answer letters not found yet.
+    private var unguessedLetters: Set<Character> {
+        answerLetters.subtracting(guessedLetters)
+    }
+
+    /// A letter hint can't finish the word for the player.
+    var canRevealLetter: Bool {
+        difficulty.allowsLetterHints && unguessedLetters.count >= 2 && canAfford(1)
+    }
+
+    /// The description clue, letter hints and the verse clue, for the round summary.
+    var hintsUsed: Int {
+        (clueRevealed ? 1 : 0) + hintedLetters.count + (isVerseClueShown ? 1 : 0)
+    }
+
+    /// The verse with the answer blanked out while the word is being guessed, and whole after.
+    var displayedVerse: GameVerse? {
+        guard let current, let verse else { return nil }
+        if roundOver {
+            return GameVerse(text: verse.text, reference: verse.reference, isClue: false)
+        }
+        guard isVerseClueShown || isVersePrompt else { return nil }
+        return GameVerse(text: current.blankingOut(in: verse.text), reference: verse.reference, isClue: true)
+    }
+
+    /// One square per character of the answer. Spaces split words; other punctuation always shows.
+    var displayLetters: [HangmanDisplayLetter] {
+        (current?.answer ?? "").map { character in
+            guard character.isLetter else { return HangmanDisplayLetter(character: character, state: .punctuation) }
+            let upper = Character(String(character).uppercased())
+            let state: HangmanDisplayLetter.State
+            if hintedLetters.contains(upper) {
+                state = .hinted
+            } else if guessedLetters.contains(upper) {
+                state = .found
+            } else {
+                state = roundOver ? .missed : .hidden
+            }
+            return HangmanDisplayLetter(character: upper, state: state)
+        }
     }
 
     /// What VoiceOver reads for the word, e.g. "J, blank, S, blank".
     var spokenDisplayWord: String {
         let blank = String(localized: "blank")
-        return displayWord.map { $0 == "_" ? blank : String($0) }.joined(separator: ", ")
+        return displayLetters.map { letter in
+            switch letter.state {
+            case .hidden: blank
+            case .punctuation where letter.character == " ": String(localized: "space")
+            default: String(letter.character)
+            }
+        }
+        .joined(separator: ", ")
     }
 
     // MARK: - Lifecycle
@@ -281,13 +417,18 @@ final class HangmanGameViewModel {
         return (answer.isEmpty ? trimmed : answer, qualifier.isEmpty ? nil : qualifier)
     }
 
+    private static func nonEmpty(_ reference: String?) -> String? {
+        guard let reference, !reference.trimmingCharacters(in: .whitespaces).isEmpty else { return nil }
+        return reference
+    }
+
     private func peopleWords() -> [HangmanWord] {
         loadedPeople
             .filter { isReviewRound || difficulty.includes($0.difficulty) }
             .map { entry in
                 let parts = Self.split(entry.name)
                 return HangmanWord(answer: parts.answer, category: .people, clue: entry.shortDescription,
-                                   qualifier: parts.qualifier, reference: nil)
+                                   qualifier: parts.qualifier, reference: Self.nonEmpty(entry.scriptureReferences))
             }
     }
 
@@ -297,21 +438,20 @@ final class HangmanGameViewModel {
             .map { entry in
                 let parts = Self.split(entry.locationName)
                 return HangmanWord(answer: parts.answer, category: .places, clue: entry.shortDescription,
-                                   qualifier: parts.qualifier,
-                                   reference: entry.scriptureMentioned.isEmpty ? nil : entry.scriptureMentioned)
+                                   qualifier: parts.qualifier, reference: Self.nonEmpty(entry.scriptureMentioned))
             }
     }
 
-    private func bibleWords() -> [HangmanWord] {
+    private func bibleWords(as category: HangmanTheme = .bibleWords) -> [HangmanWord] {
         loadedBibleWords
             .filter { isReviewRound || difficulty.includes($0.difficulty) }
             .map { entry in
                 HangmanWord(
                     answer: entry.name,
-                    category: .bibleWords,
+                    category: category,
                     clue: entry.shortDescription,
                     qualifier: nil,
-                    reference: entry.scriptureReferences.isEmpty ? nil : entry.scriptureReferences
+                    reference: Self.nonEmpty(entry.scriptureReferences)
                 )
             }
     }
@@ -328,17 +468,15 @@ final class HangmanGameViewModel {
     }
 
     /// Draws the game's words without repeats, including words used in recent rounds.
-    init(reviewQuestionIDs: Set<String> = []) {
-        self.reviewQuestionIDs = reviewQuestionIDs
-    }
-
     private func makeDeck() -> [HangmanWord] {
+        // Verses is its own way to play Bible Words, so Mixed and review rounds leave it out.
         let themes: [HangmanTheme] = isReviewRound || theme == .all ? [.people, .places, .bibleWords, .books] : [theme]
         let allWords = themes.flatMap { item -> [HangmanWord] in
             switch item {
             case .people: peopleWords()
             case .places: placeWords()
             case .bibleWords: bibleWords()
+            case .verses: bibleWords(as: .verses).filter { $0.reference != nil }
             case .books: bookWords()
             case .all: []
             }
@@ -365,7 +503,12 @@ final class HangmanGameViewModel {
     // MARK: - Game flow
 
     func startGame() {
-        deck = makeDeck()
+        startGame(with: makeDeck())
+    }
+
+    /// Starts a game with these words, last one first. Tests pass their own.
+    func startGame(with words: [HangmanWord]) {
+        deck = words
         guard !deck.isEmpty else { return }
         totalWords = deck.count
         wordNumber = 0
@@ -382,13 +525,21 @@ final class HangmanGameViewModel {
         current = word
         RecentGameQuestionStore.shared.record(word, game: "hangman", id: { $0.answer.uppercased() })
         wordNumber += 1
+        resetRound()
+        session.startQuestion()
+    }
+
+    private func resetRound() {
         guessedLetters = []
         wrongGuesses = 0
         clueRevealed = false
+        hintedLetters = []
+        verse = nil
+        isVerseLoaded = false
+        isVerseClueShown = false
         roundOver = false
         didWin = false
         lastCorrectGuess = nil
-        session.startQuestion()
     }
 
     private func showResults() {
@@ -402,12 +553,7 @@ final class HangmanGameViewModel {
         deck = []
         current = nil
         wordNumber = 0
-        guessedLetters = []
-        wrongGuesses = 0
-        clueRevealed = false
-        roundOver = false
-        didWin = false
-        lastCorrectGuess = nil
+        resetRound()
         session.clearGame()
     }
 
@@ -417,14 +563,30 @@ final class HangmanGameViewModel {
         wrongGuesses += 1
     }
 
+    /// Fills in every place one unfound letter appears, for one mistake.
+    func revealLetter() {
+        guard canRevealLetter, let letter = unguessedLetters.randomElement() else { return }
+        guessedLetters.insert(letter)
+        hintedLetters.insert(letter)
+        lastCorrectGuess = letter
+        wrongGuesses += 1
+        Haptics.selection()
+    }
+
+    func showVerseClue() {
+        guard canShowVerseClue else { return }
+        isVerseClueShown = true
+        wrongGuesses += difficulty.verseClueCost
+    }
+
     @discardableResult
-    func guess(_ ch: Character) -> Bool {
-        guard !roundOver else { return false }
+    func guess(_ ch: Character) -> HangmanGuessResult {
+        guard !roundOver else { return .ignored }
         let upper = Character(String(ch).uppercased())
-        guard upper.isLetter else { return false }
+        guard upper.isLetter else { return .ignored }
         guard !guessedLetters.contains(upper) else {
             Haptics.selection()
-            return true
+            return .alreadyGuessed
         }
         guessedLetters.insert(upper)
 
@@ -434,14 +596,15 @@ final class HangmanGameViewModel {
             if answerLetters.isSubset(of: guessedLetters) {
                 endRound(win: true)
             }
-        } else {
-            Haptics.warning()
-            wrongGuesses += 1
-            if wrongGuesses >= maxWrong {
-                endRound(win: false)
-            }
+            return .correct
         }
-        return false
+
+        Haptics.warning()
+        wrongGuesses += 1
+        if wrongGuesses >= maxWrong {
+            endRound(win: false)
+        }
+        return .wrong
     }
 
     func giveUp() {
@@ -467,7 +630,8 @@ final class HangmanGameViewModel {
                 givenAnswer: nil,
                 correctAnswer: answer,
                 category: String(localized: current.category.title),
-                reference: current.reference
+                reference: verse?.reference ?? current.reference,
+                hintCount: hintsUsed
             ),
             savedStreak: persistentStreak
         )
@@ -481,7 +645,7 @@ final class HangmanGameViewModel {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
-        // Per-category (People/Places/Books) accuracy
+        // Per-category accuracy, by the category's stored name.
         GameStats.shared.recordHangmanCategory(
             category: current.category.rawValue,
             answered: 1,
@@ -489,9 +653,9 @@ final class HangmanGameViewModel {
         )
         let questionID = current.answer.uppercased()
         if win, isReviewRound {
-            MissedGameQuestionStore.shared.resolveReviewQuestion(game: .hangman, questionID: questionID)
+            missedQuestions.resolveReviewQuestion(game: .hangman, questionID: questionID)
         } else if !win {
-            MissedGameQuestionStore.shared.record(
+            missedQuestions.record(
                 game: .hangman,
                 bookNames: [],
                 topic: String(localized: current.category.title),
@@ -500,50 +664,54 @@ final class HangmanGameViewModel {
         }
     }
 
-    // MARK: - References
+    // MARK: - Verses
 
-    /// Turns a reference like "Genesis 12:1" into a passage to preview.
-    static func scriptureRef(from ref: String) -> ScriptureRef? {
-        let attributed = BibleReferenceLinker.linkify(ref)
-        for run in attributed.runs {
-            if let url = run.attributes.link, let parsed = BibleReferenceLinker.parse(url: url) {
-                return parsed
-            }
+    /// Finds a verse quoting the current answer, for the verse clue (or the Verses prompt) and
+    /// for showing once the round is over. A verse that doesn't name the answer isn't used.
+    func loadVerse() async {
+        guard let word = current, !isVerseLoaded else { return }
+        guard let reference = word.reference else {
+            isVerseLoaded = true
+            return
         }
-
-        let trimmed = ref.trimmingCharacters(in: .whitespacesAndNewlines)
-        let parts = trimmed.split { $0.isWhitespace }
-        guard let lastPart = parts.last else { return nil }
-        var last = String(lastPart)
-        last = last.replacingOccurrences(of: "\u{2013}", with: "-")
-        last = last.replacingOccurrences(of: "\u{2014}", with: "-")
-        last = last.trimmingCharacters(in: CharacterSet(charactersIn: ",;.)]”’\""))
-        guard let colonIndex = last.firstIndex(of: ":") else { return nil }
-        let chapterSlice = last[..<colonIndex]
-        let verseSlice = last[last.index(after: colonIndex)...]
-        let chapterDigits = chapterSlice.prefix { $0.isNumber }
-        let verseDigits = verseSlice.prefix { $0.isNumber }
-        guard let chapterNum = Int(chapterDigits), let verseNum = Int(verseDigits) else { return nil }
-        let bookRaw = parts.dropLast().joined(separator: " ")
-
-        if let book = BibleData.books.first(where: { $0.name.compare(bookRaw, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
-        }
-        let collapsed = bookRaw.replacingOccurrences(of: " ", with: "")
-        if let book = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
-        }
-        let spacedLeading: String
-        if let first = bookRaw.first, first.isNumber {
-            let digits = String(bookRaw.prefix { $0.isNumber })
-            let rest = String(bookRaw.drop { $0.isNumber })
-            spacedLeading = digits + " " + rest
-        } else {
-            spacedLeading = bookRaw
-        }
-        if let book = BibleData.books.first(where: { $0.name.compare(spacedLeading, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
-        }
-        return nil
+        let verses = await loadVerses(reference)
+        // The player may have moved on while the Bible loaded.
+        guard current?.answer == word.answer else { return }
+        verse = verses.first { word.blankingOut(in: $0.text) != $0.text }
+        isVerseLoaded = true
     }
+
+    /// The verses of the first passage in `reference` ("Exodus 4:14–16; 28:1" reads Exodus
+    /// 4:14–16), up to three, in the reader's translation.
+    static func versesInBible(for reference: String) async -> [HangmanVerse] {
+        guard let passage = PassageReferenceParser.parse(reference), let startVerse = passage.startVerse else { return [] }
+        let endVerse = passage.isSingleChapter ? passage.endVerse.map { min($0, startVerse + 2) } : nil
+        let scriptureRef = ScriptureRef(
+            bookName: passage.bookName,
+            chapter: passage.startChapter,
+            startVerse: startVerse,
+            endVerse: endVerse
+        )
+        guard let loaded = await BibleReferenceLinker.loadVersesEnsuringLoaded(for: scriptureRef) else { return [] }
+        return loaded.verses
+            .filter { !$0.isOmitted }
+            .map { HangmanVerse(reference: "\(passage.bookName) \(passage.startChapter):\($0.number)", text: $0.text) }
+    }
+}
+
+/// One square of the word on screen.
+struct HangmanDisplayLetter: Equatable {
+    enum State: Equatable {
+        case hidden
+        case found
+        /// Filled in by a letter hint.
+        case hinted
+        /// Never found; shown once the round is lost.
+        case missed
+        /// A space or punctuation mark, which is never guessed.
+        case punctuation
+    }
+
+    let character: Character
+    let state: State
 }

@@ -77,29 +77,161 @@ struct HangmanRevealCard: View {
     }
 }
 
-struct HangmanWordDisplay: View {
-    let word: String
+/// The word as letter squares. Each word stays together on a line, and a long name wraps
+/// between its words instead of in the middle of one.
+struct HangmanWordTiles: View {
+    let letters: [HangmanDisplayLetter]
     let spokenWord: String
     let lastCorrectGuess: Character?
     let didWin: Bool
-    @State private var showsNewLetterHighlight = false
+    @State private var width: CGFloat = 320
+    @State private var highlightedLetter: Character?
+
+    private static let letterSpacing: CGFloat = 4
+
+    /// The answer split at its spaces.
+    private var words: [[HangmanDisplayLetter]] {
+        letters
+            .split { $0.state == .punctuation && $0.character == " " }
+            .map(Array.init)
+    }
 
     var body: some View {
-        Text(word)
-            .font(.title.weight(.semibold).monospaced())
-            .foregroundStyle(didWin || showsNewLetterHighlight ? .green : .primary)
-            .multilineTextAlignment(.center)
-            .scaleEffect(showsNewLetterHighlight ? 1.06 : 1)
-            .animation(.spring(duration: 0.25), value: showsNewLetterHighlight)
-            .accessibilityLabel("Word to guess")
-            .accessibilityValue(spokenWord)
-            .task(id: lastCorrectGuess) {
-                guard lastCorrectGuess != nil else { return }
-                showsNewLetterHighlight = true
-                try? await Task.sleep(for: .milliseconds(550))
-                guard !Task.isCancelled else { return }
-                showsNewLetterHighlight = false
+        let words = words
+        let longest = CGFloat(max(1, words.map(\.count).max() ?? 1))
+        // Squares as large as fit the longest word on one line, from 22 up to 40 points.
+        let size = min(40, max(22, (width - Self.letterSpacing * (longest - 1)) / longest))
+
+        HangmanWordFlowLayout(wordSpacing: size * 0.6, lineSpacing: 8) {
+            ForEach(words.indices, id: \.self) { wordIndex in
+                HStack(spacing: Self.letterSpacing) {
+                    ForEach(words[wordIndex].indices, id: \.self) { letterIndex in
+                        tile(words[wordIndex][letterIndex], size: size)
+                    }
+                }
             }
+        }
+        .frame(maxWidth: .infinity)
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.size.width
+        } action: { newWidth in
+            width = newWidth
+        }
+        .animation(.snappy(duration: 0.25), value: letters)
+        .animation(.spring(duration: 0.25), value: highlightedLetter)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Word to guess")
+        .accessibilityValue(spokenWord)
+        .task(id: lastCorrectGuess) {
+            guard let lastCorrectGuess else { return }
+            highlightedLetter = lastCorrectGuess
+            try? await Task.sleep(for: .milliseconds(550))
+            guard !Task.isCancelled else { return }
+            highlightedLetter = nil
+        }
+    }
+
+    private func tile(_ letter: HangmanDisplayLetter, size: CGFloat) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+        let isPunctuation = letter.state == .punctuation
+        let isNew = highlightedLetter == letter.character && (letter.state == .found || letter.state == .hinted)
+
+        return Text(letter.state == .hidden ? "" : String(letter.character))
+            .font(.title2.weight(.bold).monospaced())
+            .lineLimit(1)
+            .minimumScaleFactor(0.4)
+            .foregroundStyle(textColor(letter.state, isNew: isNew))
+            .frame(width: isPunctuation ? size * 0.5 : size, height: size * 1.15)
+            .background(fillColor(letter.state, isNew: isNew), in: shape)
+            .overlay {
+                if !isPunctuation {
+                    shape.strokeBorder(strokeColor(letter.state, isNew: isNew), lineWidth: 1.5)
+                }
+            }
+            .scaleEffect(isNew ? 1.1 : 1)
+    }
+
+    private func textColor(_ state: HangmanDisplayLetter.State, isNew: Bool) -> Color {
+        if didWin || isNew { return .green }
+        switch state {
+        case .missed: return .red
+        case .punctuation: return .secondary
+        default: return .primary
+        }
+    }
+
+    private func fillColor(_ state: HangmanDisplayLetter.State, isNew: Bool) -> Color {
+        if didWin || isNew { return Color.green.opacity(0.15) }
+        switch state {
+        case .hinted: return Color.yellow.opacity(0.15)
+        case .missed: return Color.red.opacity(0.10)
+        default: return .clear
+        }
+    }
+
+    private func strokeColor(_ state: HangmanDisplayLetter.State, isNew: Bool) -> Color {
+        if didWin || isNew { return .green }
+        switch state {
+        case .hidden: return Color.primary.opacity(0.25)
+        case .found: return Color.primary.opacity(0.15)
+        case .hinted: return Color.yellow.opacity(0.8)
+        case .missed: return Color.red.opacity(0.5)
+        case .punctuation: return .clear
+        }
+    }
+}
+
+/// Lays out words left to right, wrapping to a new centered line when the next word won't fit.
+struct HangmanWordFlowLayout: Layout {
+    let wordSpacing: CGFloat
+    let lineSpacing: CGFloat
+
+    private struct Line {
+        var indices: [Int] = []
+        var width: CGFloat = 0
+        var height: CGFloat = 0
+    }
+
+    private func lines(for subviews: Subviews, maxWidth: CGFloat) -> [Line] {
+        var lines: [Line] = []
+        var line = Line()
+        for index in subviews.indices {
+            let size = subviews[index].sizeThatFits(.unspecified)
+            let widthWithWord = line.indices.isEmpty ? size.width : line.width + wordSpacing + size.width
+            if !line.indices.isEmpty, widthWithWord > maxWidth {
+                lines.append(line)
+                line = Line()
+            }
+            line.width = line.indices.isEmpty ? size.width : line.width + wordSpacing + size.width
+            line.height = max(line.height, size.height)
+            line.indices.append(index)
+        }
+        if !line.indices.isEmpty { lines.append(line) }
+        return lines
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let maxWidth = proposal.width ?? .infinity
+        let lines = lines(for: subviews, maxWidth: maxWidth)
+        let height = lines.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(0, lines.count - 1))
+        let width = lines.map(\.width).max() ?? 0
+        return CGSize(width: proposal.width ?? width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for line in lines(for: subviews, maxWidth: bounds.width) {
+            var x = bounds.midX - line.width / 2
+            for index in line.indices {
+                let size = subviews[index].sizeThatFits(.unspecified)
+                subviews[index].place(
+                    at: CGPoint(x: x, y: y + (line.height - size.height) / 2),
+                    proposal: ProposedViewSize(size)
+                )
+                x += size.width + wordSpacing
+            }
+            y += line.height + lineSpacing
+        }
     }
 }
 
@@ -423,64 +555,3 @@ struct HangmanDrawing: View {
         }
     }
 }
-
-#if canImport(UIKit)
-/// Captures hardware-keyboard letters, Delete and Return without showing any UI.
-struct HangmanKeyCapture: UIViewRepresentable {
-    var onKey: (Character) -> Void
-    var onBackspace: () -> Void
-    var onEnter: () -> Void
-
-    final class KeyView: UIView {
-        var onKey: ((Character) -> Void)?
-        var onBackspace: (() -> Void)?
-        var onEnter: (() -> Void)?
-
-        override var canBecomeFirstResponder: Bool { true }
-
-        // Claim hardware-keyboard focus once, when the view appears on screen.
-        override func didMoveToWindow() {
-            super.didMoveToWindow()
-            if window != nil {
-                DispatchQueue.main.async { self.becomeFirstResponder() }
-            }
-        }
-
-        override var keyCommands: [UIKeyCommand]? {
-            var cmds: [UIKeyCommand] = []
-            let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            for ch in letters {
-                cmds.append(UIKeyCommand(input: String(ch), modifierFlags: [], action: #selector(handleKey(_:))))
-                cmds.append(UIKeyCommand(input: String(ch.lowercased()), modifierFlags: [], action: #selector(handleKey(_:))))
-            }
-            cmds.append(UIKeyCommand(input: UIKeyCommand.inputDelete, modifierFlags: [], action: #selector(handleDelete)))
-            cmds.append(UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(handleEnter)))
-            cmds.append(UIKeyCommand(input: "\n", modifierFlags: [], action: #selector(handleEnter)))
-            return cmds
-        }
-
-        @objc private func handleKey(_ sender: UIKeyCommand) {
-            guard let s = sender.input, let first = s.uppercased().first, first.isLetter else { return }
-            onKey?(first)
-        }
-
-        @objc private func handleDelete() { onBackspace?() }
-        @objc private func handleEnter() { onEnter?() }
-    }
-
-    func makeUIView(context: Context) -> KeyView {
-        let v = KeyView()
-        v.isUserInteractionEnabled = false
-        v.onKey = onKey
-        v.onBackspace = onBackspace
-        v.onEnter = onEnter
-        return v
-    }
-
-    func updateUIView(_ uiView: KeyView, context: Context) {
-        uiView.onKey = onKey
-        uiView.onBackspace = onBackspace
-        uiView.onEnter = onEnter
-    }
-}
-#endif

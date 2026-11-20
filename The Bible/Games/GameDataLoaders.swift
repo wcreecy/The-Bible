@@ -12,6 +12,8 @@ struct BibleCharacter: Decodable, Identifiable, Hashable {
     let books: [String]
     let shortDescription: String
     let difficulty: String
+    /// Where the person appears, e.g. "Exodus 4:14–16; 28:1". Hangman links to it and quotes it.
+    var scriptureReferences: String? = nil
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -19,6 +21,7 @@ struct BibleCharacter: Decodable, Identifiable, Hashable {
         case books
         case shortDescription = "short_description"
         case difficulty
+        case scriptureReferences = "scripture_references"
     }
 
     func matchesDifficulty(_ selectedDifficulty: String) -> Bool {
@@ -161,7 +164,8 @@ private struct GameAnswerCatalog: Decodable {
                 name: entry.name,
                 books: books,
                 shortDescription: entry.shortDescription,
-                difficulty: entry.difficulty
+                difficulty: entry.difficulty,
+                scriptureReferences: entry.scriptureReferences
             )
         }
     }

@@ -1,12 +1,17 @@
 import SwiftUI
-import UIKit
 
 struct HangmanGameView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var vm: HangmanGameViewModel
     private let isReviewRound: Bool
     @State private var isGiveUpConfirmationPresented = false
-    @State private var repeatedGuessMessageID = UUID()
-    @State private var showsRepeatedGuessMessage = false
+    @State private var showsPencilActions = false
+    /// Set when a letter is guessed twice; a new value restarts the message's timer.
+    @State private var repeatedGuessMessageID: UUID?
+    @State private var selectedPassage: PassageReference?
+    @FocusState private var isKeyboardFocused: Bool
 
     init(reviewQuestionIDs: Set<String> = []) {
         isReviewRound = !reviewQuestionIDs.isEmpty
@@ -15,11 +20,6 @@ struct HangmanGameView: View {
 
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
-
-    // Smart link style preview state (mirror Wordle)
-    @State private var showRefSheet: Bool = false
-    @State private var selectedRef: ScriptureRef? = nil
-    @State private var loadedPreview: (title: String, verses: [Verse])? = nil
 
     // Keyboard layout toggle: false = QWERTY, true = A-Z
     @State private var useAlphabeticalLayout: Bool = false
@@ -36,24 +36,6 @@ struct HangmanGameView: View {
                     case .setup:
                         startSection
                     case .playing:
-                        #if canImport(UIKit)
-                        HangmanKeyCapture(
-                            onKey: { ch in
-                                if !vm.roundOver {
-                                    showRepeatedGuessMessageIfNeeded(vm.guess(ch))
-                                }
-                            },
-                            onBackspace: {},
-                            onEnter: {
-                                if vm.roundOver {
-                                    vm.nextWord()
-                                }
-                            }
-                        )
-                        .frame(width: 0, height: 0)
-                        .accessibilityHidden(true)
-                        #endif
-
                         inGameSection(
                             usesWideLayout: usesWideLayout,
                             availableHeight: geometry.size.height - 24
@@ -81,8 +63,19 @@ struct HangmanGameView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 12)
             }
+            // A hardware keyboard types guesses, and Return goes to the next word.
+            .focusable()
+            .focused($isKeyboardFocused)
+            .onKeyPress(phases: .down, action: handleKeyPress)
+            .onChange(of: vm.phase) { _, phase in
+                isKeyboardFocused = phase == .playing
+            }
         }
         .tabBarContentClearance()
+        // Pinned above the tab bar, so the answer, clue and verse never push it out of reach.
+        .pinnedGameActionButton(isShown: vm.phase == .playing && vm.roundOver) {
+            nextWordButton
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -115,49 +108,92 @@ struct HangmanGameView: View {
         .task {
             await vm.loadData()
         }
+        // The verse is ready for the clue (or the Verses prompt), and for showing after the round.
+        .task(id: vm.current?.answer) {
+            await vm.loadVerse()
+        }
+        .task(id: repeatedGuessMessageID) {
+            guard repeatedGuessMessageID != nil else { return }
+            try? await Task.sleep(for: .seconds(1.2))
+            guard !Task.isCancelled else { return }
+            repeatedGuessMessageID = nil
+        }
         .onAppear {
             vm.onAppear()
         }
         .onDisappear {
             vm.onDisappear()
         }
-        // The keyboard card is layout state; a finished round always brings it back for "Next Word".
-        .onChange(of: vm.roundOver) { _, isOver in
-            if isOver { showsOnScreenKeyboard = true }
+        .sheet(item: $selectedPassage) { reference in
+            ScripturePassageSheet(reference: reference)
         }
-        .sheet(isPresented: $showRefSheet, onDismiss: {
-            selectedRef = nil
-            loadedPreview = nil
-        }) {
-            NavigationStack {
-                VStack(alignment: .leading, spacing: 12) {
-                    if let preview = loadedPreview {
-                        ScripturePreviewCard(
-                            content: preview,
-                            refContext: selectedRef,
-                            onCopy: {
-                                let verseLines = preview.verses.map { $0.text }.joined(separator: " ")
-                                UIPasteboard.general.string = "\(preview.title) — \(verseLines)"
-                            },
-                            onClose: { showRefSheet = false }
-                        )
-                    } else {
-                        ContentUnavailableView("No reference available", systemImage: "book")
-                    }
-                }
-                .padding()
-                .navigationTitle("Reference")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") { showRefSheet = false }
-                    }
-                }
-                .presentationDetents([.medium, .large])
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore, vm.phase == .playing else { return }
+            if vm.roundOver {
+                vm.nextWord()
+            } else if vm.canRevealClue {
+                vm.revealClue()
             }
-            .task(id: selectedRef) {
-                guard let sr = selectedRef else { return }
-                loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
+        }
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore, vm.phase == .playing,
+                  case .ended = phase else { return }
+            showsPencilActions = true
+        }
+        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+            if vm.roundOver {
+                Button(vm.isLastWord ? "See Results" : "Next Word", systemImage: "arrow.right", action: vm.nextWord)
+            } else {
+                if vm.canRevealClue {
+                    Button("Show Clue", systemImage: "lightbulb", action: vm.revealClue)
+                }
+                if vm.canRevealLetter {
+                    Button("Reveal a Letter", systemImage: "character.textbox", action: vm.revealLetter)
+                }
+                if vm.canShowVerseClue {
+                    Button("Show Verse Clue", systemImage: "text.quote", action: vm.showVerseClue)
+                }
+                Button("Give Up", systemImage: "flag.fill", role: .destructive) {
+                    isGiveUpConfirmationPresented = true
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        guard vm.phase == .playing else { return .ignored }
+
+        if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
+            guard vm.roundOver else { return .ignored }
+            vm.nextWord()
+            return .handled
+        }
+
+        guard !vm.roundOver,
+              keyPress.modifiers.isEmpty,
+              let character = keyPress.characters.first,
+              character.isLetter else {
+            return .ignored
+        }
+        handleGuess(character)
+        return .handled
+    }
+
+    private func handleGuess(_ letter: Character) {
+        if vm.guess(letter) == .alreadyGuessed {
+            repeatedGuessMessageID = UUID()
+        }
+    }
+
+    private var nextWordButton: some View {
+        Group {
+            if vm.isLastWord {
+                Button("See Results", systemImage: "flag.checkered", action: vm.nextWord)
+                    .buttonStyle(GameProminentButtonStyle(tint: .teal))
+            } else {
+                Button("Next Word", systemImage: "arrow.right", action: vm.nextWord)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
             }
         }
     }
@@ -175,8 +211,8 @@ struct HangmanGameView: View {
             experienceLevel: $vm.experienceLevel,
             experienceDetails: GameExperienceDetails(
                 learn: "Well-known answers, 8 mistakes, and a clue for every word.",
-                standard: "More answers, 6 mistakes; a clue costs one mistake.",
-                challenge: "Every answer, 5 mistakes, and no clues."
+                standard: "More answers, 6 mistakes; clues and letter hints cost one mistake.",
+                challenge: "Every answer, 5 mistakes, and only a verse clue, which costs two."
             ),
             isStartEnabled: vm.isDataLoaded,
             startAction: vm.startGame
@@ -208,8 +244,8 @@ struct HangmanGameView: View {
                 .padding(.horizontal, 4)
         } word: {
             VStack(spacing: 12) {
-                HangmanWordDisplay(
-                    word: vm.spacedDisplayWord,
+                HangmanWordTiles(
+                    letters: vm.displayLetters,
                     spokenWord: vm.spokenDisplayWord,
                     lastCorrectGuess: vm.lastCorrectGuess,
                     didWin: vm.roundOver && vm.didWin
@@ -221,11 +257,10 @@ struct HangmanGameView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(vm.isOneGuessRemaining ? .red : .secondary)
 
-                if showsRepeatedGuessMessage {
+                if repeatedGuessMessageID != nil {
                     Label("Already guessed", systemImage: "arrow.uturn.backward.circle")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
-                        .id(repeatedGuessMessageID)
                 }
 
                 if vm.roundOver, let current = vm.current {
@@ -234,14 +269,27 @@ struct HangmanGameView: View {
                         answer: current.answer,
                         qualifier: current.qualifier,
                         clue: current.clue,
-                        reference: current.reference,
+                        reference: vm.verse?.reference ?? current.reference,
                         guessesLeft: vm.maxWrong - vm.wrongGuesses,
                         onShowReference: presentReferencePreview
                     )
                 } else {
                     clueRow
                 }
+
+                if let verse = vm.displayedVerse {
+                    GameVerseCard(verse: verse)
+                        .transition(.opacity.combined(with: .scale(scale: 0.97)))
+                } else if vm.isVersePrompt, !vm.isVerseLoaded {
+                    ProgressView("Finding the verse…")
+                        .font(.subheadline)
+                }
+
+                if !vm.roundOver {
+                    hintButtons
+                }
             }
+            .animation(.snappy, value: vm.displayedVerse)
         } drawing: {
             VStack(spacing: 18) {
                 if !usesWideLayout && !showsOnScreenKeyboard {
@@ -281,34 +329,10 @@ struct HangmanGameView: View {
                 style: usesWideLayout ? .dashboard : .compact
             )
         } keyboard: {
-            if vm.roundOver {
-                Group {
-                    if vm.isLastWord {
-                        Button("See Results", systemImage: "flag.checkered", action: vm.nextWord)
-                            .buttonStyle(GameProminentButtonStyle(tint: .teal))
-                    } else {
-                        Button("Next Word", systemImage: "arrow.right", action: vm.nextWord)
-                            .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                    }
-                }
+            // Next Word is pinned above the tab bar; the played keyboard stays for reference.
+            keyboardView(keyHeight: usesWideLayout ? 60 : 42)
                 .padding(.horizontal, 6)
                 .padding(.top, 8)
-            } else {
-                keyboardView(keyHeight: usesWideLayout ? 60 : 42)
-                    .padding(.horizontal, 6)
-                    .padding(.top, 8)
-            }
-        }
-    }
-
-    private func showRepeatedGuessMessageIfNeeded(_ wasRepeated: Bool) {
-        guard wasRepeated else { return }
-        repeatedGuessMessageID = UUID()
-        showsRepeatedGuessMessage = true
-        Task {
-            try? await Task.sleep(for: .seconds(1.2))
-            guard !Task.isCancelled else { return }
-            showsRepeatedGuessMessage = false
         }
     }
 
@@ -330,36 +354,72 @@ struct HangmanGameView: View {
         }
     }
 
+    /// A letter hint and the verse clue, each with what it costs.
+    @ViewBuilder
+    private var hintButtons: some View {
+        let showsLetterHint = vm.difficulty.allowsLetterHints
+        // A verse clue is only offered once a verse naming the answer has been found.
+        let showsVerseClue = !vm.isVersePrompt && !vm.isVerseClueShown && vm.verse != nil
+
+        if showsLetterHint || showsVerseClue {
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 16) { hintButtonContent(showsLetterHint: showsLetterHint, showsVerseClue: showsVerseClue) }
+                VStack(spacing: 8) { hintButtonContent(showsLetterHint: showsLetterHint, showsVerseClue: showsVerseClue) }
+            }
+            .font(.subheadline.weight(.semibold))
+            .buttonStyle(.borderless)
+        }
+    }
+
+    @ViewBuilder
+    private func hintButtonContent(showsLetterHint: Bool, showsVerseClue: Bool) -> some View {
+        if showsLetterHint {
+            Button("Reveal a letter (costs 1 mistake)", systemImage: "character.textbox", action: vm.revealLetter)
+                .disabled(!vm.canRevealLetter)
+        }
+        if showsVerseClue {
+            Button(verseClueTitle, systemImage: "text.quote") {
+                withAnimation(.snappy) { vm.showVerseClue() }
+            }
+            .disabled(!vm.canShowVerseClue)
+        }
+    }
+
+    private var verseClueTitle: LocalizedStringKey {
+        switch vm.difficulty.verseClueCost {
+        case 0: "Show verse clue"
+        case 1: "Verse clue (costs 1 mistake)"
+        default: "Verse clue (costs \(vm.difficulty.verseClueCost) mistakes)"
+        }
+    }
+
+    /// Every letter on iPad when the keyboard is hidden: played ones in green or red, the rest dimmed.
     private var playedLettersTray: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Played Letters")
+            Text("Letters")
                 .font(.headline)
 
-            if vm.guessedLetters.isEmpty {
-                Text("No letters played yet")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                LazyVGrid(
-                    columns: [GridItem(.adaptive(minimum: 36), spacing: 8)],
-                    spacing: 8
-                ) {
-                    ForEach(vm.guessedLetters.sorted(), id: \.self) { letter in
-                        Text(String(letter))
-                            .font(.headline.monospaced())
-                            .foregroundStyle(.white)
-                            .frame(width: 36, height: 36)
-                            .background(
-                                vm.correctLetters.contains(letter) ? Color.green : Color.red,
-                                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            )
-                            .accessibilityLabel(
-                                vm.correctLetters.contains(letter)
-                                    ? "\(String(letter)), correct"
-                                    : "\(String(letter)), incorrect"
-                            )
-                    }
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 36), spacing: 8)],
+                spacing: 8
+            ) {
+                ForEach(Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), id: \.self) { letter in
+                    let isCorrect = vm.correctLetters.contains(letter)
+                    let isIncorrect = vm.wrongLetters.contains(letter)
+
+                    Text(String(letter))
+                        .font(.headline.monospaced())
+                        .foregroundStyle(isCorrect || isIncorrect ? Color.white : Color.secondary)
+                        .frame(width: 36, height: 36)
+                        .background(
+                            letterStatusColor(isCorrect: isCorrect, isIncorrect: isIncorrect),
+                            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        )
+                        .accessibilityLabel(letterStatusAccessibilityLabel(
+                            letter,
+                            isCorrect: isCorrect,
+                            isIncorrect: isIncorrect
+                        ))
                 }
             }
         }
@@ -458,7 +518,8 @@ struct HangmanGameView: View {
         availableHeight: CGFloat,
         keyboardIsVisible: Bool
     ) -> CGFloat {
-        guard UIDevice.current.userInterfaceIdiom != .pad else { return 130 }
+        // A regular-width window (iPad, not a narrow Split View) has room for a larger layout.
+        guard horizontalSizeClass != .regular else { return 130 }
 
         if keyboardIsVisible {
             // Leave room for the word, clue, and keyboard on shorter iPhones.
@@ -470,10 +531,8 @@ struct HangmanGameView: View {
 
     // MARK: - References
 
-    private func presentReferencePreview(from refString: String) {
-        selectedRef = HangmanGameViewModel.scriptureRef(from: refString)
-        loadedPreview = nil
-        showRefSheet = true
+    private func presentReferencePreview(from reference: String) {
+        selectedPassage = PassageReferenceParser.parse(reference)
     }
 
     // MARK: - On-screen keyboard
@@ -486,9 +545,7 @@ struct HangmanGameView: View {
             wrongLetters: vm.wrongLetters,
             isRoundOver: vm.roundOver,
             keyHeight: keyHeight,
-            onGuess: { letter in
-                showRepeatedGuessMessageIfNeeded(vm.guess(letter))
-            }
+            onGuess: handleGuess
         )
     }
 }

@@ -1,8 +1,8 @@
 import SwiftUI
 
 // Subviews for ScrambleGameView: the large split-layout timer, the prompt and answer
-// tiles, the verse card, dragging letters around the board, the letter tray and its
-// layout, and the action buttons.
+// tiles, dragging letters around the board, the letter tray and its layout, and the
+// action buttons.
 
 struct ScrambleLargeTimerView: View {
     let timeRemaining: Int
@@ -10,7 +10,7 @@ struct ScrambleLargeTimerView: View {
     let tint: Color
     let isTimerDisabled: Bool
     /// The verse clue, or the whole verse once solved, using the panel's spare room.
-    let verse: ScrambleGameViewModel.VerseDisplay?
+    let verse: GameVerse?
     @Binding var usesMutedStyle: Bool
     let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
@@ -62,7 +62,7 @@ struct ScrambleLargeTimerView: View {
             Spacer(minLength: 0)
 
             if let verse {
-                ScrambleVerseCard(verse: verse)
+                GameVerseCard(verse: verse)
                     .frame(maxWidth: 420)
                     .transition(.opacity.combined(with: .scale(scale: 0.97)))
             }
@@ -115,7 +115,7 @@ struct ScramblePrompt<Tiles: View>: View {
     let reference: String?
     let isResolved: Bool
     /// The verse clue, or the whole verse once solved. Nil when the iPad panel shows it instead.
-    let verse: ScrambleGameViewModel.VerseDisplay?
+    let verse: GameVerse?
     let timerTint: Color?
     let onShowReference: () -> Void
     @ViewBuilder let tiles: Tiles
@@ -170,7 +170,7 @@ struct ScramblePrompt<Tiles: View>: View {
             }
 
             if let verse {
-                ScrambleVerseCard(verse: verse)
+                GameVerseCard(verse: verse)
                     .transition(.opacity.combined(with: .scale(scale: 0.97)))
             }
 
@@ -195,36 +195,6 @@ struct ScramblePrompt<Tiles: View>: View {
                 .strokeBorder(timerTint ?? Color.primary.opacity(0.12), lineWidth: timerTint == nil ? 1 : 2)
         }
         .animation(.snappy, value: verse)
-    }
-}
-
-/// The source verse: a clue with the word blanked out, or the whole verse once the word is solved.
-struct ScrambleVerseCard: View {
-    let verse: ScrambleGameViewModel.VerseDisplay
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Label(verse.isClue ? "Verse Clue" : "From the Verse", systemImage: verse.isClue ? "text.quote" : "book.pages")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-            Text(verse.text)
-                .font(.callout)
-                .fontDesign(.serif)
-                .foregroundStyle(.primary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text(verse.reference)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(verse.isClue ? "Verse clue" : "From the verse")
-        // VoiceOver would read each blank as "underscore".
-        .accessibilityValue("\(verse.text.replacing(/_+/, with: "blank")), \(verse.reference)")
     }
 }
 
