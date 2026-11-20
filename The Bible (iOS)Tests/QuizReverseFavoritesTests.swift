@@ -12,7 +12,7 @@ struct QuizReverseFavoritesTests {
 
     /// Runs `body` with the Quiz Reverse settings set as given, then puts the stored settings back.
     private func withSettings(
-        pool: QuizReversePool,
+        pool: QuizVersePool,
         sections: Set<QuizVerseSection>? = nil,
         _ body: (QuizGameViewModel) -> Void
     ) {
@@ -46,7 +46,7 @@ struct QuizReverseFavoritesTests {
 
     @Test
     func savedVersesMakeFavoritesAvailableInEveryPool() {
-        for pool in QuizReversePool.allCases {
+        for pool in QuizVersePool.allCases {
             withSettings(pool: pool) { model in
                 model.favoriteVerses = [genesis]
 
@@ -89,7 +89,7 @@ struct QuizReverseFavoritesTests {
     func standardWellKnownPoolAndAnyVerseCanStart() async throws {
         _ = await BibleRepository.shared.loadAllBooks()
         await QuizVerseFilter.prepare()
-        for pool in [QuizReversePool.wellKnown, .any] {
+        for pool in [QuizVersePool.wellKnown, .any] {
             withSettings(pool: pool) { model in
                 model.mode = .standard
                 model.startQuiz()

@@ -1,6 +1,7 @@
 import Foundation
 
-enum QuizReversePool: String, CaseIterable, Identifiable {
+/// The verses a Quiz game draws from, in either mode. Raw values are stored in settings.
+enum QuizVersePool: String, CaseIterable, Identifiable {
     case wellKnown, favorites, any
 
     var id: String { rawValue }
@@ -82,7 +83,7 @@ struct QuizReverseQuestionSource {
     static let maximumWords = 50
     static let questionsPerGame = QuizGameViewModel.questionsPerGame
     let difficulty: QuizDifficulty
-    let pool: QuizReversePool
+    let pool: QuizVersePool
     let selectedSections: Set<QuizVerseSection>
     let favoriteVerses: [QuizVerse]
     private var wellKnownVerses: [QuizVerse] = []

@@ -268,18 +268,7 @@ struct BibleTriviaAnswerOption: View {
     let isDisabled: Bool
     let action: () -> Void
 
-    private static let letters = ["A", "B", "C", "D"]
-
-    private var letter: String {
-        Self.letters.indices.contains(index) ? Self.letters[index] : "\(index + 1)"
-    }
-
-    /// The option for a key: 1–4 or A–D.
-    static func index(forKey characters: String) -> Int? {
-        guard let key = characters.uppercased().first else { return nil }
-        if let number = key.wholeNumberValue, (1...letters.count).contains(number) { return number - 1 }
-        return letters.firstIndex(of: String(key))
-    }
+    private var letter: String { GameAnswerLetter.letter(for: index) }
 
     private var backgroundColor: Color {
         guard isDisabled else { return .clear }

@@ -316,7 +316,7 @@ private struct BibleTriviaPlayScreen: View {
         }
 
         guard !model.isAnswered, keyPress.modifiers.isEmpty,
-              let index = BibleTriviaAnswerOption.index(forKey: keyPress.characters),
+              let index = GameAnswerLetter.index(forKey: keyPress.characters),
               model.options.indices.contains(index) else {
             return .ignored
         }

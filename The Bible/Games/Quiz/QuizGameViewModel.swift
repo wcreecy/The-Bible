@@ -2,10 +2,6 @@ import Foundation
 import Observation
 import SwiftUI
 
-#if canImport(UIKit)
-import UIKit
-#endif
-
 enum QuizMode: String, CaseIterable, Identifiable {
     case standard
     case reverse
@@ -192,9 +188,33 @@ struct QuizQuestion: Identifiable {
     var selected: String?
     var outcome: QuizOutcome?
     var contextRevealed = false
+    /// Wrong answers taken away by 50/50.
+    var removedOptions: Set<String> = []
+    var lifelinesUsed: Set<QuizLifeline> = []
+    /// The timer was off at some point, so the answer can't earn a speed bonus.
+    var wasTimerOff = false
+    var earnedSpeedBonus = false
+    /// The chapter's one-line summary from the Study notes, shown after answering.
+    var chapterSummary: String?
+    /// Chapters offered for the bonus after a correct book; empty when there's no bonus.
+    var chapterOptions: [Int] = []
+    var chapterGuess: Int?
 
     /// Identifies the verse for missed-question review.
     var reviewID: String { mode == .reverse ? reference : "\(correctBook)|\(chapter)|\(verse)" }
+
+    var earnedChapterBonus: Bool { chapterGuess == chapter }
+
+    /// Help used on this question, for the round summary: lifelines and the previous verse.
+    var hintCount: Int { lifelinesUsed.count + (contextRevealed ? 1 : 0) }
+}
+
+/// Help a player can use once per round.
+enum QuizLifeline: CaseIterable, Hashable {
+    /// Removes two wrong answers.
+    case fiftyFifty
+    /// Names the part of the Bible the verse is from. Standard mode only.
+    case sectionHint
 }
 
 @MainActor
@@ -206,7 +226,7 @@ final class QuizGameViewModel {
         case results
     }
 
-    private struct VerseCandidate {
+    fileprivate struct VerseCandidate {
         let text: String
         let bookName: String
         let chapter: Int
@@ -228,20 +248,36 @@ final class QuizGameViewModel {
     /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
     private let missedQuestions: MissedGameQuestionStore
 
-    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
-    /// default argument, which would be evaluated outside the main actor.
+    /// Waits between timer ticks; tests pass a manual clock.
+    @ObservationIgnored private let sleep: (Duration) async throws -> Void
+    /// The current time for the question clock; tests pass the manual clock's time.
+    @ObservationIgnored private let now: () -> Date
+    /// Looks up a chapter's summary; tests pass a fixed one.
+    @ObservationIgnored private let loadChapterSummary: (String, Int) async -> String?
+
+    /// `missedQuestions` and `chapterSummary` default to the shared store and the Study notes.
+    /// They're resolved here rather than as default arguments, which would be evaluated outside
+    /// the main actor.
     init(
         reviewQuestionIDs: Set<String> = [],
         mode: QuizMode = .standard,
-        missedQuestions: MissedGameQuestionStore? = nil
+        missedQuestions: MissedGameQuestionStore? = nil,
+        sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
+        now: @escaping () -> Date = Date.init,
+        chapterSummary: ((String, Int) async -> String?)? = nil
     ) {
         self.reviewQuestionIDs = reviewQuestionIDs
         self.mode = mode
         self.missedQuestions = missedQuestions ?? .shared
+        self.sleep = sleep
+        self.now = now
+        self.loadChapterSummary = chapterSummary ?? { book, chapter in
+            await ChapterInsightsRepository.shared.summary(forBookNamed: book, chapterNumber: chapter)
+        }
     }
 
     var mode: QuizMode
-    var pool: QuizReversePool = QuizReversePool(
+    var pool: QuizVersePool = QuizVersePool(
         rawValue: UserDefaults.standard.string(forKey: AppStorageKey.quizVersePool) ?? ""
     ) ?? .wellKnown {
         didSet { UserDefaults.standard.set(pool.rawValue, forKey: AppStorageKey.quizVersePool) }
@@ -328,10 +364,12 @@ final class QuizGameViewModel {
     /// True while the question is paused: the timer stops and the question is hidden.
     private(set) var isPaused = false
     private var wasInRedZone = false
-    private var pulseTask: Task<Void, Never>?
+    @ObservationIgnored private var pulseTask: Task<Void, Never>?
     /// Time spent on the current question. It's the authority for the countdown, so pausing
     /// and resuming can't give back part of a second.
-    private var questionClock = GameActiveClock()
+    @ObservationIgnored private var questionClock = GameActiveClock()
+    /// Set for a practice round on the book missed most.
+    private(set) var practiceBook: String?
     /// Seconds taken off the current question for revealing the previous verse.
     private var contextPenaltySeconds = 0
 
@@ -401,7 +439,60 @@ final class QuizGameViewModel {
     /// Sorts out list and repeated verses while the start screen is showing.
     func prepareFilter() async {
         await QuizVerseFilter.prepare()
+        await Self.buildCandidateCache()
         isFilterReady = true
+    }
+
+    // MARK: - Verse cache
+
+    /// Every quizzable verse, sorted out once per translation while the start screen shows, so
+    /// starting an "Any verse" game doesn't check all 31,000 verses on the main thread.
+    /// `standard` is for Easy and Normal; `hard` also leaves out verses too long for its timer.
+    private static var candidateCache: (translation: BibleTranslation, standard: [VerseCandidate], hard: [VerseCandidate])?
+
+    /// Builds the cache a book at a time, letting the screen draw in between.
+    private static func buildCandidateCache() async {
+        let translation = BibleRepository.shared.activeTranslation
+        guard QuizVerseFilter.isReady, candidateCache?.translation != translation else { return }
+        var standard: [VerseCandidate] = []
+        var hard: [VerseCandidate] = []
+        for book in BibleData.books {
+            standard += candidates(in: book, difficultyKey: QuizDifficulty.normal.rawValue)
+            hard += candidates(in: book, difficultyKey: QuizDifficulty.hard.rawValue)
+            await Task.yield()
+        }
+        guard BibleRepository.shared.activeTranslation == translation, !standard.isEmpty else { return }
+        candidateCache = (translation, standard, hard)
+    }
+
+    /// The quizzable verses in one book, each with the verse before it as context.
+    private static func candidates(in book: Book, difficultyKey: String) -> [VerseCandidate] {
+        book.chapters.flatMap { chapter in
+            chapter.verses.indices.compactMap { index -> VerseCandidate? in
+                let verse = chapter.verses[index]
+                guard !verse.isOmitted, QuizVerseFilter.isQuizzable(
+                    book: book.name,
+                    chapter: chapter.number,
+                    verse: verse.number,
+                    difficulty: difficultyKey
+                ) else { return nil }
+                return VerseCandidate(
+                    text: verse.text,
+                    bookName: book.name,
+                    chapter: chapter.number,
+                    verse: verse.number,
+                    contextText: index > 0 && !chapter.verses[index - 1].isOmitted ? chapter.verses[index - 1].text : nil
+                )
+            }
+        }
+    }
+
+    /// Every quizzable verse at a difficulty, from the cache when it's ready.
+    private static func allCandidates(difficultyKey: String) -> [VerseCandidate] {
+        if let cache = candidateCache, cache.translation == BibleRepository.shared.activeTranslation {
+            return difficultyKey == QuizDifficulty.hard.rawValue ? cache.hard : cache.standard
+        }
+        return BibleData.books.flatMap { candidates(in: $0, difficultyKey: difficultyKey) }
     }
 
     func onDisappear() {
@@ -422,7 +513,7 @@ final class QuizGameViewModel {
     /// only keeps the display current.
     func runTimer() async {
         while !Task.isCancelled, isTimerRunning, remainingSeconds > 0 {
-            try? await Task.sleep(for: .milliseconds(100))
+            try? await sleep(.milliseconds(100))
             guard !Task.isCancelled, isTimerRunning else { return }
             updateRemainingTime()
         }
@@ -430,7 +521,7 @@ final class QuizGameViewModel {
 
     private func updateRemainingTime() {
         guard let timeLimit else { return }
-        let remaining = max(0, timeLimit - contextPenaltySeconds - Int(questionClock.elapsed()))
+        let remaining = max(0, timeLimit - contextPenaltySeconds - Int(questionClock.elapsed(at: now())))
         guard remaining != remainingSeconds else { return }
         remainingSeconds = remaining
         if remainingSeconds == 0 {
@@ -452,6 +543,12 @@ final class QuizGameViewModel {
     // MARK: - Questions
 
     private func buildQuestionBag() -> [VerseCandidate] {
+        // A practice round draws on every quizzable verse in its book, whatever the pool.
+        if let practiceBook {
+            return Self.allCandidates(difficultyKey: difficulty.rawValue)
+                .filter { $0.bookName == practiceBook }
+                .shuffled()
+        }
         // Explicit pools share Reverse's selection rules. Keep Standard's existing
         // difficulty filtering for Any verse and its separate missed-question review.
         if reviewQuestionIDs.isEmpty, pool != .any {
@@ -473,28 +570,8 @@ final class QuizGameViewModel {
         // A review round replays every missed verse. The categories can't be changed while
         // reviewing, so filtering by them would hide verses missed under other categories.
         let isReview = !reviewQuestionIDs.isEmpty
-        return BibleData.books
-            .filter { isReview || pool.contains($0.name) }
-            .flatMap { book in
-                book.chapters.flatMap { chapter in
-                    chapter.verses.indices.compactMap { index -> VerseCandidate? in
-                        let verse = chapter.verses[index]
-                        guard !verse.isOmitted, QuizVerseFilter.isQuizzable(
-                            book: book.name,
-                            chapter: chapter.number,
-                            verse: verse.number,
-                            difficulty: difficultyKey
-                        ) else { return nil }
-                        return VerseCandidate(
-                            text: verse.text,
-                            bookName: book.name,
-                            chapter: chapter.number,
-                            verse: verse.number,
-                            contextText: index > 0 && !chapter.verses[index - 1].isOmitted ? chapter.verses[index - 1].text : nil
-                        )
-                    }
-                }
-            }
+        return Self.allCandidates(difficultyKey: difficultyKey)
+            .filter { isReview || pool.contains($0.bookName) }
             .shuffled()
     }
 
@@ -547,7 +624,7 @@ final class QuizGameViewModel {
             return nil
         }
         guard let candidate = questionBag.popLast() else { return nil }
-        return QuizQuestion(
+        var question = QuizQuestion(
             verseText: candidate.text,
             correctBook: candidate.bookName,
             chapter: candidate.chapter,
@@ -555,11 +632,33 @@ final class QuizGameViewModel {
             contextText: candidate.contextText,
             options: (wrongChoices(for: candidate.bookName) + [candidate.bookName]).shuffled()
         )
+        if difficulty != .easy {
+            question.chapterOptions = chapterChoices(for: candidate)
+        }
+        return question
+    }
+
+    /// The right chapter and up to three others close to it, in order. Empty for a book with
+    /// one chapter, which would make the bonus free.
+    private func chapterChoices(for candidate: VerseCandidate) -> [Int] {
+        let chapterCount = BibleData.books.first { $0.name == candidate.bookName }?.chapters.count ?? 0
+        guard chapterCount > 1 else { return [] }
+        let others = Array(1...chapterCount).filter { $0 != candidate.chapter }
+        // Nearby chapters first, so the bonus asks for real knowledge rather than a rough guess.
+        let nearby = others.filter { abs($0 - candidate.chapter) <= 5 }.shuffled()
+        let rest = others.filter { abs($0 - candidate.chapter) > 5 }.shuffled()
+        return (Array((nearby + rest).prefix(3)) + [candidate.chapter]).sorted()
     }
 
     // MARK: - Game flow
 
+    /// Starts a game from the chosen settings. A practice round on one book ends here.
     func startQuiz() {
+        practiceBook = nil
+        beginQuiz()
+    }
+
+    private func beginQuiz() {
         guard canStart else { return }
         if mode == .reverse {
             var source = configuredReverseSource
@@ -572,7 +671,9 @@ final class QuizGameViewModel {
             totalQuestions = min(Self.questionsPerGame, reverseBag.count)
         } else {
             questionBag = buildQuestionBag()
-            if reviewQuestionIDs.isEmpty {
+            if practiceBook != nil {
+                questionBag = Array(questionBag.prefix(Self.questionsPerGame))
+            } else if reviewQuestionIDs.isEmpty {
                 questionBag = selectQuestions(from: questionBag, id: \.reviewID)
             } else {
                 questionBag = questionBag.filter { reviewQuestionIDs.contains($0.reviewID) }
@@ -625,14 +726,17 @@ final class QuizGameViewModel {
             return
         }
         history.append(question)
-        RecentGameQuestionStore.shared.record([question.reviewID], game: recencyGameKey)
+        if practiceBook == nil {
+            RecentGameQuestionStore.shared.record([question.reviewID], game: recencyGameKey)
+        }
         currentIndex = history.count - 1
         session.startQuestion()
         remainingSeconds = timeLimit ?? 0
         contextPenaltySeconds = 0
-        questionClock.start()
+        questionClock.start(at: now())
         if isTimerDisabled {
-            questionClock.pause()
+            questionClock.pause(at: now())
+            history[currentIndex].wasTimerOff = true
         }
         wasInRedZone = false
         stopTimerPulse()
@@ -646,7 +750,7 @@ final class QuizGameViewModel {
     }
 
     func resetToSetup() {
-        questionClock.pause()
+        questionClock.pause(at: now())
         phase = .setup
         isPaused = false
         history = []
@@ -654,6 +758,7 @@ final class QuizGameViewModel {
         questionBag = []
         reverseBag = []
         reverseSource = nil
+        practiceBook = nil
         remainingSeconds = 0
         session.clearGame()
     }
@@ -680,7 +785,7 @@ final class QuizGameViewModel {
     /// Stops the clock and hides the question until `resume()`.
     func pause() {
         guard canPause else { return }
-        questionClock.pause()
+        questionClock.pause(at: now())
         isPaused = true
         stopTimerPulse()
     }
@@ -689,7 +794,7 @@ final class QuizGameViewModel {
     func resume() {
         guard isPaused else { return }
         isPaused = false
-        questionClock.resume()
+        questionClock.resume(at: now())
         timerID += 1
     }
 
@@ -698,16 +803,19 @@ final class QuizGameViewModel {
         isTimerDisabled.toggle()
         if isTimerDisabled {
             session.noteTimerTurnedOff()
-            questionClock.pause()
+            questionClock.pause(at: now())
+            if history.indices.contains(currentIndex) {
+                history[currentIndex].wasTimerOff = true
+            }
         } else {
-            questionClock.resume()
+            questionClock.resume(at: now())
         }
         stopTimerPulse()
         timerID += 1
     }
 
     func selectOption(_ name: String) {
-        guard let current, current.options.contains(name), !isPaused else { return }
+        guard let current, current.options.contains(name), !current.removedOptions.contains(name), !isPaused else { return }
         finishQuestion(name == current.correctAnswer ? .correct : .incorrect, selected: name)
     }
 
@@ -716,10 +824,18 @@ final class QuizGameViewModel {
         guard phase == .playing, let current, current.outcome == nil else { return }
         history[currentIndex].outcome = outcome
         history[currentIndex].selected = selected
-        questionClock.pause()
+        questionClock.pause(at: now())
         stopTimerPulse()
 
         let correct = outcome == .correct
+        // A quick answer with the timer on the whole time earns a bonus point.
+        if correct, let timeLimit, !history[currentIndex].wasTimerOff {
+            history[currentIndex].earnedSpeedBonus = questionClock.elapsed(at: now()) <= Double(timeLimit) / 3
+        }
+        // The chapter bonus only follows a correct book.
+        if !correct {
+            history[currentIndex].chapterOptions = []
+        }
         session.record(
             GameRoundEntry(
                 prompt: current.prompt,
@@ -728,7 +844,8 @@ final class QuizGameViewModel {
                 correctAnswer: current.correctAnswer,
                 category: QuizVerseSection.containing(current.correctBook).map { String(localized: $0.title) },
                 bookName: current.correctBook,
-                reference: "\(current.correctBook) \(current.chapter):\(current.verse)"
+                reference: "\(current.correctBook) \(current.chapter):\(current.verse)",
+                hintCount: current.hintCount
             ),
             savedStreak: persistentStreak
         )
@@ -756,39 +873,168 @@ final class QuizGameViewModel {
             )
         }
 
-        #if canImport(UIKit)
         switch outcome {
-        case .correct: UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        case .incorrect: UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-        case .timedOut: UINotificationFeedbackGenerator().notificationOccurred(.error)
+        case .correct: Haptics.success()
+        case .incorrect: Haptics.error()
+        case .timedOut: Haptics.warning()
         }
-        #endif
+    }
+
+    // MARK: - Lifelines
+
+    /// Lifelines already used this round; each can be used once.
+    var usedLifelines: Set<QuizLifeline> {
+        history.reduce(into: []) { $0.formUnion($1.lifelinesUsed) }
+    }
+
+    /// Whether this kind of game has the lifeline at all, used or not.
+    func offers(_ lifeline: QuizLifeline) -> Bool {
+        lifeline == .fiftyFifty || mode == .standard
+    }
+
+    func canUse(_ lifeline: QuizLifeline) -> Bool {
+        guard phase == .playing, let current, !isAnswered, !isPaused,
+              offers(lifeline), !usedLifelines.contains(lifeline) else { return false }
+        switch lifeline {
+        case .fiftyFifty:
+            return current.options.count - current.removedOptions.count > 2
+        case .sectionHint:
+            // On Hard every choice is from the same part of the Bible, so the hint says nothing.
+            let sections = Set(current.options.compactMap(QuizVerseSection.containing))
+            return sections.count > 1
+        }
+    }
+
+    func use(_ lifeline: QuizLifeline) {
+        guard canUse(lifeline), let current else { return }
+        history[currentIndex].lifelinesUsed.insert(lifeline)
+        if lifeline == .fiftyFifty {
+            let wrong = current.options.filter { $0 != current.correctAnswer }.shuffled()
+            history[currentIndex].removedOptions = Set(wrong.prefix(2))
+        }
+        Haptics.selection()
+    }
+
+    /// "It's from the Gospels", once the section hint is used on this question.
+    var sectionHint: String? {
+        guard let current, current.lifelinesUsed.contains(.sectionHint),
+              let section = QuizVerseSection.containing(current.correctBook) else { return nil }
+        return String(localized: "It's from \(String(localized: section.title)).")
+    }
+
+    // MARK: - After answering
+
+    /// For a wrong book that was close: the right part of the Bible, or on Hard, where every
+    /// choice is from that part, a book right next to the answer.
+    var closeGuessNote: String? {
+        guard let current, mode == .standard, current.outcome == .incorrect, let selected = current.selected,
+              let section = QuizVerseSection.containing(current.correctBook) else { return nil }
+        if difficulty == .hard {
+            let canon = BibleCanon.fallbackCanon
+            guard let guessIndex = canon.firstIndex(of: selected),
+                  let answerIndex = canon.firstIndex(of: current.correctBook),
+                  abs(guessIndex - answerIndex) == 1 else { return nil }
+            return String(localized: "So close: \(selected) is right next to \(current.correctBook).")
+        }
+        guard QuizVerseSection.containing(selected) == section else { return nil }
+        return String(localized: "Right section: \(String(localized: section.title)).")
+    }
+
+    /// Loads the current question's chapter summary, ready for after it's answered.
+    func loadChapterSummary() async {
+        guard let current, current.chapterSummary == nil else { return }
+        let summary = await loadChapterSummary(current.correctBook, current.chapter)
+        // The player may have moved on while it loaded.
+        guard self.current?.id == current.id else { return }
+        history[currentIndex].chapterSummary = summary
+    }
+
+    /// The chapter bonus is offered after a correct book, until a chapter is picked.
+    var isChapterBonusOpen: Bool {
+        guard let current else { return false }
+        return current.outcome == .correct && !current.chapterOptions.isEmpty && current.chapterGuess == nil
+    }
+
+    func guessChapter(_ chapter: Int) {
+        guard isChapterBonusOpen, let current, current.chapterOptions.contains(chapter) else { return }
+        history[currentIndex].chapterGuess = chapter
+        if chapter == current.chapter { Haptics.success() } else { Haptics.error() }
+    }
+
+    // MARK: - Points
+
+    var speedBonusCount: Int { history.count(where: \.earnedSpeedBonus) }
+    var chapterBonusCount: Int { history.count(where: \.earnedChapterBonus) }
+
+    /// Correct books plus speed and chapter bonuses.
+    var points: Int { session.score + speedBonusCount + chapterBonusCount }
+
+    /// How the points add up, for the summary. Nil when there were no bonuses.
+    var bonusNote: String? {
+        let speed = speedBonusCount
+        let chapter = chapterBonusCount
+        guard speed + chapter > 0 else { return nil }
+        var parts = [String(localized: "\(session.score) correct")]
+        if speed > 0 {
+            parts.append(speed == 1 ? String(localized: "1 speed bonus") : String(localized: "\(speed) speed bonuses"))
+        }
+        if chapter > 0 {
+            parts.append(chapter == 1 ? String(localized: "1 chapter bonus") : String(localized: "\(chapter) chapter bonuses"))
+        }
+        return parts.joined(separator: " + ") + " = " + String(localized: "\(points) points")
+    }
+
+    // MARK: - Practicing a book
+
+    /// A practice round needs at least this many verses from the book.
+    private static let minimumPracticeVerses = 5
+
+    /// The book with the most misses this game, when it has enough verses for a practice round.
+    /// Standard mode only; in Reverse the book is part of the question.
+    var bookToPractice: String? {
+        guard mode == .standard else { return nil }
+        let candidates = Self.allCandidates(difficultyKey: difficulty.rawValue)
+        let missedBooks = history
+            .filter { $0.outcome != nil && $0.outcome != .correct }
+            .map(\.correctBook)
+            .filter { book in candidates.count { $0.bookName == book } >= Self.minimumPracticeVerses }
+        let counts = Dictionary(missedBooks.map { ($0, 1) }, uniquingKeysWith: +)
+        // Most misses first; ties go to the book missed first.
+        return missedBooks.first { counts[$0] == counts.values.max() }
+    }
+
+    /// A game of verses from one book. It doesn't count toward the pool's pass, and Play
+    /// Again goes back to the chosen settings.
+    func practice(book: String) {
+        practiceBook = book
+        beginQuiz()
     }
 
     // MARK: - Timer pulse
 
     /// Starts the pulse the moment a running timer crosses into the red zone.
     private func updateRedZone() {
-        guard isTimerRunning else { return }
-        let inRed = timerColor == .red
+        guard isTimerRunning, let timeLimit else { return }
+        // The same threshold as `timerColor`'s red, worked out from the time rather than the color.
+        let inRed = Double(remainingSeconds) / Double(max(1, timeLimit)) <= 0.3
         if inRed && !wasInRedZone {
             startTimerPulse()
         }
         wasInRedZone = inRed
     }
 
-    /// Flashes the timer when it enters the red zone. The task is cancelled when the question
-    /// ends or the timer is reset, so a late toggle can't leave the timer lit.
+    /// Flashes the timer when it enters the red zone; the timer views animate the change.
+    /// The task is cancelled when the question ends or the timer is reset, so a late toggle
+    /// can't leave the timer lit.
     private func startTimerPulse() {
         pulseTask?.cancel()
-        pulseTask = Task { @MainActor in
+        pulseTask = Task { @MainActor [weak self] in
             for _ in 0..<6 {
-                guard !Task.isCancelled else { return }
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    isPulsing.toggle()
-                }
-                try? await Task.sleep(for: .milliseconds(250))
+                guard let self, !Task.isCancelled else { return }
+                isPulsing.toggle()
+                try? await sleep(.milliseconds(250))
             }
+            guard let self else { return }
             guard !Task.isCancelled else { return }
             isPulsing = false
         }

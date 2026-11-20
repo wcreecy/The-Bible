@@ -1,13 +1,11 @@
 import SwiftUI
 import SwiftData
 
-#if canImport(UIKit)
-import UIKit
-#endif
-
 struct QuizView: View {
     @Query private var favorites: [Favorite]
     @State private var vm: QuizGameViewModel
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @FocusState private var isKeyboardFocused: Bool
 
     init(reviewQuestionIDs: Set<String> = [], mode: QuizMode = .standard) {
         _vm = State(initialValue: QuizGameViewModel(reviewQuestionIDs: reviewQuestionIDs, mode: mode))
@@ -20,46 +18,68 @@ struct QuizView: View {
     @State private var timerOnLeft: Bool = false
     @State private var usesMutedTimerStyle: Bool = false
     @State private var verseToast = VerseActionToastState()
+    @State private var showsPencilActions = false
 
     var body: some View {
         GeometryReader { geometry in
-            let usesSplitLayout = vm.mode == .standard && vm.phase == .playing && geometry.size.width >= 700
+            // Both modes use the split layout on a wide screen.
+            let usesSplitLayout = vm.phase == .playing && geometry.size.width >= 700
 
             ZStack {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        switch vm.phase {
-                        case .setup:
-                            setupContent
-                        case .playing:
-                            if vm.isPaused {
-                                GamePausedView(tint: .blue, remainingSeconds: vm.remainingSeconds) {
-                                    vm.resume()
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            switch vm.phase {
+                            case .setup:
+                                setupContent
+                            case .playing:
+                                if vm.isPaused {
+                                    GamePausedView(tint: .blue, remainingSeconds: vm.remainingSeconds) {
+                                        vm.resume()
+                                    }
+                                } else if usesSplitLayout {
+                                    dashboard(availableHeight: geometry.size.height - 32)
+                                } else {
+                                    compactGameContent
                                 }
-                            } else if usesSplitLayout {
-                                dashboard(availableHeight: geometry.size.height - 32)
-                            } else {
-                                compactGameContent
+                            case .results:
+                                GameRoundSummaryView(
+                                    summary: GameRoundSummary(score: vm.session),
+                                    tint: .blue,
+                                    canTimeOut: vm.isTimed,
+                                    resultNote: vm.bonusNote,
+                                    extraAction: vm.bookToPractice.map { book in
+                                        GameRoundSummaryView.ExtraAction(
+                                            title: String(localized: "Practice \(book)"),
+                                            systemImage: "book.pages",
+                                            action: { vm.practice(book: book) }
+                                        )
+                                    },
+                                    onPlayAgain: vm.startQuiz,
+                                    onChangeSettings: vm.resetToSetup
+                                )
                             }
-                        case .results:
-                            GameRoundSummaryView(
-                                summary: GameRoundSummary(score: vm.session),
-                                tint: .blue,
-                                canTimeOut: vm.isTimed,
-                                onPlayAgain: vm.startQuiz,
-                                onChangeSettings: vm.resetToSetup
-                            )
+                        }
+                        .padding(.horizontal)
+                    }
+                    .tabBarContentClearance()
+                    .pinnedNextQuestionButton(
+                        isShown: !usesSplitLayout && vm.phase == .playing && vm.isAnswered,
+                        isLastQuestion: vm.isOnLastQuestion,
+                        tint: .blue,
+                        action: vm.showNext
+                    )
+                    // Once answered, keep the result, bonus and summary in view above the pinned
+                    // Next button: when the content grows and when the button's inset arrives.
+                    .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                        geometry.contentSize.height + geometry.contentInsets.bottom
+                    } action: { _, _ in
+                        guard vm.phase == .playing, vm.isAnswered, !usesSplitLayout else { return }
+                        withAnimation(.snappy) {
+                            proxy.scrollTo(QuizAfterAnswer.scrollID, anchor: .bottom)
                         }
                     }
-                    .padding(.horizontal)
                 }
-                .tabBarContentClearance()
-                .pinnedNextQuestionButton(
-                    isShown: !usesSplitLayout && vm.phase == .playing && vm.isAnswered,
-                    isLastQuestion: vm.isOnLastQuestion,
-                    tint: .blue,
-                    action: vm.showNext
-                )
                 .background {
                     if usesSplitLayout {
                         Color.clear
@@ -93,12 +113,24 @@ struct QuizView: View {
                     .frame(maxWidth: .infinity, alignment: timerOnLeft ? .leading : .trailing)
                 }
             }
+            // A hardware keyboard answers with 1–4 or A–D (and picks the bonus chapter), and
+            // Return goes on.
+            .focusable()
+            .focused($isKeyboardFocused)
+            .onKeyPress(phases: .down, action: handleKeyPress)
+            .onChange(of: vm.phase) { _, phase in
+                isKeyboardFocused = phase == .playing
+            }
         }
         .background(AppBackgroundView(tab: .games))
         .verseActionToast($verseToast)
         // Restarts with each question so the first second is a full second.
         .task(id: vm.timerID) {
             await vm.runTimer()
+        }
+        // The chapter summary loads with each question, ready for after answering.
+        .task(id: vm.current?.id) {
+            await vm.loadChapterSummary()
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -110,6 +142,27 @@ struct QuizView: View {
             }
         }
         .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore, vm.phase == .playing, vm.isAnswered else { return }
+            vm.showNext()
+        }
+        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+            if vm.isAnswered {
+                Button(vm.isOnLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: vm.showNext)
+            } else {
+                ForEach(QuizLifeline.allCases, id: \.self) { lifeline in
+                    if vm.canUse(lifeline) {
+                        Button(lifeline.title, systemImage: lifeline.systemImage) {
+                            vm.use(lifeline)
+                        }
+                    }
+                }
+                if vm.canRevealContext {
+                    Button("Show Previous Verse", systemImage: "text.alignleft", action: vm.revealContext)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
         .onChange(of: favoriteVerses, initial: true) { _, verses in
             vm.favoriteVerses = verses
         }
@@ -129,6 +182,27 @@ struct QuizView: View {
             QuizVerse(bookName: $0.bookName, chapterNumber: $0.chapterNumber,
                       verseNumber: $0.verseNumber, verseText: $0.verseText)
         }
+    }
+
+    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        guard vm.phase == .playing, !vm.isPaused, let current = vm.current else { return .ignored }
+
+        if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
+            guard vm.isAnswered else { return .ignored }
+            vm.showNext()
+            return .handled
+        }
+
+        guard keyPress.modifiers.isEmpty, let index = GameAnswerLetter.index(forKey: keyPress.characters) else {
+            return .ignored
+        }
+        if vm.isChapterBonusOpen, current.chapterOptions.indices.contains(index) {
+            vm.guessChapter(current.chapterOptions[index])
+            return .handled
+        }
+        guard !vm.isAnswered, current.options.indices.contains(index) else { return .ignored }
+        vm.selectOption(current.options[index])
+        return .handled
     }
 
     // MARK: - Setup
@@ -173,7 +247,7 @@ struct QuizView: View {
                         systemImage: "text.quote",
                         tint: .blue,
                         selection: $vm.pool,
-                        choices: QuizReversePool.allCases.map {
+                        choices: QuizVersePool.allCases.map {
                             GameChoice(value: $0, title: $0.title,
                                        detail: $0 == .favorites && !vm.isFavoritesAvailable
                                            ? "Save a favorite verse to unlock this." : $0.detail,
@@ -225,35 +299,6 @@ struct QuizView: View {
 
     // MARK: - Gameplay layouts
 
-    private var contextRow: QuizContextRow? {
-        guard let current = vm.current, let contextText = current.contextText else { return nil }
-        return QuizContextRow(
-            contextText: contextText,
-            isRevealed: current.contextRevealed || current.outcome != nil,
-            cost: vm.difficulty.contextCost,
-            canReveal: vm.canRevealContext,
-            onReveal: vm.revealContext
-        )
-    }
-
-    @ViewBuilder
-    private var answerReveal: some View {
-        if let current = vm.current, let outcome = current.outcome {
-            QuizAnswerReveal(
-                outcome: outcome,
-                bookName: current.correctBook,
-                chapterNumber: current.chapter,
-                verseNumber: current.verse,
-                verseText: current.verseText
-            )
-        }
-    }
-
-    /// The inline Next button for the iPad dashboard; iPhone pins it to the bottom instead.
-    private var nextButton: some View {
-        GameNextQuestionButton(isLastQuestion: vm.isOnLastQuestion, tint: .blue, action: vm.showNext)
-    }
-
     @ViewBuilder
     private var compactGameContent: some View {
         if let current = vm.current {
@@ -265,126 +310,16 @@ struct QuizView: View {
                     game: .quiz
                 )
 
-                // Verse card
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(vm.progressText)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-
-                    Text(current.prompt)
-                        .italic()
-                        .font(.title3)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .foregroundStyle(.primary)
-                        .frame(maxWidth: .infinity)
-
-                    contextRow
-                }
-                .padding(24)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(UIColor.secondarySystemBackground), Color(UIColor.systemBackground)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(
-                            vm.isTimerRunning ? vm.timerColor : Color.primary.opacity(0.12),
-                            lineWidth: vm.isTimerRunning ? 2 : 1
-                        )
-                )
-                .animation(.easeInOut(duration: 0.25), value: vm.remainingSeconds)
-                .padding(.horizontal)
-
-                if vm.isTimed, !vm.isAnswered {
-                    GameTimerCard(
-                        remainingSeconds: vm.remainingSeconds,
-                        tint: vm.isTimerDisabled ? .secondary : vm.timerColor,
-                        isPulsing: vm.isTimerDisabled ? false : vm.isPulsing,
-                        formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
-                        isDisabled: vm.isTimerDisabled,
-                        onTap: vm.toggleTimer
-                    )
-                    .padding(.horizontal)
-                }
+                QuizQuestionPanel(vm: vm, showsTimer: true) { showsPencilActions = true }
 
                 if !vm.isAnswered {
-                    Text(vm.mode == .reverse ? "Which verse matches this reference?" : "Which book is this from?")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
+                    QuizLifelineBar(vm: vm)
                 }
 
-                LazyVGrid(columns: vm.mode == .reverse ? [GridItem(.flexible())] : [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                    ForEach(current.options, id: \.self) { option in
-                        VStack(spacing: 0) {
-                            Button {
-                                vm.selectOption(option)
-                            } label: {
-                                Text(option)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .foregroundStyle(.primary)
-                            }
-                            .disabled(vm.isAnswered)
+                QuizAfterAnswer(vm: vm)
+                    .id(QuizAfterAnswer.scrollID)
 
-                            if vm.isAnswered,
-                               let verse = current.optionVerses.first(where: { $0.verseText == option }) {
-                                HStack {
-                                    Text(verse.reference)
-                                        .font(.subheadline.weight(.semibold))
-                                    Spacer()
-                                    VerseActionMenu(
-                                        verse: VerseActionReference(
-                                            bookName: verse.bookName,
-                                            chapterNumber: verse.chapterNumber,
-                                            verseNumber: verse.verseNumber,
-                                            verseText: verse.verseText
-                                        )
-                                    )
-                                    .accessibilityLabel("Actions for \(verse.reference)")
-                                }
-                                .padding(.horizontal)
-                                .padding(.bottom)
-                            }
-                        }
-                        .background(buttonBackground(for: option, in: current))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(
-                                    vm.isAnswered && option == current.correctAnswer ? Color.green : Color.black.opacity(0.15),
-                                    lineWidth: vm.isAnswered && option == current.correctAnswer ? 3 : 1
-                                )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .font(.body)
-                    }
-                }
-                .padding(.horizontal)
-
-                if vm.isAnswered {
-                    answerReveal
-                        .padding(.horizontal)
-                }
-
-                // DEBUG: WIN button
-                if debugAutoWinEnabled, !vm.isAnswered {
-                    Button("WIN") {
-                        vm.selectOption(current.correctAnswer)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .red))
-                    .controlSize(.large)
-                    .padding(.top, 4)
-                    .accessibilityLabel("Win this round")
-                }
+                debugWinButton(for: current)
             }
             .padding(.vertical)
         }
@@ -402,28 +337,21 @@ struct QuizView: View {
                     style: .dashboard
                 )
 
-                QuizDashboardQuestion(
-                    progressText: vm.progressText,
-                    verseText: current.verseText,
-                    contextRow: contextRow,
-                    options: current.options,
-                    selectedOption: current.selected,
-                    correctBookName: current.correctBook,
-                    isAnswered: vm.isAnswered,
-                    onSelectOption: vm.selectOption
-                )
+                QuizQuestionPanel(vm: vm, showsTimer: false) { showsPencilActions = true }
 
-                answerReveal
+                if !vm.isAnswered {
+                    QuizLifelineBar(vm: vm)
+                }
+
+                QuizAfterAnswer(vm: vm)
 
                 Spacer(minLength: 0)
 
                 if debugAutoWinEnabled && !vm.isAnswered {
-                    Button("Win", systemImage: "checkmark.seal.fill") {
-                        vm.selectOption(current.correctAnswer)
-                    }
-                    .buttonStyle(GameProminentButtonStyle(tint: .red))
+                    debugWinButton(for: current)
                 } else {
-                    nextButton
+                    // The inline Next button for the iPad dashboard; iPhone pins it to the bottom instead.
+                    GameNextQuestionButton(isLastQuestion: vm.isOnLastQuestion, tint: .blue, action: vm.showNext)
                         .disabled(!vm.canGoNext)
                 }
             }
@@ -433,11 +361,17 @@ struct QuizView: View {
         }
     }
 
-    // MARK: - UI helpers
-
-    private func buttonBackground(for option: String, in question: QuizQuestion) -> Color {
-        guard question.outcome != nil, question.selected == option else { return .clear }
-        return option == question.correctAnswer ? Color.green.opacity(0.3) : Color.red.opacity(0.3)
+    @ViewBuilder
+    private func debugWinButton(for current: QuizQuestion) -> some View {
+        if debugAutoWinEnabled, !vm.isAnswered {
+            Button("WIN") {
+                vm.selectOption(current.correctAnswer)
+            }
+            .buttonStyle(ModernPillButtonStyle(tint: .red))
+            .controlSize(.large)
+            .padding(.top, 4)
+            .accessibilityLabel("Win this round")
+        }
     }
 }
 
