@@ -69,6 +69,9 @@ final class CrosswordGameViewModel {
 
     enum Outcome: Equatable {
         case solved
+        /// Finished, but hints filled more than half the letters. Keeps the streak, but never
+        /// sets a best time.
+        case solvedWithHelp
         case revealed
     }
 
@@ -83,6 +86,8 @@ final class CrosswordGameViewModel {
     static let savedRoundsKey = "crosswordSavedRounds"
     /// Fastest solved time for a difficulty. Revealed puzzles don't count.
     static func bestTimeKey(for difficulty: Difficulty) -> String { "crosswordBestTime_\(difficulty.rawValue)" }
+    static let showsMistakesKey = "crosswordShowsMistakesAsYouType"
+    static let showsVersesKey = "crosswordShowsVerseAfterAnswer"
 
     var difficulty: Difficulty {
         didSet { defaults.set(difficulty.rawValue, forKey: Self.difficultyKey) }
@@ -92,6 +97,19 @@ final class CrosswordGameViewModel {
     var usesLargeBoard: Bool {
         didSet { defaults.set(usesLargeBoard, forKey: Self.largeBoardKey) }
     }
+
+    /// Wrong letters turn red as they're typed, instead of waiting for Check. Off by default.
+    var showsMistakesAsYouType: Bool {
+        didSet { defaults.set(showsMistakesAsYouType, forKey: Self.showsMistakesKey) }
+    }
+
+    /// A correct answer briefly shows its verse. Off by default.
+    var showsVerseAfterAnswer: Bool {
+        didSet { defaults.set(showsVerseAfterAnswer, forKey: Self.showsVersesKey) }
+    }
+
+    /// Pencil mode: letters typed now are guesses, drawn in gray.
+    var isPencilMode = false
 
     var targetBoardSize: Int {
         usesLargeBoard ? 15 : difficulty.boardSize
@@ -104,6 +122,10 @@ final class CrosswordGameViewModel {
     private(set) var revealedCells: Set<Cell> = []
     /// Wrong letters found by Check. A square leaves this set once it is edited.
     private(set) var wrongCells: Set<Cell> = []
+    /// Letters entered in pencil mode, drawn in gray. Check treats them like any other letter.
+    private(set) var pencilCells: Set<Cell> = []
+    /// The last answer completed correctly by the player, for its verse. Nil until one is.
+    private(set) var lastCompletedEntry: CrosswordPuzzle.Entry?
     private(set) var selectedCell: Cell?
     private(set) var direction: Direction = .across
     private(set) var outcome: Outcome?
@@ -132,6 +154,8 @@ final class CrosswordGameViewModel {
         self.loadClues = loadClues
         difficulty = defaults.string(forKey: Self.difficultyKey).flatMap(Difficulty.init(rawValue:)) ?? .normal
         usesLargeBoard = defaults.bool(forKey: Self.largeBoardKey)
+        showsMistakesAsYouType = defaults.bool(forKey: Self.showsMistakesKey)
+        showsVerseAfterAnswer = defaults.bool(forKey: Self.showsVersesKey)
         currentStreak = defaults.integer(forKey: Self.currentStreakKey)
     }
 
@@ -183,6 +207,9 @@ final class CrosswordGameViewModel {
         guesses = [:]
         revealedCells = []
         wrongCells = []
+        pencilCells = []
+        lastCompletedEntry = nil
+        isPencilMode = false
         outcome = nil
         letterHintsUsed = 0
         wordHintsUsed = 0
@@ -221,6 +248,8 @@ final class CrosswordGameViewModel {
         let elapsedSeconds: Int
         let selectedCell: Cell?
         let direction: Direction
+        /// Pencil-mode letters. Missing from boards saved before pencil mode.
+        var pencilCells: [Cell]?
     }
 
     /// True when Start would resume an unfinished board at this difficulty and size.
@@ -242,7 +271,8 @@ final class CrosswordGameViewModel {
             checksUsed: checksUsed,
             elapsedSeconds: clock.elapsedSeconds(at: now),
             selectedCell: selectedCell,
-            direction: direction
+            direction: direction,
+            pencilCells: Array(pencilCells)
         )
         var rounds = savedRounds
         rounds[savedRoundKey] = round
@@ -289,6 +319,7 @@ final class CrosswordGameViewModel {
             uniquingKeysWith: { first, _ in first }
         )
         revealedCells = Set(round.revealedCells).intersection(validCells)
+        pencilCells = Set(round.pencilCells ?? []).intersection(Set(guesses.keys))
         letterHintsUsed = round.letterHintsUsed
         wordHintsUsed = round.wordHintsUsed
         checksUsed = round.checksUsed
@@ -401,6 +432,8 @@ final class CrosswordGameViewModel {
         if !revealedCells.contains(selectedCell) {
             guesses[selectedCell] = upper
             wrongCells.remove(selectedCell)
+            if isPencilMode { pencilCells.insert(selectedCell) } else { pencilCells.remove(selectedCell) }
+            noteCompletedEntries(at: selectedCell)
         }
         advance(from: selectedCell, in: entry)
         checkForCompletion()
@@ -431,6 +464,29 @@ final class CrosswordGameViewModel {
     private func clear(_ cell: Cell) {
         guesses[cell] = nil
         wrongCells.remove(cell)
+        pencilCells.remove(cell)
+    }
+
+    /// Notes an answer through `cell` that the player just finished correctly, for its verse.
+    /// Answers finished with hints don't count.
+    private func noteCompletedEntries(at cell: Cell) {
+        guard let puzzle else { return }
+        for direction in [CrosswordPuzzle.Direction.across, .down] {
+            guard let entry = puzzle.entry(containing: cell, direction: direction),
+                  entry.cells.allSatisfy(isCorrect),
+                  entry.cells.contains(where: { !revealedCells.contains($0) }) else { continue }
+            lastCompletedEntry = entry
+            return
+        }
+    }
+
+    /// Wrong letters to mark on the board: every wrong letter when showing mistakes as you
+    /// type, and otherwise the ones found by Check.
+    var displayedWrongCells: Set<Cell> {
+        guard showsMistakesAsYouType, let puzzle, phase == .playing else { return wrongCells }
+        return Set(guesses.compactMap { cell, letter in
+            letter == puzzle.letter(at: cell) ? nil : cell
+        })
     }
 
     /// After typing, go to the next open square in this answer. If the answer is now full,
@@ -526,6 +582,7 @@ final class CrosswordGameViewModel {
         let cellsToClear = wrongCells.filter { !revealedCells.contains($0) }
         for cell in cellsToClear {
             guesses[cell] = nil
+            pencilCells.remove(cell)
         }
         wrongCells = []
 
@@ -553,6 +610,7 @@ final class CrosswordGameViewModel {
         guesses[cell] = solution
         revealedCells.insert(cell)
         wrongCells.remove(cell)
+        pencilCells.remove(cell)
     }
 
     // MARK: - Finishing
@@ -572,7 +630,11 @@ final class CrosswordGameViewModel {
     }
 
     private func checkForCompletion() {
-        if isSolved { finish(.solved) }
+        guard isSolved, let puzzle else { return }
+        // A board mostly filled by hints is solved with help, not solved.
+        let letterCount = allLetterCells(in: puzzle).count
+        let mostlyHinted = revealedCells.count * 2 > letterCount
+        finish(mostlyHinted ? .solvedWithHelp : .solved)
     }
 
     private func finish(_ result: Outcome) {
@@ -584,11 +646,13 @@ final class CrosswordGameViewModel {
         clock.pause()
         elapsedSeconds = max(1, clock.elapsedSeconds())
         clearSavedRound()
-        recordBestTime(solved: result == .solved)
+        // A best time needs a real solve: not mostly hinted, and no word hints at all.
+        recordBestTime(solved: result == .solved && wordHintsUsed == 0)
 
-        // One board is one game: a solve counts as a win (hints are allowed), revealing
-        // the puzzle counts as a loss and resets the streak, the same as Word Search.
-        let won = result == .solved
+        // One board is one game: a solve counts as a win (some hints are allowed), and so does
+        // a solve with help; revealing the puzzle counts as a loss and resets the streak, the
+        // same as Word Search.
+        let won = result == .solved || result == .solvedWithHelp
         currentStreak = won ? defaults.integer(forKey: Self.currentStreakKey) + 1 : 0
         defaults.set(currentStreak, forKey: Self.currentStreakKey)
 

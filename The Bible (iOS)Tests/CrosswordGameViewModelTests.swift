@@ -301,4 +301,85 @@ struct CrosswordGameViewModelTests {
         #expect(vm.bestTimeComparison?.isNewBest == false)
         #expect(defaults.object(forKey: CrosswordGameViewModel.bestTimeKey(for: vm.difficulty)) == nil)
     }
+
+    // MARK: - Hints and best times
+
+    private var bestTimeKey: String { CrosswordGameViewModel.bestTimeKey(for: .normal) }
+
+    @Test func aBoardFilledMostlyByHintsIsSolvedWithHelp() {
+        let (vm, defaults) = makeViewModel()
+        defaults.set(2, forKey: CrosswordGameViewModel.currentStreakKey)
+        // NOAH, then KIN, then ARK's last square, all by word hints.
+        vm.revealWord()
+        vm.revealWord()
+        vm.revealWord()
+        #expect(vm.outcome == .solvedWithHelp)
+        // The streak carries on, but there's no best time.
+        #expect(vm.currentStreak == 3)
+        #expect(defaults.integer(forKey: bestTimeKey) == 0)
+    }
+
+    @Test func anyWordHintKeepsABestTimeFromBeingSet() {
+        let (vm, defaults) = makeViewModel()
+        // Half the letters by one word hint isn't "most", so it's still a solve.
+        vm.revealWord()
+        for letter in "KINR" { vm.type(letter) }
+        #expect(vm.outcome == .solved)
+        #expect(defaults.integer(forKey: bestTimeKey) == 0)
+    }
+
+    @Test func aSolveWithOnlyLetterHintsSetsABestTime() {
+        let (vm, defaults) = makeViewModel()
+        for letter in "NOAHKIN" { vm.type(letter) }
+        vm.revealLetter()
+        #expect(vm.outcome == .solved)
+        #expect(defaults.integer(forKey: bestTimeKey) > 0)
+    }
+
+    // MARK: - Pencil mode and settings
+
+    @Test func pencilLettersAreMarkedUntilTypedOverInPen() {
+        let (vm, _) = makeViewModel()
+        vm.isPencilMode = true
+        vm.type("N")
+        #expect(vm.pencilCells == [Cell(row: 0, col: 0)])
+
+        vm.isPencilMode = false
+        vm.select(Cell(row: 0, col: 1))
+        vm.select(Cell(row: 0, col: 0))
+        vm.type("N")
+        #expect(vm.pencilCells.isEmpty)
+    }
+
+    @Test func pencilLettersComeBackWithASavedBoard() async {
+        let (vm, defaults) = makeViewModel()
+        vm.isPencilMode = true
+        vm.type("N")
+        vm.saveProgress()
+
+        let resumed = CrosswordGameViewModel(defaults: defaults, recordsStats: false, loadClues: { [] })
+        await resumed.start()
+        #expect(resumed.guesses[Cell(row: 0, col: 0)] == "N")
+        #expect(resumed.pencilCells == [Cell(row: 0, col: 0)])
+    }
+
+    @Test func mistakesShowAsYouTypeOnlyWhenTurnedOn() {
+        let (vm, _) = makeViewModel()
+        #expect(!vm.showsMistakesAsYouType)
+        vm.type("X")
+        #expect(vm.displayedWrongCells.isEmpty)
+
+        vm.showsMistakesAsYouType = true
+        #expect(vm.displayedWrongCells == [Cell(row: 0, col: 0)])
+    }
+
+    @Test func versesAfterAnswersStartOffAndFollowCorrectAnswers() {
+        let (vm, _) = makeViewModel()
+        #expect(!vm.showsVerseAfterAnswer)
+        for letter in "NOA" { vm.type(letter) }
+        #expect(vm.lastCompletedEntry == nil)
+        vm.type("H")
+        #expect(vm.lastCompletedEntry?.answer == "NOAH")
+    }
 }
+

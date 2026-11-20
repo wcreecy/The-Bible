@@ -12,6 +12,8 @@ struct CrosswordBoardView: View {
     let selectedDirection: CrosswordPuzzle.Direction
     /// Wrong letters found by Check, marked with a red slash.
     var wrongCells: Set<CrosswordPuzzle.Cell> = []
+    /// Letters entered in pencil mode, drawn in gray.
+    var pencilCells: Set<CrosswordPuzzle.Cell> = []
     var tint: Color = .accentColor
     var hasKeyboardFocus = false
     let onTapCell: (CrosswordPuzzle.Cell) -> Void
@@ -114,6 +116,7 @@ struct CrosswordBoardView: View {
     private func letterColor(for cell: CrosswordPuzzle.Cell, isWrong: Bool) -> Color {
         if isWrong { return .red }
         if revealedCells.contains(cell) { return .blue }
+        if pencilCells.contains(cell) { return .secondary }
         return .primary
     }
 
@@ -124,6 +127,9 @@ struct CrosswordBoardView: View {
         }
         parts.append(String(localized: "Row \(cell.row + 1), column \(cell.col + 1)"))
         parts.append(guess.map { String($0) } ?? String(localized: "Empty"))
+        if guess != nil, pencilCells.contains(cell) {
+            parts.append(String(localized: "Pencil"))
+        }
         return parts.joined(separator: ", ")
     }
 }

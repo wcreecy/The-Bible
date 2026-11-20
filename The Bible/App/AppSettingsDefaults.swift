@@ -58,6 +58,9 @@ enum AppSettingsDefaults {
             AppStorageKey.hangmanTheme: HangmanTheme.all.rawValue,
             "scrambleDifficulty": "normal",
             "crosswordDifficulty": "normal",
+            // Both start off.
+            "crosswordShowsMistakesAsYouType": false,
+            "crosswordShowsVerseAfterAnswer": false,
             "quizDifficulty": "normal",
             AppStorageKey.triviaDifficulty: BibleTriviaDifficulty.normal.rawValue,
             AppStorageKey.triviaTopic: BibleTriviaTopic.mixed.rawValue,

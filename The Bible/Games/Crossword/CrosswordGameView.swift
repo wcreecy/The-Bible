@@ -1,3 +1,4 @@
+import GameController
 import SwiftUI
 
 struct CrosswordGameView: View {
@@ -15,9 +16,17 @@ struct CrosswordGameView: View {
     @State private var previewRef: ScriptureRef?
     @FocusState private var isBoardFocused: Bool
     @State private var keyboardFocusRequestID = 0
-    @State private var showsClueList = true
     @State private var showsTouchKeyboard = true
     @State private var showsPencilActions = false
+    /// iPhone: the full clue list, opened from the Clues button.
+    @State private var showsClueSheet = false
+    /// iPhone: the board zoomed in around the selected square.
+    @State private var isZoomed = false
+    @State private var boardScroll = ScrollPosition()
+    /// The verse shown after an answer is finished, when that setting is on.
+    @State private var completedVerse: GameVerse?
+
+    private static let zoomScale: CGFloat = 1.8
 
     private static let scrollTopID = "crosswordTop"
 
@@ -49,9 +58,13 @@ struct CrosswordGameView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 if vm.phase == .playing {
                     Menu {
-                        if !isPad {
-                            Button(showsClueList ? "Focus Clue" : "Show Clue List", systemImage: "list.bullet") {
-                                showsClueList.toggle()
+                        Toggle("Show Mistakes as You Type", systemImage: "exclamationmark.circle", isOn: $vm.showsMistakesAsYouType)
+                        Toggle("Verse After Each Answer", systemImage: "book.pages", isOn: $vm.showsVerseAfterAnswer)
+                        if !vm.wrongCells.isEmpty {
+                            Button("Remove All Wrong Letters", systemImage: "eraser.fill") {
+                                vm.removeAllWrongLetters()
+                                checkMessage = nil
+                                restoreBoardFocus()
                             }
                         }
                         Button("Reveal Puzzle", systemImage: "eye", role: .destructive) {
@@ -112,12 +125,74 @@ struct CrosswordGameView: View {
         .onAppActiveChange { vm.appActiveChanged($0) }
         // Leaving keeps the board, so it comes back with Resume.
         .onDisappear { vm.saveProgress() }
+        .sheet(isPresented: $showsClueSheet, onDismiss: restoreBoardFocus) {
+            if let puzzle = vm.puzzle {
+                NavigationStack {
+                    ScrollView {
+                        clueList(puzzle)
+                            .padding()
+                    }
+                    .navigationTitle("Clues")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { showsClueSheet = false }
+                        }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+            }
+        }
+        // A correct answer shows its verse for a few seconds, when that setting is on.
+        .overlay(alignment: .top) {
+            if let completedVerse {
+                GameVerseCard(verse: completedVerse)
+                    .frame(maxWidth: 520)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    .shadow(color: .black.opacity(0.15), radius: 8, y: 3)
+                    .onTapGesture { self.completedVerse = nil }
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .accessibilityHint("Double tap to close")
+            }
+        }
+        .animation(.snappy, value: completedVerse)
+        .task(id: vm.lastCompletedEntry) {
+            guard vm.showsVerseAfterAnswer, vm.phase == .playing, let entry = vm.lastCompletedEntry,
+                  let passage = await GamePassage.load(for: entry.reference) else { return }
+            completedVerse = GameVerse(text: passage.text, reference: passage.title, isClue: false)
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled else { return }
+            completedVerse = nil
+        }
+        .onChange(of: vm.phase) { _, phase in
+            if phase != .playing {
+                completedVerse = nil
+                isZoomed = false
+            }
+        }
+        // A connected hardware keyboard closes the iPad touch keyboard, which it makes redundant.
+        .task {
+            if GCKeyboard.coalesced != nil { showsTouchKeyboard = false }
+            for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidConnect) {
+                showsTouchKeyboard = false
+            }
+        }
+        .task {
+            for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidDisconnect) {
+                showsTouchKeyboard = true
+            }
+        }
     }
 
     @ViewBuilder
     private var gameContent: some View {
-        if isPad, vm.phase == .playing, let puzzle = vm.puzzle {
-            ipadPlayingViewport(puzzle)
+        if vm.phase == .playing, let puzzle = vm.puzzle {
+            if isPad {
+                ipadPlayingViewport(puzzle)
+            } else {
+                iPhonePlayingLayout(puzzle)
+            }
         } else {
             scrollableGameContent
         }
@@ -188,6 +263,26 @@ struct CrosswordGameView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
+
+                    Toggle(isOn: $vm.showsMistakesAsYouType) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Show Mistakes as You Type")
+                            Text("Wrong letters turn red right away.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .tint(Self.tint)
+
+                    Toggle(isOn: $vm.showsVerseAfterAnswer) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Verse After Each Answer")
+                            Text("Briefly shows the verse behind each answer you finish.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .tint(Self.tint)
 
                     if isPad {
                         Toggle(isOn: $vm.usesLargeBoard) {
@@ -262,13 +357,13 @@ struct CrosswordGameView: View {
                     resultCard(puzzle, pinsNewPuzzle: true)
                         .frame(maxWidth: 520)
                 } else {
-                    TimelineView(.periodic(from: .now, by: 1)) { _ in
-                            CrosswordInspectorView(
+                    // Only the time redraws each second; the panel redraws when the board changes.
+                    CrosswordInspectorView(
                             puzzle: puzzle,
                             guesses: vm.guesses,
-                            wrongCells: vm.wrongCells,
+                            wrongCells: vm.displayedWrongCells,
                             currentEntry: vm.currentEntry,
-                            elapsedSeconds: vm.activeSeconds(),
+                            elapsedSeconds: { vm.activeSeconds() },
                             letterHintsUsed: vm.letterHintsUsed,
                             wordHintsUsed: vm.wordHintsUsed,
                             checksUsed: vm.checksUsed,
@@ -279,6 +374,7 @@ struct CrosswordGameView: View {
                             checkMessage: checkMessage,
                             tint: Self.tint,
                             showsKeyboard: $showsTouchKeyboard,
+                            isPencilMode: $vm.isPencilMode,
                             selectEntry: {
                                 vm.select($0)
                                 restoreBoardFocus()
@@ -321,23 +417,16 @@ struct CrosswordGameView: View {
                                     previewRef = ref
                                 }
                             }
-                            )
-                    }
+                    )
                     .frame(maxWidth: 540, maxHeight: .infinity)
                 }
             }
             .frame(maxWidth: 1264)
         } else {
+            // iPhone play has its own fixed layout; this is the finished board and results.
             VStack(spacing: 12) {
                 board(puzzle)
-                if vm.phase == .playing {
-                    hintBar
-                    clueBar
-                    keyboard
-                    if showsClueList { clueList(puzzle) }
-                } else {
-                    resultCard(puzzle, pinsNewPuzzle: false)
-                }
+                resultCard(puzzle, pinsNewPuzzle: false)
             }
         }
     }
@@ -356,21 +445,27 @@ struct CrosswordGameView: View {
                         restoreBoardFocus()
                     }
                 )
+            } else if canZoom(puzzle) {
+                zoomableBoard(puzzle)
             } else {
-                CrosswordBoardView(
+                boardGrid(puzzle)
+            }
+
+            if isPad {
+                CrosswordScribbleCapture(
                     puzzle: puzzle,
-                    guesses: vm.guesses,
-                    revealedCells: vm.revealedCells,
-                    selectedCell: vm.selectedCell,
-                    selectedDirection: vm.direction,
-                    wrongCells: vm.wrongCells,
-                    tint: Self.tint,
-                    hasKeyboardFocus: isBoardFocused,
-                    onTapCell: { cell in
-                        vm.select(cell)
-                        restoreBoardFocus()
-                    }
+                    isActive: vm.phase == .playing,
+                    onSelect: { cell in
+                        if cell != vm.selectedCell { vm.select(cell) }
+                    },
+                    onText: { text in
+                        for letter in text where letter.isLetter {
+                            vm.type(letter)
+                        }
+                    },
+                    onFinish: restoreBoardFocus
                 )
+                .allowsHitTesting(false)
             }
 
             CrosswordHardwareKeyboardCapture(
@@ -415,6 +510,166 @@ struct CrosswordGameView: View {
         .focusEffectDisabled()
         .onKeyPress(phases: .down, action: handleKeyPress)
         .onAppear(perform: restoreBoardFocus)
+    }
+
+    private func boardGrid(_ puzzle: CrosswordPuzzle) -> some View {
+        CrosswordBoardView(
+            puzzle: puzzle,
+            guesses: vm.guesses,
+            revealedCells: vm.revealedCells,
+            selectedCell: vm.selectedCell,
+            selectedDirection: vm.direction,
+            wrongCells: vm.displayedWrongCells,
+            pencilCells: vm.pencilCells,
+            tint: Self.tint,
+            hasKeyboardFocus: isBoardFocused,
+            onTapCell: { cell in
+                vm.select(cell)
+                restoreBoardFocus()
+            }
+        )
+    }
+
+    /// iPhone boards of 11×11 and up have small squares, so they can zoom in.
+    private func canZoom(_ puzzle: CrosswordPuzzle) -> Bool {
+        !isPad && vm.phase == .playing && puzzle.size >= 11
+    }
+
+    /// The board, zoomed in around the selected square when `isZoomed`. Pinch to zoom in or out.
+    /// The zoomed board scrolls, following the selection as you type.
+    private func zoomableBoard(_ puzzle: CrosswordPuzzle) -> some View {
+        GeometryReader { geo in
+            let side = min(geo.size.width, geo.size.height)
+            Group {
+                if isZoomed {
+                    ScrollView([.horizontal, .vertical], showsIndicators: false) {
+                        boardGrid(puzzle)
+                            .frame(width: side * Self.zoomScale, height: side * Self.zoomScale)
+                    }
+                    .scrollPosition($boardScroll)
+                    .onAppear { scrollToSelection(puzzle: puzzle, side: side, animated: false) }
+                    .onChange(of: vm.selectedCell) { _, _ in scrollToSelection(puzzle: puzzle, side: side, animated: true) }
+                } else {
+                    boardGrid(puzzle)
+                }
+            }
+            .frame(width: side, height: side)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .simultaneousGesture(
+                MagnifyGesture().onEnded { value in
+                    if value.magnification > 1.15 { setZoomed(true) }
+                    if value.magnification < 0.87 { setZoomed(false) }
+                }
+            )
+        }
+        .aspectRatio(1, contentMode: .fit)
+    }
+
+    private func setZoomed(_ zoomed: Bool) {
+        guard zoomed != isZoomed else { return }
+        withAnimation(.snappy) { isZoomed = zoomed }
+        Haptics.selection()
+    }
+
+    /// Scrolls the zoomed board so the selected square sits in the middle where it can.
+    private func scrollToSelection(puzzle: CrosswordPuzzle, side: CGFloat, animated: Bool) {
+        guard let cell = vm.selectedCell else { return }
+        let cellSize = side * Self.zoomScale / CGFloat(puzzle.size)
+        let point = CGPoint(
+            x: max(0, (CGFloat(cell.col) + 0.5) * cellSize - side / 2),
+            y: max(0, (CGFloat(cell.row) + 0.5) * cellSize - side / 2)
+        )
+        if animated {
+            withAnimation(.snappy) { boardScroll.scrollTo(point: point) }
+        } else {
+            boardScroll.scrollTo(point: point)
+        }
+    }
+
+    // MARK: - iPhone
+
+    /// iPhone play: the board at the top, the current clue under it, and the tools and keyboard
+    /// pinned at the bottom, with nothing to scroll. The full clue list opens as a sheet.
+    private func iPhonePlayingLayout(_ puzzle: CrosswordPuzzle) -> some View {
+        VStack(spacing: 8) {
+            board(puzzle)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(1)
+            clueBar
+            iPhoneToolRow
+            if let message = toolMessage {
+                Text(message)
+                    .font(.footnote)
+                    .foregroundStyle(vm.isFilledWithMistakes ? .orange : .secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(2)
+            }
+            keyboard
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .onChange(of: vm.guesses) { checkMessage = nil }
+    }
+
+    private var toolMessage: String? {
+        if vm.isFilledWithMistakes {
+            return String(localized: "The board is full, but some letters are wrong. Tap Check to find them.")
+        }
+        return checkMessage
+    }
+
+    /// Hints, Check, pencil mode, zoom and the clue list, in one slim row.
+    private var iPhoneToolRow: some View {
+        GlassEffectContainer(spacing: 6) {
+            HStack(spacing: 6) {
+                Button("Letter", systemImage: "character.cursor.ibeam") {
+                    vm.revealLetter()
+                    restoreBoardFocus()
+                }
+                .disabled(!vm.canUseLetterHint)
+                .accessibilityLabel("Reveal a letter")
+
+                Button("Word", systemImage: "text.cursor") {
+                    vm.revealWord()
+                    restoreBoardFocus()
+                }
+                .disabled(!vm.canUseWordHint)
+                .accessibilityLabel("Reveal the current word")
+
+                Button(checkButtonTitle, systemImage: "checkmark.circle.fill") {
+                    checkPuzzle()
+                    restoreBoardFocus()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(vm.isFilledWithMistakes ? .orange : Self.tint)
+
+                Button("Pencil", systemImage: vm.isPencilMode ? "pencil.circle.fill" : "pencil.circle") {
+                    vm.isPencilMode.toggle()
+                    restoreBoardFocus()
+                }
+                .tint(vm.isPencilMode ? Self.tint : nil)
+                .accessibilityLabel("Pencil mode")
+                .accessibilityValue(vm.isPencilMode ? "On" : "Off")
+
+                if let puzzle = vm.puzzle, canZoom(puzzle) {
+                    Button(isZoomed ? "Zoom Out" : "Zoom In", systemImage: isZoomed ? "minus.magnifyingglass" : "plus.magnifyingglass") {
+                        setZoomed(!isZoomed)
+                    }
+                    .labelStyle(.iconOnly)
+                }
+
+                Button("Clues", systemImage: "list.bullet") {
+                    showsClueSheet = true
+                }
+                .labelStyle(.iconOnly)
+            }
+            .font(.subheadline.weight(.semibold))
+            .labelStyle(CrosswordHintLabelStyle())
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .buttonStyle(.glass)
+            .foregroundStyle(.primary)
+        }
     }
 
     private func handleKeyPress(_ press: KeyPress) -> KeyPress.Result {
@@ -516,6 +771,15 @@ struct CrosswordGameView: View {
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
                 .accessibilityLabel(directionButtonAccessibilityLabel)
+                if let entry = vm.currentEntry, let ref = BibleReferenceLinker.parse(entry.reference) {
+                    Button("Scripture Hint", systemImage: "book") { previewRef = ref }
+                        .labelStyle(.iconOnly)
+                        .font(.body.weight(.semibold))
+                        .frame(width: 32, height: 32)
+                        .buttonStyle(.glass)
+                        .buttonBorderShape(.circle)
+                        .accessibilityHint("Shows the verse behind this clue")
+                }
                 clueArrow("Next clue", systemImage: "chevron.right", offset: 1)
             }
         }
@@ -577,64 +841,6 @@ struct CrosswordGameView: View {
         .accessibilityHint("Switches between Across and Down")
     }
 
-    private var hintBar: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Reveal")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-            GlassEffectContainer(spacing: 8) {
-                HStack(spacing: 8) {
-                    Button("Letter", systemImage: "character.cursor.ibeam") {
-                        vm.revealLetter()
-                        restoreBoardFocus()
-                    }
-                    .disabled(!vm.canUseLetterHint)
-                    .accessibilityLabel("Reveal a letter")
-                    Button("Word", systemImage: "text.cursor") {
-                        vm.revealWord()
-                        restoreBoardFocus()
-                    }
-                    .disabled(!vm.canUseWordHint)
-                    .accessibilityLabel("Reveal the current word")
-                    Button(checkButtonTitle, systemImage: "checkmark.circle.fill") {
-                        checkPuzzle()
-                        restoreBoardFocus()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(vm.isFilledWithMistakes ? .orange : Self.tint)
-                }
-                .font(.subheadline.weight(.semibold))
-                .labelStyle(CrosswordHintLabelStyle())
-                .lineLimit(1)
-                .buttonStyle(.glass)
-                .foregroundStyle(.primary)
-            }
-
-            if vm.isFilledWithMistakes {
-                Text("The board is full, but some letters are wrong. Tap Check to find them.")
-                    .font(.footnote)
-                    .foregroundStyle(.orange)
-            } else if let checkMessage {
-                Text(checkMessage)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            if !vm.wrongCells.isEmpty {
-                Button("Remove All Wrong Letters", systemImage: "eraser.fill") {
-                    vm.removeAllWrongLetters()
-                    checkMessage = nil
-                    restoreBoardFocus()
-                }
-                .font(.subheadline.weight(.semibold))
-                .buttonStyle(.bordered)
-                .tint(.red)
-            }
-        }
-        .onChange(of: vm.guesses) { checkMessage = nil }
-    }
-
     private var checkButtonTitle: LocalizedStringKey {
         if vm.isFilledWithMistakes, !vm.wrongCells.isEmpty {
             "Check \(vm.wrongCells.count) mistakes"
@@ -674,6 +880,7 @@ struct CrosswordGameView: View {
                 let isFilled = entry.cells.allSatisfy { vm.guesses[$0] != nil }
                 Button {
                     vm.select(entry)
+                    showsClueSheet = false
                     restoreBoardFocus()
                 } label: {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -714,14 +921,29 @@ struct CrosswordGameView: View {
     // MARK: - Results
 
     private func resultCard(_ puzzle: CrosswordPuzzle, pinsNewPuzzle: Bool) -> some View {
-        let solved = vm.outcome == .solved
         let unassistedAnswers = puzzle.entries.filter(vm.wasSolvedWithoutHints).count
+        let title: String = switch vm.outcome {
+        case .solved: String(localized: "Puzzle solved!")
+        case .solvedWithHelp: String(localized: "Solved with help")
+        case .revealed, nil: String(localized: "Puzzle revealed")
+        }
+        let subtitle: String? = switch vm.outcome {
+        case .solved where vm.wordHintsUsed > 0:
+            String(localized: "Solved without hints: \(unassistedAnswers) of \(puzzle.entries.count) answers. Best times need no word hints.")
+        case .solved:
+            String(localized: "Solved without hints: \(unassistedAnswers) of \(puzzle.entries.count) answers")
+        case .solvedWithHelp:
+            String(localized: "Hints filled more than half the letters. Your streak continues, but it doesn't count toward a best time.")
+        case .revealed, nil:
+            nil
+        }
+        let isWin = vm.outcome == .solved || vm.outcome == .solvedWithHelp
         return VStack(spacing: 12) {
             GamePuzzleResultCard(
-                title: solved ? String(localized: "Puzzle solved!") : String(localized: "Puzzle revealed"),
-                subtitle: solved ? String(localized: "Solved without hints: \(unassistedAnswers) of \(puzzle.entries.count) answers") : nil,
-                systemImage: solved ? "checkmark.seal.fill" : "eye.fill",
-                tint: solved ? .green : Self.tint,
+                title: title,
+                subtitle: subtitle,
+                systemImage: vm.outcome == .solved ? "checkmark.seal.fill" : (isWin ? "lightbulb.fill" : "eye.fill"),
+                tint: vm.outcome == .solved ? .green : Self.tint,
                 facts: [
                     ("timer", GameTimeFormat.short(seconds: vm.elapsedSeconds), String(localized: "Time")),
                     ("character.cursor.ibeam", "\(vm.letterHintsUsed)", String(localized: "Letter hints")),
@@ -792,7 +1014,8 @@ private struct CrosswordInspectorView: View {
     let guesses: [CrosswordPuzzle.Cell: Character]
     let wrongCells: Set<CrosswordPuzzle.Cell>
     let currentEntry: CrosswordPuzzle.Entry?
-    let elapsedSeconds: Int
+    /// The solve time so far, read by the status bar once a second.
+    let elapsedSeconds: () -> Int
     let letterHintsUsed: Int
     let wordHintsUsed: Int
     let checksUsed: Int
@@ -803,6 +1026,7 @@ private struct CrosswordInspectorView: View {
     let checkMessage: String?
     let tint: Color
     @Binding var showsKeyboard: Bool
+    @Binding var isPencilMode: Bool
     let selectEntry: (CrosswordPuzzle.Entry) -> Void
     let moveToEntry: (Int) -> Void
     let toggleDirection: () -> Void
@@ -838,6 +1062,7 @@ private struct CrosswordInspectorView: View {
             }
 
             CrosswordInspectorTools(
+                isPencilMode: $isPencilMode,
                 canUseLetterHint: canUseLetterHint,
                 canUseWordHint: canUseWordHint,
                 isFilledWithMistakes: isFilledWithMistakes,
@@ -878,7 +1103,7 @@ private struct CrosswordInspectorView: View {
 private struct CrosswordStatusBar: View {
     let puzzle: CrosswordPuzzle
     let guesses: [CrosswordPuzzle.Cell: Character]
-    let elapsedSeconds: Int
+    let elapsedSeconds: () -> Int
     let hintsUsed: Int
     let checksUsed: Int
     let tint: Color
@@ -891,7 +1116,10 @@ private struct CrosswordStatusBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            item(GameTimeFormat.short(seconds: elapsedSeconds), label: "Time", systemImage: "timer")
+            // The only part of the panel that changes every second.
+            TimelineView(.periodic(from: .now, by: 1)) { _ in
+                item(GameTimeFormat.short(seconds: elapsedSeconds()), label: "Time", systemImage: "timer")
+            }
             Divider()
             item("\(completedEntries)/\(puzzle.entries.count)", label: "Answers", systemImage: "list.number")
             Divider()
@@ -997,6 +1225,7 @@ private struct CrosswordActiveClueCard: View {
 }
 
 private struct CrosswordInspectorTools: View {
+    @Binding var isPencilMode: Bool
     let canUseLetterHint: Bool
     let canUseWordHint: Bool
     let isFilledWithMistakes: Bool
@@ -1028,6 +1257,13 @@ private struct CrosswordInspectorTools: View {
                 Button("Check", systemImage: "checkmark.circle.fill", action: checkPuzzle)
                     .buttonStyle(.borderedProminent)
                     .tint(isFilledWithMistakes ? .orange : tint)
+
+                Toggle(isOn: $isPencilMode) {
+                    Label("Pencil", systemImage: "pencil")
+                }
+                .toggleStyle(.button)
+                .tint(tint)
+                .accessibilityHint("Letters you type now are drawn in gray as guesses")
             }
             .buttonStyle(.bordered)
             .frame(maxWidth: .infinity)
