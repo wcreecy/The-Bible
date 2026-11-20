@@ -134,7 +134,7 @@ struct GamePuzzleResultTests {
     // MARK: - Missed question history
 
     @Test
-    func bookOrderMissesAreKeptButNeverReviewable() {
+    func bookOrderMissesCanBeReviewed() {
         let entries = (0..<12).map { index in
             MissedGameQuestionStore.Entry(
                 id: UUID(),
@@ -148,10 +148,11 @@ struct GamePuzzleResultTests {
         }
         let store = MissedGameQuestionStore(entries: entries)
 
+        // Book Order misses are book names; a review asks a Missing Book question about each.
         #expect(store.containsMiss(game: .bookOrder, questionID: "Book 3"))
-        #expect(store.reviewCount(for: .bookOrder) == 0)
-        #expect(!store.reviewableGames().contains(.bookOrder))
-        #expect(!MissedGameQuestionStore.Entry.Game.reviewableCases.contains(.bookOrder))
+        #expect(store.reviewCount(for: .bookOrder) == 12)
+        #expect(store.reviewableGames().contains(.bookOrder))
+        #expect(MissedGameQuestionStore.Entry.Game.reviewableCases.contains(.bookOrder))
     }
 
     @Test

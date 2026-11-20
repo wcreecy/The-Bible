@@ -4,12 +4,21 @@ struct BookOrderGameView: View {
     @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
     @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var vm = BookOrderGameViewModel()
+    /// The Before or After?, Missing Book or Which Section? round being played, if any.
+    @State private var quickRound: BookOrderQuickRound?
     @State private var elapsedSeconds: Int = 0
     /// The solve clock only runs while the app is in front, so time away doesn't count.
     @State private var roundClock = GameActiveClock()
     @State private var isAppActive = true
     @State private var isTimerHidden: Bool = false
     @State private var showsPencilActions = false
+    @State private var isWide = false
+    /// Books missed earlier, for a review round; empty for a normal game.
+    private let reviewBooks: [String]
+
+    init(reviewBooks: [String] = []) {
+        self.reviewBooks = reviewBooks
+    }
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -33,88 +42,62 @@ struct BookOrderGameView: View {
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
+    /// The mode to play here: Classic on iPhone plays as Tap in Order.
+    private var mode: BookOrderMode { vm.playMode(isWide: isWide) }
+
     var body: some View {
         GeometryReader { geometry in
-        VStack {
-            if !vm.started {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        Text("Rearrange the books in the correct order.")
-                            .gameStartDescriptionStyle(title: "Book Order", systemImage: "list.number", tint: .purple)
-
-                        GameSplashLaunchLayout(
-                            tint: .purple,
-                            // A section too small for more than one level (like the Gospels) has
-                            // nothing to choose, so the picker is hidden.
-                            experienceLevel: vm.difficulty == .fullBible || vm.availableLevels.count < 2
-                                ? nil
-                                : experienceLevel,
-                            experienceDetails: GameExperienceDetails(
-                                learn: "Arrange \(vm.bookCount(for: .easy)) books.",
-                                standard: "Arrange \(vm.bookCount(for: .normal)) books.",
-                                challenge: "Arrange \(vm.bookCount(for: .hard)) books."
-                            ),
-                            startTitle: vm.hasSavedPuzzle ? "Resume" : "Start Game",
-                            startSubtitle: vm.hasSavedPuzzle ? "Pick up where you left off." : "Begin your challenge.",
-                            startAction: startGame
-                        ) {
-                            GameLobbyPreview(kind: .bookOrder, bookOrderBooks: vm.source.previewBookNames)
-                        } configuration: {
-                            BookOrderSetupControls(
-                                source: $vm.source,
-                                difficulty: $vm.difficulty
+            VStack {
+                if let quickRound {
+                    if quickRound.isFinished {
+                        ScrollView {
+                            GameRoundSummaryView(
+                                summary: GameRoundSummary(score: quickRound.session),
+                                tint: .purple,
+                                canTimeOut: false,
+                                resultNote: quickRoundNote(quickRound),
+                                onPlayAgain: { startQuickRound(quickRound.mode) },
+                                onChangeSettings: { self.quickRound = nil }
                             )
-                        } facts: {
-                            GameSplashFacts(
-                                first: (
-                                    "books.vertical",
-                                    vm.difficulty == .fullBible && vm.source == .both
-                                        ? String(localized: "All 66 books")
-                                        : String(localized: "\(vm.roundBookCount) books"),
-                                    String(localized: "This session")
-                                ),
-                                second: (
-                                    "stopwatch",
-                                    vm.savedBestTime.map(Self.formatted) ?? "—",
-                                    String(localized: "Best time")
-                                ),
-                                third: ("flame.fill", "\(vm.persistentBestStreak)", String(localized: "Best streak"))
-                            )
+                            .padding()
                         }
+                    } else {
+                        BookOrderQuickRoundView(round: quickRound)
                     }
-                    .padding()
+                } else if !vm.started {
+                    setupScreen
+                } else if mode == .classic {
+                    iPadGameBoard(availableHeight: geometry.size.height)
+                } else {
+                    tapBoard
                 }
-                .accessibilityIdentifier("bookOrderSetupScrollView")
-            } else if geometry.size.width >= 700 {
-                iPadGameBoard(availableHeight: geometry.size.height)
-            } else {
-                compactGameBoard
             }
-        }
+            .onAppear { isWide = geometry.size.width >= 700 }
+            .onChange(of: geometry.size.width) { _, width in isWide = width >= 700 }
         }
         .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                if vm.started {
+                if vm.started || quickRound != nil {
                     GameNavigationTitle(title: "Book Order", systemImage: "list.number", tint: .purple)
                 }
             }
         }
         .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore,
-                  vm.started else { return }
+            guard preferredPencilDoubleTapAction != .ignore, vm.started else { return }
             showsPencilActions = true
         }
         .onPencilSqueeze { phase in
-            guard preferredPencilSqueezeAction != .ignore,
-                  vm.started, case .ended = phase else { return }
+            guard preferredPencilSqueezeAction != .ignore, vm.started, case .ended = phase else { return }
             showsPencilActions = true
         }
         .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
             if !vm.showResult {
-                Button("Check Order", systemImage: "checkmark.circle", action: checkOrder)
+                if mode == .classic {
+                    Button("Check Order", systemImage: "checkmark.circle", action: checkOrder)
+                }
             } else {
                 Button("Next Puzzle", systemImage: "arrow.right.circle", action: advanceToNextRound)
             }
@@ -139,8 +122,10 @@ struct BookOrderGameView: View {
             isAppActive = active
             if active {
                 roundClock.resume()
+                quickRound?.resume()
             } else {
                 roundClock.pause()
+                quickRound?.pause()
             }
             elapsedSeconds = roundClock.elapsedSeconds()
             if !active {
@@ -148,67 +133,235 @@ struct BookOrderGameView: View {
                 vm.savePuzzle(elapsedSeconds: elapsedSeconds)
             }
         }
+        .onAppear {
+            // A review round goes straight to Missing Book questions about the missed books.
+            if !reviewBooks.isEmpty, quickRound == nil {
+                startQuickRound(.missingBook)
+            }
+        }
         .onDisappear {
             roundClock.pause()
+            quickRound?.stop()
             // An unchecked puzzle comes back next time instead of being skipped.
             vm.savePuzzle(elapsedSeconds: roundClock.elapsedSeconds())
             vm.onDisappear()
         }
     }
 
-    // MARK: - iPhone
+    // MARK: - Setup
 
-    private var compactGameBoard: some View {
-        VStack(spacing: 12) {
-            GameScoreboardCard(
-                currentCorrect: vm.session.score,
-                currentAnswered: vm.session.answered,
-                currentStreak: vm.session.streak,
-                game: .bookorder
-            )
+    private var setupScreen: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                Text("Learn the order of the books of the Bible.")
+                    .gameStartDescriptionStyle(title: "Book Order", systemImage: "list.number", tint: .purple)
 
-            HStack(alignment: .firstTextBaseline) {
-                Text(prompt)
-                    .font(.subheadline.weight(.semibold))
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Spacer(minLength: 8)
-
-                timerToggle
-            }
-
-            List {
-                ForEach(Array(vm.currentItems.enumerated()), id: \.element) { index, item in
-                    BookOrderRow(
-                        position: index + 1,
-                        book: item,
-                        isChecked: vm.showResult,
-                        needsMoving: vm.needsMoving(item),
-                        moveHint: vm.moveHint(for: item)
+                GameSplashLaunchLayout(
+                    tint: .purple,
+                    // A section too small for more than one level (like the Gospels) has
+                    // nothing to choose, so the picker is hidden.
+                    experienceLevel: (mode == .classic && vm.difficulty == .fullBible) || (mode.isPuzzle && vm.availableLevels.count < 2)
+                        ? nil
+                        : experienceLevel,
+                    experienceDetails: experienceDetails,
+                    startTitle: mode.isPuzzle && vm.hasSavedPuzzle ? "Resume" : "Start Game",
+                    startSubtitle: mode.isPuzzle && vm.hasSavedPuzzle ? "Pick up where you left off." : "Begin your challenge.",
+                    startAction: start
+                ) {
+                    GameLobbyPreview(kind: .bookOrder, bookOrderBooks: vm.source.previewBookNames)
+                } configuration: {
+                    BookOrderSetupControls(
+                        mode: $vm.mode,
+                        modes: BookOrderMode.available(isWide: isWide),
+                        source: $vm.source,
+                        difficulty: $vm.difficulty
                     )
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .listRowBackground(rowBackground(for: item))
-                    .hoverEffect(.lift)
-                    .moveDisabled(vm.showResult)
+                } facts: {
+                    setupFacts
                 }
-                .onMove(perform: vm.move)
             }
-            .environment(\.editMode, .constant(EditMode.active))
-            .listStyle(.plain)
-            .clipShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
-
-            if vm.showResult {
-                // Just the headline and stats, so the checked list keeps most of the screen.
-                // The marked rows already show which books to move and where they go.
-                resultSummary(compact: true)
-            }
-
-            actionButtons
+            .padding()
         }
-        .padding()
+        .accessibilityIdentifier("bookOrderSetupScrollView")
+        .onAppear { vm.preparePuzzle(mode) }
+        .onChange(of: vm.mode) { _, _ in vm.preparePuzzle(mode) }
     }
 
-    // MARK: - iPad
+    private var experienceDetails: GameExperienceDetails {
+        switch mode {
+        case .tapInOrder, .classic:
+            GameExperienceDetails(
+                learn: "\(vm.bookCount(for: .easy)) books.",
+                standard: "\(vm.bookCount(for: .normal)) books.",
+                challenge: "\(vm.bookCount(for: .hard)) books."
+            )
+        case .beforeAfter:
+            GameExperienceDetails(
+                learn: "Books far apart.",
+                standard: "Books a few apart.",
+                challenge: "Books next to each other."
+            )
+        case .missingBook:
+            GameExperienceDetails(
+                learn: "Wrong choices from anywhere in the Bible.",
+                standard: "Wrong choices from the same Testament.",
+                challenge: "Wrong choices from the books nearby."
+            )
+        case .whichSection:
+            GameExperienceDetails(
+                learn: "Books from the whole Bible.",
+                standard: "Books from the whole Bible.",
+                challenge: "Books from the whole Bible."
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var setupFacts: some View {
+        switch mode {
+        case .tapInOrder, .classic:
+            GameSplashFacts(
+                first: (
+                    "books.vertical",
+                    mode == .classic && vm.difficulty == .fullBible && vm.source == .both
+                        ? String(localized: "All 66 books")
+                        : String(localized: "\(vm.roundBookCount) books"),
+                    String(localized: "This session")
+                ),
+                second: ("stopwatch", vm.savedBestTime.map(Self.formatted) ?? "—", String(localized: "Best time")),
+                third: ("flame.fill", "\(vm.persistentBestStreak)", String(localized: "Best streak"))
+            )
+        case .beforeAfter:
+            GameSplashFacts(
+                first: ("timer", "\(BookOrderQuickRound.beforeAfterSeconds) sec", String(localized: "Per round")),
+                second: ("hand.tap.fill", String(localized: "Tap"), String(localized: "The first book")),
+                third: ("trophy", "\(previewRound(.beforeAfter).bestBeforeAfterScore)", String(localized: "Best score"))
+            )
+        case .missingBook, .whichSection:
+            GameSplashFacts(
+                first: ("number", "\(BookOrderQuickRound.questionsPerRound) questions", String(localized: "This session")),
+                second: ("square.grid.2x2", mode == .missingBook ? "4" : "8", String(localized: "Choices")),
+                third: ("timer", String(localized: "No limit"), String(localized: "Per question"))
+            )
+        }
+    }
+
+    /// A round with the current settings, for reading its saved best score.
+    private func previewRound(_ mode: BookOrderMode) -> BookOrderQuickRound {
+        BookOrderQuickRound(mode: mode, difficulty: vm.difficulty, source: vm.source)
+    }
+
+    private func start() {
+        if mode.isPuzzle {
+            vm.preparePuzzle(mode)
+            startGame()
+        } else {
+            startQuickRound(mode)
+        }
+    }
+
+    private func startQuickRound(_ mode: BookOrderMode) {
+        let round = BookOrderQuickRound(
+            mode: mode,
+            difficulty: vm.difficulty,
+            source: vm.source,
+            reviewBooks: reviewBooks
+        )
+        round.start()
+        quickRound = round
+    }
+
+    private func quickRoundNote(_ round: BookOrderQuickRound) -> String? {
+        guard round.mode == .beforeAfter else { return nil }
+        return String(localized: "\(round.session.score) right in \(BookOrderQuickRound.beforeAfterSeconds) seconds · Best \(round.bestBeforeAfterScore)")
+    }
+
+    // MARK: - Tap in Order
+
+    private var tapBoard: some View {
+        ScrollView {
+            VStack(spacing: 14) {
+                GameScoreboardCard(
+                    currentCorrect: vm.session.score,
+                    currentAnswered: vm.session.answered,
+                    currentStreak: vm.session.streak,
+                    game: .bookorder,
+                    style: isWide ? .dashboard : .compact
+                )
+
+                HStack(alignment: .firstTextBaseline) {
+                    Text(tapPrompt)
+                        .font(.subheadline.weight(.semibold))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 8)
+                    timerToggle
+                }
+
+                BookOrderPlacedRow(placed: vm.tapPlaced, total: vm.correctOrder.count)
+
+                if let hint = vm.wrongTapHint, !vm.showResult {
+                    Label(hint, systemImage: "exclamationmark.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.orange)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .id(vm.wrongTapCount)
+                        .transition(.opacity)
+                }
+
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: isWide ? 170 : 140), spacing: 10)], spacing: 10) {
+                    ForEach(vm.currentItems, id: \.self) { book in
+                        BookOrderTile(
+                            book: book,
+                            isPlaced: vm.tapPlaced.contains(book),
+                            wasMissed: vm.wrongTapBooks.contains(book)
+                        ) {
+                            vm.tap(book, elapsedSeconds: roundClock.elapsedSeconds())
+                            if vm.showResult {
+                                roundClock.pause()
+                                elapsedSeconds = roundClock.elapsedSeconds()
+                            }
+                        }
+                        .disabled(vm.showResult)
+                    }
+                }
+
+                if vm.showResult {
+                    resultSummary(compact: !isWide)
+                    HStack(spacing: 12) {
+                        Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+
+                        Button("Next Puzzle", systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
+                            .buttonStyle(GameProminentButtonStyle(tint: .purple))
+                    }
+                } else if debugAutoWinEnabled, !vm.correctOrder.isEmpty {
+                    Button("WIN") {
+                        for book in vm.correctOrder where !vm.tapPlaced.contains(book) {
+                            vm.tap(book, elapsedSeconds: roundClock.elapsedSeconds())
+                        }
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .red))
+                    .accessibilityLabel("Win this round")
+                }
+            }
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .animation(.snappy, value: vm.tapPlaced)
+        }
+    }
+
+    private var tapPrompt: String {
+        let count = vm.correctOrder.count
+        return switch vm.source {
+        case .both: String(localized: "Tap these \(count) books in Bible order.")
+        case .ot: String(localized: "Tap these \(count) Old Testament books in Bible order.")
+        case .nt: String(localized: "Tap these \(count) New Testament books in Bible order.")
+        default: String(localized: "Tap these \(count) \(String(localized: vm.source.title)) books in Bible order.")
+        }
+    }
+
+    // MARK: - iPad Classic
 
     private func iPadGameBoard(availableHeight: CGFloat) -> some View {
         VStack(spacing: 12) {
@@ -420,10 +573,14 @@ struct BookOrderGameView: View {
         return GamePuzzleResultCard(
             title: vm.wasCorrect
                 ? String(localized: "Perfect Order")
-                : String(localized: "\(vm.booksInOrder) of \(total) in order"),
+                : (vm.puzzleMode == .tapInOrder
+                    ? String(localized: "\(vm.booksInOrder) of \(total) right the first time")
+                    : String(localized: "\(vm.booksInOrder) of \(total) in order")),
             subtitle: vm.wasCorrect
                 ? String(localized: "All \(total) books are in the right order.")
-                : String(localized: "Books marked in red are added to your missed list."),
+                : (vm.puzzleMode == .tapInOrder
+                    ? String(localized: "Books you tapped too early are added to your missed list.")
+                    : String(localized: "Books marked in red are added to your missed list.")),
             systemImage: vm.wasCorrect ? "checkmark.seal.fill" : "arrow.up.arrow.down.circle.fill",
             tint: vm.wasCorrect ? .green : .red,
             facts: [
@@ -538,134 +695,6 @@ struct BookOrderGameView: View {
         roundClock.pause()
         elapsedSeconds = 0
         vm.endGame()
-    }
-}
-
-private struct BookOrderRow: View {
-    let position: Int
-    let book: String
-    let isChecked: Bool
-    /// True once checked if this book was out of order.
-    let needsMoving: Bool
-    /// Where the book belongs, e.g. "Goes after Micah".
-    let moveHint: String?
-
-    private var isInPlace: Bool { !needsMoving }
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Text("\(position)")
-                .font(.caption.monospacedDigit().weight(.semibold))
-                .foregroundStyle(.secondary)
-                .frame(width: 24, alignment: .trailing)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(book)
-                    .font(.subheadline.weight(.medium))
-
-                if isChecked, let moveHint {
-                    Text(moveHint)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                }
-            }
-
-            Spacer(minLength: 8)
-
-            if isChecked {
-                Image(systemName: isInPlace ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .foregroundStyle(isInPlace ? .green : .red)
-            }
-        }
-        .accessibilityElement(children: .combine)
-    }
-}
-
-private struct BookOrderSetupControls: View {
-    @Binding var source: BookSourceScope
-    @Binding var difficulty: BookOrderDifficulty
-
-    private static let sectionOptions = BookSourceScope.allCases.filter { !$0.isCategory }
-        + BookSourceScope.allCases.filter(\.isCategory)
-
-    private var isFullBibleMode: Bool {
-        difficulty == .fullBible
-    }
-
-    /// True for the full 66-book round; false for the shorter section rounds.
-    private var fullBibleSelection: Binding<Bool> {
-        Binding(
-            get: { isFullBibleMode },
-            set: { isFull in
-                if isFull {
-                    source = .both
-                    difficulty = .fullBible
-                } else {
-                    difficulty = .normal
-                }
-            }
-        )
-    }
-
-    private var sectionSelection: Binding<BookSourceScope> {
-        Binding(
-            get: { source },
-            set: { option in
-                // The difficulty stays as chosen; a smaller section plays it at the level it allows.
-                source = option
-            }
-        )
-    }
-
-    var body: some View {
-        GameSettingsGroup {
-            GameChoiceSetting(
-                title: "Round Type",
-                systemImage: "rectangle.3.group.fill",
-                tint: .purple,
-                selection: fullBibleSelection,
-                choices: [
-                    GameChoice(
-                        value: false,
-                        title: "Quick Rounds",
-                        detail: "Select section of the Bible.",
-                        icon: "arrow.triangle.2.circlepath"
-                    ),
-                    GameChoice(
-                        value: true,
-                        title: "Full Bible Order",
-                        detail: "Arrange all 66 books.",
-                        icon: "books.vertical.fill"
-                    )
-                ]
-            )
-
-            if !isFullBibleMode {
-                GameChoiceSetting(
-                    title: "Part of the Bible",
-                    systemImage: "books.vertical.fill",
-                    tint: .purple,
-                    selection: sectionSelection,
-                    choices: Self.sectionOptions.map {
-                        GameChoice(
-                            value: $0,
-                            title: $0.title,
-                            detail: "\($0.bookNames.count) books",
-                            icon: icon(for: $0)
-                        )
-                    }
-                )
-            }
-        }
-    }
-
-    private func icon(for option: BookSourceScope) -> String {
-        switch option {
-        case .both: "books.vertical.fill"
-        case .ot: "scroll.fill"
-        case .nt: "book.closed.fill"
-        default: "book.fill"
-        }
     }
 }
 

@@ -16,12 +16,13 @@ final class MissedGameQuestionStore {
             case whoAmI
             case hangman
             case scramble
-            /// Books placed out of order. Kept as study history only; never offered as a review round.
+            /// Books placed out of order or missed in a quick round, saved by book name. A review
+            /// asks a Missing Book question about each.
             case bookOrder
 
             /// Whether misses from this game can be replayed in a review round.
             /// Reverse Quiz history remains stored for a future review mode, but is not offered yet.
-            var isReviewable: Bool { self != .bookOrder && self != .quizReverse }
+            var isReviewable: Bool { self != .quizReverse }
 
             /// The games that offer review rounds.
             static var reviewableCases: [Game] { allCases.filter(\.isReviewable) }
@@ -156,7 +157,7 @@ final class MissedGameQuestionStore {
 
     /// How many missed questions a game needs before it offers a review round, and how many
     /// a round asks. The one place this number is set.
-    static let reviewRoundSize = 10
+    nonisolated static let reviewRoundSize = 10
 
     func reviewableGames(minimumQuestions: Int = reviewRoundSize) -> [Entry.Game] {
         Entry.Game.reviewableCases.filter { reviewCount(for: $0) >= minimumQuestions }

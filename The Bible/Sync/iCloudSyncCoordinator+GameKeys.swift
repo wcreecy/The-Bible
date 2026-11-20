@@ -234,6 +234,16 @@ extension iCloudSyncCoordinator {
                 keys.append("bookorderPersistentBestStreak_\(section.rawValue)_\(d)")
             }
         }
+        // Tap in Order and the quick rounds keep their own streak per section and difficulty.
+        let modeVariants = ["tap"] + BookOrderMode.allCases.filter { !$0.isPuzzle }.map(\.rawValue)
+        for mode in modeVariants {
+            for section in BookSourceScope.allCases {
+                for d in ["easy","normal","hard"] {
+                    keys.append("bookorderPersistentStreak_\(mode)_\(section.rawValue)_\(d)")
+                    keys.append("bookorderPersistentBestStreak_\(mode)_\(section.rawValue)_\(d)")
+                }
+            }
+        }
         return keys
     }()
 

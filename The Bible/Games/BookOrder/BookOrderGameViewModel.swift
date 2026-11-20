@@ -18,6 +18,15 @@ enum BookOrderDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Books in a Tap in Order puzzle: enough to fill the screen without scrolling.
+    var tapRunLength: Int {
+        switch self {
+        case .easy: 5
+        case .normal: 7
+        case .hard, .fullBible: 9
+        }
+    }
+
     /// Books in a round, or nil for the full Bible mode.
     var runLength: Int? {
         switch self {
@@ -130,6 +139,33 @@ final class BookOrderGameViewModel {
     private static let sourceKey = AppStorageKey.bookOrderSource
     private static let lastSeenKey = AppStorageKey.bookOrderBookLastSeen
     private static let savedPuzzlesKey = AppStorageKey.bookOrderSavedPuzzles
+    private static let modeKey = AppStorageKey.bookOrderMode
+
+    /// How the game is played. Classic is iPad-only; `playMode(isWide:)` stands it in for
+    /// Tap in Order on iPhone.
+    var mode: BookOrderMode = BookOrderMode(
+        rawValue: UserDefaults.standard.string(forKey: BookOrderGameViewModel.modeKey) ?? ""
+    ) ?? .tapInOrder {
+        didSet { UserDefaults.standard.set(mode.rawValue, forKey: Self.modeKey) }
+    }
+
+    /// The mode to play on this screen size: Classic needs the room of an iPad.
+    func playMode(isWide: Bool) -> BookOrderMode {
+        mode == .classic && !isWide ? .tapInOrder : mode
+    }
+
+    /// The puzzle being played: Tap in Order or Classic.
+    private(set) var puzzleMode: BookOrderMode = .tapInOrder
+
+    // Tap in Order
+    /// Books tapped in order so far.
+    private(set) var tapPlaced: [String] = []
+    /// Books tapped too early, which count as missed.
+    private(set) var wrongTapBooks: Set<String> = []
+    /// What the last wrong tap got wrong, e.g. "Amos comes after Joel".
+    private(set) var wrongTapHint: String?
+    /// Changes on each wrong tap, so the view can shake the tile.
+    private(set) var wrongTapCount = 0
 
     var started: Bool = false
     var currentItems: [String] = []
@@ -185,19 +221,39 @@ final class BookOrderGameViewModel {
     }
 
     var effectiveDifficulty: BookOrderDifficulty {
-        Self.effectiveDifficulty(difficulty, bookCount: source.bookNames.count)
+        puzzleMode == .tapInOrder
+            ? Self.tapEffectiveDifficulty(difficulty, bookCount: source.bookNames.count)
+            : Self.effectiveDifficulty(difficulty, bookCount: source.bookNames.count)
+    }
+
+    /// The same for Tap in Order, which has no full-Bible puzzle: a small section plays at the
+    /// shortest level that uses all its books.
+    static func tapEffectiveDifficulty(_ difficulty: BookOrderDifficulty, bookCount: Int) -> BookOrderDifficulty {
+        let level = difficulty == .fullBible ? .hard : difficulty
+        guard level.tapRunLength >= bookCount else { return level }
+        return roundLevels.first { $0.tapRunLength >= bookCount } ?? level
     }
 
     /// The levels that give different puzzles for the chosen section. Gospels (4 books) has only Easy.
     var availableLevels: [BookOrderDifficulty] {
         let bookCount = source.bookNames.count
-        return Self.roundLevels.filter { Self.effectiveDifficulty($0, bookCount: bookCount) == $0 }
+        return puzzleMode == .tapInOrder
+            ? Self.roundLevels.filter { Self.tapEffectiveDifficulty($0, bookCount: bookCount) == $0 }
+            : Self.roundLevels.filter { Self.effectiveDifficulty($0, bookCount: bookCount) == $0 }
     }
 
     /// Books in a puzzle at a level for the chosen section.
     func bookCount(for level: BookOrderDifficulty) -> Int {
         let available = source.bookNames.count
-        return min(level.runLength ?? available, available)
+        let length = puzzleMode == .tapInOrder ? level.tapRunLength : (level.runLength ?? available)
+        return min(length, available)
+    }
+
+    /// Sets which puzzle the settings describe, before starting it or showing its setup.
+    func preparePuzzle(_ mode: BookOrderMode) {
+        guard mode.isPuzzle else { return }
+        puzzleMode = mode
+        session.syncSavedBest(from: persistentStreak)
     }
 
     /// Books in each puzzle for the current settings.
@@ -207,7 +263,9 @@ final class BookOrderGameViewModel {
 
     /// Whole Bible keeps the original per-difficulty keys, so existing streaks carry over.
     private var settingsVariant: String {
-        source == .both ? effectiveDifficulty.rawValue : "\(source.rawValue)_\(effectiveDifficulty.rawValue)"
+        let classic = source == .both ? effectiveDifficulty.rawValue : "\(source.rawValue)_\(effectiveDifficulty.rawValue)"
+        // Tap in Order keeps its own streak and best time; its puzzles are a different size.
+        return puzzleMode == .tapInOrder ? "tap_\(source.rawValue)_\(effectiveDifficulty.rawValue)" : classic
     }
 
     private var persistentStreak: PersistentGameStreak {
@@ -216,7 +274,11 @@ final class BookOrderGameViewModel {
 
     var persistentBestStreak: Int { persistentStreak.best }
 
-    private var bestTimeKey: String { "bookorderBestTime_\(source.rawValue)_\(effectiveDifficulty.rawValue)" }
+    private var bestTimeKey: String {
+        puzzleMode == .tapInOrder
+            ? "bookorderBestTime_tap_\(source.rawValue)_\(effectiveDifficulty.rawValue)"
+            : "bookorderBestTime_\(source.rawValue)_\(effectiveDifficulty.rawValue)"
+    }
 
     /// Fastest fully correct puzzle for the current settings.
     var savedBestTime: Int? {
@@ -232,9 +294,16 @@ final class BookOrderGameViewModel {
         let correctOrder: [String]
         let currentItems: [String]
         let elapsedSeconds: Int
+        /// Tap in Order: how many books were tapped in order, and which were tapped too early.
+        var placedCount: Int?
+        var wrongTapBooks: [String]?
     }
 
-    private var savedPuzzleKey: String { "\(source.rawValue)_\(effectiveDifficulty.rawValue)" }
+    private var savedPuzzleKey: String {
+        puzzleMode == .tapInOrder
+            ? "tap_\(source.rawValue)_\(effectiveDifficulty.rawValue)"
+            : "\(source.rawValue)_\(effectiveDifficulty.rawValue)"
+    }
 
     private static func loadSavedPuzzles() -> [String: SavedPuzzle] {
         guard let data = UserDefaults.standard.data(forKey: savedPuzzlesKey) else { return [:] }
@@ -268,7 +337,9 @@ final class BookOrderGameViewModel {
         puzzles[savedPuzzleKey] = SavedPuzzle(
             correctOrder: correctOrder,
             currentItems: currentItems,
-            elapsedSeconds: elapsedSeconds
+            elapsedSeconds: elapsedSeconds,
+            placedCount: puzzleMode == .tapInOrder ? tapPlaced.count : nil,
+            wrongTapBooks: puzzleMode == .tapInOrder ? Array(wrongTapBooks) : nil
         )
         Self.storeSavedPuzzles(puzzles)
     }
@@ -294,6 +365,8 @@ final class BookOrderGameViewModel {
             resetResult()
             correctOrder = puzzle.correctOrder
             currentItems = puzzle.currentItems
+            tapPlaced = Array(puzzle.correctOrder.prefix(puzzle.placedCount ?? 0))
+            wrongTapBooks = Set(puzzle.wrongTapBooks ?? [])
             return puzzle.elapsedSeconds
         }
         nextRound()
@@ -322,6 +395,9 @@ final class BookOrderGameViewModel {
         bestTimeComparison = nil
         booksToReview = []
         isNewBestStreak = false
+        tapPlaced = []
+        wrongTapBooks = []
+        wrongTapHint = nil
     }
 
     /// Picks a run of books in a row from the chosen part and shuffles it.
@@ -408,16 +484,72 @@ final class BookOrderGameViewModel {
         booksToReview.first { $0.book == book }?.placementHint
     }
 
+    // MARK: - Tap in Order
+
+    /// The next book to tap, or nil once the puzzle is done.
+    var nextBookToTap: String? {
+        correctOrder.indices.contains(tapPlaced.count) ? correctOrder[tapPlaced.count] : nil
+    }
+
+    /// A tap on a book tile. The right next book joins the row; any other is a mistake, and
+    /// the puzzle says where that book goes. Tapping the last book finishes the puzzle.
+    func tap(_ book: String, elapsedSeconds: Int) {
+        guard puzzleMode == .tapInOrder, !showResult, !tapPlaced.contains(book), let next = nextBookToTap else { return }
+        if book == next {
+            tapPlaced.append(book)
+            wrongTapHint = nil
+            Haptics.selection()
+            if tapPlaced.count == correctOrder.count {
+                finishTapPuzzle(elapsedSeconds: elapsedSeconds)
+            }
+        } else {
+            wrongTapBooks.insert(book)
+            // Where the tapped book goes, by its neighbors in Bible order.
+            if let index = correctOrder.firstIndex(of: book) {
+                wrongTapHint = BookOrderReviewItem(
+                    book: book,
+                    previousBook: index > 0 ? correctOrder[index - 1] : nil,
+                    nextBook: index + 1 < correctOrder.count ? correctOrder[index + 1] : nil
+                ).hint
+            } else {
+                wrongTapHint = String(localized: "\(book) isn't next")
+            }
+            wrongTapCount += 1
+            Haptics.error()
+        }
+    }
+
+    private func finishTapPuzzle(elapsedSeconds: Int) {
+        let missed = wrongTapBooks
+        booksInOrder = correctOrder.count - missed.count
+        booksToReview = correctOrder.indices.compactMap { index in
+            guard missed.contains(correctOrder[index]) else { return nil }
+            return BookOrderReviewItem(
+                book: correctOrder[index],
+                previousBook: index > 0 ? correctOrder[index - 1] : nil,
+                nextBook: index + 1 < correctOrder.count ? correctOrder[index + 1] : nil
+            )
+        }
+        finishPuzzle(elapsedSeconds: elapsedSeconds, wasCorrect: missed.isEmpty)
+    }
+
+    // MARK: - Classic
+
     func checkOrder(elapsedSeconds: Int) {
         guard !showResult, !currentItems.isEmpty, !correctOrder.isEmpty else { return }
 
         booksInOrder = Self.inOrderPositions(current: currentItems, correct: correctOrder).count
-        wasCorrect = currentItems == correctOrder
+        booksToReview = Self.reviewItems(current: currentItems, correct: correctOrder)
+        finishPuzzle(elapsedSeconds: elapsedSeconds, wasCorrect: currentItems == correctOrder)
+    }
+
+    /// Records a finished puzzle: the streak, stats, best time and missed books.
+    private func finishPuzzle(elapsedSeconds: Int, wasCorrect: Bool) {
+        self.wasCorrect = wasCorrect
         lastTimeSeconds = elapsedSeconds
         let bestStreakBefore = persistentStreak.best
         session.record(correct: wasCorrect, savedStreak: persistentStreak)
         isNewBestStreak = persistentStreak.best > bestStreakBefore
-        booksToReview = Self.reviewItems(current: currentItems, correct: correctOrder)
         bestTimeComparison = GameBestTimeComparison(
             seconds: max(1, elapsedSeconds),
             previousBest: savedBestTime,

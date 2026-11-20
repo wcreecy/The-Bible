@@ -128,8 +128,9 @@ final class BookOrderQuickRound {
 
     var isReview: Bool { !reviewBooks.isEmpty }
 
+    /// Which Section? always uses the whole Bible, since one section's books would all have the same answer.
     private var books: [String] {
-        isReview ? BibleCanon.fallbackCanon : source.bookNames
+        isReview || mode == .whichSection ? BibleCanon.fallbackCanon : source.bookNames
     }
 
     var current: BookOrderQuickQuestion? {

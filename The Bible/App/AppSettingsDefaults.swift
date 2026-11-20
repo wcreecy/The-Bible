@@ -52,6 +52,7 @@ enum AppSettingsDefaults {
             AppStorageKey.beatTheClockDifficulty: BeatTheClockDifficulty.normal.rawValue,
             AppStorageKey.beatTheClockMode: BeatTheClockMode.classic.rawValue,
             AppStorageKey.whoAmIMode: WhoAmIGameViewModel.Mode.clueToName.rawValue,
+            AppStorageKey.bookOrderMode: BookOrderMode.tapInOrder.rawValue,
             AppStorageKey.whoAmIDifficulty: WhoAmIGameViewModel.Difficulty.normal.rawValue,
             AppStorageKey.hangmanDifficulty: HangmanDifficulty.normal.rawValue,
             AppStorageKey.hangmanTheme: HangmanTheme.all.rawValue,

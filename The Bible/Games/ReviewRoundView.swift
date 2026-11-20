@@ -104,8 +104,8 @@ private struct ReviewRoundSession: View {
         case .scramble:
             ScrambleGameView(reviewQuestionIDs: questionIDs)
         case .bookOrder:
-            // Book Order misses are study history only and never offered for review.
-            EmptyView()
+            // Book Order misses are book names; the review asks a Missing Book question about each.
+            BookOrderGameView(reviewBooks: Array(questionIDs))
         }
     }
 }

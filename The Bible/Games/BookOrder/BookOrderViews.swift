@@ -44,7 +44,7 @@ struct BookOrderSetupControls: View {
     var body: some View {
         GameSettingsGroup {
             GameChoiceSetting(
-                title: "How to play",
+                title: "Game Type",
                 systemImage: "list.number",
                 tint: .purple,
                 selection: modeSelection,
