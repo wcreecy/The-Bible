@@ -177,7 +177,7 @@ struct ReviewRoundProgress: Identifiable {
     let count: Int
 
     var id: String { game.rawValue }
-    var isReady: Bool { count >= 10 }
+    var isReady: Bool { count >= MissedGameQuestionStore.reviewRoundSize }
 
     var title: LocalizedStringResource {
         switch game {

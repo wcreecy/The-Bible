@@ -163,7 +163,7 @@ struct ReviewRoundStatusRow: View {
     private var statusText: LocalizedStringResource {
         hasEligibleGame
             ? "Ready: replay the questions you missed."
-            : "Unlocks once a game has 10 missed questions."
+            : "Unlocks once a game has \(MissedGameQuestionStore.reviewRoundSize) missed questions."
     }
 
     var body: some View {
@@ -190,7 +190,7 @@ struct ReviewRoundStatusRow: View {
                     Text(item.title)
                         .font(.caption)
                     Spacer()
-                    Text("\(item.count) / 10")
+                    Text("\(item.count) / \(MissedGameQuestionStore.reviewRoundSize)")
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(item.isReady ? .purple : .secondary)
 
@@ -209,7 +209,7 @@ struct ReviewRoundStatusRow: View {
         .padding(.vertical, usesExpandedLayout ? 9 : 4)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(hasEligibleGame ? "Review Round, ready" : "Review Round, locked")
-        .accessibilityHint("Requires 10 replayable missed questions in one game.")
+        .accessibilityHint("Requires \(MissedGameQuestionStore.reviewRoundSize) replayable missed questions in one game.")
         .accessibilityIdentifier(hasEligibleGame ? "reviewRoundReady" : "reviewRoundLocked")
     }
 }

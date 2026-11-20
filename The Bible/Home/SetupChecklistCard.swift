@@ -356,6 +356,7 @@ struct SetupChecklistCard: View {
 }
 
 private struct OnboardingStepRow: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let step: SetupChecklistCard.Step
     let isComplete: Bool
     let title: String?
@@ -376,17 +377,22 @@ private struct OnboardingStepRow: View {
         // card's full width in narrow columns (such as iPad portrait).
         VStack(alignment: .leading, spacing: 6) {
             Button(action: action) {
-                HStack(alignment: .top, spacing: Self.columnSpacing) {
-                    Image(systemName: isComplete ? "checkmark.circle.fill" : "circle")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(isComplete ? .green : .secondary)
-                        .frame(width: iconColumnWidth)
-                        .accessibilityHidden(true)
+                let rowLayout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: Self.columnSpacing))
+                    : AnyLayout(HStackLayout(alignment: .top, spacing: Self.columnSpacing))
+                rowLayout {
+                    HStack(spacing: Self.columnSpacing) {
+                        Image(systemName: isComplete ? "checkmark.circle.fill" : "circle")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(isComplete ? .green : .secondary)
+                            .frame(width: iconColumnWidth)
+                            .accessibilityHidden(true)
 
-                    Image(systemName: step.systemImage)
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(isComplete ? Color.secondary : Color.accentColor)
-                        .frame(width: iconColumnWidth)
+                        Image(systemName: step.systemImage)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(isComplete ? Color.secondary : Color.accentColor)
+                            .frame(width: iconColumnWidth)
+                    }
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(title ?? String(localized: step.title))
@@ -399,11 +405,13 @@ private struct OnboardingStepRow: View {
                             .strikethrough(isComplete)
                     }
 
-                    Spacer(minLength: 4)
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        Spacer(minLength: 4)
 
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                    }
                 }
                 .contentShape(Rectangle())
             }
@@ -417,7 +425,7 @@ private struct OnboardingStepRow: View {
                     .controlSize(.small)
                     // Matches the card's Hide button and progress bar.
                     .tint(.orange)
-                    .padding(.leading, textLeadingInset)
+                    .padding(.leading, dynamicTypeSize.isAccessibilitySize ? 0 : textLeadingInset)
                     .accessibilityHint("Marks this optional step complete")
             }
         }

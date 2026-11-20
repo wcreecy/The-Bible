@@ -114,36 +114,6 @@ enum BibleTriviaLifeline: CaseIterable, Hashable {
     static let extraSeconds = 10
 }
 
-/// The passage a question cites, loaded for the verse hint and shown after answering.
-struct BibleTriviaPassage: Equatable, Sendable {
-    struct Verse: Equatable, Sendable {
-        let number: Int
-        let text: String
-    }
-
-    let bookName: String
-    let chapter: Int
-    /// Up to three verses from the start of the reference.
-    let verses: [Verse]
-    /// True when the reference runs past the verses shown.
-    let isTruncated: Bool
-
-    /// "Genesis 6:13–15" for the verses shown.
-    var title: String {
-        guard let first = verses.first, let last = verses.last else { return "\(bookName) \(chapter)" }
-        return first.number == last.number
-            ? "\(bookName) \(chapter):\(first.number)"
-            : "\(bookName) \(chapter):\(first.number)–\(last.number)"
-    }
-
-    /// The verses run together, each after its number.
-    var text: String {
-        verses.count == 1
-            ? verses[0].text
-            : verses.map { "\($0.number) \($0.text)" }.joined(separator: " ")
-    }
-}
-
 enum BibleTriviaDifficulty: String, CaseIterable, Identifiable, Codable {
     case easy
     case normal

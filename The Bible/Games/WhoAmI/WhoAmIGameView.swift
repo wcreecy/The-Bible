@@ -4,25 +4,19 @@ struct WhoAmIGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var vm: WhoAmIGameViewModel
-
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @State private var showsPencilActions = false
+    @FocusState private var isKeyboardFocused: Bool
     init(reviewQuestionIDs: Set<String> = []) {
         isReviewRound = !reviewQuestionIDs.isEmpty
         _vm = State(initialValue: WhoAmIGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
     }
-    @State private var maxChoiceHeight: CGFloat = 0
     @State private var timerOnLeading = false
     @State private var usesMutedTimerStyle = false
     private let isReviewRound: Bool
 
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
-
-    private struct ChoiceHeightKey: PreferenceKey {
-        static var defaultValue: CGFloat = 0
-        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-            value = max(value, nextValue())
-        }
-    }
 
     private var promptIsName: Bool { vm.currentPromptIsName }
 
@@ -56,6 +50,7 @@ struct WhoAmIGameView: View {
                             summary: GameRoundSummary(score: vm.session),
                             tint: .brown,
                             canTimeOut: vm.difficulty.timeLimit > 0,
+                            resultNote: vm.bonusNote,
                             onPlayAgain: vm.startGame,
                             onChangeSettings: vm.returnToSetup
                         )
@@ -77,6 +72,17 @@ struct WhoAmIGameView: View {
             .padding()
         }
         .tabBarContentClearance()
+        // Next pinned above the tab bar on iPhone, so the result and verse never push it out of reach.
+        .pinnedGameActionButton(isShown: horizontalSizeClass != .regular && vm.started && !vm.isComplete && vm.roundOver) {
+            roundActions
+        }
+        // A hardware keyboard answers with 1–4 or A–D, and Return goes on.
+        .focusable()
+        .focused($isKeyboardFocused)
+        .onKeyPress(phases: .down, action: handleKeyPress)
+        .onChange(of: vm.started) { _, started in
+            isKeyboardFocused = started
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -89,9 +95,40 @@ struct WhoAmIGameView: View {
         .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
         .onAppear { vm.onAppear() }
         .onDisappear { vm.endRoundWhenLeavingScreen() }
-        .onChange(of: vm.choices) { _, _ in
-            maxChoiceHeight = 0
+        // The person's verses load with each question, ready for after answering.
+        .task(id: vm.questionNumber) {
+            await vm.loadPassage()
         }
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore, vm.started, !vm.isComplete, vm.roundOver else { return }
+            vm.nextRound()
+        }
+        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+            if vm.roundOver {
+                Button(vm.isLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: vm.nextRound)
+            } else if vm.canUseHint {
+                Button(vm.hintTitle, systemImage: "lightbulb", action: vm.useHint)
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        guard vm.started, !vm.isComplete, !vm.isPaused, vm.current != nil else { return .ignored }
+
+        if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
+            guard vm.roundOver else { return .ignored }
+            vm.nextRound()
+            return .handled
+        }
+
+        guard !vm.roundOver, keyPress.modifiers.isEmpty,
+              let index = GameAnswerLetter.index(forKey: keyPress.characters),
+              vm.choices.indices.contains(index) else {
+            return .ignored
+        }
+        vm.select(vm.choices[index])
+        return .handled
     }
 
     // MARK: - Setup
@@ -141,12 +178,21 @@ struct WhoAmIGameView: View {
     @ViewBuilder
     private var reveal: some View {
         if vm.roundOver, let person = vm.current {
-            WhoAmIRevealCard(
-                wasCorrect: vm.selectedChoice == vm.correctChoice,
-                wasTimedOut: vm.wasTimedOut,
-                person: person,
-                secondsRemaining: vm.remainingSeconds
-            )
+            VStack(spacing: 12) {
+                WhoAmIRevealCard(
+                    wasCorrect: vm.selectedChoice == vm.correctChoice,
+                    wasTimedOut: vm.wasTimedOut,
+                    person: person,
+                    secondsRemaining: vm.remainingSeconds,
+                    earnedSpeedBonus: vm.earnedSpeedBonus
+                )
+
+                if let verse = vm.displayedVerse {
+                    GameVerseCard(verse: verse)
+                        .transition(.opacity.combined(with: .scale(scale: 0.97)))
+                }
+            }
+            .animation(.snappy, value: vm.displayedVerse)
         }
     }
 
@@ -217,57 +263,23 @@ struct WhoAmIGameView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(promptIsName ? "Which clue describes them?" : "Who am I?")
                 .font(.headline)
-            LazyVGrid(columns: compactChoiceColumns, spacing: 12) {
-                ForEach(vm.choices, id: \.self) { choice in
-                    Button {
-                        vm.select(choice)
-                    } label: {
-                        Text(choice)
-                            .font(promptIsName ? .footnote : .body.weight(.semibold))
-                            .multilineTextAlignment(promptIsName ? .leading : .center)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .frame(
-                                maxWidth: .infinity,
-                                minHeight: promptIsName ? max(maxChoiceHeight, 96) : 40,
-                                maxHeight: promptIsName ? max(maxChoiceHeight, 96) : 40,
-                                alignment: promptIsName ? .leading : .center
-                            )
-                            .padding(promptIsName ? 16 : 10)
-                            .foregroundStyle(.primary)
-                            .contentShape(Rectangle())
-                            .background(
-                                GeometryReader { geo in
-                                    Color.clear
-                                        .preference(key: ChoiceHeightKey.self, value: geo.size.height)
-                                }
-                            )
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(vm.roundOver)
-                    .accessibilityValue(accessibilityState(for: choice))
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(backgroundColor(for: choice))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .strokeBorder(
-                                borderColor(for: choice),
-                                lineWidth: vm.roundOver && choice == vm.correctChoice ? 2 : 1
-                            )
-                    )
-                }
-            }
-            .onPreferenceChange(ChoiceHeightKey.self) { value in
-                maxChoiceHeight = value
-            }
+
+            WhoAmIChoiceGrid(
+                vm: vm,
+                columnCount: promptIsName || dynamicTypeSize.isAccessibilitySize ? 1 : 2,
+                usesLargeText: false,
+                onShowPencilMenu: { showsPencilActions = true }
+            )
         }
 
         hintAction
 
         reveal
 
-        roundActions
+        // Next is pinned above the tab bar on iPhone; only the debug win button stays here.
+        if debugAutoWinEnabled, !vm.roundOver {
+            roundActions
+        }
     }
 
     private var iPadBoard: some View {
@@ -314,46 +326,12 @@ struct WhoAmIGameView: View {
             hintAction
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible(), spacing: 12),
-                    GridItem(.flexible(), spacing: 12)
-                ],
-                spacing: 12
-            ) {
-                ForEach(vm.choices, id: \.self) { choice in
-                    Button {
-                        vm.select(choice)
-                    } label: {
-                        Text(choice)
-                            .font(promptIsName ? .subheadline : .body.weight(.semibold))
-                            .multilineTextAlignment(promptIsName ? .leading : .center)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .frame(
-                                maxWidth: .infinity,
-                                minHeight: promptIsName ? 88 : 40,
-                                alignment: promptIsName ? .leading : .center
-                            )
-                            .padding(promptIsName ? 16 : 10)
-                            .foregroundStyle(.primary)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(vm.roundOver)
-                    .accessibilityValue(accessibilityState(for: choice))
-                    .background(
-                        backgroundColor(for: choice),
-                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    )
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .strokeBorder(
-                                borderColor(for: choice),
-                                lineWidth: vm.roundOver && choice == vm.correctChoice ? 2 : 1
-                            )
-                    }
-                }
-            }
+            WhoAmIChoiceGrid(
+                vm: vm,
+                columnCount: 2,
+                usesLargeText: true,
+                onShowPencilMenu: { showsPencilActions = true }
+            )
 
             reveal
 
@@ -384,39 +362,14 @@ struct WhoAmIGameView: View {
 
     // MARK: - Helpers
 
-    private func accessibilityState(for choice: String) -> String {
-        guard vm.roundOver else { return "" }
-        if choice == vm.correctChoice { return String(localized: "Correct answer") }
-        if choice == vm.selectedChoice { return String(localized: "Your answer, incorrect") }
-        return ""
-    }
-
-    private func backgroundColor(for choice: String) -> Color {
-        guard vm.roundOver else { return Color(.secondarySystemBackground) }
-        if choice == vm.correctChoice { return .green.opacity(0.25) }
-        if let sel = vm.selectedChoice, sel == choice, choice != vm.correctChoice { return .red.opacity(0.25) }
-        return Color(.secondarySystemBackground)
-    }
-
-    private func borderColor(for choice: String) -> Color {
-        guard vm.roundOver else { return Color.primary.opacity(0.15) }
-        if choice == vm.correctChoice { return .green }
-        if let sel = vm.selectedChoice, sel == choice, choice != vm.correctChoice { return .red }
-        return Color.primary.opacity(0.15)
-    }
-
     private var timerIsActive: Bool {
         isTimedQuestion && !vm.isTimerDisabled
-    }
-
-    private var compactChoiceColumns: [GridItem] {
-        Array(repeating: GridItem(.flexible(), spacing: 12), count: promptIsName || dynamicTypeSize.isAccessibilitySize ? 1 : 2)
     }
 
     @ViewBuilder
     private var hintAction: some View {
         if vm.canUseHint {
-            Button("Hint — costs 5 seconds", systemImage: "lightbulb") { vm.useHint() }
+            Button(vm.hintTitle, systemImage: "lightbulb") { withAnimation(.snappy) { vm.useHint() } }
                 .buttonStyle(.bordered)
                 .tint(.brown)
         } else if vm.hintUsed, let hint = vm.hintText {

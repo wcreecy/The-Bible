@@ -123,8 +123,9 @@ struct TitleCardView: View {
                     ? .system(size: iPadGreetingFontSize, weight: .black)
                     : .title.weight(.black)
             )
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+            .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.8)
+            .fixedSize(horizontal: false, vertical: true)
             .accessibilityAddTraits(.isHeader)
     }
 

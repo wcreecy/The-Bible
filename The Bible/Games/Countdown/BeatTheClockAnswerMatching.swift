@@ -61,7 +61,14 @@ enum BibleBookNameMatcher {
     }
 }
 
-/// Finds every book whose text mentions a place by name.
+/// Where one name is mentioned in one book: how many verses, and the first of them.
+nonisolated struct BeatTheClockMention: Equatable, Sendable {
+    var verseCount: Int
+    let firstChapter: Int
+    let firstVerse: Int
+}
+
+/// Finds every book whose text mentions a person or place by name, and where.
 nonisolated enum BeatTheClockAnswerIndex {
     /// Drops a description in parentheses, e.g. "Jordan (river)" → "Jordan", then
     /// splits into lowercased words. Hyphenated names also get a joined form because
@@ -80,36 +87,49 @@ nonisolated enum BeatTheClockAnswerIndex {
     }
 
     static func booksMentioning(_ places: [(id: Int, name: String)], in books: [Book]) -> [Int: Set<String>] {
-        let phrasesByPlace = places.map { place in
-            (id: place.id, phrases: searchPhrases(for: place.name).map { $0.joined(separator: " ") })
-        }
-        let allPhrases = phrasesByPlace.flatMap(\.phrases)
-        let maxLength = allPhrases.map { $0.split(separator: " ").count }.max() ?? 1
-        // Only phrases that begin with one of these words can match, which keeps the index small.
-        let firstWords = Set(allPhrases.compactMap { $0.split(separator: " ").first.map(String.init) })
+        mentions(of: places, in: books).mapValues { Set($0.keys) }
+    }
 
-        var result: [Int: Set<String>] = [:]
-        for book in books {
-            // Keep each verse separate so a multi-word place cannot match across a
-            // verse or chapter boundary.
-            let verseWordLists = book.chapters.flatMap { chapter in
-                chapter.verses.map { words(in: $0.text) }
+    /// For each name, the books that mention it, with how many verses and the first one.
+    static func mentions(of names: [(id: Int, name: String)], in books: [Book]) -> [Int: [String: BeatTheClockMention]] {
+        // Each search phrase, with the names it stands for.
+        var idsByPhrase: [String: [Int]] = [:]
+        for name in names {
+            for phrase in searchPhrases(for: name.name).map({ $0.joined(separator: " ") }) {
+                idsByPhrase[phrase, default: []].append(name.id)
             }
+        }
+        let maxLength = idsByPhrase.keys.map { $0.split(separator: " ").count }.max() ?? 1
+        // Only phrases that begin with one of these words can match, which keeps the work small.
+        let firstWords = Set(idsByPhrase.keys.compactMap { $0.split(separator: " ").first.map(String.init) })
 
-            var bookPhrases: Set<String> = []
-            for verseWords in verseWordLists {
-                for start in verseWords.indices where firstWords.contains(verseWords[start]) {
-                    var phrase = verseWords[start]
-                    bookPhrases.insert(phrase)
-                    for offset in 1..<maxLength where start + offset < verseWords.count {
-                        phrase += " " + verseWords[start + offset]
-                        bookPhrases.insert(phrase)
+        var result: [Int: [String: BeatTheClockMention]] = [:]
+        for book in books {
+            for chapter in book.chapters {
+                for verse in chapter.verses {
+                    // Each verse on its own, so a multi-word name can't match across a verse boundary.
+                    let verseWords = words(in: verse.text)
+                    var matchedIDs: Set<Int> = []
+                    for start in verseWords.indices where firstWords.contains(verseWords[start]) {
+                        var phrase = verseWords[start]
+                        matchedIDs.formUnion(idsByPhrase[phrase] ?? [])
+                        for offset in 1..<max(maxLength, 1) where start + offset < verseWords.count {
+                            phrase += " " + verseWords[start + offset]
+                            matchedIDs.formUnion(idsByPhrase[phrase] ?? [])
+                        }
+                    }
+                    for id in matchedIDs {
+                        if result[id]?[book.name] != nil {
+                            result[id]?[book.name]?.verseCount += 1
+                        } else {
+                            result[id, default: [:]][book.name] = BeatTheClockMention(
+                                verseCount: 1,
+                                firstChapter: chapter.number,
+                                firstVerse: verse.number
+                            )
+                        }
                     }
                 }
-            }
-
-            for place in phrasesByPlace where place.phrases.contains(where: bookPhrases.contains) {
-                result[place.id, default: []].insert(book.name)
             }
         }
         return result

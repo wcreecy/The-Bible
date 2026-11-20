@@ -20,11 +20,11 @@ struct BeatTheClockTimerTests {
 
     /// A game with its people, places and book index loaded, on the manual clock.
     private func loadedGame(
-        missedQuestions: MissedGameQuestionStore = MissedGameQuestionStore(entries: []),
+        missedQuestions: MissedGameQuestionStore? = nil,
         clock: ManualSleeper
     ) async -> BeatTheClockGameViewModel {
         let game = BeatTheClockGameViewModel(
-            missedQuestions: missedQuestions,
+            missedQuestions: missedQuestions ?? MissedGameQuestionStore(entries: []),
             sleep: clock.sleep(for:),
             now: { clock.date },
             loadPassage: { _ in Self.passage }

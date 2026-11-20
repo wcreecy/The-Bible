@@ -359,7 +359,7 @@ struct BibleTriviaAnswerReveal: View {
     let outcome: BibleTriviaAnswerOutcome
     let reference: String
     /// The loaded passage, so the verse menu works even before the reader has opened the Bible.
-    let passage: BibleTriviaPassage?
+    let passage: GamePassage?
     let earnedSpeedBonus: Bool
 
     private var passageReference: PassageReference? {

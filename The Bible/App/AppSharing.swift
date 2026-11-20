@@ -357,13 +357,17 @@ struct AppLinkShareSheet: View {
     }
 }
 
-/// A slim card pinned to the bottom of the More tab: Share and a QR code, side by side.
+/// The More tab's share card, with stacked content at accessibility text sizes.
 struct ShareAppFooterCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showsQRCode = false
     @State private var showsShareSheet = false
 
     var body: some View {
-        HStack(spacing: 12) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 12))
+        layout {
             Image(systemName: "book.closed.fill")
                 .font(.title3)
                 .foregroundStyle(Color.accentColor)
@@ -372,47 +376,57 @@ struct ShareAppFooterCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Enjoying The Bible?")
                     .font(.subheadline.weight(.semibold))
-                    .lineLimit(2)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                 Text("Help others find it.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
             }
             .layoutPriority(1)
 
-            Spacer(minLength: 8)
-
-            Button {
-                showsShareSheet = true
-            } label: {
-                // Icon and word when there's room, otherwise just the icon; never wrapped.
-                ViewThatFits(in: .horizontal) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                        .lineLimit(1)
-                        .fixedSize()
-                    Image(systemName: "square.and.arrow.up")
-                }
-                .font(.subheadline.weight(.semibold))
+            if !dynamicTypeSize.isAccessibilitySize {
+                Spacer(minLength: 8)
             }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .accessibilityLabel("Share The Bible")
-            .accessibilityIdentifier("shareAppLink")
 
-            Button {
-                showsQRCode = true
-            } label: {
-                Image(systemName: "qrcode")
+            HStack(spacing: 12) {
+                Button {
+                    showsShareSheet = true
+                } label: {
+                    // Icon and word when there's room, otherwise just the icon; never wrapped.
+                    Group {
+                        if dynamicTypeSize.isAccessibilitySize {
+                            Image(systemName: "square.and.arrow.up")
+                        } else {
+                            ViewThatFits(in: .horizontal) {
+                                Label("Share", systemImage: "square.and.arrow.up")
+                                    .lineLimit(1)
+                                    .fixedSize()
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                        }
+                    }
                     .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .accessibilityLabel("Share The Bible")
+                .accessibilityIdentifier("shareAppLink")
+
+                Button {
+                    showsQRCode = true
+                } label: {
+                    Image(systemName: "qrcode")
+                        .font(.subheadline.weight(.semibold))
+                }
+                // Filled like Share, so the two read as a matched pair.
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .accessibilityLabel("Show QR code")
+                .accessibilityIdentifier("shareAppQRCode")
             }
-            // Filled like Share, so the two read as a matched pair.
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .accessibilityLabel("Show QR code")
-            .accessibilityIdentifier("shareAppQRCode")
         }
         .padding(14)
-        .frame(maxWidth: 600)
+        .frame(maxWidth: 600, alignment: .leading)
         .heroCardSurface()
         .sheet(isPresented: $showsShareSheet) {
             // Share through the controlled link item, like verse sharing, so Messages shows the

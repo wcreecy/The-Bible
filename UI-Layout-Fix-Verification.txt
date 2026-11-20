@@ -25,4 +25,10 @@ Separate follow-up
 The QR sheet itself truncates content at accessibility XXXL in its initial sheet
 height. This is outside the two requested Home/More layout fixes and was not changed.
 
-iPad verification pending.
+iPad verification
+- iPad A16: Home and More checked at normal and accessibility XXXL text sizes.
+  Home fits; More's footer is centered, with readable copy and visible action icons.
+- Share and QR presentations opened/dismissed on iPad without sending anything.
+- Both devices were relaunched without temporary overrides; all sessions closed.
+- Minor cosmetic follow-up: the scrolling footer's shadow is cropped at the list
+  row boundary. Its content and controls are unaffected.

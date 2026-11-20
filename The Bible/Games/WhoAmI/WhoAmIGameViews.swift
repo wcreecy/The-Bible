@@ -50,6 +50,7 @@ struct WhoAmIRevealCard: View {
     let wasTimedOut: Bool
     let person: WhoAmIGameViewModel.Entry
     let secondsRemaining: Int
+    var earnedSpeedBonus = false
 
     private static let shownBookCount = 6
 
@@ -74,6 +75,12 @@ struct WhoAmIRevealCard: View {
                 Text("Correct — \(secondsRemaining) seconds remaining")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.green)
+            }
+
+            if earnedSpeedBonus {
+                Label("+1 speed bonus", systemImage: "bolt.fill")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.orange)
             }
 
             if let qualifier = person.qualifier {
@@ -254,3 +261,114 @@ struct WhoAmITimerCard: View {
     }
 }
 
+
+/// The four answers, shared by iPhone and iPad. Answers in a row match the taller one's
+/// height, and each grows with its text, so nothing is cut off at large text sizes.
+struct WhoAmIChoiceGrid: View {
+    let vm: WhoAmIGameViewModel
+    let columnCount: Int
+    /// iPad uses slightly larger text for clue answers.
+    let usesLargeText: Bool
+    let onShowPencilMenu: () -> Void
+
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
+    /// Each answer's frame, so a Pencil squeeze while hovering can pick the answer under it.
+    @State private var optionFrames: [String: CGRect] = [:]
+    private static let coordinateSpace = "whoChoiceGrid"
+
+    var body: some View {
+        let choices = vm.choices
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            ForEach(Array(stride(from: 0, to: choices.count, by: columnCount)), id: \.self) { start in
+                GridRow {
+                    ForEach(start..<min(start + columnCount, choices.count), id: \.self) { index in
+                        option(at: index, choice: choices[index])
+                    }
+                }
+            }
+        }
+        .coordinateSpace(.named(Self.coordinateSpace))
+        // Squeezing while hovering over an answer chooses it; anywhere else opens the actions menu.
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore, case .ended(let value) = phase else { return }
+            if !vm.roundOver, let location = value.hoverPose?.location,
+               let choice = optionFrames.first(where: { choices.contains($0.key) && $0.value.contains(location) })?.key,
+               !vm.removedChoices.contains(choice) {
+                vm.select(choice)
+            } else {
+                onShowPencilMenu()
+            }
+        }
+        .onChange(of: choices) { _, _ in
+            optionFrames = [:]
+        }
+    }
+
+    private func option(at index: Int, choice: String) -> some View {
+        let promptIsName = vm.currentPromptIsName
+        let isRemoved = vm.removedChoices.contains(choice)
+        let letter = GameAnswerLetter.letter(for: index)
+
+        return Button {
+            vm.select(choice)
+        } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Text(letter)
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 22, height: 22)
+                    .background(Color.primary.opacity(0.08), in: Circle())
+
+                Text(choice)
+                    .font(promptIsName ? (usesLargeText ? .subheadline : .footnote) : .body.weight(.semibold))
+                    .multilineTextAlignment(.leading)
+                    .strikethrough(isRemoved)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(promptIsName ? 16 : 12)
+            .frame(maxWidth: .infinity, minHeight: promptIsName ? 88 : 44, maxHeight: .infinity, alignment: .leading)
+            .foregroundStyle(.primary)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(vm.roundOver || isRemoved)
+        .opacity(isRemoved ? 0.35 : 1)
+        .accessibilityLabel("\(letter), \(choice)")
+        .accessibilityValue(accessibilityState(for: choice, isRemoved: isRemoved))
+        .background(backgroundColor(for: choice), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(borderColor(for: choice), lineWidth: vm.roundOver && choice == vm.correctChoice ? 2 : 1)
+        }
+        .onGeometryChange(for: CGRect.self) { proxy in
+            proxy.frame(in: .named(Self.coordinateSpace))
+        } action: { frame in
+            optionFrames[choice] = frame
+        }
+    }
+
+    private func accessibilityState(for choice: String, isRemoved: Bool) -> String {
+        if isRemoved { return String(localized: "Removed") }
+        guard vm.roundOver else { return "" }
+        if choice == vm.correctChoice {
+            return choice == vm.selectedChoice ? String(localized: "Your answer, correct") : String(localized: "Correct answer")
+        }
+        if choice == vm.selectedChoice { return String(localized: "Your answer, incorrect") }
+        return ""
+    }
+
+    private func backgroundColor(for choice: String) -> Color {
+        guard vm.roundOver else { return Color(.secondarySystemBackground) }
+        if choice == vm.correctChoice { return .green.opacity(0.25) }
+        if choice == vm.selectedChoice { return .red.opacity(0.25) }
+        return Color(.secondarySystemBackground)
+    }
+
+    private func borderColor(for choice: String) -> Color {
+        guard vm.roundOver else { return Color.primary.opacity(0.15) }
+        if choice == vm.correctChoice { return .green }
+        if choice == vm.selectedChoice { return .red }
+        return Color.primary.opacity(0.15)
+    }
+}

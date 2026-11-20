@@ -36,10 +36,21 @@ struct GameRoundSummaryView: View {
     let onChangeSettings: () -> Void
 
     @State private var selectedPassage: PassageReference?
+    /// Set when this is the end of a review round.
+    @Environment(\.reviewRoundContext) private var reviewRound
 
     var body: some View {
         VStack(spacing: 16) {
             GameRoundSummaryHeader(summary: summary, tint: tint, unit: unit)
+
+            if let reviewRound {
+                ReviewRoundResultCard(
+                    cleared: summary.entries.count { $0.outcome == .correct },
+                    stillToReview: summary.entries.count { $0.outcome != .correct },
+                    remaining: MissedGameQuestionStore.shared.reviewCount(for: reviewRound.game),
+                    gameTitle: reviewRound.game.title
+                )
+            }
 
             if let resultNote {
                 Label(resultNote, systemImage: "lightbulb.fill")
@@ -95,10 +106,29 @@ struct GameRoundSummaryView: View {
         !summary.bookTallies.isEmpty
     }
 
+    /// Another review needs a full round of missed questions left.
+    private var canReviewAgain: Bool {
+        guard let reviewRound else { return false }
+        return MissedGameQuestionStore.shared.reviewCount(for: reviewRound.game) >= MissedGameQuestionStore.reviewRoundSize
+    }
+
     private var actions: some View {
         VStack(spacing: 10) {
-            Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
-                .buttonStyle(GameProminentButtonStyle(tint: tint))
+            if let reviewRound {
+                // Replaying the same review would ask questions it just cleared, so a review
+                // ends with Review Again, which draws the missed questions that are left.
+                Button("Review Again", systemImage: "arrow.clockwise.heart", action: reviewRound.reviewAgain)
+                    .buttonStyle(GameProminentButtonStyle(tint: tint))
+                    .disabled(!canReviewAgain)
+                if !canReviewAgain {
+                    Text("Another review unlocks at \(MissedGameQuestionStore.reviewRoundSize) missed questions.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
+                    .buttonStyle(GameProminentButtonStyle(tint: tint))
+            }
 
             if let extraAction {
                 Button(extraAction.title, systemImage: extraAction.systemImage, action: extraAction.action)
@@ -583,3 +613,47 @@ private struct GameRoundSummaryCard<Content: View>: View {
         }
     }
 }
+
+// MARK: - Review round
+
+/// What a review round did: questions cleared, still to review, and left for this game.
+private struct ReviewRoundResultCard: View {
+    let cleared: Int
+    let stillToReview: Int
+    let remaining: Int
+    let gameTitle: LocalizedStringResource
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Review Round", systemImage: "arrow.clockwise.heart.fill")
+                .font(.headline)
+                .foregroundStyle(.purple)
+
+            HStack(spacing: 12) {
+                stat(cleared, label: "Cleared", tint: .green)
+                stat(stillToReview, label: "Still to review", tint: .orange)
+                stat(remaining, label: "Left in \(String(localized: gameTitle))", tint: .purple)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(Color.purple.opacity(0.08), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Review Round")
+        .accessibilityValue(Text("Cleared \(cleared) questions, \(stillToReview) still to review, \(remaining) left in \(String(localized: gameTitle))"))
+    }
+
+    private func stat(_ value: Int, label: LocalizedStringKey, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value, format: .number)
+                .font(.title2.weight(.bold).monospacedDigit())
+                .foregroundStyle(tint)
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+

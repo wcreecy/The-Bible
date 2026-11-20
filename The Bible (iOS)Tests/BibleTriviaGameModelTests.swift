@@ -49,7 +49,7 @@ struct BibleTriviaGameModelTests {
 
     // MARK: - Playing a round
 
-    private static let passage = BibleTriviaPassage(
+    private static let passage = GamePassage(
         bookName: "Genesis",
         chapter: 6,
         verses: [

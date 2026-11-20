@@ -16,6 +16,7 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
     let centerHeader: Bool
     // Optional custom leading icon content (used instead of systemName icon if provided)
     private let iconContent: (() -> AnyView)?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ViewBuilder var content: Content
 
     init(
@@ -278,7 +279,12 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
                 } else {
-                    HStack(alignment: .center, spacing: 10) {
+                    // Give large headings the card's full width instead of squeezing
+                    // them between the icon and accessory controls.
+                    let headerLayout = dynamicTypeSize.isAccessibilitySize
+                        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+                        : AnyLayout(HStackLayout(alignment: .center, spacing: 10))
+                    headerLayout {
                         if let iconContent {
                             iconContent()
                                 .font(titleFont)
@@ -297,7 +303,9 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        Spacer()
+                        if !dynamicTypeSize.isAccessibilitySize {
+                            Spacer()
+                        }
                         if let trailingAccessory {
                             trailingAccessory()
                         }

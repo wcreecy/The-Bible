@@ -31,7 +31,7 @@ struct HomeScrollContent<Dashboard: View, Compact: View>: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 16) {
                 if usesDashboard {
                     dashboard()
                 } else {

@@ -134,7 +134,7 @@ struct TimedQuestionGamePauseTests {
     /// Puts back the difficulty settings these tests change.
     private func withRestoredDefaults(_ body: () async throws -> Void) async rethrows {
         let defaults = UserDefaults.standard
-        let keys = [AppStorageKey.quizDifficulty, "whoamiDifficulty", "whoamiMode"]
+        let keys = [AppStorageKey.quizDifficulty, AppStorageKey.whoAmIDifficulty, AppStorageKey.whoAmIMode]
         let saved = Dictionary(uniqueKeysWithValues: keys.compactMap { key in defaults.object(forKey: key).map { (key, $0) } })
         defer {
             keys.forEach { defaults.removeObject(forKey: $0) }

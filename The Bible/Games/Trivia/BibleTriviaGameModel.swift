@@ -26,7 +26,7 @@ final class BibleTriviaGameModel {
     /// The current time for the question clock; tests pass the manual clock's time.
     @ObservationIgnored private let now: () -> Date
     /// Loads the passage a question cites; tests pass a fixed passage.
-    @ObservationIgnored private let loadPassageForReference: (String) async -> BibleTriviaPassage?
+    @ObservationIgnored private let loadPassageForReference: (String) async -> GamePassage?
 
     /// The stores, clock and Bible text default to the real ones. They're resolved here rather
     /// than as default arguments, which would be evaluated outside the main actor.
@@ -36,14 +36,14 @@ final class BibleTriviaGameModel {
         progressStore: BibleTriviaProgressStore? = nil,
         sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         now: @escaping () -> Date = Date.init,
-        loadPassage: ((String) async -> BibleTriviaPassage?)? = nil
+        loadPassage: ((String) async -> GamePassage?)? = nil
     ) {
         self.reviewQuestionIDs = reviewQuestionIDs
         self.missedQuestions = missedQuestions ?? .shared
         self.progressStore = progressStore ?? .shared
         self.sleep = sleep
         self.now = now
-        self.loadPassageForReference = loadPassage ?? { await Self.passageInBible(for: $0) }
+        self.loadPassageForReference = loadPassage ?? { await GamePassage.load(for: $0) }
     }
 
     private struct RoundQuestion: Identifiable {
@@ -94,7 +94,7 @@ final class BibleTriviaGameModel {
     /// True while the question is paused: the timer stops and the question is hidden.
     private(set) var isPaused = false
     /// The current question's passage, once loaded.
-    private(set) var passage: BibleTriviaPassage?
+    private(set) var passage: GamePassage?
     @ObservationIgnored private var timerTask: Task<Void, Never>?
     /// Time spent on the current question; the countdown is worked out from it.
     @ObservationIgnored private var questionClock = GameActiveClock()
@@ -437,34 +437,6 @@ final class BibleTriviaGameModel {
         // The player may have moved on while the Bible loaded.
         guard currentQuestion?.id == question.id else { return }
         passage = loaded
-    }
-
-    /// Up to the first three verses of `reference`, in the reader's translation.
-    static func passageInBible(for reference: String) async -> BibleTriviaPassage? {
-        // The reference parser matches against the loaded Bible's book names.
-        _ = await BibleRepository.shared.loadAllBooks()
-        guard let parsed = PassageReferenceParser.parse(reference) else { return nil }
-        let start = parsed.startVerse ?? 1
-        let lastVerse = parsed.isSingleChapter ? parsed.endVerse : nil
-        let shownEnd = lastVerse.map { min($0, start + 2) } ?? start
-        let scriptureRef = ScriptureRef(
-            bookName: parsed.bookName,
-            chapter: parsed.startChapter,
-            startVerse: start,
-            endVerse: shownEnd == start ? nil : shownEnd
-        )
-        guard let loaded = BibleReferenceLinker.loadVerses(for: scriptureRef) else { return nil }
-        let verses = loaded.verses
-            .filter { !$0.isOmitted }
-            .map { BibleTriviaPassage.Verse(number: $0.number, text: $0.text) }
-        guard !verses.isEmpty else { return nil }
-        let runsPastShown = !parsed.isSingleChapter || (lastVerse ?? start) > shownEnd || parsed.startVerse == nil
-        return BibleTriviaPassage(
-            bookName: parsed.bookName,
-            chapter: parsed.startChapter,
-            verses: verses,
-            isTruncated: runsPastShown
-        )
     }
 
     // MARK: - Pausing

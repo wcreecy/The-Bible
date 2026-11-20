@@ -7,6 +7,8 @@ enum MoreDestination: Hashable {
 }
 
 struct MoreView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
         List {
             Section {
@@ -23,14 +25,26 @@ struct MoreView: View {
                 }
             }
             .listRowBackground(HeroCardListRowBackground())
+
+            // A tall footer must scroll with the destinations rather than consume
+            // most of their viewport at accessibility text sizes.
+            if dynamicTypeSize.isAccessibilitySize {
+                ShareAppFooterCard()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            }
         }
         .scrollContentBackground(.hidden)
-        // Pinned to the bottom; inside the tab bar clearance, so on iPhone it sits just
-        // above the floating tab bar.
+        // At standard text sizes, keep the compact footer above the floating tab bar.
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            ShareAppFooterCard()
-                .padding(.horizontal)
-                .padding(.vertical, 12)
+            if !dynamicTypeSize.isAccessibilitySize {
+                ShareAppFooterCard()
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
+            }
         }
         .tabBarContentClearance()
         .background(AppBackgroundView(tab: .more))

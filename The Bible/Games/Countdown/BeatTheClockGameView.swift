@@ -1,8 +1,11 @@
 import SwiftUI
-import UIKit
 
 struct BeatTheClockGameView: View {
     @State private var vm: BeatTheClockGameViewModel
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
+    @State private var showsPencilActions = false
+    @State private var selectedPassage: PassageReference?
 
     init(reviewQuestionIDs: Set<String> = []) {
         _vm = State(initialValue: BeatTheClockGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
@@ -41,6 +44,7 @@ struct BeatTheClockGameView: View {
                             GameRoundSummaryView(
                                 summary: GameRoundSummary(score: vm.session),
                                 tint: .indigo,
+                                resultNote: vm.pointsNote,
                                 onPlayAgain: vm.startGame,
                                 onChangeSettings: vm.resetToSetup
                             )
@@ -49,6 +53,11 @@ struct BeatTheClockGameView: View {
                     .padding()
                 }
                 .tabBarContentClearance()
+                // Submit, then Next, pinned above the tab bar and the keyboard on iPhone, so
+                // typing or a long result never hides them.
+                .pinnedGameActionButton(isShown: !usesSplitLayout && vm.phase == .playing && !vm.isPaused) {
+                    actions
+                }
                 .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)
                 .frame(
                     maxWidth: .infinity,
@@ -97,6 +106,34 @@ struct BeatTheClockGameView: View {
         .task {
             await vm.loadData()
         }
+        // The cited verses load with each round, ready for when it ends.
+        .task(id: vm.currentQuestion?.id) {
+            await vm.loadPassage()
+        }
+        .onPencilDoubleTap { _ in
+            guard preferredPencilDoubleTapAction != .ignore, vm.phase == .playing, vm.selectionLocked else { return }
+            vm.nextRound()
+        }
+        .onPencilSqueeze { phase in
+            guard preferredPencilSqueezeAction != .ignore, vm.phase == .playing, !vm.isPaused,
+                  case .ended = phase else { return }
+            showsPencilActions = true
+        }
+        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+            if vm.selectionLocked {
+                Button(vm.isLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: vm.nextRound)
+            } else {
+                if vm.canRequestHint {
+                    Button("Show Clue", systemImage: "lightbulb", action: vm.revealHint)
+                }
+                if vm.canRequestTestamentHint {
+                    Button("Which Testament?", systemImage: "books.vertical", action: vm.revealTestamentHint)
+                }
+                // Rapid Fire keeps the books already found, so it's ending the round rather than giving up.
+                Button(vm.isRapidFire ? "End Round" : "Give Up", systemImage: "flag.fill", role: .destructive, action: vm.giveUp)
+            }
+            Button("Cancel", role: .cancel) {}
+        }
         .onAppear {
             vm.onAppear()
         }
@@ -128,22 +165,26 @@ struct BeatTheClockGameView: View {
         }
         .sheet(isPresented: $showAnswers) {
             NavigationStack {
-                VStack(alignment: .leading, spacing: 12) {
-                    if vm.sortedAcceptableBooks.isEmpty {
+                Group {
+                    if vm.booksByMentions.isEmpty {
                         Text("No matches found in the Bible text for this entry.")
                             .foregroundStyle(.secondary)
+                            .padding()
                     } else {
-                        List(vm.sortedAcceptableBooks, id: \.self) { name in
-                            Text(name)
-                        }
-                        .listStyle(.insetGrouped)
+                        BeatTheClockBooksList(
+                            books: vm.booksByMentions,
+                            foundBooks: Set(vm.foundBooks + [vm.submittedBook].compactMap(\.self)),
+                            firstMention: vm.firstMention(in:),
+                            onOpen: { selectedPassage = PassageReferenceParser.parse($0) }
+                        )
                     }
-                    Spacer(minLength: 0)
                 }
-                .padding()
-                .navigationTitle("Acceptable Books")
+                .navigationTitle("Books That Mention \(vm.currentQuestion?.label ?? "")")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showAnswers = false } } }
+                .sheet(item: $selectedPassage) { reference in
+                    ScripturePassageSheet(reference: reference)
+                }
             }
         }
     }
@@ -153,17 +194,25 @@ struct BeatTheClockGameView: View {
     @ViewBuilder
     private var setupContent: some View {
         Spacer(minLength: 32)
-        Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
+        Text(vm.mode == .rapidFire
+            ? "Name as many Bible books as you can that mention each person or place before the timer runs out."
+            : "Type a Bible book that mentions the shown person or place before the timer runs out.")
             .gameStartDescriptionStyle(title: "Countdown", systemImage: "hourglass", tint: .indigo)
 
         GameSplashLaunchLayout(
             tint: .indigo,
             experienceLevel: $vm.experienceLevel,
-            experienceDetails: GameExperienceDetails(
-                learn: "Popular/Familiar names",
-                standard: "More challenging names",
-                challenge: "All names"
-            ),
+            experienceDetails: vm.mode == .rapidFire
+                ? GameExperienceDetails(
+                    learn: "\(BeatTheClockDifficulty.easy.rapidFireTime) seconds for each name. Well-known names, with a clue shown for each one.",
+                    standard: "\(BeatTheClockDifficulty.normal.rapidFireTime) seconds for each name. Adds less familiar names.",
+                    challenge: "\(BeatTheClockDifficulty.hard.rapidFireTime) seconds for each name. Every name in the game."
+                )
+                : GameExperienceDetails(
+                    learn: "\(BeatTheClockDifficulty.easy.roundTime) seconds per question. Well-known names, with a clue shown for each one.",
+                    standard: "\(BeatTheClockDifficulty.normal.roundTime) seconds per question. Adds less familiar names. A clue costs \(BeatTheClockDifficulty.hintCost) seconds.",
+                    challenge: "\(BeatTheClockDifficulty.hard.roundTime) seconds per question. Every name in the game. A clue costs \(BeatTheClockDifficulty.hintCost) seconds."
+                ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,
             isStartEnabled: !vm.isLoadingData,
@@ -171,7 +220,7 @@ struct BeatTheClockGameView: View {
         ) {
             GameLobbyPreview(kind: .beatTheClock)
         } configuration: {
-            BeatTheClockSetupControls(category: $vm.category)
+            BeatTheClockSetupControls(mode: $vm.mode, category: $vm.category)
 
             if vm.isLoadingData {
                 Label("Loading questions…", systemImage: "hourglass")
@@ -184,11 +233,17 @@ struct BeatTheClockGameView: View {
                 first: (
                     "number",
                     vm.reviewQuestionIDs.isEmpty
-                        ? "\(BeatTheClockGameViewModel.questionsPerGame) questions"
+                        ? (vm.mode == .rapidFire
+                            ? "\(BeatTheClockGameViewModel.rapidFireSubjectsPerGame) names"
+                            : "\(BeatTheClockGameViewModel.questionsPerGame) questions")
                         : "Up to \(BeatTheClockGameViewModel.questionsPerGame) questions",
                     String(localized: "This session")
                 ),
-                second: ("timer", "\(vm.difficulty.roundTime) sec", String(localized: "Per question")),
+                second: (
+                    "timer",
+                    "\(vm.mode == .rapidFire ? vm.difficulty.rapidFireTime : vm.difficulty.roundTime) sec",
+                    vm.mode == .rapidFire ? String(localized: "Per name") : String(localized: "Per question")
+                ),
                 third: (
                     "lightbulb",
                     vm.difficulty.showsClueAutomatically
@@ -209,21 +264,36 @@ struct BeatTheClockGameView: View {
             clue: vm.currentQuestion?.clue ?? "",
             isRevealed: vm.showsClue,
             canRequestHint: vm.canRequestHint,
-            onRequestHint: vm.revealHint
+            onRequestHint: vm.revealHint,
+            testamentHint: vm.currentQuestion?.testamentHint ?? "",
+            showsTestamentHint: vm.showsTestamentHint,
+            canRequestTestamentHint: vm.canRequestTestamentHint,
+            onRequestTestamentHint: vm.revealTestamentHint
         )
     }
 
     @ViewBuilder
     private var roundResult: some View {
         if let roundOutcome = vm.roundOutcome, let currentQuestion = vm.currentQuestion {
-            BeatTheClockRoundResultCard(
-                outcome: roundOutcome,
-                subjectName: currentQuestion.label,
-                submittedBook: vm.submittedBook,
-                acceptableBooks: vm.sortedAcceptableBooks,
-                scriptureReference: currentQuestion.scriptureReference,
-                onShowAllAnswers: { showAnswers = true }
-            )
+            VStack(spacing: 12) {
+                BeatTheClockRoundResultCard(
+                    outcome: roundOutcome,
+                    subjectName: currentQuestion.label,
+                    submittedBook: vm.submittedBook,
+                    books: vm.booksByMentions,
+                    scriptureReference: currentQuestion.scriptureReference,
+                    foundBooks: vm.isRapidFire ? vm.foundBooks : nil,
+                    earnedSpeedBonus: vm.earnedSpeedBonus,
+                    earnedLessKnownBonus: vm.earnedLessKnownBonus,
+                    onShowAllAnswers: { showAnswers = true }
+                )
+
+                if let verse = vm.displayedVerse {
+                    GameVerseCard(verse: verse)
+                        .transition(.opacity.combined(with: .scale(scale: 0.97)))
+                }
+            }
+            .animation(.snappy, value: vm.displayedVerse)
         }
     }
 
@@ -288,8 +358,12 @@ struct BeatTheClockGameView: View {
                 onTap: vm.toggleTimer
             )
 
+            if vm.isRapidFire {
+                rapidFireProgress
+            }
+
             VStack(alignment: .leading, spacing: 8) {
-                Text("Type a Bible book")
+                Text(vm.isRapidFire ? "Name another book" : "Type a Bible book")
                     .font(.headline)
                 HStack(spacing: 8) {
                     TextField("Start typing…", text: $vm.searchText)
@@ -338,8 +412,14 @@ struct BeatTheClockGameView: View {
                 }
             }
         }
+        // Submit and Next are pinned above the tab bar on iPhone.
+    }
 
-        actions
+    @ViewBuilder
+    private var rapidFireProgress: some View {
+        if let currentQuestion = vm.currentQuestion {
+            BeatTheClockFoundBooks(foundBooks: vm.foundBooks, totalBooks: currentQuestion.acceptableBooks.count)
+        }
     }
 
     private func dashboard(availableHeight: CGFloat) -> some View {
@@ -365,6 +445,10 @@ struct BeatTheClockGameView: View {
             if vm.selectionLocked {
                 roundResult
             } else {
+                if vm.isRapidFire {
+                    rapidFireProgress
+                }
+
                 BeatTheClockDashboardAnswer(
                     searchText: $vm.searchText,
                     searchFieldFocused: $searchFieldFocused,

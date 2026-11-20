@@ -99,7 +99,7 @@ struct WhoAmIGameViewModelTests {
 
             game.endRoundWhenLeavingScreen()
             #expect(!game.started)
-            #expect(missed.containsMiss(game: .whoAmI, questionID: String(person.id)))
+            #expect(missed.containsMiss(game: .whoAmI, questionID: person.questionID))
         }
     }
 
@@ -110,7 +110,7 @@ struct WhoAmIGameViewModelTests {
             let person = try #require(game.current)
 
             game.endRoundWhenLeavingScreen()
-            #expect(!missed.containsMiss(game: .whoAmI, questionID: String(person.id)))
+            #expect(!missed.containsMiss(game: .whoAmI, questionID: person.questionID))
             #expect(!game.roundOver)
         }
     }
@@ -171,5 +171,73 @@ struct WhoAmIGameViewModelTests {
             game.select(wrongChoice(in: game))
             #expect(game.displayedVerse?.reference == "Exodus 4:14")
         }
+    }
+
+    // MARK: - Review
+
+    /// A loaded review game for `ids`, with an in-memory missed store.
+    private func reviewGame(ids: Set<String>, missed: MissedGameQuestionStore) async -> WhoAmIGameViewModel {
+        let game = WhoAmIGameViewModel(reviewQuestionIDs: ids, missedQuestions: missed, loadPassage: { _ in nil })
+        await game.loadData()
+        return game
+    }
+
+    @Test func aMissIsSavedForTheQuestionNotThePerson() async throws {
+        let missed = MissedGameQuestionStore(entries: [])
+        try await withGame(missed: missed) { game, _ in
+            game.startGame()
+            let person = try #require(game.current)
+            game.select(wrongChoice(in: game))
+
+            #expect(person.questionID.hasPrefix("who-"))
+            #expect(missed.containsMiss(game: .whoAmI, questionID: person.questionID))
+            #expect(!missed.containsMiss(game: .whoAmI, questionID: String(person.id)))
+        }
+    }
+
+    @Test func aReviewShowsOnlyTheQuestionsThatWereMissed() async throws {
+        let loader = WhoAmIGameViewModel(missedQuestions: MissedGameQuestionStore(entries: []))
+        await loader.loadData()
+        // Ten Clue → Name questions, from ten different people.
+        let missedIDs = Set(loader.entries.filter { $0.questionMode == .factToPerson }.prefix(10).map(\.questionID))
+
+        let review = await reviewGame(ids: missedIDs, missed: MissedGameQuestionStore(entries: []))
+        #expect(review.isReady)
+        review.startGame()
+        var asked: Set<String> = []
+        while review.started, !review.isComplete, let current = review.current {
+            asked.insert(current.questionID)
+            review.select(review.correctChoice)
+            review.nextRound()
+        }
+        #expect(asked == missedIDs)
+    }
+
+    @Test func aReviewNeedsTenMissedQuestions() async throws {
+        let loader = WhoAmIGameViewModel(missedQuestions: MissedGameQuestionStore(entries: []))
+        await loader.loadData()
+        let nineIDs = Set(loader.entries.prefix(9).map(\.questionID))
+
+        let review = await reviewGame(ids: nineIDs, missed: MissedGameQuestionStore(entries: []))
+        #expect(!review.isReady)
+    }
+
+    @Test func anOlderMissSavedByPersonBringsBackBothQuestionsAndEitherClearsIt() async throws {
+        let loader = WhoAmIGameViewModel(missedQuestions: MissedGameQuestionStore(entries: []))
+        await loader.loadData()
+        let personIDs = Array(Set(loader.entries.map(\.id))).sorted().prefix(5).map { String($0) }
+
+        let missed = MissedGameQuestionStore(entries: [])
+        for id in personIDs {
+            missed.record(game: .whoAmI, bookNames: [], topic: "Bible people", questionID: id)
+        }
+        // Five people saved the old way stand for both of their questions: ten in all.
+        let review = await reviewGame(ids: Set(personIDs), missed: missed)
+        #expect(review.isReady)
+
+        review.startGame()
+        let first = try #require(review.current)
+        review.select(review.correctChoice)
+        #expect(!missed.containsMiss(game: .whoAmI, questionID: String(first.id)))
     }
 }

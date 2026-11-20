@@ -154,11 +154,15 @@ final class MissedGameQuestionStore {
         }).count
     }
 
-    func reviewableGames(minimumQuestions: Int = 10) -> [Entry.Game] {
+    /// How many missed questions a game needs before it offers a review round, and how many
+    /// a round asks. The one place this number is set.
+    static let reviewRoundSize = 10
+
+    func reviewableGames(minimumQuestions: Int = reviewRoundSize) -> [Entry.Game] {
         Entry.Game.reviewableCases.filter { reviewCount(for: $0) >= minimumQuestions }
     }
 
-    func questionIDsForReview(game: Entry.Game, count: Int = 10) -> [String] {
+    func questionIDsForReview(game: Entry.Game, count: Int = reviewRoundSize) -> [String] {
         Array(
             Set(entries.compactMap { entry in
                 entry.game == game ? entry.questionID : nil

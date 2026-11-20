@@ -20,7 +20,7 @@ struct ReviewRoundView: View {
     var body: some View {
         Group {
             if let selectedGame {
-                destination(for: selectedGame)
+                ReviewRoundSession(game: selectedGame)
             } else {
                 ScrollView {
                     VStack(spacing: 20) {
@@ -29,7 +29,7 @@ struct ReviewRoundView: View {
                         LazyVStack(spacing: 12) {
                             ForEach(availableGames, id: \.rawValue) { game in
                                 NavigationLink {
-                                    destination(for: game)
+                                    ReviewRoundSession(game: game)
                                 } label: {
                                     ReviewRoundGameCard(
                                         title: game.title,
@@ -50,10 +50,44 @@ struct ReviewRoundView: View {
             }
         }
     }
+}
+
+/// What a game's results screen needs to know when it's showing a review round.
+struct ReviewRoundContext {
+    let game: MissedGameQuestionStore.Entry.Game
+    /// Starts another review of this game's missed questions.
+    let reviewAgain: () -> Void
+}
+
+extension EnvironmentValues {
+    /// Set while a game is playing a review round, so its results show what the review cleared.
+    @Entry var reviewRoundContext: ReviewRoundContext? = nil
+}
+
+/// One game's review rounds. Review Again draws a fresh set of missed questions and starts
+/// the game over with them.
+private struct ReviewRoundSession: View {
+    let game: MissedGameQuestionStore.Entry.Game
+    @State private var questionIDs: Set<String>
+    /// Changes for each new round, so the game starts fresh rather than keeping its old state.
+    @State private var round = 0
+
+    init(game: MissedGameQuestionStore.Entry.Game) {
+        self.game = game
+        _questionIDs = State(initialValue: Set(MissedGameQuestionStore.shared.questionIDsForReview(game: game)))
+    }
+
+    var body: some View {
+        destination
+            .id(round)
+            .environment(\.reviewRoundContext, ReviewRoundContext(game: game) {
+                questionIDs = Set(MissedGameQuestionStore.shared.questionIDsForReview(game: game))
+                round += 1
+            })
+    }
 
     @ViewBuilder
-    private func destination(for game: MissedGameQuestionStore.Entry.Game) -> some View {
-        let questionIDs = Set(MissedGameQuestionStore.shared.questionIDsForReview(game: game))
+    private var destination: some View {
         switch game {
         case .beatTheClock:
             BeatTheClockGameView(reviewQuestionIDs: questionIDs)
@@ -84,7 +118,7 @@ private struct ReviewRoundHeader: View {
                 .foregroundStyle(.purple)
             Text("Review missed questions")
                 .font(.title2.weight(.bold))
-            Text("Choose a game to practice ten questions you have previously missed.")
+            Text("Choose a game to practice \(MissedGameQuestionStore.reviewRoundSize) questions you have previously missed.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -136,7 +170,7 @@ private struct ReviewRoundGameCard: View {
     }
 }
 
-private extension MissedGameQuestionStore.Entry.Game {
+extension MissedGameQuestionStore.Entry.Game {
     var title: LocalizedStringResource {
         switch self {
         case .beatTheClock: "Countdown"

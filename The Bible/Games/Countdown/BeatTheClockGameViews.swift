@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - Setup views
 
 struct BeatTheClockSetupControls: View {
+    @Binding var mode: BeatTheClockMode
     @Binding var category: BeatTheClockCategory
 
     private func icon(for category: BeatTheClockCategory) -> String {
@@ -24,6 +25,16 @@ struct BeatTheClockSetupControls: View {
     var body: some View {
         GameSettingsGroup {
             GameChoiceSetting(
+                title: "Mode",
+                systemImage: "hourglass",
+                tint: .indigo,
+                selection: $mode,
+                choices: BeatTheClockMode.allCases.map {
+                    GameChoice(value: $0, title: $0.title, detail: $0.detail, icon: $0.systemImage)
+                }
+            )
+
+            GameChoiceSetting(
                 title: "Question subject",
                 systemImage: "person.2.fill",
                 tint: .indigo,
@@ -43,25 +54,120 @@ struct BeatTheClockClueRow: View {
     let isRevealed: Bool
     let canRequestHint: Bool
     let onRequestHint: () -> Void
+    let testamentHint: String
+    let showsTestamentHint: Bool
+    let canRequestTestamentHint: Bool
+    let onRequestTestamentHint: () -> Void
 
     var body: some View {
-        if !clue.isEmpty {
-            if isRevealed {
-                Label(clue, systemImage: "lightbulb.fill")
+        VStack(alignment: .leading, spacing: 6) {
+            if !clue.isEmpty {
+                if isRevealed {
+                    Label(clue, systemImage: "lightbulb.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Button(
+                        "Show clue (−\(BeatTheClockDifficulty.hintCost) sec)",
+                        systemImage: "lightbulb",
+                        action: onRequestHint
+                    )
+                    .font(.subheadline.weight(.semibold))
+                    .buttonStyle(.borderless)
+                    .disabled(!canRequestHint)
+                }
+            }
+
+            if showsTestamentHint {
+                Label(testamentHint, systemImage: "books.vertical.fill")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
             } else {
                 Button(
-                    "Show clue (−\(BeatTheClockDifficulty.hintCost) sec)",
-                    systemImage: "lightbulb",
-                    action: onRequestHint
+                    "Which Testament? (−\(BeatTheClockDifficulty.testamentHintCost) sec)",
+                    systemImage: "books.vertical",
+                    action: onRequestTestamentHint
                 )
                 .font(.subheadline.weight(.semibold))
                 .buttonStyle(.borderless)
-                .disabled(!canRequestHint)
+                .disabled(!canRequestTestamentHint)
             }
         }
+    }
+}
+
+/// Rapid Fire: the books found so far for the current name.
+struct BeatTheClockFoundBooks: View {
+    let foundBooks: [String]
+    let totalBooks: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("\(foundBooks.count) of \(totalBooks) found", systemImage: "flame.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.orange)
+                .contentTransition(.numericText())
+
+            if !foundBooks.isEmpty {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 6)], alignment: .leading, spacing: 6) {
+                    ForEach(foundBooks, id: \.self) { book in
+                        Label(book, systemImage: "checkmark")
+                            .font(.caption.weight(.semibold))
+                            .lineLimit(1)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.green.opacity(0.15), in: Capsule())
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .animation(.snappy, value: foundBooks)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Every accepted book, most mentions first, each linking to its first mention.
+struct BeatTheClockBooksList: View {
+    let books: [(book: String, verses: Int)]
+    let foundBooks: Set<String>
+    let firstMention: (String) -> String?
+    let onOpen: (String) -> Void
+
+    var body: some View {
+        List(books, id: \.book) { entry in
+            let reference = firstMention(entry.book)
+            Button {
+                if let reference { onOpen(reference) }
+            } label: {
+                HStack {
+                    if foundBooks.contains(entry.book) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                            .accessibilityLabel("Found")
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(entry.book)
+                            .foregroundStyle(.primary)
+                        if let reference {
+                            Text("First mentioned in \(reference)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Spacer()
+                    if entry.verses > 0 {
+                        Text(entry.verses == 1 ? "1 verse" : "\(entry.verses) verses")
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .disabled(reference == nil)
+        }
+        .listStyle(.insetGrouped)
     }
 }
 
@@ -69,17 +175,37 @@ struct BeatTheClockRoundResultCard: View {
     let outcome: BeatTheClockRoundOutcome
     let subjectName: String
     let submittedBook: String?
-    let acceptableBooks: [String]
+    /// The accepted books, most mentions first.
+    let books: [(book: String, verses: Int)]
     let scriptureReference: String?
+    /// Rapid Fire's books found, or nil in Classic.
+    let foundBooks: [String]?
+    let earnedSpeedBonus: Bool
+    let earnedLessKnownBonus: Bool
     let onShowAllAnswers: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(outcome.title, systemImage: outcome.systemImage)
-                .font(.headline.weight(.bold))
-                .foregroundStyle(outcome.tint)
+            HStack(spacing: 8) {
+                Label(foundBooks == nil ? outcome.title : "Round Over", systemImage: foundBooks == nil ? outcome.systemImage : "flame.fill")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(foundBooks == nil ? outcome.tint : .orange)
+                if earnedSpeedBonus {
+                    Label("+1 speed bonus", systemImage: "bolt.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.orange)
+                }
+                if earnedLessKnownBonus {
+                    Label("+1 less-known book", systemImage: "sparkles")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.purple)
+                }
+            }
 
-            if outcome == .incorrect, let submittedBook {
+            if let foundBooks {
+                Text("You found \(foundBooks.count) of \(books.count) books that mention \(subjectName).")
+                    .font(.subheadline)
+            } else if outcome == .incorrect, let submittedBook {
                 Text("\(submittedBook) doesn’t mention \(subjectName).")
                     .font(.subheadline)
             }
@@ -94,35 +220,38 @@ struct BeatTheClockRoundResultCard: View {
                     .foregroundStyle(.secondary)
             }
 
-            if acceptableBooks.count > 1 {
-                Button("Show all \(acceptableBooks.count) books", systemImage: "books.vertical.fill", action: onShowAllAnswers)
+            if books.count > 1 {
+                Button("Show all \(books.count) books", systemImage: "books.vertical.fill", action: onShowAllAnswers)
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .background(
-            outcome.tint.opacity(0.1),
+            (foundBooks == nil ? outcome.tint : .orange).opacity(0.1),
             in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
         )
         .accessibilityElement(children: .contain)
     }
 
+    /// The books with the most mentions, e.g. "1 Samuel (42) · 2 Samuel (31) · 1 Kings (12)".
+    private var topBooks: String {
+        books.prefix(4)
+            .map { $0.verses > 0 ? "\($0.book) (\($0.verses))" : $0.book }
+            .joined(separator: " · ")
+    }
+
     @ViewBuilder
     private var answerSummary: some View {
-        let count = acceptableBooks.count
+        let count = books.count
         if count == 0 {
             Text("No books are listed for this entry.")
-        } else if outcome == .correct {
-            if count == 1 {
-                Text("That’s the only book that mentions \(subjectName).")
-            } else {
-                Text("\(subjectName) appears in ^[\(count) book](inflect: true).")
-            }
-        } else if count == 1, let onlyBook = acceptableBooks.first {
-            Text("The answer was \(onlyBook).")
+        } else if count == 1, let onlyBook = books.first?.book {
+            Text(outcome == .correct
+                ? "That’s the only book that mentions \(subjectName)."
+                : "The answer was \(onlyBook).")
         } else {
-            Text("Answers include \(Array(acceptableBooks.prefix(3)).formatted(.list(type: .and))).")
+            Text("Mentioned most in \(topBooks)\(count > 4 ? " …" : "")")
         }
     }
 }
