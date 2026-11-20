@@ -64,6 +64,9 @@ extension iCloudSyncCoordinator {
         "beatclockPerTypeCorrectMap"
     ]
 
+    // Per-mode maps for games with more than one mode (JSON [String:Int]), synced by the ledger
+    static let gameModeMapKeys: [String] = GameModeStatsGame.allMapKeys
+
     // Game keys: Reference Match (legacy)
     static let refMatchKeys: [String] = {
         // Include both legacy "medium" and new "normal"
@@ -288,7 +291,7 @@ extension iCloudSyncCoordinator {
                 + gamePlayTimeCounterKeys + gamePlayTimeMapKeys
                 + gameDailyAndLastPlayedKeys + quizPerBookMapKeys + triviaPerBookMapKeys
                 + quizPerBookDailyMapKeys + triviaPerBookDailyMapKeys + verseMatchPerBookDailyMapKeys
-                + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys
+                + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys + gameModeMapKeys
                 + hangmanPerCategoryMapKeys + perGameDailyMapKeys
                 + wordleSolvedMapKeys + wordleDailyResultKeys
                 + wordleDailyFlagKeys + allPersistentStreakKeys

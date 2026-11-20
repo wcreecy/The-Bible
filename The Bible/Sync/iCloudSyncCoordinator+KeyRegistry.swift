@@ -27,6 +27,7 @@ extension iCloudSyncCoordinator {
             + verseMatchPerBookMapKeys
             + hangmanPerCategoryMapKeys
             + beatClockPerTypeMapKeys
+            + gameModeMapKeys
             + bookOrderKeys
             + whoAmIKeys
             + wordleKeys

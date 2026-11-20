@@ -436,6 +436,7 @@ final class WhoAmIGameViewModel {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
+        GameStats.shared.recordModeAnswer(.whoami, mode: (current.map { mode(for: $0) } ?? mode).rawValue, correct: correct)
         if correct, !reviewQuestionIDs.isEmpty, let current {
             missedQuestions.resolveReviewQuestion(game: .whoAmI, questionID: current.questionID)
             // An older miss saved under the person's ID is cleared by either of their questions.

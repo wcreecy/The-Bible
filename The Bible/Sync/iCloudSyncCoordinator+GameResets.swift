@@ -79,7 +79,8 @@ extension iCloudSyncCoordinator {
                     "wordleDailyCompletedDay", "wordleDailyTarget",
                     "quizPerBookDailyAnswered", "quizPerBookDailyCorrect",
                     "triviaPerBookDailyAnswered", "triviaPerBookDailyCorrect",
-                    "versematchPerBookDailyAnswered", "versematchPerBookDailyCorrect"] {
+                    "versematchPerBookDailyAnswered", "versematchPerBookDailyCorrect"]
+                    + Self.gameModeMapKeys {
             defaults.removeObject(forKey: key)
         }
 
@@ -169,6 +170,13 @@ extension iCloudSyncCoordinator {
             kvs.removeObject(forKey: key)
         }
         enqueueKeysForSync(["beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap"])
+
+        // 2c.2b) Clear per-mode results (all-time maps mirrored)
+        for key in Self.gameModeMapKeys {
+            defaults.removeObject(forKey: key)
+            kvs.removeObject(forKey: key)
+        }
+        enqueueKeysForSync(Self.gameModeMapKeys)
 
         // 2c.3) Clear Verses per-book analytics (all-time maps mirrored)
         for key in ["versematchPerBookAnsweredMap", "versematchPerBookCorrectMap"] {

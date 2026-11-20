@@ -858,6 +858,7 @@ final class QuizGameViewModel {
             currentBestStreak: session.savedBestStreak
         )
         GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
+        GameStats.shared.recordModeAnswer(.quiz, mode: current.mode.rawValue, correct: correct)
         if correct, !reviewQuestionIDs.isEmpty {
             missedQuestions.resolveReviewQuestion(
                 game: mode == .reverse ? .quizReverse : .bibleQuiz,

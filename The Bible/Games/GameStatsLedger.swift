@@ -100,13 +100,14 @@ final class GameStatsLedger {
                 + iCloudSyncCoordinator.verseMatchPerBookMapKeys
                 + iCloudSyncCoordinator.hangmanPerCategoryMapKeys
                 + iCloudSyncCoordinator.beatClockPerTypeMapKeys
+                + GameModeStatsGame.allSumMapKeys
                 + iCloudSyncCoordinator.gamePlayTimeMapKeys
         )
     }
 
     /// `[String: Int]` maps that keep the largest value per entry.
     static var maxMapKeys: Set<String> {
-        Set(iCloudSyncCoordinator.wordleSolvedMapKeys)
+        Set(iCloudSyncCoordinator.wordleSolvedMapKeys + GameModeStatsGame.allMaxMapKeys)
     }
 
     /// `[String: [String: Int]]` maps summed per inner entry.

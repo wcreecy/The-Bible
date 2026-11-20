@@ -491,6 +491,66 @@ struct GameStatsAccountingTests {
     }
 
     @Test
+    func modeResultsCountAnswersRoundsAndSolveTimesForEachMode() {
+        let keys = GameModeStatsGame.bookorder.sumMapKeys + GameModeStatsGame.bookorder.maxMapKeys
+        let saved = savedValues(for: keys)
+        clear(keys)
+        defer { restore(saved, for: keys) }
+        let stats = GameStats.shared
+
+        // Two Before or After? rounds of 12 and 8, with three answers between them.
+        stats.recordModeAnswer(.bookorder, mode: "beforeAfter", correct: true)
+        stats.recordModeAnswer(.bookorder, mode: "beforeAfter", correct: true)
+        stats.recordModeAnswer(.bookorder, mode: "beforeAfter", correct: false)
+        stats.recordModeRound(.bookorder, mode: "beforeAfter", score: 12)
+        stats.recordModeRound(.bookorder, mode: "beforeAfter", score: 8)
+        // Three Tap in Order puzzles, two solved in 50 and 70 seconds.
+        stats.recordModeAnswer(.bookorder, mode: "tapInOrder", correct: true)
+        stats.recordModeSolveTime(.bookorder, mode: "tapInOrder", seconds: 50)
+        stats.recordModeAnswer(.bookorder, mode: "tapInOrder", correct: false)
+        stats.recordModeAnswer(.bookorder, mode: "tapInOrder", correct: true)
+        stats.recordModeSolveTime(.bookorder, mode: "tapInOrder", seconds: 70)
+
+        let results = stats.modeResults(.bookorder, modes: ["beforeAfter", "tapInOrder", "classic"])
+        #expect(results[0].answered == 3 && results[0].correct == 2)
+        #expect(results[0].rounds == 2 && results[0].bestRound == 12 && results[0].averageRoundScore == 10)
+        #expect(results[1].answered == 3 && results[1].correct == 2 && results[1].averageSolveSeconds == 60)
+        #expect(!results[2].hasPlays)
+
+        // Only the modes played get a row.
+        let rows = GameModeStatsRows.rows(forGame: "Book Order")
+        #expect(rows.map(\.id) == ["tapInOrder", "beforeAfter"])
+    }
+
+    @Test
+    func modeSectionIsHiddenUntilASecondModeIsPlayed() {
+        let keys = GameModeStatsGame.quiz.sumMapKeys + GameModeStatsGame.quiz.maxMapKeys
+        let saved = savedValues(for: keys)
+        clear(keys)
+        defer { restore(saved, for: keys) }
+
+        GameStats.shared.recordModeAnswer(.quiz, mode: QuizMode.standard.rawValue, correct: true)
+        #expect(GameModeStatsRows.rows(forGame: "Quiz").isEmpty)
+
+        GameStats.shared.recordModeAnswer(.quiz, mode: QuizMode.reverse.rawValue, correct: false)
+        #expect(GameModeStatsRows.rows(forGame: "Quiz").map(\.value) == ["100% (1/1)", "0% (0/1)"])
+    }
+
+    @Test
+    func modeMapsSyncThroughTheLedgerWithBestRoundsKeptAtTheirLargest() {
+        for key in GameModeStatsGame.allSumMapKeys {
+            #expect(GameStatsLedger.sumMapKeys.contains(key), "\(key) should be summed across devices")
+        }
+        for key in GameModeStatsGame.allMaxMapKeys {
+            #expect(GameStatsLedger.maxMapKeys.contains(key), "\(key) should keep its largest value")
+            #expect(!GameStatsLedger.sumMapKeys.contains(key))
+        }
+        for key in GameModeStatsGame.allMapKeys {
+            #expect(iCloudSyncCoordinator.shared.allKnownKeys.contains(key), "\(key) would never be pushed")
+        }
+    }
+
+    @Test
     func quizHistoryAndTriviaContributeToBookMasteryWithoutDuplicatingOverallTotals() async throws {
         _ = await BibleRepository.shared.loadAllBooks()
         let stats = GameStats.shared

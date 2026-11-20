@@ -139,6 +139,11 @@ struct GamesOverviewCardContent: View {
     /// The sections that follow the summary, which depend on the selected game.
     @ViewBuilder
     private var gameSections: some View {
+        let modeRows = GameModeStatsRows.rows(forGame: selectedGame)
+        if !modeRows.isEmpty {
+            GameModeStatsSection(rows: modeRows)
+        }
+
         switch selectedGame {
         case "Quiz", "Trivia":
             let isTrivia = selectedGame == "Trivia"

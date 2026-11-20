@@ -574,6 +574,10 @@ final class BookOrderGameViewModel {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
+        GameStats.shared.recordModeAnswer(.bookorder, mode: puzzleMode.rawValue, correct: wasCorrect)
+        if wasCorrect {
+            GameStats.shared.recordModeSolveTime(.bookorder, mode: puzzleMode.rawValue, seconds: elapsedSeconds)
+        }
 
         showResult = true
     }

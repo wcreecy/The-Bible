@@ -261,6 +261,9 @@ final class BeatTheClockGameViewModel {
     /// Review rounds replay single questions, so they're always Classic.
     var isRapidFire: Bool { mode == .rapidFire && reviewQuestionIDs.isEmpty }
 
+    /// The mode actually being played: review games are always played as Classic.
+    private var playedMode: BeatTheClockMode { isRapidFire ? .rapidFire : .classic }
+
     var experienceLevel: GameExperienceLevel {
         get { difficulty.experienceLevel }
         set { difficulty = BeatTheClockDifficulty(experienceLevel: newValue) }
@@ -713,6 +716,10 @@ final class BeatTheClockGameViewModel {
     private func showResults() {
         roundClock.pause(at: now())
         session.finishGame(bestScoreKey: bestGameScoreKey)
+        // Review games use only missed questions, so their scores aren't comparable.
+        if reviewQuestionIDs.isEmpty {
+            GameStats.shared.recordModeRound(.beatclock, mode: playedMode.rawValue, score: points)
+        }
         currentQuestion = nil
         phase = .results
     }
@@ -866,6 +873,7 @@ final class BeatTheClockGameViewModel {
             answered: 1,
             correct: correct ? 1 : 0
         )
+        GameStats.shared.recordModeAnswer(.beatclock, mode: playedMode.rawValue, correct: correct)
         if correct, !reviewQuestionIDs.isEmpty {
             missedQuestions.resolveReviewQuestion(game: .beatTheClock, questionID: currentQuestion.id)
         } else if !correct {

@@ -207,6 +207,10 @@ final class BookOrderQuickRound {
         if isTimed, session.score > bestBeforeAfterScore {
             UserDefaults.standard.set(session.score, forKey: bestScoreKey)
         }
+        // Review rounds use only missed books, so their scores aren't comparable.
+        if isTimed, !isReview {
+            GameStats.shared.recordModeRound(.bookorder, mode: mode.rawValue, score: session.score)
+        }
         isFinished = true
     }
 
@@ -235,6 +239,7 @@ final class BookOrderQuickRound {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
+        GameStats.shared.recordModeAnswer(.bookorder, mode: mode.rawValue, correct: isCorrect)
         // Misses are saved by book, the same as the puzzles, and a right answer clears one.
         if isCorrect {
             if missedQuestions.containsMiss(game: .bookOrder, questionID: question.book) {

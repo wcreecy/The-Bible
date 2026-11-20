@@ -53,7 +53,7 @@ extension iCloudSyncCoordinator {
             gameDailyAndLastPlayedKeys + quizPerBookMapKeys + triviaPerBookMapKeys
                 + quizPerBookDailyMapKeys + triviaPerBookDailyMapKeys
                 + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys + hangmanPerCategoryMapKeys
-                + perGameDailyMapKeys + wordleSolvedMapKeys + wordleDailyResultKeys
+                + gameModeMapKeys + perGameDailyMapKeys + wordleSolvedMapKeys + wordleDailyResultKeys
                 + wordleDailyFlagKeys + bibleTriviaProgressKeys
         )
     }()
