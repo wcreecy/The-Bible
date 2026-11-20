@@ -52,7 +52,8 @@ extension ScrambleGameView {
         var hintLabel: String {
             switch hintLimit {
             case 1: String(localized: "1 hint")
-            default: String(localized: "\(hintLimit) hints")
+            // Hard allows fewer on short words: one per three letters.
+            default: String(localized: "Up to \(hintLimit) hints")
             }
         }
 

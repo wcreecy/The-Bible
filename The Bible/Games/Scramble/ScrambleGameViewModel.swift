@@ -49,6 +49,26 @@ final class ScrambleGameViewModel {
         }
     }
 
+    /// Where a picked-up or dragged letter comes from.
+    enum TileSource: Equatable {
+        /// A tray tile that isn't placed yet, by its index in `shuffledLetters`.
+        case tray(Int)
+        /// The letter in an answer square, by position.
+        case slot(Int)
+    }
+
+    /// A verse shown with the puzzle: as a clue with the word blanked out, or in full once solved.
+    struct VerseDisplay: Equatable {
+        let text: String
+        let reference: String
+        let isClue: Bool
+    }
+
+    private struct UndoState {
+        let slots: [Int?]
+        let letters: [Character]
+    }
+
     enum AnswerFeedback {
         case correct
         case incorrect
@@ -119,9 +139,20 @@ final class ScrambleGameViewModel {
     }
     var deck: [ScrambleWord] = []
     var currentWord: ScrambleWord?
+    /// The letter tiles in the tray. A tile keeps its spot when it's placed, leaving a gap.
     var shuffledLetters: [Character] = []
-    var selectedIndices: [Int] = []
-    var typedAnswer = ""
+    /// The answer squares, each holding the index of the tile placed in it. The one record of
+    /// the answer: what's typed and which tiles are used are both worked out from it.
+    private(set) var slots: [Int?] = []
+    /// A tile the player has picked up and not yet dropped.
+    private(set) var heldTile: TileSource?
+    /// The square the next tapped or typed letter goes into, once the player picks one.
+    private(set) var cursorPosition: Int?
+    /// Earlier arrangements, newest last, for Undo. Cleared with each word.
+    private var undoHistory: [UndoState] = []
+    /// The source verse's text, once loaded. Nil when there's no reference or it can't be found.
+    private(set) var verseText: String?
+    private(set) var isVerseClueShown = false
     var currentNumber = 0
     var totalWords = 0
     /// Score and streaks; see `GameScore` for the rules.
@@ -161,28 +192,63 @@ final class ScrambleGameViewModel {
     /// Whether a string is a real English word; tests can pass a fixed list. Main actor
     /// because the real check uses UIKit's spell checker.
     @ObservationIgnored private let isEnglishWord: @MainActor (String) -> Bool
+    /// Looks up a verse's text by reference, for the verse clue; tests pass a fixed text.
+    @ObservationIgnored private let loadVerseText: (String) async -> String?
     /// Time spent on the current word. The countdown is worked out from it, so pausing and
     /// resuming can't give back part of a second.
     @ObservationIgnored private var wordClock = GameActiveClock()
 
-    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
-    /// default argument, which would be evaluated outside the main actor.
+    /// `missedQuestions` and `loadVerseText` default to the shared store and the Bible text.
+    /// They're resolved here rather than as default arguments, which would be evaluated
+    /// outside the main actor.
     init(
         reviewQuestionIDs: Set<String> = [],
         missedQuestions: MissedGameQuestionStore? = nil,
         sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         now: @escaping () -> Date = Date.init,
-        isEnglishWord: @escaping @MainActor (String) -> Bool = EnglishDictionary.contains
+        isEnglishWord: @escaping @MainActor (String) -> Bool = EnglishDictionary.contains,
+        loadVerseText: ((String) async -> String?)? = nil
     ) {
         self.reviewQuestionIDs = reviewQuestionIDs
         self.missedQuestions = missedQuestions ?? .shared
         self.sleep = sleep
         self.now = now
         self.isEnglishWord = isEnglishWord
+        self.loadVerseText = loadVerseText ?? { await Self.sourceVerseText(for: $0) }
     }
 
-    var selectedAnswer: String {
-        typedAnswer
+    // MARK: - The answer squares
+
+    /// The letter in each square, or nil for an empty one.
+    var placedLetters: [Character?] {
+        slots.map { $0.map { shuffledLetters[$0] } }
+    }
+
+    /// The placed letters in order, skipping empty squares.
+    var typedAnswer: String {
+        String(slots.compactMap { $0.map { shuffledLetters[$0] } })
+    }
+
+    /// Tray tiles that are in a square.
+    var usedTileIndices: Set<Int> {
+        Set(slots.compactMap { $0 })
+    }
+
+    var isAnswerFull: Bool {
+        !slots.isEmpty && slots.allSatisfy { $0 != nil }
+    }
+
+    var hasPlacedLetters: Bool {
+        slots.contains { $0 != nil }
+    }
+
+    var canUndo: Bool {
+        canEdit && !undoHistory.isEmpty
+    }
+
+    /// Letters can only be moved while a word is on screen and unsolved.
+    private var canEdit: Bool {
+        currentWord != nil && !isCurrentWordResolved
     }
 
     var isLastWord: Bool {
@@ -199,8 +265,7 @@ final class ScrambleGameViewModel {
     }
 
     var canCheckAnswer: Bool {
-        guard let currentWord else { return false }
-        return typedAnswer.count == currentWord.answer.count && !requiresAnswerEdit
+        currentWord != nil && isAnswerFull && !requiresAnswerEdit
     }
 
     var currentTimeLimit: Int? {
@@ -210,6 +275,11 @@ final class ScrambleGameViewModel {
     var hintBadgeText: String? {
         guard maxHintLevel > 0 else { return nil }
         return "\(hintLevel)/\(maxHintLevel)"
+    }
+
+    /// Letter hints plus the verse clue, which counts as one more.
+    var hintsUsed: Int {
+        hintLevel + (isVerseClueShown ? 1 : 0)
     }
 
     var hintFreeSolvedCount: Int {
@@ -233,40 +303,33 @@ final class ScrambleGameViewModel {
         let wordLength = currentWord.answer.count
 
         if difficulty == .hard {
-            // The first Hard hint reveals the opening letter; later hints
-            // reveal up to two different interior letters.
-            return min(3, max(1, wordLength - 1))
+            // Each hint places a letter, so Hard allows one per three letters, up to three:
+            // the opening letter, then interior ones.
+            return min(3, max(1, wordLength / 3), max(1, wordLength - 1))
         }
 
         return min(difficulty.hintLimit, wordLength)
     }
 
-    var hintText: String? {
-        guard hintLevel > 0, let currentWord, let firstLetter = currentWord.answer.first else { return nil }
-
-        guard !hintPositions.isEmpty else {
-            return "Starts with \(firstLetter)."
-        }
-
-        let details = hintPositions.sorted().map { position in
-            let index = currentWord.answer.index(currentWord.answer.startIndex, offsetBy: position)
-            return "Position \(position + 1) is \(currentWord.answer[index])."
-        }
-        return (["Starts with \(firstLetter)."] + details).joined(separator: " ")
-    }
-
+    /// The correct letter for each hinted square, shown faintly whenever the square is empty.
     var hintedLetters: [Character?] {
         guard let currentWord else { return [] }
+        let answer = Array(currentWord.answer)
+        return answer.indices.map { hintPositions.contains($0) ? answer[$0] : nil }
+    }
 
-        var hints = Array<Character?>(repeating: nil, count: currentWord.answer.count)
-        if hintLevel > 0 {
-            hints[0] = currentWord.answer.first
+    var canShowVerseClue: Bool {
+        canEdit && verseText != nil && !isVerseClueShown
+    }
+
+    /// The clue with the word blanked out while the word is unsolved, and the whole verse after.
+    var displayedVerse: VerseDisplay? {
+        guard let currentWord, let verseText, let reference = currentWord.reference else { return nil }
+        if isCurrentWordResolved {
+            return VerseDisplay(text: verseText, reference: reference, isClue: false)
         }
-        for position in hintPositions where position < currentWord.answer.count {
-            let index = currentWord.answer.index(currentWord.answer.startIndex, offsetBy: position)
-            hints[position] = currentWord.answer[index]
-        }
-        return hints
+        guard isVerseClueShown else { return nil }
+        return VerseDisplay(text: Self.blankingOut(currentWord.answer, in: verseText), reference: reference, isClue: true)
     }
 
     /// Each difficulty has its own word list, so each keeps its own pass through it.
@@ -351,6 +414,7 @@ final class ScrambleGameViewModel {
         currentWord = nil
         totalWords = 0
         answerFeedback = nil
+        resetBoard(letterCount: 0)
         session.clearGame()
     }
 
@@ -367,13 +431,14 @@ final class ScrambleGameViewModel {
         currentNumber += 1
         shuffledLetters = scrambledLetters(for: next.answer)
         acceptedAlternate = nil
-        selectedIndices.removeAll()
-        typedAnswer = ""
+        resetBoard(letterCount: next.answer.count)
         answerFeedback = nil
         requiresAnswerEdit = false
         isNextWordReady = false
         hintLevel = 0
         hintPositions.removeAll()
+        verseText = nil
+        isVerseClueShown = false
         strikes = 0
         timeRemaining = currentTimeLimit ?? 0
         isPaused = false
@@ -385,78 +450,251 @@ final class ScrambleGameViewModel {
         session.startQuestion()
     }
 
-    func selectLetter(_ index: Int) {
-        guard !selectedIndices.contains(index),
-              let currentWord,
-              selectedIndices.count < currentWord.answer.count else {
-            return
-        }
+    private func resetBoard(letterCount: Int) {
+        slots = Array(repeating: nil, count: letterCount)
+        heldTile = nil
+        cursorPosition = nil
+        undoHistory.removeAll()
+    }
 
-        selectedIndices.append(index)
-        typedAnswer.append(shuffledLetters[index])
+    /// Every change to the squares goes through here, so it can be undone and clears the last verdict.
+    private func updateSlots(_ change: (inout [Int?]) -> Void) {
+        var updated = slots
+        change(&updated)
+        heldTile = nil
+        guard updated != slots else { return }
+        undoHistory.append(UndoState(slots: slots, letters: shuffledLetters))
+        slots = updated
         answerFeedback = nil
         requiresAnswerEdit = false
     }
 
-    /// Selects the next unused tile matching a hardware-keyboard character.
+    /// The next empty square after `position`, wrapping around.
+    private func nextEmptyPosition(after position: Int) -> Int? {
+        guard !slots.isEmpty else { return nil }
+        return (1...slots.count)
+            .map { (position + $0) % slots.count }
+            .first { slots[$0] == nil }
+    }
+
+    /// A tap on a tray tile: the quick way to build an answer. The letter goes into the chosen
+    /// square, or the first empty one. While a placed letter is held, it goes back to the tray instead.
+    func selectLetter(_ index: Int) {
+        guard canEdit, shuffledLetters.indices.contains(index), !usedTileIndices.contains(index) else { return }
+
+        if case .slot = heldTile {
+            returnHeldTileToTray()
+            return
+        }
+        guard let position = cursorPosition ?? slots.firstIndex(where: { $0 == nil }) else {
+            heldTile = nil
+            return
+        }
+
+        placeTile(index, at: position)
+        if cursorPosition != nil {
+            cursorPosition = nextEmptyPosition(after: position)
+        }
+    }
+
+    /// Places the next unused tile matching a hardware-keyboard character.
     @discardableResult
     func selectLetter(matching character: Character) -> Bool {
+        let used = usedTileIndices
         guard let index = shuffledLetters.indices.first(where: {
-            !selectedIndices.contains($0)
+            !used.contains($0)
                 && String(shuffledLetters[$0]).uppercased() == String(character).uppercased()
         }) else {
             return false
         }
 
-        let previousCount = selectedIndices.count
         selectLetter(index)
-        return selectedIndices.count > previousCount
+        return usedTileIndices.contains(index)
     }
 
-    func removeLastLetter() {
-        guard let index = selectedIndices.popLast() else { return }
-        typedAnswer.removeLast()
+    /// Puts a tray tile into a square. A letter already there goes back to the tray.
+    func placeTile(_ index: Int, at position: Int) {
+        guard canEdit, slots.indices.contains(position), shuffledLetters.indices.contains(index),
+              !usedTileIndices.contains(index) else { return }
+        updateSlots { $0[position] = index }
+    }
+
+    /// Moves a placed letter to another square, swapping with any letter already there.
+    func moveLetter(from source: Int, to destination: Int) {
+        guard canEdit, slots.indices.contains(source), slots.indices.contains(destination),
+              slots[source] != nil else { return }
+        updateSlots { $0.swapAt(source, destination) }
+    }
+
+    func returnToTray(_ position: Int) {
+        guard canEdit, slots.indices.contains(position) else { return }
+        updateSlots { $0[position] = nil }
+    }
+
+    /// A tap on a square. Holding a letter drops it here; otherwise a placed letter is picked
+    /// up, and an empty square becomes (or stops being) where the next letter goes.
+    func tapSquare(_ position: Int) {
+        guard canEdit, slots.indices.contains(position) else { return }
+
+        if heldTile != nil {
+            dropHeldTile(on: position)
+        } else if slots[position] != nil {
+            pickUp(.slot(position))
+        } else {
+            cursorPosition = cursorPosition == position ? nil : position
+        }
+    }
+
+    func pickUp(_ source: TileSource) {
+        guard canEdit else { return }
+        switch source {
+        case .tray(let index):
+            guard shuffledLetters.indices.contains(index), !usedTileIndices.contains(index) else { return }
+        case .slot(let position):
+            guard slots.indices.contains(position), slots[position] != nil else { return }
+        }
+        heldTile = source
+        cursorPosition = nil
+    }
+
+    /// Drops the held letter into a square. Dropping it where it came from just puts it down.
+    func dropHeldTile(on position: Int) {
+        switch heldTile {
+        case .tray(let index): placeTile(index, at: position)
+        case .slot(let source): moveLetter(from: source, to: position)
+        case nil: break
+        }
+        heldTile = nil
+    }
+
+    func returnHeldTileToTray() {
+        if case .slot(let position) = heldTile {
+            returnToTray(position)
+        }
+        heldTile = nil
+    }
+
+    func cancelHold() {
+        heldTile = nil
+    }
+
+    /// Moves the typing cursor one square left or right.
+    func moveCursor(by offset: Int) {
+        guard canEdit, !slots.isEmpty else { return }
+        let start = cursorPosition ?? (offset > 0 ? -1 : slots.count)
+        cursorPosition = min(max(start + offset, 0), slots.count - 1)
+        heldTile = nil
+    }
+
+    /// The Delete key: clears the letter at the cursor, or the last one before it.
+    func deleteBackward() {
+        guard canEdit else { return }
+        let end = cursorPosition.map { $0 + 1 } ?? slots.count
+        guard let position = slots[..<end].lastIndex(where: { $0 != nil }) else { return }
+        returnToTray(position)
+        if cursorPosition != nil {
+            cursorPosition = position
+        }
+    }
+
+    /// Puts back the arrangement before the last move, shuffle or hint letter.
+    func undo() {
+        guard canEdit, let previous = undoHistory.popLast() else { return }
+        slots = previous.slots
+        shuffledLetters = previous.letters
+        heldTile = nil
         answerFeedback = nil
         requiresAnswerEdit = false
-        _ = index
     }
 
     func clearAnswer() {
-        selectedIndices.removeAll()
-        typedAnswer = ""
-        answerFeedback = nil
-        requiresAnswerEdit = false
+        guard hasPlacedLetters else { return }
+        updateSlots { $0 = Array(repeating: nil, count: $0.count) }
+        cursorPosition = nil
     }
 
-    /// Removes the tapped letter and every letter after it, so an answer can be
-    /// corrected directly from its answer slots.
-    func removeLetters(startingAt position: Int) {
-        guard position >= 0, position < selectedIndices.count else { return }
-
-        selectedIndices.removeSubrange(position...)
-        typedAnswer.removeLast(typedAnswer.count - position)
-        answerFeedback = nil
-        requiresAnswerEdit = false
-    }
-
+    /// Reveals a letter and places it in its square. The first hint is the opening letter;
+    /// later Hard hints are interior letters, ones not already right where possible.
     func showHint() {
-        guard !isCurrentWordResolved, maxHintLevel > 0 else { return }
+        guard canEdit, let currentWord, hintLevel < maxHintLevel else { return }
+        let answer = Array(currentWord.answer)
 
-        let nextLevel = min(hintLevel + 1, maxHintLevel)
-        if nextLevel > 1, let currentWord {
-            let wordLength = currentWord.answer.count
-            if difficulty == .hard {
-                // Keep the first and last letters out of later Hard hints,
-                // and never reveal an interior letter twice.
-                let candidates = (1..<(wordLength - 1)).filter { !hintPositions.contains($0) }
-                if let position = candidates.randomElement() {
-                    hintPositions.insert(position)
-                }
-            } else {
-                hintPositions.insert(1)
+        let position: Int?
+        if hintLevel == 0 {
+            position = 0
+        } else {
+            let placed = placedLetters
+            let unrevealed = (1..<max(1, answer.count - 1)).filter { !hintPositions.contains($0) }
+            position = unrevealed.filter { placed[$0] != answer[$0] }.randomElement() ?? unrevealed.randomElement()
+        }
+
+        hintLevel += 1
+        guard let position else { return }
+        hintPositions.insert(position)
+        placeHintedLetter(at: position, answer: answer)
+    }
+
+    /// Puts the correct letter in `position`, using an unused tile if there is one, or else
+    /// taking it from a square where it's wrong. Whatever was in `position` goes back to the tray.
+    private func placeHintedLetter(at position: Int, answer: [Character]) {
+        let letter = answer[position]
+        let placed = placedLetters
+        guard placed[position] != letter else { return }
+
+        let used = usedTileIndices
+        if let tile = shuffledLetters.indices.first(where: { !used.contains($0) && shuffledLetters[$0] == letter }) {
+            updateSlots { $0[position] = tile }
+        } else if let source = slots.indices.first(where: {
+            $0 != position && placed[$0] == letter && answer[$0] != letter
+        }) {
+            updateSlots {
+                $0[position] = $0[source]
+                $0[source] = nil
             }
         }
-        hintLevel = nextLevel
+        if cursorPosition == position {
+            cursorPosition = nextEmptyPosition(after: position)
+        }
+    }
+
+    // MARK: - Verse clue
+
+    /// Loads the current word's source verse, for the clue and for showing after it's solved.
+    func loadVerse() async {
+        guard let word = currentWord, let reference = word.reference, verseText == nil else { return }
+        let text = await loadVerseText(reference)
+        guard currentWord?.id == word.id else { return }
+        verseText = text
+    }
+
+    func showVerseClue() {
+        guard canShowVerseClue else { return }
+        isVerseClueShown = true
+    }
+
+    /// `text` with every appearance of `word` replaced by blanks, so the clue doesn't give it away.
+    /// Longer words that contain it (PRAYED for PRAY) keep their other letters.
+    static func blankingOut(_ word: String, in text: String) -> String {
+        guard !word.isEmpty else { return text }
+        return text.replacingOccurrences(
+            of: word,
+            with: String(repeating: "_", count: word.count),
+            options: [.caseInsensitive, .diacriticInsensitive]
+        )
+    }
+
+    /// The first verse of `reference` in the reader's translation, or nil if it can't be found.
+    static func sourceVerseText(for reference: String) async -> String? {
+        guard let passage = PassageReferenceParser.parse(reference), let verse = passage.startVerse else { return nil }
+        let scriptureRef = ScriptureRef(
+            bookName: passage.bookName,
+            chapter: passage.startChapter,
+            startVerse: verse,
+            endVerse: nil
+        )
+        guard let text = await BibleReferenceLinker.loadVersesEnsuringLoaded(for: scriptureRef)?.verses.first?.text,
+              !text.isEmpty else { return nil }
+        return text
     }
 
     func toggleTimer() {
@@ -468,8 +706,9 @@ final class ScrambleGameViewModel {
     }
 
     func shuffleUnusedLetters() {
-        let selected = Set(selectedIndices)
-        let availableIndices = shuffledLetters.indices.filter { !selected.contains($0) }
+        guard canEdit else { return }
+        let used = usedTileIndices
+        let availableIndices = shuffledLetters.indices.filter { !used.contains($0) }
         guard availableIndices.count > 1 else { return }
 
         let availableLetters = availableIndices.map { shuffledLetters[$0] }
@@ -480,6 +719,8 @@ final class ScrambleGameViewModel {
             rearranged = Array(availableLetters.dropFirst()) + [availableLetters[0]]
         }
 
+        undoHistory.append(UndoState(slots: slots, letters: shuffledLetters))
+        heldTile = nil
         for (index, letter) in zip(availableIndices, rearranged) {
             shuffledLetters[index] = letter
         }
@@ -488,7 +729,7 @@ final class ScrambleGameViewModel {
     func checkAnswer() {
         guard let currentWord, !isCurrentWordResolved, canCheckAnswer else { return }
 
-        let guess = selectedAnswer.uppercased()
+        let guess = typedAnswer.uppercased()
         guard isAcceptedAnswer(guess, for: currentWord.answer) else {
             if difficulty != .easy {
                 strikes += 1
@@ -523,18 +764,26 @@ final class ScrambleGameViewModel {
 
     func revealAnswer() {
         guard let currentWord, !isCurrentWordResolved else { return }
-        typedAnswer = currentWord.answer
-        selectedIndices = Array(shuffledLetters.indices)
+        showAnswerInSquares(currentWord)
         recordWordResult(.wrong, givenAnswer: nil)
         answerFeedback = .revealed
     }
 
     func revealAnswerAfterStrikeLimit(for word: ScrambleWord) {
-        let lastGuess = selectedAnswer.uppercased()
-        typedAnswer = word.answer
-        selectedIndices = Array(shuffledLetters.indices)
+        let lastGuess = typedAnswer.uppercased()
+        showAnswerInSquares(word)
         recordWordResult(.wrong, givenAnswer: lastGuess.isEmpty ? nil : lastGuess)
         answerFeedback = .revealed
+    }
+
+    /// Fills the squares with the word, matching each letter to a tile.
+    private func showAnswerInSquares(_ word: ScrambleWord) {
+        var unused = Array(shuffledLetters.indices)
+        slots = word.answer.map { letter in
+            unused.firstIndex { shuffledLetters[$0] == letter }.map { unused.remove(at: $0) }
+        }
+        heldTile = nil
+        cursorPosition = nil
     }
 
     func runTimer() async {
@@ -561,8 +810,7 @@ final class ScrambleGameViewModel {
     func revealTimedOutAnswer(for word: ScrambleWord?) {
         guard let word else { return }
         wordClock.pause(at: now())
-        typedAnswer = word.answer
-        selectedIndices = Array(shuffledLetters.indices)
+        showAnswerInSquares(word)
         recordWordResult(.timedOut, givenAnswer: nil)
         answerFeedback = .timedOut
     }
@@ -580,7 +828,7 @@ final class ScrambleGameViewModel {
                     correctAnswer: currentWord.answer,
                     category: currentWord.categoryName,
                     reference: currentWord.reference,
-                    hintCount: hintLevel
+                    hintCount: hintsUsed
                 ),
                 savedStreak: persistentStreak
             )

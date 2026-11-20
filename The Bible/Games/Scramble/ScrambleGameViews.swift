@@ -1,13 +1,16 @@
 import SwiftUI
 
 // Subviews for ScrambleGameView: the large split-layout timer, the prompt and answer
-// tiles, the letter tray and its layout, and the action buttons.
+// tiles, the verse card, dragging letters around the board, the letter tray and its
+// layout, and the action buttons.
 
 struct ScrambleLargeTimerView: View {
     let timeRemaining: Int
     let timeLimit: Int?
     let tint: Color
     let isTimerDisabled: Bool
+    /// The verse clue, or the whole verse once solved, using the panel's spare room.
+    let verse: ScrambleGameViewModel.VerseDisplay?
     @Binding var usesMutedStyle: Bool
     let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
@@ -58,6 +61,12 @@ struct ScrambleLargeTimerView: View {
 
             Spacer(minLength: 0)
 
+            if let verse {
+                ScrambleVerseCard(verse: verse)
+                    .frame(maxWidth: 420)
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            }
+
             HStack(spacing: 12) {
                 Button("Swap card sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
 
@@ -96,22 +105,20 @@ struct ScrambleLargeTimerView: View {
         .shadow(color: usesNeutralStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: timeRemaining)
+        .animation(.snappy, value: verse)
     }
 }
 
-struct ScramblePrompt: View {
+struct ScramblePrompt<Tiles: View>: View {
     let category: LocalizedStringKey
     let categoryName: String
     let reference: String?
-    let answer: String
-    let answerLength: Int
-    let hintedLetters: [Character?]
     let isResolved: Bool
-    let isIncorrect: Bool
-    let isCorrect: Bool
+    /// The verse clue, or the whole verse once solved. Nil when the iPad panel shows it instead.
+    let verse: ScrambleGameViewModel.VerseDisplay?
     let timerTint: Color?
-    let onRemoveLetters: (Int) -> Void
     let onShowReference: () -> Void
+    @ViewBuilder let tiles: Tiles
 
     private var categorySymbol: String {
         switch categoryName {
@@ -162,22 +169,14 @@ struct ScramblePrompt: View {
                 }
             }
 
-            Text("Build the word from the letter tiles.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            if let verse {
+                ScrambleVerseCard(verse: verse)
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            }
 
             Spacer(minLength: 28)
 
-            ScrambleAnswerTiles(
-                answer: answer,
-                answerLength: answerLength,
-                hintedLetters: hintedLetters,
-                isResolved: isResolved,
-                isIncorrect: isIncorrect,
-                isCorrect: isCorrect,
-                onRemoveLetters: onRemoveLetters
-            )
+            tiles
         }
         .frame(maxWidth: .infinity)
         .padding(24)
@@ -195,40 +194,200 @@ struct ScramblePrompt: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .strokeBorder(timerTint ?? Color.primary.opacity(0.12), lineWidth: timerTint == nil ? 1 : 2)
         }
+        .animation(.snappy, value: verse)
+    }
+}
+
+/// The source verse: a clue with the word blanked out, or the whole verse once the word is solved.
+struct ScrambleVerseCard: View {
+    let verse: ScrambleGameViewModel.VerseDisplay
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label(verse.isClue ? "Verse Clue" : "From the Verse", systemImage: verse.isClue ? "text.quote" : "book.pages")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            Text(verse.text)
+                .font(.callout)
+                .fontDesign(.serif)
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(verse.reference)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(verse.isClue ? "Verse clue" : "From the verse")
+        // VoiceOver would read each blank as "underscore".
+        .accessibilityValue("\(verse.text.replacing(/_+/, with: "blank")), \(verse.reference)")
+    }
+}
+
+/// Where each answer square and tray tile sits, and the letter being dragged, so a drag or an
+/// Apple Pencil squeeze can tell what's under it. Frames are in the board's coordinate space.
+@Observable
+final class ScrambleBoardLayout {
+    static let coordinateSpace = "scrambleBoard"
+
+    enum Target: Hashable {
+        case square(Int)
+        case trayTile(Int)
+        /// The tray itself, including the gaps left by placed letters.
+        case tray
+    }
+
+    struct Drag: Equatable {
+        let source: ScrambleGameViewModel.TileSource
+        let letter: Character
+        var location: CGPoint
+        var target: Target?
+    }
+
+    var drag: Drag?
+    /// Written on every layout pass, so it's left out of observation.
+    @ObservationIgnored var frames: [Target: CGRect] = [:]
+
+    /// What's at `point`. Squares can be narrow on small phones, so each also catches the gap
+    /// beside it and a band above and below; the nearest one wins.
+    func target(at point: CGPoint) -> Target? {
+        let squares = frames.compactMap { target, frame -> (Int, CGRect)? in
+            guard case .square(let position) = target,
+                  frame.insetBy(dx: -6, dy: -24).contains(point) else { return nil }
+            return (position, frame)
+        }
+        if let nearest = squares.min(by: { abs($0.1.midX - point.x) < abs($1.1.midX - point.x) }) {
+            return .square(nearest.0)
+        }
+        for (target, frame) in frames {
+            if case .trayTile = target, frame.insetBy(dx: -4, dy: -4).contains(point) {
+                return target
+            }
+        }
+        if let tray = frames[.tray], tray.insetBy(dx: -16, dy: -16).contains(point) {
+            return .tray
+        }
+        return nil
+    }
+}
+
+extension View {
+    /// Records this view's frame on the board so drags and Pencil squeezes can find it.
+    func scrambleBoardTarget(_ target: ScrambleBoardLayout.Target, in layout: ScrambleBoardLayout) -> some View {
+        onGeometryChange(for: CGRect.self) { proxy in
+            proxy.frame(in: .named(ScrambleBoardLayout.coordinateSpace))
+        } action: { frame in
+            layout.frames[target] = frame
+        }
+        .onDisappear {
+            layout.frames[target] = nil
+        }
+    }
+}
+
+/// Drags a letter around the board. A custom gesture rather than system drag and drop, which
+/// waits for a long press before lifting and feels slow in a game.
+private struct ScrambleTileDrag: ViewModifier {
+    let source: ScrambleGameViewModel.TileSource
+    let letter: Character
+    let layout: ScrambleBoardLayout
+    let isEnabled: Bool
+    let onDrop: (ScrambleGameViewModel.TileSource, ScrambleBoardLayout.Target?) -> Void
+    @GestureState private var isDragging = false
+
+    func body(content: Content) -> some View {
+        content
+            .gesture(
+                DragGesture(minimumDistance: 6, coordinateSpace: .named(ScrambleBoardLayout.coordinateSpace))
+                    .updating($isDragging) { _, isDragging, _ in isDragging = true }
+                    .onChanged { value in
+                        let target = layout.target(at: value.location)
+                        if layout.drag?.source == source {
+                            layout.drag?.location = value.location
+                            layout.drag?.target = target
+                        } else {
+                            layout.drag = ScrambleBoardLayout.Drag(
+                                source: source,
+                                letter: letter,
+                                location: value.location,
+                                target: target
+                            )
+                        }
+                    }
+                    .onEnded { value in
+                        layout.drag = nil
+                        onDrop(source, layout.target(at: value.location))
+                    },
+                isEnabled: isEnabled
+            )
+            .onChange(of: isDragging) { _, isDragging in
+                // A drag the system cancels never reaches onEnded, so put the letter down here.
+                if !isDragging, layout.drag?.source == source {
+                    layout.drag = nil
+                }
+            }
+    }
+}
+
+extension View {
+    func scrambleTileDrag(
+        _ source: ScrambleGameViewModel.TileSource,
+        letter: Character,
+        layout: ScrambleBoardLayout,
+        isEnabled: Bool,
+        onDrop: @escaping (ScrambleGameViewModel.TileSource, ScrambleBoardLayout.Target?) -> Void
+    ) -> some View {
+        modifier(ScrambleTileDrag(source: source, letter: letter, layout: layout, isEnabled: isEnabled, onDrop: onDrop))
+    }
+}
+
+/// The letter that follows a finger or pointer during a drag.
+struct ScrambleFloatingTile: View {
+    let letter: Character
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+        Text(String(letter))
+            .font(.title3.weight(.bold))
+            .frame(width: 48, height: 48)
+            .background(.regularMaterial, in: shape)
+            .overlay { shape.strokeBorder(Color.pink, lineWidth: 2) }
+            .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
+            .scaleEffect(1.1)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
     }
 }
 
 struct ScrambleAnswerTiles: View {
-    let answer: String
-    let answerLength: Int
-    let hintedLetters: [Character?]
-    let isResolved: Bool
+    let vm: ScrambleGameViewModel
+    let layout: ScrambleBoardLayout
     let isIncorrect: Bool
     let isCorrect: Bool
-    let onRemoveLetters: (Int) -> Void
+    let onDrop: (ScrambleGameViewModel.TileSource, ScrambleBoardLayout.Target?) -> Void
     @State private var shakeOffset: CGFloat = 0
     @State private var showsCorrectHighlight = false
 
     var body: some View {
+        let letters = vm.placedLetters
+        let hints = vm.hintedLetters
+
         GeometryReader { proxy in
-            let metrics = Self.tileMetrics(availableWidth: proxy.size.width, tileCount: max(answerLength, 1))
+            let metrics = Self.tileMetrics(availableWidth: proxy.size.width, tileCount: max(letters.count, 1))
 
             HStack(spacing: metrics.spacing) {
-                ForEach(0..<answerLength, id: \.self) { index in
-                    let letter = letter(at: index)
-                    let tile = tile(letter: letter, hint: hint(at: index), metrics: metrics)
-
-                    if letter.isEmpty || isResolved {
-                        tile
-                    } else {
-                        Button {
-                            onRemoveLetters(index)
-                        } label: {
-                            tile
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Remove letters from position \(index + 1)")
-                    }
+                ForEach(letters.indices, id: \.self) { index in
+                    square(
+                        at: index,
+                        letter: letters[index],
+                        hint: index < hints.count ? hints[index] : nil,
+                        count: letters.count,
+                        metrics: metrics
+                    )
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -267,9 +426,10 @@ struct ScrambleAnswerTiles: View {
                 showsCorrectHighlight = false
             }
         }
-        .accessibilityElement(children: .ignore)
+        .animation(.snappy(duration: 0.2), value: vm.slots)
+        .animation(.snappy(duration: 0.2), value: vm.heldTile)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel("Answer")
-        .accessibilityValue(answer.isEmpty ? "Empty" : answer)
     }
 
     // The tile's size, letter, and colors are worked out in these helpers rather than inline
@@ -279,6 +439,11 @@ struct ScrambleAnswerTiles: View {
         let spacing: CGFloat
         let width: CGFloat
         let height: CGFloat
+    }
+
+    /// How one square looks, from most to least important.
+    private enum SquareStyle {
+        case correct, incorrect, dropTarget, held, cursor, hintedLetter, ghostHint, plain
     }
 
     /// Tiles as wide as fits (up to 48 points), with the gaps shrinking first for long words.
@@ -292,56 +457,116 @@ struct ScrambleAnswerTiles: View {
         return TileMetrics(spacing: spacing, width: width, height: min(56, max(36, width + 8)))
     }
 
-    /// The typed letter at `index`, or "" past the end of what's been typed.
-    private func letter(at index: Int) -> String {
-        guard index < answer.count else { return "" }
-        return String(answer[answer.index(answer.startIndex, offsetBy: index)])
+    private func style(at index: Int, letter: Character?, hint: Character?) -> SquareStyle {
+        if showsCorrectHighlight { return .correct }
+        if isIncorrect { return .incorrect }
+        if layout.drag?.target == .square(index) { return .dropTarget }
+        if vm.heldTile == .slot(index) { return .held }
+        if vm.cursorPosition == index { return .cursor }
+        if let letter, letter == hint { return .hintedLetter }
+        if letter == nil, hint != nil { return .ghostHint }
+        return .plain
     }
 
-    /// A revealed hint letter for an untyped position, or "".
-    private func hint(at index: Int) -> String {
-        guard index >= answer.count, index < hintedLetters.count else { return "" }
-        return hintedLetters[index].map(String.init) ?? ""
-    }
-
-    private func tile(letter: String, hint: String, metrics: TileMetrics) -> some View {
-        let showsHint = letter.isEmpty && !hint.isEmpty
+    /// How a square looks; `square(at:)` adds what it does.
+    private func squareFace(at index: Int, letter: Character?, hint: Character?, metrics: TileMetrics) -> some View {
+        let style = style(at: index, letter: letter, hint: hint)
+        let isDragSource = layout.drag?.source == .slot(index)
         let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
 
-        return Text(letter.isEmpty ? hint : letter)
+        return Text(letter.map { String($0) } ?? hint.map { String($0) } ?? "")
             .font(.title3.weight(.bold).monospaced())
-            .foregroundStyle(textColor(showsHint: showsHint))
+            .foregroundStyle(textColor(style))
+            .opacity(isDragSource ? 0.25 : 1)
             .lineLimit(1)
             .minimumScaleFactor(0.5)
             .frame(width: metrics.width, height: metrics.height)
-            .background(fillColor(showsHint: showsHint), in: shape)
+            .background(fillColor(style), in: shape)
             .overlay {
-                shape.strokeBorder(
-                    strokeColor(showsHint: showsHint),
-                    lineWidth: isIncorrect || showsCorrectHighlight || showsHint ? 2 : 1
-                )
+                shape.strokeBorder(strokeColor(style), lineWidth: style == .plain ? 1 : 2)
             }
-            .offset(x: shakeOffset)
+            // While a letter is held, every square shows it can take the drop.
+            .overlay {
+                if vm.heldTile != nil, style == .plain || style == .ghostHint {
+                    shape.strokeBorder(Color.pink.opacity(0.45), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                }
+            }
+            .scaleEffect(style == .held ? 1.08 : 1)
+            .offset(x: shakeOffset, y: style == .held ? -4 : 0)
     }
 
-    private func textColor(showsHint: Bool) -> Color {
-        if showsCorrectHighlight { return .green }
-        if showsHint { return .yellow }
-        return isResolved ? .secondary : .primary
+    private func square(at index: Int, letter: Character?, hint: Character?, count: Int, metrics: TileMetrics) -> some View {
+        let isResolved = vm.isCurrentWordResolved
+
+        return squareFace(at: index, letter: letter, hint: hint, metrics: metrics)
+            .contentShape(Rectangle())
+            .onTapGesture { vm.tapSquare(index) }
+            .scrambleTileDrag(
+                .slot(index),
+                letter: letter ?? " ",
+                layout: layout,
+                isEnabled: letter != nil && !isResolved,
+                onDrop: onDrop
+            )
+            .scrambleBoardTarget(.square(index), in: layout)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Square \(index + 1)")
+            .accessibilityValue(accessibilityValue(letter: letter, hint: hint))
+            .accessibilityAddTraits(isResolved ? [] : .isButton)
+            .accessibilityHint(isResolved ? "" : accessibilityHint(at: index, letter: letter))
+            .accessibilityAction { vm.tapSquare(index) }
+            .accessibilityActions {
+                if letter != nil, !isResolved {
+                    Button("Return to tray") { vm.returnToTray(index) }
+                    ForEach(Array(0..<count).filter { $0 != index }, id: \.self) { destination in
+                        Button("Move to square \(destination + 1)") {
+                            vm.moveLetter(from: index, to: destination)
+                        }
+                    }
+                }
+            }
     }
 
-    private func fillColor(showsHint: Bool) -> Color {
-        if isIncorrect { return Color.orange.opacity(0.10) }
-        if showsCorrectHighlight { return Color.green.opacity(0.18) }
-        if showsHint { return Color.yellow.opacity(0.12) }
-        return .clear
+    private func accessibilityValue(letter: Character?, hint: Character?) -> String {
+        if let letter { return String(letter) }
+        if let hint { return String(localized: "Empty, hint \(String(hint))") }
+        return String(localized: "Empty")
     }
 
-    private func strokeColor(showsHint: Bool) -> Color {
-        if isIncorrect { return .orange }
-        if showsCorrectHighlight { return .green }
-        if showsHint { return Color.yellow.opacity(0.8) }
-        return Color.primary.opacity(isResolved ? 0.08 : 0.15)
+    private func accessibilityHint(at index: Int, letter: Character?) -> String {
+        if vm.heldTile == .slot(index) { return String(localized: "Double tap to put the letter back down.") }
+        if vm.heldTile != nil { return String(localized: "Double tap to drop the held letter here.") }
+        if letter != nil { return String(localized: "Double tap to pick up this letter.") }
+        return String(localized: "Double tap to fill this square next.")
+    }
+
+    private func textColor(_ style: SquareStyle) -> Color {
+        switch style {
+        case .correct: .green
+        case .ghostHint: .yellow
+        default: vm.isCurrentWordResolved ? .secondary : .primary
+        }
+    }
+
+    private func fillColor(_ style: SquareStyle) -> Color {
+        switch style {
+        case .correct: Color.green.opacity(0.18)
+        case .incorrect: Color.orange.opacity(0.10)
+        case .dropTarget: Color.pink.opacity(0.18)
+        case .held: Color.pink.opacity(0.10)
+        case .hintedLetter, .ghostHint: Color.yellow.opacity(0.12)
+        case .cursor, .plain: .clear
+        }
+    }
+
+    private func strokeColor(_ style: SquareStyle) -> Color {
+        switch style {
+        case .correct: .green
+        case .incorrect: .orange
+        case .dropTarget, .held, .cursor: .pink
+        case .hintedLetter, .ghostHint: Color.yellow.opacity(0.8)
+        case .plain: Color.primary.opacity(vm.isCurrentWordResolved ? 0.08 : 0.15)
+        }
     }
 }
 
@@ -366,30 +591,80 @@ struct ScrambleStrikeIndicator: View {
     }
 }
 
+/// The letter tiles. A placed tile leaves a gap where it was, so the others don't move and
+/// there's a spot to put it back.
 struct ScrambleLetterTray: View {
-    let letters: [Character]
-    let selectedIndices: [Int]
-    let onSelect: (Int) -> Void
+    let vm: ScrambleGameViewModel
+    let layout: ScrambleBoardLayout
+    let onDrop: (ScrambleGameViewModel.TileSource, ScrambleBoardLayout.Target?) -> Void
 
     var body: some View {
+        let used = vm.usedTileIndices
+
         ScrambleLetterFlowLayout {
-            ForEach(letters.indices.filter { !selectedIndices.contains($0) }, id: \.self) { index in
-                Button {
-                    onSelect(index)
-                } label: {
-                    Text(String(letters[index]))
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.primary)
+            ForEach(vm.shuffledLetters.indices, id: \.self) { index in
+                if used.contains(index) {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Color.primary.opacity(0.12), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
                         .frame(width: 48, height: 48)
+                        .accessibilityHidden(true)
+                } else {
+                    tile(at: index)
                 }
-                .buttonStyle(ScrambleLetterTileStyle())
-                .hoverEffect(.lift)
-                .accessibilityLabel("\(String(letters[index])), available")
-                .accessibilityHint("Double tap to add this letter.")
             }
         }
         .frame(maxWidth: 360, alignment: .center)
+        .contentShape(Rectangle())
+        // Tapping the tray, gaps included, puts a held letter back.
+        .onTapGesture {
+            vm.returnHeldTileToTray()
+        }
+        .scrambleBoardTarget(.tray, in: layout)
         .frame(maxWidth: .infinity, alignment: .center)
+        .animation(.snappy(duration: 0.2), value: vm.shuffledLetters)
+        .animation(.snappy(duration: 0.2), value: used)
+    }
+
+    private func tile(at index: Int) -> some View {
+        let letter = vm.shuffledLetters[index]
+        let isHeld = vm.heldTile == .tray(index)
+        let isDragSource = layout.drag?.source == .tray(index)
+        let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+
+        return Text(String(letter))
+            .font(.title3.weight(.bold))
+            .foregroundStyle(.primary)
+            .frame(width: 48, height: 48)
+            .background(isHeld ? Color.pink.opacity(0.10) : .clear, in: shape)
+            .overlay {
+                shape.strokeBorder(isHeld ? Color.pink : Color.primary.opacity(0.15), lineWidth: isHeld ? 2 : 1)
+            }
+            .opacity(isDragSource ? 0.25 : 1)
+            .scaleEffect(isHeld ? 1.08 : 1)
+            .offset(y: isHeld ? -4 : 0)
+            .contentShape(shape)
+            .hoverEffect(.lift)
+            .onTapGesture { vm.selectLetter(index) }
+            .scrambleTileDrag(
+                .tray(index),
+                letter: letter,
+                layout: layout,
+                isEnabled: !vm.isCurrentWordResolved,
+                onDrop: onDrop
+            )
+            .scrambleBoardTarget(.trayTile(index), in: layout)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(String(letter)), available")
+            .accessibilityAddTraits(.isButton)
+            .accessibilityHint("Double tap to add this letter.")
+            .accessibilityAction { vm.selectLetter(index) }
+            .accessibilityActions {
+                ForEach(vm.slots.indices, id: \.self) { position in
+                    Button("Place in square \(position + 1)") {
+                        vm.placeTile(index, at: position)
+                    }
+                }
+            }
     }
 }
 
@@ -440,19 +715,6 @@ struct ScrambleLetterFlowLayout: Layout {
 
     private func columnCount(for width: CGFloat) -> Int {
         max(1, Int((width + spacing) / (tileSize + spacing)))
-    }
-}
-
-struct ScrambleLetterTileStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .background(Color.clear, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.15), lineWidth: 1)
-            }
-            .opacity(configuration.isPressed ? 0.65 : 1)
-            .scaleEffect(configuration.isPressed ? 0.96 : 1)
     }
 }
 

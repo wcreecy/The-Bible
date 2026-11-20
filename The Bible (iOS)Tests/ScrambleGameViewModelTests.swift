@@ -12,6 +12,7 @@ struct ScrambleGameViewModelTests {
     private func withNormalGame(
         missed: MissedGameQuestionStore? = nil,
         isEnglishWord: @escaping (String) -> Bool = { _ in false },
+        verseText: String? = nil,
         _ body: (ScrambleGameViewModel, ManualSleeper) async -> Void
     ) async {
         let before = UserDefaults.standard.dictionaryRepresentation()
@@ -31,7 +32,8 @@ struct ScrambleGameViewModelTests {
             missedQuestions: missed ?? MissedGameQuestionStore(entries: []),
             sleep: clock.sleep(for:),
             now: { clock.date },
-            isEnglishWord: isEnglishWord
+            isEnglishWord: isEnglishWord,
+            loadVerseText: { _ in verseText }
         )
         game.difficulty = .normal
         game.sessionLength = .short
@@ -48,7 +50,7 @@ struct ScrambleGameViewModelTests {
     private func type(_ answer: String, into game: ScrambleGameViewModel) {
         for letter in answer {
             let index = game.shuffledLetters.indices.first {
-                game.shuffledLetters[$0] == letter && !game.selectedIndices.contains($0)
+                game.shuffledLetters[$0] == letter && !game.usedTileIndices.contains($0)
             }
             if let index { game.selectLetter(index) }
         }
@@ -135,41 +137,87 @@ struct ScrambleGameViewModelTests {
         }
     }
 
-    @Test
-    func hardHintsRevealTheOpeningThenTwoDifferentInteriorLetters() {
-        let savedDifficulty = UserDefaults.standard.object(forKey: "scrambleDifficulty")
-        defer { UserDefaults.standard.set(savedDifficulty, forKey: "scrambleDifficulty") }
-
-        let game = ScrambleGameViewModel()
-        game.difficulty = .hard
-        let word = ScrambleWordEntry(
-            word: "Shepherd",
-            category: "Roles",
-            difficulty: "hard",
-            reference: nil
-        )
-        game.currentWord = ScrambleGameViewModel.ScrambleWord(word)
-
-        game.showHint()
-
-        #expect(game.hintLevel == 1)
-        #expect(game.hintPositions.isEmpty)
-        #expect(game.hintedLetters.first! == game.currentWord?.answer.first)
-
-        game.showHint()
-        game.showHint()
-
-        let answer = try! #require(game.currentWord?.answer)
-        #expect(game.hintLevel == 3)
-        #expect(game.hintPositions.count == 2)
-        for position in game.hintPositions {
-            #expect(position > 0)
-            #expect(position < answer.count - 1)
-            #expect(game.hintedLetters[position] != nil)
+    /// A Hard game whose current word is `word`, outside a session, with settings put back after.
+    private func withHardWord(_ word: String, _ body: (ScrambleGameViewModel) -> Void) {
+        // Loading a word records it in the word history, so that's put back too.
+        let keys = ["scrambleDifficulty", AppStorageKey.gameQuestionRecency]
+        let saved = keys.map { UserDefaults.standard.object(forKey: $0) }
+        defer {
+            for (key, value) in zip(keys, saved) {
+                if let value { UserDefaults.standard.set(value, forKey: key) } else { UserDefaults.standard.removeObject(forKey: key) }
+            }
         }
 
-        game.recordWordResult(.correct, givenAnswer: answer)
-        #expect(game.session.entries.last?.hintCount == 3)
+        let game = ScrambleGameViewModel(missedQuestions: MissedGameQuestionStore(entries: []), loadVerseText: { _ in nil })
+        game.difficulty = .hard
+        game.deck = [ScrambleGameViewModel.ScrambleWord(
+            ScrambleWordEntry(word: word, category: "Roles", difficulty: "hard", reference: nil)
+        )!]
+        game.loadNextWord()
+        body(game)
+    }
+
+    @Test
+    func hardHintsPlaceTheOpeningThenADifferentInteriorLetter() {
+        withHardWord("Shepherd") { game in
+            let answer = Array(game.currentWord!.answer)
+            // Eight letters allow two hints, one per three letters.
+            #expect(game.maxHintLevel == 2)
+
+            game.showHint()
+            #expect(game.hintLevel == 1)
+            #expect(game.hintPositions == [0])
+            #expect(game.placedLetters[0] == answer[0])
+
+            game.showHint()
+            game.showHint()
+            #expect(game.hintLevel == 2)
+            #expect(game.hintPositions.count == 2)
+            for position in game.hintPositions {
+                #expect(position < answer.count - 1)
+                #expect(game.hintedLetters[position] == answer[position])
+                #expect(game.placedLetters[position] == answer[position])
+            }
+
+            game.recordWordResult(.correct, givenAnswer: String(answer))
+            #expect(game.session.entries.last?.hintCount == 2)
+        }
+    }
+
+    @Test
+    func shortHardWordsGetOneHint() {
+        withHardWord("Isaac") { game in
+            #expect(game.maxHintLevel == 1)
+        }
+    }
+
+    @Test
+    func aHintSendsAWrongLetterBackAndKeepsItsGhostWhenRemoved() {
+        withHardWord("Moses") { game in
+            // Put a letter other than M in the first square.
+            let wrong = game.shuffledLetters.indices.first { game.shuffledLetters[$0] != "M" }!
+            game.placeTile(wrong, at: 0)
+
+            game.showHint()
+            #expect(game.placedLetters[0] == "M")
+            #expect(!game.usedTileIndices.contains(wrong))
+
+            game.returnToTray(0)
+            #expect(game.placedLetters[0] == nil)
+            #expect(game.hintedLetters[0] == "M")
+        }
+    }
+
+    @Test
+    func aHintTakesItsLetterFromASquareWhereItIsWrong() {
+        withHardWord("Moses") { game in
+            let m = game.shuffledLetters.firstIndex(of: "M")!
+            game.placeTile(m, at: 3)
+
+            game.showHint()
+            #expect(game.placedLetters[0] == "M")
+            #expect(game.placedLetters[3] == nil)
+        }
     }
 
     @Test
@@ -320,5 +368,154 @@ struct ScrambleGameViewModelTests {
             #expect(asked.count == 10)
             #expect(Set(asked).count == 10)
         }
+    }
+
+    // MARK: - Placing letters
+
+    @Test
+    func aTrayTapFillsTheFirstEmptySquare() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            game.selectLetter(2)
+            game.selectLetter(0)
+            #expect(game.slots.prefix(2) == [2, 0])
+            #expect(game.slots.dropFirst(2).allSatisfy { $0 == nil })
+        }
+    }
+
+    @Test
+    func choosingAnEmptySquareSendsTheNextLetterThere() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            game.tapSquare(3)
+            #expect(game.cursorPosition == 3)
+
+            game.selectLetter(0)
+            #expect(game.slots[3] == 0)
+            // The cursor moves on to the next empty square.
+            #expect(game.cursorPosition == 4)
+        }
+    }
+
+    @Test
+    func pickingUpALetterAndDroppingItOnAnotherSwapsThem() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            game.selectLetter(0)
+            game.selectLetter(1)
+
+            game.tapSquare(0)
+            #expect(game.heldTile == .slot(0))
+            game.tapSquare(1)
+            #expect(game.heldTile == nil)
+            #expect(game.slots.prefix(2) == [1, 0])
+
+            // Moving to an empty square leaves the old one empty.
+            game.moveLetter(from: 0, to: 4)
+            #expect(game.slots[0] == nil)
+            #expect(game.slots[4] == 1)
+        }
+    }
+
+    @Test
+    func aHeldLetterGoesBackToTheTrayWhenTheTrayIsTapped() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            game.selectLetter(0)
+            game.selectLetter(1)
+            game.tapSquare(0)
+
+            game.selectLetter(2)
+            #expect(game.slots[0] == nil)
+            // The tapped tile isn't placed; the tap only put the held letter back.
+            #expect(!game.usedTileIndices.contains(2))
+        }
+    }
+
+    @Test
+    func undoPutsBackEachMoveInTurn() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            game.selectLetter(0)
+            game.selectLetter(1)
+            game.moveLetter(from: 0, to: 1)
+
+            game.undo()
+            #expect(game.slots.prefix(2) == [0, 1])
+            game.undo()
+            game.undo()
+            #expect(!game.hasPlacedLetters)
+            #expect(!game.canUndo)
+        }
+    }
+
+    @Test
+    func deleteClearsTheLastLetterBeforeTheCursor() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            game.placeTile(0, at: 0)
+            game.placeTile(1, at: 3)
+
+            game.deleteBackward()
+            #expect(game.slots[3] == nil)
+            game.deleteBackward()
+            #expect(!game.hasPlacedLetters)
+        }
+    }
+
+    @Test
+    func anAnswerWithAGapCannotBeChecked() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            let answer = try! #require(game.currentWord?.answer)
+            type(answer, into: game)
+            game.returnToTray(1)
+
+            #expect(!game.canCheckAnswer)
+            game.checkAnswer()
+            #expect(game.answerFeedback == nil)
+        }
+    }
+
+    @Test
+    func revealingFillsTheSquaresWithTheWord() async {
+        await withNormalGame { game, _ in
+            game.startSession()
+            let answer = try! #require(game.currentWord?.answer)
+            game.placeTile(0, at: 2)
+
+            game.revealAnswer()
+            #expect(game.typedAnswer == answer)
+            #expect(game.usedTileIndices.count == answer.count)
+        }
+    }
+
+    // MARK: - Verse clue
+
+    @Test
+    func theVerseClueBlanksTheWordAndCountsAsAHint() async {
+        await withNormalGame(verseText: "And the child grew, and he called his name Moses.") { game, _ in
+            game.wordBank = [
+                ScrambleWordEntry(word: "Moses", category: "People", difficulty: "normal", reference: "Exodus 2:10")
+            ].compactMap(ScrambleGameViewModel.ScrambleWord.init)
+            game.startSession()
+            await game.loadVerse()
+            #expect(game.displayedVerse == nil)
+
+            game.showVerseClue()
+            #expect(game.displayedVerse?.isClue == true)
+            #expect(game.displayedVerse?.text == "And the child grew, and he called his name _____.")
+
+            game.revealAnswer()
+            // Once the word is over, the whole verse shows.
+            #expect(game.displayedVerse?.text.hasSuffix("Moses.") == true)
+            #expect(game.session.entries.last?.hintCount == 1)
+        }
+    }
+
+    @Test
+    func blankingIgnoresCase() {
+        let text = ScrambleGameViewModel.blankingOut("LORD", in: "The Lord is my shepherd; the lordship")
+        #expect(text == "The ____ is my shepherd; the ____ship")
     }
 }

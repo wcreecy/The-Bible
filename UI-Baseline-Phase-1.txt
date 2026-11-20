@@ -3,8 +3,10 @@ Date: 2026-11-19
 Scope: Inspection only. No application source changes.
 
 STATUS
-Source inventory complete; runtime inspection in progress.
-Visual judgments below remain provisional until supported by screenshots.
+Initial representative baseline review complete. Coverage limitations are below.
+Build and launch succeeded on iPhone 17 simulator (iOS 27.2).
+The existing personalized Home configuration shows two cards and hides eight;
+this is not a default-install or full-dashboard baseline.
 
 SOURCE-CONFIRMED DIFFERENCES
 1. Content surfaces
@@ -74,4 +76,111 @@ COVERAGE REQUIRED BEFORE THE FULL BASELINE IS COMPLETE
 - Record gaps explicitly rather than treating an untested configuration as passing.
 
 RUNTIME FINDINGS AND SCREENSHOT INDEX
-Pending runtime inspection.
+Screenshots are stored in UI-Baseline-Screenshots/ alongside this report.
+
+B1 — Confirmed layout bug; highest cleanup priority
+iPhone accessibility XXXL Home extends beyond the right edge. The greeting,
+search field, and card content are clipped; the Welcome heading breaks awkwardly
+into "Wel-" / "come" and the trailing header control is partly offscreen.
+Reproduced in a settled capture with -UITesting (all Home cards visible).
+Evidence: iphone-light-accessibility-xxxl-home.png.
+Investigation entry points: Home/HomeView.swift:181-203,
+Home/HomeScrollContent.swift:32-43, and the individual Home card header layouts.
+Root cause is not yet isolated. Fix width negotiation and adaptive card headers;
+do not shrink accessibility fonts to hide the problem.
+Acceptance: no horizontal overflow; readable headings and reachable controls at
+the same text size, with all Home cards visible, on narrow iPhone layouts.
+
+B2 — Confirmed layout bug; highest cleanup priority
+iPhone accessibility XXXL More footer squeezes its title and subtitle into a
+tiny column (isolated letters and ellipses). Its controls consume the row width.
+Evidence: iphone-light-accessibility-xxxl-more.png.
+Source: App/AppSharing.swift:361-416 keeps icon, text, and both buttons in an HStack
+and limits both text labels to two lines. MoreView pins this footer above clearance.
+Proposed fix: allow a vertical text/action arrangement at narrow widths or large
+text sizes, and verify that the More list remains scrollable and reachable.
+Acceptance: complete readable copy and usable Share/QR controls at accessibility
+XXXL on iPhone. iPad's wider version currently wraps successfully; preserve that.
+
+These two defects should be addressed before aesthetic surface/button changes,
+even though adaptive layout work was originally grouped under Phase 4.
+
+V1 — Confirmed appearance difference; Phase 2 refinement
+Home and Stats cards have a pronounced border/shadow compared with More and
+Settings grouped rows. More combines a quiet list with a heavier footer card.
+Evidence: iphone-light-home.png, iphone-light-stats.png, iphone-light-more.png.
+Recommendation: reduce content-surface emphasis consistently. No text overlap
+or unreadability is established by these captures.
+
+V2 — Confirmed navigation difference; Phase 4 design decision
+Saved Verses opens with a large title while Stats and Settings use inline titles.
+Evidence: iphone-light-saved.png, iphone-light-stats.png, iphone-light-settings.png.
+Recommendation: adopt the proposed pushed-screen rule or explicitly document
+Saved Verses as a library exception.
+
+V3 — Visible whitespace; Phase 4 refinement candidate, not a confirmed bug
+More's footer is separated from the tab bar by a substantial empty gap, in addition
+to the intentionally sparse center of this three-row screen.
+Evidence: iphone-light-more.png.
+Recommendation: compare bottom spacing across screen sizes before altering shared
+clearance. Do not treat content scrolling behind the translucent tab bar as a bug.
+
+V4 — Additional visual action inconsistency; Phase 3 refinement candidate
+Games' recommendation uses a thin purple Play capsule, unlike shared primary
+buttons. The entire recommendation card is the button, so the thin capsule does
+not establish a small touch-target defect.
+Evidence: iphone-light-games.png; Games/GamesViewRows.swift:133-146.
+Recommendation: align the visible action cue with the app's chosen hierarchy.
+
+V5 — Dark appearance follow-up; not a measured contrast failure
+Home's verse reference, refresh time, reading date, and preview text look faint
+against the dark translucent cards. Main headings and verse text remain readable
+in this capture. Measure contrast with actual backgrounds before classifying it
+as an accessibility failure; this baseline is not a contrast compliance audit.
+Evidence: iphone-dark-home.png.
+
+iPhone captures:
+- Light: Home, Books, Notes, Games, More, Saved Verses, Stats, Settings.
+- Dark: Home, Settings, Appearance detail.
+- Book Order setup capture caught a navigation transition; do not use transient
+  edge geometry as evidence of a layout defect.
+- Saved Verses is empty; Notes contains a pinned note; Stats contains history.
+- Existing Home uses a gradient background and a photographic greeting header.
+- App appearance was restored to its original System preference after review.
+
+Saved Verses was inspected in its empty state. This is expected, not missing data.
+The gallery index.html provides clickable original-resolution images;
+screenshots are evidence, not mockups. It contains 23 captures, including one
+explicitly excluded transitional Book Order capture.
+
+FINAL COVERAGE
+- iPhone 17 / iOS 27.2: all five tabs light; empty Saved Verses; Stats; Settings;
+  Home/Appearance/Settings dark; John 3 reader; Choose a Book sheet;
+  Home/More at accessibility XXXL using launch-only overrides and -UITesting.
+- iPad A16 / iOS 27.2: Home/More normal size light and dark;
+  Home/More/Games accessibility XXXL, using -UITesting.
+- iPad large-text visible portions wrap without observed overlap or clipping.
+- The normal iPad dashboard also shows an abbreviated onboarding action
+  ("Set a daily rea..."). Consider wrapping meaningful action labels during the
+  layout phase; this is lower priority than the iPhone overflow defects.
+- Both devices were relaunched without test overrides and System appearance was
+  restored. All device interaction sessions were closed.
+
+LIMITATIONS / REMAINING BASELINE CHECKS
+Not covered: custom photo/color content backgrounds beyond the existing gradient,
+landscape and resized windows, every scrolled card, populated Saved Verses,
+active game/result states, or every dark/large-text screen combination.
+Small-control hit-region measurements and numerical contrast testing remain open.
+Reader navigation can update ordinary reading position/statistics; no notes,
+favorites, or other content were deliberately created, edited, or deleted.
+No blanket accessibility or layout pass is claimed for untested configurations.
+
+RECOMMENDED IMPLEMENTATION ORDER
+1. Repair B1/B2 (narrow-screen large-text layout), then repeat their captures.
+2. Phase 2 content surfaces: V1; retain deliberate game accents and Home header.
+3. Phase 3 action hierarchy/touch regions: source findings 2/4 and V4.
+4. Phase 4 navigation/spacing: V2/V3 and abbreviated iPad action labels.
+5. Phase 5 regression checks, including remaining baseline gaps and V5 contrast.
+
+All styling rules in this report remain proposals for the implementation phases.
+Phase 1 changed only this report and screenshot/gallery artifacts, not app source.

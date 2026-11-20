@@ -9,6 +9,8 @@ struct ScrambleGameView: View {
     @State private var isRevealConfirmationPresented = false
     @State private var vm: ScrambleGameViewModel
     @State private var showsPencilActions = false
+    /// Square and tile frames, and any drag in progress, for drag and Apple Pencil drops.
+    @State private var boardLayout = ScrambleBoardLayout()
 
     init(reviewQuestionIDs: Set<String> = []) {
         _vm = State(initialValue: ScrambleGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
@@ -55,6 +57,10 @@ struct ScrambleGameView: View {
                     .padding(.horizontal)
                 }
                 .tabBarContentClearance()
+                // Pinned above the tab bar, so a long verse never pushes it out of reach.
+                .pinnedGameActionButton(isShown: showsNextWordButton) {
+                    nextWordButton
+                }
                 .background {
                     if usesSplitLayout {
                         Color.clear
@@ -74,6 +80,7 @@ struct ScrambleGameView: View {
                         timeLimit: vm.currentTimeLimit,
                         tint: vm.timerTint,
                         isTimerDisabled: vm.isTimerDisabled,
+                        verse: vm.displayedVerse,
                         usesMutedStyle: $usesMutedTimerStyle,
                         onToggleTimer: vm.toggleTimer,
                         onSwapSides: {
@@ -140,6 +147,10 @@ struct ScrambleGameView: View {
         .task(id: ScrambleTimerRun(id: vm.timerID, isPaused: vm.isPaused)) {
             await vm.runTimer()
         }
+        // The verse is ready for the clue, and for showing once the word is solved.
+        .task(id: vm.currentWord?.id) {
+            await vm.loadVerse()
+        }
         .sheet(item: $selectedPassage) { reference in
             ScripturePassageSheet(reference: reference)
         }
@@ -154,19 +165,14 @@ struct ScrambleGameView: View {
         .onPencilDoubleTap { _ in
             guard preferredPencilDoubleTapAction != .ignore,
                   vm.phase == .playing, !vm.isPaused, !vm.isCurrentWordResolved else { return }
-            vm.removeLastLetter()
-        }
-        .onPencilSqueeze { phase in
-            guard preferredPencilSqueezeAction != .ignore,
-                  vm.phase == .playing, !vm.isPaused,
-                  case .ended = phase else { return }
-            showsPencilActions = true
+            vm.undo()
         }
         .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
             if !vm.isCurrentWordResolved {
-                Button("Remove Last Letter", systemImage: "delete.backward") {
-                    vm.removeLastLetter()
+                Button("Undo", systemImage: "arrow.uturn.backward") {
+                    vm.undo()
                 }
+                .disabled(!vm.canUndo)
                 Button("Check Answer", systemImage: "checkmark.circle") {
                     vm.checkAnswer()
                 }
@@ -196,7 +202,17 @@ struct ScrambleGameView: View {
         }
 
         if keyPress.key == .delete || keyPress.characters == "\u{8}" {
-            vm.removeLastLetter()
+            vm.deleteBackward()
+            return .handled
+        }
+
+        if keyPress.key == .leftArrow || keyPress.key == .rightArrow {
+            vm.moveCursor(by: keyPress.key == .leftArrow ? -1 : 1)
+            return .handled
+        }
+
+        if keyPress.key == .escape, vm.heldTile != nil {
+            vm.cancelHold()
             return .handled
         }
 
@@ -241,7 +257,7 @@ struct ScrambleGameView: View {
                 GameLobbyPreview(kind: .scramble)
             } configuration: {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Build each answer from the scrambled letter tiles.")
+                    Text("Tap letters to fill the squares, or drag them where they belong. Tap a placed letter to move it.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
@@ -295,16 +311,19 @@ struct ScrambleGameView: View {
                     category: currentWord.category,
                     categoryName: currentWord.categoryName,
                     reference: vm.difficulty == .easy || vm.isCurrentWordResolved ? currentWord.reference : nil,
-                    answer: vm.typedAnswer,
-                    answerLength: currentWord.answer.count,
-                    hintedLetters: vm.hintedLetters,
                     isResolved: vm.isCurrentWordResolved,
-                    isIncorrect: isIncorrectAnswer,
-                    isCorrect: vm.answerFeedback == .correct,
+                    verse: usesSplitLayout ? nil : vm.displayedVerse,
                     timerTint: vm.currentTimeLimit == nil || vm.isTimerDisabled ? nil : vm.timerTint,
-                    onRemoveLetters: vm.removeLetters,
                     onShowReference: showCurrentReference
-                )
+                ) {
+                    ScrambleAnswerTiles(
+                        vm: vm,
+                        layout: boardLayout,
+                        isIncorrect: isIncorrectAnswer,
+                        isCorrect: vm.answerFeedback == .correct,
+                        onDrop: drop
+                    )
+                }
 
                 if !usesSplitLayout, vm.currentTimeLimit != nil {
                     GameTimerCard(
@@ -335,26 +354,14 @@ struct ScrambleGameView: View {
                     ScrambleStrikeIndicator(strikes: vm.strikes, limit: 3)
                 }
 
-                if vm.strikes == 1, isIncorrectAnswer {
-                    Label("Tip: Shuffle the remaining letters.", systemImage: "shuffle")
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(.secondary)
-                }
-
-                ScrambleLetterTray(
-                    letters: vm.shuffledLetters,
-                    selectedIndices: vm.selectedIndices,
-                    onSelect: vm.selectLetter
-                )
-                .disabled(vm.isCurrentWordResolved)
+                ScrambleLetterTray(vm: vm, layout: boardLayout, onDrop: drop)
+                    .disabled(vm.isCurrentWordResolved)
 
                 if vm.isCurrentWordResolved {
-                    if vm.answerFeedback == .correct, !vm.isNextWordReady {
+                    if !showsNextWordButton {
                         Label("Correct — take a moment to review.", systemImage: "book.closed.fill")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.green)
-                    } else {
-                        nextWordButton
                     }
                 } else {
                     answerControls
@@ -362,8 +369,72 @@ struct ScrambleGameView: View {
                 }
             }
         }
+        // Drags, tile frames and Pencil hover locations all share this coordinate space.
+        .coordinateSpace(.named(ScrambleBoardLayout.coordinateSpace))
+        .overlay {
+            if let drag = boardLayout.drag {
+                ScrambleFloatingTile(letter: drag.letter)
+                    .position(drag.location)
+            }
+        }
+        // Attached here so the hover location is in the board's coordinate space.
+        .onPencilSqueeze(perform: handlePencilSqueeze)
         .frame(maxWidth: 620)
         .padding(.top, 8)
+    }
+
+    /// Finishes a drag: onto a square places or swaps the letter, onto the tray returns it.
+    /// Anywhere else leaves it where it was.
+    private func drop(_ source: ScrambleGameViewModel.TileSource, on target: ScrambleBoardLayout.Target?) {
+        switch (source, target) {
+        case (.tray(let tile), .square(let position)?):
+            vm.placeTile(tile, at: position)
+        case (.slot(let from), .square(let position)?):
+            vm.moveLetter(from: from, to: position)
+        case (.slot(let from), .tray?), (.slot(let from), .trayTile?):
+            vm.returnToTray(from)
+        default:
+            break
+        }
+    }
+
+    /// Squeezing while hovering over a letter picks it up, and over a square drops it. A squeeze
+    /// that isn't over a letter or square opens the Pencil actions menu.
+    private func handlePencilSqueeze(_ phase: PencilSqueezeGesturePhase) {
+        guard preferredPencilSqueezeAction != .ignore,
+              vm.phase == .playing, !vm.isPaused,
+              case .ended(let value) = phase else { return }
+
+        let target = value.hoverPose.flatMap { boardLayout.target(at: $0.location) }
+        guard !vm.isCurrentWordResolved else {
+            showsPencilActions = true
+            return
+        }
+
+        if vm.heldTile != nil {
+            switch target {
+            case .square(let position)?: vm.dropHeldTile(on: position)
+            case .tray?, .trayTile?: vm.returnHeldTileToTray()
+            case nil: vm.cancelHold()
+            }
+            return
+        }
+
+        switch target {
+        case .square(let position)?:
+            // Picks up a placed letter, or makes an empty square the next one to fill.
+            vm.tapSquare(position)
+        case .trayTile(let index)?:
+            vm.pickUp(.tray(index))
+        case .tray?, nil:
+            showsPencilActions = true
+        }
+    }
+
+    /// Once the word is over. A correct answer first waits a moment so the verse can be read.
+    private var showsNextWordButton: Bool {
+        vm.phase == .playing && vm.isCurrentWordResolved
+            && (vm.answerFeedback != .correct || vm.isNextWordReady)
     }
 
     private var nextWordButton: some View {
@@ -373,8 +444,7 @@ struct ScrambleGameView: View {
         ) {
             vm.loadNextWord()
         }
-        .buttonStyle(.borderedProminent)
-        .tint(.pink)
+        .buttonStyle(GameProminentButtonStyle(tint: .pink))
     }
 
     /// Secondary editing controls and a deliberately prominent primary action.
@@ -382,16 +452,16 @@ struct ScrambleGameView: View {
         VStack(spacing: 12) {
             HStack(spacing: 10) {
                 ScrambleActionButton(
-                    systemImage: "delete.left",
-                    accessibilityLabel: "Remove last letter",
-                    isEnabled: !vm.typedAnswer.isEmpty,
+                    systemImage: "arrow.uturn.backward",
+                    accessibilityLabel: "Undo",
+                    isEnabled: vm.canUndo,
                     isProminent: true,
-                    action: vm.removeLastLetter
+                    action: vm.undo
                 )
                 ScrambleActionButton(
                     systemImage: "shuffle",
                     accessibilityLabel: "Shuffle available letters",
-                    isEnabled: vm.shuffledLetters.count - vm.selectedIndices.count >= 2,
+                    isEnabled: vm.shuffledLetters.count - vm.usedTileIndices.count >= 2,
                     action: vm.shuffleUnusedLetters
                 )
                 ScrambleActionButton(
@@ -403,9 +473,16 @@ struct ScrambleGameView: View {
                     action: vm.showHint
                 )
                 ScrambleActionButton(
+                    systemImage: "text.quote",
+                    accessibilityLabel: "Show verse clue",
+                    isEnabled: vm.canShowVerseClue,
+                    tint: .teal,
+                    action: { withAnimation(.snappy) { vm.showVerseClue() } }
+                )
+                ScrambleActionButton(
                     systemImage: "trash",
                     accessibilityLabel: "Clear answer",
-                    isEnabled: !vm.typedAnswer.isEmpty,
+                    isEnabled: vm.hasPlacedLetters,
                     action: vm.clearAnswer
                 )
             }
