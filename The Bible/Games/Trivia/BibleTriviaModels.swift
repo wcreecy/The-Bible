@@ -11,6 +11,137 @@ struct BibleTriviaQuestion: Codable, Identifiable, Hashable, Sendable {
     let incorrectAnswers: [String]
     let reference: String
     let difficulty: String
+
+    /// The book the reference starts in, e.g. "1 Samuel" for "1 Samuel 17:4-11". Read from the
+    /// text rather than the loaded Bible, so it works before the Bible text is loaded.
+    var bookName: String? {
+        // Longest names first, so "1 John" isn't taken for "John".
+        for name in Self.booksByLength where reference.hasPrefix(name + " ") {
+            return name
+        }
+        // The catalog cites a single psalm as "Psalm 23:1".
+        return reference.hasPrefix("Psalm ") ? "Psalms" : nil
+    }
+
+    private static let booksByLength = BibleCanon.fallbackCanon.sorted { $0.count > $1.count }
+}
+
+/// Which part of the Bible a round's questions come from.
+enum BibleTriviaTopic: String, CaseIterable, Identifiable {
+    // Raw values are stored in settings.
+    case mixed
+    case oldTestament
+    case newTestament
+    case law
+    case history
+    case wisdomAndPoetry
+    case prophets
+    case gospelsAndActs
+    case lettersAndRevelation
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .mixed: "Whole Bible"
+        case .oldTestament: "Old Testament"
+        case .newTestament: "New Testament"
+        case .law: "Law"
+        case .history: "History"
+        case .wisdomAndPoetry: "Wisdom & Poetry"
+        case .prophets: "Prophets"
+        case .gospelsAndActs: "Gospels & Acts"
+        case .lettersAndRevelation: "Letters & Revelation"
+        }
+    }
+
+    var detail: LocalizedStringResource {
+        switch self {
+        case .mixed: "Questions from every book"
+        case .oldTestament: "Genesis to Malachi"
+        case .newTestament: "Matthew to Revelation"
+        case .law: "Genesis to Deuteronomy"
+        case .history: "Joshua to Esther"
+        case .wisdomAndPoetry: "Job to Song of Solomon"
+        case .prophets: "Isaiah to Malachi"
+        case .gospelsAndActs: "Matthew, Mark, Luke, John and Acts"
+        case .lettersAndRevelation: "Romans to Revelation"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .mixed: "books.vertical.fill"
+        case .oldTestament: "scroll.fill"
+        case .newTestament: "cross.fill"
+        case .law: "list.bullet.rectangle.portrait.fill"
+        case .history: "crown.fill"
+        case .wisdomAndPoetry: "music.note"
+        case .prophets: "megaphone.fill"
+        case .gospelsAndActs: "book.fill"
+        case .lettersAndRevelation: "envelope.fill"
+        }
+    }
+
+    /// Whether a question citing `bookName` belongs to this topic, using the Bible's book groups.
+    func includes(bookName: String?) -> Bool {
+        guard self != .mixed else { return true }
+        guard let bookName else { return false }
+        let group = BibleBookGroup.group(for: bookName)
+        return switch self {
+        case .mixed: true
+        case .oldTestament: group.testament == .old
+        case .newTestament: group.testament == .new
+        case .law: group == .law
+        case .history: group == .history
+        case .wisdomAndPoetry: group == .wisdomAndPoetry
+        case .prophets: group == .majorProphets || group == .minorProphets
+        case .gospelsAndActs: group == .gospelsAndActs
+        case .lettersAndRevelation: group == .letters || group == .revelation
+        }
+    }
+}
+
+/// The help a player can use once per round.
+enum BibleTriviaLifeline: CaseIterable, Hashable {
+    /// Removes two wrong answers.
+    case fiftyFifty
+    /// Shows the reference and its opening verse, with the answer blanked out.
+    case verseHint
+    /// Adds ten seconds to the clock. Not on Easy, which has the most time already.
+    case extraTime
+
+    static let extraSeconds = 10
+}
+
+/// The passage a question cites, loaded for the verse hint and shown after answering.
+struct BibleTriviaPassage: Equatable, Sendable {
+    struct Verse: Equatable, Sendable {
+        let number: Int
+        let text: String
+    }
+
+    let bookName: String
+    let chapter: Int
+    /// Up to three verses from the start of the reference.
+    let verses: [Verse]
+    /// True when the reference runs past the verses shown.
+    let isTruncated: Bool
+
+    /// "Genesis 6:13–15" for the verses shown.
+    var title: String {
+        guard let first = verses.first, let last = verses.last else { return "\(bookName) \(chapter)" }
+        return first.number == last.number
+            ? "\(bookName) \(chapter):\(first.number)"
+            : "\(bookName) \(chapter):\(first.number)–\(last.number)"
+    }
+
+    /// The verses run together, each after its number.
+    var text: String {
+        verses.count == 1
+            ? verses[0].text
+            : verses.map { "\($0.number) \($0.text)" }.joined(separator: " ")
+    }
 }
 
 enum BibleTriviaDifficulty: String, CaseIterable, Identifiable, Codable {

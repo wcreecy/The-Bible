@@ -17,6 +17,13 @@ struct GameRoundSummaryView: View {
         let total: Int
     }
 
+    /// A game-specific next step shown under Play Again, e.g. Trivia's "Practice Genesis".
+    struct ExtraAction {
+        let title: String
+        let systemImage: String
+        let action: () -> Void
+    }
+
     let summary: GameRoundSummary
     let tint: Color
     var unit: Unit = .questions
@@ -24,6 +31,7 @@ struct GameRoundSummaryView: View {
     var canTimeOut = true
     var poolProgress: PoolProgress?
     var resultNote: String?
+    var extraAction: ExtraAction?
     let onPlayAgain: () -> Void
     let onChangeSettings: () -> Void
 
@@ -91,6 +99,11 @@ struct GameRoundSummaryView: View {
         VStack(spacing: 10) {
             Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
                 .buttonStyle(GameProminentButtonStyle(tint: tint))
+
+            if let extraAction {
+                Button(extraAction.title, systemImage: extraAction.systemImage, action: extraAction.action)
+                    .buttonStyle(ModernPillButtonStyle(tint: tint))
+            }
 
             Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
                 .buttonStyle(ModernPillButtonStyle(tint: .accentColor))

@@ -334,14 +334,14 @@ final class BibleTriviaGameModel {
 
     /// The book with the most misses this round, when it has enough questions for a practice round.
     var bookToPractice: String? {
+        // Only books with enough questions for a round can be practiced.
         let missedBooks = session.entries
             .filter { $0.outcome != .correct }
             .compactMap(\.bookName)
+            .filter { book in questions.count { bookName(of: $0) == book } >= Self.minimumBookRoundQuestions }
         let counts = Dictionary(missedBooks.map { ($0, 1) }, uniquingKeysWith: +)
         // Most misses first; ties go to the book missed first.
-        guard let book = missedBooks.first(where: { counts[$0] == counts.values.max() }) else { return nil }
-        let available = questions.count { bookName(of: $0) == book }
-        return available >= Self.minimumBookRoundQuestions ? book : nil
+        return missedBooks.first { counts[$0] == counts.values.max() }
     }
 
     /// A round of up to ten questions from one book, at this level when it has enough.
@@ -420,7 +420,9 @@ final class BibleTriviaGameModel {
             guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { continue }
             for match in regex.matches(in: result, range: NSRange(result.startIndex..., in: result)).reversed() {
                 guard let range = Range(match.range, in: result) else { continue }
-                result.replaceSubrange(range, with: String(repeating: "_", count: result[range].count))
+                // Letters only, so a phrase keeps its spaces: "Forty days" becomes "_____ ____".
+                let blanked = String(result[range].map { $0.isLetter || $0.isNumber ? "_" : $0 })
+                result.replaceSubrange(range, with: blanked)
             }
         }
         return result

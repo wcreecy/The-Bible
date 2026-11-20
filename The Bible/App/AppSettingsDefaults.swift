@@ -56,6 +56,7 @@ enum AppSettingsDefaults {
             "crosswordDifficulty": "normal",
             "quizDifficulty": "normal",
             AppStorageKey.triviaDifficulty: BibleTriviaDifficulty.normal.rawValue,
+            AppStorageKey.triviaTopic: BibleTriviaTopic.mixed.rawValue,
             "quizScope": "whole",
             "quizSections": "",
             "wordleAllowDailyReplay": false,
