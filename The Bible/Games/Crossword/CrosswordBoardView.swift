@@ -69,6 +69,16 @@ struct CrosswordBoardView: View {
                     .foregroundStyle(letterColor(for: cell, isWrong: isWrong))
                     .frame(width: size, height: size)
                     .offset(y: size * 0.05)
+                if revealedCells.contains(cell) {
+                    // A corner mark, so hint letters read as hints and not as the keyboard's blue.
+                    Path { path in
+                        path.move(to: CGPoint(x: size * 0.72, y: 0))
+                        path.addLine(to: CGPoint(x: size, y: 0))
+                        path.addLine(to: CGPoint(x: size, y: size * 0.28))
+                        path.closeSubpath()
+                    }
+                    .fill(Self.hintColor)
+                }
                 if isWrong {
                     Path { path in
                         path.move(to: CGPoint(x: size * 0.15, y: size * 0.85))
@@ -107,15 +117,20 @@ struct CrosswordBoardView: View {
         traits.userInterfaceStyle == .dark ? .systemGray4 : .white
     })
 
+    /// Letters revealed with a hint, and their corner mark.
+    static let hintColor = Color.purple
+
+    /// The selected square and its answer are the square color mixed with the tint, so they
+    /// stay bright in Dark Mode (a see-through tint over the dark board looked dim brown).
     private func fillColor(for cell: CrosswordPuzzle.Cell, highlighted: Set<CrosswordPuzzle.Cell>) -> Color {
-        if cell == selectedCell { return tint.opacity(0.45) }
-        if highlighted.contains(cell) { return tint.opacity(0.18) }
+        if cell == selectedCell { return Self.letterCellColor.mix(with: tint, by: 0.55) }
+        if highlighted.contains(cell) { return Self.letterCellColor.mix(with: tint, by: 0.28) }
         return Self.letterCellColor
     }
 
     private func letterColor(for cell: CrosswordPuzzle.Cell, isWrong: Bool) -> Color {
         if isWrong { return .red }
-        if revealedCells.contains(cell) { return .blue }
+        if revealedCells.contains(cell) { return Self.hintColor }
         if pencilCells.contains(cell) { return .secondary }
         return .primary
     }
@@ -181,7 +196,7 @@ private struct CrosswordAccessibleCell: View {
                 .background(isSelected ? tint.opacity(0.28) : Color.secondary.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(isRevealed ? Color.blue : tint.opacity(0.5), lineWidth: isSelected ? 2 : 1)
+                        .strokeBorder(isRevealed ? CrosswordBoardView.hintColor : tint.opacity(0.5), lineWidth: isSelected ? 2 : 1)
                 }
         }
         .buttonStyle(.plain)

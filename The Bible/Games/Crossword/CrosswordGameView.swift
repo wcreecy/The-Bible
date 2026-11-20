@@ -13,7 +13,9 @@ struct CrosswordGameView: View {
     @State private var vm = CrosswordGameViewModel()
     @State private var confirmReveal = false
     @State private var checkMessage: String?
-    @State private var previewRef: ScriptureRef?
+    @State private var selectedPassage: PassageReference?
+    /// iPhone: a brief message over the board after Check, or when the board fills with mistakes.
+    @State private var bannerMessage: String?
     @FocusState private var isBoardFocused: Bool
     @State private var keyboardFocusRequestID = 0
     @State private var showsTouchKeyboard = true
@@ -115,8 +117,8 @@ struct CrosswordGameView: View {
             }
             Button("Cancel", role: .cancel) { restoreBoardFocus() }
         }
-        .sheet(item: $previewRef, onDismiss: restoreBoardFocus) { ref in
-            CrosswordReferenceSheet(ref: ref)
+        .sheet(item: $selectedPassage, onDismiss: restoreBoardFocus) { reference in
+            ScripturePassageSheet(reference: reference)
         }
         .onChange(of: confirmReveal) { _, isPresented in
             if !isPresented { restoreBoardFocus() }
@@ -413,9 +415,7 @@ struct CrosswordGameView: View {
                                 restoreBoardFocus()
                             },
                             showReference: { entry in
-                                if let ref = BibleReferenceLinker.parse(entry.reference) {
-                                    previewRef = ref
-                                }
+                                selectedPassage = PassageReferenceParser.parse(entry.reference)
                             }
                     )
                     .frame(maxWidth: 540, maxHeight: .infinity)
@@ -588,34 +588,100 @@ struct CrosswordGameView: View {
 
     // MARK: - iPhone
 
-    /// iPhone play: the board at the top, the current clue under it, and the tools and keyboard
+    /// iPhone play: time and progress, the board, then the current clue, tools and keyboard
     /// pinned at the bottom, with nothing to scroll. The full clue list opens as a sheet.
+    ///
+    /// The clue, tools and keyboard always get the height they need (a long clue wraps instead of
+    /// spilling over the tools), and the board shrinks to fit what's left.
     private func iPhonePlayingLayout(_ puzzle: CrosswordPuzzle) -> some View {
-        VStack(spacing: 8) {
-            board(puzzle)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .layoutPriority(1)
-            clueBar
-            iPhoneToolRow
-            if let message = toolMessage {
-                Text(message)
-                    .font(.footnote)
-                    .foregroundStyle(vm.isFilledWithMistakes ? .orange : .secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(2)
+        GeometryReader { geometry in
+            VStack(spacing: 8) {
+                iPhoneStatusRow(puzzle)
+                board(puzzle)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .overlay(alignment: .bottom) { messageBanner }
+                VStack(spacing: 8) {
+                    clueBar
+                    iPhoneToolRow
+                    keyboard(keyHeight: Self.iPhoneKeyHeight(for: geometry.size))
+                }
+                .fixedSize(horizontal: false, vertical: true)
             }
-            keyboard
+            .padding(.horizontal, 12)
+            .padding(.top, 4)
+            .padding(.bottom, 8)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .onChange(of: vm.guesses) { checkMessage = nil }
+        // Uses most of the space kept clear for the tab bar, leaving a small gap above it.
+        .padding(.bottom, -Self.iPhoneTabBarAllowance)
+        .onChange(of: vm.guesses) {
+            checkMessage = nil
+            if !vm.isFilledWithMistakes { bannerMessage = nil }
+        }
+        .onChange(of: vm.isFilledWithMistakes) { _, isFull in
+            if isFull {
+                bannerMessage = String(localized: "The board is full, but some letters are wrong. Tap Check to find them.")
+            }
+        }
+        .task(id: bannerMessage) {
+            guard bannerMessage != nil else { return }
+            try? await Task.sleep(for: .seconds(4))
+            guard !Task.isCancelled else { return }
+            withAnimation(.snappy) { bannerMessage = nil }
+        }
+        .animation(.snappy, value: bannerMessage)
     }
 
-    private var toolMessage: String? {
-        if vm.isFilledWithMistakes {
-            return String(localized: "The board is full, but some letters are wrong. Tap Check to find them.")
+    /// How far the iPhone game may extend into the 80 points `tabBarContentClearance()` keeps
+    /// clear, leaving a 16-point gap above the tab bar (as in WORD).
+    private static let iPhoneTabBarAllowance: CGFloat = 64
+
+    /// Keys grow on taller phones, from 40 up to 48 points. This depends only on the screen
+    /// size (with room for a three-line clue), so keys don't change size from clue to clue.
+    private static func iPhoneKeyHeight(for size: CGSize) -> CGFloat {
+        let board = size.width - 24
+        // Status row, three-line clue, tool row, keyboard gaps, spacing and padding.
+        let reserved: CGFloat = 20 + 96 + 44 + 12 + 4 * 8 + 12
+        let leftover = size.height - board - reserved - 3 * 40
+        return 40 + min(8, max(0, leftover / 3)).rounded(.down)
+    }
+
+    /// The solve time and how many squares are filled, under the title.
+    private func iPhoneStatusRow(_ puzzle: CrosswordPuzzle) -> some View {
+        let letterCells = Set(puzzle.entries.flatMap(\.cells))
+        let filled = letterCells.count { vm.guesses[$0] != nil }
+        return TimelineView(.periodic(from: .now, by: 1)) { _ in
+            HStack(spacing: 6) {
+                Label(GameTimeFormat.short(seconds: vm.activeSeconds()), systemImage: "timer")
+                Text(verbatim: "·")
+                    .accessibilityHidden(true)
+                Text("\(filled)/\(letterCells.count) squares")
+            }
+            .font(.caption.weight(.semibold).monospacedDigit())
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 3)
+            .background(.primary.opacity(0.06), in: Capsule())
+            .accessibilityElement(children: .combine)
         }
-        return checkMessage
+    }
+
+    /// The Check result or the board-full note, over the bottom of the board for a few seconds,
+    /// so it never pushes the board or keyboard around. Tap to close it sooner.
+    @ViewBuilder
+    private var messageBanner: some View {
+        if let bannerMessage {
+            Text(bannerMessage)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(vm.isFilledWithMistakes ? .orange : .primary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .glassEffect(.regular, in: .capsule)
+                .padding(8)
+                .onTapGesture { self.bannerMessage = nil }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .accessibilityAddTraits(.isStaticText)
+        }
     }
 
     /// Hints, Check, pencil mode, zoom and the clue list, in one slim row.
@@ -692,8 +758,8 @@ struct CrosswordGameView: View {
         case .space:
             vm.toggleDirection()
         case .escape:
-            if previewRef != nil {
-                previewRef = nil
+            if selectedPassage != nil {
+                selectedPassage = nil
             } else if confirmReveal {
                 confirmReveal = false
             } else {
@@ -731,6 +797,10 @@ struct CrosswordGameView: View {
         checkMessage = wrong == 0
             ? String(localized: "No mistakes so far.")
             : String(localized: "\(wrong) letters to fix.")
+        bannerMessage = checkMessage
+        if let checkMessage {
+            AccessibilityNotification.Announcement(checkMessage).post()
+        }
     }
 
     private func restoreBoardFocus() {
@@ -743,8 +813,8 @@ struct CrosswordGameView: View {
     }
 
     private func dismissPresentedContent() {
-        if previewRef != nil {
-            previewRef = nil
+        if selectedPassage != nil {
+            selectedPassage = nil
         } else if confirmReveal {
             confirmReveal = false
         }
@@ -757,29 +827,6 @@ struct CrosswordGameView: View {
             HStack(spacing: 8) {
                 clueArrow("Previous clue", systemImage: "chevron.left", offset: -1)
                 clueText
-                Button(
-                    vm.direction == .across ? "Across" : "Down",
-                    systemImage: vm.direction == .across ? "arrow.left.and.right" : "arrow.up.and.down"
-                ) {
-                    vm.toggleDirection()
-                    restoreBoardFocus()
-                }
-                .disabled(!vm.canToggleDirection)
-                .labelStyle(.iconOnly)
-                .font(.body.weight(.semibold))
-                .frame(width: 32, height: 32)
-                .buttonStyle(.glass)
-                .buttonBorderShape(.circle)
-                .accessibilityLabel(directionButtonAccessibilityLabel)
-                if let entry = vm.currentEntry, let ref = BibleReferenceLinker.parse(entry.reference) {
-                    Button("Scripture Hint", systemImage: "book") { previewRef = ref }
-                        .labelStyle(.iconOnly)
-                        .font(.body.weight(.semibold))
-                        .frame(width: 32, height: 32)
-                        .buttonStyle(.glass)
-                        .buttonBorderShape(.circle)
-                        .accessibilityHint("Shows the verse behind this clue")
-                }
                 clueArrow("Next clue", systemImage: "chevron.right", offset: 1)
             }
         }
@@ -810,35 +857,62 @@ struct CrosswordGameView: View {
             .buttonBorderShape(.circle)
     }
 
+    /// The current clue, with the direction and Scripture buttons beside its label so the clue
+    /// itself gets the full width. Long clues wrap to three lines and then shrink slightly.
     private var clueText: some View {
-        Button {
-            vm.toggleDirection()
-            restoreBoardFocus()
-        } label: {
-            VStack(alignment: .leading, spacing: 2) {
-                if let entry = vm.currentEntry {
+        VStack(alignment: .leading, spacing: 2) {
+            if let entry = vm.currentEntry {
+                HStack(spacing: 6) {
                     Text(entryLabel(entry))
                         .font(.caption.weight(.bold))
                         .foregroundStyle(.secondary)
+                    Spacer(minLength: 0)
+                    Button(
+                        vm.direction == .across ? "Across" : "Down",
+                        systemImage: vm.direction == .across ? "arrow.left.and.right" : "arrow.up.and.down"
+                    ) {
+                        vm.toggleDirection()
+                        restoreBoardFocus()
+                    }
+                    .disabled(!vm.canToggleDirection)
+                    .accessibilityLabel(directionButtonAccessibilityLabel)
+                    if let reference = PassageReferenceParser.parse(entry.reference) {
+                        Button("Scripture Hint", systemImage: "book") { selectedPassage = reference }
+                            .accessibilityHint("Shows the verse behind this clue")
+                    }
+                }
+                .labelStyle(.iconOnly)
+                .font(.subheadline.weight(.semibold))
+                .buttonStyle(.borderless)
+                .tint(.primary)
+
+                Button {
+                    vm.toggleDirection()
+                    restoreBoardFocus()
+                } label: {
                     Text(entry.clue)
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.primary)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(3)
+                        .minimumScaleFactor(0.8)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityHint("Switches between Across and Down")
             }
-            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .glassEffect(.regular, in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
         .overlay {
             RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius)
                 .stroke(.primary.opacity(0.12), lineWidth: 0.75)
+                .allowsHitTesting(false)
         }
         .shadow(color: .black.opacity(0.10), radius: 3, y: 1)
-        .accessibilityHint("Switches between Across and Down")
     }
 
     private var checkButtonTitle: LocalizedStringKey {
@@ -849,8 +923,9 @@ struct CrosswordGameView: View {
         }
     }
 
-    private var keyboard: some View {
+    private func keyboard(keyHeight: CGFloat) -> some View {
         CrosswordKeyboardView(
+            keyHeight: keyHeight,
             onLetter: {
                 vm.type($0)
                 restoreBoardFocus()
@@ -983,15 +1058,15 @@ struct CrosswordGameView: View {
                 if !solvedByPlayer {
                     Image(systemName: "lightbulb.fill")
                         .font(.caption)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(CrosswordBoardView.hintColor)
                         .accessibilityLabel("Revealed")
                 }
             }
             Text(entry.clue)
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
-            if let ref = BibleReferenceLinker.parse(entry.reference) {
-                Button(entry.reference, systemImage: "book") { previewRef = ref }
+            if let reference = PassageReferenceParser.parse(entry.reference) {
+                Button(entry.reference, systemImage: "book") { selectedPassage = reference }
                     .font(.footnote.weight(.semibold))
                     .buttonStyle(.borderless)
                     .tint(Self.tint)
@@ -1460,6 +1535,7 @@ private struct CrosswordHintLabelStyle: LabelStyle {
 
 /// An on-screen QWERTY keyboard for typing into the crossword.
 private struct CrosswordKeyboardView: View {
+    var keyHeight: CGFloat = 40
     let onLetter: (Character) -> Void
     let onDelete: () -> Void
 
@@ -1472,14 +1548,14 @@ private struct CrosswordKeyboardView: View {
                     ForEach(rows[index], id: \.self) { letter in
                         Button(String(letter)) { onLetter(letter) }
                             .font(.headline)
-                            .frame(maxWidth: .infinity, minHeight: 40)
+                            .frame(maxWidth: .infinity, minHeight: keyHeight)
                             .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
                     }
                     if index == rows.count - 1 {
                         Button(action: onDelete) {
                             Image(systemName: "delete.left")
                                 .font(.headline)
-                                .frame(maxWidth: .infinity, minHeight: 40)
+                                .frame(maxWidth: .infinity, minHeight: keyHeight)
                         }
                         .buttonStyle(GameKeyButtonStyle(tint: .red))
                         .frame(maxWidth: 64)
@@ -1489,46 +1565,6 @@ private struct CrosswordKeyboardView: View {
             }
         }
         .accessibilityElement(children: .contain)
-    }
-}
-
-// MARK: - Reference
-
-private struct CrosswordReferenceSheet: View {
-    let ref: ScriptureRef
-    @Environment(\.dismiss) private var dismiss
-    @State private var content: (title: String, verses: [Verse])?
-    @State private var didLoad = false
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    if let content {
-                        ScripturePreviewCard(content: content, refContext: ref)
-                    } else if didLoad {
-                        ContentUnavailableView("No reference available", systemImage: "book")
-                    } else {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-                .padding()
-            }
-            .navigationTitle("Reference")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                        .keyboardShortcut(.cancelAction)
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
-        .task {
-            content = await BibleReferenceLinker.loadVersesEnsuringLoaded(for: ref)
-            didLoad = true
-        }
     }
 }
 
