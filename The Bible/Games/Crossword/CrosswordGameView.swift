@@ -645,24 +645,47 @@ struct CrosswordGameView: View {
         return 40 + min(8, max(0, leftover / 3)).rounded(.down)
     }
 
-    /// The solve time and how many squares are filled, under the title.
+    /// The solve time and how many squares are filled, under the title. After Check marks wrong
+    /// letters, a button beside it clears them all (iPad has the same button in its side panel).
     private func iPhoneStatusRow(_ puzzle: CrosswordPuzzle) -> some View {
         let letterCells = Set(puzzle.entries.flatMap(\.cells))
         let filled = letterCells.count { vm.guesses[$0] != nil }
-        return TimelineView(.periodic(from: .now, by: 1)) { _ in
-            HStack(spacing: 6) {
-                Label(GameTimeFormat.short(seconds: vm.activeSeconds()), systemImage: "timer")
-                Text(verbatim: "·")
-                    .accessibilityHidden(true)
-                Text("\(filled)/\(letterCells.count) squares")
+        let wrongCount = vm.wrongCells.count
+        return HStack(spacing: 8) {
+            TimelineView(.periodic(from: .now, by: 1)) { _ in
+                HStack(spacing: 6) {
+                    Label(GameTimeFormat.short(seconds: vm.activeSeconds()), systemImage: "timer")
+                    Text(verbatim: "·")
+                        .accessibilityHidden(true)
+                    Text("\(filled)/\(letterCells.count) squares")
+                }
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 3)
+                .background(.primary.opacity(0.06), in: Capsule())
+                .accessibilityElement(children: .combine)
             }
-            .font(.caption.weight(.semibold).monospacedDigit())
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 3)
-            .background(.primary.opacity(0.06), in: Capsule())
-            .accessibilityElement(children: .combine)
+
+            if wrongCount > 0 {
+                Button {
+                    vm.removeAllWrongLetters()
+                    checkMessage = nil
+                    bannerMessage = nil
+                    restoreBoardFocus()
+                } label: {
+                    Label("Remove \(wrongCount) Wrong", systemImage: "eraser.fill")
+                        .foregroundStyle(.red)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
+                        .background(Color.red.opacity(0.14), in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Remove \(wrongCount) wrong letters")
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+            }
         }
+        .font(.caption.weight(.semibold).monospacedDigit())
+        .animation(.snappy, value: wrongCount > 0)
     }
 
     /// The Check result or the board-full note, over the bottom of the board for a few seconds,
