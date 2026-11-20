@@ -1,0 +1,77 @@
+UI BASELINE — PHASE 1
+Date: 2026-11-19
+Scope: Inspection only. No application source changes.
+
+STATUS
+Source inventory complete; runtime inspection in progress.
+Visual judgments below remain provisional until supported by screenshots.
+
+SOURCE-CONFIRMED DIFFERENCES
+1. Content surfaces
+   Design/Styles.swift:10-28 applies glass, a border, and a shadow to cards.
+   Design/Styles.swift:58-62 uses regular material for grouped list rows.
+   Review whether the emphasis difference distracts across Home, Games, and More.
+   Phase 2: establish a related family of content surfaces, retaining useful grouping.
+
+2. Action hierarchy
+   Design/Styles.swift:74-98 gives secondary pills white text and strong tint.
+   Design/Styles.swift:136-160 gives primary actions white text and strong tint.
+   Games/WordSearch/WordSearchControlsBar.swift:33-38 uses prominent styling for
+   both Settings and Next Puzzle. Review their relative emphasis.
+   Phase 3: quieter secondary actions and consistent disabled/pressed states.
+
+3. Navigation titles
+   SavedVerses/FavoritesView.swift:115 explicitly uses a large title.
+   Settings/SettingsView.swift:27 and Stats/StatsView.swift:206 use inline titles.
+   All three are reached from More. This is a confirmed configuration difference;
+   whether Saved Verses deserves a library exception is a design decision.
+   Phase 4: apply a documented navigation-title convention.
+
+4. Small controls
+   Design/HeaderBox.swift:19-23 gives the favorite heart no explicit minimum frame.
+   Design/Styles.swift:105 defaults shared circular buttons to 44 points.
+   Notes/NotesListViews.swift:158 sets filter chips to a 40-point minimum height.
+   These are source-level differences, not measured runtime hit regions.
+   Phase 3: inspect actual interaction bounds and standardize standalone targets.
+
+EXISTING CONSISTENCY TO PRESERVE
+- Shared cards already use 16-point padding and corner radii.
+- Home and Books use recurring 16-point content spacing.
+- NotesListCard already uses shared tab-bar clearance; it is not missing.
+- Home deliberately uses its own header instead of a navigation title.
+- Game colors communicate game identity and should not be flattened indiscriminately.
+- iPad split views and wider layouts are deliberate adaptations.
+
+PROPOSED RULES FOR IMPLEMENTATION (NOT YET USER-APPROVED DESIGN DECISIONS)
+- Use standard adaptive materials/backgrounds for content; reserve glass emphasis
+  for navigation and important controls.
+- Distinguish primary, secondary, destructive, selected, and disabled actions by role.
+- Aim for at least 44-by-44-point touch areas for standalone small controls,
+  without requiring oversized visible icons.
+- Use large titles on tab landing screens and inline titles on pushed screens;
+  retain Home's custom header and explicitly document any library exceptions.
+- Preserve existing shared spacing tokens; fix visible outliers rather than
+  replacing every literal spacing value.
+- Do not change the shared 80-point bottom clearance without runtime evidence.
+
+BASELINE CHECKLIST
+For each screen, record device, appearance, text size, data state, screenshot,
+surface weight, action hierarchy, title treatment, margins, and bottom clearance.
+
+Home: custom header, content cards, primary/secondary actions, bottom scroll position.
+Bible: book list, feature tiles, chapter list, reader, search and one reader sheet.
+Games: game collection, setup, active round, and result controls where practical.
+Notes: empty/populated list, search, detail/editor presentation.
+More: grouped rows, share footer placement, bottom clearance.
+Saved Verses: title, segmented picker, empty/populated state, search.
+Stats: title, cards, section spacing, bottom scroll position.
+Settings: title, grouped surfaces, appearance controls, representative detail.
+
+COVERAGE REQUIRED BEFORE THE FULL BASELINE IS COMPLETE
+- iPhone and iPad representative screens in light and dark mode.
+- Larger text on dense screens and sheets.
+- At least one custom background for translucent surfaces.
+- Record gaps explicitly rather than treating an untested configuration as passing.
+
+RUNTIME FINDINGS AND SCREENSHOT INDEX
+Pending runtime inspection.
