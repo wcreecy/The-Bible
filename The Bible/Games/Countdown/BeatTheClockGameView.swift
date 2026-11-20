@@ -2,9 +2,7 @@ import SwiftUI
 
 struct BeatTheClockGameView: View {
     @State private var vm: BeatTheClockGameViewModel
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
-    @State private var showsPencilActions = false
+    @State private var isGiveUpConfirmationPresented = false
     @State private var selectedPassage: PassageReference?
 
     init(reviewQuestionIDs: Set<String> = []) {
@@ -37,18 +35,26 @@ struct BeatTheClockGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.phase != .setup {
-                    GameNavigationTitle(title: "Countdown", systemImage: "hourglass", tint: .indigo)
+                    GameNavigationTitle(.beatTheClock)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                if vm.canPause {
-                    GamePauseButton { vm.pause() }
+                if vm.phase == .playing, !vm.selectionLocked, !vm.isPaused {
+                    GameOptionsMenu(gameTitle: "Countdown") {
+                        isGiveUpConfirmationPresented = true
+                    }
                 }
             }
         }
-        // A call, another app, or locking the phone pauses the question until Resume.
-        .onAppActiveChange { isActive in
-            if !isActive { vm.pause() }
+        .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
+        .gameGiveUpConfirmation(
+            vm.isRapidFire ? "End this round?" : "Give up this question?",
+            isPresented: $isGiveUpConfirmationPresented,
+            message: vm.isRapidFire
+                ? "The round ends now and keeps the books you've found."
+                : "The answer will be shown and marked incorrect."
+        ) {
+            vm.giveUp()
         }
         .task {
             await vm.loadData()
@@ -57,16 +63,11 @@ struct BeatTheClockGameView: View {
         .task(id: vm.currentQuestion?.id) {
             await vm.loadPassage()
         }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore, vm.phase == .playing, vm.selectionLocked else { return }
-            vm.nextRound()
-        }
-        .onPencilSqueeze { phase in
-            guard preferredPencilSqueezeAction != .ignore, vm.phase == .playing, !vm.isPaused,
-                  case .ended = phase else { return }
-            showsPencilActions = true
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+        // Double-tap goes on once the question is answered; it never spends a hint.
+        .gamePencilActions(
+            isEnabled: vm.phase == .playing && !vm.isPaused,
+            onDoubleTap: vm.selectionLocked ? { vm.nextRound() } : nil
+        ) {
             if vm.selectionLocked {
                 Button(vm.isLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: vm.nextRound)
             } else {
@@ -76,10 +77,8 @@ struct BeatTheClockGameView: View {
                 if vm.canRequestTestamentHint {
                     Button("Which Testament?", systemImage: "books.vertical", action: vm.revealTestamentHint)
                 }
-                // Rapid Fire keeps the books already found, so it's ending the round rather than giving up.
-                Button(vm.isRapidFire ? "End Round" : "Give Up", systemImage: "flag.fill", role: .destructive, action: vm.giveUp)
+                GameGiveUpButton { isGiveUpConfirmationPresented = true }
             }
-            Button("Cancel", role: .cancel) {}
         }
         .onAppear {
             vm.onAppear()
@@ -187,7 +186,7 @@ struct BeatTheClockGameView: View {
         Text(vm.mode == .rapidFire
             ? "Name as many Bible books as you can that mention each person or place before the timer runs out."
             : "Type a Bible book that mentions the shown person or place before the timer runs out.")
-            .gameStartDescriptionStyle(title: "Countdown", systemImage: "hourglass", tint: .indigo)
+            .gameStartDescriptionStyle(for: .beatTheClock)
 
         GameSplashLaunchLayout(
             tint: .indigo,

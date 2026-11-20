@@ -108,10 +108,10 @@ struct FavoritesFlashcardsView: View {
             if isShowingAnswer {
                 HStack(spacing: 12) {
                     Button("Again", systemImage: "arrow.counterclockwise", action: again)
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                         .accessibilityHint("Moves this card to the back of the deck")
                     Button("Got It", systemImage: "checkmark", action: gotIt)
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(.glassProminent)
                         .tint(.green)
                         .accessibilityHint("Sets this card aside as learned")
                 }
@@ -125,7 +125,7 @@ struct FavoritesFlashcardsView: View {
                 Button("Next", systemImage: "arrow.right", action: next)
                     .disabled(remaining.count <= 1)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .labelStyle(.iconOnly)
             .font(.title3)
         }
@@ -144,7 +144,7 @@ struct FavoritesFlashcardsView: View {
                 known.removeAll()
                 shuffle()
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
         }
     }
 

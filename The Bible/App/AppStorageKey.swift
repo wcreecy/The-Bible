@@ -95,6 +95,8 @@ enum AppStorageKey {
     static let wordleAllowDailyReplay = "wordleAllowDailyReplay"
     static let wordleHardModeEnabled = "wordleHardModeEnabled"
     static let wordleColorBlindMode = "wordleColorBlindMode"
+    /// The on-screen game keyboards (WORD, Hangman, Crossword) share one A–Z or QWERTY choice.
+    static let gameKeyboardUsesABCLayout = "gameKeyboardUsesABCLayout"
     static let wordleDailyCompletedDay = "wordleDailyCompletedDay"
     static let wordleDailyTarget = "wordleDailyTarget"
     static let wordleDailyProgress = "wordleDailyProgress"

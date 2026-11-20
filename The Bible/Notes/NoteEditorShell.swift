@@ -236,7 +236,7 @@ private struct NoteEditorShell: ViewModifier {
                 discardRestoredDraft()
             }
             .font(.footnote.weight(.semibold))
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .controlSize(.small)
         }
         .padding(.horizontal, 14)

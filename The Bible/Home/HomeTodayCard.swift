@@ -44,7 +44,7 @@ struct HomeTodayCard: View {
                 if let bookName = challenge.bookName, let chapterNumber = challenge.chapterNumber {
                     ChapterInsightsView(bookName: bookName, chapterNumber: chapterNumber)
                         .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
+                            ToolbarItem(placement: .confirmationAction) {
                                 Button("Done") {
                                     studyChallenge = nil
                                 }

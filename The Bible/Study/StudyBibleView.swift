@@ -440,7 +440,7 @@ struct CompactStudyBookHeader: View {
     private var overviewButton: some View {
         Button("View \(bookName) Overview", systemImage: "book.closed.fill", action: onOpenOverview)
             .font(.subheadline.weight(.semibold))
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
             .buttonBorderShape(.capsule)
             .controlSize(.small)
             .accessibilityIdentifier("compactStudyBookOverviewButton")

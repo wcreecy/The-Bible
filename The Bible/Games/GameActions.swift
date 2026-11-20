@@ -104,6 +104,7 @@ private struct GamePencilActionsModifier<MenuContent: View>: ViewModifier {
     let isEnabled: Bool
     let handlesSqueeze: Bool
     let onDoubleTap: (() -> Void)?
+    let onSqueeze: ((CGPoint?) -> Bool)?
     let menu: () -> MenuContent
 
     func body(content: Content) -> some View {
@@ -118,6 +119,7 @@ private struct GamePencilActionsModifier<MenuContent: View>: ViewModifier {
             .onPencilSqueeze { phase in
                 guard handlesSqueeze, squeezeAction != .ignore, isEnabled,
                       case let .ended(value) = phase else { return }
+                if let onSqueeze, onSqueeze(value.hoverPose?.location) { return }
                 anchor = .point(value.hoverPose?.anchor ?? .center)
                 isPresented = true
             }
@@ -150,18 +152,53 @@ extension View {
     ///   - handlesSqueeze: Pass `false` when views inside handle the squeeze themselves and call
     ///     `showGamePencilMenu` when it isn't on an answer.
     ///   - onDoubleTap: The safe next step right now, or `nil` when there isn't one.
+    ///   - onSqueeze: Acts on what's under the Pencil (a point in `GamePencil.coordinateSpace`)
+    ///     and returns `true` when it did, so the menu stays closed.
     ///   - menu: The actions, in order: Next, hints, then `GameGiveUpButton`.
     func gamePencilActions<MenuContent: View>(
         isEnabled: Bool,
         handlesSqueeze: Bool = true,
         onDoubleTap: (() -> Void)?,
+        onSqueeze: ((CGPoint?) -> Bool)? = nil,
         @ViewBuilder menu: @escaping () -> MenuContent
     ) -> some View {
         modifier(GamePencilActionsModifier(
             isEnabled: isEnabled,
             handlesSqueeze: handlesSqueeze,
             onDoubleTap: onDoubleTap,
+            onSqueeze: onSqueeze,
             menu: menu
         ))
     }
+}
+
+// MARK: - Hints
+
+/// The look of every game's hint and lifeline buttons: a compact glass capsule in the game's
+/// color, so "get help" reads the same wherever it appears.
+struct GameHintButtonStyle: ButtonStyle {
+    var tint: Color
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(isEnabled ? AnyShapeStyle(tint) : AnyShapeStyle(.secondary))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .padding(.horizontal, 14)
+            .frame(minHeight: 40)
+            .glassEffect(
+                .regular.tint(tint.opacity(isEnabled ? 0.16 : 0.05)).interactive(isEnabled),
+                in: .capsule
+            )
+            .contentShape(Capsule())
+            .opacity(configuration.isPressed ? 0.75 : 1)
+            .animation(.snappy, value: configuration.isPressed)
+    }
+}
+
+extension ButtonStyle where Self == GameHintButtonStyle {
+    /// A game's hint or lifeline button, in the game's color.
+    static func gameHint(tint: Color) -> GameHintButtonStyle { GameHintButtonStyle(tint: tint) }
 }

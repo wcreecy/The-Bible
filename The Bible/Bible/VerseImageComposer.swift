@@ -65,7 +65,7 @@ struct VerseImageComposerView: View {
             .interactiveDismissDisabled(model.isMarkingUp)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", action: dismiss.callAsFunction)
+                    Button("Done", action: dismiss.callAsFunction)
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button(

@@ -114,7 +114,7 @@ struct CustomPlanBuilderView: View {
                     Text("Create and Start Plan")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .controlSize(.large)
                 .disabled(!store.canCreateCustomPlan)
             } footer: {

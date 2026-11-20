@@ -9,96 +9,44 @@ struct WordSetupControls: View {
     @Binding var colorBlindModeEnabled: Bool
 
     var body: some View {
-        GameSettingsGroup {
-            WordSegmentedSetting(
-                title: "Game type",
-                systemImage: "calendar",
-                selection: $mode,
-                choices: [
-                    GameChoice(
-                        value: WordleView.Mode.daily,
-                        title: WordleView.Mode.daily.title,
-                        detail: "One puzzle a day. Counts toward your Daily streak.",
-                        icon: WordleView.Mode.daily.icon
-                    ),
-                    GameChoice(
-                        value: WordleView.Mode.practice,
-                        title: WordleView.Mode.practice.title,
-                        detail: "Unlimited puzzles with a separate streak.",
-                        icon: WordleView.Mode.practice.icon
-                    )
-                ]
-            )
-
-            WordSegmentedSetting(
-                title: "Difficulty",
-                systemImage: "flame.fill",
-                selection: $hardModeEnabled,
-                choices: [
-                    GameChoice(
-                        value: false,
-                        title: "Normal",
-                        detail: "Guess any five-letter word.",
-                        icon: "circle"
-                    ),
-                    GameChoice(
-                        value: true,
-                        title: "Hard",
-                        detail: "Reuse confirmed letters in every guess.",
-                        icon: "flame.fill"
-                    )
-                ]
-            )
-
-            GameToggleSetting(
-                title: "Color-Blind Colors",
-                detail: "Orange for the right spot, blue for in the word.",
-                systemImage: "eye",
+        // Daily or Practice and Normal or Hard are WORD's one-tap choices, like difficulty in
+        // the other games; the color option is a switch in the settings list.
+        VStack(alignment: .leading, spacing: 16) {
+            GameSegmentedSetting(
+                title: Text("Game type"),
                 tint: .mint,
-                isOn: $colorBlindModeEnabled
-            )
-        }
-    }
-}
-
-/// A settings row with every option visible in a segmented control, so the current choice
-/// is clear at a glance and changing it takes one tap. The selected option's description
-/// sits underneath.
-private struct WordSegmentedSetting<Value: Hashable>: View {
-    let title: LocalizedStringResource
-    let systemImage: String
-    @Binding var selection: Value
-    let choices: [GameChoice<Value>]
-
-    private var selectedDetail: LocalizedStringResource? {
-        choices.first { $0.value == selection }?.detail
-    }
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            GameSettingBadge(systemImage: systemImage, tint: .mint)
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text(title)
-
-                Picker(title, selection: $selection) {
-                    ForEach(choices) { choice in
-                        Text(choice.title).tag(choice.value)
+                selection: $mode,
+                options: WordleView.Mode.allCases,
+                label: { Text($0.title) },
+                detail: { mode in
+                    switch mode {
+                    case .daily: Text("One puzzle a day. Counts toward your Daily streak.")
+                    case .practice: Text("Unlimited puzzles with a separate streak.")
                     }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
+                },
+                icon: \.icon
+            )
 
-                if let selectedDetail {
-                    Text(selectedDetail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+            GameSegmentedSetting(
+                title: Text("Difficulty"),
+                tint: .mint,
+                selection: $hardModeEnabled,
+                options: [false, true],
+                label: { $0 ? Text("Hard") : Text("Normal") },
+                detail: { $0 ? Text("Reuse confirmed letters in every guess.") : Text("Guess any five-letter word.") },
+                icon: { $0 ? "flame.fill" : "target" }
+            )
+
+            GameSettingsGroup {
+                GameToggleSetting(
+                    title: "Color-Blind Colors",
+                    detail: "Orange for the right spot, blue for in the word.",
+                    systemImage: "eye",
+                    tint: .mint,
+                    isOn: $colorBlindModeEnabled
+                )
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
     }
 }
 
@@ -213,7 +161,7 @@ struct WordGameResponsiveLayout<
                     Label("Swap Cards", systemImage: "arrow.left.arrow.right")
                 }
                 .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .controlSize(.small)
                 .accessibilityHint("Switches the game board and letter tray cards to opposite sides")
 
@@ -225,7 +173,7 @@ struct WordGameResponsiveLayout<
                     }
                 }
                 .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .controlSize(.small)
             }
 
@@ -306,7 +254,7 @@ struct WordLetterBox: View {
                         Label("Shuffle Letters in Word", systemImage: "shuffle")
                     }
                     .labelStyle(.iconOnly)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .controlSize(.small)
                     .disabled(letters.count < 2)
                 }

@@ -13,7 +13,7 @@ struct GameStartScreenStyle: ViewModifier {
 }
 
 struct GameStartDescriptionStyle: ViewModifier {
-    let title: LocalizedStringKey
+    let title: LocalizedStringResource
     let systemImage: String
     let tint: Color
 
@@ -70,7 +70,7 @@ struct GameStartActionBar: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 4)
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.glassProminent)
         .buttonBorderShape(.roundedRectangle(radius: 16))
         .controlSize(.large)
         .tint(tint)
@@ -394,8 +394,13 @@ extension View {
         modifier(GameStartScreenStyle())
     }
 
+    /// The start screen's heading with the game's title, icon, and color from the catalog.
+    func gameStartDescriptionStyle(for route: GameRoute) -> some View {
+        gameStartDescriptionStyle(title: route.title, systemImage: route.systemImage, tint: route.tint)
+    }
+
     func gameStartDescriptionStyle(
-        title: LocalizedStringKey,
+        title: LocalizedStringResource,
         systemImage: String = "gamecontroller.fill",
         tint: Color = .accentColor
     ) -> some View {

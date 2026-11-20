@@ -69,6 +69,7 @@ enum AppSettingsDefaults {
             "wordleAllowDailyReplay": false,
             "wordleHardModeEnabled": false,
             AppStorageKey.wordleColorBlindMode: false,
+            AppStorageKey.gameKeyboardUsesABCLayout: false,
             PrayerTimerKind.preferenceKey: PrayerTimerKind.prayer.rawValue,
             "prayerTimerVerseSource": PrayerVerseSource.verseOfDay.rawValue,
         ]

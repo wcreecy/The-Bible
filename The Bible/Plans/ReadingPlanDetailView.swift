@@ -215,7 +215,7 @@ struct ReadingPlanDetailView: View {
                 }
             }
             Button("Read It Again") { store.restart(plan.id) }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .disabled(!store.canStart(plan.id))
             if !store.canStart(plan.id) {
                 PlanLimitNote(message: store.limitMessage)
@@ -228,7 +228,7 @@ struct ReadingPlanDetailView: View {
                 Text("Read Day \(day.day): \(day.readingSummary)")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
             .controlSize(.large)
         } else {
             Button {
@@ -237,7 +237,7 @@ struct ReadingPlanDetailView: View {
                 Text("Start Plan")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
             .controlSize(.large)
             .disabled(!store.canStart(plan.id))
             if !store.canStart(plan.id) {
@@ -329,7 +329,7 @@ struct PlanFinishedView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             Button("Done") { dismiss() }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .controlSize(.large)
         }
         .padding(28)

@@ -236,7 +236,7 @@ struct AppQRCodeView: View {
                 } label: {
                     Label("Share Link Instead", systemImage: "square.and.arrow.up")
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .sheet(isPresented: $showsShareSheet) {
                     // The controlled link item keeps Messages from fetching an App Store screenshot.
                     ActivityShareSheet(items: [AppShare.message + "\n\n", AppLinkActivityItem()])
@@ -338,7 +338,7 @@ struct AppLinkShareSheet: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .controlSize(.large)
                 .accessibilityIdentifier("continueToShareButton")
             }
@@ -407,7 +407,7 @@ struct ShareAppFooterCard: View {
                     }
                     .font(.subheadline.weight(.semibold))
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .buttonBorderShape(.capsule)
                 .accessibilityLabel("Share The Bible")
                 .accessibilityIdentifier("shareAppLink")
@@ -419,7 +419,7 @@ struct ShareAppFooterCard: View {
                         .font(.subheadline.weight(.semibold))
                 }
                 // Filled like Share, so the two read as a matched pair.
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .buttonBorderShape(.capsule)
                 .accessibilityLabel("Show QR code")
                 .accessibilityIdentifier("shareAppQRCode")

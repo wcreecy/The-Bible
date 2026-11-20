@@ -50,7 +50,7 @@ struct CrossReferenceExplorerView: View {
                     Button("Show All Connections") {
                         isShowingSavedOnly = false
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.glassProminent)
                 }
                 .listRowSeparator(.hidden)
             } else if sections.isEmpty {
@@ -291,7 +291,7 @@ private struct CrossReferencePreviewSheet: View {
             .navigationTitle("Scripture Connection")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         dismiss()
                     }
@@ -354,7 +354,7 @@ private struct CrossReferencePassagePreview: View {
                 Label("Open in Bible", systemImage: "book")
                     .font(.subheadline.weight(.semibold))
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .accessibilityHint("Opens this passage in the Bible reader")
         }
         .frame(maxWidth: .infinity, alignment: .leading)

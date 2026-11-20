@@ -353,7 +353,7 @@ private struct OverviewActions: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.vertical, 6)
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.glassProminent)
         .accessibilityHint("Opens \(bookName) chapter 1")
 
         if !story.isEmpty {
@@ -370,7 +370,7 @@ private struct OverviewActions: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.vertical, 6)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .accessibilityHint(
                 hasSavedStoryPlace
                     ? "Continues the retelling of \(bookName) from your saved place"

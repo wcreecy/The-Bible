@@ -175,11 +175,13 @@ final class WordStudyUITests: XCTestCase {
         menu.tap()
 
         // The study actions follow Keep and Share in the menu, so at accessibility sizes
-        // they can sit below the first screen of a scrolling menu.
+        // they sit screens down a scrolling menu that only creates its rows as they scroll in.
+        let copy = app.buttons["Copy"].firstMatch
         let words = app.buttons["Hebrew Words"].firstMatch
-        _ = words.waitForExistence(timeout: 3)
-        for _ in 0..<4 where !words.isHittable {
-            app.swipeUp()
+        XCTAssertTrue(copy.waitForExistence(timeout: 5), "Expected the verse menu to open.")
+        let menuList = app.collectionViews.containing(NSPredicate(format: "label == %@", "Copy")).firstMatch
+        for _ in 0..<10 where !(words.exists && words.isHittable) {
+            menuList.swipeUp(velocity: .slow)
         }
         XCTAssertTrue(words.isHittable, "Expected Hebrew Words in the verse menu.")
         words.tap()

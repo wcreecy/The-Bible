@@ -421,7 +421,7 @@ private struct OnboardingStepRow: View {
             if !isComplete, let skipAction {
                 Button("Skip", action: skipAction)
                     .font(.caption.weight(.semibold))
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .controlSize(.small)
                     // Matches the card's Hide button and progress bar.
                     .tint(.orange)

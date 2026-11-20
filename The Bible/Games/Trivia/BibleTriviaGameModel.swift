@@ -512,6 +512,7 @@ final class BibleTriviaGameModel {
         round[currentIndex].selectedAnswer = answer
         round[currentIndex].timedOut = answer == nil
         let isCorrect = answer == question.correctAnswer
+        if isCorrect { Haptics.success() } else if answer == nil { Haptics.warning() } else { Haptics.error() }
         // A quick answer with the timer on the whole time earns a bonus point.
         round[currentIndex].earnedSpeedBonus = isCorrect && !round[currentIndex].wasTimerOff
             && questionClock.elapsed(at: now()) <= Double(difficulty.timerSeconds) / 3

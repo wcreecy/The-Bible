@@ -4,14 +4,10 @@ import SwiftData
 struct WordSearchGameView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @Query private var favorites: [Favorite]
     @State private var vm = WordSearchViewModel()
     @State private var didBindVM = false
     @State private var confirmReveal = false
-    @State private var pencilActionsPresented = false
-    @State private var pencilActionsAnchor: PopoverAttachmentAnchor = .point(.center)
     /// Width available to the phone layout, used to size the grid.
     @State private var phoneContentWidth: CGFloat = 0
 
@@ -39,7 +35,7 @@ struct WordSearchGameView: View {
                         Button("Change Settings") {
                             vm.changeSettings()
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                     } else if !vm.started {
                         WordSearchStartScreen(
                             difficulty: $vm.difficulty,
@@ -101,7 +97,6 @@ struct WordSearchGameView: View {
                                 roundOver: vm.roundOver,
                                 hintTitle: vm.hintButtonTitle,
                                 onHint: { vm.hint() },
-                                onReveal: { confirmReveal = true },
                                 onShowWordList: { vm.showWordList() },
                                 onNewPuzzle: { vm.newPuzzle() },
                                 onChangeSettings: { vm.changeSettings() },
@@ -132,15 +127,18 @@ struct WordSearchGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.started {
-                    GameNavigationTitle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
+                    GameNavigationTitle(.wordSearch)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                if vm.canPause {
-                    GamePauseButton { vm.pause() }
+                if vm.started, !vm.roundOver, !vm.isPaused {
+                    GameOptionsMenu(gameTitle: "Word Search") {
+                        confirmReveal = true
+                    }
                 }
             }
         }
+        .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
         // On phones the controls stay pinned above the tab bar: Hint/Reveal while playing,
         // Settings/Next Puzzle once the round ends. A swipe that starts on the grid selects
         // letters rather than scrolling, so controls below the grid would be hard to reach.
@@ -157,50 +155,25 @@ struct WordSearchGameView: View {
             }
             .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
         }
-        .confirmationDialog("Reveal all words?", isPresented: $confirmReveal, titleVisibility: .visible) {
-            Button("Reveal", role: .destructive) { vm.reveal() }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("This shows every word and counts the puzzle as unfinished.")
-        }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore,
-                  vm.started, !vm.roundOver, !vm.isPaused else { return }
-            if vm.selectionStart != nil {
-                vm.cancelSelection()
-            } else {
-                vm.hint()
-            }
-        }
-        .onPencilSqueeze { phase in
-            guard preferredPencilSqueezeAction != .ignore,
-                  vm.started, !vm.roundOver, !vm.isPaused,
-                  case let .ended(value) = phase else { return }
-            if let anchor = value.hoverPose?.anchor {
-                pencilActionsAnchor = .point(anchor)
-            }
-            pencilActionsPresented = true
-        }
-        .popover(
-            isPresented: $pencilActionsPresented,
-            attachmentAnchor: pencilActionsAnchor
+        .gameGiveUpConfirmation(
+            "Give up this puzzle?",
+            isPresented: $confirmReveal,
+            message: "Every word will be shown and this puzzle counts as unfinished."
         ) {
-            PencilQuickActions(
-                canClearSelection: vm.selectionStart != nil,
-                onHint: {
-                    pencilActionsPresented = false
-                    vm.hint()
-                },
-                onClearSelection: {
-                    pencilActionsPresented = false
-                    vm.cancelSelection()
-                },
-                onReveal: {
-                    pencilActionsPresented = false
-                    confirmReveal = true
+            vm.reveal()
+        }
+        // Double-tap clears a selection in progress, or starts the next puzzle once this one is
+        // over; it never spends a hint.
+        .gamePencilActions(isEnabled: vm.started && !vm.isPaused, onDoubleTap: pencilDoubleTapAction) {
+            if vm.roundOver {
+                Button("Next Puzzle", systemImage: "arrow.right") { vm.newPuzzle() }
+            } else {
+                Button(vm.hintButtonTitle, systemImage: "lightbulb") { vm.hint() }
+                if vm.selectionStart != nil {
+                    Button("Clear Selection", systemImage: "xmark.circle") { vm.cancelSelection() }
                 }
-            )
-            .presentationCompactAdaptation(.popover)
+                GameGiveUpButton { confirmReveal = true }
+            }
         }
         .persistenceFailureAlert(failure: $vm.favoriteSaveFailure)
         // The clock pauses while the game is off screen and picks up where it left off.
@@ -279,13 +252,21 @@ struct WordSearchGameView: View {
         .padding(.top, 2)
     }
 
+    /// Double-tap: clear a selection in progress, or start the next puzzle once this one is over.
+    private var pencilDoubleTapAction: (() -> Void)? {
+        if vm.roundOver {
+            return { vm.newPuzzle() }
+        }
+        guard vm.selectionStart != nil else { return nil }
+        return { vm.cancelSelection() }
+    }
+
     private var phoneControlsBar: some View {
         WordSearchControlsBar(
             roundOver: vm.roundOver,
             hintTitle: vm.hintButtonTitle,
             canShowWordList: vm.hidesWordList,
             onHint: { vm.hint() },
-            onReveal: { confirmReveal = true },
             onShowWordList: { vm.showWordList() },
             onNewPuzzle: { vm.newPuzzle() },
             onChangeSettings: { vm.changeSettings() },
@@ -383,32 +364,6 @@ struct WordSearchGameView: View {
             return Color.blue.opacity(0.35)
         }
         return Color(.secondarySystemBackground)
-    }
-}
-
-private struct PencilQuickActions: View {
-    let canClearSelection: Bool
-    let onHint: () -> Void
-    let onClearSelection: () -> Void
-    let onReveal: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("Apple Pencil", systemImage: "applepencil")
-                .font(.headline)
-
-            Button("Hint", systemImage: "lightbulb", action: onHint)
-
-            Button("Clear Selection", systemImage: "xmark.circle", action: onClearSelection)
-                .disabled(!canClearSelection)
-
-            Divider()
-
-            Button("Reveal Words", systemImage: "eye", role: .destructive, action: onReveal)
-        }
-        .buttonStyle(.bordered)
-        .padding()
-        .frame(minWidth: 220)
     }
 }
 

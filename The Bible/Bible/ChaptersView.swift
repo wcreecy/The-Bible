@@ -125,7 +125,7 @@ struct ChaptersView: View {
             NavigationStack {
                 ChapterInsightsView(bookName: book.name, chapterNumber: target.number)
                     .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
+                        ToolbarItem(placement: .confirmationAction) {
                             Button("Done") { insightsChapter = nil }
                         }
                     }
@@ -235,7 +235,7 @@ struct ChaptersView: View {
             Label(title, systemImage: systemImage)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .controlSize(.large)
     }
 
@@ -296,7 +296,7 @@ private struct ChapterConnectionsSheet: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Done", action: onDone)
                 }
             }

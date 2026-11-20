@@ -4,7 +4,6 @@ import SwiftData
 struct QuizView: View {
     @Query private var favorites: [Favorite]
     @State private var vm: QuizGameViewModel
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
     @FocusState private var isKeyboardFocused: Bool
 
     init(reviewQuestionIDs: Set<String> = [], mode: QuizMode = .standard) {
@@ -18,7 +17,6 @@ struct QuizView: View {
     @State private var timerOnLeft: Bool = false
     @State private var usesMutedTimerStyle: Bool = false
     @State private var verseToast = VerseActionToastState()
-    @State private var showsPencilActions = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -137,16 +135,17 @@ struct QuizView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.phase != .setup {
-                    GameNavigationTitle(title: "Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
+                    GameNavigationTitle(.quiz)
                 }
             }
         }
         .gamePauseControls(canPause: vm.canPause, pause: vm.pause)
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore, vm.phase == .playing, vm.isAnswered else { return }
-            vm.showNext()
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+        // Double-tap goes on once the question is answered; squeezing on an answer chooses it.
+        .gamePencilActions(
+            isEnabled: vm.phase == .playing,
+            handlesSqueeze: false,
+            onDoubleTap: vm.isAnswered ? { vm.showNext() } : nil
+        ) {
             if vm.isAnswered {
                 Button(vm.isOnLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: vm.showNext)
             } else {
@@ -161,7 +160,6 @@ struct QuizView: View {
                     Button("Show Previous Verse", systemImage: "text.alignleft", action: vm.revealContext)
                 }
             }
-            Button("Cancel", role: .cancel) {}
         }
         .onChange(of: favoriteVerses, initial: true) { _, verses in
             vm.favoriteVerses = verses
@@ -210,7 +208,7 @@ struct QuizView: View {
     @ViewBuilder
     private var setupContent: some View {
         Text(vm.mode == .reverse ? "Choose the verse text that matches the reference." : "Test your knowledge by guessing the book of the Bible from a given verse.")
-            .gameStartDescriptionStyle(title: "Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
+            .gameStartDescriptionStyle(for: .quiz)
 
         GameSplashLaunchLayout(
             tint: .blue,
@@ -310,7 +308,7 @@ struct QuizView: View {
                     game: .quiz
                 )
 
-                QuizQuestionPanel(vm: vm, showsTimer: true) { showsPencilActions = true }
+                QuizQuestionPanel(vm: vm, showsTimer: true)
 
                 if !vm.isAnswered {
                     QuizLifelineBar(vm: vm)
@@ -337,7 +335,7 @@ struct QuizView: View {
                     style: .dashboard
                 )
 
-                QuizQuestionPanel(vm: vm, showsTimer: false) { showsPencilActions = true }
+                QuizQuestionPanel(vm: vm, showsTimer: false)
 
                 if !vm.isAnswered {
                     QuizLifelineBar(vm: vm)

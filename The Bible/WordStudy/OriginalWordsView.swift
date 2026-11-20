@@ -292,7 +292,7 @@ struct OriginalWordsView: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .controlSize(.small)
             .accessibilityHint("Articles, conjunctions, and markers with no English meaning")
         }

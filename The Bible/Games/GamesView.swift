@@ -2,9 +2,20 @@ import SwiftUI
 import SwiftData
 
 struct GameNavigationTitle: View {
-    let title: LocalizedStringKey
+    let title: LocalizedStringResource
     let systemImage: String
     let tint: Color
+
+    init(title: LocalizedStringResource, systemImage: String, tint: Color) {
+        self.title = title
+        self.systemImage = systemImage
+        self.tint = tint
+    }
+
+    /// The game's title, icon, and color from the catalog, as on the Games screen.
+    init(_ route: GameRoute) {
+        self.init(title: route.title, systemImage: route.systemImage, tint: route.tint)
+    }
 
     var body: some View {
         HStack(spacing: 10) {

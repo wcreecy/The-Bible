@@ -7,7 +7,6 @@ struct WordSearchControlsBar: View {
     let canShowWordList: Bool
 
     let onHint: () -> Void
-    let onReveal: () -> Void
     let onShowWordList: () -> Void
     let onNewPuzzle: () -> Void
     let onChangeSettings: () -> Void
@@ -17,20 +16,16 @@ struct WordSearchControlsBar: View {
         HStack(spacing: 12) {
             if !roundOver {
                 Button(hintTitle, systemImage: "lightbulb", action: onHint)
-                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                    .buttonStyle(.gameHint(tint: .green))
                     .accessibilityHint("Briefly highlights the first letter of a word you haven't found")
 
                 if canShowWordList {
                     Button("Word List", systemImage: "list.bullet", action: onShowWordList)
-                        .buttonStyle(ModernPillButtonStyle(tint: .teal))
+                        .buttonStyle(.gameHint(tint: .green))
                         .accessibilityHint("Shows the word list for the rest of this puzzle")
                 }
-
-                Button("Reveal", systemImage: "eye", action: onReveal)
-                    .buttonStyle(ModernPillButtonStyle(tint: .red))
-                    .accessibilityHint("Shows every word and ends the puzzle")
             } else {
-                Button("Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
+                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
                     .buttonStyle(GameProminentButtonStyle(tint: .gray))
 
                 if showsNextPuzzle {

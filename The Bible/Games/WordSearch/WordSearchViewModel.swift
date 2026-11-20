@@ -473,10 +473,7 @@ final class WordSearchViewModel {
     private func handleTimeUp() {
         revealOverlay()
         finishRound(.timeUp)
-        #if canImport(UIKit)
-        let gen = UINotificationFeedbackGenerator()
-        gen.notificationOccurred(.warning)
-        #endif
+        Haptics.warning()
     }
 
     func timerTint(for seconds: Int) -> Color {
@@ -644,9 +641,7 @@ final class WordSearchViewModel {
               !foundWords.contains(originalWord) else {
             if start.row != end.row || start.col != end.col {
                 invalidSelectionCount += 1
-                #if canImport(UIKit)
-                UINotificationFeedbackGenerator().notificationOccurred(.error)
-                #endif
+                Haptics.error()
             }
             return
         }
@@ -662,12 +657,12 @@ final class WordSearchViewModel {
         hintWord = nil
         hintStage = 0
 
-        #if canImport(UIKit)
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        #endif
-
+        // A found word ticks; the last one celebrates.
         if foundWords.count == targetWords.count {
+            Haptics.success()
             finishRound(.won)
+        } else {
+            Haptics.selection()
         }
     }
 

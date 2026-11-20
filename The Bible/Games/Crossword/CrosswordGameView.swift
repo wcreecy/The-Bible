@@ -8,8 +8,6 @@ struct CrosswordGameView: View {
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var vm = CrosswordGameViewModel()
     @State private var confirmReveal = false
     @State private var checkMessage: String?
@@ -19,7 +17,6 @@ struct CrosswordGameView: View {
     @FocusState private var isBoardFocused: Bool
     @State private var keyboardFocusRequestID = 0
     @State private var showsTouchKeyboard = true
-    @State private var showsPencilActions = false
     /// iPhone: the full clue list, opened from the Clues button.
     @State private var showsClueSheet = false
     /// iPhone: the board zoomed in around the selected square.
@@ -46,7 +43,7 @@ struct CrosswordGameView: View {
         gameContent
         .tabBarContentClearance()
         .pinnedGameActionButton(isShown: isPad && vm.phase == .finished) {
-            Button("New Puzzle", systemImage: "arrow.clockwise", action: startPuzzle)
+            Button("Next Puzzle", systemImage: "arrow.right", action: startPuzzle)
                 .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
         }
         .navigationTitle("")
@@ -54,68 +51,64 @@ struct CrosswordGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.phase != .setup {
-                    GameNavigationTitle(title: Self.title, systemImage: Self.systemImage, tint: Self.tint)
+                    GameNavigationTitle(.crossword)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if vm.phase == .playing {
-                    Menu {
+                    GameOptionsMenu(gameTitle: Self.title, onGiveUp: { confirmReveal = true }) {
                         Toggle("Show Mistakes as You Type", systemImage: "exclamationmark.circle", isOn: $vm.showsMistakesAsYouType)
                         Toggle("Verse After Each Answer", systemImage: "book.pages", isOn: $vm.showsVerseAfterAnswer)
                         if !vm.wrongCells.isEmpty {
                             Button("Remove All Wrong Letters", systemImage: "eraser.fill") {
                                 vm.removeAllWrongLetters()
                                 checkMessage = nil
+                                bannerMessage = nil
                                 restoreBoardFocus()
                             }
                         }
-                        Button("Reveal Puzzle", systemImage: "eye", role: .destructive) {
-                            confirmReveal = true
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
                     }
-                    .accessibilityLabel("Crossword options")
                 }
             }
         }
-        .confirmationDialog("Reveal the puzzle?", isPresented: $confirmReveal, titleVisibility: .visible) {
-            Button("Reveal", role: .destructive) { vm.revealPuzzle() }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This fills in every answer and counts this puzzle as a loss.")
-        }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore,
-                  vm.phase == .playing, vm.canToggleDirection else { return }
-            vm.toggleDirection()
-            restoreBoardFocus()
-        }
-        .onPencilSqueeze { phase in
-            guard preferredPencilSqueezeAction != .ignore,
-                  vm.phase == .playing, case .ended = phase else { return }
-            showsPencilActions = true
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
-            Button("Letter Hint", systemImage: "character.cursor.ibeam") {
-                vm.revealLetter()
-                restoreBoardFocus()
-            }
-            Button("Word Hint", systemImage: "text.cursor") {
-                vm.revealWord()
-                restoreBoardFocus()
-            }
-            Button("Check", systemImage: "checkmark.circle.fill") {
-                checkPuzzle()
-                restoreBoardFocus()
-            }
-            if !vm.wrongCells.isEmpty {
-                Button("Remove All Wrong Letters", systemImage: "eraser.fill") {
-                    vm.removeAllWrongLetters()
+        .gameGiveUpConfirmation(
+            "Give up this puzzle?",
+            isPresented: $confirmReveal,
+            message: "Every answer will be filled in and this puzzle counts as a loss.",
+            action: vm.revealPuzzle
+        )
+        // Double-tap checks the puzzle while playing, and starts the next puzzle once it's done.
+        .gamePencilActions(
+            isEnabled: vm.phase == .playing || vm.phase == .finished,
+            onDoubleTap: pencilDoubleTapAction
+        ) {
+            if vm.phase == .finished {
+                Button("Next Puzzle", systemImage: "arrow.right", action: startPuzzle)
+            } else {
+                Button("Letter Hint", systemImage: "character.cursor.ibeam") {
+                    vm.revealLetter()
                     restoreBoardFocus()
                 }
+                .disabled(!vm.canUseLetterHint)
+                Button("Word Hint", systemImage: "text.cursor") {
+                    vm.revealWord()
+                    restoreBoardFocus()
+                }
+                .disabled(!vm.canUseWordHint)
+                Button("Check", systemImage: "checkmark.circle.fill") {
+                    checkPuzzle()
+                    restoreBoardFocus()
+                }
+                if !vm.wrongCells.isEmpty {
+                    Button("Remove All Wrong Letters", systemImage: "eraser.fill") {
+                        vm.removeAllWrongLetters()
+                        checkMessage = nil
+                        bannerMessage = nil
+                        restoreBoardFocus()
+                    }
+                }
+                GameGiveUpButton { confirmReveal = true }
             }
-            Button("Cancel", role: .cancel) { restoreBoardFocus() }
         }
         .sheet(item: $selectedPassage, onDismiss: restoreBoardFocus) { reference in
             ScripturePassageSheet(reference: reference)
@@ -195,6 +188,9 @@ struct CrosswordGameView: View {
             } else {
                 iPhonePlayingLayout(puzzle)
             }
+        } else if vm.phase == .finished, isPad, let puzzle = vm.puzzle {
+            // The finished board stays pinned at the top; only the results column scrolls.
+            ipadPlayingViewport(puzzle)
         } else {
             scrollableGameContent
         }
@@ -241,7 +237,7 @@ struct CrosswordGameView: View {
             Spacer(minLength: 24)
 
             Text("Solve a crossword of Bible people, places, and words.")
-                .gameStartDescriptionStyle(title: "Crossword", systemImage: Self.systemImage, tint: Self.tint)
+                .gameStartDescriptionStyle(for: .crossword)
 
             GameSplashLaunchLayout(
                 tint: Self.tint,
@@ -266,36 +262,30 @@ struct CrosswordGameView: View {
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    Toggle(isOn: $vm.showsMistakesAsYouType) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Show Mistakes as You Type")
-                            Text("Wrong letters turn red right away.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                    GameSettingsGroup {
+                        GameToggleSetting(
+                            title: "Show Mistakes as You Type",
+                            detail: "Wrong letters turn red right away.",
+                            systemImage: "exclamationmark.circle",
+                            tint: Self.tint,
+                            isOn: $vm.showsMistakesAsYouType
+                        )
+                        GameToggleSetting(
+                            title: "Verse After Each Answer",
+                            detail: "Briefly shows the verse behind each answer you finish.",
+                            systemImage: "book.pages",
+                            tint: Self.tint,
+                            isOn: $vm.showsVerseAfterAnswer
+                        )
+                        if isPad {
+                            GameToggleSetting(
+                                title: "Large 15×15 Puzzle",
+                                detail: "A longer puzzle designed for the iPad workspace.",
+                                systemImage: "square.grid.4x3.fill",
+                                tint: Self.tint,
+                                isOn: $vm.usesLargeBoard
+                            )
                         }
-                    }
-                    .tint(Self.tint)
-
-                    Toggle(isOn: $vm.showsVerseAfterAnswer) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Verse After Each Answer")
-                            Text("Briefly shows the verse behind each answer you finish.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .tint(Self.tint)
-
-                    if isPad {
-                        Toggle(isOn: $vm.usesLargeBoard) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Large 15×15 Puzzle")
-                                Text("A longer puzzle designed for the iPad workspace.")
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .tint(Self.tint)
                     }
                 }
             } facts: {
@@ -322,7 +312,18 @@ struct CrosswordGameView: View {
             Button("Try Again", systemImage: "arrow.clockwise", action: startPuzzle)
                 .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
             Button("Change Settings") { vm.changeSettings() }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
+        }
+    }
+
+    /// Double-tap: check the puzzle while playing, or start the next one once it's done.
+    private var pencilDoubleTapAction: () -> Void {
+        if vm.phase == .finished {
+            return { startPuzzle() }
+        }
+        return {
+            checkPuzzle()
+            restoreBoardFocus()
         }
     }
 
@@ -356,8 +357,12 @@ struct CrosswordGameView: View {
                     .frame(maxWidth: 700)
 
                 if vm.phase == .finished {
-                    resultCard(puzzle, pinsNewPuzzle: true)
-                        .frame(maxWidth: 520)
+                    ScrollView {
+                        resultCard(puzzle, pinsNewPuzzle: true)
+                            .padding(.bottom, 16)
+                    }
+                    .scrollIndicators(.hidden)
+                    .frame(maxWidth: 520, maxHeight: .infinity)
                 } else {
                     // Only the time redraws each second; the panel redraws when the board changes.
                     CrosswordInspectorView(
@@ -716,6 +721,7 @@ struct CrosswordGameView: View {
                     restoreBoardFocus()
                 }
                 .disabled(!vm.canUseLetterHint)
+                .buttonStyle(.gameHint(tint: Self.tint))
                 .accessibilityLabel("Reveal a letter")
 
                 Button("Word", systemImage: "text.cursor") {
@@ -723,13 +729,14 @@ struct CrosswordGameView: View {
                     restoreBoardFocus()
                 }
                 .disabled(!vm.canUseWordHint)
+                .buttonStyle(.gameHint(tint: Self.tint))
                 .accessibilityLabel("Reveal the current word")
 
                 Button(checkButtonTitle, systemImage: "checkmark.circle.fill") {
                     checkPuzzle()
                     restoreBoardFocus()
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .tint(vm.isFilledWithMistakes ? .orange : Self.tint)
 
                 Button("Pencil", systemImage: vm.isPencilMode ? "pencil.circle.fill" : "pencil.circle") {
@@ -1061,11 +1068,11 @@ struct CrosswordGameView: View {
             }
 
             if !pinsNewPuzzle {
-                Button("New Puzzle", systemImage: "arrow.clockwise", action: startPuzzle)
+                Button("Next Puzzle", systemImage: "arrow.right", action: startPuzzle)
                     .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
             }
             Button("Change Settings") { vm.changeSettings() }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
         }
     }
 
@@ -1278,7 +1285,7 @@ private struct CrosswordActiveClueCard: View {
             HStack {
                 Button("Previous clue", systemImage: "chevron.left", action: previous)
                     .labelStyle(.iconOnly)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(entry.number) \(directionLabel)")
@@ -1297,12 +1304,12 @@ private struct CrosswordActiveClueCard: View {
                 )
                     .disabled(!canToggleDirection)
                     .labelStyle(.iconOnly)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .accessibilityLabel(directionButtonAccessibilityLabel)
 
                 Button("Next clue", systemImage: "chevron.right", action: next)
                     .labelStyle(.iconOnly)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
             }
 
             HStack {
@@ -1344,16 +1351,18 @@ private struct CrosswordInspectorTools: View {
 
                 Button("Letter", systemImage: "character.cursor.ibeam", action: revealLetter)
                     .disabled(!canUseLetterHint)
+                    .buttonStyle(.gameHint(tint: tint))
                     .accessibilityLabel("Reveal a letter")
                 Button("Word", systemImage: "text.cursor", action: revealWord)
                     .disabled(!canUseWordHint)
+                    .buttonStyle(.gameHint(tint: tint))
                     .accessibilityLabel("Reveal the current word")
 
                 Divider()
                     .frame(height: 24)
 
                 Button("Check", systemImage: "checkmark.circle.fill", action: checkPuzzle)
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.glassProminent)
                     .tint(isFilledWithMistakes ? .orange : tint)
 
                 Toggle(isOn: $isPencilMode) {
@@ -1363,7 +1372,7 @@ private struct CrosswordInspectorTools: View {
                 .tint(tint)
                 .accessibilityHint("Letters you type now are drawn in gray as guesses")
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .frame(maxWidth: .infinity)
 
             if isFilledWithMistakes {
@@ -1377,7 +1386,7 @@ private struct CrosswordInspectorTools: View {
             if wrongLetterCount > 0 {
                 Button("Remove All Wrong Letters", systemImage: "eraser.fill", action: removeWrongLetters)
                     .font(.subheadline.weight(.semibold))
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .tint(.red)
                     .accessibilityLabel("Remove \(wrongLetterCount) wrong letters")
             }
@@ -1562,32 +1571,8 @@ private struct CrosswordKeyboardView: View {
     let onLetter: (Character) -> Void
     let onDelete: () -> Void
 
-    private let rows: [[Character]] = [Array("QWERTYUIOP"), Array("ASDFGHJKL"), Array("ZXCVBNM")]
-
     var body: some View {
-        VStack(spacing: 6) {
-            ForEach(rows.indices, id: \.self) { index in
-                HStack(spacing: 4) {
-                    ForEach(rows[index], id: \.self) { letter in
-                        Button(String(letter)) { onLetter(letter) }
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, minHeight: keyHeight)
-                            .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                    }
-                    if index == rows.count - 1 {
-                        Button(action: onDelete) {
-                            Image(systemName: "delete.left")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, minHeight: keyHeight)
-                        }
-                        .buttonStyle(GameKeyButtonStyle(tint: .red))
-                        .frame(maxWidth: 64)
-                        .accessibilityLabel("Delete")
-                    }
-                }
-            }
-        }
-        .accessibilityElement(children: .contain)
+        GameLetterKeyboard(keyHeight: keyHeight, onLetter: onLetter, onDelete: onDelete)
     }
 }
 

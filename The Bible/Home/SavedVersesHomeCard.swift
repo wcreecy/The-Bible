@@ -140,13 +140,13 @@ struct SavedVersesHomeCard: View {
                     Button(action: onRefresh) {
                         Image(systemName: "arrow.clockwise")
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .accessibilityLabel("Refresh saved verse")
 #endif
 
                     Button("View All", action: onOpenSavedVerses)
                         .font(.caption.weight(.semibold))
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                         .accessibilityLabel("View all saved verses")
                 }
             }

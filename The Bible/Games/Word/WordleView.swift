@@ -44,8 +44,6 @@ struct WordleView: View {
 
     private var dailyCompletedToday: Bool { dailyCompletedDay == todayKey }
 
-    // Toggle for keyboard layout
-    @State private var useABCLayout: Bool = false
     @State private var showsOnScreenKeyboard: Bool = true
     @State private var showsBoardCardSecond: Bool = false
     @State private var hardwareKeyboardConnected: Bool = false
@@ -67,9 +65,6 @@ struct WordleView: View {
     /// The verse opened from the result card.
     @State private var selectedPassage: PassageReference?
     @State private var showsVerseHint = false
-    @State private var showsPencilActions = false
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
 
   var body: some View {
     GeometryReader { geometry in
@@ -173,11 +168,17 @@ struct WordleView: View {
                     // On phones the message keeps to its one-line slot below.
                     .lineLimit(usesCompactPhoneLayout ? 1 : nil)
                     .minimumScaleFactor(usesCompactPhoneLayout ? 0.75 : 1)
+                } else if !vm.roundOver, vm.canShowVerseHint || vm.verseHintUsed {
+                  // Practice only, after the third guess. Shares the message slot, which is
+                  // tall enough for it in Practice.
+                  Button(vm.verseHintUsed ? "Show Verse Hint" : "Verse Hint", systemImage: "text.quote", action: openVerseHint)
+                    .buttonStyle(.gameHint(tint: .mint))
+                    .accessibilityHint(vm.verseHintUsed ? "Shows the verse again" : "Shows the answer's verse with the word left out. A win with the hint doesn't count toward your streak.")
                 }
               }
               // On phones the message always has its own slot, so the keyboard doesn't
-              // jump down when "Not in word list" appears.
-              .frame(height: usesCompactPhoneLayout && !vm.roundOver ? Self.compactMessageHeight : nil)
+              // jump down when "Not in word list" or the hint appears.
+              .frame(height: usesCompactPhoneLayout && !vm.roundOver ? messageSlotHeight : nil)
             } letterTray: {
               WordTriedLettersCard(
                 lettersInWord: lettersInWord,
@@ -224,28 +225,14 @@ struct WordleView: View {
     .toolbar {
       ToolbarItem(placement: .principal) {
         if vm.started {
-          GameNavigationTitle(title: "WORD", systemImage: "textformat.abc", tint: .mint)
-        }
-      }
-      ToolbarItem(placement: .topBarTrailing) {
-        if vm.started && !vm.roundOver && (vm.canShowVerseHint || vm.verseHintUsed) {
-          Button("Verse Hint", systemImage: "text.quote", action: openVerseHint)
-            .accessibilityHint(vm.verseHintUsed ? "Shows the verse again" : "Shows the answer's verse with the word left out. A win with the hint doesn't count toward your streak.")
+          GameNavigationTitle(.wordle)
         }
       }
       ToolbarItem(placement: .topBarTrailing) {
         if vm.started && !vm.roundOver {
-          Menu {
-            Button(role: .destructive) {
-              confirmReveal = true
-            } label: {
-              Label("Give Up", systemImage: "flag.fill")
-            }
-          } label: {
-            Image(systemName: "ellipsis.circle")
+          GameOptionsMenu(gameTitle: "WORD") {
+            confirmReveal = true
           }
-          .accessibilityLabel("WORD options")
-          .accessibilityHint("Includes an option to give up the current round")
         }
       }
     }
@@ -298,38 +285,27 @@ struct WordleView: View {
     .sheet(isPresented: $showsVerseHint) {
       verseHintSheet
     }
-    .onPencilDoubleTap { _ in
-      guard preferredPencilDoubleTapAction != .ignore, vm.started, !vm.roundOver,
-            vm.isCurrentRowFull() else { return }
-      vm.submitGuess()
-    }
-    .onPencilSqueeze { phase in
-      guard preferredPencilSqueezeAction != .ignore, vm.started, !vm.roundOver,
-            case .ended = phase else { return }
-      showsPencilActions = true
-    }
-    .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
-      if vm.canShowVerseHint || vm.verseHintUsed {
-        Button("Verse Hint", systemImage: "text.quote", action: openVerseHint)
+    // Double-tap submits a full row, or goes on to the next Practice word once the round is over.
+    .gamePencilActions(isEnabled: vm.started, onDoubleTap: pencilDoubleTapAction) {
+      if vm.roundOver {
+        if !vm.isDailyRound {
+          Button("Next Word", systemImage: "arrow.right") { vm.startNewRound(practice: true) }
+        }
+      } else {
+        if vm.canShowVerseHint || vm.verseHintUsed {
+          Button("Verse Hint", systemImage: "text.quote", action: openVerseHint)
+        }
+        GameGiveUpButton { confirmReveal = true }
       }
-      Button("Give Up", systemImage: "flag.fill", role: .destructive) {
-        confirmReveal = true
-      }
-      Button("Cancel", role: .cancel) {}
     }
-        .confirmationDialog(
-            "Reveal the word?",
+        .gameGiveUpConfirmation(
+            "Give up this word?",
             isPresented: $confirmReveal,
-            titleVisibility: .visible
+            message: "The word will be shown and this round counts as a loss."
         ) {
-            Button("Reveal", role: .destructive) {
-                guard !vm.roundOver else { return }
-                vm.didWin = false
-                vm.endRound(win: false)
-            }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("This will reveal the answer and count this round as a loss.")
+            guard !vm.roundOver else { return }
+            vm.didWin = false
+            vm.endRound(win: false)
         }
         // Seed session streaks from persistent values so they survive navigation/relaunch
         .onAppear {
@@ -347,7 +323,7 @@ struct WordleView: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
-                .gameStartDescriptionStyle(title: "WORD", systemImage: "textformat.abc", tint: .mint)
+                .gameStartDescriptionStyle(for: .wordle)
 
             let resumesRound = vm.isAnswerBankPrepared
                 && vm.hasRoundToResume(practice: vm.mode == .practice)
@@ -434,6 +410,12 @@ struct WordleView: View {
     /// Height of the one-line message slot between the board and the keyboard on phones.
     private static let compactMessageHeight: CGFloat = 20
 
+    /// The message slot on phones: one line in the Daily, and tall enough for the Verse Hint
+    /// button in Practice, so the board and keyboard never move during a round.
+    private var messageSlotHeight: CGFloat {
+        vm.isDailyRound ? Self.compactMessageHeight : 40
+    }
+
     /// How far the keyboard may extend into the 80 points `tabBarContentClearance()` keeps
     /// clear. The system safe area already ends at the top of the tab bar, so that space is
     /// empty here; this uses most of it and leaves a 16-point gap above the tab bar.
@@ -452,7 +434,7 @@ struct WordleView: View {
         // Top padding (8), the three gaps between scoreboard, board, message and keyboard
         // (3 × 12), the message slot, and the gap after the hidden key-capture view when a
         // hardware keyboard is connected. The allowance gives back the tab bar clearance.
-        let reserved = 8 + compactScoreboardHeight + 36 + Self.compactMessageHeight
+        let reserved = 8 + compactScoreboardHeight + 36 + messageSlotHeight
             + (hardwareKeyboardConnected ? 12 : 0)
             - Self.compactTabBarAllowance
         // Keyboard: 4 rows of (key + 16 padding), 3 gaps of 8, and 6 of top padding.
@@ -482,7 +464,6 @@ struct WordleView: View {
     // MARK: - On-screen keyboard
     private func keyboardView(keyHeight: CGFloat) -> some View {
         WordleKeyboardView(
-            usesABCLayout: $useABCLayout,
             keyStates: vm.keyboardStates,
             isRoundOver: vm.roundOver,
             isCurrentRowFull: vm.isCurrentRowFull(),
@@ -499,6 +480,16 @@ struct WordleView: View {
     // MARK: - Reference preview presentation
     private func presentReferencePreview(_ ref: WordleGameViewModel.VerseRefInfo) {
         selectedPassage = PassageReferenceParser.parse(ref.display)
+    }
+
+    /// Double-tap: submit a full row, or start the next Practice word after the round.
+    private var pencilDoubleTapAction: (() -> Void)? {
+        if vm.roundOver {
+            guard !vm.isDailyRound else { return nil }
+            return { vm.startNewRound(practice: true) }
+        }
+        guard vm.isCurrentRowFull() else { return nil }
+        return { vm.submitGuess() }
     }
 
     // MARK: - Verse hint (Practice only)

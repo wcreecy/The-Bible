@@ -122,9 +122,11 @@ struct QuizQuestionPanel: View {
     let vm: QuizGameViewModel
     /// iPad shows the timer in its own panel instead.
     let showsTimer: Bool
-    let onShowPencilMenu: () -> Void
 
     @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
+    @Environment(\.showGamePencilMenu) private var showGamePencilMenu
+    /// Where this view sits in the game, so the Pencil menu opens at the Pencil tip.
+    @State private var originInGame: CGPoint = .zero
     /// Each answer's frame, so a Pencil squeeze while hovering can pick the answer under it.
     @State private var optionFrames: [String: CGRect] = [:]
     private static let coordinateSpace = "quizQuestionPanel"
@@ -173,6 +175,9 @@ struct QuizQuestionPanel: View {
                 }
             }
             .coordinateSpace(.named(Self.coordinateSpace))
+            .onGeometryChange(for: CGPoint.self) { $0.frame(in: .named(GamePencil.coordinateSpace)).origin } action: {
+                originInGame = $0
+            }
             // Squeezing while hovering over an answer chooses it; anywhere else opens the actions menu.
             .onPencilSqueeze { phase in
                 guard preferredPencilSqueezeAction != .ignore, case .ended(let value) = phase else { return }
@@ -181,7 +186,9 @@ struct QuizQuestionPanel: View {
                    !current.removedOptions.contains(option) {
                     vm.selectOption(option)
                 } else {
-                    onShowPencilMenu()
+                    showGamePencilMenu(at: value.hoverPose.map {
+                    CGPoint(x: $0.location.x + originInGame.x, y: $0.location.y + originInGame.y)
+                })
                 }
             }
             .onChange(of: current.id) { _, _ in
@@ -370,9 +377,7 @@ struct QuizLifelineBar: View {
                         .minimumScaleFactor(0.75)
                         .frame(maxWidth: .infinity, minHeight: 36)
                 }
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.capsule)
-                .tint(.blue)
+                .buttonStyle(.gameHint(tint: .blue))
                 .disabled(!vm.canUse(lifeline))
                 .accessibilityHint(lifeline.accessibilityHint)
                 .accessibilityValue(isUsed ? "Used" : "")
@@ -478,7 +483,7 @@ struct QuizChapterBonus: View {
                                 .font(.headline.monospacedDigit())
                                 .frame(maxWidth: .infinity, minHeight: 36)
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                         .tint(.orange)
                         .accessibilityLabel("\(GameAnswerLetter.letter(for: index)), chapter \(chapter)")
                     }

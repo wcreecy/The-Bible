@@ -392,7 +392,7 @@ struct ChapterNavigationSection: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
             .accessibilityHint("Opens this chapter in the reader")
 
             if previous != nil || next != nil {

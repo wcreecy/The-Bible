@@ -269,9 +269,11 @@ struct WhoAmIChoiceGrid: View {
     let columnCount: Int
     /// iPad uses slightly larger text for clue answers.
     let usesLargeText: Bool
-    let onShowPencilMenu: () -> Void
 
     @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
+    @Environment(\.showGamePencilMenu) private var showGamePencilMenu
+    /// Where this view sits in the game, so the Pencil menu opens at the Pencil tip.
+    @State private var originInGame: CGPoint = .zero
     /// Each answer's frame, so a Pencil squeeze while hovering can pick the answer under it.
     @State private var optionFrames: [String: CGRect] = [:]
     private static let coordinateSpace = "whoChoiceGrid"
@@ -288,6 +290,9 @@ struct WhoAmIChoiceGrid: View {
             }
         }
         .coordinateSpace(.named(Self.coordinateSpace))
+        .onGeometryChange(for: CGPoint.self) { $0.frame(in: .named(GamePencil.coordinateSpace)).origin } action: {
+            originInGame = $0
+        }
         // Squeezing while hovering over an answer chooses it; anywhere else opens the actions menu.
         .onPencilSqueeze { phase in
             guard preferredPencilSqueezeAction != .ignore, case .ended(let value) = phase else { return }
@@ -296,7 +301,9 @@ struct WhoAmIChoiceGrid: View {
                !vm.removedChoices.contains(choice) {
                 vm.select(choice)
             } else {
-                onShowPencilMenu()
+                showGamePencilMenu(at: value.hoverPose.map {
+                    CGPoint(x: $0.location.x + originInGame.x, y: $0.location.y + originInGame.y)
+                })
             }
         }
         .onChange(of: choices) { _, _ in

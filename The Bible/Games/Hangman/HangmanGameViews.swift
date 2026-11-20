@@ -235,8 +235,8 @@ struct HangmanWordFlowLayout: Layout {
     }
 }
 
+/// Hangman's keys on the shared game keyboard: played letters turn green or red.
 struct HangmanKeyboardView: View {
-    @Binding var usesAlphabeticalLayout: Bool
     let guessedLetters: Set<Character>
     let correctLetters: Set<Character>
     let wrongLetters: Set<Character>
@@ -244,46 +244,15 @@ struct HangmanKeyboardView: View {
     let keyHeight: CGFloat
     let onGuess: (Character) -> Void
 
-    private var rows: [[Character]] {
-        let layout = usesAlphabeticalLayout
-            ? ["ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ"]
-            : ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
-        return layout.map(Array.init)
-    }
-
     var body: some View {
-        VStack(spacing: 8) {
-            ForEach(rows.indices, id: \.self) { rowIndex in
-                HStack(spacing: 6) {
-                    ForEach(rows[rowIndex], id: \.self) { character in
-                        let upper = Character(String(character).uppercased())
-                        Button {
-                            onGuess(upper)
-                        } label: {
-                            Text(String(character))
-                                .font(.headline.weight(.semibold))
-                                .frame(maxWidth: .infinity, minHeight: keyHeight)
-                                .accessibilityLabel("Letter \(String(character))")
-                        }
-                        .buttonStyle(GameKeyButtonStyle(tint: tint(for: upper)))
-                        // Played keys remain tappable so the player receives repeat-guess feedback.
-                        .allowsHitTesting(!isRoundOver)
-                        .opacity(isRoundOver ? 0.6 : 1)
-                        .accessibilityValue(keyState(for: upper))
-
-                        if !usesAlphabeticalLayout,
-                           rowIndex == rows.count - 1,
-                           character == "M" {
-                            layoutToggle(title: "A-Z")
-                        }
-                    }
-
-                    if usesAlphabeticalLayout, rowIndex == rows.count - 1 {
-                        layoutToggle(title: "QWERTY")
-                    }
-                }
-            }
-        }
+        // Played keys stay tappable, so a repeat guess gets its "already guessed" message.
+        GameLetterKeyboard(
+            keyHeight: keyHeight,
+            isActive: !isRoundOver,
+            appearance: { .standard(tint: tint(for: $0)) },
+            keyValue: keyState(for:),
+            onLetter: onGuess
+        )
     }
 
     private func keyState(for character: Character) -> String {
@@ -297,20 +266,6 @@ struct HangmanKeyboardView: View {
             return .green
         }
         return wrongLetters.contains(character) ? .red : .accentColor
-    }
-
-    private func layoutToggle(title: String) -> some View {
-        Button {
-            usesAlphabeticalLayout.toggle()
-        } label: {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity, minHeight: keyHeight)
-                .accessibilityLabel("Toggle keyboard layout")
-        }
-        .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-        .disabled(isRoundOver)
-        .opacity(isRoundOver ? 0.6 : 1)
     }
 }
 
@@ -424,7 +379,7 @@ struct HangmanResponsiveLayout<
                     : "keyboard"
             )
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .controlSize(.small)
         .accessibilityHint(
             showsKeyboardCard
@@ -447,7 +402,7 @@ struct HangmanResponsiveLayout<
                     )
                 }
                 .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .controlSize(.small)
             }
 
@@ -470,7 +425,7 @@ struct HangmanResponsiveLayout<
                     Label("Swap Cards", systemImage: "arrow.left.arrow.right")
                 }
                 .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .controlSize(.small)
                 .accessibilityHint("Switches the game and hangman cards to opposite sides")
             }

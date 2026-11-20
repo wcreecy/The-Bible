@@ -249,7 +249,7 @@ struct StudyHomeCard: View {
             Label("Read verse \(startVerseNumber)", systemImage: "book.fill")
                 .lineLimit(1)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .tint(.teal)
         .frame(maxWidth: .infinity)
 
@@ -258,7 +258,7 @@ struct StudyHomeCard: View {
                 Label(secondaryTitle, systemImage: "text.book.closed")
                     .lineLimit(1)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .tint(.teal)
             .frame(maxWidth: .infinity)
         }
@@ -345,7 +345,7 @@ private struct StudyBookStoryPrompt: View {
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .tint(.teal)
             .accessibilityHint("Opens a narrative retelling of \(bookName)")
         }

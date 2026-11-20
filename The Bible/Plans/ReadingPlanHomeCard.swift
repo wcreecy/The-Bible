@@ -127,7 +127,7 @@ struct ReadingPlanHomeCard: View {
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.glassProminent)
         .buttonBorderShape(.capsule)
         .fixedSize()
 
@@ -147,7 +147,7 @@ struct ReadingPlanHomeCard: View {
             .lineLimit(1)
         }
         .accessibilityLabel("Mark day \(day) read")
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .buttonBorderShape(.capsule)
         .fixedSize()
     }
@@ -214,7 +214,7 @@ struct ReadingPlanHomeCard: View {
             }
 
             Button("Create Your Own", systemImage: "plus", action: onCreatePlan)
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .buttonBorderShape(.capsule)
                 .controlSize(.small)
         }
@@ -250,7 +250,7 @@ struct ReadingPlansNewTip: View {
                         .foregroundStyle(.secondary)
                     Button("Browse Plans", action: onBrowse)
                         .font(.subheadline.weight(.semibold))
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                         .buttonBorderShape(.capsule)
                         .controlSize(.small)
                 }

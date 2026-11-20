@@ -159,7 +159,7 @@ struct ScramblePrompt<Tiles: View>: View {
                         Label("Read \(reference)", systemImage: "book.closed")
                             .font(.caption.weight(.semibold))
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .tint(.accentColor)
                     .accessibilityHint("Shows a preview of the source verse")
                 } else {

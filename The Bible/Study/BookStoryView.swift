@@ -258,7 +258,7 @@ private struct BookStoryNavigation: View {
             }
         }
         .font(.subheadline.weight(.semibold))
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .padding(.top, 12)
     }
 }

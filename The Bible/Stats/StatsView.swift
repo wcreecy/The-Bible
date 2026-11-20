@@ -220,7 +220,7 @@ struct StatsView: View {
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("Close") { selectedBookForChapters = nil }
+                            Button("Done") { selectedBookForChapters = nil }
                         }
                         ToolbarItem(placement: .confirmationAction) {
                             if let next = nextUnreadChapter(in: key.bookName) {
@@ -254,8 +254,8 @@ struct StatsView: View {
                 .navigationTitle("\(genre.rawValue)")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") { selectedGenre = nil }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { selectedGenre = nil }
                     }
                 }
             }

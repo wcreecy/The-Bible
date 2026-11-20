@@ -79,7 +79,7 @@ private struct RichNoteEditing: ViewModifier {
                 selectedScriptureReference = reference
             }
             .sheet(item: $selectedScriptureReference) { reference in
-                ScriptureReferencePreview(reference: reference)
+                ScripturePassageSheet(reference: reference.passageReference)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
@@ -477,7 +477,7 @@ private struct NoteTagSuggestionBar: View {
                     ForEach(suggestions, id: \.self) { tag in
                         Button("#\(tag)") { choose(tag) }
                             .font(.subheadline.weight(.semibold))
-                            .buttonStyle(.bordered)
+                            .buttonStyle(.glass)
                             .controlSize(.small)
                     }
                 }

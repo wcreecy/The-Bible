@@ -8,7 +8,6 @@ struct BibleTriviaCompactBoard: View {
     let model: BibleTriviaGameModel
     let timerTint: Color
     let outcome: BibleTriviaAnswerOutcome?
-    let onShowPencilMenu: () -> Void
     let onShowPassage: () -> Void
 
     var body: some View {
@@ -23,8 +22,7 @@ struct BibleTriviaCompactBoard: View {
             BibleTriviaQuestionBoard(
                 model: model,
                 showsTimer: true,
-                timerTint: timerTint,
-                onShowPencilMenu: onShowPencilMenu
+                timerTint: timerTint
             )
 
             if !model.isAnswered {
@@ -64,7 +62,6 @@ struct BibleTriviaCompactBoard: View {
 struct BibleTriviaDashboard: View {
     let model: BibleTriviaGameModel
     let outcome: BibleTriviaAnswerOutcome?
-    let onShowPencilMenu: () -> Void
     let onShowPassage: () -> Void
 
     var body: some View {
@@ -80,8 +77,7 @@ struct BibleTriviaDashboard: View {
             BibleTriviaQuestionBoard(
                 model: model,
                 showsTimer: false,
-                timerTint: .cyan,
-                onShowPencilMenu: onShowPencilMenu
+                timerTint: .cyan
             )
 
             if !model.isAnswered {
@@ -142,9 +138,7 @@ struct BibleTriviaLifelineBar: View {
                         .minimumScaleFactor(0.75)
                         .frame(maxWidth: .infinity, minHeight: 36)
                 }
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.capsule)
-                .tint(.cyan)
+                .buttonStyle(.gameHint(tint: .cyan))
                 .disabled(!model.canUse(lifeline))
                 .accessibilityHint(lifeline.accessibilityHint)
                 .accessibilityValue(isUsed ? "Used" : "")
@@ -157,9 +151,11 @@ struct BibleTriviaQuestionBoard: View {
     let model: BibleTriviaGameModel
     let showsTimer: Bool
     let timerTint: Color
-    let onShowPencilMenu: () -> Void
 
     @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
+    @Environment(\.showGamePencilMenu) private var showGamePencilMenu
+    /// Where this view sits in the game, so the Pencil menu opens at the Pencil tip.
+    @State private var originInGame: CGPoint = .zero
     /// Each answer's frame, so a Pencil squeeze while hovering can pick the answer under it.
     @State private var optionFrames: [String: CGRect] = [:]
     private static let coordinateSpace = "triviaQuestionBoard"
@@ -240,6 +236,9 @@ struct BibleTriviaQuestionBoard: View {
             }
         }
         .coordinateSpace(.named(Self.coordinateSpace))
+        .onGeometryChange(for: CGPoint.self) { $0.frame(in: .named(GamePencil.coordinateSpace)).origin } action: {
+            originInGame = $0
+        }
         // Squeezing while hovering over an answer chooses it; anywhere else opens the actions menu.
         .onPencilSqueeze { phase in
             guard preferredPencilSqueezeAction != .ignore, case .ended(let value) = phase else { return }
@@ -248,7 +247,9 @@ struct BibleTriviaQuestionBoard: View {
                !model.removedOptions.contains(option) {
                 model.choose(option)
             } else {
-                onShowPencilMenu()
+                showGamePencilMenu(at: value.hoverPose.map {
+                    CGPoint(x: $0.location.x + originInGame.x, y: $0.location.y + originInGame.y)
+                })
             }
         }
         .onChange(of: options) { _, _ in

@@ -4,8 +4,6 @@ struct WhoAmIGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var vm: WhoAmIGameViewModel
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @State private var showsPencilActions = false
     @FocusState private var isKeyboardFocused: Bool
     init(reviewQuestionIDs: Set<String> = []) {
         isReviewRound = !reviewQuestionIDs.isEmpty
@@ -88,7 +86,7 @@ struct WhoAmIGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.started {
-                    GameNavigationTitle(title: "Who?", systemImage: "person.text.rectangle", tint: .brown)
+                    GameNavigationTitle(.whoAmI)
                 }
             }
         }
@@ -99,17 +97,17 @@ struct WhoAmIGameView: View {
         .task(id: vm.questionNumber) {
             await vm.loadPassage()
         }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore, vm.started, !vm.isComplete, vm.roundOver else { return }
-            vm.nextRound()
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+        // Double-tap goes on once the question is answered; squeezing on a choice picks it.
+        .gamePencilActions(
+            isEnabled: vm.started && !vm.isComplete,
+            handlesSqueeze: false,
+            onDoubleTap: vm.roundOver ? { vm.nextRound() } : nil
+        ) {
             if vm.roundOver {
                 Button(vm.isLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: vm.nextRound)
             } else if vm.canUseHint {
                 Button(vm.hintTitle, systemImage: "lightbulb", action: vm.useHint)
             }
-            Button("Cancel", role: .cancel) {}
         }
     }
 
@@ -137,7 +135,7 @@ struct WhoAmIGameView: View {
     private var setupContent: some View {
         Spacer(minLength: 24)
         Text("Name the Bible person from a clue, or the clue from a name.")
-            .gameStartDescriptionStyle(title: "Who?", systemImage: "person.text.rectangle", tint: .brown)
+            .gameStartDescriptionStyle(for: .whoAmI)
 
         GameSplashLaunchLayout(
             tint: .brown,
@@ -267,8 +265,7 @@ struct WhoAmIGameView: View {
             WhoAmIChoiceGrid(
                 vm: vm,
                 columnCount: promptIsName || dynamicTypeSize.isAccessibilitySize ? 1 : 2,
-                usesLargeText: false,
-                onShowPencilMenu: { showsPencilActions = true }
+                usesLargeText: false
             )
         }
 
@@ -329,8 +326,7 @@ struct WhoAmIGameView: View {
             WhoAmIChoiceGrid(
                 vm: vm,
                 columnCount: 2,
-                usesLargeText: true,
-                onShowPencilMenu: { showsPencilActions = true }
+                usesLargeText: true
             )
 
             reveal
@@ -370,8 +366,7 @@ struct WhoAmIGameView: View {
     private var hintAction: some View {
         if vm.canUseHint {
             Button(vm.hintTitle, systemImage: "lightbulb") { withAnimation(.snappy) { vm.useHint() } }
-                .buttonStyle(.bordered)
-                .tint(.brown)
+                .buttonStyle(.gameHint(tint: .brown))
         } else if vm.hintUsed, let hint = vm.hintText {
             Label(hint, systemImage: "lightbulb.fill")
                 .font(.subheadline)

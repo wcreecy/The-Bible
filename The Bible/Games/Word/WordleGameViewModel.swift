@@ -288,6 +288,7 @@ final class WordleGameViewModel {
         // Accept the target, any curated answer, or any correctly spelled 5-letter English word
         guard guess == target || Self.curatedWordSet.contains(guess) || isValidWord(guess) else {
             message = String(localized: "Not in word list")
+            Haptics.warning()
             return
         }
 
@@ -495,6 +496,7 @@ final class WordleGameViewModel {
     func endRound(win: Bool) {
         roundOver = true
         didWin = win
+        if win { Haptics.success() } else { Haptics.error() }
         // Clear current input to avoid duplicate rendering.
         currentInput = ""
 

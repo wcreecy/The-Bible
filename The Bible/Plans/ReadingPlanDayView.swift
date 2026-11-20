@@ -97,7 +97,7 @@ struct ReadingPlanDayView: View {
                         Text(isComplete ? "Day Complete ✓" : "Mark Day Complete")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.glassProminent)
                     .tint(isComplete ? .green : .accentColor)
                     .controlSize(.large)
                 } else {
@@ -110,7 +110,7 @@ struct ReadingPlanDayView: View {
                         Text("Start This Plan")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.glassProminent)
                     .controlSize(.large)
                     .disabled(!store.canStart(plan.id))
                 }
@@ -161,7 +161,7 @@ private struct ReadingRow: View {
                 Label("Read", systemImage: "book.fill")
                     .font(.subheadline.weight(.semibold))
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .buttonBorderShape(.capsule)
             .accessibilityHint("Opens \(reading.title) in the reader")
         }

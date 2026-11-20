@@ -74,7 +74,7 @@ struct ResumeReadingCard: View {
                         Button("Choose a passage") {
                             showsScripturePicker = true
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                         .controlSize(.small)
                     }
                 }
@@ -140,7 +140,7 @@ struct ResumeReadingCard: View {
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .controlSize(.large)
     }
 

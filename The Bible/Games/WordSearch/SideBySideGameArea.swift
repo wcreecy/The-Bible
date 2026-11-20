@@ -23,7 +23,6 @@ struct SideBySideGameArea<Summary: View>: View {
     let roundOver: Bool
     let hintTitle: String
     let onHint: () -> Void
-    let onReveal: () -> Void
     let onShowWordList: () -> Void
     let onNewPuzzle: () -> Void
     let onChangeSettings: () -> Void
@@ -108,7 +107,6 @@ struct SideBySideGameArea<Summary: View>: View {
                 hintTitle: hintTitle,
                 canShowWordList: hidesWordList,
                 onHint: onHint,
-                onReveal: onReveal,
                 onShowWordList: onShowWordList,
                 onNewPuzzle: onNewPuzzle,
                 onChangeSettings: onChangeSettings,

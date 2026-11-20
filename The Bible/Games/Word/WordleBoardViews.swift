@@ -140,8 +140,8 @@ extension WordleView {
         }
     }
 
+    /// WORD's keys on the shared game keyboard, colored by what each guess revealed.
     struct WordleKeyboardView: View {
-        @Binding var usesABCLayout: Bool
         let keyStates: [Character: KeyState]
         let isRoundOver: Bool
         let isCurrentRowFull: Bool
@@ -152,107 +152,37 @@ extension WordleView {
         let onEnter: () -> Void
         @Environment(\.wordColorBlindMode) private var colorBlind
 
-        private var rows: [[Character]] {
-            if usesABCLayout {
-                return [Array("ABCDEFGHIJ"), Array("KLMNOPQRS"), Array("TUVWXYZ")]
-            }
-            return [Array("QWERTYUIOP"), Array("ASDFGHJKL"), Array("ZXCVBNM")]
-        }
-
-        private var rowSpacing: CGFloat {
-            keyHeight <= 32 ? 5 : 8
-        }
-
-        private var keySpacing: CGFloat {
-            keyHeight <= 32 ? 4 : 6
-        }
-
         var body: some View {
-            VStack(spacing: rowSpacing) {
-                keyboardRow(rows[0])
-                keyboardRow(rows[1])
-
-                HStack(spacing: keySpacing) {
-                    Button {
-                        usesABCLayout.toggle()
-                    } label: {
-                        Image(systemName: "arrow.uturn.backward.circle")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, minHeight: keyHeight)
-                    }
-                    .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                    .disabled(isRoundOver)
-                    .accessibilityLabel(usesABCLayout ? "Switch to QWERTY layout" : "Switch to ABC layout")
-
-                    ForEach(rows[2], id: \.self) { character in
-                        keyButton(for: character)
-                    }
-
-                    Button(action: onDelete) {
-                        Image(systemName: "delete.left")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, minHeight: keyHeight)
-                    }
-                    .buttonStyle(.glass(.regular.tint(.red)))
-                    .disabled(isRoundOver || !canDelete)
-                    .accessibilityLabel("Backspace")
-                }
-
-                Button(action: onEnter) {
-                    Label("Enter", systemImage: "return")
-                        .labelStyle(.titleAndIcon)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, minHeight: keyHeight)
-                }
-                .buttonStyle(
-                    GameKeyButtonStyle(tint: isCurrentRowFull ? .green : .gray)
-                )
-                .disabled(isRoundOver || !isCurrentRowFull)
-                .accessibilityLabel("Enter")
-            }
-            .accessibilityElement(children: .contain)
+            GameLetterKeyboard(
+                keyHeight: keyHeight,
+                isActive: !isRoundOver,
+                acceptsLetters: !isCurrentRowFull,
+                appearance: appearance(for:),
+                keyValue: keyValue(for:),
+                onLetter: onLetter,
+                onDelete: onDelete,
+                canDelete: canDelete,
+                enterKey: GameKeyboardEnterKey(isEnabled: isCurrentRowFull, action: onEnter)
+            )
             .padding(.top, 6)
         }
 
-        private func keyboardRow(_ characters: [Character]) -> some View {
-            HStack(spacing: keySpacing) {
-                ForEach(characters, id: \.self) { character in
-                    keyButton(for: character)
-                }
-            }
-        }
-
-        @ViewBuilder
-        private func keyButton(for character: Character) -> some View {
-            let state = keyStates[character] ?? .unknown
-
+        private func appearance(for letter: Character) -> GameKeyAppearance {
+            let state = keyStates[letter] ?? .unknown
             switch state {
             case .unknown:
-                keyLabel(character)
-                    .buttonStyle(GameKeyButtonStyle(tint: state.tint))
-                    .disabled(isRoundOver || isCurrentRowFull)
-            case .absent:
-                keyLabel(character)
-                    .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
-                    .disabled(isRoundOver || isCurrentRowFull)
-            case .present, .correct:
-                keyLabel(character)
-                    .buttonStyle(FilledGameKeyButtonStyle(
-                        fill: state.fill(colorBlind: colorBlind),
-                        foreground: state.foreground(colorBlind: colorBlind)
-                    ))
-                    .disabled(isRoundOver || isCurrentRowFull)
+                return .plain
+            case .absent, .present, .correct:
+                return .filled(fill: state.fill(colorBlind: colorBlind), foreground: state.foreground(colorBlind: colorBlind))
             }
         }
 
-        private func keyLabel(_ character: Character) -> some View {
-            Button {
-                onLetter(character)
-            } label: {
-                Text(String(character))
-                    .font((keyHeight > 40 ? Font.title3 : Font.headline).weight(.semibold))
-                    .frame(maxWidth: .infinity, minHeight: keyHeight)
+        private func keyValue(for letter: Character) -> String {
+            switch keyStates[letter] ?? .unknown {
+            case .unknown: ""
+            case .absent: String(localized: "Not in the word")
+            case .present: String(localized: "In the word, wrong spot")
+            case .correct: String(localized: "In the right spot")
             }
         }
     }

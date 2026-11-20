@@ -76,7 +76,7 @@ struct NotesFilterBar: View {
 
                 Button("Manage", systemImage: "slider.horizontal.3", action: manageTagsAction)
                     .font(.subheadline.weight(.semibold))
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .clipShape(Capsule())
                     .accessibilityLabel("Manage tags")
             }
@@ -120,7 +120,7 @@ struct NotesActiveFiltersSummary: View {
 
             Button("Clear filters", systemImage: "xmark.circle", action: clearAction)
                 .font(.subheadline.weight(.semibold))
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .controlSize(.small)
                 .accessibilityLabel("Clear all filters")
         }
@@ -271,7 +271,7 @@ struct NotesListCard: View {
                     Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
                         clearFiltersAction()
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.glassProminent)
                 }
             }
         } else {

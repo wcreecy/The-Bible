@@ -1,14 +1,13 @@
 import SwiftUI
 
 struct ScrambleGameView: View {
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
     @State private var selectedPassage: PassageReference?
     @State private var isRevealConfirmationPresented = false
     @State private var vm: ScrambleGameViewModel
-    @State private var showsPencilActions = false
+    /// The board's frame in the game's Pencil space, to find the square or tile under the Pencil.
+    @State private var boardFrameInGame: CGRect = .zero
     /// Square and tile frames, and any drag in progress, for drag and Apple Pencil drops.
     @State private var boardLayout = ScrambleBoardLayout()
 
@@ -108,38 +107,19 @@ struct ScrambleGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.phase != .setup {
-                    GameNavigationTitle(
-                        title: "Scramble",
-                        systemImage: "text.line.first.and.arrowtriangle.forward",
-                        tint: .pink
-                    )
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                if vm.canPause {
-                    GamePauseButton { vm.isPaused = true }
+                    GameNavigationTitle(.scramble)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if vm.phase == .playing, !vm.isCurrentWordResolved {
-                    Menu {
-                        Button(role: .destructive) {
-                            isRevealConfirmationPresented = true
-                        } label: {
-                            Label("Reveal Answer", systemImage: "eye")
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                    GameOptionsMenu(gameTitle: "Scramble") {
+                        isRevealConfirmationPresented = true
                     }
-                    .accessibilityLabel("Scramble options")
-                    .accessibilityHint("Includes an option to reveal the answer")
                 }
             }
         }
         // A call, another app, or locking the phone pauses the word until Resume.
-        .onAppActiveChange { isActive in
-            if !isActive, vm.canPause { vm.isPaused = true }
-        }
+        .gamePauseControls(canPause: vm.canPause) { vm.isPaused = true }
         .task {
             await vm.loadWordBank()
         }
@@ -154,33 +134,30 @@ struct ScrambleGameView: View {
         .sheet(item: $selectedPassage) { reference in
             ScripturePassageSheet(reference: reference)
         }
-        .confirmationDialog("Reveal answer?", isPresented: $isRevealConfirmationPresented, titleVisibility: .visible) {
-            Button("Reveal & Next", role: .destructive) {
-                vm.revealAnswer()
+        .gameGiveUpConfirmation(
+            "Give up this word?",
+            isPresented: $isRevealConfirmationPresented,
+            message: "The word will be shown and marked incorrect. Then the next word begins.",
+            action: vm.revealAnswer
+        )
+        // Double-tap checks a full answer, or goes on once the word is over; squeezing on a
+        // square or tile moves letters, and anywhere else opens the menu.
+        .gamePencilActions(
+            isEnabled: vm.phase == .playing && !vm.isPaused,
+            onDoubleTap: pencilDoubleTapAction,
+            onSqueeze: handlePencilSqueeze
+        ) {
+            if vm.isCurrentWordResolved {
+                if showsNextWordButton {
+                    Button(vm.isLastWord ? "See Results" : "Next Word", systemImage: "arrow.right", action: vm.loadNextWord)
+                }
+            } else {
+                Button("Check Answer", systemImage: "checkmark.circle", action: vm.checkAnswer)
+                    .disabled(!vm.canCheckAnswer)
+                Button("Undo", systemImage: "arrow.uturn.backward", action: vm.undo)
+                    .disabled(!vm.canUndo)
+                GameGiveUpButton { isRevealConfirmationPresented = true }
             }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("The word will be marked incorrect, then the next word will begin.")
-        }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore,
-                  vm.phase == .playing, !vm.isPaused, !vm.isCurrentWordResolved else { return }
-            vm.undo()
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
-            if !vm.isCurrentWordResolved {
-                Button("Undo", systemImage: "arrow.uturn.backward") {
-                    vm.undo()
-                }
-                .disabled(!vm.canUndo)
-                Button("Check Answer", systemImage: "checkmark.circle") {
-                    vm.checkAnswer()
-                }
-                Button("Reveal Answer", systemImage: "eye", role: .destructive) {
-                    isRevealConfirmationPresented = true
-                }
-            }
-            Button("Cancel", role: .cancel) {}
         }
         .onAppear {
             vm.session.syncSavedBest(from: vm.persistentStreak)
@@ -237,11 +214,7 @@ struct ScrambleGameView: View {
             Spacer(minLength: 24)
 
             Text("Unscramble Bible names, places, books, and terms.")
-                .gameStartDescriptionStyle(
-                    title: "Scramble",
-                    systemImage: "text.line.first.and.arrowtriangle.forward",
-                    tint: .pink
-                )
+                .gameStartDescriptionStyle(for: .scramble)
 
             GameSplashLaunchLayout(
                 tint: .pink,
@@ -267,16 +240,27 @@ struct ScrambleGameView: View {
                             .foregroundStyle(.orange)
                     }
 
-                    Picker("Session length", selection: $vm.sessionLength) {
-                        ForEach(SessionLength.allCases) { length in
-                            Text(length.title).tag(length)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
                     @Bindable var bindableVM = vm
-                    Toggle("Practice mode (no timer)", isOn: $bindableVM.isPracticeMode)
-                        .font(.subheadline.weight(.medium))
+                    GameSettingsGroup {
+                        GameChoiceSetting(
+                            title: "Session length",
+                            systemImage: "number",
+                            tint: .pink,
+                            selection: $bindableVM.sessionLength,
+                            choices: [
+                                GameChoice(value: SessionLength.short, title: "5 words", icon: "5.circle"),
+                                GameChoice(value: SessionLength.quick, title: "10 words", icon: "10.circle"),
+                                GameChoice(value: SessionLength.extended, title: "20 words", icon: "20.circle")
+                            ]
+                        )
+                        GameToggleSetting(
+                            title: "Practice Mode",
+                            detail: "No timer, so you can take your time with each word.",
+                            systemImage: "timer",
+                            tint: .pink,
+                            isOn: $bindableVM.isPracticeMode
+                        )
+                    }
                 }
             } facts: {
                 GameSplashFacts(
@@ -377,8 +361,10 @@ struct ScrambleGameView: View {
                     .position(drag.location)
             }
         }
-        // Attached here so the hover location is in the board's coordinate space.
-        .onPencilSqueeze(perform: handlePencilSqueeze)
+        // Apple Pencil squeezes arrive in the game's space; this converts them to the board's.
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(GamePencil.coordinateSpace)) } action: {
+            boardFrameInGame = $0
+        }
         .frame(maxWidth: 620)
         .padding(.top, 8)
     }
@@ -398,17 +384,22 @@ struct ScrambleGameView: View {
         }
     }
 
-    /// Squeezing while hovering over a letter picks it up, and over a square drops it. A squeeze
-    /// that isn't over a letter or square opens the Pencil actions menu.
-    private func handlePencilSqueeze(_ phase: PencilSqueezeGesturePhase) {
-        guard preferredPencilSqueezeAction != .ignore,
-              vm.phase == .playing, !vm.isPaused,
-              case .ended(let value) = phase else { return }
+    /// Double-tap: check a full answer, or go on once the word is over. Never a hint.
+    private var pencilDoubleTapAction: (() -> Void)? {
+        if vm.isCurrentWordResolved {
+            guard showsNextWordButton else { return nil }
+            return { vm.loadNextWord() }
+        }
+        guard vm.canCheckAnswer else { return nil }
+        return { vm.checkAnswer() }
+    }
 
-        let target = value.hoverPose.flatMap { boardLayout.target(at: $0.location) }
-        guard !vm.isCurrentWordResolved else {
-            showsPencilActions = true
-            return
+    /// Squeezing over a square or tile moves letters, as tapping does. Returns `false` (so the
+    /// Pencil menu opens) anywhere else, or once the word is over.
+    private func handlePencilSqueeze(at point: CGPoint?) -> Bool {
+        guard !vm.isCurrentWordResolved else { return false }
+        let target = point.flatMap { point in
+            boardLayout.target(at: CGPoint(x: point.x - boardFrameInGame.minX, y: point.y - boardFrameInGame.minY))
         }
 
         if vm.heldTile != nil {
@@ -417,17 +408,19 @@ struct ScrambleGameView: View {
             case .tray?, .trayTile?: vm.returnHeldTileToTray()
             case nil: vm.cancelHold()
             }
-            return
+            return true
         }
 
         switch target {
         case .square(let position)?:
             // Picks up a placed letter, or makes an empty square the next one to fill.
             vm.tapSquare(position)
+            return true
         case .trayTile(let index)?:
             vm.pickUp(.tray(index))
+            return true
         case .tray?, nil:
-            showsPencilActions = true
+            return false
         }
     }
 

@@ -573,6 +573,7 @@ final class CrosswordGameViewModel {
             guard let guess = guesses[cell] else { return false }
             return guess != puzzle.letter(at: cell)
         })
+        if wrongCells.isEmpty { Haptics.success() } else { Haptics.warning() }
         return wrongCells.count
     }
 
@@ -639,6 +640,7 @@ final class CrosswordGameViewModel {
 
     private func finish(_ result: Outcome) {
         guard phase == .playing else { return }
+        if result == .revealed { Haptics.error() } else { Haptics.success() }
         outcome = result
         phase = .finished
         selectedCell = nil

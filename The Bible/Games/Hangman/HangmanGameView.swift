@@ -2,12 +2,9 @@ import SwiftUI
 
 struct HangmanGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var vm: HangmanGameViewModel
     private let isReviewRound: Bool
     @State private var isGiveUpConfirmationPresented = false
-    @State private var showsPencilActions = false
     /// Set when a letter is guessed twice; a new value restarts the message's timer.
     @State private var repeatedGuessMessageID: UUID?
     @State private var selectedPassage: PassageReference?
@@ -22,7 +19,6 @@ struct HangmanGameView: View {
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
     // Keyboard layout toggle: false = QWERTY, true = A-Z
-    @State private var useAlphabeticalLayout: Bool = false
     @State private var showsOnScreenKeyboard: Bool = true
     @State private var showsHangmanCardFirst: Bool = false
 
@@ -81,30 +77,23 @@ struct HangmanGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.phase != .setup {
-                    GameNavigationTitle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
+                    GameNavigationTitle(.hangman)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if vm.phase == .playing, !vm.roundOver {
-                    Menu {
-                        Button(role: .destructive) {
-                            isGiveUpConfirmationPresented = true
-                        } label: {
-                            Label("Give Up", systemImage: "flag.fill")
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                    GameOptionsMenu(gameTitle: "Hangman") {
+                        isGiveUpConfirmationPresented = true
                     }
-                    .accessibilityLabel("Hangman options")
                 }
             }
         }
-        .confirmationDialog("Give up this word?", isPresented: $isGiveUpConfirmationPresented, titleVisibility: .visible) {
-            Button("Give Up", role: .destructive, action: vm.giveUp)
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("The word will be marked incorrect and you can continue to the next word.")
-        }
+        .gameGiveUpConfirmation(
+            "Give up this word?",
+            isPresented: $isGiveUpConfirmationPresented,
+            message: "The word will be shown and marked incorrect. Then you can go on to the next word.",
+            action: vm.giveUp
+        )
         .task {
             await vm.loadData()
         }
@@ -127,20 +116,11 @@ struct HangmanGameView: View {
         .sheet(item: $selectedPassage) { reference in
             ScripturePassageSheet(reference: reference)
         }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore, vm.phase == .playing else { return }
-            if vm.roundOver {
-                vm.nextWord()
-            } else if vm.canRevealClue {
-                vm.revealClue()
-            }
-        }
-        .onPencilSqueeze { phase in
-            guard preferredPencilSqueezeAction != .ignore, vm.phase == .playing,
-                  case .ended = phase else { return }
-            showsPencilActions = true
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+        // Double-tap goes on to the next word once this one is over; it never spends a hint.
+        .gamePencilActions(
+            isEnabled: vm.phase == .playing,
+            onDoubleTap: vm.roundOver ? { vm.nextWord() } : nil
+        ) {
             if vm.roundOver {
                 Button(vm.isLastWord ? "See Results" : "Next Word", systemImage: "arrow.right", action: vm.nextWord)
             } else {
@@ -153,11 +133,8 @@ struct HangmanGameView: View {
                 if vm.canShowVerseClue {
                     Button("Show Verse Clue", systemImage: "text.quote", action: vm.showVerseClue)
                 }
-                Button("Give Up", systemImage: "flag.fill", role: .destructive) {
-                    isGiveUpConfirmationPresented = true
-                }
+                GameGiveUpButton { isGiveUpConfirmationPresented = true }
             }
-            Button("Cancel", role: .cancel) {}
         }
     }
 
@@ -204,7 +181,7 @@ struct HangmanGameView: View {
     private var startSection: some View {
         Spacer(minLength: 24)
         Text("Guess the person, place, word, or book from the Bible")
-            .gameStartDescriptionStyle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
+            .gameStartDescriptionStyle(for: .hangman)
 
         GameSplashLaunchLayout(
             tint: .teal,
@@ -366,8 +343,7 @@ struct HangmanGameView: View {
                 HStack(spacing: 16) { hintButtonContent(showsLetterHint: showsLetterHint, showsVerseClue: showsVerseClue) }
                 VStack(spacing: 8) { hintButtonContent(showsLetterHint: showsLetterHint, showsVerseClue: showsVerseClue) }
             }
-            .font(.subheadline.weight(.semibold))
-            .buttonStyle(.borderless)
+            .buttonStyle(.gameHint(tint: .teal))
         }
     }
 
@@ -539,7 +515,6 @@ struct HangmanGameView: View {
 
     private func keyboardView(keyHeight: CGFloat) -> some View {
         HangmanKeyboardView(
-            usesAlphabeticalLayout: $useAlphabeticalLayout,
             guessedLetters: vm.guessedLetters,
             correctLetters: vm.correctLetters,
             wrongLetters: vm.wrongLetters,

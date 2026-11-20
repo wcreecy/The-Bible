@@ -335,7 +335,7 @@ private struct HiddenHomeCardTile: View {
                 Label("Show", systemImage: "plus.circle.fill")
                     .font(.subheadline.weight(.semibold))
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
             .accessibilityLabel("Show \(id.title)")
         }
         .padding(AppDesignMetrics.cardPadding)

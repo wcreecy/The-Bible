@@ -63,7 +63,7 @@ struct ReadingPlanReaderPanel: View {
                         Text("Keep Going: Day \(following.day)")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                 }
             } else if let next {
                 Button {
@@ -72,7 +72,7 @@ struct ReadingPlanReaderPanel: View {
                     Text("Next: \(next.title)")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .controlSize(.large)
             } else {
                 Button {
@@ -82,7 +82,7 @@ struct ReadingPlanReaderPanel: View {
                     Text("Finish Day \(session.day)")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
                 .controlSize(.large)
             }
         }

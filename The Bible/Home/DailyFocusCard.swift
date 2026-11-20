@@ -70,7 +70,7 @@ struct DailyFocusCard: View {
         if showsSavedFocus {
             HStack(spacing: 8) {
                 Button("Edit", action: beginEditing)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.glass)
                     .controlSize(.small)
                     .tint(.purple)
                     .accessibilityLabel("Edit Intention")
@@ -78,7 +78,7 @@ struct DailyFocusCard: View {
                 Button("Clear", role: .destructive) {
                     isConfirmingClear = true
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .controlSize(.small)
                 .tint(.red)
                 .accessibilityLabel("Clear Intention")

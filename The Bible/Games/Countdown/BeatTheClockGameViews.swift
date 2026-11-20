@@ -73,8 +73,7 @@ struct BeatTheClockClueRow: View {
                         systemImage: "lightbulb",
                         action: onRequestHint
                     )
-                    .font(.subheadline.weight(.semibold))
-                    .buttonStyle(.borderless)
+                    .buttonStyle(.gameHint(tint: .indigo))
                     .disabled(!canRequestHint)
                 }
             }
@@ -89,8 +88,7 @@ struct BeatTheClockClueRow: View {
                     systemImage: "books.vertical",
                     action: onRequestTestamentHint
                 )
-                .font(.subheadline.weight(.semibold))
-                .buttonStyle(.borderless)
+                .buttonStyle(.gameHint(tint: .indigo))
                 .disabled(!canRequestTestamentHint)
             }
         }

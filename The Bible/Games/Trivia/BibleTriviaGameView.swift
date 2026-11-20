@@ -69,7 +69,7 @@ struct BibleTriviaGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if model.phase == .playing || model.phase == .results {
-                    GameNavigationTitle(title: "Trivia", systemImage: "questionmark.text.page.fill", tint: .cyan)
+                    GameNavigationTitle(.trivia)
                 }
             }
         }
@@ -116,11 +116,7 @@ private struct BibleTriviaSetupScreen: View {
                 Spacer(minLength: 24)
 
                 Text("Answer Bible knowledge questions with Scripture support after every answer.")
-                    .gameStartDescriptionStyle(
-                        title: "Trivia",
-                        systemImage: "questionmark.text.page.fill",
-                        tint: .cyan
-                    )
+                    .gameStartDescriptionStyle(for: .trivia)
 
                 GameSplashLaunchLayout(
                     tint: .cyan,
@@ -165,11 +161,9 @@ private struct BibleTriviaSetupScreen: View {
 private struct BibleTriviaPlayScreen: View {
     let model: BibleTriviaGameModel
 
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
     @State private var timerOnLeft = false
     @State private var usesMutedTimerStyle = false
     @State private var verseToast = VerseActionToastState()
-    @State private var showsPencilActions = false
     @State private var selectedPassage: PassageReference?
     @FocusState private var isKeyboardFocused: Bool
 
@@ -202,7 +196,6 @@ private struct BibleTriviaPlayScreen: View {
                                 BibleTriviaDashboard(
                                     model: model,
                                     outcome: outcome,
-                                    onShowPencilMenu: { showsPencilActions = true },
                                     onShowPassage: showFullPassage
                                 )
                                 .frame(minHeight: geometry.size.height - 32, alignment: .top)
@@ -211,7 +204,6 @@ private struct BibleTriviaPlayScreen: View {
                                     model: model,
                                     timerTint: timerTint,
                                     outcome: outcome,
-                                    onShowPencilMenu: { showsPencilActions = true },
                                     onShowPassage: showFullPassage
                                 )
                             }
@@ -280,11 +272,12 @@ private struct BibleTriviaPlayScreen: View {
         .focused($isKeyboardFocused)
         .onKeyPress(phases: .down, action: handleKeyPress)
         .onAppear { isKeyboardFocused = true }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore, model.isAnswered else { return }
-            model.advance()
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+        // Double-tap goes on once the question is answered; squeezing on an answer chooses it.
+        .gamePencilActions(
+            isEnabled: model.currentQuestion != nil,
+            handlesSqueeze: false,
+            onDoubleTap: model.isAnswered ? { model.advance() } : nil
+        ) {
             if model.isAnswered {
                 Button(model.isLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: model.advance)
             } else {
@@ -296,7 +289,6 @@ private struct BibleTriviaPlayScreen: View {
                     }
                 }
             }
-            Button("Cancel", role: .cancel) {}
         }
         .sheet(item: $selectedPassage) { reference in
             ScripturePassageSheet(reference: reference)

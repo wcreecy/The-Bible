@@ -735,12 +735,14 @@ final class ScrambleGameViewModel {
             }
             answerFeedback = .incorrect
             requiresAnswerEdit = true
+            Haptics.error()
             return
         }
 
         acceptedAlternate = guess == currentWord.answer ? nil : guess
         recordWordResult(.correct, givenAnswer: guess)
         answerFeedback = .correct
+        Haptics.success()
         let wordID = currentWord.id
         Task { [weak self] in
             try? await Task.sleep(for: .seconds(1))
@@ -762,6 +764,7 @@ final class ScrambleGameViewModel {
         showAnswerInSquares(currentWord)
         recordWordResult(.wrong, givenAnswer: nil)
         answerFeedback = .revealed
+        Haptics.warning()
     }
 
     func revealAnswerAfterStrikeLimit(for word: ScrambleWord) {

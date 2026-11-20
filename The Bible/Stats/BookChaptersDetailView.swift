@@ -75,7 +75,7 @@ struct BookChaptersDetailView: View {
                                     Button("Unread") {
                                         clearChapter(bookName: b.name, chapterNumber: chap)
                                     }
-                                    .buttonStyle(.bordered)
+                                    .buttonStyle(.glass)
                                     .controlSize(.mini)
                                     .tint(.red)
                                     .disabled(!isRead)

@@ -198,7 +198,7 @@ struct ReviewRoundStatusRow: View {
                         Button("Play") {
                             onSelectGame(.game(item.game.rawValue))
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(.glassProminent)
                         .tint(.purple)
                         .controlSize(.small)
                     }

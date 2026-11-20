@@ -63,7 +63,7 @@ final class The_Bible__iOS_UITests: XCTestCase {
         XCTAssertTrue(setup.waitForExistence(timeout: 8))
         assertFullyContained(setup)
 
-        for title in ["Round Type", "Part of the Bible"] {
+        for title in ["Game Type", "Part of the Bible"] {
             let control = app.buttons[title].firstMatch
             XCTAssertTrue(control.waitForExistence(timeout: 5), "Expected \(title) to be visible.")
             XCTAssertTrue(control.isHittable, "\(title) is clipped or outside the iPad viewport.")

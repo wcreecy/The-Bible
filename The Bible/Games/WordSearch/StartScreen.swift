@@ -43,7 +43,7 @@ struct WordSearchStartScreen: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Find the hidden words from a Bible verse.")
-                .gameStartDescriptionStyle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
+                .gameStartDescriptionStyle(for: .wordSearch)
 
             GameSplashLaunchLayout(
                 tint: .green,

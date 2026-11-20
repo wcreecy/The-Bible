@@ -42,7 +42,7 @@ struct WordStudyGuideView: View {
                                 .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
 
                             Button("Search", action: search)
-                                .buttonStyle(.borderedProminent)
+                                .buttonStyle(.glassProminent)
                                 .disabled(trimmedQuery.isEmpty)
                         }
 
@@ -59,7 +59,7 @@ struct WordStudyGuideView: View {
                                         .font(.subheadline)
                                         .lineLimit(1)
                                 }
-                                .buttonStyle(.bordered)
+                                .buttonStyle(.glass)
                                 .buttonBorderShape(.capsule)
                                 .accessibilityLabel("Search \(example.query), meaning \(example.meaning)")
                             }

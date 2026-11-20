@@ -203,7 +203,7 @@ private struct BookPencilPopover: View {
                     Label("Retelling of \(book.name)", systemImage: "book.pages")
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glass)
                 .controlSize(.large)
             }
 
@@ -227,7 +227,7 @@ private struct BookPencilPopover: View {
                                 .foregroundStyle(isRead ? Color.green : Color.primary)
                                 .frame(maxWidth: .infinity, minHeight: 36)
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                         .accessibilityLabel("Chapter \(chapter.number)")
                         .accessibilityValue(isRead ? "Read" : "")
                     }
@@ -252,7 +252,7 @@ private struct BookPencilPopover: View {
             Label(title, systemImage: systemImage)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .controlSize(.large)
     }
 }

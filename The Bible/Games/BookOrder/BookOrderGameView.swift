@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct BookOrderGameView: View {
-    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
-    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @State private var vm = BookOrderGameViewModel()
     /// The Before or After?, Missing Book or Which Section? round being played, if any.
     @State private var quickRound: BookOrderQuickRound?
@@ -11,7 +9,6 @@ struct BookOrderGameView: View {
     @State private var roundClock = GameActiveClock()
     @State private var isAppActive = true
     @State private var isTimerHidden: Bool = false
-    @State private var showsPencilActions = false
     @State private var isWide = false
     /// Books missed earlier, for a review round; empty for a normal game.
     private let reviewBooks: [String]
@@ -81,28 +78,18 @@ struct BookOrderGameView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if vm.started || quickRound != nil {
-                    GameNavigationTitle(title: "Book Order", systemImage: "list.number", tint: .purple)
+                    GameNavigationTitle(.bookOrder)
                 }
             }
         }
-        .onPencilDoubleTap { _ in
-            guard preferredPencilDoubleTapAction != .ignore, vm.started else { return }
-            showsPencilActions = true
-        }
-        .onPencilSqueeze { phase in
-            guard preferredPencilSqueezeAction != .ignore, vm.started, case .ended = phase else { return }
-            showsPencilActions = true
-        }
-        .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
-            if !vm.showResult {
-                if mode == .classic {
-                    Button("Check Order", systemImage: "checkmark.circle", action: checkOrder)
-                }
-            } else {
-                Button("Next Puzzle", systemImage: "arrow.right.circle", action: advanceToNextRound)
+        // Double-tap checks the order (Classic), or goes on to the next puzzle once it's shown.
+        .gamePencilActions(isEnabled: vm.started, onDoubleTap: pencilDoubleTapAction) {
+            if vm.showResult {
+                Button("Next Puzzle", systemImage: "arrow.right", action: advanceToNextRound)
+            } else if mode == .classic {
+                Button("Check Order", systemImage: "checkmark.circle", action: checkOrder)
             }
             Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
-            Button("Cancel", role: .cancel) {}
         }
         .task(id: vm.started && !vm.showResult && isAppActive) {
             guard vm.started, !vm.showResult, isAppActive else { return }
@@ -154,7 +141,7 @@ struct BookOrderGameView: View {
         ScrollView {
             VStack(spacing: 16) {
                 Text("Learn the order of the books of the Bible.")
-                    .gameStartDescriptionStyle(title: "Book Order", systemImage: "list.number", tint: .purple)
+                    .gameStartDescriptionStyle(for: .bookOrder)
 
                 GameSplashLaunchLayout(
                     tint: .purple,
@@ -674,6 +661,15 @@ struct BookOrderGameView: View {
             roundClock.pause()
         }
         elapsedSeconds = roundClock.elapsedSeconds()
+    }
+
+    /// Double-tap: check the order in Classic, or go on once the result is shown.
+    private var pencilDoubleTapAction: (() -> Void)? {
+        if vm.showResult {
+            return { advanceToNextRound() }
+        }
+        guard mode == .classic else { return nil }
+        return { checkOrder() }
     }
 
     private func checkOrder() {

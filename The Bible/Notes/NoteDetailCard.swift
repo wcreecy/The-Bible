@@ -35,7 +35,7 @@ struct NoteDetailCard: View {
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                                 Button("Add a Note", systemImage: "square.and.pencil", action: editAction)
-                                    .buttonStyle(.borderedProminent)
+                                    .buttonStyle(.glassProminent)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -64,7 +64,7 @@ struct NoteDetailCard: View {
             return .handled
         })
         .sheet(item: $selectedScriptureReference) { reference in
-            ScriptureReferencePreview(reference: reference)
+            ScripturePassageSheet(reference: reference.passageReference)
         }
     }
 
@@ -228,7 +228,7 @@ struct NoteDetailHeader: View {
                 }
                 .accessibilityLabel("Edit note")
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.glass)
         }
     }
 }

@@ -10,6 +10,17 @@ struct ScriptureRef: Equatable, Identifiable {
         "\(bookName)|\(chapter)|\(startVerse)|\(endVerse ?? startVerse)"
     }
 
+    /// The same passage, for the shared `ScripturePassageSheet`.
+    var passageReference: PassageReference {
+        PassageReference(
+            bookName: bookName,
+            startChapter: chapter,
+            startVerse: startVerse,
+            endChapter: chapter,
+            endVerse: endVerse ?? startVerse
+        )
+    }
+
     var formattedReference: String {
         let range = endVerse.map { "-\($0)" } ?? ""
         return "\(bookName) \(chapter):\(startVerse)\(range)"

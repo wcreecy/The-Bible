@@ -74,8 +74,8 @@ struct GamesOverviewCardView: View {
             .navigationTitle(selectedGenre ?? "Genre")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { showGenreDrill = false }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { showGenreDrill = false }
                 }
             }
         }

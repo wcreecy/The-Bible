@@ -232,7 +232,7 @@ private struct VerseOfDayPencilActions: View {
             Label(title, systemImage: systemImage)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
         .controlSize(.large)
         .opacity(isDimmed ? 0.6 : 1)
     }

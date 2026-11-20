@@ -264,7 +264,7 @@ struct ReaderChapterInsightsSheet: View {
                 openedFromReader: true
             )
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         dismissal.dismiss()
                     }
