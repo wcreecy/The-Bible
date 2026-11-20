@@ -14,22 +14,36 @@ final class BibleTriviaGameModel {
     }
 
     private static let questionsPerRound = 10
+    /// A practice round on one book can be shorter, but not shorter than this.
+    private static let minimumBookRoundQuestions = 5
     private static let bestScoreKeyPrefix = "bibleTriviaBestScore"
 
     private let reviewQuestionIDs: Set<String>
     /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
     private let missedQuestions: MissedGameQuestionStore
+    /// Waits between timer ticks; tests pass a manual clock.
+    @ObservationIgnored private let sleep: (Duration) async throws -> Void
+    /// The current time for the question clock; tests pass the manual clock's time.
+    @ObservationIgnored private let now: () -> Date
+    /// Loads the passage a question cites; tests pass a fixed passage.
+    @ObservationIgnored private let loadPassageForReference: (String) async -> BibleTriviaPassage?
 
-    /// The stores default to the shared ones. They're resolved here rather than as default
-    /// arguments, which would be evaluated outside the main actor.
+    /// The stores, clock and Bible text default to the real ones. They're resolved here rather
+    /// than as default arguments, which would be evaluated outside the main actor.
     init(
         reviewQuestionIDs: Set<String> = [],
         missedQuestions: MissedGameQuestionStore? = nil,
-        progressStore: BibleTriviaProgressStore? = nil
+        progressStore: BibleTriviaProgressStore? = nil,
+        sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
+        now: @escaping () -> Date = Date.init,
+        loadPassage: ((String) async -> BibleTriviaPassage?)? = nil
     ) {
         self.reviewQuestionIDs = reviewQuestionIDs
         self.missedQuestions = missedQuestions ?? .shared
         self.progressStore = progressStore ?? .shared
+        self.sleep = sleep
+        self.now = now
+        self.loadPassageForReference = loadPassage ?? { await Self.passageInBible(for: $0) }
     }
 
     private struct RoundQuestion: Identifiable {
@@ -37,6 +51,13 @@ final class BibleTriviaGameModel {
         let options: [String]
         var selectedAnswer: String?
         var timedOut = false
+        /// Wrong answers taken away by 50/50.
+        var removedOptions: Set<String> = []
+        var lifelinesUsed: Set<BibleTriviaLifeline> = []
+        var bonusSeconds = 0
+        /// The timer was off at some point, so the answer can't earn a speed bonus.
+        var wasTimerOff = false
+        var earnedSpeedBonus = false
 
         var id: Int { question.id }
         var isAnswered: Bool { selectedAnswer != nil || timedOut }
@@ -52,9 +73,18 @@ final class BibleTriviaGameModel {
             session.syncSavedBest(from: persistentStreak)
         }
     }
+    var topic: BibleTriviaTopic = BibleTriviaTopic(
+        rawValue: UserDefaults.standard.string(forKey: AppStorageKey.triviaTopic) ?? ""
+    ) ?? .mixed {
+        didSet { UserDefaults.standard.set(topic.rawValue, forKey: AppStorageKey.triviaTopic) }
+    }
     private(set) var questions: [BibleTriviaQuestion] = []
+    /// Each question's book, worked out once when the catalog loads.
+    @ObservationIgnored private var bookNames: [Int: String] = [:]
     private var round: [RoundQuestion] = []
     private var carryoverQuestionIDs: Set<Int> = []
+    /// Set for a practice round on the book missed most, which doesn't count toward the pool.
+    private(set) var practiceBook: String?
     private(set) var currentIndex = 0
     /// Score and streaks; see `GameScore` for the rules. Trivia keeps its own best score below.
     private(set) var session = GameScore()
@@ -63,6 +93,8 @@ final class BibleTriviaGameModel {
     var isTimerDisabled = false
     /// True while the question is paused: the timer stops and the question is hidden.
     private(set) var isPaused = false
+    /// The current question's passage, once loaded.
+    private(set) var passage: BibleTriviaPassage?
     @ObservationIgnored private var timerTask: Task<Void, Never>?
     /// Time spent on the current question; the countdown is worked out from it.
     @ObservationIgnored private var questionClock = GameActiveClock()
@@ -85,6 +117,10 @@ final class BibleTriviaGameModel {
         currentRoundQuestion?.options ?? []
     }
 
+    var removedOptions: Set<String> {
+        currentRoundQuestion?.removedOptions ?? []
+    }
+
     var selectedAnswer: String? {
         currentRoundQuestion?.selectedAnswer
     }
@@ -97,15 +133,46 @@ final class BibleTriviaGameModel {
         currentRoundQuestion?.timedOut ?? false
     }
 
-    var eligibleQuestions: [BibleTriviaQuestion] {
-        guard !reviewQuestionIDs.isEmpty else {
-            return questions.filter(difficulty.includes)
-        }
-        return questions.filter { reviewQuestionIDs.contains(String($0.id)) }
+    var earnedSpeedBonus: Bool {
+        currentRoundQuestion?.earnedSpeedBonus ?? false
     }
 
+    /// Speed bonuses earned this round: a correct answer in the first third of the time.
+    var speedBonusCount: Int {
+        round.count { $0.earnedSpeedBonus }
+    }
+
+    /// Correct answers plus speed bonuses.
+    var points: Int {
+        session.score + speedBonusCount
+    }
+
+    /// The question's full time, plus any extra time added.
+    var currentTimeLimit: Int {
+        difficulty.timerSeconds + (currentRoundQuestion?.bonusSeconds ?? 0)
+    }
+
+    private func bookName(of question: BibleTriviaQuestion) -> String? {
+        bookNames[question.id] ?? question.bookName
+    }
+
+    var eligibleQuestions: [BibleTriviaQuestion] {
+        if !reviewQuestionIDs.isEmpty {
+            return questions.filter { reviewQuestionIDs.contains(String($0.id)) }
+        }
+        if let practiceBook {
+            let inBook = questions.filter { bookName(of: $0) == practiceBook }
+            // A small book may need questions from every level to fill a round.
+            let atLevel = inBook.filter(difficulty.includes)
+            return atLevel.count >= Self.minimumBookRoundQuestions ? atLevel : inBook
+        }
+        return questions.filter { difficulty.includes($0) && topic.includes(bookName: bookName(of: $0)) }
+    }
+
+    /// Questions from this topic and level already asked in the current pass through the pool.
     var completedInPool: Int {
-        min(progressStore.progress(for: difficulty).completedQuestionIDs.count, eligibleQuestions.count)
+        let completed = progressStore.progress(for: difficulty).completedQuestionIDs
+        return eligibleQuestions.count { completed.contains($0.id) }
     }
 
     var accuracy: Int {
@@ -146,18 +213,28 @@ final class BibleTriviaGameModel {
         }
 
         questions = loadedQuestions
+        bookNames = Dictionary(uniqueKeysWithValues: loadedQuestions.compactMap { question in
+            question.bookName.map { (question.id, $0) }
+        })
         phase = .setup
     }
 
+    /// Starts a round from the chosen level and topic. A practice round on one book ends here.
     func startRound() {
+        practiceBook = nil
+        beginRound()
+    }
+
+    private func beginRound() {
         let eligible = eligibleQuestions
-        guard eligible.count >= Self.questionsPerRound else {
+        let roundSize = practiceBook == nil ? Self.questionsPerRound : min(Self.questionsPerRound, eligible.count)
+        guard eligible.count >= roundSize, roundSize >= Self.minimumBookRoundQuestions else {
             phase = .unavailable
             return
         }
 
-        round = selectRoundQuestions(from: eligible).map(makeRoundQuestion)
-        guard round.count == Self.questionsPerRound else {
+        round = selectRoundQuestions(from: eligible, count: roundSize).map(makeRoundQuestion)
+        guard round.count == roundSize else {
             phase = .unavailable
             return
         }
@@ -175,26 +252,29 @@ final class BibleTriviaGameModel {
     /// Draws questions at random from those not yet asked in the current cycle. When fewer than a
     /// round's worth remain, the leftovers are used, the pool restarts, and the round is topped up
     /// from the rest so no question repeats until every question in the pool has been asked.
-    private func selectRoundQuestions(from eligible: [BibleTriviaQuestion]) -> [BibleTriviaQuestion] {
+    /// The pool is kept per level, so finishing one topic's questions restarts that level's pool.
+    /// Review and book practice rounds pick at random and leave the pool alone.
+    private func selectRoundQuestions(from eligible: [BibleTriviaQuestion], count: Int) -> [BibleTriviaQuestion] {
         carryoverQuestionIDs = []
-        guard reviewQuestionIDs.isEmpty else {
-            return Array(eligible.shuffled().prefix(Self.questionsPerRound))
+        guard reviewQuestionIDs.isEmpty, practiceBook == nil else {
+            return Array(eligible.shuffled().prefix(count))
         }
 
         let completed = progressStore.progress(for: difficulty).completedQuestionIDs
-        var selected = Array(eligible.filter { !completed.contains($0.id) }.shuffled().prefix(Self.questionsPerRound))
-        guard selected.count < Self.questionsPerRound else { return selected }
+        var selected = Array(eligible.filter { !completed.contains($0.id) }.shuffled().prefix(count))
+        guard selected.count < count else { return selected }
 
         // Leftovers belong to the finished cycle, so they aren't recorded against the new one.
         carryoverQuestionIDs = Set(selected.map(\.id))
         progressStore.resetCompletedPool(for: difficulty)
         let refill = eligible.filter { !carryoverQuestionIDs.contains($0.id) }.shuffled()
-        selected += refill.prefix(Self.questionsPerRound - selected.count)
+        selected += refill.prefix(count - selected.count)
         return selected.shuffled()
     }
 
     func choose(_ answer: String) {
-        guard !isPaused, !isAnswered, options.contains(answer), let question = currentQuestion else { return }
+        guard !isPaused, !isAnswered, options.contains(answer), !removedOptions.contains(answer),
+              let question = currentQuestion else { return }
         finishAnswer(answer, question: question)
     }
 
@@ -213,10 +293,12 @@ final class BibleTriviaGameModel {
     /// Back to the start screen. The streak is kept so the next game can continue it.
     func returnToSetup() {
         timerTask?.cancel()
-        questionClock.pause()
+        questionClock.pause(at: now())
         isPaused = false
         phase = .setup
         round = []
+        practiceBook = nil
+        passage = nil
         currentIndex = 0
         session.clearGame()
     }
@@ -235,15 +317,152 @@ final class BibleTriviaGameModel {
     }
 
     private func prepareCurrentQuestion() {
+        passage = nil
         guard !isAnswered else { return }
         remainingSeconds = difficulty.timerSeconds
         session.startQuestion()
         isPaused = false
-        questionClock.start()
+        questionClock.start(at: now())
         if isTimerDisabled {
-            questionClock.pause()
+            questionClock.pause(at: now())
+            round[currentIndex].wasTimerOff = true
         }
         startTimer()
+    }
+
+    // MARK: - Practicing a book
+
+    /// The book with the most misses this round, when it has enough questions for a practice round.
+    var bookToPractice: String? {
+        let missedBooks = session.entries
+            .filter { $0.outcome != .correct }
+            .compactMap(\.bookName)
+        let counts = Dictionary(missedBooks.map { ($0, 1) }, uniquingKeysWith: +)
+        // Most misses first; ties go to the book missed first.
+        guard let book = missedBooks.first(where: { counts[$0] == counts.values.max() }) else { return nil }
+        let available = questions.count { bookName(of: $0) == book }
+        return available >= Self.minimumBookRoundQuestions ? book : nil
+    }
+
+    /// A round of up to ten questions from one book, at this level when it has enough.
+    func practice(book: String) {
+        practiceBook = book
+        beginRound()
+    }
+
+    // MARK: - Lifelines
+
+    /// Lifelines already used this round; each can be used once.
+    var usedLifelines: Set<BibleTriviaLifeline> {
+        round.reduce(into: []) { $0.formUnion($1.lifelinesUsed) }
+    }
+
+    func canUse(_ lifeline: BibleTriviaLifeline) -> Bool {
+        guard phase == .playing, !isPaused, !isAnswered, !usedLifelines.contains(lifeline) else { return false }
+        switch lifeline {
+        case .fiftyFifty:
+            return options.count - removedOptions.count > 2
+        case .verseHint:
+            return passage != nil
+        case .extraTime:
+            return difficulty != .easy && !isTimerDisabled
+        }
+    }
+
+    /// Whether the player can use this lifeline in this kind of game at all, used or not.
+    func offers(_ lifeline: BibleTriviaLifeline) -> Bool {
+        lifeline != .extraTime || difficulty != .easy
+    }
+
+    func use(_ lifeline: BibleTriviaLifeline) {
+        guard canUse(lifeline), let question = currentQuestion else { return }
+        round[currentIndex].lifelinesUsed.insert(lifeline)
+        switch lifeline {
+        case .fiftyFifty:
+            let wrong = options.filter { $0 != question.correctAnswer }.shuffled()
+            round[currentIndex].removedOptions = Set(wrong.prefix(2))
+        case .verseHint:
+            break
+        case .extraTime:
+            round[currentIndex].bonusSeconds += BibleTriviaLifeline.extraSeconds
+            updateRemainingSeconds()
+        }
+    }
+
+    var isVerseHintShown: Bool {
+        currentRoundQuestion?.lifelinesUsed.contains(.verseHint) ?? false
+    }
+
+    /// Before answering, the verse hint with the answer blanked out; after, the passage in full.
+    var displayedVerse: GameVerse? {
+        guard let passage, let question = currentQuestion else { return nil }
+        if isAnswered {
+            return GameVerse(text: passage.text, reference: passage.title, isClue: false)
+        }
+        guard isVerseHintShown, let opening = passage.verses.first else { return nil }
+        return GameVerse(
+            text: Self.blankingOut(question.correctAnswer, in: opening.text),
+            reference: "\(passage.bookName) \(passage.chapter):\(opening.number)",
+            isClue: true
+        )
+    }
+
+    /// `text` with the answer blanked out, along with each of its longer words, so the hint
+    /// doesn't give it away. "Forty days" blanks "forty" and "days" wherever they appear.
+    static func blankingOut(_ answer: String, in text: String) -> String {
+        let skipped: Set<String> = ["the", "and", "of", "his", "her", "a", "an", "to", "in"]
+        let words = answer.split(whereSeparator: { !$0.isLetter && !$0.isNumber })
+            .map(String.init)
+            .filter { $0.count >= 3 && !skipped.contains($0.lowercased()) }
+        var result = text
+        for phrase in [answer] + words {
+            let pattern = "\\b" + NSRegularExpression.escapedPattern(for: phrase) + "\\b"
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { continue }
+            for match in regex.matches(in: result, range: NSRange(result.startIndex..., in: result)).reversed() {
+                guard let range = Range(match.range, in: result) else { continue }
+                result.replaceSubrange(range, with: String(repeating: "_", count: result[range].count))
+            }
+        }
+        return result
+    }
+
+    // MARK: - Passages
+
+    /// Loads the current question's passage, for the verse hint and for after answering.
+    func loadPassage() async {
+        guard let question = currentQuestion, passage == nil else { return }
+        let loaded = await loadPassageForReference(question.reference)
+        // The player may have moved on while the Bible loaded.
+        guard currentQuestion?.id == question.id else { return }
+        passage = loaded
+    }
+
+    /// Up to the first three verses of `reference`, in the reader's translation.
+    static func passageInBible(for reference: String) async -> BibleTriviaPassage? {
+        // The reference parser matches against the loaded Bible's book names.
+        _ = await BibleRepository.shared.loadAllBooks()
+        guard let parsed = PassageReferenceParser.parse(reference) else { return nil }
+        let start = parsed.startVerse ?? 1
+        let lastVerse = parsed.isSingleChapter ? parsed.endVerse : nil
+        let shownEnd = lastVerse.map { min($0, start + 2) } ?? start
+        let scriptureRef = ScriptureRef(
+            bookName: parsed.bookName,
+            chapter: parsed.startChapter,
+            startVerse: start,
+            endVerse: shownEnd == start ? nil : shownEnd
+        )
+        guard let loaded = BibleReferenceLinker.loadVerses(for: scriptureRef) else { return nil }
+        let verses = loaded.verses
+            .filter { !$0.isOmitted }
+            .map { BibleTriviaPassage.Verse(number: $0.number, text: $0.text) }
+        guard !verses.isEmpty else { return nil }
+        let runsPastShown = !parsed.isSingleChapter || (lastVerse ?? start) > shownEnd || parsed.startVerse == nil
+        return BibleTriviaPassage(
+            bookName: parsed.bookName,
+            chapter: parsed.startChapter,
+            verses: verses,
+            isTruncated: runsPastShown
+        )
     }
 
     // MARK: - Pausing
@@ -258,7 +477,7 @@ final class BibleTriviaGameModel {
     func pause() {
         guard canPause else { return }
         isPaused = true
-        questionClock.pause()
+        questionClock.pause(at: now())
         timerTask?.cancel()
     }
 
@@ -266,8 +485,12 @@ final class BibleTriviaGameModel {
     func resume() {
         guard isPaused else { return }
         isPaused = false
-        questionClock.resume()
+        questionClock.resume(at: now())
         startTimer()
+    }
+
+    private func updateRemainingSeconds() {
+        remainingSeconds = max(0, currentTimeLimit - Int(questionClock.elapsed(at: now())))
     }
 
     /// Updates the countdown from the question clock. The clock is the authority, so pausing
@@ -277,13 +500,10 @@ final class BibleTriviaGameModel {
         guard !isTimerDisabled, !isPaused else { return }
         timerTask = Task { [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(for: .milliseconds(100))
-                guard let self, !Task.isCancelled, !self.isAnswered else { return }
-                let remaining = max(0, self.difficulty.timerSeconds - Int(self.questionClock.elapsed()))
-                if remaining != self.remainingSeconds {
-                    self.remainingSeconds = remaining
-                }
-                if remaining == 0 {
+                try? await self?.sleep(.milliseconds(100))
+                guard let self, !Task.isCancelled, !self.isAnswered, !self.isPaused else { return }
+                self.updateRemainingSeconds()
+                if self.remainingSeconds == 0 {
                     if let question = self.currentQuestion {
                         self.finishAnswer(nil, question: question)
                     }
@@ -297,9 +517,12 @@ final class BibleTriviaGameModel {
         isTimerDisabled.toggle()
         if isTimerDisabled {
             session.noteTimerTurnedOff()
-            questionClock.pause()
+            questionClock.pause(at: now())
+            if round.indices.contains(currentIndex) {
+                round[currentIndex].wasTimerOff = true
+            }
         } else if !isAnswered {
-            questionClock.resume()
+            questionClock.resume(at: now())
         }
         if !isTimerDisabled, !isAnswered {
             startTimer()
@@ -311,10 +534,14 @@ final class BibleTriviaGameModel {
     private func finishAnswer(_ answer: String?, question: BibleTriviaQuestion) {
         guard !isAnswered else { return }
         timerTask?.cancel()
-        questionClock.pause()
+        questionClock.pause(at: now())
         round[currentIndex].selectedAnswer = answer
         round[currentIndex].timedOut = answer == nil
         let isCorrect = answer == question.correctAnswer
+        // A quick answer with the timer on the whole time earns a bonus point.
+        round[currentIndex].earnedSpeedBonus = isCorrect && !round[currentIndex].wasTimerOff
+            && questionClock.elapsed(at: now()) <= Double(difficulty.timerSeconds) / 3
+        let book = bookName(of: question)
         let scriptureReference = BibleReferenceLinker.parse(question.reference)
         session.record(
             GameRoundEntry(
@@ -323,12 +550,13 @@ final class BibleTriviaGameModel {
                 givenAnswer: answer,
                 correctAnswer: question.correctAnswer,
                 category: Self.questionLevelTitle(question.difficulty),
-                bookName: scriptureReference?.bookName,
-                reference: question.reference
+                bookName: book,
+                reference: question.reference,
+                hintCount: round[currentIndex].lifelinesUsed.count
             ),
             savedStreak: persistentStreak
         )
-        if !carryoverQuestionIDs.contains(question.id) {
+        if !carryoverQuestionIDs.contains(question.id), practiceBook == nil {
             progressStore.record(questionID: question.id, difficulty: difficulty)
         }
         GameStats.shared.recordRound(
@@ -338,9 +566,9 @@ final class BibleTriviaGameModel {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
-        if let bookName = scriptureReference?.bookName {
+        if let book {
             GameStats.shared.recordTriviaPerBook(
-                bookName: bookName,
+                bookName: book,
                 answered: 1,
                 correct: isCorrect ? 1 : 0
             )
@@ -353,7 +581,7 @@ final class BibleTriviaGameModel {
         } else if !isCorrect {
             missedQuestions.record(
                 game: .bibleTrivia,
-                bookNames: scriptureReference.map { [$0.bookName] } ?? [],
+                bookNames: book.map { [$0] } ?? [],
                 chapterNumber: scriptureReference?.chapter,
                 topic: "Bible trivia",
                 questionID: String(question.id)
@@ -379,14 +607,26 @@ final class BibleTriviaGameModel {
         }
     }
 
-    /// Progress through this difficulty's question pool; nil for a review round.
+    /// Progress through this level and topic's question pool; nil for a review or practice round.
     var poolProgress: GameRoundSummaryView.PoolProgress? {
-        guard reviewQuestionIDs.isEmpty else { return nil }
+        guard reviewQuestionIDs.isEmpty, practiceBook == nil else { return nil }
+        let title = topic == .mixed
+            ? String(localized: difficulty.title)
+            : "\(String(localized: difficulty.title)) · \(String(localized: topic.title))"
         return GameRoundSummaryView.PoolProgress(
-            title: String(localized: difficulty.title),
+            title: title,
             seen: completedInPool,
             total: eligibleQuestions.count
         )
+    }
+
+    /// Points from speed bonuses, for the summary. Nil when there were none.
+    var speedBonusNote: String? {
+        let bonuses = speedBonusCount
+        guard bonuses > 0 else { return nil }
+        return bonuses == 1
+            ? String(localized: "\(session.score) correct + 1 speed bonus = \(points) points")
+            : String(localized: "\(session.score) correct + \(bonuses) speed bonuses = \(points) points")
     }
 
     private var bestScoreKey: String {
