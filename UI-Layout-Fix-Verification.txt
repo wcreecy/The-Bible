@@ -1,0 +1,28 @@
+Home and More large-text layout fixes — 2026-11-20
+
+Changes
+- Home greeting wraps at accessibility text sizes instead of requiring one line.
+- Home content aligns to the leading edge of its available width.
+- Shared card headers stack at accessibility text sizes so headings and accessory
+  controls do not compete for a narrow horizontal strip.
+- Welcome checklist icons move above the text at accessibility sizes; Skip no
+  longer reserves the two icon columns as empty leading space.
+- More share-card text and actions stack at accessibility sizes. The card scrolls
+  with the destinations instead of consuming the menu's viewport as a pinned footer.
+- The Share control uses an explicit icon at accessibility sizes; its accessibility
+  label remains "Share The Bible".
+
+Validation
+- Xcode BuildProject passed with no errors after the final code change.
+- git diff --check passed.
+- iPhone 17: Home and More checked at normal and accessibility XXXL text sizes.
+  Greeting/cards stay within the screen; checklist text wraps across the available
+  width; footer copy and Share/QR icons are readable; Settings is reachable.
+- Share and QR presentations open and dismiss; nothing was sent/shared externally.
+- Screenshots: UI-Layout-Fix-Screenshots/.
+
+Separate follow-up
+The QR sheet itself truncates content at accessibility XXXL in its initial sheet
+height. This is outside the two requested Home/More layout fixes and was not changed.
+
+iPad verification pending.
