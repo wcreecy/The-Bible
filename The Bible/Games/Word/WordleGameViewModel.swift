@@ -26,6 +26,18 @@ final class WordleGameViewModel {
         didSet { UserDefaults.standard.set(hardModeEnabled, forKey: AppStorageKey.wordleHardModeEnabled) }
     }
 
+    /// Orange and blue instead of green and yellow, on the board, the keyboard and the share grid.
+    var colorBlindModeEnabled: Bool = UserDefaults.standard.bool(forKey: AppStorageKey.wordleColorBlindMode) {
+        didSet { UserDefaults.standard.set(colorBlindModeEnabled, forKey: AppStorageKey.wordleColorBlindMode) }
+    }
+
+    /// The Practice verse hint was used this round, so a win doesn't count toward the streak.
+    var verseHintUsed = false
+
+    /// Whether the round on the board is today's Daily, as opposed to Practice. The round
+    /// decides, not the Mode setting, so results always go to the right streak.
+    var isDailyRound: Bool { roundDayKey != nil }
+
     // MARK: - State
     var started: Bool = false
 
@@ -275,7 +287,7 @@ final class WordleGameViewModel {
 
         // Accept the target, any curated answer, or any correctly spelled 5-letter English word
         guard guess == target || Self.curatedWordSet.contains(guess) || isValidWord(guess) else {
-            message = "Not in word list"
+            message = String(localized: "Not in word list")
             return
         }
 
@@ -360,6 +372,8 @@ final class WordleGameViewModel {
         let hardMode: Bool
         let guesses: [String]
         let elapsedSeconds: Int
+        /// Missing from rounds saved before the verse hint.
+        var verseHintUsed: Bool?
     }
 
     /// Practice rounds have no day key, so that's what tells the two apart.
@@ -376,7 +390,8 @@ final class WordleGameViewModel {
             word: target,
             hardMode: roundHardMode,
             guesses: Array(guesses.prefix(rowIndex)),
-            elapsedSeconds: roundClock.elapsedSeconds()
+            elapsedSeconds: roundClock.elapsedSeconds(),
+            verseHintUsed: verseHintUsed
         )
         if let data = try? JSONEncoder().encode(progress) {
             UserDefaults.standard.set(data, forKey: progressKey(practice: isPracticeRound))
@@ -411,6 +426,7 @@ final class WordleGameViewModel {
     /// Puts a saved round back on the board. The round keeps the difficulty it was started with.
     private func restore(_ progress: RoundProgress) {
         roundHardMode = progress.hardMode
+        verseHintUsed = progress.verseHintUsed ?? false
         roundClock.start(alreadyElapsed: Double(progress.elapsedSeconds))
         for guess in progress.guesses.prefix(6) where guess.count == 5 {
             applyGuess(guess)
@@ -437,6 +453,7 @@ final class WordleGameViewModel {
         keyboardStates.removeAll()
         roundRef = nil
         isNewBestStreak = false
+        verseHintUsed = false
 
         // Reset locked letters.
         pinned = Array(repeating: Array(repeating: nil, count: 5), count: 6)
@@ -488,16 +505,18 @@ final class WordleGameViewModel {
         UserDefaults.standard.removeObject(forKey: progressKey(practice: isPracticeRound))
 
         if win {
-            let tries = rowIndex == 1 ? "1 guess" : "\(rowIndex) guesses"
-            message = mode == .daily
-                ? "You got it in \(tries)! See you tomorrow."
-                : "You got it in \(tries)!"
+            let tries = rowIndex == 1 ? String(localized: "1 guess") : String(localized: "\(rowIndex) guesses")
+            message = isDailyRound
+                ? String(localized: "You got it in \(tries)! See you tomorrow.")
+                : (verseHintUsed
+                    ? String(localized: "You got it in \(tries), with the verse hint.")
+                    : String(localized: "You got it in \(tries)!"))
         } else {
             // The answer box below shows the word, so the message only explains how the round ended.
-            message = rowIndex < 6 ? "Word revealed." : "Out of guesses."
+            message = rowIndex < 6 ? String(localized: "Word revealed.") : String(localized: "Out of guesses.")
         }
 
-        if mode == .daily, let roundDayKey {
+        if let roundDayKey {
             answered += 1
 
             if win {
@@ -534,7 +553,11 @@ final class WordleGameViewModel {
         } else {
             answered += 1
 
-            if win {
+            if win, verseHintUsed {
+                // A win with the verse hint counts as a win, but leaves the Practice streak as it was.
+                score += 1
+                practiceStreak = practicePersistentStreak.current
+            } else if win {
                 score += 1
                 let bestBefore = practicePersistentStreak.best
                 let streak = practicePersistentStreak.recordWin()
@@ -563,9 +586,9 @@ final class WordleGameViewModel {
         }
 
         roundRef = Self.verseIndex[target]
-        guessDistribution = GameStats.shared.wordleWinGuessStats(type: mode == .daily ? .daily : .free).winsByGuess
+        guessDistribution = GameStats.shared.wordleWinGuessStats(type: isDailyRound ? .daily : .free).winsByGuess
 
-        if mode == .daily, let roundDayKey {
+        if let roundDayKey {
             UserDefaults.standard.set(roundDayKey, forKey: AppStorageKey.wordleDailyCompletedDay)
             UserDefaults.standard.set(target, forKey: AppStorageKey.wordleDailyTarget)
             // Push daily flags to iCloud KVS so other devices see completion/target
@@ -575,13 +598,8 @@ final class WordleGameViewModel {
             // Persist a per-day result summary for the Games list row
             let defaults = UserDefaults.standard
             let key = AppStorageKey.wordleDailyResultMap
-            struct DailyResult: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
-            var map: [String: DailyResult] = [:]
-            if let data = defaults.data(forKey: key),
-               let decoded = PersistedDecoding.decode([String: DailyResult].self, from: data, key: key, keepingUnreadableIn: defaults) {
-                map = decoded
-            }
-            map[roundDayKey] = DailyResult(won: win, guesses: rowIndex, elapsed: elapsedSeconds, word: target)
+            var map = Self.dailyResults(defaults: defaults)
+            map[roundDayKey] = WordleDailyResult(won: win, guesses: rowIndex, elapsed: elapsedSeconds, word: target)
             if let data = try? JSONEncoder().encode(map) {
                 defaults.set(data, forKey: key)
                 // Mirror to iCloud KVS so other devices see the same-day result
@@ -593,8 +611,59 @@ final class WordleGameViewModel {
         }
     }
 
+    // MARK: - Verse hint (Practice only)
+
+    /// After three guesses, Practice can show the answer's verse with the word blanked out.
+    /// The Daily stays hint-free, so results are fair to share.
+    var canShowVerseHint: Bool {
+        started && !roundOver && !isDailyRound && !verseHintUsed && rowIndex >= 3
+            && Self.verseIndex[target] != nil
+    }
+
+    func showVerseHint() {
+        guard canShowVerseHint else { return }
+        verseHintUsed = true
+        saveProgress()
+    }
+
+    /// The verse with the answer blanked out, once the hint is used.
+    var verseHint: GameVerse? {
+        guard verseHintUsed, let ref = Self.verseIndex[target] else { return nil }
+        return GameVerse(text: Self.blankingOut(target, in: ref.text), reference: ref.display, isClue: true)
+    }
+
+    /// `text` with `word` blanked out, along with longer words built on it ("PRAY" in "prayed").
+    static func blankingOut(_ word: String, in text: String) -> String {
+        let pattern = "\\b" + NSRegularExpression.escapedPattern(for: word) + "[a-z]*"
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return text }
+        var result = text
+        for match in regex.matches(in: text, range: NSRange(text.startIndex..., in: text)).reversed() {
+            guard let range = Range(match.range, in: result) else { continue }
+            result.replaceSubrange(range, with: String(repeating: "_", count: result[range].count))
+        }
+        return result
+    }
+
+    // MARK: - Daily results
+
+    /// Every Daily played on this device or synced from another, by local day key.
+    static func dailyResults(defaults: UserDefaults = .standard) -> [String: WordleDailyResult] {
+        let key = AppStorageKey.wordleDailyResultMap
+        guard let data = defaults.data(forKey: key) else { return [:] }
+        return PersistedDecoding.decode([String: WordleDailyResult].self, from: data, key: key, keepingUnreadableIn: defaults) ?? [:]
+    }
+
     // MARK: - Word validity (system dictionary)
     func isValidWord(_ uppercasedWord: String) -> Bool {
         uppercasedWord.count == 5 && EnglishDictionary.contains(uppercasedWord)
     }
+}
+
+/// One day's Daily result, saved by local day key. The stored shape is unchanged from before
+/// it had a name, so existing results still read.
+struct WordleDailyResult: Codable, Equatable {
+    let won: Bool
+    let guesses: Int
+    let elapsed: Int
+    let word: String
 }

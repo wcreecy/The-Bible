@@ -64,10 +64,12 @@ struct WordleView: View {
 
     // MARK: - Curated answers (WORDCuratedWordList.json)
 
-    // Smart link style preview state
-    @State private var showRefSheet: Bool = false
-    @State private var selectedRef: ScriptureRef? = nil
-    @State private var loadedPreview: (title: String, verses: [Verse])? = nil
+    /// The verse opened from the result card.
+    @State private var selectedPassage: PassageReference?
+    @State private var showsVerseHint = false
+    @State private var showsPencilActions = false
+    @Environment(\.preferredPencilDoubleTapAction) private var preferredPencilDoubleTapAction
+    @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
 
   var body: some View {
     GeometryReader { geometry in
@@ -133,7 +135,7 @@ struct WordleView: View {
               GameScoreboardCard(
                 currentCorrect: vm.score,
                 currentAnswered: vm.answered,
-                currentStreak: vm.mode == .daily ? vm.currentStreak : vm.practiceStreak,
+                currentStreak: vm.isDailyRound ? vm.currentStreak : vm.practiceStreak,
                 game: .wordle,
                 wordMode: vm.roundHardMode ? .hard : .normal,
                 style: usesWideLayout ? .dashboard : .compact
@@ -147,6 +149,19 @@ struct WordleView: View {
                     : (usesCompactPhoneLayout ? compactSizes.tile : 48)
                 )
               }
+              #if canImport(UIKit)
+              // On iPad, writing a word with Apple Pencil anywhere on the board types it.
+              .overlay {
+                if horizontalSizeClass == .regular {
+                  ScribbleTextCapture(isActive: vm.started && !vm.roundOver) { text in
+                    for letter in text where !vm.isCurrentRowFull() {
+                      vm.tapLetter(Character(letter.uppercased()))
+                    }
+                  }
+                  .allowsHitTesting(false)
+                }
+              }
+              #endif
             } feedback: {
               VStack(spacing: 10) {
                 // Once the round ends, the result card below the board covers the outcome.
@@ -195,8 +210,9 @@ struct WordleView: View {
       }
     }
     .tabBarContentClearance()
+    .environment(\.wordColorBlindMode, vm.colorBlindModeEnabled)
     .pinnedGameActionButton(
-      isShown: horizontalSizeClass != nil && vm.roundOver && vm.mode == .practice
+      isShown: horizontalSizeClass != nil && vm.roundOver && !vm.isDailyRound
     ) {
       Button("Next Word", systemImage: "arrow.right") {
         vm.startNewRound(practice: true)
@@ -209,6 +225,12 @@ struct WordleView: View {
       ToolbarItem(placement: .principal) {
         if vm.started {
           GameNavigationTitle(title: "WORD", systemImage: "textformat.abc", tint: .mint)
+        }
+      }
+      ToolbarItem(placement: .topBarTrailing) {
+        if vm.started && !vm.roundOver && (vm.canShowVerseHint || vm.verseHintUsed) {
+          Button("Verse Hint", systemImage: "text.quote", action: openVerseHint)
+            .accessibilityHint(vm.verseHintUsed ? "Shows the verse again" : "Shows the answer's verse with the word left out. A win with the hint doesn't count toward your streak.")
         }
       }
       ToolbarItem(placement: .topBarTrailing) {
@@ -270,50 +292,31 @@ struct WordleView: View {
     .onDisappear {
       vm.saveProgress()
     }
-    .sheet(
-      isPresented: $showRefSheet,
-      onDismiss: {
-        selectedRef = nil
-        loadedPreview = nil
+    .sheet(item: $selectedPassage) { reference in
+      ScripturePassageSheet(reference: reference)
+    }
+    .sheet(isPresented: $showsVerseHint) {
+      verseHintSheet
+    }
+    .onPencilDoubleTap { _ in
+      guard preferredPencilDoubleTapAction != .ignore, vm.started, !vm.roundOver,
+            vm.isCurrentRowFull() else { return }
+      vm.submitGuess()
+    }
+    .onPencilSqueeze { phase in
+      guard preferredPencilSqueezeAction != .ignore, vm.started, !vm.roundOver,
+            case .ended = phase else { return }
+      showsPencilActions = true
+    }
+    .confirmationDialog("Apple Pencil Actions", isPresented: $showsPencilActions, titleVisibility: .visible) {
+      if vm.canShowVerseHint || vm.verseHintUsed {
+        Button("Verse Hint", systemImage: "text.quote", action: openVerseHint)
       }
-    ) {
-            NavigationStack {
-                // A ScrollView keeps the verse directly under the title (instead of centered
-                // in the sheet with a blank gap above it) and lets long passages scroll.
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
-                        if let preview = loadedPreview {
-                            ScripturePreviewCard(
-                                content: preview,
-                                refContext: selectedRef,
-                                onCopy: {
-                                    let verseLines = preview.verses.map { $0.text }.joined(separator: " ")
-                                    UIPasteboard.general.string = "\(preview.title) — \(verseLines)"
-                                },
-                                onClose: {
-                                    showRefSheet = false
-                                }
-                            )
-                        } else {
-                            ContentUnavailableView("No reference available", systemImage: "book")
-                        }
-                    }
-                    .padding()
-                }
-                .navigationTitle("Reference")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") { showRefSheet = false }
-                    }
-                }
-                .presentationDetents([.medium, .large])
-            }
-            .task(id: selectedRef) {
-                guard let sr = selectedRef else { return }
-                loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
-            }
-        }
+      Button("Give Up", systemImage: "flag.fill", role: .destructive) {
+        confirmReveal = true
+      }
+      Button("Cancel", role: .cancel) {}
+    }
         .confirmationDialog(
             "Reveal the word?",
             isPresented: $confirmReveal,
@@ -361,8 +364,18 @@ struct WordleView: View {
             } configuration: {
                 WordSetupControls(
                     mode: $vm.mode,
-                    hardModeEnabled: $vm.hardModeEnabled
+                    hardModeEnabled: $vm.hardModeEnabled,
+                    colorBlindModeEnabled: $vm.colorBlindModeEnabled
                 )
+
+                if vm.mode == .daily {
+                    // Re-read when another device syncs today's result.
+                    WordDailyCalendarView(
+                        results: WordleGameViewModel.dailyResults(),
+                        todayKey: todayKey
+                    )
+                    .id(dailyCompletedDay)
+                }
 
                 if vm.mode == .daily && dailyCompletedToday {
                     Label(
@@ -485,10 +498,40 @@ struct WordleView: View {
 
     // MARK: - Reference preview presentation
     private func presentReferencePreview(_ ref: WordleGameViewModel.VerseRefInfo) {
-        let sr = ScriptureRef(bookName: ref.bookName, chapter: ref.chapter, startVerse: ref.verse, endVerse: nil)
-        selectedRef = sr
-        loadedPreview = nil
-        showRefSheet = true
+        selectedPassage = PassageReferenceParser.parse(ref.display)
+    }
+
+    // MARK: - Verse hint (Practice only)
+
+    private func openVerseHint() {
+        if !vm.verseHintUsed {
+            vm.showVerseHint()
+        }
+        showsVerseHint = vm.verseHint != nil
+    }
+
+    private var verseHintSheet: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    if let verse = vm.verseHint {
+                        GameVerseCard(verse: verse)
+                    }
+                    Text("A win with the verse hint doesn't count toward your Practice streak.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+            }
+            .navigationTitle("Verse Hint")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { showsVerseHint = false }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 
     // MARK: - End-of-round result
@@ -504,13 +547,17 @@ struct WordleView: View {
         [
             ("square.grid.3x2", vm.didWin ? "\(vm.rowIndex)/6" : "X/6", String(localized: "Guesses")),
             ("stopwatch", vm.lastRoundElapsedSeconds.map(formatElapsed) ?? "—", String(localized: "Time")),
-            (vm.mode.icon, String(localized: vm.mode.title), String(localized: "Puzzle")),
+            (roundMode.icon, String(localized: roundMode.title), String(localized: "Puzzle")),
             (vm.roundHardMode ? "flame" : "circle", vm.roundHardMode ? String(localized: "Hard") : String(localized: "Normal"), String(localized: "Mode"))
         ]
     }
 
+    /// The type of the round just played, which can differ from the Mode setting (for
+    /// example, a resumed Practice round while the setting shows Daily).
+    private var roundMode: Mode { vm.isDailyRound ? .daily : .practice }
+
     private var resultStreak: GamePuzzleStreak {
-        vm.mode == .daily
+        vm.isDailyRound
             ? GamePuzzleStreak(current: vm.currentStreak, best: vm.currentBestStreak, isNewBest: vm.isNewBestStreak)
             : GamePuzzleStreak(current: vm.practiceStreak, best: vm.practiceBestStreak, isNewBest: vm.isNewBestStreak)
     }
@@ -542,7 +589,7 @@ struct WordleView: View {
         }
     }
 
-    /// The answer spelled out in tiles, green when solved and red otherwise.
+    /// The answer spelled out in tiles, green (orange in color-blind mode) when solved and red otherwise.
     private var answerTiles: some View {
         HStack(spacing: 6) {
             ForEach(Array(vm.target.uppercased().enumerated()), id: \.offset) { _, letter in
@@ -551,7 +598,7 @@ struct WordleView: View {
                     .foregroundStyle(.white)
                     .frame(width: 40, height: 40)
                     .background(
-                        (vm.didWin ? Color.green : Color.red).opacity(0.85),
+                        (vm.didWin ? WordleKeyState.correct.fill(colorBlind: vm.colorBlindModeEnabled) : Color.red).opacity(0.85),
                         in: RoundedRectangle(cornerRadius: 8, style: .continuous)
                     )
             }
@@ -580,7 +627,7 @@ struct WordleView: View {
                 }
                 .buttonStyle(ModernPillButtonStyle(tint: .mint))
 
-                if vm.mode == .practice {
+                if !vm.isDailyRound {
                     // On iPhone and iPad, Next Word is pinned above the tab bar instead.
                     if !pinsNextWord {
                         Button("Next Word", systemImage: "arrow.right") {
@@ -617,19 +664,20 @@ struct WordleView: View {
 
     /// Spoiler-free result summary with an emoji grid of the guesses.
     private var shareText: String {
-        let title = vm.mode == .daily ? "WORD Daily \(vm.roundDayKey ?? todayKey)" : "WORD Practice"
+        let title = if let dayKey = vm.roundDayKey {
+            String(localized: "WORD Daily \(dayKey)")
+        } else {
+            String(localized: "WORD Practice")
+        }
         let scoreText = vm.didWin ? "\(vm.rowIndex)/6" : "X/6"
-        let difficulty = vm.roundHardMode ? " (Hard)" : ""
+        var notes: [String] = []
+        if vm.roundHardMode { notes.append(String(localized: "Hard")) }
+        if vm.verseHintUsed { notes.append(String(localized: "Verse hint")) }
+        let details = notes.isEmpty ? "" : " (\(notes.formatted(.list(type: .and))))"
         let grid = vm.evaluations.prefix(vm.rowIndex).map { row in
-            row.map { state -> String in
-                switch state {
-                case .correct: "🟩"
-                case .present: "🟨"
-                case .absent, .unknown: "⬛"
-                }
-            }.joined()
+            row.map { $0.emoji(colorBlind: vm.colorBlindModeEnabled) }.joined()
         }.joined(separator: "\n")
-        return "\(title) \(scoreText)\(difficulty)\n\n\(grid)"
+        return "\(title) \(scoreText)\(details)\n\n\(grid)"
     }
 
   private func formatElapsed(_ s: Int) -> String {

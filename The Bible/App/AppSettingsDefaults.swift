@@ -68,6 +68,7 @@ enum AppSettingsDefaults {
             "quizSections": "",
             "wordleAllowDailyReplay": false,
             "wordleHardModeEnabled": false,
+            AppStorageKey.wordleColorBlindMode: false,
             PrayerTimerKind.preferenceKey: PrayerTimerKind.prayer.rawValue,
             "prayerTimerVerseSource": PrayerVerseSource.verseOfDay.rawValue,
         ]

@@ -9,7 +9,10 @@ struct WordleGameViewModelTests {
         AppStorageKey.wordleHardModeEnabled,
         AppStorageKey.wordlePracticeWordBag,
         AppStorageKey.wordleLastPracticeWord,
-        AppStorageKey.wordlePracticeProgress
+        AppStorageKey.wordlePracticeProgress,
+        AppStorageKey.wordleColorBlindMode,
+        "wordlePersistentStreak_practice",
+        "wordlePersistentBestStreak_practice"
     ]
 
     /// Runs `body` with a Practice round whose answer is GRACE, then restores the saved settings.
@@ -30,6 +33,12 @@ struct WordleGameViewModelTests {
         // The round saved its drawn word on start; save again so a resumed round finds GRACE.
         game.saveProgress()
         body(game)
+    }
+
+    /// An answer that has a verse, so the verse hint is available, and isn't one of the
+    /// words guessed before it.
+    private var answerWithVerse: String? {
+        WordleGameViewModel.verseIndex.keys.sorted().first { !["FAITH", "HEART", "LIGHT"].contains($0) }
     }
 
     private func guess(_ word: String, in game: WordleGameViewModel) {
@@ -125,5 +134,121 @@ struct WordleGameViewModelTests {
             #expect(!game.started)
             #expect(!game.roundOver)
         }
+    }
+
+    // MARK: - Verse hint
+
+    @Test
+    func theVerseHintIsOfferedInPracticeAfterTheThirdGuess() throws {
+        let answer = try #require(answerWithVerse)
+        withPracticeRound { game in
+            game.target = answer
+            #expect(!game.isDailyRound)
+            #expect(!game.canShowVerseHint)
+
+            for word in ["FAITH", "HEART", "LIGHT"] {
+                guess(word, in: game)
+            }
+            #expect(game.canShowVerseHint)
+
+            game.showVerseHint()
+            #expect(game.verseHintUsed)
+            #expect(!game.canShowVerseHint)
+            #expect(game.verseHint?.text.localizedCaseInsensitiveContains(answer) == false)
+        }
+    }
+
+    @Test
+    func theDailyNeverOffersTheVerseHint() throws {
+        let answer = try #require(answerWithVerse)
+        withPracticeRound { game in
+            game.target = answer
+            game.roundDayKey = "2026-11-20"
+            for word in ["FAITH", "HEART", "LIGHT"] {
+                guess(word, in: game)
+            }
+            #expect(game.isDailyRound)
+            #expect(!game.canShowVerseHint)
+            game.showVerseHint()
+            #expect(!game.verseHintUsed)
+            #expect(game.verseHint == nil)
+        }
+    }
+
+    @Test
+    func aWinWithTheVerseHintLeavesThePracticeStreakAsItWas() throws {
+        let answer = try #require(answerWithVerse)
+        withPracticeRound { game in
+            game.target = answer
+            let streakBefore = game.practicePersistentStreak.current
+            for word in ["FAITH", "HEART", "LIGHT"] {
+                guess(word, in: game)
+            }
+            game.showVerseHint()
+            guess(answer, in: game)
+
+            #expect(game.roundOver)
+            #expect(game.didWin)
+            #expect(game.practicePersistentStreak.current == streakBefore)
+            #expect(game.practiceStreak == streakBefore)
+        }
+    }
+
+    @Test
+    func aWinWithoutTheHintAddsToThePracticeStreak() {
+        withPracticeRound { game in
+            let streakBefore = game.practicePersistentStreak.current
+            guess("GRACE", in: game)
+            #expect(game.practicePersistentStreak.current == streakBefore + 1)
+        }
+    }
+
+    @Test
+    func aResumedRoundRemembersTheVerseHint() throws {
+        let answer = try #require(answerWithVerse)
+        withPracticeRound { game in
+            game.target = answer
+            game.saveProgress()
+            for word in ["FAITH", "HEART", "LIGHT"] {
+                guess(word, in: game)
+            }
+            game.showVerseHint()
+
+            let resumed = WordleGameViewModel()
+            resumed.mode = .practice
+            resumed.startNewRound(practice: true)
+            #expect(resumed.verseHintUsed)
+            #expect(resumed.rowIndex == 3)
+        }
+    }
+
+    @Test
+    func blankingOutCoversTheWordAndLongerFormsOnly() {
+        let text = WordleGameViewModel.blankingOut("PRAY", in: "Pray always; he prayed. Spray it.")
+        #expect(text == "____ always; he ______. Spray it.")
+    }
+
+    // MARK: - Color-blind mode and Daily results
+
+    @Test
+    func colorBlindModeChangesTheShareGrid() {
+        #expect(WordleKeyState.correct.emoji(colorBlind: false) == "🟩")
+        #expect(WordleKeyState.present.emoji(colorBlind: false) == "🟨")
+        #expect(WordleKeyState.correct.emoji(colorBlind: true) == "🟧")
+        #expect(WordleKeyState.present.emoji(colorBlind: true) == "🟦")
+        #expect(WordleKeyState.absent.emoji(colorBlind: true) == "⬛")
+    }
+
+    @Test
+    func dailyResultsReadTheSavedMap() throws {
+        let defaults = try #require(UserDefaults(suiteName: "WordleDailyResultsTests"))
+        defer { defaults.removePersistentDomain(forName: "WordleDailyResultsTests") }
+        let json = #"{"2026-11-19":{"won":true,"guesses":4,"elapsed":95,"word":"GRACE"},"2026-11-18":{"won":false,"guesses":6,"elapsed":300,"word":"MERCY"}}"#
+        defaults.set(Data(json.utf8), forKey: AppStorageKey.wordleDailyResultMap)
+
+        let results = WordleGameViewModel.dailyResults(defaults: defaults)
+        #expect(results["2026-11-19"] == WordleDailyResult(won: true, guesses: 4, elapsed: 95, word: "GRACE"))
+        #expect(results["2026-11-18"]?.won == false)
+        #expect(results.count == 2)
     }
 }

@@ -94,6 +94,7 @@ enum AppStorageKey {
     static let debugAutoWinEnabled = "debugAutoWinEnabled"
     static let wordleAllowDailyReplay = "wordleAllowDailyReplay"
     static let wordleHardModeEnabled = "wordleHardModeEnabled"
+    static let wordleColorBlindMode = "wordleColorBlindMode"
     static let wordleDailyCompletedDay = "wordleDailyCompletedDay"
     static let wordleDailyTarget = "wordleDailyTarget"
     static let wordleDailyProgress = "wordleDailyProgress"

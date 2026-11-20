@@ -9,23 +9,11 @@ extension WordleView {
         let state: KeyState
         let tileSize: CGFloat
         let isNextInput: Bool
+        @Environment(\.wordColorBlindMode) private var colorBlind
 
-        private var background: Color {
-            switch state {
-            case .unknown: Color(.secondarySystemBackground)
-            case .absent: .gray
-            case .present: .yellow
-            case .correct: .green
-            }
-        }
+        private var background: Color { state.fill(colorBlind: colorBlind) }
 
-        private var foreground: Color {
-            switch state {
-            case .unknown: .primary
-            case .present, .correct: .black
-            case .absent: .white
-            }
-        }
+        private var foreground: Color { state.foreground(colorBlind: colorBlind) }
 
         private var border: Color {
             if isNextInput { return .blue.opacity(0.85) }
@@ -162,6 +150,7 @@ extension WordleView {
         let onLetter: (Character) -> Void
         let onDelete: () -> Void
         let onEnter: () -> Void
+        @Environment(\.wordColorBlindMode) private var colorBlind
 
         private var rows: [[Character]] {
             if usesABCLayout {
@@ -247,13 +236,12 @@ extension WordleView {
                 keyLabel(character)
                     .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
                     .disabled(isRoundOver || isCurrentRowFull)
-            case .present:
+            case .present, .correct:
                 keyLabel(character)
-                    .buttonStyle(FilledGameKeyButtonStyle(fill: .yellow, foreground: .black))
-                    .disabled(isRoundOver || isCurrentRowFull)
-            case .correct:
-                keyLabel(character)
-                    .buttonStyle(FilledGameKeyButtonStyle(fill: .green, foreground: .white))
+                    .buttonStyle(FilledGameKeyButtonStyle(
+                        fill: state.fill(colorBlind: colorBlind),
+                        foreground: state.foreground(colorBlind: colorBlind)
+                    ))
                     .disabled(isRoundOver || isCurrentRowFull)
             }
         }

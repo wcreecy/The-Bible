@@ -20,6 +20,41 @@ enum WordleKeyState: Int {
         case .correct: return .green
         }
     }
+
+    /// The fill for a judged tile or key. Color-blind mode swaps green and yellow for orange
+    /// and blue, which are easier to tell apart.
+    func fill(colorBlind: Bool) -> Color {
+        switch self {
+        case .unknown: Color(.secondarySystemBackground)
+        case .absent: .gray
+        case .present: colorBlind ? .blue : .yellow
+        case .correct: colorBlind ? .orange : .green
+        }
+    }
+
+    /// Text on that fill.
+    func foreground(colorBlind: Bool) -> Color {
+        switch self {
+        case .unknown: .primary
+        case .absent: .white
+        case .present: colorBlind ? .white : .black
+        case .correct: colorBlind ? .white : .black
+        }
+    }
+
+    /// The share grid's square for this result.
+    func emoji(colorBlind: Bool) -> String {
+        switch self {
+        case .correct: colorBlind ? "🟧" : "🟩"
+        case .present: colorBlind ? "🟦" : "🟨"
+        case .absent, .unknown: "⬛"
+        }
+    }
+}
+
+extension EnvironmentValues {
+    /// WORD's color-blind mode, passed down to the tiles and keys.
+    @Entry var wordColorBlindMode = false
 }
 
 /// The Word game's rules, apart from the screen: judging a guess, keeping the keyboard colors,
@@ -127,7 +162,7 @@ enum WordleRules {
 
         for (idx, ch) in greens {
             if guessChars[idx] != ch {
-                return "Hard Mode: must keep \(ch) at position \(idx + 1)"
+                return String(localized: "Hard Mode: must keep \(String(ch)) at position \(idx + 1)")
             }
         }
 
@@ -138,14 +173,16 @@ enum WordleRules {
         for (ch, required) in minCount {
             let have = guessCounts[ch] ?? 0
             if have < required {
-                return "Hard Mode: must include \(required) \(ch)\(required > 1 ? "s" : "")"
+                return required > 1
+                    ? String(localized: "Hard Mode: must include \(required) \(String(ch))s")
+                    : String(localized: "Hard Mode: must include \(required) \(String(ch))")
             }
         }
 
         for (ch, badPositions) in disallowed {
             for idx in badPositions {
                 if guessChars[idx] == ch {
-                    return "Hard Mode: \(ch) cannot be at position \(idx + 1)"
+                    return String(localized: "Hard Mode: \(String(ch)) cannot be at position \(idx + 1)")
                 }
             }
         }

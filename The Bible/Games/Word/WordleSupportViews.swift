@@ -6,6 +6,7 @@ import UIKit
 struct WordSetupControls: View {
     @Binding var mode: WordleView.Mode
     @Binding var hardModeEnabled: Bool
+    @Binding var colorBlindModeEnabled: Bool
 
     var body: some View {
         GameSettingsGroup {
@@ -47,6 +48,14 @@ struct WordSetupControls: View {
                         icon: "flame.fill"
                     )
                 ]
+            )
+
+            GameToggleSetting(
+                title: "Color-Blind Colors",
+                detail: "Orange for the right spot, blue for in the word.",
+                systemImage: "eye",
+                tint: .mint,
+                isOn: $colorBlindModeEnabled
             )
         }
     }
@@ -467,14 +476,14 @@ struct WordGuessDistributionView: View {
 #Preview("Setup – Normal") {
         @Previewable @State var mode = WordleView.Mode.daily
         @Previewable @State var hard = false
-        WordSetupControls(mode: $mode, hardModeEnabled: $hard)
+        WordSetupControls(mode: $mode, hardModeEnabled: $hard, colorBlindModeEnabled: .constant(false))
                 .padding()
 }
 
 #Preview("Setup – Hard") {
         @Previewable @State var mode = WordleView.Mode.practice
         @Previewable @State var hard = true
-        WordSetupControls(mode: $mode, hardModeEnabled: $hard)
+        WordSetupControls(mode: $mode, hardModeEnabled: $hard, colorBlindModeEnabled: .constant(false))
                 .padding()
 }
 #endif
