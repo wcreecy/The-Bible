@@ -21,69 +21,16 @@ struct BeatTheClockGameView: View {
     @State private var usesMutedTimerStyle: Bool = false
 
     var body: some View {
-        GeometryReader { geometry in
-            let usesSplitLayout = vm.phase == .playing && geometry.size.width >= 700
-
-            ZStack {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        switch vm.phase {
-                        case .setup:
-                            setupContent
-                        case .playing:
-                            if vm.isPaused {
-                                GamePausedView(tint: .indigo, remainingSeconds: vm.remainingSeconds) {
-                                    vm.resume()
-                                }
-                            } else if usesSplitLayout {
-                                dashboard(availableHeight: geometry.size.height - 32)
-                            } else {
-                                compactGameContent
-                            }
-                        case .results:
-                            GameRoundSummaryView(
-                                summary: GameRoundSummary(score: vm.session),
-                                tint: .indigo,
-                                resultNote: vm.pointsNote,
-                                onPlayAgain: vm.startGame,
-                                onChangeSettings: vm.resetToSetup
-                            )
-                        }
-                    }
-                    .padding()
-                }
-                .tabBarContentClearance()
-                // Submit, then Next, pinned above the tab bar and the keyboard on iPhone, so
-                // typing or a long result never hides them.
-                .pinnedGameActionButton(isShown: !usesSplitLayout && vm.phase == .playing && !vm.isPaused) {
-                    actions
-                }
-                .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)
-                .frame(
-                    maxWidth: .infinity,
-                    alignment: usesSplitLayout && timerOnLeft ? .trailing : .leading
-                )
-
-                if usesSplitLayout {
-                    BeatTheClockLargeTimerView(
-                        remainingSeconds: vm.remainingSeconds,
-                        tint: vm.timerColor,
-                        isPulsing: vm.isPulsing,
-                        isTimerDisabled: vm.isTimerDisabled,
-                        outcome: vm.roundOutcome,
-                        usesMutedStyle: $usesMutedTimerStyle,
-                        onToggleTimer: vm.toggleTimer,
-                        onSwapSides: {
-                            withAnimation(.snappy) {
-                                timerOnLeft.toggle()
-                            }
-                        }
-                    )
-                    .frame(width: geometry.size.width / 2)
-                    .frame(maxWidth: .infinity, alignment: timerOnLeft ? .leading : .trailing)
-                }
-            }
-        }
+        BeatTheClockResponsiveGameScreen(
+            isPlaying: vm.phase == .playing,
+            isPaused: vm.isPaused,
+            timerOnLeft: $timerOnLeft,
+            content: { usesSplitLayout, availableHeight in
+                gameContent(usesSplitLayout: usesSplitLayout, availableHeight: availableHeight)
+            },
+            actions: { actions },
+            timer: { largeTimer }
+        )
         .background(AppBackgroundView(tab: .games))
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -187,6 +134,49 @@ struct BeatTheClockGameView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func gameContent(usesSplitLayout: Bool, availableHeight: CGFloat) -> some View {
+        switch vm.phase {
+        case .setup:
+            setupContent
+        case .playing:
+            if vm.isPaused {
+                GamePausedView(tint: .indigo, remainingSeconds: vm.remainingSeconds) {
+                    vm.resume()
+                }
+            } else if usesSplitLayout {
+                dashboard(availableHeight: availableHeight)
+            } else {
+                compactGameContent
+            }
+        case .results:
+            GameRoundSummaryView(
+                summary: GameRoundSummary(score: vm.session),
+                tint: .indigo,
+                resultNote: vm.pointsNote,
+                onPlayAgain: vm.startGame,
+                onChangeSettings: vm.resetToSetup
+            )
+        }
+    }
+
+    private var largeTimer: some View {
+        BeatTheClockLargeTimerView(
+            remainingSeconds: vm.remainingSeconds,
+            tint: vm.timerColor,
+            isPulsing: vm.isPulsing,
+            isTimerDisabled: vm.isTimerDisabled,
+            outcome: vm.roundOutcome,
+            usesMutedStyle: $usesMutedTimerStyle,
+            onToggleTimer: vm.toggleTimer,
+            onSwapSides: {
+                withAnimation(.snappy) {
+                    timerOnLeft.toggle()
+                }
+            }
+        )
     }
 
     // MARK: - Setup
@@ -469,6 +459,61 @@ struct BeatTheClockGameView: View {
         .padding(.top, AppDesignMetrics.cardPadding + 12)
         .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
         .heroCardSurface()
+    }
+}
+
+private struct BeatTheClockResponsiveGameScreen<Content: View, Actions: View, Timer: View>: View {
+    let isPlaying: Bool
+    let isPaused: Bool
+    @Binding private var timerOnLeft: Bool
+    private let content: (Bool, CGFloat) -> Content
+    private let actions: () -> Actions
+    private let timer: () -> Timer
+
+    init(
+        isPlaying: Bool,
+        isPaused: Bool,
+        timerOnLeft: Binding<Bool>,
+        @ViewBuilder content: @escaping (Bool, CGFloat) -> Content,
+        @ViewBuilder actions: @escaping () -> Actions,
+        @ViewBuilder timer: @escaping () -> Timer
+    ) {
+        self.isPlaying = isPlaying
+        self.isPaused = isPaused
+        _timerOnLeft = timerOnLeft
+        self.content = content
+        self.actions = actions
+        self.timer = timer
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            let usesSplitLayout = isPlaying && geometry.size.width >= 700
+
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        content(usesSplitLayout, geometry.size.height - 32)
+                    }
+                    .padding()
+                }
+                .tabBarContentClearance()
+                .pinnedGameActionButton(isShown: !usesSplitLayout && isPlaying && !isPaused) {
+                    actions()
+                }
+                .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: usesSplitLayout && timerOnLeft ? .trailing : .leading
+                )
+
+                if usesSplitLayout {
+                    timer()
+                        .frame(width: geometry.size.width / 2)
+                        .frame(maxWidth: .infinity, alignment: timerOnLeft ? .leading : .trailing)
+                }
+            }
+        }
     }
 }
 
