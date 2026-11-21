@@ -195,7 +195,6 @@ struct QuizQuestion: Identifiable {
     var wasTimerOff = false
     var earnedSpeedBonus = false
     /// The chapter's one-line summary from the Study notes, shown after answering.
-    var chapterSummary: String?
     /// Chapters offered for the bonus after a correct book; empty when there's no bonus.
     var chapterOptions: [Int] = []
     var chapterGuess: Int?
@@ -252,28 +251,21 @@ final class QuizGameViewModel {
     @ObservationIgnored private let sleep: (Duration) async throws -> Void
     /// The current time for the question clock; tests pass the manual clock's time.
     @ObservationIgnored private let now: () -> Date
-    /// Looks up a chapter's summary; tests pass a fixed one.
-    @ObservationIgnored private let loadChapterSummary: (String, Int) async -> String?
 
-    /// `missedQuestions` and `chapterSummary` default to the shared store and the Study notes.
-    /// They're resolved here rather than as default arguments, which would be evaluated outside
-    /// the main actor.
+    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
+    /// default argument, which would be evaluated outside the main actor.
     init(
         reviewQuestionIDs: Set<String> = [],
         mode: QuizMode = .standard,
         missedQuestions: MissedGameQuestionStore? = nil,
         sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
-        now: @escaping () -> Date = Date.init,
-        chapterSummary: ((String, Int) async -> String?)? = nil
+        now: @escaping () -> Date = Date.init
     ) {
         self.reviewQuestionIDs = reviewQuestionIDs
         self.mode = mode
         self.missedQuestions = missedQuestions ?? .shared
         self.sleep = sleep
         self.now = now
-        self.loadChapterSummary = chapterSummary ?? { book, chapter in
-            await ChapterInsightsRepository.shared.summary(forBookNamed: book, chapterNumber: chapter)
-        }
     }
 
     var mode: QuizMode
@@ -745,7 +737,7 @@ final class QuizGameViewModel {
     }
 
     private func showResults() {
-        session.finishGame(bestScoreKey: bestGameScoreKey)
+        session.finishGame(bestScoreKey: bestGameScoreKey, points: points)
         phase = .results
     }
 
@@ -941,15 +933,6 @@ final class QuizGameViewModel {
         return String(localized: "Right section: \(String(localized: section.title)).")
     }
 
-    /// Loads the current question's chapter summary, ready for after it's answered.
-    func loadChapterSummary() async {
-        guard let current, current.chapterSummary == nil else { return }
-        let summary = await loadChapterSummary(current.correctBook, current.chapter)
-        // The player may have moved on while it loaded.
-        guard self.current?.id == current.id else { return }
-        history[currentIndex].chapterSummary = summary
-    }
-
     /// The chapter bonus is offered after a correct book, until a chapter is picked.
     var isChapterBonusOpen: Bool {
         guard let current else { return false }
@@ -971,18 +954,11 @@ final class QuizGameViewModel {
     var points: Int { session.score + speedBonusCount + chapterBonusCount }
 
     /// How the points add up, for the summary. Nil when there were no bonuses.
-    var bonusNote: String? {
-        let speed = speedBonusCount
-        let chapter = chapterBonusCount
-        guard speed + chapter > 0 else { return nil }
-        var parts = [String(localized: "\(session.score) correct")]
-        if speed > 0 {
-            parts.append(speed == 1 ? String(localized: "1 speed bonus") : String(localized: "\(speed) speed bonuses"))
-        }
-        if chapter > 0 {
-            parts.append(chapter == 1 ? String(localized: "1 chapter bonus") : String(localized: "\(chapter) chapter bonuses"))
-        }
-        return parts.joined(separator: " + ") + " = " + String(localized: "\(points) points")
+    var roundPoints: RoundPoints? {
+        RoundPoints(
+            correct: session.score,
+            bonuses: [RoundPoints.speed(speedBonusCount), RoundPoints.chapter(chapterBonusCount)]
+        )
     }
 
     // MARK: - Practicing a book

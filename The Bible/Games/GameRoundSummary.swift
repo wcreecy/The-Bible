@@ -44,6 +44,56 @@ struct GameRoundEntry: Identifiable {
 }
 
 /// The numbers behind the end-of-round summary, worked out from a finished `GameScore`.
+/// What a round scored once bonus points are counted, for games that award them. A round can
+/// score more points than it had questions, so the summary shows the total and how it adds up.
+struct RoundPoints: Equatable {
+    struct Bonus: Equatable {
+        /// "3 speed bonuses", already worded for the count.
+        let title: String
+        let systemImage: String
+        let count: Int
+    }
+
+    /// Correct answers plus every bonus.
+    let total: Int
+    let correct: Int
+    /// Only the bonuses that were earned.
+    let bonuses: [Bonus]
+
+    /// Nil when no bonus was earned, so the summary keeps its plain "N of M correct" look.
+    init?(correct: Int, bonuses: [Bonus]) {
+        let earned = bonuses.filter { $0.count > 0 }
+        guard !earned.isEmpty else { return nil }
+        self.correct = correct
+        self.bonuses = earned
+        self.total = correct + earned.reduce(0) { $0 + $1.count }
+    }
+
+    static func speed(_ count: Int) -> Bonus {
+        Bonus(
+            title: count == 1 ? String(localized: "1 speed bonus") : String(localized: "\(count) speed bonuses"),
+            systemImage: "bolt.fill",
+            count: count
+        )
+    }
+
+    static func chapter(_ count: Int) -> Bonus {
+        Bonus(
+            title: count == 1 ? String(localized: "1 chapter bonus") : String(localized: "\(count) chapter bonuses"),
+            systemImage: "star.fill",
+            count: count
+        )
+    }
+
+    static func lessKnown(_ count: Int) -> Bonus {
+        Bonus(
+            title: count == 1 ? String(localized: "1 less-known book") : String(localized: "\(count) less-known books"),
+            systemImage: "books.vertical.fill",
+            count: count
+        )
+    }
+}
+
 struct GameRoundSummary {
     enum Grade {
         case perfect

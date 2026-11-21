@@ -48,7 +48,7 @@ struct WhoAmIGameView: View {
                             summary: GameRoundSummary(score: vm.session),
                             tint: .brown,
                             canTimeOut: vm.difficulty.timeLimit > 0,
-                            resultNote: vm.bonusNote,
+                            points: vm.roundPoints,
                             onPlayAgain: vm.startGame,
                             onChangeSettings: vm.returnToSetup
                         )
@@ -142,9 +142,9 @@ struct WhoAmIGameView: View {
             tint: .brown,
             experienceLevel: experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Well-known people with no timer.",
-                standard: "More people with 30 seconds per clue.",
-                challenge: "Everyone with 15 seconds per clue."
+                learn: "Well-known people with no timer. No bonus points.",
+                standard: "More people with 30 seconds per clue. +1 bonus point for answering in the first 10 seconds.",
+                challenge: "Everyone with 15 seconds per clue. +1 bonus point for answering in the first 5 seconds."
             ),
             experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
             isConfigurationEnabled: !isReviewRound,

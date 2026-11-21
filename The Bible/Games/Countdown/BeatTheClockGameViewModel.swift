@@ -429,26 +429,14 @@ final class BeatTheClockGameViewModel {
         isRapidFire ? rapidFireBookCount : session.score + speedBonusCount + lessKnownBonusCount
     }
 
-    /// How the points add up, for the summary. Nil when there's nothing beyond the score.
-    var pointsNote: String? {
-        if isRapidFire {
-            return rapidFireBookCount == 1
-                ? String(localized: "1 book found")
-                : String(localized: "\(rapidFireBookCount) books found")
-        }
-        guard speedBonusCount + lessKnownBonusCount > 0 else { return nil }
-        var parts = [String(localized: "\(session.score) correct")]
-        if speedBonusCount > 0 {
-            parts.append(speedBonusCount == 1
-                ? String(localized: "1 speed bonus")
-                : String(localized: "\(speedBonusCount) speed bonuses"))
-        }
-        if lessKnownBonusCount > 0 {
-            parts.append(lessKnownBonusCount == 1
-                ? String(localized: "1 less-known book")
-                : String(localized: "\(lessKnownBonusCount) less-known books"))
-        }
-        return parts.joined(separator: " + ") + " = " + String(localized: "\(points) points")
+    /// How the points add up, for the summary. Nil in Rapid Fire, which scores books found, and
+    /// when no bonus was earned.
+    var roundPoints: RoundPoints? {
+        guard !isRapidFire else { return nil }
+        return RoundPoints(
+            correct: session.score,
+            bonuses: [RoundPoints.speed(speedBonusCount), RoundPoints.lessKnown(lessKnownBonusCount)]
+        )
     }
 
     // MARK: - Lifecycle
@@ -715,7 +703,7 @@ final class BeatTheClockGameViewModel {
 
     private func showResults() {
         roundClock.pause(at: now())
-        session.finishGame(bestScoreKey: bestGameScoreKey)
+        session.finishGame(bestScoreKey: bestGameScoreKey, points: points)
         // Review games use only missed questions, so their scores aren't comparable.
         if reviewQuestionIDs.isEmpty {
             GameStats.shared.recordModeRound(.beatclock, mode: playedMode.rawValue, score: points)

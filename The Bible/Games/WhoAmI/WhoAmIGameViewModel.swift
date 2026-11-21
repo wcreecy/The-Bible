@@ -456,7 +456,7 @@ final class WhoAmIGameViewModel {
     }
 
     private func finishGame() {
-        session.finishGame(bestScoreKey: bestGameScoreKey)
+        session.finishGame(bestScoreKey: bestGameScoreKey, points: points)
         current = nil
         isComplete = true
     }
@@ -497,12 +497,8 @@ final class WhoAmIGameViewModel {
     var points: Int { session.score + speedBonusCount }
 
     /// How the points add up, for the summary. Nil when there were no bonuses.
-    var bonusNote: String? {
-        guard speedBonusCount > 0 else { return nil }
-        let bonuses = speedBonusCount == 1
-            ? String(localized: "1 speed bonus")
-            : String(localized: "\(speedBonusCount) speed bonuses")
-        return String(localized: "\(session.score) correct + \(bonuses) = \(points) points")
+    var roundPoints: RoundPoints? {
+        RoundPoints(correct: session.score, bonuses: [RoundPoints.speed(speedBonusCount)])
     }
 
     // MARK: - Hint

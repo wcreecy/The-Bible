@@ -595,13 +595,9 @@ final class BibleTriviaGameModel {
         )
     }
 
-    /// Points from speed bonuses, for the summary. Nil when there were none.
-    var speedBonusNote: String? {
-        let bonuses = speedBonusCount
-        guard bonuses > 0 else { return nil }
-        return bonuses == 1
-            ? String(localized: "\(session.score) correct + 1 speed bonus = \(points) points")
-            : String(localized: "\(session.score) correct + \(bonuses) speed bonuses = \(points) points")
+    /// How the points add up, for the summary. Nil when there were no bonuses.
+    var roundPoints: RoundPoints? {
+        RoundPoints(correct: session.score, bonuses: [RoundPoints.speed(speedBonusCount)])
     }
 
     private var bestScoreKey: String {
@@ -609,9 +605,10 @@ final class BibleTriviaGameModel {
     }
 
     private func savePersonalBest() {
-        guard session.score > bestScore else { return }
-        bestScore = session.score
-        UserDefaults.standard.set(session.score, forKey: bestScoreKey)
+        // The best is in points, so bonuses count toward it.
+        guard points > bestScore else { return }
+        bestScore = points
+        UserDefaults.standard.set(points, forKey: bestScoreKey)
         iCloudSyncCoordinator.shared.pushKey(bestScoreKey)
     }
 }

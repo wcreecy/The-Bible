@@ -42,7 +42,7 @@ struct BibleTriviaGameView: View {
                         summary: GameRoundSummary(score: model.session),
                         tint: .cyan,
                         poolProgress: model.poolProgress,
-                        resultNote: model.speedBonusNote,
+                        points: model.roundPoints,
                         extraAction: model.bookToPractice.map { book in
                             GameRoundSummaryView.ExtraAction(
                                 title: String(localized: "Practice \(book)"),
@@ -122,9 +122,9 @@ private struct BibleTriviaSetupScreen: View {
                     tint: .cyan,
                     experienceLevel: experienceLevel,
                     experienceDetails: GameExperienceDetails(
-                        learn: "The most familiar questions, with 30 seconds for each answer.",
-                        standard: "15 seconds for each answer, and questions are a little more challenging.",
-                        challenge: "10 seconds for each answer and the most challenging questions."
+                        learn: "The most familiar questions, with 30 seconds for each answer. +1 bonus point for answering in the first 10 seconds.",
+                        standard: "15 seconds for each answer, and questions are a little more challenging. +1 bonus point for answering in the first 5 seconds.",
+                        challenge: "10 seconds for each answer and the most challenging questions. +1 bonus point for answering in the first 3 seconds."
                     ),
                     experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
                     isConfigurationEnabled: !isReviewRound,

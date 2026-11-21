@@ -30,8 +30,7 @@ struct QuizGameplayTests {
             mode: .standard,
             missedQuestions: MissedGameQuestionStore(entries: []),
             sleep: clock.sleep(for:),
-            now: { clock.date },
-            chapterSummary: { book, chapter in "Summary of \(book) \(chapter)" }
+            now: { clock.date }
         )
         game.difficulty = difficulty
         game.pool = .any
@@ -187,15 +186,6 @@ struct QuizGameplayTests {
             game.revealContext()
             game.selectOption(try #require(game.current?.correctAnswer))
             #expect(game.session.entries.last?.hintCount == 2)
-        }
-    }
-
-    @Test func theChapterSummaryLoadsForEachQuestion() async throws {
-        try await withGame { game, _ in
-            game.startQuiz()
-            await game.loadChapterSummary()
-            let current = try #require(game.current)
-            #expect(current.chapterSummary == "Summary of \(current.correctBook) \(current.chapter)")
         }
     }
 

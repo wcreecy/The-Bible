@@ -105,14 +105,17 @@ struct GameScore {
         }
     }
 
-    /// Ends the game and works out whether it beat the saved best score.
-    mutating func finishGame(bestScoreKey: String, defaults: UserDefaults = .standard) {
+    /// Ends the game and works out whether it beat the saved best score. Games that award
+    /// bonus points pass the round's `points`, so the best is what the player saw; the rest
+    /// compare their correct answers.
+    mutating func finishGame(bestScoreKey: String, points: Int? = nil, defaults: UserDefaults = .standard) {
         endGame()
+        let result = points ?? score
         let previousBest = defaults.integer(forKey: bestScoreKey)
-        isNewBestGame = score > previousBest
-        bestGameScore = max(previousBest, score)
+        isNewBestGame = result > previousBest
+        bestGameScore = max(previousBest, result)
         if isNewBestGame {
-            defaults.set(score, forKey: bestScoreKey)
+            defaults.set(result, forKey: bestScoreKey)
         }
     }
 

@@ -410,7 +410,7 @@ extension QuizLifeline {
     }
 }
 
-/// The result, the chapter's summary, and the chapter bonus, once a question is answered.
+/// The result and the chapter bonus, once a question is answered.
 struct QuizAfterAnswer: View {
     /// The game scrolls here once a question is answered, so it's never left under the Next button.
     static let scrollID = "quizAfterAnswer"
@@ -427,27 +427,12 @@ struct QuizAfterAnswer: View {
                     verseNumber: current.verse,
                     verseText: current.verseText,
                     closeGuessNote: vm.closeGuessNote,
-                    earnedSpeedBonus: current.earnedSpeedBonus
+                    earnedSpeedBonus: current.earnedSpeedBonus,
+                    hidesChapter: vm.isChapterBonusOpen
                 )
 
                 if !current.chapterOptions.isEmpty {
                     QuizChapterBonus(question: current, onGuess: vm.guessChapter)
-                }
-
-                // Held back until the bonus is answered, since it names the chapter.
-                if let summary = current.chapterSummary, !vm.isChapterBonusOpen {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Label("\(current.correctBook) \(current.chapter)", systemImage: "book.pages")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Text(summary)
-                            .font(.callout)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(12)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .accessibilityElement(children: .combine)
                 }
             }
             .animation(.snappy, value: current.chapterGuess)
@@ -463,14 +448,16 @@ struct QuizChapterBonus: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             if let guess = question.chapterGuess {
+                let isRight = guess == question.chapter
+                // Says whether the chapter was right, since the card above only names the verse.
                 Label(
-                    guess == question.chapter
-                        ? "Chapter \(question.chapter). +1 chapter bonus"
-                        : "It was chapter \(question.chapter).",
-                    systemImage: guess == question.chapter ? "star.fill" : "info.circle"
+                    isRight
+                        ? "Correct! Chapter \(question.chapter). +1 chapter bonus"
+                        : "Not quite. You chose chapter \(guess); it was chapter \(question.chapter).",
+                    systemImage: isRight ? "star.fill" : "xmark.circle.fill"
                 )
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(guess == question.chapter ? .orange : .secondary)
+                .foregroundStyle(isRight ? Color.orange : Color.red)
             } else {
                 Label("Bonus: which chapter of \(question.correctBook)?", systemImage: "star")
                     .font(.subheadline.weight(.semibold))
@@ -493,7 +480,10 @@ struct QuizChapterBonus: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
-        .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .background(
+            (question.chapterGuess.map { $0 == question.chapter ? Color.orange : Color.red } ?? Color.orange).opacity(0.1),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
     }
 }
 
@@ -506,6 +496,9 @@ struct QuizAnswerReveal: View {
     /// "Right section: Gospels" for a close wrong guess.
     var closeGuessNote: String?
     var earnedSpeedBonus = false
+    /// True while the chapter bonus is waiting, so the card names the book without giving
+    /// away the chapter and verse (or the menu that opens them).
+    var hidesChapter = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -526,7 +519,9 @@ struct QuizAnswerReveal: View {
                     }
                 }
 
-                Text("\(bookName) \(chapterNumber):\(verseNumber) \(BibleRepository.shared.activeTranslation.abbreviation)")
+                Text(hidesChapter
+                    ? bookName
+                    : "\(bookName) \(chapterNumber):\(verseNumber) \(BibleRepository.shared.activeTranslation.abbreviation)")
                     .font(.title3.weight(.bold))
                     .foregroundStyle(.primary)
 
@@ -539,14 +534,16 @@ struct QuizAnswerReveal: View {
 
             Spacer(minLength: 8)
 
-            VerseActionMenu(
-                verse: VerseActionReference(
-                    bookName: bookName,
-                    chapterNumber: chapterNumber,
-                    verseNumber: verseNumber,
-                    verseText: verseText
+            if !hidesChapter {
+                VerseActionMenu(
+                    verse: VerseActionReference(
+                        bookName: bookName,
+                        chapterNumber: chapterNumber,
+                        verseNumber: verseNumber,
+                        verseText: verseText
+                    )
                 )
-            )
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)

@@ -31,6 +31,8 @@ struct GameRoundSummaryView: View {
     var canTimeOut = true
     var poolProgress: PoolProgress?
     var resultNote: String?
+    /// Set when bonus points were earned, so the header leads with the points total.
+    var points: RoundPoints?
     var extraAction: ExtraAction?
     let onPlayAgain: () -> Void
     let onChangeSettings: () -> Void
@@ -41,7 +43,7 @@ struct GameRoundSummaryView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            GameRoundSummaryHeader(summary: summary, tint: tint, unit: unit)
+            GameRoundSummaryHeader(summary: summary, tint: tint, unit: unit, points: points)
 
             if let reviewRound {
                 ReviewRoundResultCard(
@@ -144,10 +146,11 @@ struct GameRoundSummaryView: View {
 
 // MARK: - Header
 
-private struct GameRoundSummaryHeader: View {
+struct GameRoundSummaryHeader: View {
     let summary: GameRoundSummary
     let tint: Color
     let unit: GameRoundSummaryView.Unit
+    var points: RoundPoints?
 
     private var title: LocalizedStringKey {
         switch summary.grade {
@@ -198,15 +201,61 @@ private struct GameRoundSummaryHeader: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.title.weight(.bold))
+                if let points {
+                    // More points than questions is possible, so the points lead and the
+                    // plain count stays beside them: "15 points", "10 of 10 correct".
+                    Text("\(points.total) points")
+                        .font(.system(.largeTitle, design: .rounded).weight(.heavy))
+                        .monospacedDigit()
+                        .foregroundStyle(ringTint)
+                        .contentTransition(.numericText())
+                }
                 Text(scoreText)
-                    .font(.title3.weight(.semibold))
+                    .font(points == nil ? .title3.weight(.semibold) : .headline.weight(.medium))
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
+            }
+
+            if let points {
+                bonusChips(points)
             }
         }
         .padding(.top, 8)
         .accessibilityElement(children: .combine)
-        .accessibilityValue(Text(summary.accuracy, format: .percent.precision(.fractionLength(0))))
+        .accessibilityValue(accessibilityValue)
+    }
+}
+
+extension GameRoundSummaryHeader {
+    /// "+3 speed bonuses", "+2 chapter bonuses": one chip per bonus earned.
+    @ViewBuilder
+    private func bonusChips(_ points: RoundPoints) -> some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) { chips(points) }
+            VStack(spacing: 8) { chips(points) }
+        }
+    }
+
+    @ViewBuilder
+    private func chips(_ points: RoundPoints) -> some View {
+        ForEach(points.bonuses, id: \.title) { bonus in
+            chip("+\(bonus.title)", systemImage: bonus.systemImage, tint: .orange)
+        }
+    }
+
+    private func chip(_ text: String, systemImage: String, tint: Color) -> some View {
+        Label(text, systemImage: systemImage)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(tint.opacity(0.14), in: Capsule())
+    }
+
+    var accessibilityValue: Text {
+        guard let points else { return Text(summary.accuracy, format: .percent.precision(.fractionLength(0))) }
+        let parts = points.bonuses.map(\.title).joined(separator: ", ")
+        return Text("\(points.total) points: \(points.correct) correct, \(parts)")
     }
 }
 
@@ -606,6 +655,7 @@ private struct GameRoundSummaryCard<Content: View>: View {
                 ),
                 tint: .cyan,
                 poolProgress: .init(title: "Normal", seen: 142, total: 600),
+                points: RoundPoints(correct: 3, bonuses: [RoundPoints.speed(2), RoundPoints.chapter(1)]),
                 onPlayAgain: {},
                 onChangeSettings: {}
             )

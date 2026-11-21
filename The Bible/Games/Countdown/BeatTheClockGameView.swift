@@ -154,7 +154,7 @@ struct BeatTheClockGameView: View {
             GameRoundSummaryView(
                 summary: GameRoundSummary(score: vm.session),
                 tint: .indigo,
-                resultNote: vm.pointsNote,
+                points: vm.roundPoints,
                 onPlayAgain: vm.startGame,
                 onChangeSettings: vm.resetToSetup
             )
@@ -198,9 +198,9 @@ struct BeatTheClockGameView: View {
                     challenge: "\(BeatTheClockDifficulty.hard.rapidFireTime) seconds for each name. Every name in the game."
                 )
                 : GameExperienceDetails(
-                    learn: "\(BeatTheClockDifficulty.easy.roundTime) seconds per question. Well-known names, with a clue shown for each one.",
-                    standard: "\(BeatTheClockDifficulty.normal.roundTime) seconds per question. Adds less familiar names. A clue costs \(BeatTheClockDifficulty.hintCost) seconds.",
-                    challenge: "\(BeatTheClockDifficulty.hard.roundTime) seconds per question. Every name in the game. A clue costs \(BeatTheClockDifficulty.hintCost) seconds."
+                    learn: "\(BeatTheClockDifficulty.easy.roundTime) seconds per question. Well-known names, with a clue shown for each one. +1 bonus point for answering in the first \(BeatTheClockDifficulty.easy.roundTime / 3) seconds, and +1 for a less-known book.",
+                    standard: "\(BeatTheClockDifficulty.normal.roundTime) seconds per question. Adds less familiar names. A clue costs \(BeatTheClockDifficulty.hintCost) seconds. +1 bonus point for answering in the first \(BeatTheClockDifficulty.normal.roundTime / 3) seconds, and +1 for a less-known book.",
+                    challenge: "\(BeatTheClockDifficulty.hard.roundTime) seconds per question. Every name in the game. A clue costs \(BeatTheClockDifficulty.hintCost) seconds. +1 bonus point for answering in the first \(BeatTheClockDifficulty.hard.roundTime / 3) seconds, and +1 for a less-known book."
                 ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,

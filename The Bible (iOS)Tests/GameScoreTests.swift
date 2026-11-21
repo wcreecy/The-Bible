@@ -172,4 +172,57 @@ struct GameScoreTests {
         score.finishGame(bestScoreKey: key, defaults: defaults)
         #expect(!score.isNewBestGame)
     }
+
+    @Test
+    func theBestScoreCountsBonusPointsWhenAGamePassesThem() throws {
+        let suiteName = "gamescoretest.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let saved = makeSavedStreak()
+        defer { discard(saved) }
+        let key = "bestGameScore"
+        var score = GameScore()
+
+        // Two right answers plus three bonus points is a 5-point game.
+        score.beginGame(savedStreak: saved)
+        score.record(correct: true, savedStreak: saved)
+        score.record(correct: true, savedStreak: saved)
+        score.finishGame(bestScoreKey: key, points: 5, defaults: defaults)
+        #expect(score.isNewBestGame)
+        #expect(score.bestGameScore == 5)
+        #expect(defaults.integer(forKey: key) == 5)
+
+        // Three right answers and no bonuses is fewer points, so it isn't a new best.
+        score.beginGame(savedStreak: saved)
+        for _ in 0..<3 { score.record(correct: true, savedStreak: saved) }
+        score.finishGame(bestScoreKey: key, points: 3, defaults: defaults)
+        #expect(!score.isNewBestGame)
+        #expect(defaults.integer(forKey: key) == 5)
+    }
+
+    @Test
+    func roundPointsAddEachBonusToTheCorrectAnswers() throws {
+        let points = try #require(RoundPoints(
+            correct: 10,
+            bonuses: [RoundPoints.speed(3), RoundPoints.chapter(2), RoundPoints.lessKnown(0)]
+        ))
+        #expect(points.total == 15)
+        #expect(points.correct == 10)
+        // Bonuses that weren't earned don't show.
+        #expect(points.bonuses.map(\.count) == [3, 2])
+    }
+
+    @Test
+    func roundPointsAreNilWhenNoBonusWasEarned() {
+        #expect(RoundPoints(correct: 8, bonuses: [RoundPoints.speed(0), RoundPoints.chapter(0)]) == nil)
+        #expect(RoundPoints(correct: 8, bonuses: []) == nil)
+    }
+
+    @Test
+    func bonusTitlesAgreeWithTheirCount() {
+        #expect(RoundPoints.speed(1).title == "1 speed bonus")
+        #expect(RoundPoints.speed(2).title == "2 speed bonuses")
+        #expect(RoundPoints.chapter(1).title == "1 chapter bonus")
+        #expect(RoundPoints.lessKnown(3).title == "3 less-known books")
+    }
 }

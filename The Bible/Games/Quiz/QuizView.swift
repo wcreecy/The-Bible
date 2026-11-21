@@ -10,6 +10,13 @@ struct QuizView: View {
         _vm = State(initialValue: QuizGameViewModel(reviewQuestionIDs: reviewQuestionIDs, mode: mode))
     }
 
+    #if DEBUG
+    /// Lets previews open straight into a round.
+    fileprivate init(viewModel: QuizGameViewModel) {
+        _vm = State(initialValue: viewModel)
+    }
+    #endif
+
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
@@ -45,7 +52,7 @@ struct QuizView: View {
                                     summary: GameRoundSummary(score: vm.session),
                                     tint: .blue,
                                     canTimeOut: vm.isTimed,
-                                    resultNote: vm.bonusNote,
+                                    points: vm.roundPoints,
                                     extraAction: vm.bookToPractice.map { book in
                                         GameRoundSummaryView.ExtraAction(
                                             title: String(localized: "Practice \(book)"),
@@ -125,10 +132,6 @@ struct QuizView: View {
         // Restarts with each question so the first second is a full second.
         .task(id: vm.timerID) {
             await vm.runTimer()
-        }
-        // The chapter summary loads with each question, ready for after answering.
-        .task(id: vm.current?.id) {
-            await vm.loadChapterSummary()
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -214,9 +217,13 @@ struct QuizView: View {
             tint: .blue,
             experienceLevel: $vm.experienceLevel,
             experienceDetails: GameExperienceDetails(
-                learn: "Untimed practice at your own pace.",
-                standard: vm.mode == .reverse ? "20 seconds. Choices from your categories." : "15 seconds for each verse.",
-                challenge: vm.mode == .reverse ? "30 seconds. Choices from the same book." : "12 seconds for each verse."
+                learn: "Untimed practice at your own pace. No bonus points.",
+                standard: vm.mode == .reverse
+                    ? "20 seconds. Choices from your categories. +1 bonus point for answering in the first third of the time."
+                    : "15 seconds for each verse. +1 bonus point for answering in the first 5 seconds, and +1 for naming the right chapter.",
+                challenge: vm.mode == .reverse
+                    ? "30 seconds. Choices from the same book. +1 bonus point for answering in the first third of the time."
+                    : "12 seconds for each verse. +1 bonus point for answering in the first 4 seconds, and +1 for naming the right chapter."
             ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,
@@ -374,3 +381,24 @@ struct QuizView: View {
         QuizView()
     }
 }
+
+#if DEBUG
+/// A round answered correctly and instantly, so the speed bonus and chapter bonus show.
+#Preview("Answered") {
+    @Previewable @State var vm = QuizGameViewModel(
+        mode: .standard,
+        missedQuestions: MissedGameQuestionStore(entries: [])
+    )
+    NavigationStack { QuizView(viewModel: vm) }
+        .task {
+            _ = await BibleRepository.shared.loadAllBooks()
+            vm.pool = .any
+            vm.selectedSections = Set(QuizVerseSection.allCases)
+            await vm.prepareFilter()
+            vm.startQuiz()
+            if let correct = vm.current?.correctAnswer {
+                vm.selectOption(correct)
+            }
+        }
+}
+#endif
