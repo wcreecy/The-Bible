@@ -45,7 +45,10 @@
       "category": "Major Biblical Events",
       "description": "Cain kills his brother Abel after God regards their offerings differently.",
       "aliases": [
-        "first murder"
+        "first murder",
+        "Cain kills Abel",
+        "Cain murders Abel",
+        "am I my brother's keeper"
       ],
       "references": [
         {
@@ -76,7 +79,9 @@
       "category": "Major Biblical Events",
       "description": "People build a city and tower to make a name for themselves; God confuses their language and scatters them.",
       "aliases": [
-        "babel"
+        "babel",
+        "languages confused",
+        "scattering of nations"
       ],
       "references": [
         {
@@ -106,7 +111,9 @@
       "category": "Major Biblical Events",
       "description": "God destroys Sodom and Gomorrah while rescuing Lot and his daughters.",
       "aliases": [
-        "destruction of sodom"
+        "destruction of sodom",
+        "fire and brimstone",
+        "destruction of Sodom and Gomorrah"
       ],
       "references": [
         {
@@ -122,7 +129,9 @@
       "description": "God tests Abraham by commanding him to offer Isaac, then provides a ram in Isaac’s place.",
       "aliases": [
         "sacrifice of isaac",
-        "abraham and isaac"
+        "abraham and isaac",
+        "Abraham sacrifices Isaac",
+        "ram in the thicket"
       ],
       "references": [
         {
@@ -171,7 +180,9 @@
       "category": "Major Biblical Events",
       "description": "Joseph’s brothers sell him to traders, who take him to Egypt.",
       "aliases": [
-        "joseph and his brothers"
+        "joseph and his brothers",
+        "coat of many colors",
+        "Joseph's brothers sell him"
       ],
       "references": [
         {
@@ -202,7 +213,9 @@
       "category": "Major Biblical Events",
       "description": "God speaks to Moses from a burning bush and commissions him to lead Israel out of Egypt.",
       "aliases": [
-        "moses burning bush"
+        "moses burning bush",
+        "Moses and the bush",
+        "I am who I am"
       ],
       "references": [
         {
@@ -217,7 +230,12 @@
       "category": "Major Biblical Events",
       "description": "God sends a series of plagues upon Egypt as Pharaoh refuses to release the Israelites.",
       "aliases": [
-        "plagues of egypt"
+        "plagues of egypt",
+        "10 plagues",
+        "frogs and locusts",
+        "death of the firstborn",
+        "ten plagues of Egypt",
+        "plague of locusts"
       ],
       "references": [
         {
@@ -281,7 +299,9 @@
       "category": "Major Biblical Events",
       "description": "God provides water for Israel when Moses strikes a rock at Horeb.",
       "aliases": [
-        "meribah"
+        "meribah",
+        "Moses strikes the rock",
+        "Moses hits the rock"
       ],
       "references": [
         {
@@ -296,7 +316,9 @@
       "category": "Major Biblical Events",
       "description": "While Moses is on the mountain, the Israelites make and worship a golden calf.",
       "aliases": [
-        "idol of gold"
+        "idol of gold",
+        "Aaron makes a calf",
+        "Israelites worship a calf"
       ],
       "references": [
         {
@@ -313,7 +335,9 @@
       "aliases": [
         "spies in canaan",
         "The Twelve Spies Explore Canaan",
-        "spying out the promised land"
+        "spying out the promised land",
+        "12 spies",
+        "ten spies"
       ],
       "references": [
         {
@@ -382,7 +406,11 @@
       "category": "Major Biblical Events",
       "description": "Israel marches around Jericho as instructed, and the city walls fall.",
       "aliases": [
-        "walls of jericho"
+        "walls of jericho",
+        "Joshua at Jericho",
+        "walls fall down",
+        "Rahab",
+        "battle of Jericho"
       ],
       "references": [
         {
@@ -414,7 +442,10 @@
       "category": "Major Biblical Events",
       "description": "God delivers Israel from Midian through Gideon and a force reduced to three hundred men.",
       "aliases": [
-        "gideon 300"
+        "gideon 300",
+        "Gideon's army",
+        "Gideon 300 men",
+        "trumpets and jars"
       ],
       "references": [
         {
@@ -429,7 +460,10 @@
       "category": "Major Biblical Events",
       "description": "Delilah discovers the secret connected to Samson’s strength and hands him over to the Philistines.",
       "aliases": [
-        "samson"
+        "samson",
+        "Samson's hair",
+        "Samson loses his strength",
+        "Samson haircut"
       ],
       "references": [
         {
@@ -493,7 +527,10 @@
       "category": "Major Biblical Events",
       "description": "David defeats the Philistine champion Goliath with a sling and stone.",
       "aliases": [
-        "goliath"
+        "goliath",
+        "David kills Goliath",
+        "David and the giant",
+        "five smooth stones"
       ],
       "references": [
         {
@@ -525,7 +562,10 @@
       "category": "Major Biblical Events",
       "description": "David takes Bathsheba and arranges the death of her husband Uriah.",
       "aliases": [
-        "bathsheba"
+        "bathsheba",
+        "David sins with Bathsheba",
+        "David and Bathsheba on the roof",
+        "Uriah the Hittite"
       ],
       "references": [
         {
@@ -540,7 +580,9 @@
       "category": "Major Biblical Events",
       "description": "David’s son Absalom rebels against him, leading to conflict and Absalom’s death.",
       "aliases": [
-        "absalom"
+        "absalom",
+        "Absalom's revolt",
+        "Absalom's hair caught in a tree"
       ],
       "references": [
         {
@@ -656,7 +698,8 @@
       "category": "Major Biblical Events",
       "description": "Assyria captures Samaria and exiles many inhabitants of the northern kingdom of Israel.",
       "aliases": [
-        "northern kingdom exile"
+        "northern kingdom exile",
+        "fall of the northern kingdom"
       ],
       "references": [
         {
@@ -708,7 +751,8 @@
       "aliases": [
         "nehemiah wall",
         "Nehemiah Rebuilds Jerusalem's Wall",
-        "rebuilding the wall"
+        "rebuilding the wall",
+        "Nehemiah rebuilds the wall"
       ],
       "references": [
         {
@@ -723,7 +767,9 @@
       "category": "Major Biblical Events",
       "description": "Esther risks approaching the king to help protect the Jewish people from a planned massacre.",
       "aliases": [
-        "queen esther"
+        "queen esther",
+        "Esther and Haman",
+        "Purim"
       ],
       "references": [
         {
@@ -738,7 +784,9 @@
       "category": "Major Biblical Events",
       "description": "Job loses possessions, children, and health, beginning a prolonged test of his faith.",
       "aliases": [
-        "suffering of job"
+        "suffering of job",
+        "patience of Job",
+        "Job loses everything"
       ],
       "references": [
         {
@@ -753,7 +801,11 @@
       "category": "Major Biblical Events",
       "description": "Three Jewish men are thrown into a blazing furnace for refusing to worship an image and are preserved.",
       "aliases": [
-        "shadrach meshach abednego"
+        "shadrach meshach abednego",
+        "Daniel's friends in the fire",
+        "three men in the furnace",
+        "fourth man in the fire",
+        "the fourth man"
       ],
       "references": [
         {
@@ -786,7 +838,9 @@
       "category": "Major Biblical Events",
       "description": "Daniel is thrown into a den of lions for praying to God and is delivered unharmed.",
       "aliases": [
-        "daniel lions"
+        "daniel lions",
+        "Daniel and the lions",
+        "Daniel in the lion's den"
       ],
       "references": [
         {
@@ -801,7 +855,9 @@
       "category": "Major Biblical Events",
       "description": "Jonah flees from God’s command, is swallowed by a great fish, and prays for deliverance.",
       "aliases": [
-        "jonah whale"
+        "jonah whale",
+        "Jonah swallowed",
+        "Jonah and the whale"
       ],
       "references": [
         {
@@ -834,7 +890,10 @@
       "category": "Life and Teachings of Jesus",
       "description": "The angel Gabriel tells Mary that she will bear Jesus, whose kingdom will have no end.",
       "aliases": [
-        "angel gabriel mary"
+        "angel gabriel mary",
+        "angel visits Mary",
+        "Gabriel visits Mary",
+        "Mary told she will have a baby"
       ],
       "references": [
         {
@@ -851,7 +910,11 @@
       "aliases": [
         "nativity",
         "christmas",
-        "virgin birth"
+        "virgin birth",
+        "Jesus born",
+        "Jesus in a manger",
+        "no room at the inn",
+        "shepherds and angels"
       ],
       "references": [
         {
@@ -873,7 +936,10 @@
         "visit of the magi",
         "The Magi",
         "magi",
-        "wise men from the east"
+        "wise men from the east",
+        "three kings",
+        "three wise men",
+        "star of Bethlehem"
       ],
       "references": [
         {
@@ -888,7 +954,9 @@
       "category": "Life and Teachings of Jesus",
       "description": "Joseph takes Mary and Jesus to Egypt to escape Herod’s threat and later returns.",
       "aliases": [
-        "joseph mary egypt"
+        "joseph mary egypt",
+        "escape to Egypt",
+        "Joseph and Mary flee to Egypt"
       ],
       "references": [
         {
@@ -905,7 +973,12 @@
       "aliases": [
         "jesus at twelve",
         "The Boy Jesus in the Temple",
-        "Jesus at age twelve"
+        "Jesus at age twelve",
+        "Jesus with the scholars",
+        "Jesus and the scholars",
+        "Jesus with the teachers",
+        "Jesus among the teachers",
+        "Jesus with the doctors"
       ],
       "references": [
         {
@@ -920,7 +993,10 @@
       "category": "Life and Teachings of Jesus",
       "description": "John baptizes Jesus in the Jordan; the Spirit descends and a voice speaks from heaven.",
       "aliases": [
-        "jesus baptized"
+        "jesus baptized",
+        "Jesus baptism",
+        "John baptizes Jesus",
+        "dove descends"
       ],
       "references": [
         {
@@ -935,7 +1011,10 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus resists the devil’s temptations in the wilderness by answering with Scripture.",
       "aliases": [
-        "jesus in wilderness"
+        "jesus in wilderness",
+        "Jesus tempted by Satan",
+        "40 days in the desert",
+        "stones to bread"
       ],
       "references": [
         {
@@ -951,7 +1030,9 @@
       "description": "Jesus calls fishermen to follow him.",
       "aliases": [
         "fishers of men",
-        "Jesus Calls the First Disciples"
+        "Jesus Calls the First Disciples",
+        "Jesus calls Peter and Andrew",
+        "Jesus calls the disciples"
       ],
       "references": [
         {
@@ -1182,7 +1263,8 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus describes himself as the good shepherd who knows and lays down his life for his sheep.",
       "aliases": [
-        "good shepherd"
+        "good shepherd",
+        "Jesus the Good Shepherd"
       ],
       "references": [
         {
@@ -1248,7 +1330,9 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus appears in glory with Moses and Elijah before Peter, James, and John.",
       "aliases": [
-        "mount of transfiguration"
+        "mount of transfiguration",
+        "Jesus glows",
+        "Moses and Elijah appear"
       ],
       "references": [
         {
@@ -1263,7 +1347,10 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus enters Jerusalem riding a donkey as crowds welcome him.",
       "aliases": [
-        "palm sunday"
+        "palm sunday",
+        "Jesus rides a donkey",
+        "Jesus enters Jerusalem",
+        "hosanna"
       ],
       "references": [
         {
@@ -1280,7 +1367,13 @@
       "aliases": [
         "temple cleansing",
         "Jesus Cleanses the Temple",
-        "money changers"
+        "money changers",
+        "Jesus flipping tables",
+        "Jesus flips tables",
+        "flipping tables",
+        "Jesus overturns tables",
+        "overturning tables",
+        "Jesus flips the tables"
       ],
       "references": [
         {
@@ -1319,7 +1412,10 @@
       "aliases": [
         "communion",
         "this is my body",
-        "do this in remembrance of me"
+        "do this in remembrance of me",
+        "Lord's Supper",
+        "Jesus' last meal",
+        "Passover meal with the disciples"
       ],
       "references": [
         {
@@ -1335,7 +1431,8 @@
       "description": "Jesus models humble service by washing his disciples' feet.",
       "aliases": [
         "foot washing",
-        "Jesus Washes the Disciples' Feet"
+        "Jesus Washes the Disciples' Feet",
+        "Jesus washes Peter's feet"
       ],
       "references": [
         {
@@ -1350,7 +1447,9 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus prays in anguish in Gethsemane and submits to the Father's will.",
       "aliases": [
-        "garden of gethsemane"
+        "garden of gethsemane",
+        "Jesus prays in the garden",
+        "let this cup pass"
       ],
       "references": [
         {
@@ -1365,7 +1464,10 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus is seized after Judas identifies him to an armed crowd.",
       "aliases": [
-        "betrayal by judas"
+        "betrayal by judas",
+        "Judas kiss",
+        "Jesus arrested",
+        "Jesus betrayed"
       ],
       "references": [
         {
@@ -1381,7 +1483,10 @@
       "description": "Peter denies knowing Jesus three times before the rooster crows.",
       "aliases": [
         "peters denial",
-        "Peter Denies Jesus Three Times"
+        "Peter Denies Jesus Three Times",
+        "Peter denies knowing Jesus",
+        "rooster crows",
+        "cock crows"
       ],
       "references": [
         {
@@ -1417,7 +1522,9 @@
         "good friday",
         "golgotha",
         "place of the skull",
-        "the cross"
+        "the cross",
+        "Jesus dies on the cross",
+        "Jesus crucified"
       ],
       "references": [
         {
@@ -1432,7 +1539,10 @@
       "category": "Life and Teachings of Jesus",
       "description": "Joseph of Arimathea and Nicodemus prepare Jesus' body and place it in a tomb.",
       "aliases": [
-        "tomb of jesus"
+        "tomb of jesus",
+        "Joseph of Arimathea",
+        "Jesus buried",
+        "Nicodemus helps bury Jesus"
       ],
       "references": [
         {
@@ -1450,7 +1560,9 @@
         "empty tomb",
         "easter",
         "he is risen",
-        "resurrection sunday"
+        "resurrection sunday",
+        "Jesus rises from the dead",
+        "Jesus is risen"
       ],
       "references": [
         {
@@ -1485,7 +1597,8 @@
       "description": "Thomas encounters the risen Jesus and believes.",
       "aliases": [
         "thomas doubts",
-        "Jesus Appears to Thomas"
+        "Jesus Appears to Thomas",
+        "Thomas touches Jesus' wounds"
       ],
       "references": [
         {
@@ -1518,7 +1631,8 @@
       "category": "Life and Teachings of Jesus",
       "description": "The risen Jesus sends his followers to make disciples of all nations.",
       "aliases": [
-        "go make disciples"
+        "go make disciples",
+        "go and make disciples of all nations"
       ],
       "references": [
         {
@@ -1533,7 +1647,9 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus ascends from his disciples’ sight, and two men in white tell them he will return.",
       "aliases": [
-        "jesus ascends"
+        "jesus ascends",
+        "Jesus goes up to heaven",
+        "Jesus taken up"
       ],
       "references": [
         {
@@ -1563,7 +1679,8 @@
       "category": "Parables",
       "description": "Jesus compares the kingdom to a field where wheat and weeds grow until harvest.",
       "aliases": [
-        "weeds and wheat"
+        "weeds and wheat",
+        "Parable of the Wheat and Tares"
       ],
       "references": [
         {
@@ -1582,7 +1699,8 @@
       "category": "Parables",
       "description": "Jesus likens the kingdom to a tiny seed that grows into a large plant.",
       "aliases": [
-        "kingdom mustard seed"
+        "kingdom mustard seed",
+        "Parable of the Mustard Seed"
       ],
       "references": [
         {
@@ -1661,7 +1779,8 @@
       "category": "Parables",
       "description": "A shepherd searches for one lost sheep and rejoices when it is found.",
       "aliases": [
-        "ninety nine sheep"
+        "ninety nine sheep",
+        "Parable of the Lost Sheep"
       ],
       "references": [
         {
@@ -1676,7 +1795,8 @@
       "category": "Parables",
       "description": "A woman searches for a lost coin and celebrates when she finds it.",
       "aliases": [
-        "lost silver coin"
+        "lost silver coin",
+        "Parable of the Lost Coin"
       ],
       "references": [
         {
@@ -1691,7 +1811,11 @@
       "category": "Parables",
       "description": "A father welcomes home his younger son after the son wastes his inheritance.",
       "aliases": [
-        "lost son"
+        "lost son",
+        "the lost son",
+        "son who left home",
+        "pigs and the father's welcome",
+        "Parable of the Prodigal Son"
       ],
       "references": [
         {
@@ -1706,7 +1830,10 @@
       "category": "Parables",
       "description": "Jesus tells of a Samaritan who shows mercy to a wounded stranger.",
       "aliases": [
-        "samaritan"
+        "samaritan",
+        "man beaten by robbers",
+        "priest and Levite",
+        "Parable of the Good Samaritan"
       ],
       "references": [
         {
@@ -1721,7 +1848,8 @@
       "category": "Parables",
       "description": "A wealthy man stores up possessions but dies before he can enjoy them.",
       "aliases": [
-        "bigger barns"
+        "bigger barns",
+        "Parable of the Rich Fool"
       ],
       "references": [
         {
@@ -1817,7 +1945,8 @@
       "category": "Parables",
       "description": "Jesus contrasts a Pharisee who trusts in his own righteousness with a tax collector who humbly asks God for mercy.",
       "aliases": [
-        "pharisee publican"
+        "pharisee publican",
+        "Parable of the Pharisee and Tax Collector"
       ],
       "references": [
         {
@@ -1832,7 +1961,8 @@
       "category": "Parables",
       "description": "A forgiven servant refuses to forgive a fellow servant's much smaller debt.",
       "aliases": [
-        "unmerciful servant"
+        "unmerciful servant",
+        "Parable of the Unforgiving Servant"
       ],
       "references": [
         {
@@ -1915,7 +2045,10 @@
       "category": "Parables",
       "description": "Ten virgins wait for the bridegroom; five bring extra oil and are ready when he arrives, while five are not.",
       "aliases": [
-        "wise and foolish virgins"
+        "wise and foolish virgins",
+        "10 virgins",
+        "ten bridesmaids",
+        "Parable of the Ten Virgins"
       ],
       "references": [
         {
@@ -1948,7 +2081,8 @@
         "judgment sheep goats",
         "The Sheep and the Goats",
         "judgment of nations",
-        "The Judgment of Nations"
+        "The Judgment of Nations",
+        "Parable of the Sheep and Goats"
       ],
       "references": [
         {
@@ -1999,7 +2133,9 @@
       "aliases": [
         "wedding at cana",
         "water into wine",
-        "first miracle"
+        "first miracle",
+        "Jesus turns water into wine",
+        "Jesus at the wedding"
       ],
       "references": [
         {
@@ -2048,7 +2184,10 @@
       "category": "Miracles",
       "description": "Jesus forgives and heals a paralyzed man lowered through a roof.",
       "aliases": [
-        "man lowered through roof"
+        "man lowered through roof",
+        "paralyzed man",
+        "Jesus heals the paralytic",
+        "four friends"
       ],
       "references": [
         {
@@ -2080,7 +2219,10 @@
       "category": "Miracles",
       "description": "Jesus rebukes the wind and sea, bringing calm during a storm.",
       "aliases": [
-        "peace be still"
+        "peace be still",
+        "Jesus calms the storm",
+        "Jesus calms the sea",
+        "storm on the sea"
       ],
       "references": [
         {
@@ -2095,7 +2237,10 @@
       "category": "Miracles",
       "description": "Jesus frees a man living among tombs from many unclean spirits in the region of the Gadarenes/Gerasenes.",
       "aliases": [
-        "legion demons"
+        "legion demons",
+        "Jesus and the pigs",
+        "demons into pigs",
+        "Legion"
       ],
       "references": [
         {
@@ -2110,7 +2255,9 @@
       "category": "Miracles",
       "description": "A woman suffering prolonged bleeding touches Jesus' garment and is healed.",
       "aliases": [
-        "woman touched garment"
+        "woman touched garment",
+        "bleeding woman",
+        "hem of his garment"
       ],
       "references": [
         {
@@ -2125,7 +2272,9 @@
       "category": "Miracles",
       "description": "Jesus raises Jairus' daughter after telling her family not to fear.",
       "aliases": [
-        "jairus daughter"
+        "jairus daughter",
+        "Jesus raises a girl",
+        "talitha cumi"
       ],
       "references": [
         {
@@ -2143,7 +2292,10 @@
         "five loaves two fishes",
         "feeding of the 5000",
         "feeding of the five thousand",
-        "loaves and fishes"
+        "loaves and fishes",
+        "Jesus feeds the 5000",
+        "Jesus feeds five thousand",
+        "5000 fed"
       ],
       "references": [
         {
@@ -2158,7 +2310,10 @@
       "category": "Miracles",
       "description": "Jesus walks across the sea toward his disciples' boat.",
       "aliases": [
-        "jesus walks water"
+        "jesus walks water",
+        "Jesus walks on water",
+        "Peter walks on water",
+        "Peter sinks"
       ],
       "references": [
         {
@@ -2173,7 +2328,10 @@
       "category": "Miracles",
       "description": "Jesus feeds a crowd of about four thousand with seven loaves and a few fish.",
       "aliases": [
-        "seven loaves"
+        "seven loaves",
+        "feeding the 4000",
+        "Jesus feeds the 4000",
+        "Jesus feeds four thousand"
       ],
       "references": [
         {
@@ -2188,7 +2346,9 @@
       "category": "Miracles",
       "description": "Jesus gives sight to a man blind from birth, prompting debate about his identity.",
       "aliases": [
-        "blind from birth"
+        "blind from birth",
+        "Jesus heals the blind man",
+        "mud and spit"
       ],
       "references": [
         {
@@ -2221,7 +2381,8 @@
       "aliases": [
         "ten lepers",
         "Jesus Heals Ten Men with Leprosy",
-        "ten lepers healed"
+        "ten lepers healed",
+        "10 lepers"
       ],
       "references": [
         {
@@ -2238,7 +2399,10 @@
       "aliases": [
         "lazarus raised",
         "raising of lazarus",
-        "lazarus come forth"
+        "lazarus come forth",
+        "Jesus raises Lazarus",
+        "Lazarus rises from the dead",
+        "Lazarus tomb"
       ],
       "references": [
         {
@@ -2253,7 +2417,9 @@
       "category": "Miracles",
       "description": "Jesus directs fishermen to a remarkable catch after an unsuccessful night.",
       "aliases": [
-        "great catch fish"
+        "great catch fish",
+        "Jesus fills the nets",
+        "nets breaking with fish"
       ],
       "references": [
         {
@@ -2269,7 +2435,9 @@
       "description": "Jesus heals a man who had been disabled for many years.",
       "aliases": [
         "pool of bethesda",
-        "Jesus Heals at the Pool of Bethesda"
+        "Jesus Heals at the Pool of Bethesda",
+        "Jesus heals the man at the pool",
+        "take up your mat and walk"
       ],
       "references": [
         {
@@ -2351,7 +2519,8 @@
       "category": "Miracles",
       "description": "Jesus instructs Peter to find a coin in a fish's mouth to pay the temple tax.",
       "aliases": [
-        "temple tax coin"
+        "temple tax coin",
+        "Peter finds a coin in a fish"
       ],
       "references": [
         {
@@ -2366,7 +2535,8 @@
       "category": "Miracles",
       "description": "Jesus speaks judgment over a fruitless fig tree, which later withers.",
       "aliases": [
-        "withered fig tree"
+        "withered fig tree",
+        "Jesus curses the fig tree"
       ],
       "references": [
         {
@@ -2574,7 +2744,8 @@
       "description": "Revelation identifies 666 as the number of the beast.",
       "aliases": [
         "666",
-        "six hundred sixty six"
+        "six hundred sixty six",
+        "the number 666"
       ],
       "references": [
         {
@@ -2589,7 +2760,8 @@
       "category": "Prophecy and End Times",
       "description": "The first four seals reveal riders commonly understood to represent conquest, war, famine, and death.",
       "aliases": [
-        "four horsemen apocalypse"
+        "four horsemen apocalypse",
+        "4 horsemen"
       ],
       "references": [
         {
@@ -2604,7 +2776,8 @@
       "category": "Prophecy and End Times",
       "description": "The Lamb opens a sequence of seals revealing judgments and heavenly scenes.",
       "aliases": [
-        "seals revelation"
+        "seals revelation",
+        "7 seals"
       ],
       "references": [
         {
@@ -2623,7 +2796,8 @@
       "category": "Prophecy and End Times",
       "description": "Seven trumpet blasts introduce a series of judgments in John's vision.",
       "aliases": [
-        "trumpet judgments"
+        "trumpet judgments",
+        "7 trumpets"
       ],
       "references": [
         {
@@ -2642,7 +2816,8 @@
       "category": "Prophecy and End Times",
       "description": "Seven angels pour out bowls representing the final plagues in Revelation.",
       "aliases": [
-        "vials wrath"
+        "vials wrath",
+        "7 bowls"
       ],
       "references": [
         {
@@ -3460,7 +3635,9 @@
       "aliases": [
         "blasphemy holy spirit",
         "blasphemy against the holy spirit",
-        "unpardonable sin"
+        "unpardonable sin",
+        "blasphemy of the Holy Spirit",
+        "Jesus and Beelzebub"
       ],
       "references": [
         {
@@ -4044,7 +4221,9 @@
       "category": "People and Groups",
       "description": "Jesus gives the twelve apostles authority and names them before sending them out.",
       "aliases": [
-        "twelve disciples"
+        "twelve disciples",
+        "12 apostles",
+        "12 disciples"
       ],
       "references": [
         {
@@ -4624,7 +4803,8 @@
       "category": "Covenants, Laws and Feasts",
       "description": "God gives Israel commandments through Moses at Sinai.",
       "aliases": [
-        "decalogue"
+        "decalogue",
+        "10 commandments"
       ],
       "references": [
         {
@@ -4809,7 +4989,8 @@
       "category": "Covenants, Laws and Feasts",
       "description": "The annual day when the high priest makes atonement for Israel's sins.",
       "aliases": [
-        "yom kippur"
+        "yom kippur",
+        "scapegoat"
       ],
       "references": [
         {
@@ -4965,7 +5146,9 @@
         "coming holy spirit",
         "day of pentecost",
         "tongues of fire",
-        "pentecost"
+        "pentecost",
+        "speaking in tongues",
+        "baptism of the Holy Spirit"
       ],
       "references": [
         {
@@ -4981,7 +5164,8 @@
       "description": "Matthias is chosen to take Judas's place among the apostles.",
       "aliases": [
         "matthias replaces judas",
-        "The Choosing of Matthias"
+        "The Choosing of Matthias",
+        "Matthias chosen"
       ],
       "references": [
         {
@@ -5030,7 +5214,8 @@
       "description": "Stephen is stoned after testifying before the council.",
       "aliases": [
         "stephen martyr",
-        "Stephen's Martyrdom"
+        "Stephen's Martyrdom",
+        "Stephen stoned"
       ],
       "references": [
         {
@@ -5067,7 +5252,8 @@
         "pauls conversion",
         "The Damascus Road",
         "road to damascus",
-        "saul becomes paul"
+        "saul becomes paul",
+        "Paul blinded by light"
       ],
       "references": [
         {
@@ -5132,7 +5318,10 @@
       "aliases": [
         "mars hill",
         "The Unknown God at Athens",
-        "Mars Hill sermon"
+        "Mars Hill sermon",
+        "Paul in Athens",
+        "Paul preaches in Athens",
+        "unknown god"
       ],
       "references": [
         {
@@ -5262,7 +5451,10 @@
       "aliases": [
         "jacob and esau",
         "stolen blessing",
-        "jacob deceives isaac"
+        "jacob deceives isaac",
+        "Jacob steals Esau's blessing",
+        "Jacob tricks Isaac",
+        "Jacob and Esau's blessing"
       ],
       "references": [
         {
@@ -5743,7 +5935,9 @@
       "description": "Jesus teaches Nicodemus about being born again.",
       "aliases": [
         "Nicodemus Visits Jesus",
-        "Nicodemus at night"
+        "Nicodemus at night",
+        "you must be born again",
+        "Jesus tells Nicodemus born again"
       ],
       "references": [
         {
@@ -5758,7 +5952,9 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus speaks with a Samaritan woman about living water and true worship.",
       "aliases": [
-        "samaritan woman"
+        "samaritan woman",
+        "Jesus and the Samaritan woman",
+        "Jesus at Jacob's well"
       ],
       "references": [
         {
@@ -5790,7 +5986,8 @@
       "description": "Jesus sends out a larger group of disciples to prepare towns for his visit.",
       "aliases": [
         "sending of the seventy",
-        "seventy two sent out"
+        "seventy two sent out",
+        "70 disciples"
       ],
       "references": [
         {
@@ -5838,7 +6035,9 @@
       "description": "Jesus answers a question about paying taxes to Caesar.",
       "aliases": [
         "Render to Caesar",
-        "give to Caesar"
+        "give to Caesar",
+        "paying taxes",
+        "is it lawful to pay taxes"
       ],
       "references": [
         {
@@ -6038,7 +6237,9 @@
       "description": "A lamp is meant to give light rather than be hidden.",
       "aliases": [
         "Parable of the Lamp on a Stand",
-        "lamp under a bushel"
+        "lamp under a bushel",
+        "lamp under a basket",
+        "hidden lamp"
       ],
       "references": [
         {
@@ -6217,7 +6418,8 @@
       "category": "Miracles",
       "description": "Jesus restores sight to two blind men near Jericho.",
       "aliases": [
-        "blind men of jericho"
+        "blind men of jericho",
+        "Jesus heals two blind men at Jericho"
       ],
       "references": [
         {
@@ -6379,7 +6581,8 @@
         "The Branch of Jesse",
         "shoot from Jesse",
         "root of jesse",
-        "stem of jesse"
+        "stem of jesse",
+        "shoot of Jesse"
       ],
       "references": [
         {
@@ -7248,7 +7451,8 @@
       "aliases": [
         "all things in common",
         "early church community",
-        "fellowship and breaking bread"
+        "fellowship and breaking bread",
+        "early church shares everything"
       ],
       "references": [
         {
@@ -7352,7 +7556,8 @@
       "aliases": [
         "great is diana of the ephesians",
         "demetrius the silversmith",
-        "artemis riot"
+        "artemis riot",
+        "riot in Ephesus"
       ],
       "references": [
         {
@@ -7552,7 +7757,9 @@
       "aliases": [
         "mount nebo",
         "moses dies",
-        "moses views the promised land"
+        "moses views the promised land",
+        "Joshua succeeds Moses",
+        "Joshua becomes leader"
       ],
       "references": [
         {
@@ -7600,7 +7807,8 @@
       "category": "Major Biblical Events",
       "description": "Jael kills Sisera after he flees from battle.",
       "aliases": [
-        "Jael Defeats Sisera"
+        "Jael Defeats Sisera",
+        "Jael tent peg"
       ],
       "references": [
         {
@@ -7751,7 +7959,9 @@
       "aliases": [
         "hezekiah's sickness",
         "sundial shadow",
-        "fifteen more years"
+        "fifteen more years",
+        "Hezekiah's illness",
+        "Hezekiah sick"
       ],
       "references": [
         {
@@ -9077,7 +9287,8 @@
       "description": "Jacob gives blessings and prophetic words concerning his twelve sons, whose descendants become the tribes of Israel.",
       "aliases": [
         "twelve tribes",
-        "tribes of israel"
+        "tribes of israel",
+        "12 tribes"
       ],
       "references": [
         {
@@ -9848,7 +10059,9 @@
       "category": "Major Biblical Events",
       "description": "Esau sells his birthright to Jacob for a meal.",
       "aliases": [
-        "Esau birthright"
+        "Esau birthright",
+        "Esau sells birthright for stew",
+        "bowl of stew"
       ],
       "references": [
         {
@@ -9908,7 +10121,8 @@
       "category": "Major Biblical Events",
       "description": "Joseph refuses the advances of his master's wife and is imprisoned.",
       "aliases": [
-        "Potiphar wife"
+        "Potiphar wife",
+        "Joseph and Potiphar's wife"
       ],
       "references": [
         {
@@ -10044,7 +10258,9 @@
       "category": "Major Biblical Events",
       "description": "Balaam delivers blessings rather than the curses sought by Balak.",
       "aliases": [
-        "Balaam oracles"
+        "Balaam oracles",
+        "star out of Jacob",
+        "a star shall come out of Jacob"
       ],
       "references": [
         {
@@ -10089,7 +10305,9 @@
       "category": "Major Biblical Events",
       "description": "Rahab and her family are rescued when Jericho falls.",
       "aliases": [
-        "Rahab rescued"
+        "Rahab rescued",
+        "Rahab and the scarlet cord",
+        "Rahab hides the spies"
       ],
       "references": [
         {
@@ -10347,7 +10565,9 @@
       "description": "Jehu kills Joram and Jezebel, destroys Ahab's remaining household, and puts an end to Baal worship in Israel, although he retains Jeroboam's golden calves.",
       "aliases": [
         "Jehu",
-        "death of jezebel"
+        "death of jezebel",
+        "Jezebel's death",
+        "Jezebel thrown from the window"
       ],
       "references": [
         {
@@ -10486,7 +10706,8 @@
       "category": "Major Biblical Events",
       "description": "Daniel and his companions decline the royal food and are tested.",
       "aliases": [
-        "Daniel diet"
+        "Daniel diet",
+        "Daniel and the vegetables"
       ],
       "references": [
         {
@@ -10641,7 +10862,9 @@
       "category": "Prophecy and End Times",
       "description": "Isaiah pictures peace and harmony under the promised ruler.",
       "aliases": [
-        "wolf shall dwell with lamb"
+        "wolf shall dwell with lamb",
+        "lion and the lamb",
+        "lion lies down with the lamb"
       ],
       "references": [
         {
@@ -11061,7 +11284,8 @@
       "category": "Life and Teachings of Jesus",
       "description": "Jesus teaches about the Sabbath and heals a man with a withered hand.",
       "aliases": [
-        "Lord of the Sabbath"
+        "Lord of the Sabbath",
+        "Jesus heals on the Sabbath"
       ],
       "references": [
         {
@@ -11198,7 +11422,8 @@
       "category": "Miracles",
       "description": "God restores a widow's son to life through Elijah.",
       "aliases": [
-        "Zarephath son raised"
+        "Zarephath son raised",
+        "Elijah brings a boy back to life"
       ],
       "references": [
         {
@@ -11213,7 +11438,8 @@
       "category": "Miracles",
       "description": "Elisha prays and the Shunammite woman's son is restored to life.",
       "aliases": [
-        "Shunammite child raised"
+        "Shunammite child raised",
+        "Elisha brings a boy back to life"
       ],
       "references": [
         {
@@ -12313,7 +12539,9 @@
       "category": "Early Church and Acts",
       "description": "Peter sees a vision that prepares him for ministry to Gentiles.",
       "aliases": [
-        "unclean animals vision"
+        "unclean animals vision",
+        "Peter's vision of unclean animals",
+        "sheet from heaven"
       ],
       "references": [
         {
@@ -12328,7 +12556,9 @@
       "category": "Early Church and Acts",
       "description": "An angel leads Peter out of prison while believers pray.",
       "aliases": [
-        "Peter's prison escape"
+        "Peter's prison escape",
+        "angel frees Peter",
+        "Peter chains fall off"
       ],
       "references": [
         {
@@ -12358,7 +12588,8 @@
       "category": "Major Biblical Events",
       "description": "Samson carries away the city gates of Gaza.",
       "aliases": [
-        "Samson carries gates"
+        "Samson carries gates",
+        "Samson carries the gates"
       ],
       "references": [
         {
@@ -12388,7 +12619,8 @@
       "category": "Major Biblical Events",
       "description": "Jeremiah is thrown into a muddy cistern and rescued.",
       "aliases": [
-        "Jeremiah in the pit"
+        "Jeremiah in the pit",
+        "Jeremiah thrown in a well"
       ],
       "references": [
         {
@@ -12403,7 +12635,9 @@
       "category": "Major Biblical Events",
       "description": "Daniel explains the king's dream of a statue and successive kingdoms.",
       "aliases": [
-        "statue dream"
+        "statue dream",
+        "statue with feet of clay",
+        "Daniel and the statue"
       ],
       "references": [
         {
@@ -13295,6 +13529,622 @@
       "references": [
         {
           "reference": "Esther 4:12-17",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1025",
+      "term": "Shepherds and the Angels",
+      "category": "Life and Teachings of Jesus",
+      "description": "Angels announce Jesus' birth to shepherds in the fields near Bethlehem, and the shepherds go to see the child in the manger.",
+      "aliases": [
+        "shepherds visit Jesus",
+        "angels appear to the shepherds",
+        "glory to god in the highest",
+        "shepherds at the manger",
+        "good news of great joy",
+        "the christmas shepherds"
+      ],
+      "references": [
+        {
+          "reference": "Luke 2:8-20",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1026",
+      "term": "Slaughter of the Innocents",
+      "category": "Life and Teachings of Jesus",
+      "description": "Herod, furious that the wise men did not return, orders the killing of the young boys in Bethlehem.",
+      "aliases": [
+        "Herod kills the babies",
+        "Herod's massacre",
+        "massacre of the innocents",
+        "killing of the infants in Bethlehem",
+        "Rachel weeping for her children",
+        "Herod orders boys killed"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 2:16-18",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1027",
+      "term": "Adam Names the Animals",
+      "category": "Major Biblical Events",
+      "description": "God brings the animals to Adam to name, and none is found as a suitable helper for him.",
+      "aliases": [
+        "Adam naming the animals",
+        "Adam and the animals",
+        "no helper suitable for Adam"
+      ],
+      "references": [
+        {
+          "reference": "Genesis 2:18-20",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1028",
+      "term": "Creation of Eve",
+      "category": "Major Biblical Events",
+      "description": "God forms the first woman from Adam's rib and brings her to him.",
+      "aliases": [
+        "Eve created",
+        "Eve from Adam's rib",
+        "Adam's rib",
+        "God makes Eve",
+        "bone of my bones"
+      ],
+      "references": [
+        {
+          "reference": "Genesis 2:21-25",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1029",
+      "term": "Birth of Isaac",
+      "category": "Major Biblical Events",
+      "description": "Sarah bears Isaac in her old age, as God had promised Abraham.",
+      "aliases": [
+        "Isaac born",
+        "Sarah laughs",
+        "Sarah has a son",
+        "Abraham and Sarah's son"
+      ],
+      "references": [
+        {
+          "reference": "Genesis 21:1-7",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1030",
+      "term": "Israel Demands a King",
+      "category": "Major Biblical Events",
+      "description": "The elders of Israel ask Samuel for a king like the other nations, and God tells Samuel to grant it.",
+      "aliases": [
+        "Israel asks for a king",
+        "Israel wants a king",
+        "give us a king",
+        "Israel rejects God as king"
+      ],
+      "references": [
+        {
+          "reference": "1 Samuel 8:1-22",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1031",
+      "term": "Samuel Anoints Saul",
+      "category": "Major Biblical Events",
+      "description": "Samuel privately anoints Saul as Israel's first king, and later presents him to the people.",
+      "aliases": [
+        "Saul anointed king",
+        "Saul becomes king",
+        "Saul chosen king",
+        "Saul hides among the baggage"
+      ],
+      "references": [
+        {
+          "reference": "1 Samuel 9:15-10:1",
+          "type": "primary"
+        },
+        {
+          "reference": "1 Samuel 10:17-27",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1032",
+      "term": "David Plays the Harp for Saul",
+      "category": "Major Biblical Events",
+      "description": "David's music soothes King Saul when a distressing spirit troubles him.",
+      "aliases": [
+        "David harp Saul",
+        "David soothes Saul",
+        "David plays music for Saul",
+        "evil spirit troubles Saul"
+      ],
+      "references": [
+        {
+          "reference": "1 Samuel 16:14-23",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1033",
+      "term": "The Ark Among the Philistines",
+      "category": "Major Biblical Events",
+      "description": "The Philistines place the captured ark in Dagon's temple, suffer plagues, and send it back to Israel.",
+      "aliases": [
+        "ark in Philistia",
+        "Dagon falls before the ark",
+        "Dagon",
+        "Philistines return the ark",
+        "ark returned to Israel"
+      ],
+      "references": [
+        {
+          "reference": "1 Samuel 5:1-6:21",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1034",
+      "term": "Isaiah's Call",
+      "category": "Major Biblical Events",
+      "description": "Isaiah sees the Lord in the temple, is cleansed with a burning coal, and answers, 'Here am I; send me.'",
+      "aliases": [
+        "Isaiah sees the Lord",
+        "here am I send me",
+        "Isaiah's vision in the temple",
+        "Isaiah and the burning coal",
+        "call of Isaiah"
+      ],
+      "references": [
+        {
+          "reference": "Isaiah 6:1-13",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1035",
+      "term": "Zechariah and the Angel Gabriel",
+      "category": "Life and Teachings of Jesus",
+      "description": "Gabriel tells the priest Zechariah that his wife Elizabeth will bear John, and Zechariah is made unable to speak.",
+      "aliases": [
+        "Zechariah struck mute",
+        "angel appears to Zechariah",
+        "Gabriel visits Zechariah",
+        "Zechariah can't speak"
+      ],
+      "references": [
+        {
+          "reference": "Luke 1:5-25",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1036",
+      "term": "The Visitation",
+      "category": "Life and Teachings of Jesus",
+      "description": "Mary visits her relative Elizabeth, and the child in Elizabeth's womb leaps; Mary sings the Magnificat.",
+      "aliases": [
+        "Mary visits Elizabeth",
+        "Mary and Elizabeth",
+        "Magnificat",
+        "Mary's song",
+        "baby leaps in Elizabeth's womb"
+      ],
+      "references": [
+        {
+          "reference": "Luke 1:39-56",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1037",
+      "term": "Birth of John the Baptist",
+      "category": "Life and Teachings of Jesus",
+      "description": "Elizabeth gives birth to John, Zechariah confirms his name and speaks again, and prophesies.",
+      "aliases": [
+        "John the Baptist born",
+        "Zechariah's song",
+        "Benedictus",
+        "his name is John"
+      ],
+      "references": [
+        {
+          "reference": "Luke 1:57-80",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1038",
+      "term": "Calling of Nathanael",
+      "category": "Life and Teachings of Jesus",
+      "description": "Philip brings Nathanael to Jesus, who says he saw him under the fig tree.",
+      "aliases": [
+        "Jesus calls Nathanael",
+        "Nathanael under the fig tree",
+        "can anything good come out of Nazareth",
+        "Nathanael and Philip",
+        "Bartholomew"
+      ],
+      "references": [
+        {
+          "reference": "John 1:43-51",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1039",
+      "term": "Sermon on the Plain",
+      "category": "Life and Teachings of Jesus",
+      "description": "Jesus teaches on level ground with blessings and woes, love for enemies, and the call to be merciful.",
+      "aliases": [
+        "Luke's sermon on the plain",
+        "blessings and woes",
+        "blessed are you who are poor",
+        "Luke beatitudes"
+      ],
+      "references": [
+        {
+          "reference": "Luke 6:17-49",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1040",
+      "term": "Jesus Anointed by a Sinful Woman",
+      "category": "Life and Teachings of Jesus",
+      "description": "A sinful woman weeps on Jesus' feet, wipes them with her hair, and anoints them at a Pharisee's house.",
+      "aliases": [
+        "sinful woman anoints Jesus",
+        "woman washes Jesus' feet with tears",
+        "alabaster jar at Simon's house",
+        "your sins are forgiven woman"
+      ],
+      "references": [
+        {
+          "reference": "Luke 7:36-50",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1041",
+      "term": "Death of Judas",
+      "category": "Life and Teachings of Jesus",
+      "description": "Judas returns the silver, then hangs himself; the priests use the money to buy the Potter's Field.",
+      "aliases": [
+        "Judas hangs himself",
+        "Judas suicide",
+        "Judas returns the silver",
+        "field of blood",
+        "potter's field"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 27:3-10",
+          "type": "primary"
+        },
+        {
+          "reference": "Acts 1:16-20",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1042",
+      "term": "Jesus Before the Sanhedrin",
+      "category": "Life and Teachings of Jesus",
+      "description": "Jesus is questioned by Caiaphas and the council, declares he is the Christ, and is condemned for blasphemy.",
+      "aliases": [
+        "Jesus before Caiaphas",
+        "trial before the Sanhedrin",
+        "Jesus before the high priest",
+        "Jesus tried by the council",
+        "are you the Christ"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 26:57-68",
+          "type": "primary"
+        },
+        {
+          "reference": "Mark 14:53-65",
+          "type": "related"
+        },
+        {
+          "reference": "Luke 22:66-71",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1043",
+      "term": "Pilate Releases Barabbas",
+      "category": "Life and Teachings of Jesus",
+      "description": "The crowd chooses Barabbas over Jesus, and Pilate washes his hands before handing Jesus over.",
+      "aliases": [
+        "Barabbas",
+        "Pilate washes his hands",
+        "crowd chooses Barabbas",
+        "crucify him",
+        "release Barabbas"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 27:15-26",
+          "type": "primary"
+        },
+        {
+          "reference": "Mark 15:6-15",
+          "type": "related"
+        },
+        {
+          "reference": "John 18:38-40",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1044",
+      "term": "Soldiers Mock Jesus",
+      "category": "Life and Teachings of Jesus",
+      "description": "Roman soldiers dress Jesus in a purple robe, press a crown of thorns on his head, and mock him as king.",
+      "aliases": [
+        "crown of thorns",
+        "Jesus mocked",
+        "soldiers mock Jesus",
+        "hail king of the Jews",
+        "purple robe"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 27:27-31",
+          "type": "primary"
+        },
+        {
+          "reference": "John 19:1-5",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1045",
+      "term": "Simon of Cyrene Carries the Cross",
+      "category": "Life and Teachings of Jesus",
+      "description": "Soldiers compel Simon of Cyrene to carry Jesus' cross on the way to Golgotha.",
+      "aliases": [
+        "Simon of Cyrene",
+        "Jesus carries the cross",
+        "way of sorrows",
+        "Via Dolorosa",
+        "carrying the cross"
+      ],
+      "references": [
+        {
+          "reference": "Luke 23:26-32",
+          "type": "primary"
+        },
+        {
+          "reference": "Matthew 27:32",
+          "type": "related"
+        },
+        {
+          "reference": "Mark 15:21",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1046",
+      "term": "Soldiers Cast Lots for Jesus' Garments",
+      "category": "Life and Teachings of Jesus",
+      "description": "The soldiers divide Jesus' clothes and cast lots for his seamless tunic.",
+      "aliases": [
+        "casting lots for garments",
+        "gambling for Jesus' clothes",
+        "seamless tunic",
+        "divide his garments"
+      ],
+      "references": [
+        {
+          "reference": "John 19:23-24",
+          "type": "primary"
+        },
+        {
+          "reference": "Matthew 27:35",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1047",
+      "term": "Darkness over the Land",
+      "category": "Life and Teachings of Jesus",
+      "description": "Darkness covers the land from noon until three, and Jesus cries out and gives up his spirit.",
+      "aliases": [
+        "darkness at noon",
+        "darkness at the crucifixion",
+        "sun darkened at the cross",
+        "three hours of darkness"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 27:45-50",
+          "type": "primary"
+        },
+        {
+          "reference": "Luke 23:44-46",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1048",
+      "term": "The Centurion's Confession",
+      "category": "Life and Teachings of Jesus",
+      "description": "The centurion at the cross sees how Jesus died and declares he was truly the Son of God.",
+      "aliases": [
+        "centurion at the cross",
+        "truly this was the Son of God",
+        "Roman soldier at the cross"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 27:54",
+          "type": "primary"
+        },
+        {
+          "reference": "Mark 15:39",
+          "type": "related"
+        },
+        {
+          "reference": "Luke 23:47",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1049",
+      "term": "Guard at the Tomb",
+      "category": "Life and Teachings of Jesus",
+      "description": "Pilate lets the priests seal and guard Jesus' tomb; after the resurrection the guards are bribed to spread a false story.",
+      "aliases": [
+        "guards at the tomb",
+        "Roman guards at the tomb",
+        "sealed tomb",
+        "bribed guards",
+        "stone sealed"
+      ],
+      "references": [
+        {
+          "reference": "Matthew 27:62-66",
+          "type": "primary"
+        },
+        {
+          "reference": "Matthew 28:11-15",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1050",
+      "term": "Jesus Appears to the Disciples",
+      "category": "Life and Teachings of Jesus",
+      "description": "The risen Jesus appears among the disciples behind locked doors, shows his wounds, eats, and gives them the Spirit.",
+      "aliases": [
+        "Jesus appears in the upper room",
+        "peace be with you",
+        "Jesus appears behind locked doors",
+        "Jesus eats fish with disciples",
+        "risen Jesus appears"
+      ],
+      "references": [
+        {
+          "reference": "Luke 24:36-49",
+          "type": "primary"
+        },
+        {
+          "reference": "John 20:19-23",
+          "type": "related"
+        }
+      ]
+    },
+    {
+      "id": "BT1051",
+      "term": "Paul's Thorn in the Flesh",
+      "category": "Christian Living",
+      "description": "Paul asks three times for his thorn to be removed, and the Lord answers, 'My grace is sufficient for you.'",
+      "aliases": [
+        "thorn in the flesh",
+        "my grace is sufficient",
+        "power made perfect in weakness",
+        "when I am weak I am strong"
+      ],
+      "references": [
+        {
+          "reference": "2 Corinthians 12:7-10",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1052",
+      "term": "Philemon and Onesimus",
+      "category": "Early Church and Acts",
+      "description": "Paul urges Philemon to receive his runaway slave Onesimus back as a brother.",
+      "aliases": [
+        "Onesimus",
+        "Paul's letter to Philemon",
+        "runaway slave",
+        "receive him as a brother"
+      ],
+      "references": [
+        {
+          "reference": "Philemon 1:8-21",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1053",
+      "term": "John's Vision on Patmos",
+      "category": "Prophecy and End Times",
+      "description": "On the island of Patmos, John sees the glorified Christ among seven lampstands and is told to write what he sees.",
+      "aliases": [
+        "Patmos",
+        "John on Patmos",
+        "John sees Jesus on Patmos",
+        "vision of the glorified Christ",
+        "seven lampstands"
+      ],
+      "references": [
+        {
+          "reference": "Revelation 1:9-20",
+          "type": "primary"
+        }
+      ]
+    },
+    {
+      "id": "BT1054",
+      "term": "Ezekiel's Vision of the Living Creatures",
+      "category": "Prophecy and End Times",
+      "description": "By the river Chebar, Ezekiel sees four living creatures, wheels within wheels, and the glory of the Lord on a throne.",
+      "aliases": [
+        "Ezekiel's wheel",
+        "wheel in the middle of a wheel",
+        "Ezekiel's vision of God's glory",
+        "four living creatures Ezekiel",
+        "Ezekiel by the river Chebar"
+      ],
+      "references": [
+        {
+          "reference": "Ezekiel 1:1-28",
           "type": "primary"
         }
       ]

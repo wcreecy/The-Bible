@@ -120,6 +120,11 @@ nonisolated enum BibleTermMatcher {
         return words.joined(separator: " ")
     }
 
+    /// Words that carry no meaning in a topic query and shouldn't have to appear in a name.
+    private static let fillerWords: Set<String> = [
+        "a", "an", "and", "at", "by", "for", "from", "in", "of", "on", "the", "to", "with"
+    ]
+
     private static let apostrophes: Set<Character> = ["'", "’", "‘", "ʼ", "`"]
 
     /// Whether `query` is exactly the term's title or one of its aliases, ignoring the same
@@ -139,7 +144,11 @@ nonisolated enum BibleTermMatcher {
     static func matches(for query: String, in index: [IndexedTerm]) -> [BibleTerm] {
         let query = normalized(query)
         guard query.count >= minimumQueryLength else { return [] }
-        let queryWords = query.split(separator: " ")
+        // Filler words are ignored so "paul in athens" finds "Paul at the Areopagus". A query
+        // made only of filler words keeps them rather than matching everything.
+        let allQueryWords = query.split(separator: " ")
+        let significantWords = allQueryWords.filter { !fillerWords.contains(String($0)) }
+        let queryWords = significantWords.isEmpty ? allQueryWords : significantWords
 
         var ranked: [(rank: Rank, nameLength: Int, order: Int, term: BibleTerm)] = []
         for (order, entry) in index.enumerated() {

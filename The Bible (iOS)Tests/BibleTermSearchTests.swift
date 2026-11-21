@@ -51,6 +51,25 @@ struct BibleTermSearchTests {
     }
 
     @Test
+    func matchingIgnoresFillerWordsInTheQuery() {
+        let areopagus = term(id: "areopagus", title: "Paul at the Areopagus", aliases: ["Mars Hill"])
+        let index = BibleTermMatcher.index([areopagus])
+
+        #expect(BibleTermMatcher.matches(for: "paul in areopagus", in: index).map(\.id) == ["areopagus"])
+        #expect(BibleTermMatcher.matches(for: "paul of the areo", in: index).map(\.id) == ["areopagus"])
+        // Filler words don't make an unrelated name match.
+        #expect(BibleTermMatcher.matches(for: "paul in athens", in: index).isEmpty)
+    }
+
+    @Test
+    func matchingKeepsQueriesMadeOnlyOfFillerWords() {
+        let areopagus = term(id: "areopagus", title: "Paul at the Areopagus")
+        let index = BibleTermMatcher.index([areopagus])
+
+        #expect(BibleTermMatcher.matches(for: "and the", in: index).isEmpty)
+    }
+
+    @Test
     func matchingRejectsQueriesShorterThanThreeCharacters() {
         let term = term(id: "faith", title: "Faith")
         let index = BibleTermMatcher.index([term])
