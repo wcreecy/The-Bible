@@ -62,7 +62,7 @@ struct QuizView: View {
                     }
                     .tabBarContentClearance()
                     .pinnedNextQuestionButton(
-                        isShown: !usesSplitLayout && vm.phase == .playing && vm.isAnswered,
+                        isShown: vm.phase == .playing && !vm.isPaused && vm.isAnswered,
                         isLastQuestion: vm.isOnLastQuestion,
                         tint: .blue,
                         action: vm.showNext
@@ -72,7 +72,7 @@ struct QuizView: View {
                     .onScrollGeometryChange(for: CGFloat.self) { geometry in
                         geometry.contentSize.height + geometry.contentInsets.bottom
                     } action: { _, _ in
-                        guard vm.phase == .playing, vm.isAnswered, !usesSplitLayout else { return }
+                        guard vm.phase == .playing, vm.isAnswered else { return }
                         withAnimation(.snappy) {
                             proxy.scrollTo(QuizAfterAnswer.scrollID, anchor: .bottom)
                         }
@@ -342,16 +342,12 @@ struct QuizView: View {
                 }
 
                 QuizAfterAnswer(vm: vm)
+                    .id(QuizAfterAnswer.scrollID)
 
                 Spacer(minLength: 0)
 
-                if debugAutoWinEnabled && !vm.isAnswered {
-                    debugWinButton(for: current)
-                } else {
-                    // The inline Next button for the iPad dashboard; iPhone pins it to the bottom instead.
-                    GameNextQuestionButton(isLastQuestion: vm.isOnLastQuestion, tint: .blue, action: vm.showNext)
-                        .disabled(!vm.canGoNext)
-                }
+                // Next is pinned to the bottom of this half, as on iPhone, so it never scrolls away.
+                debugWinButton(for: current)
             }
             .padding(AppDesignMetrics.cardPadding)
             .padding(.top, 12)

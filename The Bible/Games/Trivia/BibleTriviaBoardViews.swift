@@ -92,6 +92,7 @@ struct BibleTriviaDashboard: View {
                         passage: model.passage,
                         earnedSpeedBonus: model.earnedSpeedBonus
                     )
+                    .id(BibleTriviaAnswerReveal.scrollID)
                 }
 
                 // The verse itself is in the timer panel beside this one.
@@ -99,8 +100,7 @@ struct BibleTriviaDashboard: View {
                     BibleTriviaReadMoreButton(reference: model.currentQuestion?.reference ?? "", action: onShowPassage)
                 }
 
-                GameNextQuestionButton(isLastQuestion: model.isLastQuestion, tint: .cyan, action: model.advance)
-                    .disabled(!model.canGoNext)
+                // Next is pinned to the bottom of this half, as on iPhone, so it never scrolls away.
             }
 
             Spacer(minLength: 0)

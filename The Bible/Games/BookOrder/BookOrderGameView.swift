@@ -313,14 +313,8 @@ struct BookOrderGameView: View {
                 }
 
                 if vm.showResult {
+                    // Next Puzzle and Change Settings are pinned to the bottom of the screen.
                     resultSummary(compact: !isWide)
-                    HStack(spacing: 12) {
-                        Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-
-                        Button("Next Puzzle", systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
-                            .buttonStyle(GameProminentButtonStyle(tint: .purple))
-                    }
                 } else if debugAutoWinEnabled, !vm.correctOrder.isEmpty {
                     Button("WIN") {
                         for book in vm.correctOrder where !vm.tapPlaced.contains(book) {
@@ -335,6 +329,17 @@ struct BookOrderGameView: View {
             .frame(maxWidth: .infinity)
             .padding()
             .animation(.snappy, value: vm.tapPlaced)
+        }
+        // Pinned, so a long result summary never pushes Next Puzzle out of reach.
+        .pinnedGameActionButton(isShown: vm.showResult) {
+            HStack(spacing: 12) {
+                Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+
+                Button("Next Puzzle", systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
+                    .buttonStyle(GameProminentButtonStyle(tint: .purple))
+            }
+            .frame(maxWidth: 760)
         }
     }
 

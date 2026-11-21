@@ -450,9 +450,8 @@ struct BeatTheClockGameView: View {
                 )
             }
 
+            // Submit and Next are pinned to the bottom of this half, as on iPhone.
             Spacer(minLength: 0)
-
-            actions
         }
         .padding(.horizontal, AppDesignMetrics.cardPadding)
         .padding(.bottom, AppDesignMetrics.cardPadding)
@@ -498,7 +497,7 @@ private struct BeatTheClockResponsiveGameScreen<Content: View, Actions: View, Ti
                     .padding()
                 }
                 .tabBarContentClearance()
-                .pinnedGameActionButton(isShown: !usesSplitLayout && isPlaying && !isPaused) {
+                .pinnedGameActionButton(isShown: isPlaying && !isPaused) {
                     actions()
                 }
                 .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)

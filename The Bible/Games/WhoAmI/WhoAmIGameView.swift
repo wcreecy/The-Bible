@@ -70,9 +70,10 @@ struct WhoAmIGameView: View {
             .padding()
         }
         .tabBarContentClearance()
-        // Next pinned above the tab bar on iPhone, so the result and verse never push it out of reach.
-        .pinnedGameActionButton(isShown: horizontalSizeClass != .regular && vm.started && !vm.isComplete && vm.roundOver) {
+        // Next pinned above the tab bar, so the result and verse never push it out of reach.
+        .pinnedGameActionButton(isShown: vm.started && !vm.isComplete && !vm.isPaused && vm.roundOver) {
             roundActions
+                .frame(maxWidth: horizontalSizeClass == .regular ? 520 : .infinity)
         }
         // A hardware keyboard answers with 1–4 or A–D, and Return goes on.
         .focusable()
@@ -333,7 +334,10 @@ struct WhoAmIGameView: View {
 
             Spacer(minLength: 0)
 
-            roundActions
+            // Next is pinned to the bottom of the screen; only the debug win button stays here.
+            if debugAutoWinEnabled, !vm.roundOver {
+                roundActions
+            }
         }
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()

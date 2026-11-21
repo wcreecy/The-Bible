@@ -211,7 +211,7 @@ private struct BibleTriviaPlayScreen: View {
                     }
                     .tabBarContentClearance()
                     .pinnedNextQuestionButton(
-                        isShown: !usesSplitLayout && model.currentQuestion != nil && model.isAnswered,
+                        isShown: model.currentQuestion != nil && !model.isPaused && model.isAnswered,
                         isLastQuestion: model.isLastQuestion,
                         tint: .cyan,
                         action: model.advance
@@ -222,7 +222,7 @@ private struct BibleTriviaPlayScreen: View {
                     .onScrollGeometryChange(for: CGFloat.self) { geometry in
                         geometry.contentSize.height + geometry.contentInsets.bottom
                     } action: { _, _ in
-                        guard model.isAnswered, !usesSplitLayout else { return }
+                        guard model.isAnswered else { return }
                         withAnimation(.snappy) {
                             proxy.scrollTo(BibleTriviaAnswerReveal.scrollID, anchor: .bottom)
                         }
