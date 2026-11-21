@@ -370,6 +370,7 @@ struct FilledGameKeyButtonStyle: ButtonStyle {
             )
             .shadow(color: .black.opacity(pressed ? 0.06 : 0.12), radius: pressed ? 1 : 2, x: 0, y: pressed ? 0 : 1)
             .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .hoverEffect(.lift)
             .scaleEffect(pressed ? 0.98 : 1.0)
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }

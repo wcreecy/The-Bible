@@ -341,6 +341,7 @@ struct WhoAmIChoiceGrid: View {
         .buttonStyle(.plain)
         .disabled(vm.roundOver || isRemoved)
         .opacity(isRemoved ? 0.35 : 1)
+        .hoverEffect(.lift)
         .accessibilityLabel("\(letter), \(choice)")
         .accessibilityValue(accessibilityState(for: choice, isRemoved: isRemoved))
         .background(backgroundColor(for: choice), in: RoundedRectangle(cornerRadius: 12, style: .continuous))

@@ -395,6 +395,7 @@ struct BeatTheClockDashboardAnswer: View {
                                 )
                         }
                         .buttonStyle(.plain)
+                        .hoverEffect(.lift)
                     }
                 }
             }

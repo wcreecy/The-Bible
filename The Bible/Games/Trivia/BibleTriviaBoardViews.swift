@@ -321,6 +321,7 @@ struct BibleTriviaAnswerOption: View {
                 .stroke(strokeColor, lineWidth: isDisabled && (isCorrect || isIncorrectSelection) ? 3 : 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .hoverEffect(.lift)
         .font(.body)
         .accessibilityLabel("\(letter), \(title)")
         .accessibilityValue(accessibilityState)

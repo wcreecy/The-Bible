@@ -731,6 +731,7 @@ struct ScrambleActionButton: View {
                     .offset(x: 8, y: 8)
             }
         }
+        .hoverEffect(.lift)
         .disabled(!isEnabled)
         .accessibilityLabel(isIncorrect ? "Try again" : accessibilityLabel)
     }
@@ -787,6 +788,7 @@ struct ScrambleCheckAnswerButton: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .strokeBorder(isEnabled ? Color.purple : Color.secondary.opacity(0.25), lineWidth: 1)
         }
+        .hoverEffect(.lift)
         .disabled(!isEnabled)
         .accessibilityLabel(title)
     }

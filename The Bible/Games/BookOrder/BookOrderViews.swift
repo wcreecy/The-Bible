@@ -249,6 +249,7 @@ struct BookOrderQuickRoundView: View {
                             .minimumScaleFactor(0.7)
                             .frame(maxWidth: .infinity, minHeight: 110)
                             .padding(.horizontal, 8)
+                            .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
                     .background(Color.purple.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -373,6 +374,7 @@ struct BookOrderQuickRoundView: View {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .strokeBorder(stroke(for: option, in: question), lineWidth: round.isAnswered && option == question.correctAnswer ? 2 : 1)
                 }
+                .hoverEffect(.lift)
                 .accessibilityLabel("\(GameAnswerLetter.letter(for: index)), \(option)")
                 .accessibilityValue(accessibilityState(for: option, in: question))
             }

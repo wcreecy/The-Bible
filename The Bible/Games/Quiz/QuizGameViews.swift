@@ -326,6 +326,7 @@ struct QuizAnswerOption: View {
                 .contentShape(Rectangle())
             }
             .disabled(isAnswered || isRemoved)
+            .hoverEffect(.lift)
             .accessibilityLabel("\(letter), \(title)")
             .accessibilityValue(accessibilityState)
 

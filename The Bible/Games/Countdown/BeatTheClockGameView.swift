@@ -396,6 +396,7 @@ struct BeatTheClockGameView: View {
                                     )
                             }
                             .buttonStyle(.plain)
+                            .hoverEffect(.lift)
                         }
                     }
                 }

@@ -31,6 +31,7 @@ struct GameTimerCard: View {
                     timerContent
                 }
                 .buttonStyle(.plain)
+                .hoverEffect(.highlight)
             } else {
                 timerContent
             }
