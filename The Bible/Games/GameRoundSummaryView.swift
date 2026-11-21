@@ -47,6 +47,14 @@ struct GameRoundSummaryView: View {
         VStack(spacing: 16) {
             GameRoundSummaryHeader(summary: summary, tint: tint, unit: unit, points: points, best: best)
 
+            if let resultNote {
+                Label(resultNote, systemImage: "lightbulb.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            GameRoundSummaryBreakdown(summary: summary, unit: unit, showsTimedOut: canTimeOut || summary.timedOutCount > 0, tint: tint)
+
             if let reviewRound {
                 ReviewRoundResultCard(
                     cleared: summary.entries.count { $0.outcome == .correct },
@@ -56,15 +64,18 @@ struct GameRoundSummaryView: View {
                 )
             }
 
-            if let resultNote {
-                Label(resultNote, systemImage: "lightbulb.fill")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
+            actions
+
+            sectionHeading("Progress")
+            GameRoundSummaryStreakCard(summary: summary)
+
+            if let poolProgress {
+                GameRoundSummaryPoolCard(progress: poolProgress, tint: tint)
             }
 
-            GameRoundSummaryBreakdown(summary: summary, unit: unit, showsTimedOut: canTimeOut || summary.timedOutCount > 0, tint: tint)
-
-            GameRoundSummaryStreakCard(summary: summary)
+            if hasStudyDetails {
+                sectionHeading("What to Study")
+            }
 
             if hasBookResults {
                 GameRoundSummaryBooksCard(summary: summary, tint: tint)
@@ -84,10 +95,6 @@ struct GameRoundSummaryView: View {
                 )
             }
 
-            if let poolProgress {
-                GameRoundSummaryPoolCard(progress: poolProgress, tint: tint)
-            }
-
             if !summary.entries.isEmpty {
                 GameRoundSummaryReviewList(
                     entries: summary.entries,
@@ -95,8 +102,6 @@ struct GameRoundSummaryView: View {
                     onOpenReference: { selectedPassage = PassageReferenceParser.parse($0) }
                 )
             }
-
-            actions
         }
         .frame(maxWidth: 560)
         .frame(maxWidth: .infinity)
@@ -108,6 +113,18 @@ struct GameRoundSummaryView: View {
 
     private var hasBookResults: Bool {
         !summary.bookTallies.isEmpty
+    }
+
+    private var hasStudyDetails: Bool {
+        hasBookResults || !summary.categoryTallies.isEmpty || !summary.entries.isEmpty
+    }
+
+    private func sectionHeading(_ title: LocalizedStringKey) -> some View {
+        Text(title)
+            .font(.headline.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 4)
     }
 
     /// Another review needs a full round of missed questions left.
