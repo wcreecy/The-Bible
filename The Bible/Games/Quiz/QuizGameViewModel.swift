@@ -383,8 +383,6 @@ final class QuizGameViewModel {
     /// Time spent on the current question. It's the authority for the countdown, so pausing
     /// and resuming can't give back part of a second.
     @ObservationIgnored private var questionClock = GameActiveClock()
-    /// Set for a practice round on the book missed most.
-    private(set) var practiceBook: String?
     /// Seconds taken off the current question for revealing the previous verse.
     private var contextPenaltySeconds = 0
 
@@ -400,8 +398,8 @@ final class QuizGameViewModel {
         (mode == .reverse ? GameBestScore.Kind.quizReverse : .quiz).key(difficulty: difficulty.rawValue)
     }
 
-    /// Reviews and single-book practice rounds aren't comparable with a full game.
-    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty && practiceBook == nil }
+    /// A review of missed questions isn't comparable with a full game.
+    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty }
 
     /// The saved best in points for the chosen mode and difficulty, for the start screen.
     var bestPoints: Int { GameBestScore.value(forKey: bestGameScoreKey) }
@@ -580,12 +578,6 @@ final class QuizGameViewModel {
     // MARK: - Questions
 
     private func buildQuestionBag() -> [VerseCandidate] {
-        // A practice round draws on every quizzable verse in its book, whatever the pool.
-        if let practiceBook {
-            return Self.allCandidates(difficultyKey: difficulty.rawValue)
-                .filter { $0.bookName == practiceBook }
-                .shuffled()
-        }
         // Explicit pools share Reverse's selection rules. Keep Standard's existing
         // difficulty filtering for Any verse and its separate missed-question review.
         if reviewQuestionIDs.isEmpty, pool != .any {
@@ -689,9 +681,8 @@ final class QuizGameViewModel {
 
     // MARK: - Game flow
 
-    /// Starts a game from the chosen settings. A practice round on one book ends here.
+    /// Starts a game from the chosen settings.
     func startQuiz() {
-        practiceBook = nil
         beginQuiz()
     }
 
@@ -708,9 +699,7 @@ final class QuizGameViewModel {
             totalQuestions = min(Self.questionsPerGame, reverseBag.count)
         } else {
             questionBag = buildQuestionBag()
-            if practiceBook != nil {
-                questionBag = Array(questionBag.prefix(Self.questionsPerGame))
-            } else if reviewQuestionIDs.isEmpty {
+            if reviewQuestionIDs.isEmpty {
                 questionBag = selectQuestions(from: questionBag, id: \.reviewID)
             } else {
                 questionBag = questionBag.filter { reviewQuestionIDs.contains($0.reviewID) }
@@ -763,9 +752,7 @@ final class QuizGameViewModel {
             return
         }
         history.append(question)
-        if practiceBook == nil {
-            RecentGameQuestionStore.shared.record([question.reviewID], game: recencyGameKey)
-        }
+        RecentGameQuestionStore.shared.record([question.reviewID], game: recencyGameKey)
         currentIndex = history.count - 1
         session.startQuestion()
         remainingSeconds = timeLimit ?? 0
@@ -795,7 +782,6 @@ final class QuizGameViewModel {
         questionBag = []
         reverseBag = []
         reverseSource = nil
-        practiceBook = nil
         remainingSeconds = 0
         session.clearGame()
     }
@@ -1027,32 +1013,6 @@ final class QuizGameViewModel {
             correct: session.score,
             bonuses: [RoundPoints.speed(speedBonusCount), RoundPoints.chapter(chapterBonusCount)]
         )
-    }
-
-    // MARK: - Practicing a book
-
-    /// A practice round needs at least this many verses from the book.
-    private static let minimumPracticeVerses = 5
-
-    /// The book with the most misses this game, when it has enough verses for a practice round.
-    /// Standard mode only; in Reverse the book is part of the question.
-    var bookToPractice: String? {
-        guard mode == .standard else { return nil }
-        let candidates = Self.allCandidates(difficultyKey: difficulty.rawValue)
-        let missedBooks = history
-            .filter { $0.outcome != nil && $0.outcome != .correct }
-            .map(\.correctBook)
-            .filter { book in candidates.count { $0.bookName == book } >= Self.minimumPracticeVerses }
-        let counts = Dictionary(missedBooks.map { ($0, 1) }, uniquingKeysWith: +)
-        // Most misses first; ties go to the book missed first.
-        return missedBooks.first { counts[$0] == counts.values.max() }
-    }
-
-    /// A game of verses from one book. It doesn't count toward the pool's pass, and Play
-    /// Again goes back to the chosen settings.
-    func practice(book: String) {
-        practiceBook = book
-        beginQuiz()
     }
 
     // MARK: - Timer pulse

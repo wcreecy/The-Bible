@@ -54,13 +54,6 @@ struct QuizView: View {
                                     canTimeOut: vm.isTimed,
                                     points: vm.roundPoints,
                                     best: vm.roundBest,
-                                    extraAction: vm.bookToPractice.map { book in
-                                        GameRoundSummaryView.ExtraAction(
-                                            title: String(localized: "Practice \(book)"),
-                                            systemImage: "book.pages",
-                                            action: { vm.practice(book: book) }
-                                        )
-                                    },
                                     onPlayAgain: vm.startQuiz,
                                     onChangeSettings: vm.resetToSetup
                                 )

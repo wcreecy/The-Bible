@@ -14,8 +14,6 @@ final class BibleTriviaGameModel {
     }
 
     private static let questionsPerRound = 10
-    /// A practice round on one book can be shorter, but not shorter than this.
-    private static let minimumBookRoundQuestions = 5
 
     private let reviewQuestionIDs: Set<String>
     /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
@@ -82,8 +80,6 @@ final class BibleTriviaGameModel {
     @ObservationIgnored private var bookNames: [Int: String] = [:]
     private var round: [RoundQuestion] = []
     private var carryoverQuestionIDs: Set<Int> = []
-    /// Set for a practice round on the book missed most, which doesn't count toward the pool.
-    private(set) var practiceBook: String?
     private(set) var currentIndex = 0
     /// Score and streaks; see `GameScore` for the rules. Trivia keeps its own best score below.
     private(set) var session = GameScore()
@@ -159,12 +155,6 @@ final class BibleTriviaGameModel {
         if !reviewQuestionIDs.isEmpty {
             return questions.filter { reviewQuestionIDs.contains(String($0.id)) }
         }
-        if let practiceBook {
-            let inBook = questions.filter { bookName(of: $0) == practiceBook }
-            // A small book may need questions from every level to fill a round.
-            let atLevel = inBook.filter(difficulty.includes)
-            return atLevel.count >= Self.minimumBookRoundQuestions ? atLevel : inBook
-        }
         return questions.filter { difficulty.includes($0) && topic.includes(bookName: bookName(of: $0)) }
     }
 
@@ -218,16 +208,11 @@ final class BibleTriviaGameModel {
         phase = .setup
     }
 
-    /// Starts a round from the chosen level and topic. A practice round on one book ends here.
+    /// Starts a round from the chosen level and topic.
     func startRound() {
-        practiceBook = nil
-        beginRound()
-    }
-
-    private func beginRound() {
         let eligible = eligibleQuestions
-        let roundSize = practiceBook == nil ? Self.questionsPerRound : min(Self.questionsPerRound, eligible.count)
-        guard eligible.count >= roundSize, roundSize >= Self.minimumBookRoundQuestions else {
+        let roundSize = Self.questionsPerRound
+        guard eligible.count >= roundSize else {
             phase = .unavailable
             return
         }
@@ -252,10 +237,10 @@ final class BibleTriviaGameModel {
     /// round's worth remain, the leftovers are used, the pool restarts, and the round is topped up
     /// from the rest so no question repeats until every question in the pool has been asked.
     /// The pool is kept per level, so finishing one topic's questions restarts that level's pool.
-    /// Review and book practice rounds pick at random and leave the pool alone.
+    /// Review rounds pick at random and leave the pool alone.
     private func selectRoundQuestions(from eligible: [BibleTriviaQuestion], count: Int) -> [BibleTriviaQuestion] {
         carryoverQuestionIDs = []
-        guard reviewQuestionIDs.isEmpty, practiceBook == nil else {
+        guard reviewQuestionIDs.isEmpty else {
             return Array(eligible.shuffled().prefix(count))
         }
 
@@ -296,7 +281,6 @@ final class BibleTriviaGameModel {
         isPaused = false
         phase = .setup
         round = []
-        practiceBook = nil
         passage = nil
         currentIndex = 0
         session.clearGame()
@@ -327,26 +311,6 @@ final class BibleTriviaGameModel {
             round[currentIndex].wasTimerOff = true
         }
         startTimer()
-    }
-
-    // MARK: - Practicing a book
-
-    /// The book with the most misses this round, when it has enough questions for a practice round.
-    var bookToPractice: String? {
-        // Only books with enough questions for a round can be practiced.
-        let missedBooks = session.entries
-            .filter { $0.outcome != .correct }
-            .compactMap(\.bookName)
-            .filter { book in questions.count { bookName(of: $0) == book } >= Self.minimumBookRoundQuestions }
-        let counts = Dictionary(missedBooks.map { ($0, 1) }, uniquingKeysWith: +)
-        // Most misses first; ties go to the book missed first.
-        return missedBooks.first { counts[$0] == counts.values.max() }
-    }
-
-    /// A round of up to ten questions from one book, at this level when it has enough.
-    func practice(book: String) {
-        practiceBook = book
-        beginRound()
     }
 
     // MARK: - Lifelines
@@ -535,7 +499,7 @@ final class BibleTriviaGameModel {
             ),
             savedStreak: persistentStreak
         )
-        if !carryoverQuestionIDs.contains(question.id), practiceBook == nil {
+        if !carryoverQuestionIDs.contains(question.id) {
             progressStore.record(questionID: question.id, difficulty: difficulty)
         }
         GameStats.shared.recordRound(
@@ -586,9 +550,9 @@ final class BibleTriviaGameModel {
         }
     }
 
-    /// Progress through this level and topic's question pool; nil for a review or practice round.
+    /// Progress through this level and topic's question pool; nil for a review round.
     var poolProgress: GameRoundSummaryView.PoolProgress? {
-        guard reviewQuestionIDs.isEmpty, practiceBook == nil else { return nil }
+        guard reviewQuestionIDs.isEmpty else { return nil }
         let title = topic == .mixed
             ? String(localized: difficulty.title)
             : "\(String(localized: difficulty.title)) · \(String(localized: topic.title))"
@@ -606,8 +570,8 @@ final class BibleTriviaGameModel {
 
     private var bestScoreKey: String { GameBestScore.Kind.trivia.key(difficulty: difficulty.rawValue) }
 
-    /// Reviews and single-book practice rounds aren't comparable with a full game.
-    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty && practiceBook == nil }
+    /// A review of missed questions isn't comparable with a full game.
+    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty }
 
     /// The saved best in points for the chosen difficulty, for the start screen.
     var bestPoints: Int { GameBestScore.value(forKey: bestScoreKey) }

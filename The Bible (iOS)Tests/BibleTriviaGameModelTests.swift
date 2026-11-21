@@ -247,28 +247,4 @@ struct BibleTriviaGameModelTests {
         }
     }
 
-    @Test func theBookMissedMostCanBePracticedWithoutTouchingThePool() async throws {
-        let progress = BibleTriviaProgressStore(inMemory: [:])
-        try await withGame(progress: progress) { game, _ in
-            game.startRound()
-            while game.phase == .playing {
-                game.choose(wrongAnswer(in: game))
-                game.advance()
-            }
-            let book = try #require(game.bookToPractice)
-            let recorded = progress.progress(for: game.difficulty).completedQuestionIDs
-
-            game.practice(book: book)
-            #expect(game.phase == .playing)
-            #expect(game.practiceBook == book)
-            game.choose(try #require(game.currentQuestion?.correctAnswer))
-            #expect(game.currentQuestion?.bookName == book)
-            #expect(progress.progress(for: game.difficulty).completedQuestionIDs == recorded)
-            #expect(game.poolProgress == nil)
-
-            // Play Again goes back to the chosen topic.
-            game.startRound()
-            #expect(game.practiceBook == nil)
-        }
-    }
 }

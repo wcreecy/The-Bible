@@ -2,9 +2,9 @@ import Foundation
 import Testing
 @testable import Bible
 
-/// Standard Quiz on the manual clock: the timer, lifelines, close guesses, bonuses and
-/// practicing a book. Missed verses go to an in-memory store, and every default the game
-/// writes is put back when each test ends.
+/// Standard Quiz on the manual clock: the timer, lifelines, close guesses, and bonuses.
+/// Missed verses go to an in-memory store, and every default the game writes is put back when
+/// each test ends.
 @Suite(.serialized)
 @MainActor
 struct QuizGameplayTests {
@@ -241,23 +241,4 @@ struct QuizGameplayTests {
         }
     }
 
-    @Test func theBookMissedMostCanBePracticed() async throws {
-        try await withGame { game, _ in
-            game.startQuiz()
-            while game.phase == .playing {
-                game.selectOption(wrongAnswer(in: game))
-                game.showNext()
-            }
-            let book = try #require(game.bookToPractice)
-
-            game.practice(book: book)
-            #expect(game.phase == .playing)
-            #expect(game.practiceBook == book)
-            #expect(game.current?.correctBook == book)
-
-            // Play Again goes back to the chosen settings.
-            game.startQuiz()
-            #expect(game.practiceBook == nil)
-        }
-    }
 }

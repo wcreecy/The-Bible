@@ -173,15 +173,9 @@ struct BibleTriviaQuestionBoard: View {
         VStack(spacing: 16) {
             VStack(spacing: 10) {
                 HStack {
-                    if let practiceBook = model.practiceBook {
-                        Label("Practicing \(practiceBook)", systemImage: "book.pages")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.cyan)
-                    } else {
-                        Label("Choose the correct answer", systemImage: "questionmark.circle.fill")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.cyan)
-                    }
+                    Label("Choose the correct answer", systemImage: "questionmark.circle.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.cyan)
 
                     Spacer()
 

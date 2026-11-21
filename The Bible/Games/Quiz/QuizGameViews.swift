@@ -242,17 +242,12 @@ struct QuizQuestionPanel: View {
     private func promptCard(for current: QuizQuestion) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                if let practiceBook = vm.practiceBook {
-                    Label("Practicing \(practiceBook)", systemImage: "book.pages")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.blue)
-                }
                 Spacer()
                 Text(vm.progressText)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
-                if vm.practiceBook == nil { Spacer() }
+                Spacer()
             }
 
             Text(current.prompt)

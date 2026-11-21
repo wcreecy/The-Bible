@@ -45,13 +45,6 @@ struct BibleTriviaGameView: View {
                         poolProgress: model.poolProgress,
                         points: model.roundPoints,
                         best: model.roundBest,
-                        extraAction: model.bookToPractice.map { book in
-                            GameRoundSummaryView.ExtraAction(
-                                title: String(localized: "Practice \(book)"),
-                                systemImage: "book.pages",
-                                action: { model.practice(book: book) }
-                            )
-                        },
                         onPlayAgain: model.startRound,
                         onChangeSettings: model.returnToSetup
                     )
