@@ -250,16 +250,25 @@ struct GameSplashStartButton: View {
 struct GameSplashFacts: View {
     typealias Fact = (icon: String, value: String, label: String)
 
+    enum Emphasis {
+        case standard
+        case result
+    }
+
     let first: Fact
     let second: Fact
     let third: Fact
     let fourth: Fact?
+    let emphasis: Emphasis
+    let highlight: Color?
 
-    init(first: Fact, second: Fact, third: Fact, fourth: Fact? = nil) {
+    init(first: Fact, second: Fact, third: Fact, fourth: Fact? = nil, emphasis: Emphasis = .standard, highlight: Color? = nil) {
         self.first = first
         self.second = second
         self.third = third
         self.fourth = fourth
+        self.emphasis = emphasis
+        self.highlight = highlight
     }
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -283,25 +292,29 @@ struct GameSplashFacts: View {
                 fact(fourth)
             }
         }
-        .background(Color.secondary.opacity(0.1), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(
+            highlight?.opacity(0.16) ?? Color.secondary.opacity(0.1),
+            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+        )
     }
 
     private func fact(_ fact: Fact) -> some View {
         VStack(spacing: 3) {
             Text(fact.value)
-                .font(.headline)
+                .font(emphasis == .result ? .title2.weight(.bold) : .headline)
                 .fontDesign(.rounded)
+                .monospacedDigit()
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
                 .minimumScaleFactor(0.7)
                 .multilineTextAlignment(.center)
             Text(fact.label)
-                .font(.caption2)
+                .font(emphasis == .result ? .caption : .caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.vertical, emphasis == .result ? 12 : 10)
         .padding(.horizontal, 6)
         .accessibilityElement(children: .combine)
     }

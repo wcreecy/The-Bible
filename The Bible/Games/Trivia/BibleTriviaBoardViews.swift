@@ -236,6 +236,9 @@ struct BibleTriviaQuestionBoard: View {
                     }
                 }
             }
+            // Only as tall as the answers need. Each tile can grow to match the taller one in its
+            // row, but not to soak up the spare height an iPad column has.
+            .fixedSize(horizontal: false, vertical: true)
             .animation(.snappy, value: model.removedOptions)
         }
         .coordinateSpace(.named(Self.coordinateSpace))

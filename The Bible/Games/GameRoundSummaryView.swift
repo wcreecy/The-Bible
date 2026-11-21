@@ -62,7 +62,7 @@ struct GameRoundSummaryView: View {
                     .foregroundStyle(.secondary)
             }
 
-            GameRoundSummaryBreakdown(summary: summary, unit: unit, showsTimedOut: canTimeOut || summary.timedOutCount > 0)
+            GameRoundSummaryBreakdown(summary: summary, unit: unit, showsTimedOut: canTimeOut || summary.timedOutCount > 0, tint: tint)
 
             GameRoundSummaryStreakCard(summary: summary)
 
@@ -240,10 +240,10 @@ extension GameRoundSummaryHeader {
         if best.isNew {
             Label("New best! \(best.points) points", systemImage: "trophy.fill")
                 .font(.subheadline.weight(.bold))
-                .foregroundStyle(.yellow)
+                .foregroundStyle(.primary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.yellow.opacity(0.18), in: Capsule())
+                .background(Color.yellow.opacity(0.25), in: Capsule())
         } else {
             Label("Best: \(best.points) points", systemImage: "trophy")
                 .font(.footnote.weight(.semibold))
@@ -289,6 +289,7 @@ private struct GameRoundSummaryBreakdown: View {
     let summary: GameRoundSummary
     let unit: GameRoundSummaryView.Unit
     let showsTimedOut: Bool
+    let tint: Color
 
     private var facts: [GameSplashFacts.Fact] {
         var facts: [GameSplashFacts.Fact] = [
@@ -320,7 +321,9 @@ private struct GameRoundSummaryBreakdown: View {
                 first: facts[0],
                 second: facts[1],
                 third: facts[2],
-                fourth: facts.count > 3 ? facts[3] : nil
+                fourth: facts.count > 3 ? facts[3] : nil,
+                emphasis: .result,
+                highlight: tint
             )
 
             if let paceText {
@@ -344,14 +347,14 @@ private struct GameRoundSummaryStreakCard: View {
     let summary: GameRoundSummary
 
     var body: some View {
-        GameRoundSummaryCard(title: "Streak", systemImage: "flame.fill", tint: .orange) {
-            HStack(spacing: 0) {
-                stat(value: summary.currentStreak, label: "Current")
-                Divider().padding(.vertical, 4)
-                stat(value: summary.bestStreak, label: "All-time best")
-                Divider().padding(.vertical, 4)
-                stat(value: summary.longestRunThisRound, label: "This round")
-            }
+        VStack(spacing: 8) {
+            GameSplashFacts(
+                first: ("flame.fill", String(summary.currentStreak), String(localized: "Current streak")),
+                second: ("trophy.fill", String(summary.bestStreak), String(localized: "All-time best")),
+                third: ("flame", String(summary.longestRunThisRound), String(localized: "This round")),
+                emphasis: .result
+            )
+            .foregroundStyle(.secondary)
 
             if summary.isNewBestStreak {
                 Label("New best streak!", systemImage: "trophy.fill")
@@ -363,20 +366,6 @@ private struct GameRoundSummaryStreakCard: View {
                     .foregroundStyle(.secondary)
             }
         }
-    }
-
-    private func stat(value: Int, label: LocalizedStringKey) -> some View {
-        VStack(spacing: 2) {
-            Text("\(value)")
-                .font(.title2.weight(.bold))
-                .fontDesign(.rounded)
-                .monospacedDigit()
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
     }
 }
 

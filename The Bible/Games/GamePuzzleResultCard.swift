@@ -102,7 +102,8 @@ struct GamePuzzleResultCard<Detail: View>: View {
                     first: facts[0],
                     second: facts[1],
                     third: facts[2],
-                    fourth: facts.count > 3 ? facts[3] : nil
+                    fourth: facts.count > 3 ? facts[3] : nil,
+                    emphasis: .result
                 )
             }
 
