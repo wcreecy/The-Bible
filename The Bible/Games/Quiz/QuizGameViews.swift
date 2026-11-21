@@ -151,17 +151,28 @@ struct QuizQuestionPanel: View {
                     Text(current.mode == .reverse ? "Which verse matches this reference?" : "Which book is this from?")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // The Section Hint, right above the answers where the eye goes next, in its own
+                    // color so it doesn't read as another link in the question card.
+                    if let sectionHint = vm.sectionHint {
+                        sectionHintBanner(sectionHint)
+                            .transition(.scale(scale: 0.9, anchor: .top).combined(with: .opacity))
+                    }
                 }
 
+                // 50/50 takes the two wrong answers out, so the two left close up (side by side in
+                // Standard). Each keeps its original letter, so the shortcuts still match.
+                let remaining = Array(current.options.enumerated())
+                    .filter { !current.removedOptions.contains($0.element) }
                 LazyVGrid(columns: columns(for: current), spacing: 12) {
-                    ForEach(Array(current.options.enumerated()), id: \.element) { index, option in
+                    ForEach(remaining, id: \.element) { index, option in
                         QuizAnswerOption(
                             index: index,
                             title: option,
                             isAnswered: vm.isAnswered,
                             isCorrect: option == current.correctAnswer,
                             isSelected: option == current.selected,
-                            isRemoved: current.removedOptions.contains(option),
+                            isRemoved: false,
                             verse: vm.isAnswered ? current.optionVerses.first { $0.verseText == option } : nil
                         ) {
                             vm.selectOption(option)
@@ -171,8 +182,10 @@ struct QuizQuestionPanel: View {
                         } action: { frame in
                             optionFrames[option] = frame
                         }
+                        .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                 }
+                .animation(.snappy, value: current.removedOptions)
             }
             .coordinateSpace(.named(Self.coordinateSpace))
             .onGeometryChange(for: CGPoint.self) { $0.frame(in: .named(GamePencil.coordinateSpace)).origin } action: {
@@ -201,6 +214,29 @@ struct QuizQuestionPanel: View {
         question.mode == .reverse
             ? [GridItem(.flexible())]
             : [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    }
+
+    private func sectionHintBanner(_ hint: String) -> some View {
+        Label {
+            Text(hint)
+                .font(.headline)
+        } icon: {
+            Image(systemName: "books.vertical.fill")
+                // One bounce as the hint appears (skipped when Reduce Motion is on).
+                .symbolEffect(.bounce, value: hint)
+        }
+        .foregroundStyle(.orange)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.orange.opacity(0.14), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color.orange.opacity(0.5), lineWidth: 1.5)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Hint: \(hint)")
+        .onAppear { AccessibilityNotification.Announcement(hint).post() }
     }
 
     private func promptCard(for current: QuizQuestion) -> some View {
@@ -235,13 +271,6 @@ struct QuizQuestionPanel: View {
                     canReveal: vm.canRevealContext,
                     onReveal: vm.revealContext
                 )
-            }
-
-            if let sectionHint = vm.sectionHint, !vm.isAnswered {
-                Label(sectionHint, systemImage: "books.vertical.fill")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.blue)
-                    .frame(maxWidth: .infinity)
             }
         }
         .padding(24)
@@ -365,14 +394,13 @@ struct QuizLifelineBar: View {
     let vm: QuizGameViewModel
 
     var body: some View {
-        let lifelines = QuizLifeline.allCases.filter(vm.offers)
+        // A used lifeline leaves the row, and the row goes once none are left.
         HStack(spacing: 8) {
-            ForEach(lifelines, id: \.self) { lifeline in
-                let isUsed = vm.usedLifelines.contains(lifeline)
+            ForEach(vm.availableLifelines, id: \.self) { lifeline in
                 Button {
                     withAnimation(.snappy) { vm.use(lifeline) }
                 } label: {
-                    Label(lifeline.title, systemImage: isUsed ? "checkmark" : lifeline.systemImage)
+                    Label(lifeline.title, systemImage: lifeline.systemImage)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
@@ -381,17 +409,28 @@ struct QuizLifelineBar: View {
                 .buttonStyle(.gameHint(tint: .blue))
                 .disabled(!vm.canUse(lifeline))
                 .accessibilityHint(lifeline.accessibilityHint)
-                .accessibilityValue(isUsed ? "Used" : "")
+                .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
+        .animation(.snappy, value: vm.availableLifelines)
     }
 }
 
 extension QuizLifeline {
+    /// The lifeline's name as plain text, for the start screen.
+    var name: String {
+        switch self {
+        case .fiftyFifty: "50/50"
+        case .sectionHint: String(localized: "Section Hint")
+        case .extraTime: String(localized: "+\(Self.extraSeconds) Seconds")
+        }
+    }
+
     var title: LocalizedStringKey {
         switch self {
         case .fiftyFifty: "50/50"
         case .sectionHint: "Section Hint"
+        case .extraTime: "+\(Self.extraSeconds) Seconds"
         }
     }
 
@@ -399,6 +438,7 @@ extension QuizLifeline {
         switch self {
         case .fiftyFifty: "circle.lefthalf.filled"
         case .sectionHint: "books.vertical"
+        case .extraTime: "timer"
         }
     }
 
@@ -406,6 +446,7 @@ extension QuizLifeline {
         switch self {
         case .fiftyFifty: "Removes two wrong answers. Once per game."
         case .sectionHint: "Tells you which part of the Bible the verse is from. Once per game."
+        case .extraTime: "Adds ten seconds to this question's clock. Once per game."
         }
     }
 }

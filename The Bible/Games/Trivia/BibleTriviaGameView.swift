@@ -23,6 +23,7 @@ struct BibleTriviaGameView: View {
                     questionsPerRound: 10,
                     eligibleQuestionCount: model.eligibleQuestions.count,
                     isReviewRound: isReviewRound,
+                    bestPoints: model.bestPoints,
                     onStart: model.startRound
                 )
             case .playing where model.isPaused:
@@ -43,6 +44,7 @@ struct BibleTriviaGameView: View {
                         tint: .cyan,
                         poolProgress: model.poolProgress,
                         points: model.roundPoints,
+                        best: model.roundBest,
                         extraAction: model.bookToPractice.map { book in
                             GameRoundSummaryView.ExtraAction(
                                 title: String(localized: "Practice \(book)"),
@@ -89,7 +91,14 @@ private struct BibleTriviaSetupScreen: View {
     let questionsPerRound: Int
     let eligibleQuestionCount: Int
     let isReviewRound: Bool
+    /// The saved best in points for the chosen difficulty.
+    let bestPoints: Int
     let onStart: () -> Void
+
+    /// The lifelines a round at this difficulty offers (Easy has no extra time).
+    private var lifelines: [BibleTriviaLifeline] {
+        BibleTriviaLifeline.allCases.filter { $0 != .extraTime || difficulty != .easy }
+    }
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -123,10 +132,11 @@ private struct BibleTriviaSetupScreen: View {
                     experienceLevel: experienceLevel,
                     experienceDetails: GameExperienceDetails(
                         learn: "The most familiar questions, with 30 seconds for each answer. +1 bonus point for answering in the first 10 seconds.",
-                        standard: "15 seconds for each answer, and questions are a little more challenging. +1 bonus point for answering in the first 5 seconds.",
-                        challenge: "10 seconds for each answer and the most challenging questions. +1 bonus point for answering in the first 3 seconds."
+                        standard: "20 seconds for each answer, and questions are a little more challenging. +1 bonus point for answering in the first 6 seconds.",
+                        challenge: "15 seconds for each answer and the most challenging questions. +1 bonus point for answering in the first 5 seconds."
                     ),
                     experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
+                    bestPoints: isReviewRound ? nil : bestPoints,
                     isConfigurationEnabled: !isReviewRound,
                     startAction: onStart
                 ) {
@@ -147,7 +157,11 @@ private struct BibleTriviaSetupScreen: View {
                     GameSplashFacts(
                         first: ("number", "\(questionsPerRound) questions", "This session"),
                         second: ("timer", "\(difficulty.timerSeconds) sec", "Per question"),
-                        third: ("square.stack.3d.up", eligibleQuestionCount.formatted(), "Question pool")
+                        third: (
+                            "lifepreserver",
+                            lifelines.count == 1 ? String(localized: "1 lifeline") : String(localized: "\(lifelines.count) lifelines"),
+                            lifelines.map(\.name).formatted(.list(type: .and, width: .narrow))
+                        )
                     )
                 }
 
@@ -318,6 +332,15 @@ private struct BibleTriviaPlayScreen: View {
 }
 
 extension BibleTriviaLifeline {
+    /// The lifeline's name as plain text, for the start screen.
+    var name: String {
+        switch self {
+        case .fiftyFifty: "50/50"
+        case .verseHint: String(localized: "Verse Hint")
+        case .extraTime: String(localized: "+\(Self.extraSeconds) Seconds")
+        }
+    }
+
     var title: LocalizedStringKey {
         switch self {
         case .fiftyFifty: "50/50"

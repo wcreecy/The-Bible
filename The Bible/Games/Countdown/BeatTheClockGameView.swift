@@ -155,6 +155,7 @@ struct BeatTheClockGameView: View {
                 summary: GameRoundSummary(score: vm.session),
                 tint: .indigo,
                 points: vm.roundPoints,
+                best: vm.roundBest,
                 onPlayAgain: vm.startGame,
                 onChangeSettings: vm.resetToSetup
             )
@@ -203,6 +204,7 @@ struct BeatTheClockGameView: View {
                     challenge: "\(BeatTheClockDifficulty.hard.roundTime) seconds per question. Every name in the game. A clue costs \(BeatTheClockDifficulty.hintCost) seconds. +1 bonus point for answering in the first \(BeatTheClockDifficulty.hard.roundTime / 3) seconds, and +1 for a less-known book."
                 ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
+            bestPoints: vm.reviewQuestionIDs.isEmpty ? vm.bestPoints : nil,
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,
             isStartEnabled: !vm.isLoadingData,
             startAction: vm.startGame

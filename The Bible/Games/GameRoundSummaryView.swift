@@ -33,6 +33,8 @@ struct GameRoundSummaryView: View {
     var resultNote: String?
     /// Set when bonus points were earned, so the header leads with the points total.
     var points: RoundPoints?
+    /// How the round compares with the saved best score, for games that keep one.
+    var best: RoundBest?
     var extraAction: ExtraAction?
     let onPlayAgain: () -> Void
     let onChangeSettings: () -> Void
@@ -43,7 +45,7 @@ struct GameRoundSummaryView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            GameRoundSummaryHeader(summary: summary, tint: tint, unit: unit, points: points)
+            GameRoundSummaryHeader(summary: summary, tint: tint, unit: unit, points: points, best: best)
 
             if let reviewRound {
                 ReviewRoundResultCard(
@@ -151,6 +153,7 @@ struct GameRoundSummaryHeader: View {
     let tint: Color
     let unit: GameRoundSummaryView.Unit
     var points: RoundPoints?
+    var best: RoundBest?
 
     private var title: LocalizedStringKey {
         switch summary.grade {
@@ -219,6 +222,10 @@ struct GameRoundSummaryHeader: View {
             if let points {
                 bonusChips(points)
             }
+
+            if let best {
+                bestScoreLine(best)
+            }
         }
         .padding(.top, 8)
         .accessibilityElement(children: .combine)
@@ -227,6 +234,23 @@ struct GameRoundSummaryHeader: View {
 }
 
 extension GameRoundSummaryHeader {
+    /// "New best!" when the round set the saved best; otherwise the best to beat.
+    @ViewBuilder
+    private func bestScoreLine(_ best: RoundBest) -> some View {
+        if best.isNew {
+            Label("New best! \(best.points) points", systemImage: "trophy.fill")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.yellow)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.yellow.opacity(0.18), in: Capsule())
+        } else {
+            Label("Best: \(best.points) points", systemImage: "trophy")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+    }
+
     /// "+3 speed bonuses", "+2 chapter bonuses": one chip per bonus earned.
     @ViewBuilder
     private func bonusChips(_ points: RoundPoints) -> some View {
@@ -656,6 +680,7 @@ private struct GameRoundSummaryCard<Content: View>: View {
                 tint: .cyan,
                 poolProgress: .init(title: "Normal", seen: 142, total: 600),
                 points: RoundPoints(correct: 3, bonuses: [RoundPoints.speed(2), RoundPoints.chapter(1)]),
+                best: RoundBest(points: 6, isNew: true),
                 onPlayAgain: {},
                 onChangeSettings: {}
             )

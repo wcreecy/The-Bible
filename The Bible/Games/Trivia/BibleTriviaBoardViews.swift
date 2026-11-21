@@ -26,7 +26,10 @@ struct BibleTriviaCompactBoard: View {
             )
 
             if !model.isAnswered {
-                BibleTriviaLifelineBar(model: model)
+                if !model.availableLifelines.isEmpty {
+                    BibleTriviaLifelineBar(model: model)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
 
                 if let hint = model.displayedVerse {
                     GameVerseCard(verse: hint)
@@ -80,8 +83,9 @@ struct BibleTriviaDashboard: View {
                 timerTint: .cyan
             )
 
-            if !model.isAnswered {
+            if !model.isAnswered, !model.availableLifelines.isEmpty {
                 BibleTriviaLifelineBar(model: model)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
             }
 
             if model.isAnswered {
@@ -126,13 +130,13 @@ struct BibleTriviaLifelineBar: View {
     let model: BibleTriviaGameModel
 
     var body: some View {
+        // A used lifeline leaves the row, and the row goes once none are left.
         HStack(spacing: 8) {
-            ForEach(BibleTriviaLifeline.allCases.filter(model.offers), id: \.self) { lifeline in
-                let isUsed = model.usedLifelines.contains(lifeline)
+            ForEach(model.availableLifelines, id: \.self) { lifeline in
                 Button {
                     withAnimation(.snappy) { model.use(lifeline) }
                 } label: {
-                    Label(lifeline.title, systemImage: isUsed ? "checkmark" : lifeline.systemImage)
+                    Label(lifeline.title, systemImage: lifeline.systemImage)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
@@ -141,9 +145,10 @@ struct BibleTriviaLifelineBar: View {
                 .buttonStyle(.gameHint(tint: .cyan))
                 .disabled(!model.canUse(lifeline))
                 .accessibilityHint(lifeline.accessibilityHint)
-                .accessibilityValue(isUsed ? "Used" : "")
+                .transition(.scale(scale: 0.85).combined(with: .opacity))
             }
         }
+        .animation(.snappy, value: model.availableLifelines)
     }
 }
 
@@ -208,11 +213,13 @@ struct BibleTriviaQuestionBoard: View {
             }
 
             // A Grid rather than a lazy grid, so both answers in a row share the taller one's height.
+            // 50/50 takes the two wrong answers out, so the two left sit side by side; each keeps
+            // its original letter (A–D) so the keyboard shortcuts still match.
+            let remaining = Array(options.enumerated()).filter { !model.removedOptions.contains($0.element) }
             Grid(horizontalSpacing: 10, verticalSpacing: 10) {
-                ForEach(Array(stride(from: 0, to: options.count, by: 2)), id: \.self) { start in
+                ForEach(Array(stride(from: 0, to: remaining.count, by: 2)), id: \.self) { start in
                     GridRow {
-                        ForEach(start..<min(start + 2, options.count), id: \.self) { index in
-                            let option = options[index]
+                        ForEach(remaining[start..<min(start + 2, remaining.count)], id: \.element) { index, option in
                             BibleTriviaAnswerOption(
                                 index: index,
                                 title: option,
@@ -220,7 +227,7 @@ struct BibleTriviaQuestionBoard: View {
                                 isSelected: option == model.selectedAnswer,
                                 isIncorrectSelection: isAnswered && option == model.selectedAnswer
                                     && option != question?.correctAnswer,
-                                isRemoved: model.removedOptions.contains(option),
+                                isRemoved: false,
                                 isDisabled: isAnswered
                             ) {
                                 model.choose(option)
@@ -230,10 +237,12 @@ struct BibleTriviaQuestionBoard: View {
                             } action: { frame in
                                 optionFrames[option] = frame
                             }
+                            .transition(.scale(scale: 0.85).combined(with: .opacity))
                         }
                     }
                 }
             }
+            .animation(.snappy, value: model.removedOptions)
         }
         .coordinateSpace(.named(Self.coordinateSpace))
         .onGeometryChange(for: CGPoint.self) { $0.frame(in: .named(GamePencil.coordinateSpace)).origin } action: {

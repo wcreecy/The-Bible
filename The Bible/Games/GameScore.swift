@@ -108,14 +108,30 @@ struct GameScore {
     /// Ends the game and works out whether it beat the saved best score. Games that award
     /// bonus points pass the round's `points`, so the best is what the player saw; the rest
     /// compare their correct answers.
-    mutating func finishGame(bestScoreKey: String, points: Int? = nil, defaults: UserDefaults = .standard) {
+    /// `savesBest` is false for rounds that can't be compared with others, such as a review of
+    /// missed questions; they leave the saved best alone.
+    mutating func finishGame(
+        bestScoreKey: String,
+        points: Int? = nil,
+        savesBest: Bool = true,
+        defaults: UserDefaults = .standard
+    ) {
         endGame()
         let result = points ?? score
         let previousBest = defaults.integer(forKey: bestScoreKey)
+        guard savesBest else {
+            isNewBestGame = false
+            bestGameScore = previousBest
+            return
+        }
         isNewBestGame = result > previousBest
         bestGameScore = max(previousBest, result)
         if isNewBestGame {
             defaults.set(result, forKey: bestScoreKey)
+            // Sends the new best to the player's other devices.
+            if defaults === UserDefaults.standard {
+                iCloudSyncCoordinator.shared.pushKey(bestScoreKey)
+            }
         }
     }
 

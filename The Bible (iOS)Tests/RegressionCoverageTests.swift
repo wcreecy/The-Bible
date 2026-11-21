@@ -303,6 +303,10 @@ struct RegressionCoverageTests {
         let practiceStreak = PersistentGameStreak(game: "wordle", variant: "practice")
         #expect(iCloudSyncCoordinator.allPersistentStreakKeys.contains(practiceStreak.currentKey))
         #expect(iCloudSyncCoordinator.allPersistentStreakKeys.contains(practiceStreak.bestKey))
+        // Best round scores sync between devices and clear with the rest of the game data.
+        for key in GameBestScore.allKeys {
+            #expect(iCloudSyncCoordinator.allPersistentStreakKeys.contains(key))
+        }
     }
 }
 

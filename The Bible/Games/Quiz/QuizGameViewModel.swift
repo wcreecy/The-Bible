@@ -32,8 +32,8 @@ enum QuizDifficulty: String, CaseIterable, Identifiable {
     var timeLimit: Int? {
         switch self {
         case .easy: nil
-        case .normal: 15
-        case .hard: 12
+        case .normal: 18
+        case .hard: 15
         }
     }
 
@@ -45,9 +45,9 @@ enum QuizDifficulty: String, CaseIterable, Identifiable {
         case .easy:
             "No time limit. Wrong choices come from other parts of the Bible."
         case .normal:
-            "15 seconds per verse. Wrong choices come from anywhere in your categories."
+            "18 seconds per verse. Wrong choices come from anywhere in your categories."
         case .hard:
-            "12 seconds per verse. Wrong choices come from the same part of the Bible, such as all four Gospels."
+            "15 seconds per verse. Wrong choices come from the same part of the Bible, such as all four Gospels."
         }
     }
 
@@ -139,6 +139,23 @@ enum QuizVerseSection: String, CaseIterable, Identifiable {
         }
     }
 
+    /// How the Section Hint names this part of the Bible: "It's from \(hintPhrase)."
+    /// Acts and Revelation are one book each, so naming them would give the answer away. Their
+    /// hints name a neighbor too, the same grouping Hard uses for wrong choices.
+    var hintPhrase: String {
+        switch self {
+        case .law: String(localized: "the Law")
+        case .history: String(localized: "the History books")
+        case .poetry: String(localized: "the Poetry books")
+        case .majorProphets: String(localized: "the Major Prophets")
+        case .minorProphets: String(localized: "the Minor Prophets")
+        case .gospels: String(localized: "the Gospels")
+        case .acts: String(localized: "the Gospels or Acts")
+        case .epistles: String(localized: "the Epistles")
+        case .revelation: String(localized: "the Epistles or Revelation")
+        }
+    }
+
     static func containing(_ bookName: String) -> QuizVerseSection? {
         allCases.first { $0.bookNames.contains(bookName) }
     }
@@ -191,6 +208,8 @@ struct QuizQuestion: Identifiable {
     /// Wrong answers taken away by 50/50.
     var removedOptions: Set<String> = []
     var lifelinesUsed: Set<QuizLifeline> = []
+    /// Seconds the extra-time lifeline added to this question.
+    var bonusSeconds = 0
     /// The timer was off at some point, so the answer can't earn a speed bonus.
     var wasTimerOff = false
     var earnedSpeedBonus = false
@@ -214,6 +233,10 @@ enum QuizLifeline: CaseIterable, Hashable {
     case fiftyFifty
     /// Names the part of the Bible the verse is from. Standard mode only.
     case sectionHint
+    /// Adds ten seconds to the clock. Not on Easy, which has no timer.
+    case extraTime
+
+    static let extraSeconds = 10
 }
 
 @MainActor
@@ -371,7 +394,23 @@ final class QuizGameViewModel {
         PersistentGameStreak(game: "quiz", variant: difficulty.rawValue)
     }
 
-    private var bestGameScoreKey: String { "quizBestGameScore_\(difficulty.rawValue)" }
+    /// Standard and Reverse score differently (only Standard has the chapter bonus), so each
+    /// keeps its own best for every difficulty.
+    private var bestGameScoreKey: String {
+        (mode == .reverse ? GameBestScore.Kind.quizReverse : .quiz).key(difficulty: difficulty.rawValue)
+    }
+
+    /// Reviews and single-book practice rounds aren't comparable with a full game.
+    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty && practiceBook == nil }
+
+    /// The saved best in points for the chosen mode and difficulty, for the start screen.
+    var bestPoints: Int { GameBestScore.value(forKey: bestGameScoreKey) }
+
+    /// How the round just played compares with the saved best, for the summary.
+    var roundBest: RoundBest? {
+        guard roundCountsTowardBest, session.bestGameScore > 0 else { return nil }
+        return RoundBest(points: session.bestGameScore, isNew: session.isNewBestGame)
+    }
 
     var current: QuizQuestion? {
         history.indices.contains(currentIndex) ? history[currentIndex] : nil
@@ -383,12 +422,18 @@ final class QuizGameViewModel {
         guard mode == .reverse else { return difficulty.timeLimit }
         switch difficulty {
         case .easy: return nil
-        case .normal: return 20
-        case .hard: return 30
+        case .normal: return 25
+        case .hard: return 35
         }
     }
 
     var isTimed: Bool { timeLimit != nil }
+
+    /// The current question's time, including any seconds the extra-time lifeline added.
+    /// The speed bonus window still follows the base time.
+    private var currentTimeLimit: Int? {
+        timeLimit.map { $0 + (current?.bonusSeconds ?? 0) }
+    }
 
     var isTimerRunning: Bool {
         phase == .playing && isTimed && !isTimerDisabled && !isAnswered && !isPaused
@@ -414,7 +459,7 @@ final class QuizGameViewModel {
 
     /// Green, then yellow, then red as the question runs down, scaled to the time limit.
     var timerColor: Color {
-        guard let timeLimit else { return .secondary }
+        guard let timeLimit = currentTimeLimit else { return .secondary }
         let fraction = Double(remainingSeconds) / Double(max(1, timeLimit))
         if fraction <= 0.3 { return .red }
         if fraction <= 0.6 { return .yellow }
@@ -512,7 +557,7 @@ final class QuizGameViewModel {
     }
 
     private func updateRemainingTime() {
-        guard let timeLimit else { return }
+        guard let timeLimit = currentTimeLimit else { return }
         let remaining = max(0, timeLimit - contextPenaltySeconds - Int(questionClock.elapsed(at: now())))
         guard remaining != remainingSeconds else { return }
         remainingSeconds = remaining
@@ -737,7 +782,7 @@ final class QuizGameViewModel {
     }
 
     private func showResults() {
-        session.finishGame(bestScoreKey: bestGameScoreKey, points: points)
+        session.finishGame(bestScoreKey: bestGameScoreKey, points: points, savesBest: roundCountsTowardBest)
         phase = .results
     }
 
@@ -880,9 +925,26 @@ final class QuizGameViewModel {
         history.reduce(into: []) { $0.formUnion($1.lifelinesUsed) }
     }
 
+    /// The lifelines a round will offer in the current mode and difficulty, for the start screen.
+    var lifelinesForRound: [QuizLifeline] {
+        QuizLifeline.allCases.filter { lifeline in
+            // On Hard every choice is from the same part of the Bible, so that hint says nothing.
+            offers(lifeline) && !(lifeline == .sectionHint && difficulty == .hard)
+        }
+    }
+
+    /// The lifelines still in the row: offered by this game and not yet used.
+    var availableLifelines: [QuizLifeline] {
+        QuizLifeline.allCases.filter { offers($0) && !usedLifelines.contains($0) }
+    }
+
     /// Whether this kind of game has the lifeline at all, used or not.
     func offers(_ lifeline: QuizLifeline) -> Bool {
-        lifeline == .fiftyFifty || mode == .standard
+        switch lifeline {
+        case .fiftyFifty: true
+        case .sectionHint: mode == .standard
+        case .extraTime: isTimed
+        }
     }
 
     func canUse(_ lifeline: QuizLifeline) -> Bool {
@@ -895,6 +957,8 @@ final class QuizGameViewModel {
             // On Hard every choice is from the same part of the Bible, so the hint says nothing.
             let sections = Set(current.options.compactMap(QuizVerseSection.containing))
             return sections.count > 1
+        case .extraTime:
+            return !isTimerDisabled
         }
     }
 
@@ -905,6 +969,10 @@ final class QuizGameViewModel {
             let wrong = current.options.filter { $0 != current.correctAnswer }.shuffled()
             history[currentIndex].removedOptions = Set(wrong.prefix(2))
         }
+        if lifeline == .extraTime {
+            history[currentIndex].bonusSeconds += QuizLifeline.extraSeconds
+            updateRemainingTime()
+        }
         Haptics.selection()
     }
 
@@ -912,7 +980,7 @@ final class QuizGameViewModel {
     var sectionHint: String? {
         guard let current, current.lifelinesUsed.contains(.sectionHint),
               let section = QuizVerseSection.containing(current.correctBook) else { return nil }
-        return String(localized: "It's from \(String(localized: section.title)).")
+        return String(localized: "It's from \(section.hintPhrase).")
     }
 
     // MARK: - After answering
@@ -991,7 +1059,7 @@ final class QuizGameViewModel {
 
     /// Starts the pulse the moment a running timer crosses into the red zone.
     private func updateRedZone() {
-        guard isTimerRunning, let timeLimit else { return }
+        guard isTimerRunning, let timeLimit = currentTimeLimit else { return }
         // The same threshold as `timerColor`'s red, worked out from the time rather than the color.
         let inRed = Double(remainingSeconds) / Double(max(1, timeLimit)) <= 0.3
         if inRed && !wasInRedZone {

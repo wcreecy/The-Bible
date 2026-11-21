@@ -16,7 +16,6 @@ final class BibleTriviaGameModel {
     private static let questionsPerRound = 10
     /// A practice round on one book can be shorter, but not shorter than this.
     private static let minimumBookRoundQuestions = 5
-    private static let bestScoreKeyPrefix = "bibleTriviaBestScore"
 
     private let reviewQuestionIDs: Set<String>
     /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
@@ -281,8 +280,8 @@ final class BibleTriviaGameModel {
     func advance() {
         guard canGoNext else { return }
         if isLastQuestion {
-            session.endGame()
-            savePersonalBest()
+            session.finishGame(bestScoreKey: bestScoreKey, points: points, savesBest: roundCountsTowardBest)
+            bestScore = session.bestGameScore
             phase = .results
         } else {
             currentIndex += 1
@@ -355,6 +354,11 @@ final class BibleTriviaGameModel {
     /// Lifelines already used this round; each can be used once.
     var usedLifelines: Set<BibleTriviaLifeline> {
         round.reduce(into: []) { $0.formUnion($1.lifelinesUsed) }
+    }
+
+    /// The lifelines still in the row: offered by this game and not yet used.
+    var availableLifelines: [BibleTriviaLifeline] {
+        BibleTriviaLifeline.allCases.filter { offers($0) && !usedLifelines.contains($0) }
     }
 
     func canUse(_ lifeline: BibleTriviaLifeline) -> Bool {
@@ -600,15 +604,17 @@ final class BibleTriviaGameModel {
         RoundPoints(correct: session.score, bonuses: [RoundPoints.speed(speedBonusCount)])
     }
 
-    private var bestScoreKey: String {
-        "\(Self.bestScoreKeyPrefix).\(difficulty.rawValue)"
-    }
+    private var bestScoreKey: String { GameBestScore.Kind.trivia.key(difficulty: difficulty.rawValue) }
 
-    private func savePersonalBest() {
-        // The best is in points, so bonuses count toward it.
-        guard points > bestScore else { return }
-        bestScore = points
-        UserDefaults.standard.set(points, forKey: bestScoreKey)
-        iCloudSyncCoordinator.shared.pushKey(bestScoreKey)
+    /// Reviews and single-book practice rounds aren't comparable with a full game.
+    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty && practiceBook == nil }
+
+    /// The saved best in points for the chosen difficulty, for the start screen.
+    var bestPoints: Int { GameBestScore.value(forKey: bestScoreKey) }
+
+    /// How the round just played compares with the saved best, for the summary.
+    var roundBest: RoundBest? {
+        guard roundCountsTowardBest, session.bestGameScore > 0 else { return nil }
+        return RoundBest(points: session.bestGameScore, isNew: session.isNewBestGame)
     }
 }

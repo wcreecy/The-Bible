@@ -225,4 +225,61 @@ struct GameScoreTests {
         #expect(RoundPoints.chapter(1).title == "1 chapter bonus")
         #expect(RoundPoints.lessKnown(3).title == "3 less-known books")
     }
+
+    @Test
+    func aRoundThatCannotBeComparedLeavesTheSavedBestAlone() throws {
+        let suiteName = "gamescoretest.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let saved = makeSavedStreak()
+        defer { discard(saved) }
+        let key = "bestGameScore"
+        defaults.set(8, forKey: key)
+        var score = GameScore()
+
+        score.beginGame(savedStreak: saved)
+        score.record(correct: true, savedStreak: saved)
+        score.finishGame(bestScoreKey: key, points: 12, savesBest: false, defaults: defaults)
+
+        #expect(!score.isNewBestGame)
+        #expect(score.bestGameScore == 8)
+        #expect(defaults.integer(forKey: key) == 8)
+    }
+
+    @Test
+    func everyBestScoreHasItsOwnKeyForEachDifficulty() {
+        let keys = GameBestScore.allKeys
+        #expect(Set(keys).count == keys.count)
+        #expect(keys.count == GameBestScore.Kind.allCases.count * 3)
+        // Standard and Reverse Quiz, and Classic and Rapid Fire Countdown, never share a best.
+        #expect(GameBestScore.Kind.quiz.key(difficulty: "hard") != GameBestScore.Kind.quizReverse.key(difficulty: "hard"))
+        #expect(GameBestScore.Kind.countdown.key(difficulty: "easy") != GameBestScore.Kind.countdownRapidFire.key(difficulty: "easy"))
+        // Quiz, Trivia, and Who? keep the keys an earlier best was saved under.
+        #expect(GameBestScore.Kind.quiz.key(difficulty: "normal") == "quizBestGameScore_normal")
+        #expect(GameBestScore.Kind.trivia.key(difficulty: "easy") == "bibleTriviaBestScore.easy")
+        #expect(GameBestScore.Kind.whoAmI.key(difficulty: "hard") == "whoamiBestGameScore_hard")
+    }
+
+    @Test
+    func theHighestBestPicksTheTopScoreAndItsDifficulty() throws {
+        let suiteName = "gamescoretest.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        #expect(GameBestScore.highest(for: [.quiz, .quizReverse], defaults: defaults) == nil)
+
+        defaults.set(11, forKey: GameBestScore.Kind.quiz.key(difficulty: "normal"))
+        defaults.set(14, forKey: GameBestScore.Kind.quizReverse.key(difficulty: "hard"))
+        let highest = try #require(GameBestScore.highest(for: [.quiz, .quizReverse], defaults: defaults))
+        #expect(highest.points == 14)
+        #expect(highest.difficulty == "hard")
+    }
+
+    @Test
+    func theStatsPageKnowsWhichGamesKeepABest() {
+        #expect(GameBestScore.kinds(forDisplayName: "Quiz") == [.quiz, .quizReverse])
+        #expect(GameBestScore.kinds(forDisplayName: "Countdown") == [.countdown])
+        #expect(GameBestScore.kinds(forDisplayName: "Hangman") == nil)
+        #expect(GameBestScore.kinds(forDisplayName: "All Games") == nil)
+    }
 }

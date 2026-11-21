@@ -132,8 +132,8 @@ enum BibleTriviaDifficulty: String, CaseIterable, Identifiable, Codable {
     var timerSeconds: Int {
         switch self {
         case .easy: 30
-        case .normal: 15
-        case .hard: 10
+        case .normal: 20
+        case .hard: 15
         }
     }
 

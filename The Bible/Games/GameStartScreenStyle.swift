@@ -86,6 +86,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
     let experienceLevel: Binding<GameExperienceLevel>?
     let experienceDetails: GameExperienceDetails?
     let experienceTitle: LocalizedStringKey
+    /// The saved best round score in points, shown under the difficulty. Nil or 0 shows nothing.
+    let bestPoints: Int?
     let isConfigurationEnabled: Bool
     let isStartEnabled: Bool
     /// The start button's label, e.g. "Resume" when an unfinished round is waiting.
@@ -101,6 +103,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         experienceLevel: Binding<GameExperienceLevel>? = nil,
         experienceDetails: GameExperienceDetails? = nil,
         experienceTitle: LocalizedStringKey = "How you’ll play",
+        bestPoints: Int? = nil,
         isConfigurationEnabled: Bool = true,
         isStartEnabled: Bool = true,
         startTitle: LocalizedStringKey = "Start Game",
@@ -114,6 +117,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
         self.experienceLevel = experienceLevel
         self.experienceDetails = experienceDetails
         self.experienceTitle = experienceTitle
+        self.bestPoints = bestPoints
         self.isConfigurationEnabled = isConfigurationEnabled
         self.isStartEnabled = isStartEnabled
         self.startTitle = startTitle
@@ -136,7 +140,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                                 tint: tint,
                                 selection: experienceLevel,
                                 details: experienceDetails,
-                                title: experienceTitle
+                                title: experienceTitle,
+                                bestPoints: bestPoints
                             )
                         }
                         configuration
@@ -166,7 +171,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                             tint: tint,
                             selection: experienceLevel,
                             details: experienceDetails,
-                            title: experienceTitle
+                            title: experienceTitle,
+                            bestPoints: bestPoints
                         )
                     }
 

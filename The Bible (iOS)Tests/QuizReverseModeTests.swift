@@ -41,7 +41,7 @@ struct QuizReverseModeTests {
         _ = await BibleRepository.shared.loadAllBooks()
         let model = QuizGameViewModel(reviewQuestionIDs: ["John 3:16"], mode: .reverse)
         await model.prepareFilter()
-        for (difficulty, seconds) in [(QuizDifficulty.easy, nil), (.normal, 20), (.hard, 30)] {
+        for (difficulty, seconds) in [(QuizDifficulty.easy, nil), (.normal, 25), (.hard, 35)] {
             model.difficulty = difficulty
             model.startQuiz()
             #expect(model.phase == .playing)
@@ -62,9 +62,9 @@ struct QuizReverseModeTests {
         }
         model.mode = .standard
         model.difficulty = .normal
-        #expect(model.timeLimit == 15)
+        #expect(model.timeLimit == 18)
         model.difficulty = .hard
-        #expect(model.timeLimit == 12)
+        #expect(model.timeLimit == 15)
     }
 
     @Test func questionAnswerAndReviewIdentityFollowTheMode() {

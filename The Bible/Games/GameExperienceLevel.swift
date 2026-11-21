@@ -53,17 +53,29 @@ struct GameExperienceCompactPicker: View {
     @Binding var selection: GameExperienceLevel
     let details: GameExperienceDetails?
     let title: LocalizedStringKey
+    /// The saved best round score for this difficulty, shown under its description.
+    var bestPoints: Int?
 
     var body: some View {
-        GameSegmentedSetting(
-            title: Text(title),
-            tint: tint,
-            selection: $selection,
-            options: GameExperienceLevel.allCases,
-            label: { Text($0.title) },
-            detail: { Text(details?.detail(for: $0) ?? $0.detail) },
-            icon: \.icon
-        )
+        VStack(alignment: .leading, spacing: 6) {
+            GameSegmentedSetting(
+                title: Text(title),
+                tint: tint,
+                selection: $selection,
+                options: GameExperienceLevel.allCases,
+                label: { Text($0.title) },
+                detail: { Text(details?.detail(for: $0) ?? $0.detail) },
+                icon: \.icon
+            )
+
+            if let bestPoints, bestPoints > 0 {
+                Label("Best: \(bestPoints) points", systemImage: "trophy.fill")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.orange)
+                    .padding(.horizontal, 4)
+                    .accessibilityLabel("Your best score is \(bestPoints) points")
+            }
+        }
     }
 }
 

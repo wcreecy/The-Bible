@@ -49,7 +49,7 @@ final class WhoAmIGameViewModel {
             switch self {
             case .easy: return 0
             case .normal: return 30
-            case .hard: return 15
+            case .hard: return 20
             }
         }
 
@@ -57,7 +57,7 @@ final class WhoAmIGameViewModel {
             switch self {
             case .easy: "Well-known people, no timer, and curated choices."
             case .normal: "Adds less familiar people. 30 seconds and curated choices."
-            case .hard: "Everyone in the game. 15 seconds and curated choices."
+            case .hard: "Everyone in the game. 20 seconds and curated choices."
             }
         }
 
@@ -231,7 +231,19 @@ final class WhoAmIGameViewModel {
         PersistentGameStreak(game: "whoami", variant: difficulty.rawValue)
     }
 
-    private var bestGameScoreKey: String { "whoamiBestGameScore_\(difficulty.rawValue)" }
+    private var bestGameScoreKey: String { GameBestScore.Kind.whoAmI.key(difficulty: difficulty.rawValue) }
+
+    /// A review of missed questions isn't comparable with a full game.
+    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty }
+
+    /// The saved best in points for the chosen difficulty, for the start screen.
+    var bestPoints: Int { GameBestScore.value(forKey: bestGameScoreKey) }
+
+    /// How the round just played compares with the saved best, for the summary.
+    var roundBest: RoundBest? {
+        guard roundCountsTowardBest, session.bestGameScore > 0 else { return nil }
+        return RoundBest(points: session.bestGameScore, isNew: session.isNewBestGame)
+    }
     /// Each mode and difficulty has its own pool, so each keeps its own pass through the questions.
     private var recencyGameKey: String { "whoAmI.\(mode.rawValue).\(difficulty.rawValue)" }
 
@@ -456,7 +468,7 @@ final class WhoAmIGameViewModel {
     }
 
     private func finishGame() {
-        session.finishGame(bestScoreKey: bestGameScoreKey, points: points)
+        session.finishGame(bestScoreKey: bestGameScoreKey, points: points, savesBest: roundCountsTowardBest)
         current = nil
         isComplete = true
     }

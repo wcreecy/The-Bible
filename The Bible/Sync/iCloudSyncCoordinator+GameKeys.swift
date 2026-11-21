@@ -271,12 +271,17 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    /// Best round scores (Quiz, Trivia, Who?, Countdown). They sync and reset with the persistent
+    /// streaks, since both are local records that follow the player between devices.
+    static let gameBestScoreKeys: [String] = GameBestScore.allKeys
+
     static var allPersistentStreakKeys: [String] {
         beatClockPersistentStreakKeys
             + verseMatchPersistentStreakKeys
             + hangmanPersistentStreakKeys
             + bookOrderPersistentStreakKeys
             + additionalPersistentStreakKeys
+            + gameBestScoreKeys
     }
 
     var allKnownGameDataKeys: Set<String> { Self.allKnownGameDataKeySet }

@@ -49,6 +49,7 @@ struct WhoAmIGameView: View {
                             tint: .brown,
                             canTimeOut: vm.difficulty.timeLimit > 0,
                             points: vm.roundPoints,
+                            best: vm.roundBest,
                             onPlayAgain: vm.startGame,
                             onChangeSettings: vm.returnToSetup
                         )
@@ -144,9 +145,10 @@ struct WhoAmIGameView: View {
             experienceDetails: GameExperienceDetails(
                 learn: "Well-known people with no timer. No bonus points.",
                 standard: "More people with 30 seconds per clue. +1 bonus point for answering in the first 10 seconds.",
-                challenge: "Everyone with 15 seconds per clue. +1 bonus point for answering in the first 5 seconds."
+                challenge: "Everyone with 20 seconds per clue. +1 bonus point for answering in the first 6 seconds."
             ),
             experienceTitle: isReviewRound ? "Timer" : "How you’ll play",
+            bestPoints: isReviewRound ? nil : vm.bestPoints,
             isConfigurationEnabled: !isReviewRound,
             isStartEnabled: vm.isReady,
             startAction: vm.startGame
@@ -162,7 +164,10 @@ struct WhoAmIGameView: View {
                     vm.difficulty.timeLimit > 0 ? String(localized: "\(vm.difficulty.timeLimit) sec") : String(localized: "No limit"),
                     String(localized: "Per question")
                 ),
-                third: ("square.stack.3d.up", "4", String(localized: "Choices"))
+                // Easy has no hint; the others get one per question, at a cost in time.
+                third: vm.difficulty == .easy
+                    ? ("lightbulb.slash", String(localized: "None"), String(localized: "Hints"))
+                    : ("lightbulb", String(localized: "1 hint"), String(localized: "Per question"))
             )
         }
         Spacer(minLength: 24)

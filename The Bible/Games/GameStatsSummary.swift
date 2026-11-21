@@ -120,6 +120,9 @@ struct GameStatsActivitySummary: View {
         let trendTint: Color = trend7.deltaVsPrev >= 0 ? .green : .red
         let trendArrow: String = trend7.deltaVsPrev >= 0 ? "arrow.up.right" : "arrow.down.right"
         let hasRecentActivity30 = series30.contains { $0.answered > 0 }
+        // Quiz, Trivia, Who? and Countdown keep a best round score, shown beside the trend.
+        let highScore = GameBestScore.kinds(forDisplayName: selectedGame)
+            .flatMap { GameBestScore.highest(for: $0) }
 
         VStack(alignment: .leading, spacing: 10) {
             Grid(horizontalSpacing: 8, verticalSpacing: 8) {
@@ -181,7 +184,17 @@ struct GameStatsActivitySummary: View {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .stroke(trendTint.opacity(0.25), lineWidth: 1)
                     )
-                    .gridCellColumns(2)
+                    .gridCellColumns(highScore == nil ? 2 : 1)
+
+                    if let highScore {
+                        MetricChip(
+                            title: "High Score (\(GameBestScore.difficultyTitle(highScore.difficulty)))",
+                            value: "\(highScore.points) points",
+                            tint: .yellow,
+                            fillsWidth: true
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    }
                 }
             }
 
@@ -269,3 +282,19 @@ struct GameStatsActivitySummary: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Quiz high score") {
+    // A saved best, so the chip shows next to the 7-day trend.
+    UserDefaults.standard.set(17, forKey: GameBestScore.Kind.quiz.key(difficulty: "hard"))
+    return ScrollView {
+        GameStatsActivitySummary(
+            selectedGame: "Quiz",
+            wordScope: 2,
+            version: 0,
+            kpi: GameStatsKPI(selectedGame: "Quiz", wordScope: 2, breakdown: GameStats.shared.breakdownSnapshot())
+        )
+        .padding()
+    }
+}
+#endif

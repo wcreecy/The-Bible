@@ -59,16 +59,17 @@ struct QuizGameplayTests {
     @Test func theTimerRunsOutAndPausingStopsIt() async throws {
         try await withGame { game, clock in
             game.startQuiz()
+            let limit = try #require(game.timeLimit)
             let timer = Task { await game.runTimer() }
             await clock.advance(by: 5)
-            #expect(game.remainingSeconds == 10)
+            #expect(game.remainingSeconds == limit - 5)
 
             game.pause()
             timer.cancel()
             await clock.advance(by: 30)
             game.resume()
             let resumed = Task { await game.runTimer() }
-            await clock.advance(by: 10)
+            await clock.advance(by: Double(limit - 5))
             #expect(game.current?.outcome == .timedOut)
             resumed.cancel()
         }
@@ -102,6 +103,57 @@ struct QuizGameplayTests {
             game.use(.sectionHint)
             #expect(game.sectionHint?.contains(String(localized: section.title)) == true)
         }
+    }
+
+    @Test func extraTimeAddsTenSecondsOncePerGameAndIsNotOnEasy() async throws {
+        try await withGame { game, clock in
+            game.startQuiz()
+            let timer = Task { await game.runTimer() }
+            await clock.advance(by: 5)
+            let limit = try #require(game.timeLimit)
+            #expect(game.remainingSeconds == limit - 5)
+
+            #expect(game.canUse(.extraTime))
+            game.use(.extraTime)
+            #expect(game.remainingSeconds == limit - 5 + QuizLifeline.extraSeconds)
+            #expect(!game.canUse(.extraTime))
+            #expect(!game.availableLifelines.contains(.extraTime))
+            timer.cancel()
+        }
+
+        try await withGame(difficulty: .easy) { game, _ in
+            game.startQuiz()
+            #expect(!game.offers(.extraTime))
+            #expect(!game.availableLifelines.contains(.extraTime))
+        }
+    }
+
+    @Test func extraTimeDoesNotWidenTheSpeedBonusWindow() async throws {
+        try await withGame { game, clock in
+            game.startQuiz()
+            let limit = try #require(game.timeLimit)
+            // Past the first third of the base time, so no speed bonus, even with ten more seconds.
+            await clock.advance(by: Double(limit) / 3 + 1)
+            game.use(.extraTime)
+            game.selectOption(try #require(game.current?.correctAnswer))
+            #expect(game.current?.earnedSpeedBonus == false)
+        }
+    }
+
+    @Test func theSectionHintNeverNamesTheOnlyBookInASection() {
+        // Acts and Revelation are one book each, so their hints name a neighboring section too.
+        for section in QuizVerseSection.allCases where section.bookNames.count == 1 {
+            let book = section.bookNames[0]
+            #expect(section.hintPhrase != book)
+            #expect(section.hintPhrase.contains(" or "))
+            #expect(section.hintPhrase.contains(book))
+        }
+        // Everything else names the whole section, which is more than one book.
+        for section in QuizVerseSection.allCases where section.bookNames.count > 1 {
+            #expect(!section.hintPhrase.contains(" or "))
+        }
+        #expect(QuizVerseSection.acts.hintPhrase == "the Gospels or Acts")
+        #expect(QuizVerseSection.revelation.hintPhrase == "the Epistles or Revelation")
     }
 
     @Test func hardHasNoSectionHint() async throws {

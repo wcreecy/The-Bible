@@ -23,8 +23,8 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
     var roundTime: Int {
         switch self {
         case .easy: 30
-        case .normal: 20
-        case .hard: 15
+        case .normal: 25
+        case .hard: 20
         }
     }
 
@@ -330,7 +330,25 @@ final class BeatTheClockGameViewModel {
         PersistentGameStreak(game: "beatclock", variant: difficulty.rawValue)
     }
 
-    private var bestGameScoreKey: String { "beatclockBestGameScore_\(difficulty.rawValue)" }
+    /// Classic scores points and Rapid Fire scores books found, so each keeps its own best.
+    private var bestGameScoreKey: String {
+        (isRapidFire ? GameBestScore.Kind.countdownRapidFire : .countdown).key(difficulty: difficulty.rawValue)
+    }
+
+    /// A review of missed questions isn't comparable with a full game.
+    private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty }
+
+    /// The saved best for the chosen mode and difficulty, for the start screen.
+    var bestPoints: Int {
+        let kind = mode == .rapidFire ? GameBestScore.Kind.countdownRapidFire : .countdown
+        return GameBestScore.value(forKey: kind.key(difficulty: difficulty.rawValue))
+    }
+
+    /// How the round just played compares with the saved best, for the summary.
+    var roundBest: RoundBest? {
+        guard roundCountsTowardBest, session.bestGameScore > 0 else { return nil }
+        return RoundBest(points: session.bestGameScore, isNew: session.isNewBestGame)
+    }
 
     /// Each difficulty, category and mode has its own pool, so each keeps its own pass through it.
     private var recencyGameKey: String {
@@ -703,7 +721,7 @@ final class BeatTheClockGameViewModel {
 
     private func showResults() {
         roundClock.pause(at: now())
-        session.finishGame(bestScoreKey: bestGameScoreKey, points: points)
+        session.finishGame(bestScoreKey: bestGameScoreKey, points: points, savesBest: roundCountsTowardBest)
         // Review games use only missed questions, so their scores aren't comparable.
         if reviewQuestionIDs.isEmpty {
             GameStats.shared.recordModeRound(.beatclock, mode: playedMode.rawValue, score: points)

@@ -106,16 +106,17 @@ struct BibleTriviaGameModelTests {
     @Test func theTimerRunsOutAndPausingStopsIt() async throws {
         try await withGame { game, clock in
             game.startRound()
+            let limit = game.difficulty.timerSeconds
             await clock.advance(by: 5)
-            #expect(game.remainingSeconds == 10)
+            #expect(game.remainingSeconds == limit - 5)
 
             game.pause()
             await clock.advance(by: 30)
             game.resume()
             await clock.advance(by: 0.1)
-            #expect(game.remainingSeconds == 10)
+            #expect(game.remainingSeconds == limit - 5)
 
-            await clock.advance(by: 10)
+            await clock.advance(by: Double(limit - 5))
             #expect(game.timedOut)
         }
     }
@@ -123,9 +124,10 @@ struct BibleTriviaGameModelTests {
     @Test func extraTimeAddsTenSecondsOncePerRound() async throws {
         try await withGame { game, clock in
             game.startRound()
+            let limit = game.difficulty.timerSeconds
             await clock.advance(by: 5)
             game.use(.extraTime)
-            #expect(game.remainingSeconds == 20)
+            #expect(game.remainingSeconds == limit - 5 + BibleTriviaLifeline.extraSeconds)
             #expect(!game.canUse(.extraTime))
 
             game.choose(wrongAnswer(in: game))
@@ -184,12 +186,14 @@ struct BibleTriviaGameModelTests {
     @Test func aQuickCorrectAnswerEarnsASpeedBonus() async throws {
         try await withGame { game, clock in
             game.startRound()
-            await clock.advance(by: 4)
+            let limit = Double(game.difficulty.timerSeconds)
+            // A third of the time is the bonus window.
+            await clock.advance(by: limit / 3 - 1)
             game.choose(try #require(game.currentQuestion?.correctAnswer))
             #expect(game.earnedSpeedBonus)
 
             game.advance()
-            await clock.advance(by: 6)
+            await clock.advance(by: limit / 3 + 1)
             game.choose(try #require(game.currentQuestion?.correctAnswer))
             #expect(!game.earnedSpeedBonus)
 

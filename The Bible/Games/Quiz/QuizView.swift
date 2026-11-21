@@ -53,6 +53,7 @@ struct QuizView: View {
                                     tint: .blue,
                                     canTimeOut: vm.isTimed,
                                     points: vm.roundPoints,
+                                    best: vm.roundBest,
                                     extraAction: vm.bookToPractice.map { book in
                                         GameRoundSummaryView.ExtraAction(
                                             title: String(localized: "Practice \(book)"),
@@ -219,13 +220,14 @@ struct QuizView: View {
             experienceDetails: GameExperienceDetails(
                 learn: "Untimed practice at your own pace. No bonus points.",
                 standard: vm.mode == .reverse
-                    ? "20 seconds. Choices from your categories. +1 bonus point for answering in the first third of the time."
-                    : "15 seconds for each verse. +1 bonus point for answering in the first 5 seconds, and +1 for naming the right chapter.",
+                    ? "25 seconds. Choices from your categories. +1 bonus point for answering in the first third of the time."
+                    : "18 seconds for each verse. +1 bonus point for answering in the first 6 seconds, and +1 for naming the right chapter.",
                 challenge: vm.mode == .reverse
-                    ? "30 seconds. Choices from the same book. +1 bonus point for answering in the first third of the time."
-                    : "12 seconds for each verse. +1 bonus point for answering in the first 4 seconds, and +1 for naming the right chapter."
+                    ? "35 seconds. Choices from the same book. +1 bonus point for answering in the first third of the time."
+                    : "15 seconds for each verse. +1 bonus point for answering in the first 5 seconds, and +1 for naming the right chapter."
             ),
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
+            bestPoints: vm.reviewQuestionIDs.isEmpty ? vm.bestPoints : nil,
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,
             isStartEnabled: vm.canStart,
             startAction: vm.startQuiz
@@ -293,9 +295,11 @@ struct QuizView: View {
                     String(localized: "Per verse")
                 ),
                 third: (
-                    "text.alignleft",
-                    vm.mode == .reverse ? "4" : (vm.difficulty.contextCost == 0 ? String(localized: "Free") : String(localized: "−\(vm.difficulty.contextCost) sec")),
-                    vm.mode == .reverse ? String(localized: "Choices") : String(localized: "Previous verse")
+                    "lifepreserver",
+                    vm.lifelinesForRound.count == 1
+                        ? String(localized: "1 lifeline")
+                        : String(localized: "\(vm.lifelinesForRound.count) lifelines"),
+                    vm.lifelinesForRound.map(\.name).formatted(.list(type: .and, width: .narrow))
                 )
             )
         }
@@ -317,8 +321,9 @@ struct QuizView: View {
 
                 QuizQuestionPanel(vm: vm, showsTimer: true)
 
-                if !vm.isAnswered {
+                if !vm.isAnswered, !vm.availableLifelines.isEmpty {
                     QuizLifelineBar(vm: vm)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 }
 
                 QuizAfterAnswer(vm: vm)
@@ -344,8 +349,9 @@ struct QuizView: View {
 
                 QuizQuestionPanel(vm: vm, showsTimer: false)
 
-                if !vm.isAnswered {
+                if !vm.isAnswered, !vm.availableLifelines.isEmpty {
                     QuizLifelineBar(vm: vm)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 }
 
                 QuizAfterAnswer(vm: vm)
@@ -399,6 +405,40 @@ struct QuizView: View {
             if let correct = vm.current?.correctAnswer {
                 vm.selectOption(correct)
             }
+        }
+}
+
+/// A question with 50/50 used, so the two wrong answers are gone.
+#Preview("50/50") {
+    @Previewable @State var vm = QuizGameViewModel(
+        mode: .standard,
+        missedQuestions: MissedGameQuestionStore(entries: [])
+    )
+    NavigationStack { QuizView(viewModel: vm) }
+        .task {
+            _ = await BibleRepository.shared.loadAllBooks()
+            vm.pool = .any
+            vm.selectedSections = Set(QuizVerseSection.allCases)
+            await vm.prepareFilter()
+            vm.startQuiz()
+            vm.use(.fiftyFifty)
+        }
+}
+
+/// A question with the Section Hint used, so its banner shows above the answers.
+#Preview("Section hint") {
+    @Previewable @State var vm = QuizGameViewModel(
+        mode: .standard,
+        missedQuestions: MissedGameQuestionStore(entries: [])
+    )
+    NavigationStack { QuizView(viewModel: vm) }
+        .task {
+            _ = await BibleRepository.shared.loadAllBooks()
+            vm.pool = .any
+            vm.selectedSections = Set(QuizVerseSection.allCases)
+            await vm.prepareFilter()
+            vm.startQuiz()
+            vm.use(.sectionHint)
         }
 }
 #endif
