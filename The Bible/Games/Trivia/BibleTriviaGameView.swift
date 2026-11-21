@@ -254,7 +254,6 @@ private struct BibleTriviaPlayScreen: View {
                         tint: model.isTimerDisabled ? .secondary : timerTint,
                         isTimerDisabled: model.isTimerDisabled,
                         outcome: outcome,
-                        verse: model.displayedVerse,
                         usesMutedStyle: $usesMutedTimerStyle,
                         onToggleTimer: model.toggleTimer,
                         onSwapSides: {
@@ -304,7 +303,7 @@ private struct BibleTriviaPlayScreen: View {
 
     private func showFullPassage() {
         guard let reference = model.currentQuestion?.reference else { return }
-        selectedPassage = PassageReferenceParser.parse(reference)
+        selectedPassage = PassageReferenceParser.firstPassage(in: reference)
     }
 
     private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {

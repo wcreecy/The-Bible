@@ -2,6 +2,18 @@ import Foundation
 import SwiftUI
 import Observation
 
+/// Help a player can use once per game.
+enum WhoLifeline: CaseIterable, Hashable {
+    /// Removes two wrong choices.
+    case fiftyFifty
+    /// Clue → Name: says where the person appears. Name → Clue: shows the person's verse.
+    case hint
+    /// Adds ten seconds to the clock. Not on Easy, which has no timer.
+    case extraTime
+
+    static let extraSeconds = 10
+}
+
 @MainActor
 @Observable
 final class WhoAmIGameViewModel {
@@ -97,8 +109,6 @@ final class WhoAmIGameViewModel {
     }
 
     static let questionsPerGame = 10
-    /// Seconds the hint costs on a timed difficulty.
-    static let hintCost = 5
 
     private let reviewQuestionIDs: Set<String>
     /// Where missed questions are recorded; tests pass a store that never touches disk or iCloud.
@@ -171,7 +181,7 @@ final class WhoAmIGameViewModel {
     var selectedChoice: String? = nil
     private(set) var questionNumber: Int = 0
     private(set) var totalQuestions: Int = 0
-    /// A wrong clue taken away by the Name → Clue hint.
+    /// Wrong choices taken away by 50/50.
     private(set) var removedChoices: Set<String> = []
 
     var promptTitle: String {
@@ -206,8 +216,8 @@ final class WhoAmIGameViewModel {
     /// Time spent on the current question. It's the authority for the countdown, so pausing
     /// and resuming can't give back part of a second.
     @ObservationIgnored private var questionClock = GameActiveClock()
-    /// Seconds taken off the question for the hint.
-    private var penaltySeconds = 0
+    /// Seconds the extra-time lifeline added to this question.
+    private var bonusSeconds = 0
     /// The timer was off at some point this question, so it can't earn a speed bonus.
     private var wasTimerOffThisQuestion = false
     /// Flashes the timer in the last five seconds; the timer views animate the change.
@@ -218,7 +228,11 @@ final class WhoAmIGameViewModel {
 
     var roundOver: Bool = false
     var wasTimedOut: Bool = false
-    private(set) var hintUsed = false
+    /// Lifelines used so far this game; each can be used once.
+    private(set) var usedLifelines: Set<WhoLifeline> = []
+    /// Lifelines used on the current question, for its summary entry and what shows on screen.
+    private(set) var lifelinesThisQuestion: Set<WhoLifeline> = []
+    var hintUsed: Bool { lifelinesThisQuestion.contains(.hint) }
     private(set) var timeoutCount = 0
     private(set) var correctTimeRemaining: [Int] = []
     private(set) var earnedSpeedBonus = false
@@ -355,6 +369,7 @@ final class WhoAmIGameViewModel {
         timeoutCount = 0
         correctTimeRemaining = []
         speedBonusCount = 0
+        usedLifelines = []
         isComplete = false
         isTimerDisabled = false
         started = true
@@ -379,11 +394,11 @@ final class WhoAmIGameViewModel {
         removedChoices = []
         roundOver = false
         wasTimedOut = false
-        hintUsed = false
+        lifelinesThisQuestion = []
         earnedSpeedBonus = false
         passage = nil
         isPaused = false
-        penaltySeconds = 0
+        bonusSeconds = 0
         session.startQuestion()
 
         remainingSeconds = difficulty.timeLimit
@@ -432,7 +447,7 @@ final class WhoAmIGameViewModel {
                     correctAnswer: correctChoice,
                     category: String(localized: mode(for: current).title),
                     reference: current.reference.isEmpty ? nil : current.reference,
-                    hintCount: hintUsed ? 1 : 0,
+                    hintCount: lifelinesThisQuestion.count,
                     relatedBookNames: current.books
                 ),
                 savedStreak: persistentStreak
@@ -483,6 +498,8 @@ final class WhoAmIGameViewModel {
         choiceEntries = []
         selectedChoice = nil
         removedChoices = []
+        usedLifelines = []
+        lifelinesThisQuestion = []
         remainingSeconds = 0
         roundOver = false
         isComplete = false
@@ -513,39 +530,73 @@ final class WhoAmIGameViewModel {
         RoundPoints(correct: session.score, bonuses: [RoundPoints.speed(speedBonusCount)])
     }
 
-    // MARK: - Hint
+    // MARK: - Lifelines
 
-    var canUseHint: Bool {
-        guard difficulty != .easy, !hintUsed, !roundOver, !isPaused, current != nil else { return false }
-        // The hint costs time, so it can't be the thing that runs the clock out.
-        return isTimerDisabled || remainingSeconds > Self.hintCost
+    /// Whether this game has the lifeline at all, used or not. Easy is untimed, so it has no
+    /// extra time.
+    func offers(_ lifeline: WhoLifeline) -> Bool {
+        lifeline != .extraTime || isTimed
     }
 
-    /// Clue → Name tells you where the person appears. Name → Clue already names them, so
-    /// the hint takes away a wrong clue instead.
-    var hintTitle: LocalizedStringKey {
-        currentPromptIsName
-            ? "Remove a wrong clue (−\(Self.hintCost) sec)"
-            : "Where do they appear? (−\(Self.hintCost) sec)"
+    /// The lifelines a round at this difficulty offers, for the start screen.
+    var lifelinesForRound: [WhoLifeline] {
+        WhoLifeline.allCases.filter(offers)
     }
 
-    var hintText: String? {
-        guard let current, hintUsed, !currentPromptIsName else { return nil }
+    /// The lifelines still in the row: offered by this game and not yet used.
+    var availableLifelines: [WhoLifeline] {
+        WhoLifeline.allCases.filter { offers($0) && !usedLifelines.contains($0) }
+    }
+
+    func canUse(_ lifeline: WhoLifeline) -> Bool {
+        guard started, !roundOver, !isPaused, current != nil,
+              offers(lifeline), !usedLifelines.contains(lifeline) else { return false }
+        switch lifeline {
+        case .fiftyFifty:
+            return choiceEntries.count - removedChoices.count > 2
+        case .hint:
+            // Clue → Name says where the person appears; Name → Clue shows the verse, once loaded.
+            return currentPromptIsName ? passage != nil : hintDetail != nil
+        case .extraTime:
+            return !isTimerDisabled
+        }
+    }
+
+    /// Where the person appears, or their qualifier, for the Clue → Name hint.
+    private var hintDetail: String? {
+        guard let current else { return nil }
         if !current.books.isEmpty {
             return String(localized: "Appears in \(current.books.prefix(2).formatted())")
         }
         return current.qualifier
     }
 
-    func useHint() {
-        guard canUseHint, let current else { return }
-        hintUsed = true
-        if mode(for: current) == .nameToClue,
-           let wrong = choiceEntries.filter({ $0 != correctChoice }).randomElement() {
-            removedChoices = [wrong]
-        }
-        if !isTimerDisabled {
-            penaltySeconds += Self.hintCost
+    /// The Name → Clue hint: the person's verse, shown until the question is answered. It adds
+    /// something to read instead of taking choices away, so it works with 50/50.
+    var hintVerse: GameVerse? {
+        guard hintUsed, currentPromptIsName, !roundOver, let passage else { return nil }
+        return GameVerse(text: passage.text, reference: passage.title, isClue: true)
+    }
+
+    /// What the Clue → Name hint says, once used on this question.
+    var hintText: String? {
+        guard hintUsed, !currentPromptIsName else { return nil }
+        return hintDetail
+    }
+
+    func use(_ lifeline: WhoLifeline) {
+        guard canUse(lifeline) else { return }
+        usedLifelines.insert(lifeline)
+        lifelinesThisQuestion.insert(lifeline)
+        switch lifeline {
+        case .fiftyFifty:
+            let wrong = choiceEntries.filter { $0 != correctChoice && !removedChoices.contains($0) }.shuffled()
+            removedChoices.formUnion(wrong.prefix(2))
+        case .hint:
+            // Its effect is `hintText` (Clue → Name) or `hintVerse` (Name → Clue).
+            break
+        case .extraTime:
+            bonusSeconds += WhoLifeline.extraSeconds
             updateRemainingTime()
         }
         Haptics.selection()
@@ -597,7 +648,7 @@ final class WhoAmIGameViewModel {
 
     private func updateRemainingTime() {
         guard isTimed else { return }
-        let remaining = max(0, difficulty.timeLimit - penaltySeconds - Int(questionClock.elapsed(at: now())))
+        let remaining = max(0, difficulty.timeLimit + bonusSeconds - Int(questionClock.elapsed(at: now())))
         guard remaining != remainingSeconds else { return }
         remainingSeconds = remaining
         if remainingSeconds == 0 {

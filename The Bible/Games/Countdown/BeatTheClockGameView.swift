@@ -121,7 +121,7 @@ struct BeatTheClockGameView: View {
                             books: vm.booksByMentions,
                             foundBooks: Set(vm.foundBooks + [vm.submittedBook].compactMap(\.self)),
                             firstMention: vm.firstMention(in:),
-                            onOpen: { selectedPassage = PassageReferenceParser.parse($0) }
+                            onOpen: { selectedPassage = PassageReferenceParser.firstPassage(in: $0) }
                         )
                     }
                 }

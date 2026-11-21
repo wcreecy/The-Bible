@@ -107,8 +107,14 @@ struct WhoAmIGameView: View {
         ) {
             if vm.roundOver {
                 Button(vm.isLastQuestion ? "See Results" : "Next Question", systemImage: "arrow.right", action: vm.nextRound)
-            } else if vm.canUseHint {
-                Button(vm.hintTitle, systemImage: "lightbulb", action: vm.useHint)
+            } else {
+                ForEach(WhoLifeline.allCases, id: \.self) { lifeline in
+                    if vm.canUse(lifeline) {
+                        Button(lifeline.title, systemImage: lifeline.systemImage) {
+                            vm.use(lifeline)
+                        }
+                    }
+                }
             }
         }
     }
@@ -164,10 +170,13 @@ struct WhoAmIGameView: View {
                     vm.difficulty.timeLimit > 0 ? String(localized: "\(vm.difficulty.timeLimit) sec") : String(localized: "No limit"),
                     String(localized: "Per question")
                 ),
-                // Easy has no hint; the others get one per question, at a cost in time.
-                third: vm.difficulty == .easy
-                    ? ("lightbulb.slash", String(localized: "None"), String(localized: "Hints"))
-                    : ("lightbulb", String(localized: "1 hint"), String(localized: "Per question"))
+                third: (
+                    "lifepreserver",
+                    vm.lifelinesForRound.count == 1
+                        ? String(localized: "1 lifeline")
+                        : String(localized: "\(vm.lifelinesForRound.count) lifelines"),
+                    vm.lifelinesForRound.map(\.name).formatted(.list(type: .and, width: .narrow))
+                )
             )
         }
         Spacer(minLength: 24)
@@ -268,6 +277,8 @@ struct WhoAmIGameView: View {
             Text(promptIsName ? "Which clue describes them?" : "Who am I?")
                 .font(.headline)
 
+            hintBanner
+
             WhoAmIChoiceGrid(
                 vm: vm,
                 columnCount: promptIsName || dynamicTypeSize.isAccessibilitySize ? 1 : 2,
@@ -275,7 +286,7 @@ struct WhoAmIGameView: View {
             )
         }
 
-        hintAction
+        lifelineRow
 
         reveal
 
@@ -326,14 +337,15 @@ struct WhoAmIGameView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            hintAction
-            .frame(maxWidth: .infinity, alignment: .leading)
+            hintBanner
 
             WhoAmIChoiceGrid(
                 vm: vm,
                 columnCount: 2,
                 usesLargeText: true
             )
+
+            lifelineRow
 
             reveal
 
@@ -371,15 +383,36 @@ struct WhoAmIGameView: View {
         isTimedQuestion && !vm.isTimerDisabled
     }
 
+    /// What the Hint gave: where the person appears (Clue → Name) in an orange banner, or their
+    /// verse (Name → Clue), so it's easy to find.
     @ViewBuilder
-    private var hintAction: some View {
-        if vm.canUseHint {
-            Button(vm.hintTitle, systemImage: "lightbulb") { withAnimation(.snappy) { vm.useHint() } }
-                .buttonStyle(.gameHint(tint: .brown))
-        } else if vm.hintUsed, let hint = vm.hintText {
+    private var hintBanner: some View {
+        if let verse = vm.hintVerse {
+            GameVerseCard(verse: verse)
+                .transition(.scale(scale: 0.9, anchor: .top).combined(with: .opacity))
+        } else if let hint = vm.hintText {
             Label(hint, systemImage: "lightbulb.fill")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.headline)
+                .foregroundStyle(.orange)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.orange.opacity(0.14), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(Color.orange.opacity(0.5), lineWidth: 1.5)
+                )
+                .transition(.scale(scale: 0.9, anchor: .top).combined(with: .opacity))
+                .accessibilityLabel("Hint: \(hint)")
+        }
+    }
+
+    /// 50/50, Hint and +10 Seconds, until each is used.
+    @ViewBuilder
+    private var lifelineRow: some View {
+        if !vm.roundOver, !vm.availableLifelines.isEmpty {
+            WhoAmILifelineBar(vm: vm)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
         }
     }
 

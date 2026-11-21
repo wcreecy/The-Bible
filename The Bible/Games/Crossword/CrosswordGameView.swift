@@ -420,7 +420,7 @@ struct CrosswordGameView: View {
                                 restoreBoardFocus()
                             },
                             showReference: { entry in
-                                selectedPassage = PassageReferenceParser.parse(entry.reference)
+                                selectedPassage = PassageReferenceParser.firstPassage(in: entry.reference)
                             }
                     )
                     .frame(maxWidth: 540, maxHeight: .infinity)
@@ -906,7 +906,7 @@ struct CrosswordGameView: View {
                     }
                     .disabled(!vm.canToggleDirection)
                     .accessibilityLabel(directionButtonAccessibilityLabel)
-                    if let reference = PassageReferenceParser.parse(entry.reference) {
+                    if let reference = PassageReferenceParser.firstPassage(in: entry.reference) {
                         Button("Scripture Hint", systemImage: "book") { selectedPassage = reference }
                             .accessibilityHint("Shows the verse behind this clue")
                     }
@@ -1095,7 +1095,7 @@ struct CrosswordGameView: View {
             Text(entry.clue)
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
-            if let reference = PassageReferenceParser.parse(entry.reference) {
+            if let reference = PassageReferenceParser.firstPassage(in: entry.reference) {
                 Button(entry.reference, systemImage: "book") { selectedPassage = reference }
                     .font(.footnote.weight(.semibold))
                     .buttonStyle(.borderless)

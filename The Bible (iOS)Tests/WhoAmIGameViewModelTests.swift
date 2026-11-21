@@ -115,31 +115,88 @@ struct WhoAmIGameViewModelTests {
         }
     }
 
-    @Test func theClueToNameHintSaysWhereTheyAppearAndCostsFiveSeconds() async throws {
+    @Test func theClueToNameHintSaysWhereTheyAppearAndIsFree() async throws {
         try await withGame { game, _ in
             game.startGame()
-            game.useHint()
+            let limit = game.remainingSeconds
+            game.use(.hint)
             #expect(game.hintText?.isEmpty == false)
-            #expect(game.remainingSeconds == 30 - WhoAmIGameViewModel.hintCost)
+            #expect(game.remainingSeconds == limit)
 
             game.select(game.correctChoice)
             #expect(game.session.entries.last?.hintCount == 1)
         }
     }
 
-    @Test func theNameToClueHintRemovesAWrongClue() async throws {
+    @Test func theNameToClueHintShowsTheVerseAndKeepsEveryChoice() async throws {
         try await withGame(mode: .nameToClue) { game, _ in
             game.startGame()
-            game.useHint()
-            let removed = try #require(game.removedChoices.first)
-            #expect(removed != game.correctChoice)
-            #expect(game.hintText == nil)
+            await game.loadPassage()
+            #expect(game.hintVerse == nil)
 
-            // A removed clue can't be chosen.
-            game.select(removed)
-            #expect(!game.roundOver)
+            game.use(.hint)
+            let verse = try #require(game.hintVerse)
+            #expect(verse.isClue)
+            #expect(game.hintText == nil)
+            #expect(game.removedChoices.isEmpty)
+
+            // The verse goes once the question is answered; the usual verse card takes over.
+            game.select(game.correctChoice)
+            #expect(game.hintVerse == nil)
         }
     }
+
+    @Test func theHintAfterFiftyFiftyStillLeavesTwoChoices() async throws {
+        try await withGame(mode: .nameToClue) { game, _ in
+            game.startGame()
+            await game.loadPassage()
+            game.use(.fiftyFifty)
+            game.use(.hint)
+            #expect(game.removedChoices.count == 2)
+            #expect(game.hintVerse != nil)
+            #expect(game.choices.count - game.removedChoices.count == 2)
+        }
+    }
+
+    @Test func fiftyFiftyRemovesTwoWrongChoicesOncePerGame() async throws {
+        try await withGame { game, _ in
+            game.startGame()
+            #expect(game.canUse(.fiftyFifty))
+            game.use(.fiftyFifty)
+            #expect(game.removedChoices.count == 2)
+            #expect(!game.removedChoices.contains(game.correctChoice))
+            #expect(!game.availableLifelines.contains(.fiftyFifty))
+
+            // Used for the game, so the next question doesn't offer it again.
+            game.select(game.correctChoice)
+            game.nextRound()
+            #expect(!game.canUse(.fiftyFifty))
+            #expect(game.removedChoices.isEmpty)
+        }
+    }
+
+    @Test func extraTimeAddsTenSecondsAndIsNotOnEasy() async throws {
+        try await withGame { game, clock in
+            game.startGame()
+            let limit = game.remainingSeconds
+            await clock.advance(by: 5)
+            game.use(.extraTime)
+            #expect(game.remainingSeconds == limit - 5 + WhoLifeline.extraSeconds)
+            #expect(!game.canUse(.extraTime))
+        }
+        try await withGame(difficulty: .easy) { game, _ in
+            game.startGame()
+            #expect(!game.offers(.extraTime))
+            #expect(game.lifelinesForRound == [.fiftyFifty, .hint])
+        }
+    }
+
+    @Test func normalAndHardOfferAllThreeLifelines() async throws {
+        try await withGame { game, _ in
+            #expect(game.lifelinesForRound == [.fiftyFifty, .hint, .extraTime])
+        }
+    }
+
 
     @Test func aQuickCorrectAnswerEarnsASpeedBonus() async throws {
         try await withGame { game, clock in

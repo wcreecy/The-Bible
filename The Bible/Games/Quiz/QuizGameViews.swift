@@ -185,6 +185,8 @@ struct QuizQuestionPanel: View {
                         .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                 }
+                // Only as tall as the answers need, never stretched to fill spare iPad height.
+                .fixedSize(horizontal: false, vertical: true)
                 .animation(.snappy, value: current.removedOptions)
             }
             .coordinateSpace(.named(Self.coordinateSpace))

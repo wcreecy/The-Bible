@@ -684,7 +684,7 @@ final class HangmanGameViewModel {
     /// The verses of the first passage in `reference` ("Exodus 4:14–16; 28:1" reads Exodus
     /// 4:14–16), up to three, in the reader's translation.
     static func versesInBible(for reference: String) async -> [HangmanVerse] {
-        guard let passage = PassageReferenceParser.parse(reference), let startVerse = passage.startVerse else { return [] }
+        guard let passage = PassageReferenceParser.firstPassage(in: reference), let startVerse = passage.startVerse else { return [] }
         let endVerse = passage.isSingleChapter ? passage.endVerse.map { min($0, startVerse + 2) } : nil
         let scriptureRef = ScriptureRef(
             bookName: passage.bookName,

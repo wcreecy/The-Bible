@@ -502,7 +502,7 @@ struct ScrambleGameView: View {
 
     private func showCurrentReference() {
         guard let reference = vm.currentWord?.reference else { return }
-        selectedPassage = PassageReferenceParser.parse(reference)
+        selectedPassage = PassageReferenceParser.firstPassage(in: reference)
     }
 
 }

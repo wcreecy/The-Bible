@@ -99,7 +99,7 @@ struct GameRoundSummaryView: View {
                 GameRoundSummaryReviewList(
                     entries: summary.entries,
                     unit: unit,
-                    onOpenReference: { selectedPassage = PassageReferenceParser.parse($0) }
+                    onOpenReference: { selectedPassage = PassageReferenceParser.firstPassage(in: $0) }
                 )
             }
         }

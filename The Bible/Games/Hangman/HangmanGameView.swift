@@ -508,7 +508,7 @@ struct HangmanGameView: View {
     // MARK: - References
 
     private func presentReferencePreview(from reference: String) {
-        selectedPassage = PassageReferenceParser.parse(reference)
+        selectedPassage = PassageReferenceParser.firstPassage(in: reference)
     }
 
     // MARK: - On-screen keyboard

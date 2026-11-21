@@ -36,7 +36,7 @@ extension GamePassage {
     static func load(for reference: String) async -> GamePassage? {
         // The reference parser matches against the loaded Bible's book names.
         _ = await BibleRepository.shared.loadAllBooks()
-        guard let parsed = PassageReferenceParser.parse(reference) else { return nil }
+        guard let parsed = PassageReferenceParser.firstPassage(in: reference) else { return nil }
         let start = parsed.startVerse ?? 1
         let lastVerse = parsed.isSingleChapter ? parsed.endVerse : nil
         let shownEnd = lastVerse.map { min($0, start + 2) } ?? start

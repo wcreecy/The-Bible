@@ -680,7 +680,7 @@ final class ScrambleGameViewModel {
 
     /// The first verse of `reference` in the reader's translation, or nil if it can't be found.
     static func sourceVerseText(for reference: String) async -> String? {
-        guard let passage = PassageReferenceParser.parse(reference), let verse = passage.startVerse else { return nil }
+        guard let passage = PassageReferenceParser.firstPassage(in: reference), let verse = passage.startVerse else { return nil }
         let scriptureRef = ScriptureRef(
             bookName: passage.bookName,
             chapter: passage.startChapter,

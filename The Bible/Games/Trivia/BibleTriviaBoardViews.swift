@@ -83,9 +83,17 @@ struct BibleTriviaDashboard: View {
                 timerTint: .cyan
             )
 
-            if !model.isAnswered, !model.availableLifelines.isEmpty {
-                BibleTriviaLifelineBar(model: model)
-                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            if !model.isAnswered {
+                if !model.availableLifelines.isEmpty {
+                    BibleTriviaLifelineBar(model: model)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+
+                // The Verse Hint, under the answers as on iPhone.
+                if let hint = model.displayedVerse {
+                    GameVerseCard(verse: hint)
+                        .transition(.opacity.combined(with: .scale(scale: 0.97)))
+                }
             }
 
             if model.isAnswered {
@@ -99,9 +107,13 @@ struct BibleTriviaDashboard: View {
                     .id(BibleTriviaAnswerReveal.scrollID)
                 }
 
-                // The verse itself is in the timer panel beside this one.
-                if model.passage?.isTruncated == true {
-                    BibleTriviaReadMoreButton(reference: model.currentQuestion?.reference ?? "", action: onShowPassage)
+                // The verse sits under the result, as on iPhone and in Who?.
+                if let verse = model.displayedVerse {
+                    GameVerseCard(verse: verse)
+                        .transition(.opacity.combined(with: .scale(scale: 0.97)))
+                    if model.passage?.isTruncated == true {
+                        BibleTriviaReadMoreButton(reference: model.currentQuestion?.reference ?? "", action: onShowPassage)
+                    }
                 }
 
                 // Next is pinned to the bottom of this half, as on iPhone, so it never scrolls away.
@@ -111,6 +123,7 @@ struct BibleTriviaDashboard: View {
         }
         .padding(AppDesignMetrics.cardPadding)
         .padding(.top, 12)
+        .animation(.snappy, value: model.displayedVerse)
     }
 }
 
@@ -371,7 +384,7 @@ struct BibleTriviaAnswerReveal: View {
     let earnedSpeedBonus: Bool
 
     private var passageReference: PassageReference? {
-        PassageReferenceParser.parse(reference)
+        PassageReferenceParser.firstPassage(in: reference)
     }
 
     private var verseActionReference: VerseActionReference? {
@@ -439,8 +452,6 @@ struct BibleTriviaLargeTimerView: View {
     let tint: Color
     let isTimerDisabled: Bool
     let outcome: BibleTriviaAnswerOutcome?
-    /// The verse hint, or the passage once answered, using the panel's spare room.
-    let verse: GameVerse?
     @Binding var usesMutedStyle: Bool
     let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
@@ -496,12 +507,6 @@ struct BibleTriviaLargeTimerView: View {
 
             Spacer(minLength: 0)
 
-            if let verse {
-                GameVerseCard(verse: verse)
-                    .frame(maxWidth: 460)
-                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
-            }
-
             HStack(spacing: 12) {
                 if outcome == nil {
                     Button(
@@ -548,6 +553,5 @@ struct BibleTriviaLargeTimerView: View {
         .shadow(color: usesNeutralStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
-        .animation(.snappy, value: verse)
     }
 }

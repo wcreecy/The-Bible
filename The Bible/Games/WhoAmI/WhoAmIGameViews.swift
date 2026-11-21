@@ -52,14 +52,6 @@ struct WhoAmIRevealCard: View {
     let secondsRemaining: Int
     var earnedSpeedBonus = false
 
-    private static let shownBookCount = 6
-
-    private var booksText: String {
-        let shown = person.books.prefix(Self.shownBookCount).joined(separator: ", ")
-        let remaining = person.books.count - Self.shownBookCount
-        return remaining > 0 ? String(localized: "\(shown), and \(remaining) more") : shown
-    }
-
     private var title: LocalizedStringKey {
         if wasCorrect { return "Correct!" }
         return wasTimedOut ? "Time’s up" : "Not quite"
@@ -90,17 +82,6 @@ struct WhoAmIRevealCard: View {
                 Text(person.name)
                     .font(.title3.weight(.bold))
             }
-
-            DisclosureGroup("Why this answer?") {
-                Text(person.clue)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                if !person.books.isEmpty {
-                    Label("Appears in \(booksText)", systemImage: "books.vertical")
-                        .font(.subheadline)
-                }
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
@@ -109,6 +90,67 @@ struct WhoAmIRevealCard: View {
             in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
         )
         .accessibilityElement(children: .combine)
+    }
+}
+
+extension WhoLifeline {
+    /// The lifeline's name as plain text, for the start screen.
+    var name: String {
+        switch self {
+        case .fiftyFifty: "50/50"
+        case .hint: String(localized: "Hint")
+        case .extraTime: String(localized: "+\(Self.extraSeconds) Seconds")
+        }
+    }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .fiftyFifty: "50/50"
+        case .hint: "Hint"
+        case .extraTime: "+\(Self.extraSeconds) Seconds"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .fiftyFifty: "circle.lefthalf.filled"
+        case .hint: "lightbulb"
+        case .extraTime: "timer"
+        }
+    }
+
+    var accessibilityHint: LocalizedStringKey {
+        switch self {
+        case .fiftyFifty: "Removes two wrong choices. Once per game."
+        case .hint: "Says where the person appears, or shows their verse. Once per game."
+        case .extraTime: "Adds ten seconds to this question's clock. Once per game."
+        }
+    }
+}
+
+/// 50/50, Hint and +10 Seconds. A used lifeline leaves the row, and the row goes once none are left.
+struct WhoAmILifelineBar: View {
+    let vm: WhoAmIGameViewModel
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(vm.availableLifelines, id: \.self) { lifeline in
+                Button {
+                    withAnimation(.snappy) { vm.use(lifeline) }
+                } label: {
+                    Label(lifeline.title, systemImage: lifeline.systemImage)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity, minHeight: 36)
+                }
+                .buttonStyle(.gameHint(tint: .brown))
+                .disabled(!vm.canUse(lifeline))
+                .accessibilityHint(lifeline.accessibilityHint)
+                .transition(.scale(scale: 0.85).combined(with: .opacity))
+            }
+        }
+        .animation(.snappy, value: vm.availableLifelines)
     }
 }
 
@@ -280,15 +322,23 @@ struct WhoAmIChoiceGrid: View {
 
     var body: some View {
         let choices = vm.choices
+        // 50/50 and the Name → Clue hint take choices out, so the rest close up. Each keeps its
+        // original letter (A–D), so the keyboard shortcuts still match.
+        let remaining = Array(choices.enumerated()).filter { !vm.removedChoices.contains($0.element) }
         Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-            ForEach(Array(stride(from: 0, to: choices.count, by: columnCount)), id: \.self) { start in
+            ForEach(Array(stride(from: 0, to: remaining.count, by: columnCount)), id: \.self) { start in
                 GridRow {
-                    ForEach(start..<min(start + columnCount, choices.count), id: \.self) { index in
-                        option(at: index, choice: choices[index])
+                    ForEach(remaining[start..<min(start + columnCount, remaining.count)], id: \.element) { index, choice in
+                        option(at: index, choice: choice)
+                            .transition(.scale(scale: 0.85).combined(with: .opacity))
                     }
                 }
             }
         }
+        .animation(.snappy, value: vm.removedChoices)
+        // Only as tall as the answers need. Each can grow to match the taller one in its row,
+        // but not to soak up the spare height an iPad card has.
+        .fixedSize(horizontal: false, vertical: true)
         .coordinateSpace(.named(Self.coordinateSpace))
         .onGeometryChange(for: CGPoint.self) { $0.frame(in: .named(GamePencil.coordinateSpace)).origin } action: {
             originInGame = $0

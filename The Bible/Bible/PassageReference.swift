@@ -119,6 +119,12 @@ enum PassageReferenceParser {
         return match.reference
     }
 
+    /// The first passage in a reference that may name several, such as "Genesis 29:24; 30:9–13".
+    /// `parse` only accepts a single passage, so game data with more than one needs this.
+    static func firstPassage(in text: String) -> PassageReference? {
+        parse(text) ?? parseList(text, book: nil, chapter: nil).first
+    }
+
     /// Parses a reference-list entry, filling in what the study data leaves out using the
     /// book and chapter being shown. Handles entries such as "1:2-4" (no book), "20-23"
     /// (verses only), "Leviticus 1:1:1–3" (doubled chapter), and "3:11-13,40-45" (several
