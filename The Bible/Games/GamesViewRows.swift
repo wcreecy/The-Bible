@@ -164,7 +164,7 @@ struct ReviewRoundStatusRow: View {
     /// before any game had missed questions.
     private var statusText: LocalizedStringResource {
         hasEligibleGame
-            ? "Ready: replay the questions you missed."
+            ? "Replay missed questions."
             : "Unlocks once a game mode has \(MissedGameQuestionStore.reviewRoundSize) missed questions."
     }
 

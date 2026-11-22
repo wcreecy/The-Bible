@@ -66,7 +66,7 @@ struct GameLobbyPreview: View {
                     Text("15").font(.title.bold().monospacedDigit())
                 }
                 .frame(width: 96, height: 96)
-                previewPrompt(icon: "person.fill", title: "Moses", subtitle: "Name a book that mentions this person")
+                previewPrompt(icon: "person.fill", title: "Moses", subtitle: "Which of these books mentions this person?")
             }
         case .quizReverse:
             HStack(spacing: 24) {

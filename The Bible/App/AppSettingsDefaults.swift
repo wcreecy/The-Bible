@@ -51,7 +51,7 @@ enum AppSettingsDefaults {
             "statsSelectedGame": "All Games",
             AppStorageKey.beatTheClockCategory: BeatTheClockCategory.people.rawValue,
             AppStorageKey.beatTheClockDifficulty: BeatTheClockDifficulty.normal.rawValue,
-            AppStorageKey.beatTheClockMode: BeatTheClockMode.classic.rawValue,
+            AppStorageKey.beatTheClockMode: BeatTheClockMode.survival.rawValue,
             AppStorageKey.whoAmIMode: WhoAmIGameViewModel.Mode.clueToName.rawValue,
             AppStorageKey.bookOrderMode: BookOrderMode.tapInOrder.rawValue,
             AppStorageKey.whoAmIDifficulty: WhoAmIGameViewModel.Difficulty.normal.rawValue,

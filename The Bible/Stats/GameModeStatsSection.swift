@@ -82,10 +82,8 @@ enum GameModeStatsRows {
     private enum RoundUnit {
         /// Book Order's Before or After?: answers right in a minute.
         case right
-        /// Countdown Classic: points, including bonuses.
+        /// Countdown: points, including any bonuses.
         case points
-        /// Countdown Rapid Fire: books found.
-        case books
     }
 
     private struct Descriptor {
@@ -115,10 +113,7 @@ enum GameModeStatsRows {
             })
         case "Countdown":
             return (.beatclock, BeatTheClockMode.allCases.map { mode in
-                Descriptor(
-                    mode: mode.rawValue, title: mode.title, systemImage: mode.systemImage,
-                    scoring: .rounds(mode == .rapidFire ? .books : .points)
-                )
+                Descriptor(mode: mode.rawValue, title: mode.title, systemImage: mode.systemImage, scoring: .rounds(.points))
             })
         case "Quiz":
             // The icons match the mode choices on the Quiz setup screen.
@@ -175,8 +170,6 @@ enum GameModeStatsRows {
             return String(localized: "Best round: \(best) right · Average \(averageText)")
         case .points:
             return String(localized: "Best game: \(best) points · Average \(averageText)")
-        case .books:
-            return String(localized: "Best game: \(best) books · Average \(averageText)")
         }
     }
 }

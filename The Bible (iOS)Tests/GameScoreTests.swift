@@ -201,11 +201,11 @@ struct GameScoreTests {
     }
 
     @Test
-    func roundPointsAddEachBonusToTheCorrectAnswers() throws {
-        let points = try #require(RoundPoints(
+    func roundPointsAddEachBonusToTheCorrectAnswers() {
+        let points = RoundPoints(
             correct: 10,
-            bonuses: [RoundPoints.speed(3), RoundPoints.chapter(2), RoundPoints.lessKnown(0)]
-        ))
+            bonuses: [RoundPoints.speed(3), RoundPoints.chapter(2), RoundPoints.speed(0)]
+        )
         #expect(points.total == 15)
         #expect(points.correct == 10)
         // Bonuses that weren't earned don't show.
@@ -213,9 +213,10 @@ struct GameScoreTests {
     }
 
     @Test
-    func roundPointsAreNilWhenNoBonusWasEarned() {
-        #expect(RoundPoints(correct: 8, bonuses: [RoundPoints.speed(0), RoundPoints.chapter(0)]) == nil)
-        #expect(RoundPoints(correct: 8, bonuses: []) == nil)
+    func roundPointsWithoutBonusesScoreTheCorrectAnswers() {
+        let points = RoundPoints(correct: 8, bonuses: [RoundPoints.speed(0), RoundPoints.chapter(0)])
+        #expect(points.total == 8)
+        #expect(points.bonuses.isEmpty)
     }
 
     @Test
@@ -223,7 +224,8 @@ struct GameScoreTests {
         #expect(RoundPoints.speed(1).title == "1 speed bonus")
         #expect(RoundPoints.speed(2).title == "2 speed bonuses")
         #expect(RoundPoints.chapter(1).title == "1 chapter bonus")
-        #expect(RoundPoints.lessKnown(3).title == "3 less-known books")
+        #expect(RoundPoints.speed(2).shortTitle == "+2 speed")
+        #expect(RoundPoints.chapter(1).shortTitle == "+1 chapter")
     }
 
     @Test
@@ -253,7 +255,11 @@ struct GameScoreTests {
         #expect(keys.count == GameBestScore.Kind.allCases.count * 3)
         // Standard and Reverse Quiz, and Classic and Rapid Fire Countdown, never share a best.
         #expect(GameBestScore.Kind.quiz.key(difficulty: "hard") != GameBestScore.Kind.quizReverse.key(difficulty: "hard"))
-        #expect(GameBestScore.Kind.countdown.key(difficulty: "easy") != GameBestScore.Kind.countdownRapidFire.key(difficulty: "easy"))
+        let countdownKeys = [GameBestScore.Kind.countdown, .countdownSurvival, .countdownFirstAppearance, .countdownHigherOrLower]
+            .map { $0.key(difficulty: "easy") }
+        #expect(Set(countdownKeys).count == countdownKeys.count)
+        // Classic keeps Countdown's original key, so a best saved before the new modes carries over.
+        #expect(GameBestScore.Kind.countdown.key(difficulty: "easy") == "beatclockBestGameScore_easy")
         // Quiz, Trivia, and Who? keep the keys an earlier best was saved under.
         #expect(GameBestScore.Kind.quiz.key(difficulty: "normal") == "quizBestGameScore_normal")
         #expect(GameBestScore.Kind.trivia.key(difficulty: "easy") == "bibleTriviaBestScore.easy")
@@ -278,7 +284,7 @@ struct GameScoreTests {
     @Test
     func theStatsPageKnowsWhichGamesKeepABest() {
         #expect(GameBestScore.kinds(forDisplayName: "Quiz") == [.quiz, .quizReverse])
-        #expect(GameBestScore.kinds(forDisplayName: "Countdown") == [.countdown])
+        #expect(GameBestScore.kinds(forDisplayName: "Countdown") == [.countdownSurvival])
         #expect(GameBestScore.kinds(forDisplayName: "Hangman") == nil)
         #expect(GameBestScore.kinds(forDisplayName: "All Games") == nil)
     }

@@ -252,8 +252,6 @@ final class WhoAmIGameViewModel {
     /// Lifelines used on the current question, for its summary entry and what shows on screen.
     private(set) var lifelinesThisQuestion: Set<WhoLifeline> = []
     var hintUsed: Bool { lifelinesThisQuestion.contains(.hint) }
-    private(set) var timeoutCount = 0
-    private(set) var correctTimeRemaining: [Int] = []
     private(set) var earnedSpeedBonus = false
     private(set) var speedBonusCount = 0
     /// The verses the current person's reference points to, once loaded.
@@ -381,8 +379,6 @@ final class WhoAmIGameViewModel {
         questionQueue = candidates
         totalQuestions = questionQueue.count
         questionNumber = 0
-        timeoutCount = 0
-        correctTimeRemaining = []
         speedBonusCount = 0
         usedLifelines = []
         isComplete = false
@@ -436,7 +432,6 @@ final class WhoAmIGameViewModel {
     private func timeOut() {
         guard !roundOver else { return }
         wasTimedOut = true
-        timeoutCount += 1
         finishRound(correct: false)
     }
 
@@ -444,9 +439,6 @@ final class WhoAmIGameViewModel {
         questionClock.pause(at: now())
         stopTimer()
         roundOver = true
-        if correct, isTimed, !isTimerDisabled {
-            correctTimeRemaining.append(remainingSeconds)
-        }
         // A quick answer with the timer on the whole question earns a bonus point.
         if correct, isTimed, !wasTimerOffThisQuestion,
            questionClock.elapsed(at: now()) <= Double(difficulty.timeLimit) / 3 {

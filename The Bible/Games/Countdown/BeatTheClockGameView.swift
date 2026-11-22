@@ -234,15 +234,12 @@ struct BeatTheClockGameView: View {
                 String(localized: "This session")
             )
         }
-        let clock: GameSplashFacts.Fact = (
-            "timer",
-            String(localized: "\(vm.roundTime) sec"),
-            switch vm.mode {
-            case .survival: String(localized: "To start")
-            case .higherOrLower: String(localized: "For the game")
-            case .classic, .firstAppearance: String(localized: "Per question")
-            }
-        )
+        let clockLabel = switch vm.mode {
+        case .survival: String(localized: "To start")
+        case .higherOrLower: String(localized: "For the game")
+        case .classic, .firstAppearance: String(localized: "Per question")
+        }
+        let clock: GameSplashFacts.Fact = ("timer", String(localized: "\(vm.roundTime) sec"), clockLabel)
         let third: GameSplashFacts.Fact = switch vm.mode {
         case .survival:
             ("plus.circle", String(localized: "+\(vm.difficulty.survivalTimeBonus) sec"), String(localized: "Per right answer"))
@@ -391,6 +388,12 @@ struct BeatTheClockGameView: View {
         )
     }
 
+    /// Tapping the timer turns it off and on, except on a game clock.
+    private var timerTapAction: (() -> Void)? {
+        guard vm.canToggleTimer else { return nil }
+        return { vm.toggleTimer() }
+    }
+
     @ViewBuilder
     private var compactGameContent: some View {
         GameScoreboardCard(
@@ -435,7 +438,7 @@ struct BeatTheClockGameView: View {
                 isPulsing: vm.isPulsing,
                 formattedTime: vm.isTimerDisabled ? "Timer off" : nil,
                 isDisabled: vm.isTimerDisabled,
-                onTap: vm.canToggleTimer ? vm.toggleTimer : nil
+                onTap: timerTapAction
             )
         }
 

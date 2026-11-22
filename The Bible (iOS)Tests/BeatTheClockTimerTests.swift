@@ -3,7 +3,8 @@ import Testing
 @testable import Bible
 
 /// Countdown (Beat the Clock): the timer, pausing and turning the timer off, leaving
-/// mid-game, bonuses, hints, Rapid Fire, and the verse after a round.
+/// mid-game, bonuses, hints, the tap-to-answer boards, each mode's rules, and the verse
+/// after a round.
 ///
 /// The timer runs on a manual clock, so no test waits on the real one. Missed questions go
 /// to a store that never touches disk or iCloud, and any defaults the game writes (stats,
@@ -67,11 +68,11 @@ struct BeatTheClockTimerTests {
     }
 
     @Test
-    func pausingStopsTheClockAndBlocksAnswersUntilResume() async {
+    func pausingStopsTheClockAndBlocksAnswersUntilResume() async throws {
         let clock = ManualSleeper()
         let game = await loadedGame(clock: clock)
 
-        await withRestoredDefaults {
+        try await withRestoredDefaults {
             game.difficulty = .hard
             game.startGame()
             await play(game, for: 2, on: clock)
@@ -84,14 +85,13 @@ struct BeatTheClockTimerTests {
             #expect(game.remainingSeconds == secondsLeft)
 
             // Answers and hints wait for Resume.
-            game.searchText = "Genesis"
-            #expect(!game.canSubmit)
+            #expect(!game.canAnswer)
             #expect(!game.canRequestTestamentHint)
-            game.submitCurrentEntry()
+            game.submit(bookName: try #require(game.choices?.answer))
             #expect(game.roundOutcome == nil)
 
             game.resume()
-            #expect(game.canSubmit)
+            #expect(game.canAnswer)
             await play(game, for: 1, on: clock)
             #expect(game.remainingSeconds == secondsLeft - 1)
         }
@@ -212,13 +212,13 @@ struct BeatTheClockTimerTests {
             game.difficulty = .normal
             game.startGame()
             await play(game, for: 2, on: clock)
-            game.submit(bookName: try #require(game.currentQuestion?.acceptableBooks.first))
+            game.submit(bookName: try #require(game.choices?.answer))
             #expect(game.earnedSpeedBonus)
 
             game.nextRound()
             game.toggleTimer()
             game.toggleTimer()
-            game.submit(bookName: try #require(game.currentQuestion?.acceptableBooks.first))
+            game.submit(bookName: try #require(game.choices?.answer))
             // The timer was off during the round, so no bonus.
             #expect(!game.earnedSpeedBonus)
             #expect(game.speedBonusCount == 1)
@@ -226,26 +226,26 @@ struct BeatTheClockTimerTests {
     }
 
     @Test
-    func aRightBookOtherThanTheBestKnownEarnsABonus() async throws {
+    func theBoardHasOneRightBookAndThreeThatNeverMentionTheName() async throws {
         let clock = ManualSleeper()
         let game = await loadedGame(clock: clock)
 
         try await withRestoredDefaults {
-            game.difficulty = .hard
-            // Start games until the first name has a clear best-known book and others.
-            for _ in 0..<50 {
+            for difficulty in BeatTheClockDifficulty.allCases {
+                game.difficulty = difficulty
                 game.startGame()
-                if let question = game.currentQuestion, question.bestKnownBook != nil, question.acceptableBooks.count > 1 { break }
-                game.resetToSetup()
+                while game.phase == .playing {
+                    let question = try #require(game.currentQuestion)
+                    let choices = try #require(game.choices)
+                    #expect(choices.books.count == BeatTheClockChoiceBuilder.choiceCount)
+                    #expect(Set(choices.books).count == choices.books.count)
+                    #expect(choices.books.filter { question.acceptableBooks.contains($0) } == [choices.answer])
+                    // A wrong book never has the name, or another spelling of it.
+                    #expect(choices.books.allSatisfy { $0 == choices.answer || !question.unsafeDecoyBooks.contains($0) })
+                    game.debugWin()
+                    game.nextRound()
+                }
             }
-            let question = try #require(game.currentQuestion)
-            let bestKnown = try #require(question.bestKnownBook)
-            let other = try #require(question.acceptableBooks.first { $0 != bestKnown })
-
-            game.submit(bookName: other)
-            #expect(game.earnedLessKnownBonus)
-            #expect(game.booksByMentions.first?.book == bestKnown)
-            #expect(game.firstMention(in: bestKnown) != nil)
         }
     }
 
@@ -261,7 +261,7 @@ struct BeatTheClockTimerTests {
             #expect(game.showsTestamentHint)
             #expect(game.remainingSeconds == BeatTheClockDifficulty.hard.roundTime - BeatTheClockDifficulty.testamentHintCost)
 
-            game.submit(bookName: try #require(game.currentQuestion?.acceptableBooks.first))
+            game.submit(bookName: try #require(game.choices?.answer))
             #expect(game.session.entries.last?.hintCount == 1)
         }
     }
@@ -277,82 +277,152 @@ struct BeatTheClockTimerTests {
             await game.loadPassage()
             #expect(game.displayedVerse == nil)
 
-            game.submit(bookName: try #require(game.currentQuestion?.acceptableBooks.first))
+            game.submit(bookName: try #require(game.choices?.answer))
             #expect(game.displayedVerse?.reference == "Exodus 4:14")
         }
     }
 
-    // MARK: - Rapid Fire
+    // MARK: - Survival
 
     @Test
-    func rapidFireCountsEachNewBookAndChargesForWrongOnes() async throws {
+    func survivalAddsTimeForRightAnswersAndTakesItForWrongOnes() async throws {
         let clock = ManualSleeper()
         let game = await loadedGame(clock: clock)
 
         try await withRestoredDefaults {
-            game.mode = .rapidFire
+            game.mode = .survival
             game.difficulty = .normal
             game.startGame()
-            #expect(game.totalQuestions == BeatTheClockGameViewModel.rapidFireSubjectsPerGame)
-            #expect(game.remainingSeconds == BeatTheClockDifficulty.normal.rapidFireTime)
+            let start = BeatTheClockDifficulty.normal.survivalStartTime
+            let bonus = BeatTheClockDifficulty.normal.survivalTimeBonus
+            #expect(game.remainingSeconds == start)
+            #expect(!game.canToggleTimer)
 
-            let question = try #require(game.currentQuestion)
-            #expect(question.acceptableBooks.count >= 4)
-            let books = question.acceptableBooks.sorted()
+            await play(game, for: 2, on: clock)
+            game.debugWin()
+            #expect(game.remainingSeconds == start - 2 + bonus)
+            #expect(game.lastClockChange == bonus)
+            // The clock waits between questions.
+            await clock.advance(by: 0.5)
+            #expect(game.remainingSeconds == start - 2 + bonus)
 
-            game.submit(bookName: books[0])
-            game.submit(bookName: books[1])
-            game.submit(bookName: books[0])
-            #expect(game.foundBooks == [books[0], books[1]])
-            #expect(game.roundOutcome == nil)
-
-            let wrong = try #require(BibleCanon.fallbackCanon.first { !question.acceptableBooks.contains($0) })
-            game.submit(bookName: wrong)
-            #expect(game.remainingSeconds == BeatTheClockDifficulty.normal.rapidFireTime - BeatTheClockDifficulty.rapidFirePenalty)
-
-            // Running out of time ends the round; the books found still count.
-            await play(game, for: Double(BeatTheClockDifficulty.normal.rapidFireTime), on: clock)
-            #expect(game.roundOutcome == .correct)
-            #expect(game.points == 2)
+            game.nextRound()
+            let choices = try #require(game.choices)
+            game.submit(bookName: try #require(choices.books.first { $0 != choices.answer }))
+            #expect(game.remainingSeconds == start - 2 + bonus - BeatTheClockDifficulty.survivalPenalty)
+            // One clock for the game, so no speed bonuses.
+            #expect(game.speedBonusCount == 0)
+            #expect(game.points == 1)
         }
     }
 
     @Test
-    func aRapidFireMissIsSavedUnderRapidFireAndReviewedInIt() async throws {
+    func survivalMovesOnByItselfAndEndsWhenTheClockRunsOut() async throws {
+        let clock = ManualSleeper()
+        let game = await loadedGame(clock: clock)
+
+        await withRestoredDefaults {
+            game.mode = .survival
+            game.difficulty = .hard
+            game.startGame()
+            game.debugWin()
+            await clock.advance(by: 1)
+            await clock.settle()
+            #expect(game.questionNumber == 2)
+            #expect(game.roundOutcome == nil)
+
+            await play(game, for: Double(BeatTheClockDifficulty.hard.survivalStartTime + BeatTheClockDifficulty.hard.survivalTimeBonus), on: clock)
+            #expect(game.phase == .results)
+            // The question on screen when time ran out isn't counted.
+            #expect(game.session.answered == 1)
+        }
+    }
+
+    @Test
+    func aSurvivalMissIsReviewedAsClassic() async throws {
         let clock = ManualSleeper()
         let missed = MissedGameQuestionStore(entries: [])
         let game = await loadedGame(missedQuestions: missed, clock: clock)
 
         try await withRestoredDefaults {
-            game.mode = .rapidFire
+            game.mode = .survival
             game.startGame()
             let question = try #require(game.currentQuestion)
-            // Giving up with no books found is a miss.
-            game.giveUp()
-            #expect(missed.containsMiss(game: .beatTheClock, mode: "rapidFire", questionID: question.id))
-            #expect(missed.reviewCount(for: .beatTheClock, mode: "classic") == 0)
+            let choices = try #require(game.choices)
+            game.submit(bookName: try #require(choices.books.first { $0 != choices.answer }))
+            #expect(missed.containsMiss(game: .beatTheClock, mode: "classic", questionID: question.id))
+        }
+    }
 
-            // The review plays Rapid Fire, without changing the saved mode.
-            game.mode = .classic
-            let review = BeatTheClockGameViewModel(
-                reviewQuestionIDs: [question.id],
-                reviewMode: .rapidFire,
-                missedQuestions: missed,
-                sleep: clock.sleep(for:),
-                now: { clock.date },
-                loadPassage: { _ in Self.passage }
-            )
-            await review.loadData()
-            #expect(review.isRapidFire)
-            #expect(BeatTheClockGameViewModel().mode == .classic)
-            review.startGame()
-            #expect(review.currentQuestion?.id == question.id)
+    @Test
+    func aSavedRapidFireSettingOpensAsSurvival() {
+        #expect(BeatTheClockMode(storedValue: "rapidFire") == .survival)
+        #expect(BeatTheClockMode(storedValue: nil) == .survival)
+        #expect(BeatTheClockMode(storedValue: "classic") == .classic)
+        #expect(BeatTheClockMode.reviewableCases == [.classic, .firstAppearance])
+    }
 
-            // Finding every book is a right answer, which clears the Rapid Fire miss.
-            for book in question.acceptableBooks.sorted() {
-                review.submit(bookName: book)
-            }
-            #expect(!missed.containsMiss(game: .beatTheClock, mode: "rapidFire", questionID: question.id))
+    // MARK: - First Appearance
+
+    @Test
+    func firstAppearanceAsksForTheEarliestBook() async throws {
+        let clock = ManualSleeper()
+        let missed = MissedGameQuestionStore(entries: [])
+        let game = await loadedGame(missedQuestions: missed, clock: clock)
+
+        try await withRestoredDefaults {
+            game.mode = .firstAppearance
+            game.difficulty = .hard
+            game.startGame()
+            #expect(game.remainingSeconds == BeatTheClockDifficulty.hard.firstAppearanceTime)
+            #expect(!game.offersTestamentHint)
+
+            let question = try #require(game.currentQuestion)
+            let choices = try #require(game.choices)
+            let earliest = BibleCanon.canonicalOrder().first { question.acceptableBooks.contains($0) }
+            #expect(choices.answer == earliest)
+            // Every book on the board mentions the name.
+            #expect(choices.books.allSatisfy { question.acceptableBooks.contains($0) })
+
+            game.submit(bookName: try #require(choices.books.first { $0 != choices.answer }))
+            #expect(game.roundOutcome == .incorrect)
+            #expect(missed.containsMiss(game: .beatTheClock, mode: "firstAppearance", questionID: question.id))
+            #expect(!missed.containsMiss(game: .beatTheClock, mode: "classic", questionID: question.id))
+        }
+    }
+
+    // MARK: - Higher or Lower
+
+    @Test
+    func higherOrLowerPicksTheNameInMoreBooks() async throws {
+        let clock = ManualSleeper()
+        let missed = MissedGameQuestionStore(entries: [])
+        let game = await loadedGame(missedQuestions: missed, clock: clock)
+
+        try await withRestoredDefaults {
+            game.mode = .higherOrLower
+            game.difficulty = .normal
+            game.startGame()
+            #expect(game.remainingSeconds == BeatTheClockDifficulty.normal.higherOrLowerTime)
+            #expect(!game.offersClue)
+
+            let first = try #require(game.currentQuestion)
+            let second = try #require(game.rival)
+            #expect(first.subject == second.subject)
+            #expect(abs(first.acceptableBooks.count - second.acceptableBooks.count) >= BeatTheClockDifficulty.normal.higherOrLowerGap)
+
+            let winner = try #require(game.higherOrLowerWinner)
+            let loser = winner.id == first.id ? second : first
+            game.choose(questionID: loser.id)
+            #expect(game.roundOutcome == .incorrect)
+            #expect(game.remainingSeconds == BeatTheClockDifficulty.normal.higherOrLowerTime - BeatTheClockDifficulty.higherOrLowerPenalty)
+            // Higher or Lower's pairs aren't saved for review.
+            #expect(missed.isEmpty)
+
+            game.nextRound()
+            game.debugWin()
+            #expect(game.roundOutcome == .correct)
+            #expect(game.points == 1)
         }
     }
 

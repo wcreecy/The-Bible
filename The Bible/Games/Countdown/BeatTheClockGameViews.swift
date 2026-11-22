@@ -135,7 +135,8 @@ struct BeatTheClockChoiceGrid: View {
                     tile(book, state: state)
                 }
                 .buttonStyle(.plain)
-                .disabled(isLocked)
+                // Not `.disabled`, which would fade the green and red the answer is shown in.
+                .allowsHitTesting(!isLocked)
                 .hoverEffect(.lift)
                 .accessibilityValue(accessibilityValue(for: state))
             }
@@ -242,7 +243,8 @@ struct BeatTheClockPairBoard: View {
             .contentShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
         }
         .buttonStyle(.plain)
-        .disabled(isLocked)
+        // Not `.disabled`, which would fade the green and red the answer is shown in.
+        .allowsHitTesting(!isLocked)
         .hoverEffect(.lift)
         .accessibilityValue(isLocked ? Text(count == 1 ? "1 book" : "\(count) books") : Text(""))
     }

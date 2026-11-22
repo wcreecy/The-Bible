@@ -50,6 +50,8 @@ struct RoundPoints: Equatable {
     struct Bonus: Equatable {
         /// "3 speed bonuses", already worded for the count.
         let title: String
+        /// "+3 speed", for the chip beside the points total.
+        let shortTitle: String
         let systemImage: String
         let count: Int
     }
@@ -60,10 +62,10 @@ struct RoundPoints: Equatable {
     /// Only the bonuses that were earned.
     let bonuses: [Bonus]
 
-    /// Nil when no bonus was earned, so the summary keeps its plain "N of M correct" look.
-    init?(correct: Int, bonuses: [Bonus]) {
+    /// Bonuses that weren't earned are dropped, so a round without any scores just its correct
+    /// answers and the summary still shows points, keeping every round of a game alike.
+    init(correct: Int, bonuses: [Bonus]) {
         let earned = bonuses.filter { $0.count > 0 }
-        guard !earned.isEmpty else { return nil }
         self.correct = correct
         self.bonuses = earned
         self.total = correct + earned.reduce(0) { $0 + $1.count }
@@ -72,6 +74,7 @@ struct RoundPoints: Equatable {
     static func speed(_ count: Int) -> Bonus {
         Bonus(
             title: count == 1 ? String(localized: "1 speed bonus") : String(localized: "\(count) speed bonuses"),
+            shortTitle: String(localized: "+\(count) speed"),
             systemImage: "bolt.fill",
             count: count
         )
@@ -80,15 +83,8 @@ struct RoundPoints: Equatable {
     static func chapter(_ count: Int) -> Bonus {
         Bonus(
             title: count == 1 ? String(localized: "1 chapter bonus") : String(localized: "\(count) chapter bonuses"),
+            shortTitle: String(localized: "+\(count) chapter"),
             systemImage: "star.fill",
-            count: count
-        )
-    }
-
-    static func lessKnown(_ count: Int) -> Bonus {
-        Bonus(
-            title: count == 1 ? String(localized: "1 less-known book") : String(localized: "\(count) less-known books"),
-            systemImage: "books.vertical.fill",
             count: count
         )
     }

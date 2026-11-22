@@ -32,11 +32,19 @@ final class MissedGameQuestionStore {
                 case .bibleQuiz, .quizReverse, .bibleTrivia, .hangman, .scramble, .word: nil
                 }
             }
+
+            /// The mode a saved mode's misses are reviewed in. Countdown's Survival asks the
+            /// same question as Classic, and so did Rapid Fire, which it replaced, so their
+            /// misses join Classic's, including ones synced from a device still on Rapid Fire.
+            func reviewedMode(_ mode: String?) -> String? {
+                guard self == .beatTheClock, mode == "survival" || mode == "rapidFire" else { return mode }
+                return "classic"
+            }
         }
 
         let id: UUID
         let game: Game
-        /// The game mode the question was missed in, e.g. "rapidFire". Nil for a game with one
+        /// The game mode the question was missed in, e.g. "firstAppearance". Nil for a game with one
         /// way to play, and for misses saved before modes were recorded.
         let mode: String?
         /// Some people and place questions relate to more than one book.
@@ -75,14 +83,14 @@ final class MissedGameQuestionStore {
     /// and replayed per mode.
     struct ReviewMode: Hashable {
         let game: Entry.Game
-        /// The mode's stored name, e.g. "rapidFire"; nil for a game with one way to play.
+        /// The mode's stored name, e.g. "firstAppearance"; nil for a game with one way to play.
         let mode: String?
 
         /// A missing mode means the game's main mode. A game reviewed as one set has no
         /// mode, so any mode saved with its misses (such as WORD's Daily) is ignored.
         init(game: Entry.Game, mode: String? = nil) {
             self.game = game
-            self.mode = game.defaultMode == nil ? nil : (mode ?? game.defaultMode)
+            self.mode = game.defaultMode == nil ? nil : game.reviewedMode(mode ?? game.defaultMode)
         }
     }
 

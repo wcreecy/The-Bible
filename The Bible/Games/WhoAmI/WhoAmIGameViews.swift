@@ -1,31 +1,5 @@
 import SwiftUI
 
-struct WhoAmITimingSummary: View {
-    let timeouts: Int
-    let remainingTimes: [Int]
-
-    private var averageRemaining: Int {
-        guard !remainingTimes.isEmpty else { return 0 }
-        return remainingTimes.reduce(0, +) / remainingTimes.count
-    }
-
-    var body: some View {
-        HStack {
-            Label("\(timeouts) timeouts", systemImage: "clock.badge.exclamationmark")
-            Spacer()
-            Label("\(averageRemaining)s avg left", systemImage: "timer")
-            if let fastest = remainingTimes.max() {
-                Spacer()
-                Label("\(fastest)s fastest", systemImage: "bolt.fill")
-            }
-        }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(.secondary)
-        .padding(12)
-        .background(Color.brown.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-    }
-}
-
 struct WhoAmISetupControls: View {
     @Binding var mode: WhoAmIGameViewModel.Mode
     /// A review picks its direction from the ones ready for review instead.

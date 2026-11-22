@@ -43,20 +43,15 @@ struct WhoAmIGameView: View {
                 if !vm.started {
                     setupContent
                 } else if vm.isComplete {
-                    VStack(spacing: 12) {
-                        GameRoundSummaryView(
-                            summary: GameRoundSummary(score: vm.session),
-                            tint: .brown,
-                            canTimeOut: vm.difficulty.timeLimit > 0,
-                            points: vm.roundPoints,
-                            best: vm.roundBest,
-                            onPlayAgain: vm.startGame,
-                            onChangeSettings: vm.returnToSetup
-                        )
-                        if vm.difficulty.timeLimit > 0 {
-                            WhoAmITimingSummary(timeouts: vm.timeoutCount, remainingTimes: vm.correctTimeRemaining)
-                        }
-                    }
+                    GameRoundSummaryView(
+                        summary: GameRoundSummary(score: vm.session),
+                        tint: .brown,
+                        canTimeOut: vm.difficulty.timeLimit > 0,
+                        points: vm.roundPoints,
+                        best: vm.roundBest,
+                        onPlayAgain: vm.startGame,
+                        onChangeSettings: vm.returnToSetup
+                    )
                 } else if vm.isPaused {
                     GamePausedView(tint: .brown, remainingSeconds: vm.remainingSeconds) {
                         vm.resume()

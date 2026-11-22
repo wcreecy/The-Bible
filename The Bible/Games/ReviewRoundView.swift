@@ -67,7 +67,7 @@ enum ReviewGame: String, CaseIterable, Identifiable {
         case .trivia:
             [ReviewGameMode(game: .bibleTrivia, title: title, icon: systemImage)]
         case .countdown:
-            BeatTheClockMode.allCases.map {
+            BeatTheClockMode.reviewableCases.map {
                 ReviewGameMode(game: .beatTheClock, mode: $0.rawValue, title: $0.title, detail: $0.detail, icon: $0.systemImage)
             }
         case .whoAmI:

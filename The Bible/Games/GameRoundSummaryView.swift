@@ -31,7 +31,7 @@ struct GameRoundSummaryView: View {
     var canTimeOut = true
     var poolProgress: PoolProgress?
     var resultNote: String?
-    /// Set when bonus points were earned, so the header leads with the points total.
+    /// Set for games that score points, so the header leads with the points total.
     var points: RoundPoints?
     /// How the round compares with the saved best score, for games that keep one.
     var best: RoundBest?
@@ -134,31 +134,51 @@ struct GameRoundSummaryView: View {
 
     private var actions: some View {
         VStack(spacing: 10) {
-            if let reviewRound {
-                // Replaying the same review would ask questions it just cleared, so a review
-                // ends with Review Again, which draws the missed questions that are left.
-                Button("Review Again", systemImage: "arrow.clockwise.heart", action: reviewRound.reviewAgain)
-                    .buttonStyle(GameProminentButtonStyle(tint: tint))
-                    .disabled(!canReviewAgain)
-                if !canReviewAgain {
-                    Text("Another review unlocks at \(MissedGameQuestionStore.reviewRoundSize) missed questions.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+            // Play Again and Settings share a row, with Play Again taking the extra width. At
+            // large text sizes they don't fit side by side, so they stack at full width instead.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 10) {
+                    primaryAction
+                    settingsButton("Settings")
+                        .fixedSize(horizontal: true, vertical: false)
                 }
-            } else {
-                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
-                    .buttonStyle(GameProminentButtonStyle(tint: tint))
+                VStack(spacing: 10) {
+                    primaryAction
+                    settingsButton("Change Settings")
+                }
+            }
+
+            if reviewRound != nil, !canReviewAgain {
+                Text("Another review unlocks at \(MissedGameQuestionStore.reviewRoundSize) missed questions.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
 
             if let extraAction {
                 Button(extraAction.title, systemImage: extraAction.systemImage, action: extraAction.action)
-                    .buttonStyle(ModernPillButtonStyle(tint: tint))
+                    .buttonStyle(GameSecondaryButtonStyle(tint: tint))
             }
-
-            Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
         }
         .padding(.top, 4)
+    }
+
+    @ViewBuilder
+    private var primaryAction: some View {
+        if let reviewRound {
+            // Replaying the same review would ask questions it just cleared, so a review
+            // ends with Review Again, which draws the missed questions that are left.
+            Button("Review Again", systemImage: "arrow.clockwise.heart", action: reviewRound.reviewAgain)
+                .buttonStyle(GameProminentButtonStyle(tint: tint))
+                .disabled(!canReviewAgain)
+        } else {
+            Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
+                .buttonStyle(GameProminentButtonStyle(tint: tint))
+        }
+    }
+
+    private func settingsButton(_ title: LocalizedStringKey) -> some View {
+        Button(title, systemImage: "slider.horizontal.3", action: onChangeSettings)
+            .buttonStyle(GameSecondaryButtonStyle(tint: tint))
     }
 }
 
@@ -194,25 +214,45 @@ struct GameRoundSummaryHeader: View {
     }
 
     private var scoreText: String {
-        switch unit {
+        let count = switch unit {
         case .questions:
             String(localized: "\(summary.correctCount) of \(summary.total) correct")
         case .words:
             String(localized: "\(summary.correctCount) of \(summary.total) words solved")
         }
+        // With points in the ring, the accuracy moves down here: "3 of 5 correct · 60%".
+        guard points != nil else { return count }
+        return count + " · " + summary.accuracy.formatted(.percent.precision(.fractionLength(0)))
     }
 
     var body: some View {
         VStack(spacing: 14) {
+            // The ring always fills by accuracy. Its center shows the points for games that
+            // score them, since a round can score more points than it had questions.
             ProgressRing(progress: summary.accuracy, lineWidth: 12, size: 132, tint: ringTint) {
-                VStack(spacing: 2) {
-                    Text(summary.accuracy, format: .percent.precision(.fractionLength(0)))
-                        .font(.title.weight(.bold))
-                        .fontDesign(.rounded)
-                        .monospacedDigit()
-                    Image(systemName: systemImage)
-                        .font(.headline)
-                        .foregroundStyle(ringTint)
+                if let points {
+                    VStack(spacing: 0) {
+                        Text(points.total, format: .number)
+                            .font(.system(.largeTitle, design: .rounded).weight(.heavy))
+                            .monospacedDigit()
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(1)
+                            .contentTransition(.numericText())
+                        Text(points.total == 1 ? "point" : "points")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 14)
+                } else {
+                    VStack(spacing: 2) {
+                        Text(summary.accuracy, format: .percent.precision(.fractionLength(0)))
+                            .font(.title.weight(.bold))
+                            .fontDesign(.rounded)
+                            .monospacedDigit()
+                        Image(systemName: systemImage)
+                            .font(.headline)
+                            .foregroundStyle(ringTint)
+                    }
                 }
             }
             .accessibilityHidden(true)
@@ -220,22 +260,13 @@ struct GameRoundSummaryHeader: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.title.weight(.bold))
-                if let points {
-                    // More points than questions is possible, so the points lead and the
-                    // plain count stays beside them: "15 points", "10 of 10 correct".
-                    Text("\(points.total) points")
-                        .font(.system(.largeTitle, design: .rounded).weight(.heavy))
-                        .monospacedDigit()
-                        .foregroundStyle(ringTint)
-                        .contentTransition(.numericText())
-                }
                 Text(scoreText)
-                    .font(points == nil ? .title3.weight(.semibold) : .headline.weight(.medium))
+                    .font(.title3.weight(.semibold))
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
             }
 
-            if let points {
+            if let points, !points.bonuses.isEmpty {
                 bonusChips(points)
             }
 
@@ -254,7 +285,8 @@ extension GameRoundSummaryHeader {
     @ViewBuilder
     private func bestScoreLine(_ best: RoundBest) -> some View {
         if best.isNew {
-            Label("New best! \(best.points) points", systemImage: "trophy.fill")
+            // The total is already in the ring, so a new best doesn't repeat it.
+            Label("New best!", systemImage: "trophy.fill")
                 .font(.subheadline.weight(.bold))
                 .foregroundStyle(.primary)
                 .padding(.horizontal, 12)
@@ -267,7 +299,8 @@ extension GameRoundSummaryHeader {
         }
     }
 
-    /// "+3 speed bonuses", "+2 chapter bonuses": one chip per bonus earned.
+    /// "+3 speed", "+2 chapter": one chip per bonus earned, under the correct count, so the
+    /// count plus the chips add up to the points in the ring.
     @ViewBuilder
     private func bonusChips(_ points: RoundPoints) -> some View {
         ViewThatFits(in: .horizontal) {
@@ -279,7 +312,7 @@ extension GameRoundSummaryHeader {
     @ViewBuilder
     private func chips(_ points: RoundPoints) -> some View {
         ForEach(points.bonuses, id: \.title) { bonus in
-            chip("+\(bonus.title)", systemImage: bonus.systemImage, tint: .orange)
+            chip(bonus.shortTitle, systemImage: bonus.systemImage, tint: .orange)
         }
     }
 
@@ -294,8 +327,8 @@ extension GameRoundSummaryHeader {
 
     var accessibilityValue: Text {
         guard let points else { return Text(summary.accuracy, format: .percent.precision(.fractionLength(0))) }
-        let parts = points.bonuses.map(\.title).joined(separator: ", ")
-        return Text("\(points.total) points: \(points.correct) correct, \(parts)")
+        let parts = ([scoreText] + points.bonuses.map(\.title)).joined(separator: ", ")
+        return Text("\(points.total) points: \(parts)")
     }
 }
 
@@ -639,6 +672,35 @@ private struct GameRoundSummaryReviewRow: View {
         case 1: "1 hint used"
         default: "\(entry.hintCount) hints used"
         }
+    }
+}
+
+// MARK: - Secondary button
+
+/// The same shape and height as `GameProminentButtonStyle`, but tinted glass with tinted text,
+/// so it can sit beside Play Again as the lesser action.
+private struct GameSecondaryButtonStyle: ButtonStyle {
+    let tint: Color
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed
+
+        return configuration.label
+            .font(.headline.weight(.semibold))
+            .foregroundStyle(isEnabled ? tint : .secondary)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 18)
+            .frame(maxWidth: .infinity)
+            .glassEffect(
+                .regular
+                    .tint(tint.opacity(pressed ? 0.26 : 0.16))
+                    .interactive(isEnabled),
+                in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+            .scaleEffect(pressed ? 0.98 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
     }
 }
 

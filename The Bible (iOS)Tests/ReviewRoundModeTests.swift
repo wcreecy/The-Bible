@@ -58,11 +58,11 @@ struct ReviewRoundModeTests {
     @Test func aRightAnswerRetiresTheQuestionOnlyInItsMode() {
         let store = MissedGameQuestionStore(entries: [
             entry(.beatTheClock, mode: "classic", "person-1"),
-            entry(.beatTheClock, mode: "rapidFire", "person-1")
+            entry(.beatTheClock, mode: "firstAppearance", "person-1")
         ])
-        store.resolveReviewQuestion(game: .beatTheClock, mode: "rapidFire", questionID: "person-1")
+        store.resolveReviewQuestion(game: .beatTheClock, mode: "firstAppearance", questionID: "person-1")
 
-        #expect(!store.containsMiss(game: .beatTheClock, mode: "rapidFire", questionID: "person-1"))
+        #expect(!store.containsMiss(game: .beatTheClock, mode: "firstAppearance", questionID: "person-1"))
         #expect(store.containsMiss(game: .beatTheClock, mode: "classic", questionID: "person-1"))
     }
 
@@ -83,16 +83,31 @@ struct ReviewRoundModeTests {
         #expect(store.reviewCount(for: .beatTheClock) == 0)
     }
 
+    @Test func countdownSurvivalAndRapidFireMissesAreReviewedAsClassic() {
+        // Survival asks Classic's question, and so did Rapid Fire, which Survival replaced.
+        let store = MissedGameQuestionStore(entries: [
+            entry(.beatTheClock, mode: "survival", "person-1"),
+            entry(.beatTheClock, mode: "rapidFire", "person-2"),
+            entry(.beatTheClock, mode: "classic", "person-3")
+        ])
+
+        #expect(store.reviewCount(for: .beatTheClock, mode: "classic") == 3)
+        #expect(store.reviewCount(for: .beatTheClock, mode: "survival") == 3)
+        #expect(store.containsMiss(game: .beatTheClock, mode: "classic", questionID: "person-2"))
+        store.resolveReviewQuestion(game: .beatTheClock, mode: "classic", questionID: "person-1")
+        #expect(store.reviewCount(for: .beatTheClock, mode: "classic") == 2)
+    }
+
     @Test func eachModeUnlocksItsOwnReview() {
         let store = MissedGameQuestionStore(entries:
-            (0..<10).map { entry(.beatTheClock, mode: "rapidFire", "person-\($0)") }
+            (0..<10).map { entry(.beatTheClock, mode: "firstAppearance", "person-\($0)") }
                 + (0..<4).map { entry(.beatTheClock, mode: "classic", "place-\($0)") }
         )
 
-        #expect(store.isReviewReady(ReviewMode(game: .beatTheClock, mode: "rapidFire")))
+        #expect(store.isReviewReady(ReviewMode(game: .beatTheClock, mode: "firstAppearance")))
         #expect(!store.isReviewReady(ReviewMode(game: .beatTheClock, mode: "classic")))
-        #expect(store.reviewableModes() == [ReviewMode(game: .beatTheClock, mode: "rapidFire")])
-        #expect(Set(store.questionIDsForReview(ReviewMode(game: .beatTheClock, mode: "rapidFire"))).allSatisfy { $0.hasPrefix("person-") })
+        #expect(store.reviewableModes() == [ReviewMode(game: .beatTheClock, mode: "firstAppearance")])
+        #expect(Set(store.questionIDsForReview(ReviewMode(game: .beatTheClock, mode: "firstAppearance"))).allSatisfy { $0.hasPrefix("person-") })
     }
 
     // MARK: - Sync
