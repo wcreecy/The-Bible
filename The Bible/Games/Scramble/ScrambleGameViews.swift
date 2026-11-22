@@ -9,7 +9,7 @@ struct ScrambleLargeTimerView: View {
     let timeLimit: Int?
     let tint: Color
     let isTimerDisabled: Bool
-    /// The verse clue, or the whole verse once solved, using the panel's spare room.
+    /// The verse clue while playing. Resolved verses appear below the board.
     let verse: GameVerse?
     @Binding var usesMutedStyle: Bool
     let onToggleTimer: () -> Void

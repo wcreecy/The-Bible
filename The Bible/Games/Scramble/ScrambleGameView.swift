@@ -79,7 +79,7 @@ struct ScrambleGameView: View {
                         timeLimit: vm.currentTimeLimit,
                         tint: vm.timerTint,
                         isTimerDisabled: vm.isTimerDisabled,
-                        verse: vm.displayedVerse,
+                        verse: vm.isCurrentWordResolved ? nil : vm.displayedVerse,
                         usesMutedStyle: $usesMutedTimerStyle,
                         onToggleTimer: vm.toggleTimer,
                         onSwapSides: {
@@ -342,6 +342,11 @@ struct ScrambleGameView: View {
                     .disabled(vm.isCurrentWordResolved)
 
                 if vm.isCurrentWordResolved {
+                    if usesSplitLayout, let verse = vm.displayedVerse {
+                        GameVerseCard(verse: verse)
+                            .transition(.opacity.combined(with: .scale(scale: 0.97)))
+                    }
+
                     if !showsNextWordButton {
                         Label("Correct — take a moment to review.", systemImage: "book.closed.fill")
                             .font(.subheadline.weight(.semibold))
