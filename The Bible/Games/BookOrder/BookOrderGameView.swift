@@ -39,8 +39,11 @@ struct BookOrderGameView: View {
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
-    /// The mode to play here: Classic on iPhone plays as Tap in Order.
-    private var mode: BookOrderMode { vm.playMode(isWide: isWide) }
+    private var isReviewRound: Bool { !reviewBooks.isEmpty }
+
+    /// The mode to play here: Classic on iPhone plays as Tap in Order. A review round asks
+    /// Missing Book questions about the missed books.
+    private var mode: BookOrderMode { isReviewRound ? .missingBook : vm.playMode(isWide: isWide) }
 
     var body: some View {
         GeometryReader { geometry in
@@ -120,12 +123,6 @@ struct BookOrderGameView: View {
                 vm.savePuzzle(elapsedSeconds: elapsedSeconds)
             }
         }
-        .onAppear {
-            // A review round goes straight to Missing Book questions about the missed books.
-            if !reviewBooks.isEmpty, quickRound == nil {
-                startQuickRound(.missingBook)
-            }
-        }
         .onDisappear {
             roundClock.pause()
             quickRound?.stop()
@@ -151,6 +148,9 @@ struct BookOrderGameView: View {
                         ? nil
                         : experienceLevel,
                     experienceDetails: experienceDetails,
+                    // A review round's questions come from the missed books, so its mode and
+                    // section are fixed.
+                    isConfigurationEnabled: !isReviewRound,
                     startTitle: mode.isPuzzle && vm.hasSavedPuzzle ? "Resume" : "Start Game",
                     startSubtitle: mode.isPuzzle && vm.hasSavedPuzzle ? "Pick up where you left off." : "Begin your challenge.",
                     startAction: start
@@ -158,7 +158,7 @@ struct BookOrderGameView: View {
                     GameLobbyPreview(kind: .bookOrder, bookOrderBooks: vm.source.previewBookNames)
                 } configuration: {
                     BookOrderSetupControls(
-                        mode: $vm.mode,
+                        mode: isReviewRound ? .constant(.missingBook) : $vm.mode,
                         modes: BookOrderMode.available(isWide: isWide),
                         source: $vm.source,
                         difficulty: $vm.difficulty
