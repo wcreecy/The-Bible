@@ -694,7 +694,7 @@ struct WordleView: View {
             Button("Change Settings", systemImage: "slider.horizontal.3") {
                 vm.returnToSetup()
             }
-            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+            .buttonStyle(GameSecondaryButtonStyle(tint: .mint))
         }
     }
 

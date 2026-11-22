@@ -675,35 +675,6 @@ private struct GameRoundSummaryReviewRow: View {
     }
 }
 
-// MARK: - Secondary button
-
-/// The same shape and height as `GameProminentButtonStyle`, but tinted glass with tinted text,
-/// so it can sit beside Play Again as the lesser action.
-private struct GameSecondaryButtonStyle: ButtonStyle {
-    let tint: Color
-    @Environment(\.isEnabled) private var isEnabled
-
-    func makeBody(configuration: Configuration) -> some View {
-        let pressed = configuration.isPressed
-
-        return configuration.label
-            .font(.headline.weight(.semibold))
-            .foregroundStyle(isEnabled ? tint : .secondary)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 18)
-            .frame(maxWidth: .infinity)
-            .glassEffect(
-                .regular
-                    .tint(tint.opacity(pressed ? 0.26 : 0.16))
-                    .interactive(isEnabled),
-                in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius)
-            )
-            .contentShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
-            .scaleEffect(pressed ? 0.98 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
-    }
-}
-
 // MARK: - Card
 
 private struct GameRoundSummaryCard<Content: View>: View {

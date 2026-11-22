@@ -1067,12 +1067,16 @@ struct CrosswordGameView: View {
                 }
             }
 
-            if !pinsNewPuzzle {
-                Button("Next Puzzle", systemImage: "arrow.right", action: startPuzzle)
-                    .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
+            // The main action leads and takes the extra width; Settings sits beside it.
+            HStack(spacing: 10) {
+                if !pinsNewPuzzle {
+                    Button("Next Puzzle", systemImage: "arrow.right", action: startPuzzle)
+                        .buttonStyle(GameProminentButtonStyle(tint: Self.tint))
+                }
+                Button("Settings", systemImage: "slider.horizontal.3") { vm.changeSettings() }
+                    .buttonStyle(GameSecondaryButtonStyle(tint: Self.tint))
+                    .fixedSize(horizontal: !pinsNewPuzzle, vertical: false)
             }
-            Button("Change Settings") { vm.changeSettings() }
-                .buttonStyle(.glass)
         }
     }
 

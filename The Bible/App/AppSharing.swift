@@ -126,62 +126,6 @@ struct ActivityShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
-/// "Share The Bible": the share sheet with the App Store link, and a QR code to scan in person.
-struct ShareAppRows: View {
-    @State private var showsQRCode = false
-    @State private var showsShareSheet = false
-
-    var body: some View {
-        Button {
-            showsShareSheet = true
-        } label: {
-            row(
-                title: "Share The Bible",
-                subtitle: "Send the App Store link to a friend",
-                systemImage: "square.and.arrow.up"
-            )
-        }
-        .accessibilityIdentifier("shareAppLink")
-        .sheet(isPresented: $showsShareSheet) {
-            // Keep a text item with the controlled link item, matching verse sharing. This stops
-            // Messages from replacing the link metadata with an App Store screenshot.
-            ActivityShareSheet(items: [AppShare.message + "\n\n", AppLinkActivityItem()])
-        }
-
-        Button {
-            showsQRCode = true
-        } label: {
-            row(
-                title: "Show QR Code",
-                subtitle: "Let someone scan it to download the app",
-                systemImage: "qrcode"
-            )
-        }
-        .accessibilityIdentifier("shareAppQRCode")
-        .sheet(isPresented: $showsQRCode) {
-            AppQRCodeView()
-                .presentationDetents([.medium, .large])
-        }
-    }
-
-    private func row(title: String, subtitle: String, systemImage: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: systemImage)
-                .font(.body.weight(.semibold))
-                .foregroundStyle(Color.accentColor)
-                .frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .foregroundStyle(.primary)
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer(minLength: 0)
-        }
-        .contentShape(Rectangle())
-    }
-}
 
 /// A large QR code for the App Store link, for sharing face to face.
 struct AppQRCodeView: View {

@@ -429,14 +429,15 @@ struct BookOrderGameView: View {
         }
         // Pinned, so a long result summary never pushes Next Puzzle out of reach.
         .pinnedGameActionButton(isShown: vm.showResult) {
-            HStack(spacing: 12) {
-                Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-
+            // The main action leads and takes the extra width; Settings sits beside it.
+            HStack(spacing: 10) {
                 if canAdvance {
                     Button(advanceTitle, systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
                         .buttonStyle(GameProminentButtonStyle(tint: .purple))
                 }
+                Button("Settings", systemImage: "slider.horizontal.3", action: endGame)
+                    .buttonStyle(GameSecondaryButtonStyle(tint: .purple))
+                    .fixedSize(horizontal: canAdvance, vertical: false)
             }
             .frame(maxWidth: 760)
         }
@@ -720,14 +721,15 @@ struct BookOrderGameView: View {
     @ViewBuilder
     private var actionButtons: some View {
         if vm.showResult {
-            HStack(spacing: 12) {
-                Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-
+            // The main action leads and takes the extra width; Settings sits beside it.
+            HStack(spacing: 10) {
                 if canAdvance {
                     Button(advanceTitle, systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
                         .buttonStyle(GameProminentButtonStyle(tint: .purple))
                 }
+                Button("Settings", systemImage: "slider.horizontal.3", action: endGame)
+                    .buttonStyle(GameSecondaryButtonStyle(tint: .purple))
+                    .fixedSize(horizontal: canAdvance, vertical: false)
             }
         } else {
             VStack(spacing: 10) {
