@@ -172,7 +172,6 @@ private struct BibleTriviaPlayScreen: View {
     @State private var usesMutedTimerStyle = false
     @State private var verseToast = VerseActionToastState()
     @State private var selectedPassage: PassageReference?
-    @FocusState private var isKeyboardFocused: Bool
 
     private var timerTint: Color {
         let fraction = Double(model.remainingSeconds) / Double(max(1, model.currentTimeLimit))
@@ -274,10 +273,7 @@ private struct BibleTriviaPlayScreen: View {
             await model.loadPassage()
         }
         // A hardware keyboard answers with 1–4 or A–D, and Return goes on.
-        .focusable()
-        .focused($isKeyboardFocused)
-        .onKeyPress(phases: .down, action: handleKeyPress)
-        .onAppear { isKeyboardFocused = true }
+        .gameKeyboardInput(isActive: model.phase == .playing && !model.isPaused, onKey: handleKeyPress)
         // Double-tap goes on once the question is answered; squeezing on an answer chooses it.
         .gamePencilActions(
             isEnabled: model.currentQuestion != nil,
@@ -306,14 +302,14 @@ private struct BibleTriviaPlayScreen: View {
         selectedPassage = PassageReferenceParser.firstPassage(in: reference)
     }
 
-    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+    private func handleKeyPress(_ keyPress: GameKeyboardPress) -> GameKeyboardPress.Result {
         if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
             guard model.isAnswered else { return .ignored }
             model.advance()
             return .handled
         }
 
-        guard !model.isAnswered, keyPress.modifiers.isEmpty,
+        guard !model.isAnswered, keyPress.modifiers.intersection([.command, .control, .option]).isEmpty,
               let index = GameAnswerLetter.index(forKey: keyPress.characters),
               model.options.indices.contains(index) else {
             return .ignored

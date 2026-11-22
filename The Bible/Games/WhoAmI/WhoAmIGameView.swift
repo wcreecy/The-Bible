@@ -4,7 +4,6 @@ struct WhoAmIGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var vm: WhoAmIGameViewModel
-    @FocusState private var isKeyboardFocused: Bool
     init(reviewQuestionIDs: Set<String> = [], reviewMode: WhoAmIGameViewModel.Mode? = nil) {
         isReviewRound = !reviewQuestionIDs.isEmpty
         _vm = State(initialValue: WhoAmIGameViewModel(reviewQuestionIDs: reviewQuestionIDs, reviewMode: reviewMode))
@@ -72,12 +71,7 @@ struct WhoAmIGameView: View {
                 .frame(maxWidth: horizontalSizeClass == .regular ? 520 : .infinity)
         }
         // A hardware keyboard answers with 1–4 or A–D, and Return goes on.
-        .focusable()
-        .focused($isKeyboardFocused)
-        .onKeyPress(phases: .down, action: handleKeyPress)
-        .onChange(of: vm.started) { _, started in
-            isKeyboardFocused = started
-        }
+        .gameKeyboardInput(isActive: vm.started && !vm.isComplete && !vm.isPaused, onKey: handleKeyPress)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -114,7 +108,7 @@ struct WhoAmIGameView: View {
         }
     }
 
-    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+    private func handleKeyPress(_ keyPress: GameKeyboardPress) -> GameKeyboardPress.Result {
         guard vm.started, !vm.isComplete, !vm.isPaused, vm.current != nil else { return .ignored }
 
         if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
@@ -123,7 +117,7 @@ struct WhoAmIGameView: View {
             return .handled
         }
 
-        guard !vm.roundOver, keyPress.modifiers.isEmpty,
+        guard !vm.roundOver, keyPress.modifiers.intersection([.command, .control, .option]).isEmpty,
               let index = GameAnswerLetter.index(forKey: keyPress.characters),
               vm.choices.indices.contains(index) else {
             return .ignored

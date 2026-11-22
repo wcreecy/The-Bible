@@ -10,6 +10,7 @@ struct BookOrderGameView: View {
     @State private var isAppActive = true
     @State private var isTimerHidden: Bool = false
     @State private var isWide = false
+    @State private var keyboardBook: String?
     /// Books missed earlier, for a review round; empty for a normal game.
     private let reviewBooks: [String]
     /// The mode a review asks the missed books in. Kept apart from `vm.mode`, so a review
@@ -90,6 +91,10 @@ struct BookOrderGameView: View {
             .onAppear { isWide = geometry.size.width >= 700 }
             .onChange(of: geometry.size.width) { _, width in isWide = width >= 700 }
         }
+        .gameKeyboardInput(
+            isActive: vm.started && quickRound == nil && isAppActive,
+            onKey: handleKeyPress
+        )
         .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -147,6 +152,48 @@ struct BookOrderGameView: View {
             vm.savePuzzle(elapsedSeconds: roundClock.elapsedSeconds())
             vm.onDisappear()
         }
+    }
+
+    private func handleKeyPress(_ press: GameKeyboardPress) -> GameKeyboardPress.Result {
+        guard vm.started, quickRound == nil else { return .ignored }
+        if vm.showResult {
+            guard press.key == .return, canAdvance else { return .ignored }
+            keyboardBook = nil
+            advanceToNextRound()
+            return .handled
+        }
+        let books = mode == .classic ? vm.currentItems : vm.currentItems.filter { !vm.tapPlaced.contains($0) }
+        guard !books.isEmpty else { return .ignored }
+        let index = keyboardBook.flatMap { books.firstIndex(of: $0) } ?? 0
+        switch press.key {
+        case .upArrow, .leftArrow, .downArrow, .rightArrow:
+            let delta = press.key == .upArrow || press.key == .leftArrow ? -1 : 1
+            let next = min(max(0, index + delta), books.count - 1)
+            if mode == .classic, press.modifiers.contains(.shift) {
+                vm.move(from: IndexSet(integer: index), to: next > index ? next + 1 : next)
+                keyboardBook = books[index]
+            } else {
+                keyboardBook = books[next]
+            }
+        case .return:
+            if mode == .classic {
+                checkOrder()
+            } else {
+                vm.tap(books[index], elapsedSeconds: roundClock.elapsedSeconds())
+                keyboardBook = books[index]
+                if vm.showResult {
+                    roundClock.pause()
+                    elapsedSeconds = roundClock.elapsedSeconds()
+                }
+            }
+        default:
+            guard let letter = press.characters.first, letter.isLetter,
+                  let match = books.first(where: { $0.lowercased().hasPrefix(String(letter).lowercased()) }) else {
+                return .ignored
+            }
+            keyboardBook = match
+        }
+        return .handled
     }
 
     // MARK: - Setup
@@ -299,69 +346,86 @@ struct BookOrderGameView: View {
     // MARK: - Tap in Order
 
     private var tapBoard: some View {
-        ScrollView {
-            VStack(spacing: 14) {
-                GameScoreboardCard(
-                    currentCorrect: vm.session.score,
-                    currentAnswered: vm.session.answered,
-                    currentStreak: vm.session.streak,
-                    game: .bookorder,
-                    style: isWide ? .dashboard : .compact
-                )
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 14) {
+                    GameScoreboardCard(
+                        currentCorrect: vm.session.score,
+                        currentAnswered: vm.session.answered,
+                        currentStreak: vm.session.streak,
+                        game: .bookorder,
+                        style: isWide ? .dashboard : .compact
+                    )
 
-                HStack(alignment: .firstTextBaseline) {
-                    Text(tapPrompt)
-                        .font(.subheadline.weight(.semibold))
-                        .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 8)
-                    timerToggle
-                }
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(tapPrompt)
+                            .font(.subheadline.weight(.semibold))
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 8)
+                        timerToggle
+                    }
 
-                BookOrderPlacedRow(placed: vm.tapPlaced, total: vm.correctOrder.count)
+                    if keyboardBook != nil {
+                        Text("Arrow keys choose a book. Return places it next.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
 
-                if let hint = vm.wrongTapHint, !vm.showResult {
-                    Label(hint, systemImage: "exclamationmark.circle.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.orange)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .id(vm.wrongTapCount)
-                        .transition(.opacity)
-                }
+                    BookOrderPlacedRow(placed: vm.tapPlaced, total: vm.correctOrder.count)
 
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: isWide ? 170 : 140), spacing: 10)], spacing: 10) {
-                    ForEach(vm.currentItems, id: \.self) { book in
-                        BookOrderTile(
-                            book: book,
-                            isPlaced: vm.tapPlaced.contains(book),
-                            wasMissed: vm.wrongTapBooks.contains(book)
-                        ) {
-                            vm.tap(book, elapsedSeconds: roundClock.elapsedSeconds())
-                            if vm.showResult {
-                                roundClock.pause()
-                                elapsedSeconds = roundClock.elapsedSeconds()
+                    if let hint = vm.wrongTapHint, !vm.showResult {
+                        Label(hint, systemImage: "exclamationmark.circle.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.orange)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .id(vm.wrongTapCount)
+                            .transition(.opacity)
+                    }
+
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: isWide ? 170 : 140), spacing: 10)], spacing: 10) {
+                        ForEach(vm.currentItems, id: \.self) { book in
+                            BookOrderTile(
+                                book: book,
+                                isPlaced: vm.tapPlaced.contains(book),
+                                wasMissed: vm.wrongTapBooks.contains(book)
+                            ) {
+                                vm.tap(book, elapsedSeconds: roundClock.elapsedSeconds())
+                                if vm.showResult {
+                                    roundClock.pause()
+                                    elapsedSeconds = roundClock.elapsedSeconds()
+                                }
+                            }
+                            .overlay {
+                                if keyboardBook == book && !vm.showResult {
+                                    RoundedRectangle(cornerRadius: 12).stroke(.purple, lineWidth: 3)
+                                }
+                            }
+                            .id(book)
+                            .disabled(vm.showResult)
+                        }
+                    }
+
+                    if vm.showResult {
+                        // Next Puzzle and Change Settings are pinned to the bottom of the screen.
+                        resultSummary(compact: !isWide)
+                    } else if debugAutoWinEnabled, !vm.correctOrder.isEmpty {
+                        Button("WIN") {
+                            for book in vm.correctOrder where !vm.tapPlaced.contains(book) {
+                                vm.tap(book, elapsedSeconds: roundClock.elapsedSeconds())
                             }
                         }
-                        .disabled(vm.showResult)
+                        .buttonStyle(ModernPillButtonStyle(tint: .red))
+                        .accessibilityLabel("Win this round")
                     }
                 }
-
-                if vm.showResult {
-                    // Next Puzzle and Change Settings are pinned to the bottom of the screen.
-                    resultSummary(compact: !isWide)
-                } else if debugAutoWinEnabled, !vm.correctOrder.isEmpty {
-                    Button("WIN") {
-                        for book in vm.correctOrder where !vm.tapPlaced.contains(book) {
-                            vm.tap(book, elapsedSeconds: roundClock.elapsedSeconds())
-                        }
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .red))
-                    .accessibilityLabel("Win this round")
-                }
+                .frame(maxWidth: 760)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .animation(.snappy, value: vm.tapPlaced)
             }
-            .frame(maxWidth: 760)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .animation(.snappy, value: vm.tapPlaced)
+            .onChange(of: keyboardBook) { _, book in
+                if let book { proxy.scrollTo(book, anchor: .center) }
+            }
         }
         // Pinned, so a long result summary never pushes Next Puzzle out of reach.
         .pinnedGameActionButton(isShown: vm.showResult) {
@@ -423,33 +487,50 @@ struct BookOrderGameView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            List {
-                ForEach(Array(vm.currentItems.enumerated()), id: \.element) { index, item in
-                    HStack(spacing: 10) {
-                        Image(systemName: vm.showResult ? resultIcon(for: item) : "line.3.horizontal")
-                            .foregroundStyle(.secondary)
-                        Text(item)
-                            .font(.body.weight(.medium))
-                        Spacer()
-                        if vm.showResult, let hint = vm.moveHint(for: item) {
-                            Text(hint)
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.red)
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .frame(minHeight: 46)
-                    .glassEffect(answerGlass(for: item), in: .rect(cornerRadius: 12))
-                    .hoverEffect(.lift)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .moveDisabled(vm.showResult)
-                }
-                .onMove(perform: vm.move)
+            if keyboardBook != nil {
+                Text("Arrow keys choose a book. Shift–Up/Down moves it. Return checks the order.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            .environment(\.editMode, .constant(EditMode.active))
-            .scrollContentBackground(.hidden)
+
+            ScrollViewReader { proxy in
+                List {
+                    ForEach(Array(vm.currentItems.enumerated()), id: \.element) { index, item in
+                        HStack(spacing: 10) {
+                            Image(systemName: vm.showResult ? resultIcon(for: item) : "line.3.horizontal")
+                                .foregroundStyle(.secondary)
+                            Text(item)
+                                .font(.body.weight(.medium))
+                            Spacer()
+                            if vm.showResult, let hint = vm.moveHint(for: item) {
+                                Text(hint)
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.red)
+                            }
+                        }
+                        .padding(.horizontal, 14)
+                        .frame(minHeight: 46)
+                        .glassEffect(answerGlass(for: item), in: .rect(cornerRadius: 12))
+                        .overlay {
+                            if keyboardBook == item && !vm.showResult {
+                                RoundedRectangle(cornerRadius: 12).stroke(.purple, lineWidth: 3)
+                            }
+                        }
+                        .id(item)
+                        .hoverEffect(.lift)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .moveDisabled(vm.showResult)
+                    }
+                    .onMove(perform: vm.move)
+                }
+                .environment(\.editMode, .constant(EditMode.active))
+                .scrollContentBackground(.hidden)
+                .onChange(of: keyboardBook) { _, book in
+                    if let book { proxy.scrollTo(book, anchor: .center) }
+                }
+            }
 
             if vm.showResult {
                 resultSummary(compact: false)

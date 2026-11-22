@@ -8,7 +8,6 @@ struct HangmanGameView: View {
     /// Set when a letter is guessed twice; a new value restarts the message's timer.
     @State private var repeatedGuessMessageID: UUID?
     @State private var selectedPassage: PassageReference?
-    @FocusState private var isKeyboardFocused: Bool
 
     init(reviewQuestionIDs: Set<String> = []) {
         isReviewRound = !reviewQuestionIDs.isEmpty
@@ -60,12 +59,7 @@ struct HangmanGameView: View {
                 .padding(.bottom, 12)
             }
             // A hardware keyboard types guesses, and Return goes to the next word.
-            .focusable()
-            .focused($isKeyboardFocused)
-            .onKeyPress(phases: .down, action: handleKeyPress)
-            .onChange(of: vm.phase) { _, phase in
-                isKeyboardFocused = phase == .playing
-            }
+            .gameKeyboardInput(isActive: vm.phase == .playing && !isGiveUpConfirmationPresented && selectedPassage == nil, onKey: handleKeyPress)
         }
         .tabBarContentClearance()
         // Pinned above the tab bar, so the answer, clue and verse never push it out of reach.
@@ -138,7 +132,7 @@ struct HangmanGameView: View {
         }
     }
 
-    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+    private func handleKeyPress(_ keyPress: GameKeyboardPress) -> GameKeyboardPress.Result {
         guard vm.phase == .playing else { return .ignored }
 
         if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
@@ -148,7 +142,7 @@ struct HangmanGameView: View {
         }
 
         guard !vm.roundOver,
-              keyPress.modifiers.isEmpty,
+              keyPress.modifiers.intersection([.command, .control, .option]).isEmpty,
               let character = keyPress.characters.first,
               character.isLetter else {
             return .ignored

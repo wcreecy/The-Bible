@@ -60,6 +60,7 @@ struct WordGameResponsiveLayout<
     let usesWideLayout: Bool
     let availableHeight: CGFloat
     let showsKeyboardCard: Bool
+    let allowsKeyboardVisibilityToggle: Bool
     let showsBoardCardSecond: Bool
     let toggleKeyboardCard: () -> Void
     let swapCards: () -> Void
@@ -79,6 +80,7 @@ struct WordGameResponsiveLayout<
         usesWideLayout: Bool,
         availableHeight: CGFloat,
         showsKeyboardCard: Bool,
+        allowsKeyboardVisibilityToggle: Bool,
         showsBoardCardSecond: Bool,
         toggleKeyboardCard: @escaping () -> Void,
         swapCards: @escaping () -> Void,
@@ -91,6 +93,7 @@ struct WordGameResponsiveLayout<
         self.usesWideLayout = usesWideLayout
         self.availableHeight = availableHeight
         self.showsKeyboardCard = showsKeyboardCard
+        self.allowsKeyboardVisibilityToggle = allowsKeyboardVisibilityToggle
         self.showsBoardCardSecond = showsBoardCardSecond
         self.toggleKeyboardCard = toggleKeyboardCard
         self.swapCards = swapCards
@@ -176,6 +179,7 @@ struct WordGameResponsiveLayout<
                         Label("Show Keyboard", systemImage: "keyboard")
                     }
                 }
+                .disabled(!allowsKeyboardVisibilityToggle)
                 .labelStyle(.iconOnly)
                 .buttonStyle(.glass)
                 .controlSize(.small)
@@ -292,65 +296,6 @@ struct WordLetterBox: View {
         .background(.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
-
-#if canImport(UIKit)
-    struct KeyCaptureRepresentable: UIViewRepresentable {
-        var onKey: (Character) -> Void
-        var onBackspace: () -> Void
-        var onEnter: () -> Void
-
-        final class KeyView: UIView {
-            var onKey: ((Character) -> Void)?
-            var onBackspace: (() -> Void)?
-            var onEnter: (() -> Void)?
-
-            override var canBecomeFirstResponder: Bool { true }
-
-            override var keyCommands: [UIKeyCommand]? {
-                var cmds: [UIKeyCommand] = []
-                let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                for ch in letters {
-                    cmds.append(
-                        UIKeyCommand(input: String(ch), modifierFlags: [], action: #selector(handleKey(_:))))
-                    cmds.append(
-                        UIKeyCommand(
-                            input: String(ch.lowercased()), modifierFlags: [], action: #selector(handleKey(_:))))
-                }
-                cmds.append(
-                    UIKeyCommand(
-                        input: UIKeyCommand.inputDelete, modifierFlags: [], action: #selector(handleDelete)))
-                cmds.append(UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(handleEnter)))
-                cmds.append(UIKeyCommand(input: "\n", modifierFlags: [], action: #selector(handleEnter)))
-                return cmds
-            }
-
-            @objc private func handleKey(_ sender: UIKeyCommand) {
-                guard let s = sender.input, let first = s.uppercased().first, first.isLetter else { return }
-                onKey?(first)
-            }
-
-            @objc private func handleDelete() { onBackspace?() }
-            @objc private func handleEnter() { onEnter?() }
-        }
-
-        func makeUIView(context: Context) -> KeyView {
-            let v = KeyView()
-            v.isUserInteractionEnabled = false
-            v.onKey = onKey
-            v.onBackspace = onBackspace
-            v.onEnter = onEnter
-            DispatchQueue.main.async { v.becomeFirstResponder() }
-            return v
-        }
-
-        func updateUIView(_ uiView: KeyView, context: Context) {
-                uiView.onKey = onKey
-                uiView.onBackspace = onBackspace
-                uiView.onEnter = onEnter
-                DispatchQueue.main.async { uiView.becomeFirstResponder() }
-        }
-}
-#endif
 
 // MARK: - Filled key style for evaluated keys (absent/present/correct)
 struct FilledGameKeyButtonStyle: ButtonStyle {

@@ -21,7 +21,6 @@ struct ScrambleGameView: View {
         }
         return false
     }
-    @FocusState private var isKeyboardFocused: Bool
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -92,14 +91,7 @@ struct ScrambleGameView: View {
                     .frame(maxWidth: .infinity, alignment: timerOnLeft ? .leading : .trailing)
                 }
             }
-            .focusable()
-            .focused($isKeyboardFocused)
-            .onKeyPress(phases: .down) { keyPress in
-                handleKeyboardPress(keyPress)
-            }
-            .onChange(of: vm.phase) { _, phase in
-                isKeyboardFocused = phase == .playing
-            }
+            .gameKeyboardInput(isActive: vm.phase == .playing && !vm.isPaused && !isRevealConfirmationPresented && selectedPassage == nil, onKey: handleKeyboardPress)
         }
         .background(AppBackgroundView(tab: .games))
         .navigationTitle("")
@@ -170,7 +162,7 @@ struct ScrambleGameView: View {
         }
     }
 
-    private func handleKeyboardPress(_ keyPress: KeyPress) -> KeyPress.Result {
+    private func handleKeyboardPress(_ keyPress: GameKeyboardPress) -> GameKeyboardPress.Result {
         guard vm.phase == .playing,
               !vm.isPaused,
               !vm.isCurrentWordResolved,
@@ -199,7 +191,7 @@ struct ScrambleGameView: View {
             return .handled
         }
 
-        guard keyPress.modifiers.isEmpty,
+        guard keyPress.modifiers.intersection([.command, .control, .option]).isEmpty,
               let character = keyPress.characters.first,
               character.isLetter,
               vm.selectLetter(matching: character) else {

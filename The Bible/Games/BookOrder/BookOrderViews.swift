@@ -184,7 +184,6 @@ struct BookOrderPlacedRow: View {
 /// Before or After?, Missing Book and Which Section?: one question at a time.
 struct BookOrderQuickRoundView: View {
     let round: BookOrderQuickRound
-    @FocusState private var isKeyboardFocused: Bool
 
     var body: some View {
         ScrollView {
@@ -207,10 +206,7 @@ struct BookOrderQuickRoundView: View {
             .padding()
         }
         // A hardware keyboard answers with 1–8 or A–D (or ← → for Before or After?), and Return goes on.
-        .focusable()
-        .focused($isKeyboardFocused)
-        .onKeyPress(phases: .down, action: handleKeyPress)
-        .onAppear { isKeyboardFocused = true }
+        .gameKeyboardInput(isActive: !round.isFinished, onKey: handleKeyPress)
     }
 
     private var header: some View {
@@ -430,7 +426,7 @@ struct BookOrderQuickRoundView: View {
         return option == round.selectedAnswer ? String(localized: "Your answer, incorrect") : ""
     }
 
-    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+    private func handleKeyPress(_ keyPress: GameKeyboardPress) -> GameKeyboardPress.Result {
         guard let question = round.current else { return .ignored }
 
         if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
@@ -447,7 +443,7 @@ struct BookOrderQuickRoundView: View {
             }
         }
 
-        guard !round.isAnswered, keyPress.modifiers.isEmpty else { return .ignored }
+        guard !round.isAnswered, keyPress.modifiers.intersection([.command, .control, .option]).isEmpty else { return .ignored }
         // Which Section? has eight answers, so it also takes 5–8.
         let index: Int? = if let number = keyPress.characters.first?.wholeNumberValue, (1...question.options.count).contains(number) {
             number - 1

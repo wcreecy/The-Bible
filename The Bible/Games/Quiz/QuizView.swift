@@ -4,7 +4,6 @@ import SwiftData
 struct QuizView: View {
     @Query private var favorites: [Favorite]
     @State private var vm: QuizGameViewModel
-    @FocusState private var isKeyboardFocused: Bool
 
     init(reviewQuestionIDs: Set<String> = [], mode: QuizMode = .standard) {
         _vm = State(initialValue: QuizGameViewModel(reviewQuestionIDs: reviewQuestionIDs, mode: mode))
@@ -115,12 +114,7 @@ struct QuizView: View {
             }
             // A hardware keyboard answers with 1–4 or A–D (and picks the bonus chapter), and
             // Return goes on.
-            .focusable()
-            .focused($isKeyboardFocused)
-            .onKeyPress(phases: .down, action: handleKeyPress)
-            .onChange(of: vm.phase) { _, phase in
-                isKeyboardFocused = phase == .playing
-            }
+            .gameKeyboardInput(isActive: vm.phase == .playing && !vm.isPaused, onKey: handleKeyPress)
         }
         .background(AppBackgroundView(tab: .games))
         .verseActionToast($verseToast)
@@ -180,7 +174,7 @@ struct QuizView: View {
         }
     }
 
-    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+    private func handleKeyPress(_ keyPress: GameKeyboardPress) -> GameKeyboardPress.Result {
         guard vm.phase == .playing, !vm.isPaused, let current = vm.current else { return .ignored }
 
         if keyPress.key == .return || keyPress.characters == "\r" || keyPress.characters == "\n" {
@@ -189,7 +183,7 @@ struct QuizView: View {
             return .handled
         }
 
-        guard keyPress.modifiers.isEmpty, let index = GameAnswerLetter.index(forKey: keyPress.characters) else {
+        guard keyPress.modifiers.intersection([.command, .control, .option]).isEmpty, let index = GameAnswerLetter.index(forKey: keyPress.characters) else {
             return .ignored
         }
         if vm.isChapterBonusOpen, current.chapterOptions.indices.contains(index) {
