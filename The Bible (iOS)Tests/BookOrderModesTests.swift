@@ -138,6 +138,8 @@ struct BookOrderModesTests {
     @Test func beforeOrAfterEndsWhenTheMinuteRunsOut() async {
         let missed = MissedGameQuestionStore(entries: [])
         await withRestoredDefaults {
+            // A best score left from earlier play would outrank this round's single answer.
+            UserDefaults.standard.removeObject(forKey: "bookorderBestScore_beforeAfter_both_easy")
             let clock = ManualSleeper()
             let game = BookOrderQuickRound(mode: .beforeAfter, difficulty: .easy, source: .both, missedQuestions: missed,
                                            sleep: clock.sleep(for:), now: { clock.date })
@@ -185,6 +187,53 @@ struct BookOrderModesTests {
             #expect(review.current?.correctAnswer == question.book)
             review.choose(question.book)
             #expect(!missed.containsMiss(game: .bookOrder, questionID: question.book))
+        }
+    }
+
+    @Test func aBeforeOrAfterReviewAsksOnePairPerMissedBookWithNoClock() async {
+        let missed = MissedGameQuestionStore(entries: [])
+        // Includes the first and last books, whose pairs can only go one way.
+        let books = ["Genesis", "Ruth", "Psalms", "Matthew", "Revelation"]
+        await withRestoredDefaults {
+            let review = round(.beforeAfter, .hard, missed: missed, reviewBooks: books)
+            #expect(!review.isTimed)
+            #expect(review.questions.count == books.count)
+            #expect(Set(review.questions.map(\.book)) == Set(books))
+            for question in review.questions {
+                guard case .beforeAfter(let a, let b) = question.kind else { Issue.record("Wrong kind"); return }
+                #expect([a, b].contains(question.book))
+                #expect(a != b)
+                #expect(abs(canonIndex(a) - canonIndex(b)) <= 2)
+                #expect(canonIndex(question.correctAnswer) == min(canonIndex(a), canonIndex(b)))
+            }
+
+            // Like the other rounds, an answer waits for Next.
+            let first = review.current!
+            review.choose(first.correctAnswer)
+            #expect(review.isAnswered)
+            #expect(review.currentIndex == 0)
+            review.next()
+            #expect(review.currentIndex == 1)
+        }
+    }
+
+    @Test func aBeforeOrAfterReviewClearsAMissAnsweredRight() async {
+        let missed = MissedGameQuestionStore(entries: [])
+        missed.record(game: .bookOrder, mode: "beforeAfter", bookNames: ["Ruth"], topic: "Book order", questionID: "Ruth")
+        await withRestoredDefaults {
+            let review = round(.beforeAfter, missed: missed, reviewBooks: ["Ruth"])
+            review.choose(review.current!.correctAnswer)
+            #expect(!missed.containsMiss(game: .bookOrder, mode: "beforeAfter", questionID: "Ruth"))
+        }
+    }
+
+    @Test func aWhichSectionReviewAsksAboutTheMissedBooks() async {
+        let missed = MissedGameQuestionStore(entries: [])
+        let books = ["Ruth", "Romans", "Jude"]
+        await withRestoredDefaults {
+            let review = round(.whichSection, missed: missed, reviewBooks: books)
+            #expect(review.questions.count == books.count)
+            #expect(Set(review.questions.map(\.book)) == Set(books))
         }
     }
 

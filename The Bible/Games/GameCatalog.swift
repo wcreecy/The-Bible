@@ -172,23 +172,24 @@ enum ReviewRoundDestination: Hashable {
     case game(String)
 }
 
+/// A review game's missed questions in each of its modes.
 struct ReviewRoundProgress: Identifiable {
-    let game: MissedGameQuestionStore.Entry.Game
-    let count: Int
+    let game: ReviewGame
+    /// Each mode with its missed questions, in the game's mode order.
+    let modeCounts: [(mode: ReviewGameMode, count: Int)]
 
     var id: String { game.rawValue }
-    var isReady: Bool { count >= MissedGameQuestionStore.reviewRoundSize }
+    /// Ready once any one mode has a full round.
+    var isReady: Bool { modeCounts.contains { $0.count >= MissedGameQuestionStore.reviewRoundSize } }
 
-    var title: LocalizedStringResource {
-        switch game {
-        case .beatTheClock: "Countdown"
-        case .bibleQuiz: "Quiz"
-        case .bibleTrivia: "Trivia"
-        case .quizReverse: "Quiz — Reverse"
-        case .whoAmI: "Who?"
-        case .hangman: "Hangman"
-        case .scramble: "Scramble"
-        case .bookOrder: "Book Order"
+    @MainActor
+    static func all(store: MissedGameQuestionStore? = nil) -> [ReviewRoundProgress] {
+        let store = store ?? .shared
+        return ReviewGame.allCases.map { game in
+            ReviewRoundProgress(
+                game: game,
+                modeCounts: game.modes.map { ($0, store.reviewCount(for: $0.reviewMode)) }
+            )
         }
     }
 }

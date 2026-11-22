@@ -59,7 +59,7 @@ struct GameRoundSummaryView: View {
                 ReviewRoundResultCard(
                     cleared: summary.entries.count { $0.outcome == .correct },
                     stillToReview: summary.entries.count { $0.outcome != .correct },
-                    remaining: MissedGameQuestionStore.shared.reviewCount(for: reviewRound.game),
+                    remaining: MissedGameQuestionStore.shared.reviewCount(for: reviewRound.mode.reviewMode),
                     gameTitle: reviewRound.game.title
                 )
             }
@@ -129,8 +129,7 @@ struct GameRoundSummaryView: View {
 
     /// Another review needs a full round of missed questions left.
     private var canReviewAgain: Bool {
-        guard let reviewRound else { return false }
-        return MissedGameQuestionStore.shared.reviewCount(for: reviewRound.game) >= MissedGameQuestionStore.reviewRoundSize
+        reviewRound?.canReviewAgain ?? false
     }
 
     private var actions: some View {

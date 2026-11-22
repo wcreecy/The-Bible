@@ -221,8 +221,10 @@ final class BeatTheClockGameViewModel {
     /// `missedQuestions` and `loadPassage` default to the shared store and the Bible text.
     /// They're resolved here rather than as default arguments, which would be evaluated
     /// outside the main actor.
+    /// A review plays the mode its questions were missed in, without changing the saved setting.
     init(
         reviewQuestionIDs: Set<String> = [],
+        reviewMode: BeatTheClockMode? = nil,
         missedQuestions: MissedGameQuestionStore? = nil,
         sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         now: @escaping () -> Date = Date.init,
@@ -233,6 +235,7 @@ final class BeatTheClockGameViewModel {
         self.sleep = sleep
         self.now = now
         self.loadPassageForReference = loadPassage ?? { await GamePassage.load(for: $0) }
+        if let reviewMode { mode = reviewMode }
     }
 
     // MARK: - Settings
@@ -255,14 +258,17 @@ final class BeatTheClockGameViewModel {
     var mode: BeatTheClockMode = BeatTheClockMode(
         rawValue: UserDefaults.standard.string(forKey: BeatTheClockGameViewModel.modeKey) ?? ""
     ) ?? .classic {
-        didSet { UserDefaults.standard.set(mode.rawValue, forKey: Self.modeKey) }
+        didSet {
+            // A review plays the mode it's reviewing without changing the saved setting.
+            guard reviewQuestionIDs.isEmpty else { return }
+            UserDefaults.standard.set(mode.rawValue, forKey: Self.modeKey)
+        }
     }
 
-    /// Review rounds replay single questions, so they're always Classic.
-    var isRapidFire: Bool { mode == .rapidFire && reviewQuestionIDs.isEmpty }
+    var isRapidFire: Bool { mode == .rapidFire }
 
-    /// The mode actually being played: review games are always played as Classic.
-    private var playedMode: BeatTheClockMode { isRapidFire ? .rapidFire : .classic }
+    /// The mode being played, which misses are saved under.
+    private var playedMode: BeatTheClockMode { mode }
 
     var experienceLevel: GameExperienceLevel {
         get { difficulty.experienceLevel }
@@ -661,7 +667,8 @@ final class BeatTheClockGameViewModel {
 
     func startGame() {
         guard !isLoadingData else { return }
-        let count = isRapidFire ? Self.rapidFireSubjectsPerGame : Self.questionsPerGame
+        // A review replays every missed name it drew, in either mode.
+        let count = isRapidFire && reviewQuestionIDs.isEmpty ? Self.rapidFireSubjectsPerGame : Self.questionsPerGame
         let availableQuestions = reviewQuestionIDs.isEmpty
             ? RecentGameQuestionStore.shared.selectCycling(
                 from: makeQuestionDeck(),
@@ -881,7 +888,7 @@ final class BeatTheClockGameViewModel {
         )
         GameStats.shared.recordModeAnswer(.beatclock, mode: playedMode.rawValue, correct: correct)
         if correct, !reviewQuestionIDs.isEmpty {
-            missedQuestions.resolveReviewQuestion(game: .beatTheClock, questionID: currentQuestion.id)
+            missedQuestions.resolveReviewQuestion(game: .beatTheClock, mode: playedMode.rawValue, questionID: currentQuestion.id)
         } else if !correct {
             // A place is tied to the book it's cited from; a person to every book they're in.
             let scriptureReference = currentQuestion.subject == .place
@@ -889,6 +896,7 @@ final class BeatTheClockGameViewModel {
                 : nil
             missedQuestions.record(
                 game: .beatTheClock,
+                mode: playedMode.rawValue,
                 bookNames: scriptureReference.map { [$0.bookName] } ?? Array(currentQuestion.acceptableBooks),
                 chapterNumber: scriptureReference?.chapter,
                 topic: currentQuestion.subject == .person ? "Bible people" : "Bible places",

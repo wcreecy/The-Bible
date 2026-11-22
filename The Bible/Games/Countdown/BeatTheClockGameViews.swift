@@ -5,6 +5,8 @@ import SwiftUI
 struct BeatTheClockSetupControls: View {
     @Binding var mode: BeatTheClockMode
     @Binding var category: BeatTheClockCategory
+    /// A review picks its mode from the modes ready for review instead.
+    @Environment(\.reviewRoundContext) private var reviewRound
 
     private func icon(for category: BeatTheClockCategory) -> String {
         switch category {
@@ -24,15 +26,17 @@ struct BeatTheClockSetupControls: View {
 
     var body: some View {
         GameSettingsGroup {
-            GameChoiceSetting(
-                title: "Mode",
-                systemImage: "hourglass",
-                tint: .indigo,
-                selection: $mode,
-                choices: BeatTheClockMode.allCases.map {
-                    GameChoice(value: $0, title: $0.title, detail: $0.detail, icon: $0.systemImage)
-                }
-            )
+            if reviewRound == nil {
+                GameChoiceSetting(
+                    title: "Mode",
+                    systemImage: "hourglass",
+                    tint: .indigo,
+                    selection: $mode,
+                    choices: BeatTheClockMode.allCases.map {
+                        GameChoice(value: $0, title: $0.title, detail: $0.detail, icon: $0.systemImage)
+                    }
+                )
+            }
 
             GameChoiceSetting(
                 title: "Question subject",

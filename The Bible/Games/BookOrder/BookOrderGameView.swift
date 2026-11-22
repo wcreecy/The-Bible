@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BookOrderGameView: View {
-    @State private var vm = BookOrderGameViewModel()
+    @State private var vm: BookOrderGameViewModel
     /// The Before or After?, Missing Book or Which Section? round being played, if any.
     @State private var quickRound: BookOrderQuickRound?
     @State private var elapsedSeconds: Int = 0
@@ -12,9 +12,16 @@ struct BookOrderGameView: View {
     @State private var isWide = false
     /// Books missed earlier, for a review round; empty for a normal game.
     private let reviewBooks: [String]
+    /// The mode a review asks the missed books in. Kept apart from `vm.mode`, so a review
+    /// doesn't change the saved setting.
+    private let reviewMode: BookOrderMode
+    /// Set while playing a review round, for Review Again.
+    @Environment(\.reviewRoundContext) private var reviewRound
 
-    init(reviewBooks: [String] = []) {
+    init(reviewBooks: [String] = [], reviewMode: BookOrderMode = .missingBook) {
         self.reviewBooks = reviewBooks
+        self.reviewMode = reviewMode
+        _vm = State(initialValue: BookOrderGameViewModel(reviewBooks: reviewBooks, reviewMode: reviewMode))
     }
 
     private var experienceLevel: Binding<GameExperienceLevel> {
@@ -41,9 +48,17 @@ struct BookOrderGameView: View {
 
     private var isReviewRound: Bool { !reviewBooks.isEmpty }
 
-    /// The mode to play here: Classic on iPhone plays as Tap in Order. A review round asks
-    /// Missing Book questions about the missed books.
-    private var mode: BookOrderMode { isReviewRound ? .missingBook : vm.playMode(isWide: isWide) }
+    /// The mode to play here: Classic on iPhone plays as Tap in Order. A review round plays
+    /// the review mode chosen on its start page.
+    private var mode: BookOrderMode {
+        guard isReviewRound else { return vm.playMode(isWide: isWide) }
+        return reviewMode == .classic && !isWide ? .tapInOrder : reviewMode
+    }
+
+    /// After a puzzle: the next one, or in a review another review while enough misses are left.
+    private var canAdvance: Bool { !isReviewRound || reviewRound?.canReviewAgain == true }
+
+    private var advanceTitle: LocalizedStringKey { isReviewRound ? "Review Again" : "Next Puzzle" }
 
     var body: some View {
         GeometryReader { geometry in
@@ -88,7 +103,9 @@ struct BookOrderGameView: View {
         // Double-tap checks the order (Classic), or goes on to the next puzzle once it's shown.
         .gamePencilActions(isEnabled: vm.started, onDoubleTap: pencilDoubleTapAction) {
             if vm.showResult {
-                Button("Next Puzzle", systemImage: "arrow.right", action: advanceToNextRound)
+                if canAdvance {
+                    Button(advanceTitle, systemImage: "arrow.right", action: advanceToNextRound)
+                }
             } else if mode == .classic {
                 Button("Check Order", systemImage: "checkmark.circle", action: checkOrder)
             }
@@ -144,25 +161,28 @@ struct BookOrderGameView: View {
                     tint: .purple,
                     // A section too small for more than one level (like the Gospels) has
                     // nothing to choose, so the picker is hidden.
-                    experienceLevel: (mode == .classic && vm.difficulty == .fullBible) || (mode.isPuzzle && vm.availableLevels.count < 2)
+                    // A review puzzle is the missed books, whatever the level.
+                    experienceLevel: (mode == .classic && vm.difficulty == .fullBible)
+                        || (mode.isPuzzle && (vm.availableLevels.count < 2 || isReviewRound))
                         ? nil
                         : experienceLevel,
                     experienceDetails: experienceDetails,
-                    // A review round's questions come from the missed books, so its mode and
-                    // section are fixed.
-                    isConfigurationEnabled: !isReviewRound,
                     startTitle: mode.isPuzzle && vm.hasSavedPuzzle ? "Resume" : "Start Game",
                     startSubtitle: mode.isPuzzle && vm.hasSavedPuzzle ? "Pick up where you left off." : "Begin your challenge.",
                     startAction: start
                 ) {
                     GameLobbyPreview(kind: .bookOrder, bookOrderBooks: vm.source.previewBookNames)
                 } configuration: {
-                    BookOrderSetupControls(
-                        mode: isReviewRound ? .constant(.missingBook) : $vm.mode,
-                        modes: BookOrderMode.available(isWide: isWide),
-                        source: $vm.source,
-                        difficulty: $vm.difficulty
-                    )
+                    // A review's mode is chosen from the modes ready for review, and its
+                    // books come from the whole Bible, so it has no settings of its own.
+                    if !isReviewRound {
+                        BookOrderSetupControls(
+                            mode: $vm.mode,
+                            modes: BookOrderMode.available(isWide: isWide),
+                            source: $vm.source,
+                            difficulty: $vm.difficulty
+                        )
+                    }
                 } facts: {
                     setupFacts
                 }
@@ -206,6 +226,12 @@ struct BookOrderGameView: View {
     @ViewBuilder
     private var setupFacts: some View {
         switch mode {
+        case .tapInOrder where isReviewRound, .classic where isReviewRound:
+            GameSplashFacts(
+                first: ("books.vertical", String(localized: "\(vm.reviewBooks.count) books"), String(localized: "This session")),
+                second: ("hand.tap.fill", String(localized: mode.title), String(localized: "Game type")),
+                third: ("timer", String(localized: "No limit"), String(localized: "Time"))
+            )
         case .tapInOrder, .classic:
             GameSplashFacts(
                 first: (
@@ -217,6 +243,13 @@ struct BookOrderGameView: View {
                 ),
                 second: ("stopwatch", vm.savedBestTime.map(Self.formatted) ?? "—", String(localized: "Best time")),
                 third: ("flame.fill", "\(vm.persistentBestStreak)", String(localized: "Best streak"))
+            )
+        case .beforeAfter where isReviewRound:
+            // A review asks one pair per missed book, with no clock.
+            GameSplashFacts(
+                first: ("number", "\(min(reviewBooks.count, BookOrderQuickRound.questionsPerRound)) questions", String(localized: "This session")),
+                second: ("square.grid.2x2", "2", String(localized: "Choices")),
+                third: ("timer", String(localized: "No limit"), String(localized: "Per question"))
             )
         case .beforeAfter:
             GameSplashFacts(
@@ -336,8 +369,10 @@ struct BookOrderGameView: View {
                 Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
-                Button("Next Puzzle", systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
-                    .buttonStyle(GameProminentButtonStyle(tint: .purple))
+                if canAdvance {
+                    Button(advanceTitle, systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
+                        .buttonStyle(GameProminentButtonStyle(tint: .purple))
+                }
             }
             .frame(maxWidth: 760)
         }
@@ -345,7 +380,8 @@ struct BookOrderGameView: View {
 
     private var tapPrompt: String {
         let count = vm.correctOrder.count
-        return switch vm.source {
+        // A review's missed books come from the whole Bible.
+        return switch isReviewRound ? .both : vm.source {
         case .both: String(localized: "Tap these \(count) books in Bible order.")
         case .ot: String(localized: "Tap these \(count) Old Testament books in Bible order.")
         case .nt: String(localized: "Tap these \(count) New Testament books in Bible order.")
@@ -529,7 +565,8 @@ struct BookOrderGameView: View {
 
     private var prompt: String {
         let count = vm.correctOrder.count
-        return switch vm.source {
+        // A review's missed books come from the whole Bible.
+        return switch isReviewRound ? .both : vm.source {
         case .both: String(localized: "Put these \(count) books in Bible order.")
         case .ot: String(localized: "Put these \(count) Old Testament books in Bible order.")
         case .nt: String(localized: "Put these \(count) New Testament books in Bible order.")
@@ -606,8 +643,10 @@ struct BookOrderGameView: View {
                 Button("Change Settings", systemImage: "slider.horizontal.3", action: endGame)
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
-                Button("Next Puzzle", systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
-                    .buttonStyle(GameProminentButtonStyle(tint: .purple))
+                if canAdvance {
+                    Button(advanceTitle, systemImage: "arrow.right.circle.fill", action: advanceToNextRound)
+                        .buttonStyle(GameProminentButtonStyle(tint: .purple))
+                }
             }
         } else {
             VStack(spacing: 10) {
@@ -671,7 +710,7 @@ struct BookOrderGameView: View {
     /// Double-tap: check the order in Classic, or go on once the result is shown.
     private var pencilDoubleTapAction: (() -> Void)? {
         if vm.showResult {
-            return { advanceToNextRound() }
+            return canAdvance ? { advanceToNextRound() } : nil
         }
         guard mode == .classic else { return nil }
         return { checkOrder() }
@@ -684,6 +723,11 @@ struct BookOrderGameView: View {
     }
 
     private func advanceToNextRound() {
+        // A review's next round draws a fresh set of missed books, from the start page.
+        if isReviewRound {
+            reviewRound?.reviewAgain()
+            return
+        }
         roundClock.start()
         if !isAppActive {
             roundClock.pause()

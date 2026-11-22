@@ -83,15 +83,8 @@ enum ReviewGame: String, CaseIterable, Identifiable {
                 ReviewGameMode(game: .bookOrder, mode: $0.rawValue, title: $0.title, detail: $0.detail, icon: $0.systemImage)
             }
         case .word:
-            WordleView.Mode.allCases.map {
-                ReviewGameMode(
-                    game: .word,
-                    mode: $0.rawValue,
-                    title: $0.title,
-                    detail: $0 == .daily ? "Daily words you didn't solve." : "Practice words you didn't solve.",
-                    icon: $0.icon
-                )
-            }
+            // Daily and Practice words are reviewed together.
+            [ReviewGameMode(game: .word, title: title, icon: systemImage)]
         }
     }
 
@@ -345,7 +338,7 @@ private struct ReviewRoundSession: View {
             // Book Order misses are book names.
             BookOrderGameView(reviewBooks: Array(questionIDs), reviewMode: BookOrderMode(rawValue: modeName) ?? .missingBook)
         case .word:
-            WordleView(reviewWords: Array(questionIDs), reviewMode: WordleView.Mode(rawValue: modeName) ?? .practice)
+            WordleView(reviewWords: Array(questionIDs))
         }
     }
 }

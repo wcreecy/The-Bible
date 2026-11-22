@@ -98,7 +98,8 @@ struct ReviewRoundModeTests {
     // MARK: - Sync
 
     @Test func syncKeepsModesApartAndRetiresPerMode() {
-        let missed = Date(timeIntervalSince1970: 1_000)
+        // Recent, so the history's 180-day limit keeps it.
+        let missed = Date().addingTimeInterval(-3_600)
         let phone = MissedGameQuestionStore(entries: [entry(.whoAmI, mode: "clueToName", "who-1", date: missed)])
         let tablet = MissedGameQuestionStore(entries: [entry(.whoAmI, mode: "nameToClue", "who-1", date: missed)])
         tablet.resolveReviewQuestion(game: .whoAmI, mode: "nameToClue", questionID: "who-1", date: missed.addingTimeInterval(60))
@@ -175,39 +176,52 @@ struct ReviewRoundModeTests {
 
     @Test func aWordReviewPlaysEachMissedWordAndClearsTheSolvedOnes() async {
         let store = MissedGameQuestionStore(entries: [
-            entry(.word, mode: "Daily", "GRACE"),
-            entry(.word, mode: "Daily", "FAITH")
+            entry(.word, "GRACE"),
+            entry(.word, "FAITH")
         ])
         await withRestoredDefaults {
-            let game = WordleGameViewModel(reviewWords: ["GRACE", "FAITH"], reviewMode: .daily, missedQuestions: store)
+            let game = WordleGameViewModel(reviewWords: ["GRACE", "FAITH"], missedQuestions: store)
             game.startNewRound(practice: true)
             let first = game.target
             #expect(["GRACE", "FAITH"].contains(first))
             #expect(!game.isDailyRound)
             #expect(game.reviewWordNumber == 1)
             game.endRound(win: true)
-            #expect(!store.containsMiss(game: .word, mode: "Daily", questionID: first))
+            #expect(!store.containsMiss(game: .word, questionID: first))
 
             #expect(game.hasNextReviewWord)
             game.startNewRound(practice: true)
             let second = game.target
             #expect(second != first)
             game.endRound(win: false)
-            #expect(store.containsMiss(game: .word, mode: "Daily", questionID: second))
+            #expect(store.containsMiss(game: .word, questionID: second))
             #expect(!game.hasNextReviewWord)
             #expect(game.reviewSolvedCount == 1)
         }
     }
 
-    @Test func aLostPracticeWordIsSavedForReviewUnderPractice() async {
+    @Test func aLostWordIsSavedForReview() async {
         let store = MissedGameQuestionStore(entries: [])
         await withRestoredDefaults {
             let game = WordleGameViewModel(missedQuestions: store)
             game.started = true
             game.target = "GRACE"
             game.endRound(win: false)
-            #expect(store.containsMiss(game: .word, mode: "Practice", questionID: "GRACE"))
-            #expect(store.reviewCount(for: .word, mode: "Daily") == 0)
+            #expect(store.containsMiss(game: .word, questionID: "GRACE"))
         }
+    }
+
+    @Test func dailyAndPracticeWordsAreReviewedTogether() {
+        // Misses saved with a Daily or Practice mode count as one WORD set.
+        let store = MissedGameQuestionStore(entries: [
+            entry(.word, mode: "Daily", "GRACE"),
+            entry(.word, mode: "Practice", "FAITH"),
+            entry(.word, "MERCY")
+        ])
+        #expect(store.reviewCount(for: .word) == 3)
+        #expect(Set(store.questionIDsForReview(game: .word)) == ["GRACE", "FAITH", "MERCY"])
+        store.resolveReviewQuestion(game: .word, questionID: "GRACE")
+        #expect(store.reviewCount(for: .word) == 2)
+        #expect(ReviewGame.word.modes.count == 1)
     }
 }

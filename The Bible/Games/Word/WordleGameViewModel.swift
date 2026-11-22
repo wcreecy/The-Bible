@@ -22,6 +22,33 @@ final class WordleGameViewModel {
         didSet { UserDefaults.standard.set(mode.rawValue, forKey: "wordleMode") }
     }
 
+    // MARK: - Review round
+
+    /// Words missed earlier, in Daily or Practice, for a review round; empty for a normal
+    /// game. A review plays them one after another, and a solved word is cleared from the
+    /// missed list.
+    let reviewWords: [String]
+    /// The review's words not played yet.
+    private(set) var reviewQueue: [String] = []
+    /// Review words solved so far.
+    private(set) var reviewSolvedCount = 0
+
+    var isReviewRound: Bool { !reviewWords.isEmpty }
+    var hasNextReviewWord: Bool { !reviewQueue.isEmpty }
+    /// The review word on the board, counting from 1.
+    var reviewWordNumber: Int { reviewWords.count - reviewQueue.count }
+
+    /// Where missed words are recorded; tests pass a store that never touches disk or iCloud.
+    private let missedQuestions: MissedGameQuestionStore
+
+    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
+    /// default argument, which would be evaluated outside the main actor.
+    init(reviewWords: [String] = [], missedQuestions: MissedGameQuestionStore? = nil) {
+        self.reviewWords = reviewWords.map { $0.uppercased() }.filter { $0.count == 5 }
+        self.missedQuestions = missedQuestions ?? .shared
+        reviewQueue = self.reviewWords
+    }
+
     var hardModeEnabled: Bool = UserDefaults.standard.bool(forKey: AppStorageKey.wordleHardModeEnabled) {
         didSet { UserDefaults.standard.set(hardModeEnabled, forKey: AppStorageKey.wordleHardModeEnabled) }
     }
@@ -385,7 +412,8 @@ final class WordleGameViewModel {
     }
 
     func saveProgress() {
-        guard started, !roundOver, !target.isEmpty else { return }
+        // A review's words are replayed fresh; saving would replace the real Practice round.
+        guard !isReviewRound, started, !roundOver, !target.isEmpty else { return }
         let progress = RoundProgress(
             dayKey: roundDayKey,
             word: target,
@@ -464,6 +492,13 @@ final class WordleGameViewModel {
         lastRoundElapsedSeconds = nil
         started = true
 
+        if isReviewRound {
+            guard !reviewQueue.isEmpty else { return }
+            roundDayKey = nil
+            target = reviewQueue.removeFirst()
+            return
+        }
+
         if practice {
             if let progress = resumablePracticeProgress {
                 target = progress.word
@@ -504,7 +539,9 @@ final class WordleGameViewModel {
         let elapsedSeconds = roundClock.elapsedSeconds()
 
         lastRoundElapsedSeconds = elapsedSeconds
-        UserDefaults.standard.removeObject(forKey: progressKey(practice: isPracticeRound))
+        if !isReviewRound {
+            UserDefaults.standard.removeObject(forKey: progressKey(practice: isPracticeRound))
+        }
 
         if win {
             let tries = rowIndex == 1 ? String(localized: "1 guess") : String(localized: "\(rowIndex) guesses")
@@ -516,6 +553,28 @@ final class WordleGameViewModel {
         } else {
             // The answer box below shows the word, so the message only explains how the round ended.
             message = rowIndex < 6 ? String(localized: "Word revealed.") : String(localized: "Out of guesses.")
+        }
+
+        if isReviewRound {
+            // A review leaves streaks, stats and the Daily alone; a solved word is cleared.
+            if win {
+                reviewSolvedCount += 1
+                missedQuestions.resolveReviewQuestion(game: .word, questionID: target)
+            }
+            isNewBestStreak = false
+            roundRef = Self.verseIndex[target]
+            return
+        }
+
+        if !win {
+            let reference = Self.verseIndex[target]
+            missedQuestions.record(
+                game: .word,
+                bookNames: reference.map { [$0.bookName] } ?? [],
+                chapterNumber: reference?.chapter,
+                topic: "WORD",
+                questionID: target
+            )
         }
 
         if let roundDayKey {

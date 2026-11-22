@@ -122,8 +122,10 @@ final class WhoAmIGameViewModel {
 
     /// The stores, clock and Bible text default to the real ones. They're resolved here rather
     /// than as default arguments, which would be evaluated outside the main actor.
+    /// A review plays the direction its questions were missed in, without changing the saved setting.
     init(
         reviewQuestionIDs: Set<String> = [],
+        reviewMode: Mode? = nil,
         missedQuestions: MissedGameQuestionStore? = nil,
         sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         now: @escaping () -> Date = Date.init,
@@ -134,13 +136,18 @@ final class WhoAmIGameViewModel {
         self.sleep = sleep
         self.now = now
         self.loadPassageForReference = loadPassage ?? { await GamePassage.load(for: $0) }
+        if let reviewMode { mode = reviewMode }
     }
 
     // Start screen state
     var started: Bool = false
     var isComplete: Bool = false
     var mode: Mode = Mode(rawValue: UserDefaults.standard.string(forKey: AppStorageKey.whoAmIMode) ?? "") ?? .clueToName {
-        didSet { UserDefaults.standard.set(mode.rawValue, forKey: AppStorageKey.whoAmIMode) }
+        didSet {
+            // A review plays the direction it's reviewing without changing the saved setting.
+            guard reviewQuestionIDs.isEmpty else { return }
+            UserDefaults.standard.set(mode.rawValue, forKey: AppStorageKey.whoAmIMode)
+        }
     }
     var difficulty: Difficulty = Difficulty(rawValue: UserDefaults.standard.string(forKey: AppStorageKey.whoAmIDifficulty) ?? "") ?? .normal {
         didSet {
@@ -164,10 +171,22 @@ final class WhoAmIGameViewModel {
         reviewQuestionIDs.isEmpty ? eligibleEntries.count >= 4 : reviewEntries.count >= MissedGameQuestionStore.reviewRoundSize
     }
 
-    /// The missed questions. Misses saved before questions had their own IDs hold only the
-    /// person's ID, so for those both of the person's questions come back.
+    /// The missed questions in the direction being reviewed. Misses saved before questions had
+    /// their own IDs hold only the person's ID, so for those both of the person's questions
+    /// come back, each asked in its own direction.
     private var reviewEntries: [Entry] {
-        entries.filter { reviewQuestionIDs.contains($0.questionID) || reviewQuestionIDs.contains(Self.legacyReviewID(for: $0)) }
+        entries.filter {
+            (Self.mode(of: $0) == mode && reviewQuestionIDs.contains($0.questionID))
+                || reviewQuestionIDs.contains(Self.legacyReviewID(for: $0))
+        }
+    }
+
+    /// The direction a question asks in.
+    private static func mode(of entry: Entry) -> Mode {
+        switch entry.questionMode {
+        case .factToPerson: .clueToName
+        case .personToFact: .nameToClue
+        }
     }
 
     /// The ID misses were saved under before each question had its own: the person's ID.
@@ -319,11 +338,7 @@ final class WhoAmIGameViewModel {
     }
 
     private func mode(for entry: Entry) -> Mode {
-        guard !reviewQuestionIDs.isEmpty else { return mode }
-        switch entry.questionMode {
-        case .factToPerson: return .clueToName
-        case .personToFact: return .nameToClue
-        }
+        reviewQuestionIDs.isEmpty ? mode : Self.mode(of: entry)
     }
 
     private func rankedDistractors(for target: Entry) -> [String] {
@@ -465,8 +480,9 @@ final class WhoAmIGameViewModel {
         )
         GameStats.shared.recordModeAnswer(.whoami, mode: (current.map { mode(for: $0) } ?? mode).rawValue, correct: correct)
         if correct, !reviewQuestionIDs.isEmpty, let current {
-            missedQuestions.resolveReviewQuestion(game: .whoAmI, questionID: current.questionID)
-            // An older miss saved under the person's ID is cleared by either of their questions.
+            missedQuestions.resolveReviewQuestion(game: .whoAmI, mode: Self.mode(of: current).rawValue, questionID: current.questionID)
+            // An older miss saved under the person's ID, with no direction, is cleared by
+            // either of their questions.
             let legacyID = Self.legacyReviewID(for: current)
             if reviewQuestionIDs.contains(legacyID) {
                 missedQuestions.resolveReviewQuestion(game: .whoAmI, questionID: legacyID)
@@ -474,6 +490,7 @@ final class WhoAmIGameViewModel {
         } else if !correct, let current {
             missedQuestions.record(
                 game: .whoAmI,
+                mode: Self.mode(of: current).rawValue,
                 bookNames: current.books,
                 topic: "Bible people",
                 questionID: current.questionID

@@ -28,8 +28,16 @@ struct WhoAmITimingSummary: View {
 
 struct WhoAmISetupControls: View {
     @Binding var mode: WhoAmIGameViewModel.Mode
+    /// A review picks its direction from the ones ready for review instead.
+    @Environment(\.reviewRoundContext) private var reviewRound
 
     var body: some View {
+        if reviewRound == nil {
+            setting
+        }
+    }
+
+    private var setting: some View {
         GameSettingsGroup {
             GameChoiceSetting(
                 title: "How to play",

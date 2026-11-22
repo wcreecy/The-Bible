@@ -326,7 +326,7 @@ struct TwoDeviceSyncScenarioTests {
         store.clearAll()
 
         #expect(store.isEmpty)
-        #expect(store.reviewableGames(minimumQuestions: 1).isEmpty)
+        #expect(store.reviewableModes(minimumQuestions: 1).isEmpty)
         #expect(store.cloudPayload().entries.isEmpty)
         #expect(store.cloudPayload().tombstones.isEmpty)
     }

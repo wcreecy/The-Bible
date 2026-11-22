@@ -55,6 +55,7 @@ enum BookOrderMode: String, CaseIterable, Identifiable {
     static func available(isWide: Bool) -> [BookOrderMode] {
         isWide ? allCases : allCases.filter { $0 != .classic }
     }
+
 }
 
 /// One question in a quick round.
@@ -139,7 +140,8 @@ final class BookOrderQuickRound {
 
     var isAnswered: Bool { selectedAnswer != nil }
 
-    var isTimed: Bool { mode == .beforeAfter }
+    /// A Before or After? review asks one question per missed book instead of racing the clock.
+    var isTimed: Bool { mode == .beforeAfter && !isReview }
 
     var progressText: String {
         isTimed
@@ -164,7 +166,13 @@ final class BookOrderQuickRound {
             let targets = isReview
                 ? Array(reviewBooks.shuffled().prefix(Self.questionsPerRound))
                 : Array(books.shuffled().prefix(Self.questionsPerRound))
-            questions = targets.compactMap { mode == .whichSection ? makeWhichSection(for: $0) : makeMissingBook(for: $0) }
+            questions = targets.compactMap { book in
+                switch mode {
+                case .whichSection: makeWhichSection(for: book)
+                case .beforeAfter: makeBeforeAfter(for: book)
+                default: makeMissingBook(for: book)
+                }
+            }
         }
         session.startQuestion()
     }
@@ -242,11 +250,11 @@ final class BookOrderQuickRound {
         GameStats.shared.recordModeAnswer(.bookorder, mode: mode.rawValue, correct: isCorrect)
         // Misses are saved by book, the same as the puzzles, and a right answer clears one.
         if isCorrect {
-            if missedQuestions.containsMiss(game: .bookOrder, questionID: question.book) {
-                missedQuestions.resolveReviewQuestion(game: .bookOrder, questionID: question.book)
+            if missedQuestions.containsMiss(game: .bookOrder, mode: mode.rawValue, questionID: question.book) {
+                missedQuestions.resolveReviewQuestion(game: .bookOrder, mode: mode.rawValue, questionID: question.book)
             }
         } else {
-            missedQuestions.record(game: .bookOrder, bookNames: [question.book], topic: "Book order", questionID: question.book)
+            missedQuestions.record(game: .bookOrder, mode: mode.rawValue, bookNames: [question.book], topic: "Book order", questionID: question.book)
         }
         if isCorrect { Haptics.success() } else { Haptics.error() }
     }
@@ -313,13 +321,8 @@ final class BookOrderQuickRound {
     /// Normal, and next to each other on Hard.
     private func makeBeforeAfter() -> BookOrderQuickQuestion {
         let books = self.books
-        let distances: ClosedRange<Int> = switch difficulty {
-        case .easy: 8...max(8, books.count - 1)
-        case .normal: 3...7
-        case .hard, .fullBible: 1...2
-        }
         let maxDistance = max(1, books.count - 1)
-        let distance = min(Int.random(in: distances), maxDistance)
+        let distance = min(Int.random(in: beforeAfterDistances(bookCount: books.count)), maxDistance)
         let start = Int.random(in: 0...(books.count - 1 - distance))
         let first = books[start]
         let second = books[start + distance]
@@ -327,6 +330,34 @@ final class BookOrderQuickRound {
         return BookOrderQuickQuestion(
             kind: .beforeAfter(first: shown[0], second: shown[1]),
             book: second,
+            options: shown,
+            correctAnswer: first
+        )
+    }
+
+    private func beforeAfterDistances(bookCount: Int) -> ClosedRange<Int> {
+        switch difficulty {
+        case .easy: 8...max(8, bookCount - 1)
+        case .normal: 3...7
+        case .hard, .fullBible: 1...2
+        }
+    }
+
+    /// For a review: `book` paired with another book, before or after it, the same distance
+    /// away as a normal round at this difficulty.
+    func makeBeforeAfter(for book: String) -> BookOrderQuickQuestion? {
+        let canon = BibleCanon.fallbackCanon
+        guard let index = canon.firstIndex(of: book) else { return nil }
+        let distance = Int.random(in: beforeAfterDistances(bookCount: canon.count))
+        // Whichever side has room; near either end of the Bible, the distance shrinks to fit.
+        let partners = [index - distance, index + distance].filter(canon.indices.contains)
+        let partnerIndex = partners.randomElement()
+            ?? (index < canon.count / 2 ? canon.count - 1 : 0)
+        let first = canon[min(index, partnerIndex)]
+        let shown = [book, canon[partnerIndex]].shuffled()
+        return BookOrderQuickQuestion(
+            kind: .beforeAfter(first: shown[0], second: shown[1]),
+            book: book,
             options: shown,
             correctAnswer: first
         )

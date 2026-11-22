@@ -194,7 +194,7 @@ struct BookOrderQuickRoundView: View {
                 if let question = round.current {
                     switch question.kind {
                     case .beforeAfter(let first, let second):
-                        beforeAfter(first: first, second: second)
+                        beforeAfter(first: first, second: second, question: question)
                     case .missingBook(let run):
                         missingBook(run: run, question: question)
                     case .whichSection(let book):
@@ -233,7 +233,7 @@ struct BookOrderQuickRoundView: View {
 
     // MARK: Before or After?
 
-    private func beforeAfter(first: String, second: String) -> some View {
+    private func beforeAfter(first: String, second: String, question: BookOrderQuickQuestion) -> some View {
         VStack(spacing: 16) {
             Text("Which comes first?")
                 .font(.title3.weight(.semibold))
@@ -252,14 +252,25 @@ struct BookOrderQuickRoundView: View {
                             .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
-                    .background(Color.purple.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .disabled(round.isAnswered)
+                    .background(
+                        round.isAnswered ? fill(for: book, in: question) : Color.purple.opacity(0.12),
+                        in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    )
                     .overlay {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .strokeBorder(Color.purple.opacity(0.4), lineWidth: 1)
+                            .strokeBorder(
+                                round.isAnswered ? stroke(for: book, in: question) : Color.purple.opacity(0.4),
+                                lineWidth: round.isAnswered && book == question.correctAnswer ? 2 : 1
+                            )
                     }
                     .hoverEffect(.lift)
+                    .accessibilityValue(accessibilityState(for: book, in: question))
                 }
             }
+
+            // A review asks one pair at a time, and waits for Next like the other rounds.
+            afterAnswer(for: question)
 
             if let feedback = round.lastFeedback {
                 Label(feedback.text, systemImage: feedback.isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")

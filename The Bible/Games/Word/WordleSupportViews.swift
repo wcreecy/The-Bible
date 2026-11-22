@@ -7,25 +7,29 @@ struct WordSetupControls: View {
     @Binding var mode: WordleView.Mode
     @Binding var hardModeEnabled: Bool
     @Binding var colorBlindModeEnabled: Bool
+    /// A review picks its mode from the modes ready for review instead.
+    @Environment(\.reviewRoundContext) private var reviewRound
 
     var body: some View {
         // Daily or Practice and Normal or Hard are WORD's one-tap choices, like difficulty in
         // the other games; the color option is a switch in the settings list.
         VStack(alignment: .leading, spacing: 16) {
-            GameSegmentedSetting(
-                title: Text("Game type"),
-                tint: .mint,
-                selection: $mode,
-                options: WordleView.Mode.allCases,
-                label: { Text($0.title) },
-                detail: { mode in
-                    switch mode {
-                    case .daily: Text("One puzzle a day. Counts toward your Daily streak.")
-                    case .practice: Text("Unlimited puzzles with a separate streak.")
-                    }
-                },
-                icon: \.icon
-            )
+            if reviewRound == nil {
+                GameSegmentedSetting(
+                    title: Text("Game type"),
+                    tint: .mint,
+                    selection: $mode,
+                    options: WordleView.Mode.allCases,
+                    label: { Text($0.title) },
+                    detail: { mode in
+                        switch mode {
+                        case .daily: Text("One puzzle a day. Counts toward your Daily streak.")
+                        case .practice: Text("Unlimited puzzles with a separate streak.")
+                        }
+                    },
+                    icon: \.icon
+                )
+            }
 
             GameSegmentedSetting(
                 title: Text("Difficulty"),

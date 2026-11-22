@@ -5,8 +5,8 @@ struct BeatTheClockGameView: View {
     @State private var isGiveUpConfirmationPresented = false
     @State private var selectedPassage: PassageReference?
 
-    init(reviewQuestionIDs: Set<String> = []) {
-        _vm = State(initialValue: BeatTheClockGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
+    init(reviewQuestionIDs: Set<String> = [], reviewMode: BeatTheClockMode? = nil) {
+        _vm = State(initialValue: BeatTheClockGameViewModel(reviewQuestionIDs: reviewQuestionIDs, reviewMode: reviewMode))
     }
 
     // Global Auto‑Win debug toggle

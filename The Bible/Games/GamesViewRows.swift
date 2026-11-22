@@ -152,6 +152,8 @@ struct ReviewRoundStatusRow: View {
     let usesExpandedLayout: Bool
     let onSelectGame: (ReviewRoundDestination) -> Void
 
+    @State private var expandedGames: Set<ReviewGame> = []
+
     private var hasEligibleGame: Bool { progress.contains { $0.isReady } }
 
     // The same icon column as the game rows above, so the titles line up.
@@ -163,7 +165,7 @@ struct ReviewRoundStatusRow: View {
     private var statusText: LocalizedStringResource {
         hasEligibleGame
             ? "Ready: replay the questions you missed."
-            : "Unlocks once a game has \(MissedGameQuestionStore.reviewRoundSize) missed questions."
+            : "Unlocks once a game mode has \(MissedGameQuestionStore.reviewRoundSize) missed questions."
     }
 
     var body: some View {
@@ -184,33 +186,27 @@ struct ReviewRoundStatusRow: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(hasEligibleGame ? "Review Round, ready" : "Review Round, locked")
+            .accessibilityHint("Requires \(MissedGameQuestionStore.reviewRoundSize) replayable missed questions in one game mode.")
+            .accessibilityIdentifier(hasEligibleGame ? "reviewRoundReady" : "reviewRoundLocked")
 
             ForEach(progress) { item in
-                HStack {
-                    Text(item.title)
-                        .font(.caption)
-                    Spacer()
-                    Text("\(item.count) / \(MissedGameQuestionStore.reviewRoundSize)")
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(item.isReady ? .purple : .secondary)
-
-                    if item.isReady {
-                        Button("Play") {
-                            onSelectGame(.game(item.game.rawValue))
+                ReviewGameRow(
+                    progress: item,
+                    isExpanded: Binding(
+                        get: { expandedGames.contains(item.game) },
+                        set: { isExpanded in
+                            if isExpanded { expandedGames.insert(item.game) } else { expandedGames.remove(item.game) }
                         }
-                        .buttonStyle(.glassProminent)
-                        .tint(.purple)
-                        .controlSize(.small)
-                    }
-                }
+                    ),
+                    usesExpandedLayout: usesExpandedLayout,
+                    onPlay: { onSelectGame(.game(item.game.rawValue)) }
+                )
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, usesExpandedLayout ? 9 : 4)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(hasEligibleGame ? "Review Round, ready" : "Review Round, locked")
-        .accessibilityHint("Requires \(MissedGameQuestionStore.reviewRoundSize) replayable missed questions in one game.")
-        .accessibilityIdentifier(hasEligibleGame ? "reviewRoundReady" : "reviewRoundLocked")
     }
 }
 

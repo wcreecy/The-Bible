@@ -229,18 +229,21 @@ struct QuizView: View {
         } configuration: {
             VStack(alignment: .leading, spacing: 8) {
                 GameSettingsGroup {
-                    GameChoiceSetting(
-                        title: "Mode",
-                        systemImage: "arrow.left.arrow.right",
-                        tint: .blue,
-                        selection: $vm.mode,
-                        choices: [
-                            GameChoice(value: QuizMode.standard, title: "Standard",
-                                       detail: "Verse text → book", icon: "book.closed"),
-                            GameChoice(value: QuizMode.reverse, title: "Reverse",
-                                       detail: "Reference → verse text", icon: "text.quote")
-                        ]
-                    )
+                    // A review picks its mode from the modes ready for review instead.
+                    if vm.reviewQuestionIDs.isEmpty {
+                        GameChoiceSetting(
+                            title: "Mode",
+                            systemImage: "arrow.left.arrow.right",
+                            tint: .blue,
+                            selection: $vm.mode,
+                            choices: [
+                                GameChoice(value: QuizMode.standard, title: "Standard",
+                                           detail: "Verse text → book", icon: "book.closed"),
+                                GameChoice(value: QuizMode.reverse, title: "Reverse",
+                                           detail: "Reference → verse text", icon: "text.quote")
+                            ]
+                        )
+                    }
 
                     GameChoiceSetting(
                         title: "Verse pool",

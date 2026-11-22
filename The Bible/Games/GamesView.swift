@@ -136,7 +136,7 @@ struct GamesView: View {
             )
         }
 
-        if !isPrompted(.reviewRound), !MissedGameQuestionStore.shared.reviewableGames().isEmpty {
+        if !isPrompted(.reviewRound), !MissedGameQuestionStore.shared.reviewableModes().isEmpty {
             return GameRecommendation(
                 title: "Review missed questions",
                 detail: "Practice questions you previously missed.",
@@ -351,12 +351,7 @@ struct GamesView: View {
             progressByRoute = Dictionary(uniqueKeysWithValues: GameRoute.allCases.map { route in
                 (route, progressText(for: route, entry: statsByName[route.displayName], todayWordResult: todayWordResult))
             })
-            reviewProgress = MissedGameQuestionStore.Entry.Game.reviewableCases.map { game in
-                ReviewRoundProgress(
-                    game: game,
-                    count: MissedGameQuestionStore.shared.reviewCount(for: game)
-                )
-            }
+            reviewProgress = ReviewRoundProgress.all()
             cachedRecommendation = makeRecommendation()
         }
     }

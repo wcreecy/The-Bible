@@ -31,7 +31,18 @@ struct WordleView: View {
     typealias KeyState = WordleKeyState
 
     // MARK: - State
-    @State private var vm = WordleGameViewModel()
+    @State private var vm: WordleGameViewModel
+    /// Set while playing a review round, for Review Again.
+    @Environment(\.reviewRoundContext) private var reviewRound
+
+    init(reviewWords: [String] = []) {
+        _vm = State(initialValue: WordleGameViewModel(reviewWords: reviewWords))
+    }
+
+    /// Practice goes on to another word, and a review to its next missed word.
+    private var canPlayNextWord: Bool {
+        vm.isReviewRound ? vm.hasNextReviewWord : !vm.isDailyRound
+    }
 
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
@@ -213,7 +224,7 @@ struct WordleView: View {
     .tabBarContentClearance()
     .environment(\.wordColorBlindMode, vm.colorBlindModeEnabled)
     .pinnedGameActionButton(
-      isShown: horizontalSizeClass != nil && vm.roundOver && !vm.isDailyRound
+      isShown: horizontalSizeClass != nil && vm.roundOver && canPlayNextWord
     ) {
       Button("Next Word", systemImage: "arrow.right") {
         vm.startNewRound(practice: true)
@@ -288,7 +299,7 @@ struct WordleView: View {
     // Double-tap submits a full row, or goes on to the next Practice word once the round is over.
     .gamePencilActions(isEnabled: vm.started, onDoubleTap: pencilDoubleTapAction) {
       if vm.roundOver {
-        if !vm.isDailyRound {
+        if canPlayNextWord {
           Button("Next Word", systemImage: "arrow.right") { vm.startNewRound(practice: true) }
         }
       } else {
@@ -325,16 +336,18 @@ struct WordleView: View {
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
                 .gameStartDescriptionStyle(for: .wordle)
 
-            let resumesRound = vm.isAnswerBankPrepared
+            // A review plays its missed words, never a saved round or today's Daily.
+            let resumesRound = !vm.isReviewRound
+                && vm.isAnswerBankPrepared
                 && vm.hasRoundToResume(practice: vm.mode == .practice)
                 && (vm.mode == .practice || !dailyCompletedToday)
             GameSplashLaunchLayout(
                 tint: .mint,
                 isStartEnabled: vm.isAnswerBankPrepared
-                    && (vm.mode != .daily || !dailyCompletedToday),
+                    && (vm.isReviewRound || vm.mode != .daily || !dailyCompletedToday),
                 startTitle: resumesRound ? "Resume" : "Start Game",
                 startSubtitle: resumesRound ? "Pick up where you left off." : "Begin your challenge.",
-                startAction: { vm.startNewRound(practice: vm.mode == .practice) }
+                startAction: { vm.startNewRound(practice: vm.isReviewRound || vm.mode == .practice) }
             ) {
                 GameLobbyPreview(kind: .wordle)
             } configuration: {
@@ -344,7 +357,7 @@ struct WordleView: View {
                     colorBlindModeEnabled: $vm.colorBlindModeEnabled
                 )
 
-                if vm.mode == .daily {
+                if vm.mode == .daily, !vm.isReviewRound {
                     // Re-read when another device syncs today's result.
                     WordDailyCalendarView(
                         results: WordleGameViewModel.dailyResults(),
@@ -353,7 +366,7 @@ struct WordleView: View {
                     .id(dailyCompletedDay)
                 }
 
-                if vm.mode == .daily && dailyCompletedToday {
+                if vm.mode == .daily && dailyCompletedToday && !vm.isReviewRound {
                     Label(
                         "Daily completed. Come back tomorrow.",
                         systemImage: "exclamationmark.triangle.fill"
@@ -366,19 +379,31 @@ struct WordleView: View {
             } facts: {
                 // Game type, difficulty, and how many puzzles can be played today.
                 let allowsUnlimitedPlays = vm.mode == .practice
-                GameSplashFacts(
-                    first: (vm.mode.icon, String(localized: vm.mode.title), String(localized: "Game type")),
-                    second: (
-                        vm.hardModeEnabled ? "flame" : "circle",
-                        vm.hardModeEnabled ? String(localized: "Hard") : String(localized: "Normal"),
-                        String(localized: "Difficulty")
-                    ),
-                    third: (
-                        allowsUnlimitedPlays ? "infinity" : "1.circle",
-                        allowsUnlimitedPlays ? String(localized: "Unlimited") : String(localized: "Once"),
-                        String(localized: "Plays today")
+                if vm.isReviewRound {
+                    GameSplashFacts(
+                        first: ("arrow.clockwise.heart.fill", String(localized: "\(vm.reviewWords.count) words"), String(localized: "This review")),
+                        second: (
+                            vm.hardModeEnabled ? "flame" : "circle",
+                            vm.hardModeEnabled ? String(localized: "Hard") : String(localized: "Normal"),
+                            String(localized: "Difficulty")
+                        ),
+                        third: ("square.grid.3x2", "6", String(localized: "Guesses each"))
                     )
-                )
+                } else {
+                    GameSplashFacts(
+                        first: (vm.mode.icon, String(localized: vm.mode.title), String(localized: "Game type")),
+                        second: (
+                            vm.hardModeEnabled ? "flame" : "circle",
+                            vm.hardModeEnabled ? String(localized: "Hard") : String(localized: "Normal"),
+                            String(localized: "Difficulty")
+                        ),
+                        third: (
+                            allowsUnlimitedPlays ? "infinity" : "1.circle",
+                            allowsUnlimitedPlays ? String(localized: "Unlimited") : String(localized: "Once"),
+                            String(localized: "Plays today")
+                        )
+                    )
+                }
             }
             Spacer(minLength: 24)
         }
@@ -485,7 +510,7 @@ struct WordleView: View {
     /// Double-tap: submit a full row, or start the next Practice word after the round.
     private var pencilDoubleTapAction: (() -> Void)? {
         if vm.roundOver {
-            guard !vm.isDailyRound else { return nil }
+            guard canPlayNextWord else { return nil }
             return { vm.startNewRound(practice: true) }
         }
         guard vm.isCurrentRowFull() else { return nil }
@@ -538,7 +563,9 @@ struct WordleView: View {
         [
             ("square.grid.3x2", vm.didWin ? "\(vm.rowIndex)/6" : "X/6", String(localized: "Guesses")),
             ("stopwatch", vm.lastRoundElapsedSeconds.map(formatElapsed) ?? "—", String(localized: "Time")),
-            (roundMode.icon, String(localized: roundMode.title), String(localized: "Puzzle")),
+            vm.isReviewRound
+                ? ("arrow.clockwise.heart.fill", String(localized: "\(vm.reviewWordNumber) of \(vm.reviewWords.count)"), String(localized: "Review"))
+                : (roundMode.icon, String(localized: roundMode.title), String(localized: "Puzzle")),
             (vm.roundHardMode ? "flame" : "circle", vm.roundHardMode ? String(localized: "Hard") : String(localized: "Normal"), String(localized: "Mode"))
         ]
     }
@@ -618,7 +645,15 @@ struct WordleView: View {
                 }
                 .buttonStyle(ModernPillButtonStyle(tint: .mint))
 
-                if !vm.isDailyRound {
+                if vm.isReviewRound && !vm.hasNextReviewWord {
+                    // The last review word: another review draws a fresh set of missed words.
+                    if reviewRound?.canReviewAgain == true {
+                        Button("Review Again", systemImage: "arrow.clockwise") {
+                            reviewRound?.reviewAgain()
+                        }
+                        .buttonStyle(GameProminentButtonStyle(tint: .mint))
+                    }
+                } else if !vm.isDailyRound {
                     // On iPhone and iPad, Next Word is pinned above the tab bar instead.
                     if !pinsNextWord {
                         Button("Next Word", systemImage: "arrow.right") {
@@ -644,6 +679,15 @@ struct WordleView: View {
                     }
                     .buttonStyle(GameProminentButtonStyle(tint: .mint))
                 }
+            }
+
+            if vm.isReviewRound && !vm.hasNextReviewWord {
+                Label(
+                    "Review complete: \(vm.reviewSolvedCount) of \(vm.reviewWords.count) words solved.",
+                    systemImage: "arrow.clockwise.heart.fill"
+                )
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
             }
 
             Button("Change Settings", systemImage: "slider.horizontal.3") {

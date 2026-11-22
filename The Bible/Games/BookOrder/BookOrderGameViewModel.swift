@@ -141,6 +141,26 @@ final class BookOrderGameViewModel {
     private static let savedPuzzlesKey = AppStorageKey.bookOrderSavedPuzzles
     private static let modeKey = AppStorageKey.bookOrderMode
 
+    /// Books missed earlier, for a review round; empty for a normal game. A review puzzle is
+    /// these books, to put in Bible order.
+    let reviewBooks: [String]
+    /// The mode the review's misses were saved under. On iPhone a Classic review plays as
+    /// Tap in Order, but it still clears Classic misses.
+    private let reviewMode: BookOrderMode?
+
+    var isReview: Bool { !reviewBooks.isEmpty }
+
+    /// Where missed books are recorded; tests pass a store that never touches disk or iCloud.
+    private let missedQuestions: MissedGameQuestionStore
+
+    /// `missedQuestions` defaults to the shared store. It's resolved here rather than as a
+    /// default argument, which would be evaluated outside the main actor.
+    init(reviewBooks: [String] = [], reviewMode: BookOrderMode? = nil, missedQuestions: MissedGameQuestionStore? = nil) {
+        self.reviewBooks = reviewBooks
+        self.reviewMode = reviewMode
+        self.missedQuestions = missedQuestions ?? .shared
+    }
+
     /// How the game is played. Classic is iPad-only; `playMode(isWide:)` stands it in for
     /// Tap in Order on iPhone.
     var mode: BookOrderMode = BookOrderMode(
@@ -319,7 +339,8 @@ final class BookOrderGameViewModel {
 
     /// The saved puzzle for the current settings, if it still fits them.
     private var savedPuzzle: SavedPuzzle? {
-        guard let puzzle = Self.loadSavedPuzzles()[savedPuzzleKey],
+        // A review is always a fresh puzzle of the missed books.
+        guard !isReview, let puzzle = Self.loadSavedPuzzles()[savedPuzzleKey],
               puzzle.correctOrder.count == roundBookCount,
               Set(puzzle.currentItems) == Set(puzzle.correctOrder),
               puzzle.currentItems.count == puzzle.correctOrder.count,
@@ -332,7 +353,7 @@ final class BookOrderGameViewModel {
 
     /// Saves the puzzle on screen if it hasn't been checked yet.
     func savePuzzle(elapsedSeconds: Int) {
-        guard started, !showResult, !correctOrder.isEmpty else { return }
+        guard !isReview, started, !showResult, !correctOrder.isEmpty else { return }
         var puzzles = Self.loadSavedPuzzles()
         puzzles[savedPuzzleKey] = SavedPuzzle(
             correctOrder: correctOrder,
@@ -403,6 +424,16 @@ final class BookOrderGameViewModel {
     /// Picks a run of books in a row from the chosen part and shuffles it.
     func nextRound() {
         resetResult()
+
+        if isReview {
+            var generator = SystemRandomNumberGenerator()
+            let canon = BibleCanon.fallbackCanon
+            correctOrder = reviewBooks
+                .filter(canon.contains)
+                .sorted { (canon.firstIndex(of: $0) ?? 0) < (canon.firstIndex(of: $1) ?? 0) }
+            currentItems = Self.scrambled(correctOrder, using: &generator)
+            return
+        }
 
         let books = source.bookNames
         guard !books.isEmpty else {
@@ -550,7 +581,9 @@ final class BookOrderGameViewModel {
         let bestStreakBefore = persistentStreak.best
         session.record(correct: wasCorrect, savedStreak: persistentStreak)
         isNewBestStreak = persistentStreak.best > bestStreakBefore
-        bestTimeComparison = GameBestTimeComparison(
+        // A review's books aren't a normal puzzle for these settings, so its time isn't
+        // compared with, or saved as, their best.
+        bestTimeComparison = isReview ? nil : GameBestTimeComparison(
             seconds: max(1, elapsedSeconds),
             previousBest: savedBestTime,
             isSolved: wasCorrect
@@ -558,7 +591,7 @@ final class BookOrderGameViewModel {
         recordMissedBooks()
         clearSavedPuzzle()
 
-        if wasCorrect {
+        if wasCorrect, !isReview {
             let previousBest = savedBestTime
             isNewBestTime = previousBest.map { elapsedSeconds < $0 } ?? true
             if isNewBestTime {
@@ -629,13 +662,14 @@ final class BookOrderGameViewModel {
     /// Adds misplaced books to the missed-question history (study only, never a review round)
     /// and retires a book from it once it is placed correctly again.
     private func recordMissedBooks() {
-        let store = MissedGameQuestionStore.shared
+        let store = missedQuestions
         let missed = Set(booksToReview.map(\.book))
+        let mode = (reviewMode ?? puzzleMode).rawValue
         for book in correctOrder {
             if missed.contains(book) {
-                store.record(game: .bookOrder, bookNames: [book], topic: "Book order", questionID: book)
-            } else if store.containsMiss(game: .bookOrder, questionID: book) {
-                store.resolveReviewQuestion(game: .bookOrder, questionID: book)
+                store.record(game: .bookOrder, mode: mode, bookNames: [book], topic: "Book order", questionID: book)
+            } else if store.containsMiss(game: .bookOrder, mode: mode, questionID: book) {
+                store.resolveReviewQuestion(game: .bookOrder, mode: mode, questionID: book)
             }
         }
     }

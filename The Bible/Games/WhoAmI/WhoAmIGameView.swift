@@ -5,9 +5,9 @@ struct WhoAmIGameView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var vm: WhoAmIGameViewModel
     @FocusState private var isKeyboardFocused: Bool
-    init(reviewQuestionIDs: Set<String> = []) {
+    init(reviewQuestionIDs: Set<String> = [], reviewMode: WhoAmIGameViewModel.Mode? = nil) {
         isReviewRound = !reviewQuestionIDs.isEmpty
-        _vm = State(initialValue: WhoAmIGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
+        _vm = State(initialValue: WhoAmIGameViewModel(reviewQuestionIDs: reviewQuestionIDs, reviewMode: reviewMode))
     }
     @State private var timerOnLeading = false
     @State private var usesMutedTimerStyle = false

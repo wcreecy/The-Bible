@@ -465,6 +465,33 @@ enum DeveloperSampleData {
                 date: Date().addingTimeInterval(-Double((offset + 1) * 3_600))
             )
         }
+
+        // Book Order misses are saved by book name and mode: a full round of Missing Book,
+        // and a few Before or After? misses short of one.
+        let missedBooks = [
+            "Leviticus", "Ruth", "Ezra", "Nehemiah", "Ecclesiastes", "Lamentations",
+            "Obadiah", "Habakkuk", "Zephaniah", "Philemon", "Jude", "Titus"
+        ]
+        for (offset, book) in missedBooks.enumerated() {
+            store.record(
+                game: .bookOrder,
+                mode: BookOrderMode.missingBook.rawValue,
+                bookNames: [book],
+                topic: "Book order",
+                questionID: book,
+                date: Date().addingTimeInterval(-Double((offset + 1) * 3_600))
+            )
+        }
+        for (offset, book) in missedBooks.prefix(4).enumerated() {
+            store.record(
+                game: .bookOrder,
+                mode: BookOrderMode.beforeAfter.rawValue,
+                bookNames: [book],
+                topic: "Book order",
+                questionID: book,
+                date: Date().addingTimeInterval(-Double((offset + 1) * 3_600))
+            )
+        }
     }
 
     private static func generateAppUsageSplit() {

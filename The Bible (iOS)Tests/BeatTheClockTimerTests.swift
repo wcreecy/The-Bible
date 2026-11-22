@@ -317,6 +317,45 @@ struct BeatTheClockTimerTests {
         }
     }
 
+    @Test
+    func aRapidFireMissIsSavedUnderRapidFireAndReviewedInIt() async throws {
+        let clock = ManualSleeper()
+        let missed = MissedGameQuestionStore(entries: [])
+        let game = await loadedGame(missedQuestions: missed, clock: clock)
+
+        try await withRestoredDefaults {
+            game.mode = .rapidFire
+            game.startGame()
+            let question = try #require(game.currentQuestion)
+            // Giving up with no books found is a miss.
+            game.giveUp()
+            #expect(missed.containsMiss(game: .beatTheClock, mode: "rapidFire", questionID: question.id))
+            #expect(missed.reviewCount(for: .beatTheClock, mode: "classic") == 0)
+
+            // The review plays Rapid Fire, without changing the saved mode.
+            game.mode = .classic
+            let review = BeatTheClockGameViewModel(
+                reviewQuestionIDs: [question.id],
+                reviewMode: .rapidFire,
+                missedQuestions: missed,
+                sleep: clock.sleep(for:),
+                now: { clock.date },
+                loadPassage: { _ in Self.passage }
+            )
+            await review.loadData()
+            #expect(review.isRapidFire)
+            #expect(BeatTheClockGameViewModel().mode == .classic)
+            review.startGame()
+            #expect(review.currentQuestion?.id == question.id)
+
+            // Finding every book is a right answer, which clears the Rapid Fire miss.
+            for book in question.acceptableBooks.sorted() {
+                review.submit(bookName: book)
+            }
+            #expect(!missed.containsMiss(game: .beatTheClock, mode: "rapidFire", questionID: question.id))
+        }
+    }
+
     // MARK: - Defaults
 
     /// Runs `body`, then puts back every default it added, changed or removed.

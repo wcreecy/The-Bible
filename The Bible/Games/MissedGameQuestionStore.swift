@@ -16,20 +16,29 @@ final class MissedGameQuestionStore {
             case whoAmI
             case hangman
             case scramble
-            /// Books placed out of order or missed in a quick round, saved by book name. A review
-            /// asks a Missing Book question about each.
+            /// Books placed out of order or missed in a quick round, saved by book name.
             case bookOrder
+            /// WORD words not solved, saved by the word. Daily and Practice misses are reviewed
+            /// together, since a word plays the same either way.
+            case word
 
-            /// Whether misses from this game can be replayed in a review round.
-            /// Reverse Quiz history remains stored for a future review mode, but is not offered yet.
-            var isReviewable: Bool { self != .quizReverse }
-
-            /// The games that offer review rounds.
-            static var reviewableCases: [Game] { allCases.filter(\.isReviewable) }
+            /// The mode misses saved before modes were recorded belong to: the game's main mode.
+            /// Nil for a game reviewed as one set.
+            var defaultMode: String? {
+                switch self {
+                case .beatTheClock: "classic"
+                case .whoAmI: "clueToName"
+                case .bookOrder: "missingBook"
+                case .bibleQuiz, .quizReverse, .bibleTrivia, .hangman, .scramble, .word: nil
+                }
+            }
         }
 
         let id: UUID
         let game: Game
+        /// The game mode the question was missed in, e.g. "rapidFire". Nil for a game with one
+        /// way to play, and for misses saved before modes were recorded.
+        let mode: String?
         /// Some people and place questions relate to more than one book.
         let bookNames: [String]
         /// Present only when the question has a specific Scripture reference.
@@ -42,6 +51,7 @@ final class MissedGameQuestionStore {
         init(
             id: UUID,
             game: Game,
+            mode: String? = nil,
             bookNames: [String],
             chapterNumber: Int?,
             topic: String,
@@ -50,11 +60,29 @@ final class MissedGameQuestionStore {
         ) {
             self.id = id
             self.game = game
+            self.mode = mode
             self.bookNames = bookNames
             self.chapterNumber = chapterNumber
             self.topic = topic
             self.questionID = questionID
             self.date = date
+        }
+
+        var reviewMode: ReviewMode { ReviewMode(game: game, mode: mode) }
+    }
+
+    /// One way to replay misses: a game and the mode they were missed in. Misses are counted
+    /// and replayed per mode.
+    struct ReviewMode: Hashable {
+        let game: Entry.Game
+        /// The mode's stored name, e.g. "rapidFire"; nil for a game with one way to play.
+        let mode: String?
+
+        /// A missing mode means the game's main mode. A game reviewed as one set has no
+        /// mode, so any mode saved with its misses (such as WORD's Daily) is ignored.
+        init(game: Entry.Game, mode: String? = nil) {
+            self.game = game
+            self.mode = game.defaultMode == nil ? nil : (mode ?? game.defaultMode)
         }
     }
 
@@ -64,6 +92,10 @@ final class MissedGameQuestionStore {
         let game: Entry.Game
         let questionID: String
         let date: Date
+        /// Missing from retirements saved before modes were recorded.
+        var mode: String? = nil
+
+        var reviewMode: ReviewMode { ReviewMode(game: game, mode: mode) }
     }
 
     /// What one device publishes to iCloud; the other device merges it into its own history.
@@ -120,6 +152,7 @@ final class MissedGameQuestionStore {
 
     func record(
         game: Entry.Game,
+        mode: String? = nil,
         bookNames: [String],
         chapterNumber: Int? = nil,
         topic: String,
@@ -128,13 +161,15 @@ final class MissedGameQuestionStore {
     ) {
         let canonicalBooks = Array(Set(bookNames.filter { !$0.isEmpty }))
             .sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+        let reviewMode = ReviewMode(game: game, mode: mode)
         if let questionID {
-            entries.removeAll { $0.game == game && $0.questionID == questionID }
+            entries.removeAll { $0.reviewMode == reviewMode && $0.questionID == questionID }
         }
         entries.append(
             Entry(
                 id: UUID(),
                 game: game,
+                mode: reviewMode.mode,
                 bookNames: canonicalBooks,
                 chapterNumber: chapterNumber,
                 topic: topic,
@@ -148,25 +183,34 @@ final class MissedGameQuestionStore {
 
     /// The review feature works with distinct, replayable questions only. Older history entries
     /// without an identifier remain available for study recommendations but cannot be replayed.
-    func reviewCount(for game: Entry.Game) -> Int {
-        guard game.isReviewable else { return 0 }
-        return Set(entries.compactMap { entry in
-            entry.game == game ? entry.questionID : nil
+    func reviewCount(for reviewMode: ReviewMode) -> Int {
+        Set(entries.compactMap { entry in
+            entry.reviewMode == reviewMode ? entry.questionID : nil
         }).count
+    }
+
+    func reviewCount(for game: Entry.Game, mode: String? = nil) -> Int {
+        reviewCount(for: ReviewMode(game: game, mode: mode))
+    }
+
+    /// Whether this mode has enough misses for a review round.
+    func isReviewReady(_ reviewMode: ReviewMode) -> Bool {
+        reviewCount(for: reviewMode) >= Self.reviewRoundSize
     }
 
     /// How many missed questions a game needs before it offers a review round, and how many
     /// a round asks. The one place this number is set.
     nonisolated static let reviewRoundSize = 10
 
-    func reviewableGames(minimumQuestions: Int = reviewRoundSize) -> [Entry.Game] {
-        Entry.Game.reviewableCases.filter { reviewCount(for: $0) >= minimumQuestions }
+    /// The games and modes with at least `minimumQuestions` misses to replay.
+    func reviewableModes(minimumQuestions: Int = reviewRoundSize) -> [ReviewMode] {
+        Array(Set(entries.map(\.reviewMode))).filter { reviewCount(for: $0) >= minimumQuestions }
     }
 
-    func questionIDsForReview(game: Entry.Game, count: Int = reviewRoundSize) -> [String] {
+    func questionIDsForReview(_ reviewMode: ReviewMode, count: Int = reviewRoundSize) -> [String] {
         Array(
             Set(entries.compactMap { entry in
-                entry.game == game ? entry.questionID : nil
+                entry.reviewMode == reviewMode ? entry.questionID : nil
             })
         )
         .shuffled()
@@ -174,16 +218,22 @@ final class MissedGameQuestionStore {
         .map(\.self)
     }
 
-    /// Whether a miss with this identifier is still in the history.
-    func containsMiss(game: Entry.Game, questionID: String) -> Bool {
-        entries.contains { $0.game == game && $0.questionID == questionID }
+    func questionIDsForReview(game: Entry.Game, mode: String? = nil, count: Int = reviewRoundSize) -> [String] {
+        questionIDsForReview(ReviewMode(game: game, mode: mode), count: count)
     }
 
-    /// A correct answer in a review round retires that question from future review rounds.
-    func resolveReviewQuestion(game: Entry.Game, questionID: String, date: Date = Date()) {
-        entries.removeAll { $0.game == game && $0.questionID == questionID }
-        tombstones.removeAll { $0.game == game && $0.questionID == questionID }
-        tombstones.append(Tombstone(game: game, questionID: questionID, date: date))
+    /// Whether a miss with this identifier is still in the history for this mode.
+    func containsMiss(game: Entry.Game, mode: String? = nil, questionID: String) -> Bool {
+        let reviewMode = ReviewMode(game: game, mode: mode)
+        return entries.contains { $0.reviewMode == reviewMode && $0.questionID == questionID }
+    }
+
+    /// A correct answer in a review round retires that question from this mode's review rounds.
+    func resolveReviewQuestion(game: Entry.Game, mode: String? = nil, questionID: String, date: Date = Date()) {
+        let reviewMode = ReviewMode(game: game, mode: mode)
+        entries.removeAll { $0.reviewMode == reviewMode && $0.questionID == questionID }
+        tombstones.removeAll { $0.reviewMode == reviewMode && $0.questionID == questionID }
+        tombstones.append(Tombstone(game: game, questionID: questionID, date: date, mode: reviewMode.mode))
         save()
     }
 
@@ -229,9 +279,9 @@ final class MissedGameQuestionStore {
         let originalEntries = entries
         let originalTombstones = tombstones
 
-        var latestRetirement: [String: Date] = [:]
+        var latestRetirement: [QuestionKey: Date] = [:]
         for tombstone in tombstones + remote.tombstones {
-            let key = Self.questionKey(tombstone.game, tombstone.questionID)
+            let key = QuestionKey(reviewMode: tombstone.reviewMode, questionID: tombstone.questionID)
             latestRetirement[key] = max(latestRetirement[key] ?? .distantPast, tombstone.date)
         }
 
@@ -242,6 +292,7 @@ final class MissedGameQuestionStore {
             return Entry(
                 id: entry.id,
                 game: entry.game,
+                mode: entry.mode,
                 bookNames: entry.bookNames,
                 chapterNumber: entry.chapterNumber,
                 topic: entry.topic,
@@ -251,12 +302,12 @@ final class MissedGameQuestionStore {
         }
 
         var seenIDs = Set<UUID>()
-        var newestByQuestion: [String: Entry] = [:]
+        var newestByQuestion: [QuestionKey: Entry] = [:]
         var merged: [Entry] = []
         for entry in (entries + remoteEntries).sorted(by: { $0.date > $1.date }) {
             guard seenIDs.insert(entry.id).inserted else { continue }
             if let questionID = entry.questionID {
-                let key = Self.questionKey(entry.game, questionID)
+                let key = QuestionKey(reviewMode: entry.reviewMode, questionID: questionID)
                 if let retired = latestRetirement[key], retired >= entry.date { continue }
                 guard newestByQuestion[key] == nil else { continue }
                 newestByQuestion[key] = entry
@@ -265,10 +316,8 @@ final class MissedGameQuestionStore {
         }
 
         entries = merged
-        tombstones = latestRetirement.compactMap { key, date in
-            guard let separator = key.firstIndex(of: "|"),
-                  let game = Entry.Game(rawValue: String(key[..<separator])) else { return nil }
-            return Tombstone(game: game, questionID: String(key[key.index(after: separator)...]), date: date)
+        tombstones = latestRetirement.map { key, date in
+            Tombstone(game: key.reviewMode.game, questionID: key.questionID, date: date, mode: key.reviewMode.mode)
         }
         prune(now: now)
 
@@ -277,8 +326,11 @@ final class MissedGameQuestionStore {
         return changed
     }
 
-    private static func questionKey(_ game: Entry.Game, _ questionID: String) -> String {
-        "\(game.rawValue)|\(questionID)"
+    /// One question in one mode. The same book can be missed in Tap in Order and in Missing
+    /// Book; each is its own miss, retired by a right answer in that mode.
+    private struct QuestionKey: Hashable {
+        let reviewMode: ReviewMode
+        let questionID: String
     }
 
     /// Returns the most frequently missed referenced chapter once it has enough misses to be actionable.
@@ -334,6 +386,7 @@ final class MissedGameQuestionStore {
             return Entry(
                 id: entry.id,
                 game: entry.game,
+                mode: entry.mode,
                 bookNames: entry.bookNames,
                 chapterNumber: entry.chapterNumber,
                 topic: entry.topic,

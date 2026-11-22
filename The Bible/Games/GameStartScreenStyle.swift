@@ -144,6 +144,8 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                                 bestPoints: bestPoints
                             )
                         }
+                        // A review's mode stays choosable while its other settings are locked.
+                        ReviewModeSetting()
                         configuration
                             .disabled(!isConfigurationEnabled)
                         facts
@@ -176,6 +178,7 @@ struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: 
                         )
                     }
 
+                    ReviewModeSetting()
                     configuration
                         .disabled(!isConfigurationEnabled)
 

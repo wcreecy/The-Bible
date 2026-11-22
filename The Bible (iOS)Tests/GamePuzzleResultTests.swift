@@ -151,12 +151,11 @@ struct GamePuzzleResultTests {
         // Book Order misses are book names; a review asks a Missing Book question about each.
         #expect(store.containsMiss(game: .bookOrder, questionID: "Book 3"))
         #expect(store.reviewCount(for: .bookOrder) == 12)
-        #expect(store.reviewableGames().contains(.bookOrder))
-        #expect(MissedGameQuestionStore.Entry.Game.reviewableCases.contains(.bookOrder))
+        #expect(store.reviewableModes().contains(MissedGameQuestionStore.ReviewMode(game: .bookOrder)))
     }
 
     @Test
-    func reverseQuizMissesAreKeptButNotOfferedForReview() {
+    func reverseQuizMissesAreOfferedForReview() {
         let entries = (0..<12).map { index in
             MissedGameQuestionStore.Entry(
                 id: UUID(),
@@ -171,9 +170,10 @@ struct GamePuzzleResultTests {
         let store = MissedGameQuestionStore(entries: entries)
 
         #expect(store.containsMiss(game: .quizReverse, questionID: "Verse 3"))
-        #expect(store.reviewCount(for: .quizReverse) == 0)
-        #expect(!store.reviewableGames().contains(.quizReverse))
-        #expect(!MissedGameQuestionStore.Entry.Game.reviewableCases.contains(.quizReverse))
+        #expect(store.reviewCount(for: .quizReverse) == 12)
+        #expect(store.reviewableModes().contains(MissedGameQuestionStore.ReviewMode(game: .quizReverse)))
+        // Kept apart from standard Quiz misses.
+        #expect(store.reviewCount(for: .bibleQuiz) == 0)
         #expect(store.questionIDsForReview(game: .quizReverse).count == 10)
     }
 
