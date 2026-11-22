@@ -80,6 +80,16 @@ struct RoundPoints: Equatable {
         )
     }
 
+    /// Last Book Standing: a point for each extra book still on the board at a right tap.
+    static func earlyAnswer(_ count: Int) -> Bonus {
+        Bonus(
+            title: count == 1 ? String(localized: "1 early-answer point") : String(localized: "\(count) early-answer points"),
+            shortTitle: String(localized: "+\(count) early"),
+            systemImage: "square.grid.3x3.topleft.filled",
+            count: count
+        )
+    }
+
     static func chapter(_ count: Int) -> Bonus {
         Bonus(
             title: count == 1 ? String(localized: "1 chapter bonus") : String(localized: "\(count) chapter bonuses"),

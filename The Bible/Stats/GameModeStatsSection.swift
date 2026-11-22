@@ -118,11 +118,7 @@ enum GameModeStatsRows {
         case "Quiz":
             // The icons match the mode choices on the Quiz setup screen.
             return (.quiz, QuizMode.allCases.map { mode in
-                Descriptor(
-                    mode: mode.rawValue, title: mode.title,
-                    systemImage: mode == .reverse ? "text.quote" : "book.closed",
-                    scoring: .answers
-                )
+                Descriptor(mode: mode.rawValue, title: mode.title, systemImage: mode.systemImage, scoring: .answers)
             })
         case "Who?":
             return (.whoami, WhoAmIGameViewModel.Mode.allCases.map { mode in

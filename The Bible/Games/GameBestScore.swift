@@ -11,6 +11,7 @@ enum GameBestScore {
     enum Kind: CaseIterable {
         case quiz
         case quizReverse
+        case quizLastBookStanding
         case trivia
         case whoAmI
         /// Countdown's Classic mode, which keeps Countdown's original key.
@@ -25,6 +26,7 @@ enum GameBestScore {
             // Quiz and Who? keep their original keys, so a best saved earlier carries over.
             case .quiz: "quizBestGameScore_\(difficulty)"
             case .quizReverse: "quizReverseBestGameScore_\(difficulty)"
+            case .quizLastBookStanding: "quizLastBookStandingBestGameScore_\(difficulty)"
             case .trivia: "bibleTriviaBestScore.\(difficulty)"
             case .whoAmI: "whoamiBestGameScore_\(difficulty)"
             case .countdown: "beatclockBestGameScore_\(difficulty)"

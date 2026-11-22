@@ -61,8 +61,9 @@ enum ReviewGame: String, CaseIterable, Identifiable {
         switch self {
         case .quiz:
             [
-                ReviewGameMode(game: .bibleQuiz, title: QuizMode.standard.title, detail: "Verse text → book", icon: "book.closed"),
-                ReviewGameMode(game: .quizReverse, title: QuizMode.reverse.title, detail: "Reference → verse text", icon: "text.quote")
+                ReviewGameMode(game: .bibleQuiz, mode: QuizMode.standard.rawValue, title: QuizMode.standard.title, detail: QuizMode.standard.detail, icon: QuizMode.standard.systemImage),
+                ReviewGameMode(game: .quizReverse, title: QuizMode.reverse.title, detail: QuizMode.reverse.detail, icon: QuizMode.reverse.systemImage),
+                ReviewGameMode(game: .bibleQuiz, mode: QuizMode.lastBookStanding.rawValue, title: QuizMode.lastBookStanding.title, detail: QuizMode.lastBookStanding.detail, icon: QuizMode.lastBookStanding.systemImage)
             ]
         case .trivia:
             [ReviewGameMode(game: .bibleTrivia, title: title, icon: systemImage)]
@@ -323,7 +324,10 @@ private struct ReviewRoundSession: View {
         let modeName = mode.reviewMode.mode ?? ""
         switch game {
         case .quiz:
-            QuizView(reviewQuestionIDs: questionIDs, mode: mode.reviewMode.game == .quizReverse ? .reverse : .standard)
+            QuizView(
+                reviewQuestionIDs: questionIDs,
+                mode: mode.reviewMode.game == .quizReverse ? .reverse : QuizMode(rawValue: modeName) ?? .standard
+            )
         case .trivia:
             BibleTriviaGameView(reviewQuestionIDs: questionIDs)
         case .countdown:

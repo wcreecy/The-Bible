@@ -10,7 +10,7 @@ import Testing
 struct QuizLastBookStandingTests {
     private func withGame(
         difficulty: QuizDifficulty = .normal,
-        missed: MissedGameQuestionStore = MissedGameQuestionStore(entries: []),
+        missed: MissedGameQuestionStore? = nil,
         _ body: (QuizGameViewModel, ManualSleeper) async throws -> Void
     ) async throws {
         _ = await BibleRepository.shared.loadAllBooks()
@@ -31,7 +31,7 @@ struct QuizLastBookStandingTests {
         let clock = ManualSleeper()
         let game = QuizGameViewModel(
             mode: .lastBookStanding,
-            missedQuestions: missed,
+            missedQuestions: missed ?? MissedGameQuestionStore(entries: []),
             sleep: clock.sleep(for:),
             now: { clock.date }
         )
@@ -116,9 +116,41 @@ struct QuizLastBookStandingTests {
             game.selectOption(try #require(current.options.first { $0 != current.correctAnswer }))
             #expect(game.current?.outcome == .incorrect)
             #expect(game.points == 0)
-            // Missed verses are reviewed with Standard's, which asks the same question.
-            #expect(missed.containsMiss(game: .bibleQuiz, questionID: current.reviewID))
+            // Last Book Standing keeps its own misses, apart from Standard's.
+            #expect(missed.containsMiss(game: .bibleQuiz, mode: QuizMode.lastBookStanding.rawValue, questionID: current.reviewID))
+            #expect(!missed.containsMiss(game: .bibleQuiz, questionID: current.reviewID))
         }
+    }
+
+    @Test func aReviewReplaysMissedVersesOnTheBoardAndClearsTheRightOnes() async throws {
+        let missed = MissedGameQuestionStore(entries: [])
+        try await withGame(missed: missed) { game, _ in
+            game.startQuiz()
+            let current = try #require(game.current)
+            game.selectOption(try #require(current.options.first { $0 != current.correctAnswer }))
+            let mode = MissedGameQuestionStore.ReviewMode(game: .bibleQuiz, mode: QuizMode.lastBookStanding.rawValue)
+            #expect(missed.reviewCount(for: mode) == 1)
+            #expect(missed.reviewCount(for: MissedGameQuestionStore.ReviewMode(game: .bibleQuiz)) == 0)
+
+            let review = QuizGameViewModel(reviewQuestionIDs: [current.reviewID], mode: .lastBookStanding, missedQuestions: missed)
+            await review.prepareFilter()
+            review.startQuiz()
+            let question = try #require(review.current)
+            #expect(question.reviewID == current.reviewID)
+            #expect(question.options.count == review.difficulty.boardSize)
+
+            review.selectOption(question.correctAnswer)
+            #expect(missed.reviewCount(for: mode) == 0)
+            review.resetToSetup()
+        }
+    }
+
+    @Test func quizReviewOffersLastBookStandingAsItsOwnMode() {
+        let modes = ReviewGame.quiz.modes.map(\.reviewMode)
+        #expect(modes.contains(MissedGameQuestionStore.ReviewMode(game: .bibleQuiz, mode: QuizMode.lastBookStanding.rawValue)))
+        // Standard misses saved before modes were recorded still count as Standard.
+        #expect(modes.contains(MissedGameQuestionStore.ReviewMode(game: .bibleQuiz)))
+        #expect(Set(modes).count == 3)
     }
 
     @Test func timeIsUpWhenOnlyTheAnswerIsLeft() async throws {

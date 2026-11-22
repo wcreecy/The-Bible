@@ -41,6 +41,21 @@ struct QuizStandardModeTests {
         }
     }
 
+    @Test func reviewReplaysALongVerseThatHardLeavesOut() async throws {
+        _ = await BibleRepository.shared.loadAllBooks()
+        try await withRestoredSettings {
+            // Esther 8:9 is the longest verse in the Bible, far past Hard's word limit.
+            let review = QuizGameViewModel(reviewQuestionIDs: ["Esther|8|9"], mode: .standard, missedQuestions: MissedGameQuestionStore(entries: []))
+            await review.prepareFilter()
+            review.startQuiz()
+
+            let question = try #require(review.current)
+            #expect(question.reviewID == "Esther|8|9")
+            #expect(question.contextText != nil)
+            review.resetToSetup()
+        }
+    }
+
     @Test func leavingAnUntimedQuestionCostsNothing() async throws {
         _ = await BibleRepository.shared.loadAllBooks()
         try await withRestoredSettings {

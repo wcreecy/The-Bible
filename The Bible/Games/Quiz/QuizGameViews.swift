@@ -136,7 +136,10 @@ struct QuizQuestionPanel: View {
             VStack(spacing: 16) {
                 promptCard(for: current)
 
-                if showsTimer, vm.isTimed, !vm.isAnswered {
+                if current.mode == .lastBookStanding, !vm.isAnswered {
+                    // The board is the clock, so it shows what a right tap is worth instead.
+                    QuizBoardStatus(booksLeft: current.booksLeft, points: vm.boardPointsAvailable, tint: vm.timerColor)
+                } else if showsTimer, vm.isTimed, !vm.isAnswered {
                     GameTimerCard(
                         remainingSeconds: vm.remainingSeconds,
                         tint: vm.isTimerDisabled ? .secondary : vm.timerColor,
@@ -160,34 +163,11 @@ struct QuizQuestionPanel: View {
                     }
                 }
 
-                // 50/50 takes the two wrong answers out, so the two left close up (side by side in
-                // Standard). Each keeps its original letter, so the shortcuts still match.
-                let remaining = Array(current.options.enumerated())
-                    .filter { !current.removedOptions.contains($0.element) }
-                LazyVGrid(columns: columns(for: current), spacing: 12) {
-                    ForEach(remaining, id: \.element) { index, option in
-                        QuizAnswerOption(
-                            index: index,
-                            title: option,
-                            isAnswered: vm.isAnswered,
-                            isCorrect: option == current.correctAnswer,
-                            isSelected: option == current.selected,
-                            isRemoved: false,
-                            verse: vm.isAnswered ? current.optionVerses.first { $0.verseText == option } : nil
-                        ) {
-                            vm.selectOption(option)
-                        }
-                        .onGeometryChange(for: CGRect.self) { proxy in
-                            proxy.frame(in: .named(Self.coordinateSpace))
-                        } action: { frame in
-                            optionFrames[option] = frame
-                        }
-                        .transition(.scale(scale: 0.85).combined(with: .opacity))
-                    }
+                if current.mode == .lastBookStanding {
+                    lastBookBoard(for: current)
+                } else {
+                    answerGrid(for: current)
                 }
-                // Only as tall as the answers need, never stretched to fill spare iPad height.
-                .fixedSize(horizontal: false, vertical: true)
-                .animation(.snappy, value: current.removedOptions)
             }
             .coordinateSpace(.named(Self.coordinateSpace))
             .onGeometryChange(for: CGPoint.self) { $0.frame(in: .named(GamePencil.coordinateSpace)).origin } action: {
@@ -209,7 +189,73 @@ struct QuizQuestionPanel: View {
             .onChange(of: current.id) { _, _ in
                 optionFrames = [:]
             }
+            // With VoiceOver, say how many books are left rather than which one went.
+            .onChange(of: current.booksLeft) { _, booksLeft in
+                guard current.mode == .lastBookStanding, !vm.isAnswered, UIAccessibility.isVoiceOverRunning else { return }
+                AccessibilityNotification.Announcement(String(localized: "\(booksLeft) books left")).post()
+            }
         }
+    }
+
+    /// Last Book Standing's board. A book that leaves keeps its space, so the others never
+    /// move under a finger that's about to tap.
+    private func lastBookBoard(for current: QuizQuestion) -> some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+            ForEach(current.options, id: \.self) { option in
+                let isGone = current.removedOptions.contains(option)
+                QuizBoardTile(
+                    title: option,
+                    isAnswered: vm.isAnswered,
+                    isCorrect: option == current.correctAnswer,
+                    isSelected: option == current.selected
+                ) {
+                    vm.selectOption(option)
+                }
+                .onGeometryChange(for: CGRect.self) { proxy in
+                    proxy.frame(in: .named(Self.coordinateSpace))
+                } action: { frame in
+                    optionFrames[option] = frame
+                }
+                .opacity(isGone ? 0 : 1)
+                .scaleEffect(isGone ? 0.8 : 1)
+                .allowsHitTesting(!isGone && !vm.isAnswered)
+                .accessibilityHidden(isGone)
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .animation(.easeOut(duration: 0.3), value: current.removedOptions)
+    }
+
+    @ViewBuilder
+    private func answerGrid(for current: QuizQuestion) -> some View {
+        // 50/50 takes the two wrong answers out, so the two left close up (side by side in
+        // Standard). Each keeps its original letter, so the shortcuts still match.
+        let remaining = Array(current.options.enumerated())
+            .filter { !current.removedOptions.contains($0.element) }
+        LazyVGrid(columns: columns(for: current), spacing: 12) {
+            ForEach(remaining, id: \.element) { index, option in
+                QuizAnswerOption(
+                    index: index,
+                    title: option,
+                    isAnswered: vm.isAnswered,
+                    isCorrect: option == current.correctAnswer,
+                    isSelected: option == current.selected,
+                    isRemoved: false,
+                    verse: vm.isAnswered ? current.optionVerses.first { $0.verseText == option } : nil
+                ) {
+                    vm.selectOption(option)
+                }
+                .onGeometryChange(for: CGRect.self) { proxy in
+                    proxy.frame(in: .named(Self.coordinateSpace))
+                } action: { frame in
+                    optionFrames[option] = frame
+                }
+                .transition(.scale(scale: 0.85).combined(with: .opacity))
+            }
+        }
+        // Only as tall as the answers need, never stretched to fill spare iPad height.
+        .fixedSize(horizontal: false, vertical: true)
+        .animation(.snappy, value: current.removedOptions)
     }
 
     private func columns(for question: QuizQuestion) -> [GridItem] {
@@ -253,7 +299,7 @@ struct QuizQuestionPanel: View {
             }
 
             Text(current.prompt)
-                .italic(current.mode == .standard)
+                .italic(current.mode.asksForBook)
                 .font(current.mode == .reverse ? .title2.weight(.bold) : .title3)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -386,6 +432,81 @@ struct QuizAnswerOption: View {
     }
 }
 
+/// One book on a Last Book Standing board: compact, so twelve fit on an iPhone.
+struct QuizBoardTile: View {
+    let title: String
+    let isAnswered: Bool
+    let isCorrect: Bool
+    let isSelected: Bool
+    let action: () -> Void
+
+    private var tint: Color? {
+        guard isAnswered else { return nil }
+        if isCorrect { return .green }
+        return isSelected ? .red : nil
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 6)
+                .frame(maxWidth: .infinity, minHeight: 52)
+                .background(
+                    (tint ?? .blue).opacity(tint == nil ? 0.07 : 0.22),
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(tint ?? Color.primary.opacity(0.18), lineWidth: tint == nil ? 1 : 2.5)
+                )
+                .opacity(isAnswered && tint == nil ? 0.45 : 1)
+                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .hoverEffect(.lift)
+        .accessibilityValue(
+            !isAnswered ? Text("") : isCorrect ? Text(isSelected ? "Your answer, correct" : "Correct answer")
+                : isSelected ? Text("Your answer, incorrect") : Text("")
+        )
+    }
+}
+
+/// How many books are left on a Last Book Standing board, and what a right tap scores now.
+struct QuizBoardStatus: View {
+    let booksLeft: Int
+    let points: Int
+    let tint: Color
+
+    var body: some View {
+        HStack {
+            Label("\(booksLeft) books left", systemImage: "square.grid.3x3.topleft.filled")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Spacer()
+            // Primary, not the tint: yellow text on a yellow wash is hard to read.
+            Text(points == 1 ? "Worth 1 point" : "Worth \(points) points")
+                .font(.headline.weight(.bold))
+                .monospacedDigit()
+                .foregroundStyle(.primary)
+                .contentTransition(.numericText())
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(tint.opacity(0.16), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(tint.opacity(0.6), lineWidth: 1.5)
+        )
+        .animation(.snappy, value: points)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 /// 50/50 and the section hint. Each can be used once per round.
 struct QuizLifelineBar: View {
     let vm: QuizGameViewModel
@@ -466,6 +587,7 @@ struct QuizAfterAnswer: View {
                     verseText: current.verseText,
                     closeGuessNote: vm.closeGuessNote,
                     earnedSpeedBonus: current.earnedSpeedBonus,
+                    boardPoints: current.mode == .lastBookStanding && outcome == .correct ? current.boardPoints : nil,
                     hidesChapter: vm.isChapterBonusOpen
                 )
 
@@ -534,6 +656,8 @@ struct QuizAnswerReveal: View {
     /// "Right section: Gospels" for a close wrong guess.
     var closeGuessNote: String?
     var earnedSpeedBonus = false
+    /// What a right Last Book Standing tap scored; nil in the other modes.
+    var boardPoints: Int?
     /// True while the chapter bonus is waiting, so the card names the book without giving
     /// away the chapter and verse (or the menu that opens them).
     var hidesChapter = false
@@ -552,6 +676,12 @@ struct QuizAnswerReveal: View {
 
                     if earnedSpeedBonus {
                         Label("+1 speed bonus", systemImage: "bolt.fill")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.orange)
+                    }
+
+                    if let boardPoints {
+                        Label(boardPoints == 1 ? "+1 point" : "+\(boardPoints) points", systemImage: "square.grid.3x3.topleft.filled")
                             .font(.caption.weight(.bold))
                             .foregroundStyle(.orange)
                     }
@@ -598,6 +728,8 @@ struct QuizLargeTimerView: View {
     let isTimed: Bool
     let isTimerDisabled: Bool
     let outcome: QuizOutcome?
+    /// What a right tap scores now in Last Book Standing, shown instead of seconds; nil otherwise.
+    var boardPoints: Int?
     @Binding var usesMutedStyle: Bool
     let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
@@ -605,6 +737,9 @@ struct QuizLargeTimerView: View {
     private var isActive: Bool {
         isTimed && outcome == nil
     }
+
+    /// The board is Last Book Standing's clock, so its timer can't be turned off.
+    private var canToggle: Bool { isActive && boardPoints == nil }
 
     private var displayTint: Color {
         isTimerDisabled && outcome == nil ? .secondary : outcome?.tint ?? tint
@@ -631,7 +766,14 @@ struct QuizLargeTimerView: View {
                     .font(.largeTitle.weight(.semibold))
                     .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                if outcome == nil {
+                if outcome == nil, let boardPoints {
+                    Text(boardPoints == 1 ? "1 pt" : "\(boardPoints) pts")
+                        .font(.largeTitle.weight(.bold))
+                        .fontDesign(.rounded)
+                        .monospacedDigit()
+                        .foregroundStyle(usesNeutralStyle ? displayTint : vividTextColor)
+                        .contentTransition(.numericText())
+                } else if outcome == nil {
                     Text(isTimed ? "\(remainingSeconds)s" : "∞")
                         .font(.largeTitle.weight(.bold))
                         .fontDesign(.rounded)
@@ -643,16 +785,19 @@ struct QuizLargeTimerView: View {
             .animation(.easeOut(duration: 0.18), value: isPulsing)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(statusTitle)
-            .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : outcome == nil ? "No time limit" : "")
+            .accessibilityValue(
+                boardPoints.map { Text("\($0) points") }
+                    ?? (isActive ? Text("\(remainingSeconds) seconds") : outcome == nil ? Text("No time limit") : Text(""))
+            )
             .contentShape(Rectangle())
             .onTapGesture {
-                if isTimed, outcome == nil {
+                if canToggle {
                     onToggleTimer()
                 }
             }
-            .accessibilityAddTraits(isTimed && outcome == nil ? .isButton : [])
+            .accessibilityAddTraits(canToggle ? .isButton : [])
             .accessibilityHint(
-                isTimed && outcome == nil
+                canToggle
                     ? (isTimerDisabled ? "Tap to turn the timer on." : "Tap to turn the timer off.")
                     : ""
             )
@@ -660,7 +805,7 @@ struct QuizLargeTimerView: View {
             Spacer(minLength: 0)
 
             HStack(spacing: 12) {
-                if isActive {
+                if canToggle {
                     Button(
                         isTimerDisabled ? "Turn timer on" : "Turn timer off",
                         systemImage: isTimerDisabled ? "timer" : "timer.slash",
@@ -708,12 +853,14 @@ struct QuizLargeTimerView: View {
 
     private var statusTitle: LocalizedStringKey {
         if let outcome { return outcome.title }
+        if boardPoints != nil { return "Worth" }
         if isTimerDisabled { return "Timer Off" }
         return isTimed ? "Time Remaining" : "Untimed Mode"
     }
 
     private var statusSystemImage: String {
         if let outcome { return outcome.systemImage }
+        if boardPoints != nil { return "square.grid.3x3.topleft.filled" }
         if isTimerDisabled { return "timer.slash" }
         return isTimed ? "timer" : "infinity"
     }

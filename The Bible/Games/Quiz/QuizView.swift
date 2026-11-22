@@ -100,6 +100,7 @@ struct QuizView: View {
                         isTimed: vm.isTimed,
                         isTimerDisabled: vm.isTimerDisabled,
                         outcome: vm.current?.outcome,
+                        boardPoints: vm.mode == .lastBookStanding ? vm.boardPointsAvailable : nil,
                         usesMutedStyle: $usesMutedTimerStyle,
                         onToggleTimer: vm.toggleTimer,
                         onSwapSides: {
@@ -202,23 +203,85 @@ struct QuizView: View {
 
     // MARK: - Setup
 
+    private var setupDescription: LocalizedStringKey {
+        switch vm.mode {
+        case .standard: "Test your knowledge by guessing the book of the Bible from a given verse."
+        case .reverse: "Choose the verse text that matches the reference."
+        case .lastBookStanding: "Books leave the board one at a time until only the right one is left. Tap it sooner for more points; a wrong tap scores nothing."
+        }
+    }
+
+    private var experienceDetails: GameExperienceDetails {
+        switch vm.mode {
+        case .standard:
+            GameExperienceDetails(
+                learn: "Untimed practice at your own pace. No bonus points.",
+                standard: "18 seconds for each verse. +1 bonus point for answering in the first 6 seconds, and +1 for naming the right chapter.",
+                challenge: "15 seconds for each verse. +1 bonus point for answering in the first 5 seconds, and +1 for naming the right chapter."
+            )
+        case .reverse:
+            GameExperienceDetails(
+                learn: "Untimed practice at your own pace. No bonus points.",
+                standard: "25 seconds. Choices from your categories. +1 bonus point for answering in the first third of the time.",
+                challenge: "35 seconds. Choices from the same book. +1 bonus point for answering in the first third of the time."
+            )
+        case .lastBookStanding:
+            Self.lastBookDetails
+        }
+    }
+
+    private static var lastBookDetails: GameExperienceDetails {
+        func detail(_ difficulty: QuizDifficulty, _ extra: String) -> LocalizedStringKey {
+            let seconds = difficulty.boardRemovalInterval.formatted()
+            let reading = difficulty.boardReadingSeconds.formatted()
+            return "\(difficulty.boardSize) books. \(reading) seconds to read, then one leaves every \(seconds) seconds. \(extra)"
+        }
+        return GameExperienceDetails(
+            learn: detail(.easy, String(localized: "Wrong books come from other parts of the Bible.")),
+            standard: detail(.normal, String(localized: "+1 bonus point for naming the right chapter.")),
+            challenge: detail(.hard, String(localized: "Wrong books from the same part of the Bible where there are enough. +1 bonus point for naming the right chapter."))
+        )
+    }
+
+    private var setupFacts: GameSplashFacts {
+        let questions: GameSplashFacts.Fact = ("number", "\(QuizGameViewModel.questionsPerGame) questions", String(localized: "This session"))
+        guard vm.mode != .lastBookStanding else {
+            return GameSplashFacts(
+                first: questions,
+                second: (
+                    "timer",
+                    String(localized: "\(vm.difficulty.boardRemovalInterval.formatted()) sec"),
+                    String(localized: "Between books")
+                ),
+                third: ("square.grid.3x3.topleft.filled", String(localized: "\(vm.difficulty.boardSize) books"), String(localized: "On the board"))
+            )
+        }
+        return GameSplashFacts(
+            first: questions,
+            second: (
+                "timer",
+                vm.timeLimit.map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),
+                String(localized: "Per verse")
+            ),
+            third: (
+                "lifepreserver",
+                vm.lifelinesForRound.count == 1
+                    ? String(localized: "1 lifeline")
+                    : String(localized: "\(vm.lifelinesForRound.count) lifelines"),
+                vm.lifelinesForRound.map(\.name).formatted(.list(type: .and, width: .narrow))
+            )
+        )
+    }
+
     @ViewBuilder
     private var setupContent: some View {
-        Text(vm.mode == .reverse ? "Choose the verse text that matches the reference." : "Test your knowledge by guessing the book of the Bible from a given verse.")
+        Text(setupDescription)
             .gameStartDescriptionStyle(for: .quiz)
 
         GameSplashLaunchLayout(
             tint: .blue,
             experienceLevel: $vm.experienceLevel,
-            experienceDetails: GameExperienceDetails(
-                learn: "Untimed practice at your own pace. No bonus points.",
-                standard: vm.mode == .reverse
-                    ? "25 seconds. Choices from your categories. +1 bonus point for answering in the first third of the time."
-                    : "18 seconds for each verse. +1 bonus point for answering in the first 6 seconds, and +1 for naming the right chapter.",
-                challenge: vm.mode == .reverse
-                    ? "35 seconds. Choices from the same book. +1 bonus point for answering in the first third of the time."
-                    : "15 seconds for each verse. +1 bonus point for answering in the first 5 seconds, and +1 for naming the right chapter."
-            ),
+            experienceDetails: experienceDetails,
             experienceTitle: vm.reviewQuestionIDs.isEmpty ? "How you’ll play" : "Timer",
             bestPoints: vm.reviewQuestionIDs.isEmpty ? vm.bestPoints : nil,
             isConfigurationEnabled: vm.reviewQuestionIDs.isEmpty,
@@ -236,12 +299,9 @@ struct QuizView: View {
                             systemImage: "arrow.left.arrow.right",
                             tint: .blue,
                             selection: $vm.mode,
-                            choices: [
-                                GameChoice(value: QuizMode.standard, title: "Standard",
-                                           detail: "Verse text → book", icon: "book.closed"),
-                                GameChoice(value: QuizMode.reverse, title: "Reverse",
-                                           detail: "Reference → verse text", icon: "text.quote")
-                            ]
+                            choices: QuizMode.allCases.map {
+                                GameChoice(value: $0, title: $0.title, detail: $0.detail, icon: $0.systemImage)
+                            }
                         )
                     }
 
@@ -283,21 +343,7 @@ struct QuizView: View {
                 }
             }
         } facts: {
-            GameSplashFacts(
-                first: ("number", "\(QuizGameViewModel.questionsPerGame) questions", String(localized: "This session")),
-                second: (
-                    "timer",
-                    vm.timeLimit.map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),
-                    String(localized: "Per verse")
-                ),
-                third: (
-                    "lifepreserver",
-                    vm.lifelinesForRound.count == 1
-                        ? String(localized: "1 lifeline")
-                        : String(localized: "\(vm.lifelinesForRound.count) lifelines"),
-                    vm.lifelinesForRound.map(\.name).formatted(.list(type: .and, width: .narrow))
-                )
-            )
+            setupFacts
         }
         Spacer(minLength: 48)
     }

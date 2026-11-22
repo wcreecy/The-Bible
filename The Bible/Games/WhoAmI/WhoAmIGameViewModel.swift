@@ -151,7 +151,10 @@ final class WhoAmIGameViewModel {
     }
     var difficulty: Difficulty = Difficulty(rawValue: UserDefaults.standard.string(forKey: AppStorageKey.whoAmIDifficulty) ?? "") ?? .normal {
         didSet {
-            UserDefaults.standard.set(difficulty.rawValue, forKey: AppStorageKey.whoAmIDifficulty)
+            // A review plays at its own timer without changing the game's saved difficulty.
+            if reviewQuestionIDs.isEmpty {
+                UserDefaults.standard.set(difficulty.rawValue, forKey: AppStorageKey.whoAmIDifficulty)
+            }
             session.syncSavedBest(from: persistentStreak)
         }
     }

@@ -158,7 +158,8 @@ struct ReviewRoundModeTests {
         #expect(counts == ["tapInOrder": 3, "beforeAfter": 0, "missingBook": 0, "whichSection": 10, "classic": 0])
         // Every game but Crossword and Word Search is on the list, with each of its modes.
         #expect(progress.map(\.game) == ReviewGame.allCases)
-        #expect(quiz?.modeCounts.count == 2)
+        // Standard, Reverse and Last Book Standing.
+        #expect(quiz?.modeCounts.count == 3)
     }
 
     // MARK: - Book Order puzzles

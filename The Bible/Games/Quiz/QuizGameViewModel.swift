@@ -5,9 +5,37 @@ import SwiftUI
 enum QuizMode: String, CaseIterable, Identifiable {
     case standard
     case reverse
+    /// A board of books that empties one at a time; the sooner the right tap, the more points.
+    case lastBookStanding
 
     var id: Self { self }
-    var title: LocalizedStringResource { self == .standard ? "Standard" : "Reverse" }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .standard: "Standard"
+        case .reverse: "Reverse"
+        case .lastBookStanding: "Last Book Standing"
+        }
+    }
+
+    var detail: LocalizedStringResource {
+        switch self {
+        case .standard: "Verse text → book"
+        case .reverse: "Reference → verse text"
+        case .lastBookStanding: "Books disappear until one is left"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .standard: "book.closed"
+        case .reverse: "text.quote"
+        case .lastBookStanding: "square.grid.3x3.topleft.filled"
+        }
+    }
+
+    /// Standard and Last Book Standing show a verse and ask for its book.
+    var asksForBook: Bool { self != .reverse }
 }
 
 enum QuizDifficulty: String, CaseIterable, Identifiable {
@@ -39,6 +67,33 @@ enum QuizDifficulty: String, CaseIterable, Identifiable {
 
     /// Seconds the previous verse costs; free when there's no timer.
     var contextCost: Int { timeLimit == nil ? 0 : Self.contextCost }
+
+    /// Books on a Last Book Standing board, the right one included.
+    var boardSize: Int {
+        switch self {
+        case .easy: 8
+        case .normal: 10
+        case .hard: 12
+        }
+    }
+
+    /// Seconds to read the verse before Last Book Standing's books start to go.
+    var boardReadingSeconds: Double {
+        switch self {
+        case .easy: 4
+        case .normal: 3
+        case .hard: 2
+        }
+    }
+
+    /// Seconds between books leaving the board.
+    var boardRemovalInterval: Double {
+        switch self {
+        case .easy: 2
+        case .normal: 1.5
+        case .hard: 1.2
+        }
+    }
 
     var detail: LocalizedStringResource {
         switch self {
@@ -205,8 +260,16 @@ struct QuizQuestion: Identifiable {
     var selected: String?
     var outcome: QuizOutcome?
     var contextRevealed = false
-    /// Wrong answers taken away by 50/50.
+    /// Wrong answers taken away by 50/50, or gone from a Last Book Standing board.
     var removedOptions: Set<String> = []
+    /// The order Last Book Standing takes wrong books away: other Testament first, then other
+    /// parts of the Bible, so the board narrows toward the answer. Empty in the other modes.
+    var removalOrder: [String] = []
+    /// Seconds to read the verse, then seconds between books leaving, for Last Book Standing.
+    var boardReadingSeconds: Double = 0
+    var boardRemovalInterval: Double = 0
+    /// Points a right Last Book Standing tap scored: the wrong books still standing.
+    var boardPoints = 0
     var lifelinesUsed: Set<QuizLifeline> = []
     /// Seconds the extra-time lifeline added to this question.
     var bonusSeconds = 0
@@ -222,6 +285,9 @@ struct QuizQuestion: Identifiable {
     var reviewID: String { mode == .reverse ? reference : "\(correctBook)|\(chapter)|\(verse)" }
 
     var earnedChapterBonus: Bool { chapterGuess == chapter }
+
+    /// Books still on the board, the right one included.
+    var booksLeft: Int { options.count - removedOptions.count }
 
     /// Help used on this question, for the round summary: lifelines and the previous verse.
     var hintCount: Int { lifelinesUsed.count + (contextRevealed ? 1 : 0) }
@@ -317,7 +383,10 @@ final class QuizGameViewModel {
         rawValue: UserDefaults.standard.string(forKey: QuizGameViewModel.difficultyKey) ?? ""
     ) ?? .normal {
         didSet {
-            UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            // A review plays at its own timer without changing the game's saved difficulty.
+            if reviewQuestionIDs.isEmpty {
+                UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            }
             session.syncSavedBest(from: persistentStreak)
         }
     }
@@ -392,10 +461,15 @@ final class QuizGameViewModel {
         PersistentGameStreak(game: "quiz", variant: difficulty.rawValue)
     }
 
-    /// Standard and Reverse score differently (only Standard has the chapter bonus), so each
-    /// keeps its own best for every difficulty.
+    /// Each mode scores differently (only the book modes have the chapter bonus, and Last Book
+    /// Standing scores the books left), so each keeps its own best for every difficulty.
     private var bestGameScoreKey: String {
-        (mode == .reverse ? GameBestScore.Kind.quizReverse : .quiz).key(difficulty: difficulty.rawValue)
+        let kind: GameBestScore.Kind = switch mode {
+        case .standard: .quiz
+        case .reverse: .quizReverse
+        case .lastBookStanding: .quizLastBookStanding
+        }
+        return kind.key(difficulty: difficulty.rawValue)
     }
 
     /// A review of missed questions isn't comparable with a full game.
@@ -417,12 +491,24 @@ final class QuizGameViewModel {
     var isAnswered: Bool { current?.outcome != nil }
 
     var timeLimit: Int? {
-        guard mode == .reverse else { return difficulty.timeLimit }
-        switch difficulty {
-        case .easy: return nil
-        case .normal: return 25
-        case .hard: return 35
+        switch mode {
+        case .standard:
+            return difficulty.timeLimit
+        case .reverse:
+            switch difficulty {
+            case .easy: return nil
+            case .normal: return 25
+            case .hard: return 35
+            }
+        case .lastBookStanding:
+            // The board is the clock: time's up when the last wrong book goes.
+            return Int((difficulty.boardReadingSeconds + boardRemovalInterval * Double(difficulty.boardSize - 2)).rounded(.up))
         }
+    }
+
+    /// Books leave more slowly with VoiceOver, so there's time to hear what's left.
+    private var boardRemovalInterval: Double {
+        difficulty.boardRemovalInterval * (UIAccessibility.isVoiceOverRunning ? 2 : 1)
     }
 
     var isTimed: Bool { timeLimit != nil }
@@ -446,7 +532,7 @@ final class QuizGameViewModel {
     var isOnLastQuestion: Bool { history.count >= totalQuestions }
 
     var canRevealContext: Bool {
-        guard mode == .standard, let current, current.contextText != nil, !current.contextRevealed,
+        guard mode.asksForBook, let current, current.contextText != nil, !current.contextRevealed,
               !isAnswered, !isPaused else { return false }
         return !isTimed || isTimerDisabled || remainingSeconds > difficulty.contextCost
     }
@@ -556,6 +642,10 @@ final class QuizGameViewModel {
 
     private func updateRemainingTime() {
         guard let timeLimit = currentTimeLimit else { return }
+        if mode == .lastBookStanding {
+            updateBoard()
+            guard !isAnswered else { return }
+        }
         let remaining = max(0, timeLimit - contextPenaltySeconds - Int(questionClock.elapsed(at: now())))
         guard remaining != remainingSeconds else { return }
         remainingSeconds = remaining
@@ -578,9 +668,15 @@ final class QuizGameViewModel {
     // MARK: - Questions
 
     private func buildQuestionBag() -> [VerseCandidate] {
+        // A review round replays every missed verse, found by its reference. Looking them up in
+        // a difficulty's list would drop any it leaves out, such as a long verse missed on
+        // Normal that Hard skips, and the categories can't be changed while reviewing.
+        guard reviewQuestionIDs.isEmpty else {
+            return Self.reviewCandidates(for: reviewQuestionIDs).shuffled()
+        }
         // Explicit pools share Reverse's selection rules. Keep Standard's existing
-        // difficulty filtering for Any verse and its separate missed-question review.
-        if reviewQuestionIDs.isEmpty, pool != .any {
+        // difficulty filtering for Any verse.
+        if pool != .any {
             var source = configuredReverseSource
             source.prepare()
             return source.buildQuestionBag().map { verse in
@@ -595,17 +691,35 @@ final class QuizGameViewModel {
             }
         }
         let pool = poolBookNames
-        let difficultyKey = reviewQuestionIDs.isEmpty ? difficulty.rawValue : QuizDifficulty.hard.rawValue
-        // A review round replays every missed verse. The categories can't be changed while
-        // reviewing, so filtering by them would hide verses missed under other categories.
-        let isReview = !reviewQuestionIDs.isEmpty
-        return Self.allCandidates(difficultyKey: difficultyKey)
-            .filter { isReview || pool.contains($0.bookName) }
+        return Self.allCandidates(difficultyKey: difficulty.rawValue)
+            .filter { pool.contains($0.bookName) }
             .shuffled()
     }
 
-    /// Picks three wrong books, drawing from each list in turn until there are enough.
-    private func wrongChoices(for correctBook: String) -> [String] {
+    /// The missed verses a review replays, from their "Book|chapter|verse" IDs, each with the
+    /// verse before it as context. An ID that no longer matches a verse is skipped.
+    private static func reviewCandidates(for ids: Set<String>) -> [VerseCandidate] {
+        ids.compactMap { id -> VerseCandidate? in
+            let parts = id.split(separator: "|", omittingEmptySubsequences: false)
+            guard parts.count == 3, let chapterNumber = Int(parts[1]), let verseNumber = Int(parts[2]),
+                  let chapter = BibleData.books.first(where: { $0.name == parts[0] })?
+                      .chapters.first(where: { $0.number == chapterNumber }),
+                  let index = chapter.verses.firstIndex(where: { $0.number == verseNumber }),
+                  !chapter.verses[index].isOmitted else { return nil }
+            let previous = index > 0 && !chapter.verses[index - 1].isOmitted ? chapter.verses[index - 1].text : nil
+            return VerseCandidate(
+                text: chapter.verses[index].text,
+                bookName: String(parts[0]),
+                chapter: chapterNumber,
+                verse: verseNumber,
+                contextText: previous
+            )
+        }
+    }
+
+    /// Picks wrong books, drawing from each list in turn until there are enough. Every list
+    /// ends with the whole Bible, so a big board fills even with few categories chosen.
+    private func wrongChoices(for correctBook: String, count: Int = 3) -> [String] {
         let canon = BibleCanon.fallbackCanon
         let pool = poolBookNames
         let section = QuizVerseSection.containing(correctBook)
@@ -629,12 +743,25 @@ final class QuizGameViewModel {
         }
 
         var picks: [String] = []
-        for tier in tiers {
-            for name in tier.shuffled() where picks.count < 3 && name != correctBook && !picks.contains(name) {
+        for tier in tiers + [canon] {
+            for name in tier.shuffled() where picks.count < count && name != correctBook && !picks.contains(name) {
                 picks.append(name)
             }
         }
         return picks
+    }
+
+    /// Wrong books in the order they leave: the other Testament, then other parts of the
+    /// Bible, then the answer's own part, so what's left points toward the answer.
+    static func removalOrder(of wrongBooks: [String], answer: String) -> [String] {
+        let section = QuizVerseSection.containing(answer)
+        let family = Set(section?.hardFamily ?? [])
+        func closeness(_ book: String) -> Int {
+            let bookSection = QuizVerseSection.containing(book)
+            if bookSection?.isOldTestament != section?.isOldTestament { return 0 }
+            return bookSection.map(family.contains) == true ? 2 : 1
+        }
+        return wrongBooks.shuffled().sorted { closeness($0) < closeness($1) }
     }
 
     private func makeQuestion() -> QuizQuestion? {
@@ -653,14 +780,21 @@ final class QuizGameViewModel {
             return nil
         }
         guard let candidate = questionBag.popLast() else { return nil }
+        let wrong = wrongChoices(for: candidate.bookName, count: mode == .lastBookStanding ? difficulty.boardSize - 1 : 3)
         var question = QuizQuestion(
             verseText: candidate.text,
             correctBook: candidate.bookName,
             chapter: candidate.chapter,
             verse: candidate.verse,
             contextText: candidate.contextText,
-            options: (wrongChoices(for: candidate.bookName) + [candidate.bookName]).shuffled()
+            options: (wrong + [candidate.bookName]).shuffled(),
+            mode: mode
         )
+        if mode == .lastBookStanding {
+            question.removalOrder = Self.removalOrder(of: wrong, answer: candidate.bookName)
+            question.boardReadingSeconds = difficulty.boardReadingSeconds
+            question.boardRemovalInterval = boardRemovalInterval
+        }
         if difficulty != .easy {
             question.chapterOptions = chapterChoices(for: candidate)
         }
@@ -821,8 +955,11 @@ final class QuizGameViewModel {
         timerID += 1
     }
 
+    /// Last Book Standing's board is its clock, so it can't be turned off.
+    var canToggleTimer: Bool { isTimed && mode != .lastBookStanding }
+
     func toggleTimer() {
-        guard isTimed else { return }
+        guard canToggleTimer else { return }
         isTimerDisabled.toggle()
         if isTimerDisabled {
             session.noteTimerTurnedOff()
@@ -838,9 +975,37 @@ final class QuizGameViewModel {
     }
 
     func selectOption(_ name: String) {
-        guard let current, current.options.contains(name), !current.removedOptions.contains(name), !isPaused else { return }
-        finishQuestion(name == current.correctAnswer ? .correct : .incorrect, selected: name)
+        // Bring the board up to the moment of the tap, so a book that just left can't be picked
+        // and a right tap scores only the books still standing.
+        if mode == .lastBookStanding, !isPaused { updateBoard() }
+        guard let current, current.outcome == nil, current.options.contains(name),
+              !current.removedOptions.contains(name), !isPaused else { return }
+        let correct = name == current.correctAnswer
+        if correct, mode == .lastBookStanding {
+            history[currentIndex].boardPoints = current.booksLeft - 1
+        }
+        finishQuestion(correct ? .correct : .incorrect, selected: name)
     }
+
+    // MARK: - Last Book Standing
+
+    /// Takes away the wrong books due to go by now. The previous verse's cost counts as time
+    /// played, so it takes books away too. Once only the answer is left, time's up.
+    private func updateBoard() {
+        guard mode == .lastBookStanding, let current, current.outcome == nil, current.boardRemovalInterval > 0 else { return }
+        let elapsed = questionClock.elapsed(at: now()) + Double(contextPenaltySeconds)
+        let due = elapsed < current.boardReadingSeconds
+            ? 0
+            : min(current.removalOrder.count, 1 + Int((elapsed - current.boardReadingSeconds) / current.boardRemovalInterval))
+        guard due > current.removedOptions.count else { return }
+        history[currentIndex].removedOptions = Set(current.removalOrder.prefix(due))
+        if due == current.removalOrder.count {
+            finishQuestion(.timedOut, selected: nil)
+        }
+    }
+
+    /// What a right tap would score now: the wrong books still standing.
+    var boardPointsAvailable: Int { max(0, (current?.booksLeft ?? 1) - 1) }
 
     /// Records the answer (or timeout) on the latest question, so it can't be answered again.
     private func finishQuestion(_ outcome: QuizOutcome, selected: String?) {
@@ -852,7 +1017,7 @@ final class QuizGameViewModel {
 
         let correct = outcome == .correct
         // A quick answer with the timer on the whole time earns a bonus point.
-        if correct, let timeLimit, !history[currentIndex].wasTimerOff {
+        if correct, mode != .lastBookStanding, let timeLimit, !history[currentIndex].wasTimerOff {
             history[currentIndex].earnedSpeedBonus = questionClock.elapsed(at: now()) <= Double(timeLimit) / 3
         }
         // The chapter bonus only follows a correct book.
@@ -882,14 +1047,19 @@ final class QuizGameViewModel {
         )
         GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
         GameStats.shared.recordModeAnswer(.quiz, mode: current.mode.rawValue, correct: correct)
+        // Last Book Standing keeps its own misses, so its review replays the board; Standard's
+        // are saved without a mode, which counts as Standard.
+        let reviewModeName = mode == .lastBookStanding ? mode.rawValue : nil
         if correct, !reviewQuestionIDs.isEmpty {
             missedQuestions.resolveReviewQuestion(
                 game: mode == .reverse ? .quizReverse : .bibleQuiz,
+                mode: reviewModeName,
                 questionID: current.reviewID
             )
         } else if !correct {
             missedQuestions.record(
                 game: mode == .reverse ? .quizReverse : .bibleQuiz,
+                mode: reviewModeName,
                 bookNames: [current.correctBook],
                 chapterNumber: current.chapter,
                 topic: mode == .reverse ? "Verse matching" : "Book identification",
@@ -926,7 +1096,9 @@ final class QuizGameViewModel {
 
     /// Whether this kind of game has the lifeline at all, used or not.
     func offers(_ lifeline: QuizLifeline) -> Bool {
-        switch lifeline {
+        // The board already narrows itself, and rewards answering early.
+        guard mode != .lastBookStanding else { return false }
+        return switch lifeline {
         case .fiftyFifty: true
         case .sectionHint: mode == .standard
         case .extraTime: isTimed
@@ -974,7 +1146,7 @@ final class QuizGameViewModel {
     /// For a wrong book that was close: the right part of the Bible, or on Hard, where every
     /// choice is from that part, a book right next to the answer.
     var closeGuessNote: String? {
-        guard let current, mode == .standard, current.outcome == .incorrect, let selected = current.selected,
+        guard let current, mode.asksForBook, current.outcome == .incorrect, let selected = current.selected,
               let section = QuizVerseSection.containing(current.correctBook) else { return nil }
         if difficulty == .hard {
             let canon = BibleCanon.fallbackCanon
@@ -1003,15 +1175,24 @@ final class QuizGameViewModel {
 
     var speedBonusCount: Int { history.count(where: \.earnedSpeedBonus) }
     var chapterBonusCount: Int { history.count(where: \.earnedChapterBonus) }
+    /// Last Book Standing's points beyond one for each right book: the extra books still standing.
+    var earlyAnswerPoints: Int { history.reduce(0) { $0 + max(0, $1.boardPoints - 1) } }
 
-    /// Correct books plus speed and chapter bonuses.
-    var points: Int { session.score + speedBonusCount + chapterBonusCount }
+    /// Correct books plus bonuses: speed and chapter, or in Last Book Standing, the books
+    /// still standing at each right tap and the chapter.
+    var points: Int {
+        mode == .lastBookStanding
+            ? session.score + earlyAnswerPoints + chapterBonusCount
+            : session.score + speedBonusCount + chapterBonusCount
+    }
 
-    /// How the points add up, for the summary. Nil when there were no bonuses.
-    var roundPoints: RoundPoints? {
+    /// How the points add up, for the summary.
+    var roundPoints: RoundPoints {
         RoundPoints(
             correct: session.score,
-            bonuses: [RoundPoints.speed(speedBonusCount), RoundPoints.chapter(chapterBonusCount)]
+            bonuses: mode == .lastBookStanding
+                ? [RoundPoints.earlyAnswer(earlyAnswerPoints), RoundPoints.chapter(chapterBonusCount)]
+                : [RoundPoints.speed(speedBonusCount), RoundPoints.chapter(chapterBonusCount)]
         )
     }
 

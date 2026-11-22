@@ -106,7 +106,11 @@ final class ScrambleGameViewModel {
     var difficulty: Difficulty = Difficulty(
         rawValue: UserDefaults.standard.string(forKey: ScrambleGameViewModel.difficultyKey) ?? ""
     ) ?? .normal {
-        didSet { UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey) }
+        didSet {
+            // A review plays at its own difficulty without changing the game's saved difficulty.
+            guard !isReviewRound else { return }
+            UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+        }
     }
 
     var sessionLength: SessionLength = SessionLength(

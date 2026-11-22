@@ -215,7 +215,10 @@ final class BookOrderGameViewModel {
         rawValue: UserDefaults.standard.string(forKey: BookOrderGameViewModel.difficultyKey) ?? ""
     ) ?? .normal {
         didSet {
-            UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            // A review plays at its own difficulty without changing the game's saved difficulty.
+            if !isReview {
+                UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            }
             session.syncSavedBest(from: persistentStreak)
         }
     }

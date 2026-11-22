@@ -66,7 +66,10 @@ final class BibleTriviaGameModel {
         rawValue: UserDefaults.standard.string(forKey: AppStorageKey.triviaDifficulty) ?? ""
     ) ?? .normal {
         didSet {
-            UserDefaults.standard.set(difficulty.rawValue, forKey: AppStorageKey.triviaDifficulty)
+            // A review plays at its own timer without changing the game's saved difficulty.
+            if reviewQuestionIDs.isEmpty {
+                UserDefaults.standard.set(difficulty.rawValue, forKey: AppStorageKey.triviaDifficulty)
+            }
             session.syncSavedBest(from: persistentStreak)
         }
     }

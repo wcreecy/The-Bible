@@ -221,7 +221,10 @@ final class HangmanGameViewModel {
         rawValue: UserDefaults.standard.string(forKey: HangmanGameViewModel.difficultyKey) ?? ""
     ) ?? .normal {
         didSet {
-            UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            // A review plays at its own difficulty without changing the game's saved difficulty.
+            if !isReviewRound {
+                UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            }
             session.syncSavedBest(from: persistentStreak)
         }
     }

@@ -329,7 +329,10 @@ final class BeatTheClockGameViewModel {
         rawValue: UserDefaults.standard.string(forKey: BeatTheClockGameViewModel.difficultyKey) ?? ""
     ) ?? .normal {
         didSet {
-            UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            // A review plays at its own timer without changing the game's saved difficulty.
+            if reviewQuestionIDs.isEmpty {
+                UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            }
             session.syncSavedBest(from: persistentStreak)
         }
     }

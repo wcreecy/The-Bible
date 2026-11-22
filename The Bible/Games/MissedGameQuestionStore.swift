@@ -29,7 +29,9 @@ final class MissedGameQuestionStore {
                 case .beatTheClock: "classic"
                 case .whoAmI: "clueToName"
                 case .bookOrder: "missingBook"
-                case .bibleQuiz, .quizReverse, .bibleTrivia, .hangman, .scramble, .word: nil
+                // Verse → book misses are Standard's unless saved under Last Book Standing.
+                case .bibleQuiz: "standard"
+                case .quizReverse, .bibleTrivia, .hangman, .scramble, .word: nil
                 }
             }
 
