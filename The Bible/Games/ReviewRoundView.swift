@@ -243,7 +243,9 @@ struct ReviewGameRow: View {
                             Text(item.mode.title)
                                 .font(usesExpandedLayout ? .subheadline : .caption)
                             Spacer()
-                            Text("\(min(item.count, MissedGameQuestionStore.reviewRoundSize)) / \(MissedGameQuestionStore.reviewRoundSize)")
+                            // Every missed question counts, so a mode can show 40 / 10; a round
+                            // plays 10 of them at a time.
+                            Text("\(item.count) / \(MissedGameQuestionStore.reviewRoundSize)")
                                 .font((usesExpandedLayout ? Font.subheadline : .caption).monospacedDigit().weight(isReady ? .semibold : .regular))
                                 .foregroundStyle(isReady ? progress.game.tint : .secondary)
                         }
