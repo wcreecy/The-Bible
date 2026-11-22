@@ -4,17 +4,13 @@ struct VerseShareArtwork: View {
     let model: VerseImageComposerModel
     var photoTranslation = CGSize.zero
     var textTranslation = CGSize.zero
-    /// A pinch in progress, applied on top of the saved text size until it ends.
-    var textScaleMultiplier: CGFloat = 1
     /// The stroke being drawn, shown before it joins the model's strokes.
     var liveStroke: InkStroke?
 
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
-            // Text is sized to the part of the canvas that's always visible, which on an iPad
-            // wallpaper is the center square rather than the whole canvas.
-            let contentWidth = size.width * model.format.contentFraction
+            let contentWidth = size.width
             let textOffset = textOffset(in: size)
 
             ZStack {
@@ -46,8 +42,7 @@ struct VerseShareArtwork: View {
                     VersePhotoSubjectLayer(model: model, photoTranslation: photoTranslation)
                 }
 
-                // Wallpapers never carry branding.
-                if model.showsBranding && model.format != .wallpaper {
+                if model.showsBranding {
                     VStack {
                         Spacer()
                         Text("THE BIBLE")
@@ -103,7 +98,7 @@ struct VerseShareArtwork: View {
         case ..<200: base = 0.052
         default: base = 0.042
         }
-        let scale = (model.textScale * textScaleMultiplier).clamped(to: VerseImageComposerModel.textScaleRange)
+        let scale = model.textScale.clamped(to: VerseImageComposerModel.textScaleRange)
         return contentWidth * base * scale
     }
 
@@ -166,7 +161,7 @@ struct VersePhotoLayer: View {
 }
 
 /// The photo's subject, darkened like the photo beneath it. Drawn over the verse it tucks the verse
-/// behind the subject; drawn over the clock preview it imitates the Lock Screen's depth effect.
+/// behind the subject.
 struct VersePhotoSubjectLayer: View {
     let model: VerseImageComposerModel
     var photoTranslation = CGSize.zero

@@ -303,7 +303,6 @@ final class VerseImageComposerModel {
     }
 
     /// The photo's main subjects on a transparent background, at the photo's full size.
-    /// This is the same kind of subject lifting the Lock Screen uses for its depth effect.
     /// Succeeds with nil when the photo has no clear subject, and fails when Vision can't run,
     /// such as in some simulators.
     nonisolated private static func subjectCutout(of image: UIImage) -> Result<UIImage?, any Error> {
@@ -328,8 +327,7 @@ final class VerseImageComposerModel {
 
     // MARK: Placement
 
-    /// On an iPad wallpaper the verse stays inside the square that shows in every orientation.
-    private var textOffsetLimit: CGFloat { 0.35 * format.contentFraction }
+    private let textOffsetLimit: CGFloat = 0.35
     private static let nudgeStep: CGFloat = 0.03
 
     /// How far, as a fraction of the canvas, the photo can move before an edge would show.
@@ -368,8 +366,7 @@ final class VerseImageComposerModel {
         isRestoringSnapshot = false
     }
 
-    /// Keeps both offsets in range for the new format, and moves a centered verse into the
-    /// Lock Screen's open middle, between the clock and the notifications.
+    /// Keeps both offsets in range for the new format.
     func formatDidChange() {
         clampPhotoOffset()
         isRestoringSnapshot = true
@@ -377,9 +374,6 @@ final class VerseImageComposerModel {
         let clampedText = clampedTextOffset(textOffset)
         if clampedText != textOffset {
             textOffset = clampedText
-        }
-        if format == .wallpaper, format.contentFraction == 1, textOffset == .zero {
-            textOffset = CGSize(width: 0, height: LockScreenLayout.verseCenterOffset)
         }
     }
 

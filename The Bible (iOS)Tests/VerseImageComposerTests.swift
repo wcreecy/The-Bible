@@ -3,56 +3,18 @@ import Testing
 import UIKit
 @testable import Bible
 
-/// The wallpaper canvas, its layout, and the verse image composer's undo history.
+/// Verse image formats, export, and the composer's undo history.
 ///
 /// Composer tests set the remembered composer choices aside and put them back afterward,
 /// and undo timing runs on a clock the test moves by hand, so nothing waits on real time.
 @MainActor
-struct VerseWallpaperTests {
-    // MARK: Canvas
-
-    @Test
-    func phoneCanvasIsTheScreenItself() {
-        let canvas = WallpaperCanvas(screenPixels: CGSize(width: 1320, height: 2868), isSquare: false)
-        #expect(canvas.pixelSize == CGSize(width: 1320, height: 2868))
-        #expect(canvas.contentFraction == 1)
-    }
-
-    @Test
-    func iPadCanvasIsASquareOfTheLongSide() {
-        let canvas = WallpaperCanvas(screenPixels: CGSize(width: 2064, height: 2752), isSquare: true)
-        #expect(canvas.pixelSize == CGSize(width: 2752, height: 2752))
-        // Only the center square the width of the short side shows in every orientation.
-        #expect(abs(canvas.contentFraction - 2064.0 / 2752.0) < 0.0001)
-    }
-
-    @Test
-    func screenSizesAreTurnedPortrait() {
-        #expect(WallpaperCanvas.portraitPixels(CGSize(width: 2868, height: 1320)) == CGSize(width: 1320, height: 2868))
-        #expect(WallpaperCanvas.portraitPixels(CGSize(width: 1320, height: 2868)) == CGSize(width: 1320, height: 2868))
-    }
-
-    @Test
-    func iPadSkipsExternalDisplays() {
-        let iPad = CGSize(width: 2064, height: 2752)
-        let iPadMini = CGSize(width: 1488, height: 2266)
-        let monitor = CGSize(width: 2160, height: 3840)
-        #expect(WallpaperCanvas.isDeviceScreen(iPad, isPad: true))
-        #expect(WallpaperCanvas.isDeviceScreen(iPadMini, isPad: true))
-        #expect(!WallpaperCanvas.isDeviceScreen(monitor, isPad: true))
-        // A tall phone screen is never mistaken for a monitor.
-        #expect(WallpaperCanvas.isDeviceScreen(CGSize(width: 1320, height: 2868), isPad: false))
-        #expect(!WallpaperCanvas.isDeviceScreen(.zero, isPad: false))
-    }
-
+struct VerseImageComposerTests {
     // MARK: Formats
 
     @Test
     func artworkIsLaidOutAtAThirdOfItsPixelSize() {
         #expect(VerseImageFormat.square.layoutSize == CGSize(width: 360, height: 360))
         #expect(VerseImageFormat.story.layoutSize == CGSize(width: 360, height: 640))
-        let wallpaper = VerseImageFormat.wallpaper
-        #expect(wallpaper.layoutSize.width * VerseImageFormat.renderScale == wallpaper.pixelSize.width)
     }
 
     @Test
@@ -61,13 +23,6 @@ struct VerseWallpaperTests {
         for format in VerseImageFormat.allCases {
             #expect(largest >= max(format.pixelSize.width, format.pixelSize.height), "\(format)")
         }
-    }
-
-    @Test
-    func verseSitsBetweenTheClockAndNotifications() {
-        let center = 0.5 + LockScreenLayout.verseCenterOffset
-        #expect(center > LockScreenLayout.topZone)
-        #expect(center < 1 - LockScreenLayout.bottomZone)
     }
 
     @Test
@@ -96,24 +51,6 @@ struct VerseWallpaperTests {
             #expect(reopened.format == .story)
             #expect(abs(reopened.textScale - 1.3) < 0.0001)
             #expect(!reopened.canUndo)
-        }
-    }
-
-    @Test
-    func switchingToWallpaperPlacesACenteredVerseInTheOpenBand() {
-        withComposerDefaultsSetAside {
-            let model = makeModel()
-            model.format = .portrait
-            model.textOffset = .zero
-            model.format = .wallpaper
-            model.formatDidChange()
-
-            if VerseImageFormat.wallpaper.contentFraction == 1 {
-                #expect(abs(model.textOffset.height - LockScreenLayout.verseCenterOffset) < 0.0001)
-            } else {
-                // iPad keeps the verse centered in the square every orientation shows.
-                #expect(model.textOffset == .zero)
-            }
         }
     }
 

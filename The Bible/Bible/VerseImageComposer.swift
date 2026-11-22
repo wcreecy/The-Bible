@@ -10,9 +10,6 @@ struct VerseImageComposerView: View {
     @State private var shareImage: ShareableVerseImage?
     @State private var saveMessage: String?
     @State private var isExporting = false
-    @State private var previewLayout = WallpaperPreviewLayout()
-    @State private var showsFullScreenPreview = false
-    @State private var showsWallpaperSavedSheet = false
 
     init(verse: VerseActionReference) {
         _model = State(initialValue: VerseImageComposerModel(verse: verse))
@@ -23,7 +20,7 @@ struct VerseImageComposerView: View {
             // The preview stays above the controls so it can be dragged without fighting the
             // scroll view, and stays visible while a slider moves.
             VStack(spacing: 0) {
-                VerseImagePreview(model: model, previewLayout: previewLayout)
+                VerseImagePreview(model: model)
                     .frame(maxHeight: 320)
                     .padding([.horizontal, .top])
                     .padding(.bottom, 12)
@@ -37,13 +34,6 @@ struct VerseImageComposerView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             VerseImageCanvasControls(model: model, selectedPhoto: $selectedPhoto)
-                            if model.format == .wallpaper {
-                                VerseWallpaperControls(
-                                    model: model,
-                                    layout: $previewLayout,
-                                    onPreviewFullScreen: { showsFullScreenPreview = true }
-                                )
-                            }
                             VerseImageTextControls(model: model)
                             exportButtons
                         }
@@ -58,7 +48,7 @@ struct VerseImageComposerView: View {
             }
             .onChange(of: model.photoScale) { model.clampPhotoOffset() }
             .onChange(of: model.format) { model.formatDidChange() }
-            .navigationTitle(model.format == .wallpaper ? Text("Create Wallpaper") : Text("Share as Image"))
+            .navigationTitle("Share as Image")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.interactively)
             // A downward stroke would otherwise pull the sheet away.
@@ -94,12 +84,6 @@ struct VerseImageComposerView: View {
             .sheet(item: $shareImage) { item in
                 VerseImageShareSheet(image: item.image, includesAppLink: item.includesAppLink)
             }
-            .sheet(isPresented: $showsWallpaperSavedSheet) {
-                WallpaperSavedSheet(isPad: model.format.contentFraction < 1)
-            }
-            .fullScreenCover(isPresented: $showsFullScreenPreview) {
-                VerseLockScreenFullPreview(model: model, layout: previewLayout)
-            }
             .alert("Image Export", isPresented: Binding(
                 get: { saveMessage != nil },
                 set: { if !$0 { saveMessage = nil } }
@@ -119,32 +103,19 @@ struct VerseImageComposerView: View {
             .buttonStyle(.glassProminent)
             .tint(.orange)
 
-            Button(action: {
+            Button("Save Image", systemImage: "square.and.arrow.down") {
                 Task { await saveToPhotos() }
-            }) {
-                Label {
-                    if model.format == .wallpaper {
-                        Text("Save Wallpaper")
-                    } else {
-                        Text("Save Image")
-                    }
-                } icon: {
-                    Image(systemName: "square.and.arrow.down")
-                }
             }
-
             .buttonStyle(.glass)
             .tint(.orange)
         }
         .font(.headline)
         // The link is sent as text beside the image; this leaves it off.
         .safeAreaInset(edge: .bottom, spacing: 8) {
-            if model.format != .wallpaper {
-                IncludeAppLinkToggle()
-                    .font(.subheadline)
-                    .tint(.orange)
-                    .fixedSize()
-            }
+            IncludeAppLinkToggle()
+                .font(.subheadline)
+                .tint(.orange)
+                .fixedSize()
         }
         .disabled(isExporting)
         .opacity(isExporting ? 0.4 : 1)
@@ -171,7 +142,7 @@ struct VerseImageComposerView: View {
         }
         shareImage = ShareableVerseImage(
             image: image,
-            includesAppLink: model.format != .wallpaper && AppShare.includesLink
+            includesAppLink: AppShare.includesLink
         )
     }
 
@@ -192,11 +163,7 @@ struct VerseImageComposerView: View {
                 PHAssetChangeRequest.creationRequestForAsset(from: image)
             }
             Haptics.success()
-            if model.format == .wallpaper {
-                showsWallpaperSavedSheet = true
-            } else {
-                saveMessage = String(localized: "Saved to Photos.")
-            }
+            saveMessage = String(localized: "Saved to Photos.")
         } catch {
             saveMessage = String(localized: "The image could not be saved.")
         }
@@ -205,7 +172,6 @@ struct VerseImageComposerView: View {
 
 private struct VerseImagePreview: View {
     let model: VerseImageComposerModel
-    let previewLayout: WallpaperPreviewLayout
     @GestureState private var photoDrag = CGSize.zero
     @GestureState private var textDrag = CGSize.zero
     @State private var liveStroke: InkStroke?
@@ -222,23 +188,12 @@ private struct VerseImagePreview: View {
 
             ZStack {
                 ExportSizedLayout(layoutSize: layoutSize) {
-                    ZStack {
-                        VerseShareArtwork(
-                            model: model,
-                            photoTranslation: photoTranslation,
-                            textTranslation: CGSize(width: textDrag.width * toLayout, height: textDrag.height * toLayout),
-                            liveStroke: liveStroke
-                        )
-
-                        // Preview chrome never enters VerseShareArtwork or the exported image.
-                        if model.format == .wallpaper && previewLayout.showsLockScreen {
-                            VerseLockScreenOverlay(
-                                model: model,
-                                layout: previewLayout,
-                                photoTranslation: photoTranslation
-                            )
-                        }
-                    }
+                    VerseShareArtwork(
+                        model: model,
+                        photoTranslation: photoTranslation,
+                        textTranslation: CGSize(width: textDrag.width * toLayout, height: textDrag.height * toLayout),
+                        liveStroke: liveStroke
+                    )
                 }
 
                 if model.isMarkingUp {
@@ -534,9 +489,7 @@ private struct VerseImageTextControls: View {
             }
 
             Toggle("Show Reference", isOn: Bindable(model).showsReference)
-            if model.format != .wallpaper {
-                Toggle("Show App Branding", isOn: Bindable(model).showsBranding)
-            }
+            Toggle("Show App Branding", isOn: Bindable(model).showsBranding)
         }
         .padding()
         .glassEffect(.regular, in: .rect(cornerRadius: 18))
