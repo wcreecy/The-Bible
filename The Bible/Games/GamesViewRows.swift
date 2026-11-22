@@ -152,6 +152,7 @@ struct ReviewRoundStatusRow: View {
     let usesExpandedLayout: Bool
     let onSelectGame: (ReviewRoundDestination) -> Void
 
+    @AppStorage("gamesReviewRoundExpanded") private var isExpanded = false
     @State private var expandedGames: Set<ReviewGame> = []
 
     private var hasEligibleGame: Bool { progress.contains { $0.isReady } }
@@ -169,7 +170,23 @@ struct ReviewRoundStatusRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(progress) { item in
+                    ReviewGameRow(
+                        progress: item,
+                        isExpanded: Binding(
+                            get: { expandedGames.contains(item.game) },
+                            set: { isExpanded in
+                                if isExpanded { expandedGames.insert(item.game) } else { expandedGames.remove(item.game) }
+                            }
+                        ),
+                        usesExpandedLayout: usesExpandedLayout,
+                        onPlay: { onSelectGame(.game(item.game.rawValue)) }
+                    )
+                }
+            }
+        } label: {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "arrow.clockwise.heart.fill")
                     .font(usesExpandedLayout ? .title2 : .title3)
@@ -190,21 +207,8 @@ struct ReviewRoundStatusRow: View {
             .accessibilityLabel(hasEligibleGame ? "Review Round, ready" : "Review Round, locked")
             .accessibilityHint("Requires \(MissedGameQuestionStore.reviewRoundSize) replayable missed questions in one game mode.")
             .accessibilityIdentifier(hasEligibleGame ? "reviewRoundReady" : "reviewRoundLocked")
-
-            ForEach(progress) { item in
-                ReviewGameRow(
-                    progress: item,
-                    isExpanded: Binding(
-                        get: { expandedGames.contains(item.game) },
-                        set: { isExpanded in
-                            if isExpanded { expandedGames.insert(item.game) } else { expandedGames.remove(item.game) }
-                        }
-                    ),
-                    usesExpandedLayout: usesExpandedLayout,
-                    onPlay: { onSelectGame(.game(item.game.rawValue)) }
-                )
-            }
         }
+        .tint(.primary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, usesExpandedLayout ? 9 : 4)
     }

@@ -31,7 +31,11 @@ struct GamesOverviewCardContent: View {
     }
 
     private func visibleGameName(_ name: String) -> String {
-        name == "Word" ? "WORD" : name
+        switch name {
+        case "Word": "WORD"
+        case "Who?": "Who"
+        default: name
+        }
     }
 
     private func sortKey(for name: String) -> String {

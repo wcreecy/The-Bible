@@ -21,7 +21,7 @@ enum ReviewGame: String, CaseIterable, Identifiable {
         case .quiz: "Quiz"
         case .trivia: "Trivia"
         case .countdown: "Countdown"
-        case .whoAmI: "Who?"
+        case .whoAmI: "Who"
         case .hangman: "Hangman"
         case .scramble: "Scramble"
         case .bookOrder: "Book Order"
