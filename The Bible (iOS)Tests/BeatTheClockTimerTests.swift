@@ -321,6 +321,8 @@ struct BeatTheClockTimerTests {
 
     /// Runs `body`, then puts back every default it added, changed or removed.
     private func withRestoredDefaults(_ body: () async throws -> Void) async rethrows {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         let before = UserDefaults.standard.dictionaryRepresentation()
         defer { restore(before) }
         try await body()

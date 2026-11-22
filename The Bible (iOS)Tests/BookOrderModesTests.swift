@@ -8,6 +8,8 @@ import Testing
 @MainActor
 struct BookOrderModesTests {
     private func withRestoredDefaults(_ body: () async throws -> Void) async rethrows {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         let before = UserDefaults.standard.dictionaryRepresentation()
         defer {
             let defaults = UserDefaults.standard

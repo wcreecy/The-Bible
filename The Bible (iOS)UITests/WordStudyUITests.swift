@@ -146,9 +146,12 @@ final class WordStudyUITests: XCTestCase {
         XCTAssertTrue(sheet.waitForExistence(timeout: 5), "Tapping the card must open the study sheet.")
         // The entry's definition and the verses that use the word, grouped by book.
         // At accessibility sizes the entry fills the first screens, so the verses are scrolled to.
+        // Swipe on the sheet's list: on iPad the sheet is a small card, and the middle of the
+        // screen falls on its navigation bar, where a swipe doesn't scroll.
         let genesis = app.staticTexts["Genesis · 2"]
+        let verseList = app.collectionViews.firstMatch
         for _ in 0..<12 where !genesis.exists {
-            app.swipeUp()
+            verseList.swipeUp()
         }
         XCTAssertTrue(genesis.exists, "Expected the verses grouped by book.")
         for _ in 0..<12 where !sheet.buttons["Done"].isHittable {

@@ -8,7 +8,7 @@ import UIKit
 struct HomeLayoutStore {
     // Keys (kept identical to existing usage)
     private static let keyOrder = AppStorageKey.homeCardOrder
-    private static let keyHidden = "homeCardHidden"
+    private static let keyHidden = AppStorageKey.homeCardHidden
     private static let keyFavOrder = "homeCardFavoriteOrder"
     private static let keyFavHidden = "homeCardFavoriteHidden"
     private static let keyFavSavedAt = "homeCardFavoriteSavedAt"
@@ -62,8 +62,7 @@ struct HomeLayoutStore {
             ]
         }
 
-        // iPhone: a quiet first home screen—Welcome, the daily verse, your place and plan,
-        // then the day's checklist.
+        // iPhone: Welcome, the daily verse, and your place to continue reading.
         return [
             .setup,
             .verseOfDay,
@@ -78,12 +77,7 @@ struct HomeLayoutStore {
         ]
     }
     static var baselineHidden: Set<HomeCardID> {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            // Welcome, Continue Reading, the verse, the plan, Today, and the timer.
-            return [.savedVerses, .study, .streaks, .dailyFocus]
-        }
-        // Welcome, Verse of the Day, Continue Reading, Reading Plan, and Today.
-        return [.savedVerses, .study, .streaks, .timer, .dailyFocus]
+        Set(HomeCardID.allCases).subtracting([.setup, .verseOfDay, .resumeReading])
     }
     /// Only iPad saves its own column arrangement. Elsewhere (such as a large iPhone in
     /// landscape) the dashboard columns follow the single card order.
@@ -93,9 +87,8 @@ struct HomeLayoutStore {
 
     static var baselineColumns: HomeColumnLayout {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            // Verse of the Day heads the page at full width. Below it the columns end at
-            // about the same height once Welcome is dismissed: the timer beside your place
-            // and plan, and Today. Hidden cards sit at the ends of the columns, ready to be shown.
+            // Verse of the Day heads the page at full width. Welcome and Continue Reading
+            // sit below it; hidden cards retain positions for later customization.
             return HomeColumnLayout(
                 left: [.verseOfDay, .setup, .timer, .savedVerses],
                 middle: [.resumeReading, .readingPlan, .study],

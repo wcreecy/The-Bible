@@ -13,6 +13,8 @@ struct QuizGameplayTests {
         _ body: (QuizGameViewModel, ManualSleeper) async throws -> Void
     ) async throws {
         _ = await BibleRepository.shared.loadAllBooks()
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         let before = UserDefaults.standard.dictionaryRepresentation()
         defer {
             let defaults = UserDefaults.standard

@@ -13,6 +13,8 @@ struct HangmanGameViewModelTests {
         verses: [HangmanVerse] = [],
         _ body: (HangmanGameViewModel) async -> Void
     ) async {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         let before = UserDefaults.standard.dictionaryRepresentation()
         defer {
             let defaults = UserDefaults.standard

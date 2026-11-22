@@ -191,9 +191,9 @@ struct SettingsReadingProgressSection: View {
         self.highlightFocusReading = highlightFocusReading
     }
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
-    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers = false
-    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker = false
-    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers = false
+    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker = true
+    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers = true
     @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers = true
     @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers = true
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false

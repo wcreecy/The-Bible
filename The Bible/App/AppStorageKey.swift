@@ -131,6 +131,8 @@ enum AppStorageKey {
     static let didMigrateReadingPositionV1 = "didMigrateReadingPositionV1"
     static let didCleanSavedVerseTextV1 = "didCleanSavedVerseTextV1"
     static let didKeepPreviousReaderDefaultsV1 = "didKeepPreviousReaderDefaultsV1"
+    static let didKeepPreviousReaderMarkerDefaultsV2 = "didKeepPreviousReaderMarkerDefaultsV2"
+    static let didKeepPreviousHomeVisibilityV1 = "didKeepPreviousHomeVisibilityV1"
 
     // Reading statistics
     static let bookReadingTimes = "bookReadingTimes"
@@ -164,6 +166,7 @@ enum AppStorageKey {
 
     // Home
     static let homeCardOrder = "homeCardOrder"
+    static let homeCardHidden = "homeCardHidden"
     static let homeQuickSearchVisible = "homeQuickSearchVisible"
     static let homeCustomizeButtonVisible = "homeCustomizeButtonVisible"
     static let homeSavedVersePinID = "homeSavedVersePinID"

@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 /// The default for every app preference, in one place. Registered at launch, so these win over
 /// the inline default on any `@AppStorage` or plain `UserDefaults` read of the same key, and
@@ -9,9 +10,10 @@ import Foundation
 enum AppSettingsDefaults {
     static var preferences: [String: Any] {
         [
-            "colorSchemePreference": "system",
+            AppStorageKey.colorSchemePreference: "system",
+            LaunchTabPreference.defaultsKey: LaunchTabPreference.home.rawValue,
             AppShare.includesLinkKey: true,
-            "dailyGoalMinutes": 30,
+            AppStorageKey.dailyGoalMinutes: 30,
             StreakReminderScheduler.enabledKey: false,
             StreakReminderScheduler.hourKey: StreakReminderScheduler.defaultHour,
             StreakReminderScheduler.minuteKey: 0,
@@ -28,20 +30,19 @@ enum AppSettingsDefaults {
             "liveActivitiesEnabled": true,
             "healthKitMindfulMinutesEnabled": false,
             AppStorageKey.contextualTipsEnabled: true,
-            "readerFontSize": 17.0,
-            // Verse rows start quiet: a short "Verse 1" label, with only the note and Scripture
-            // connection icons, which open something when tapped. Installs from before this
-            // keep their previous look (see `keepPreviousReaderDefaultsIfNeeded`).
+            AppStorageKey.readerFontSize: 17.0,
             AppStorageKey.readerShowsFullReferences: false,
             ReaderDisplaySettings.showsReadProgressKey: false,
             ReaderDisplaySettings.showsVerseMarkersKey: true,
             ReaderDisplaySettings.showsNoteMarkersKey: true,
             ReaderDisplaySettings.showsCrossReferenceMarkersKey: true,
-            ReaderDisplaySettings.showsBookmarkMarkersKey: false,
-            ReaderDisplaySettings.showsFavoriteMarkersKey: false,
-            ReaderDisplaySettings.showsPinnedVerseMarkerKey: false,
-            "focusReadingEnabled": false,
-            "homeCustomizeButtonVisible": true,
+            ReaderDisplaySettings.showsBookmarkMarkersKey: true,
+            ReaderDisplaySettings.showsFavoriteMarkersKey: true,
+            ReaderDisplaySettings.showsPinnedVerseMarkerKey: true,
+            AppStorageKey.focusReadingEnabled: false,
+            RedLetterText.suppliedWordsInItalicsKey: false,
+            AppStorageKey.homeQuickSearchVisible: true,
+            AppStorageKey.homeCustomizeButtonVisible: true,
             "noteEditorTextSizeStep": 0,
             "notesTabSortField": "modified",
             "notesTabSortAscending": false,
@@ -82,6 +83,8 @@ enum AppSettingsDefaults {
         domainName: String? = Bundle.main.bundleIdentifier
     ) {
         keepPreviousReaderDefaultsIfNeeded(in: defaults, domainName: domainName)
+        keepPreviousReaderMarkerDefaultsIfNeeded(in: defaults, domainName: domainName)
+        keepPreviousHomeVisibilityIfNeeded(in: defaults, domainName: domainName)
         defaults.register(defaults: preferences)
     }
 
@@ -109,5 +112,42 @@ enum AppSettingsDefaults {
         for (key, value) in previousReaderDefaults where stored[key] == nil {
             defaults.set(value, forKey: key)
         }
+    }
+
+    /// Preserve the immediately preceding marker defaults for existing installs that never
+    /// saved an explicit choice. The earlier V1 migration runs first and retains its values.
+    static func keepPreviousReaderMarkerDefaultsIfNeeded(in defaults: UserDefaults, domainName: String?) {
+        guard !defaults.bool(forKey: AppStorageKey.didKeepPreviousReaderMarkerDefaultsV2) else { return }
+        defaults.set(true, forKey: AppStorageKey.didKeepPreviousReaderMarkerDefaultsV2)
+        guard defaults.bool(forKey: AppStorageKey.didCleanupAppTimeKeys) else { return }
+
+        let stored = domainName.flatMap(defaults.persistentDomain(forName:)) ?? [:]
+        let markerKeys = [
+            ReaderDisplaySettings.showsBookmarkMarkersKey,
+            ReaderDisplaySettings.showsFavoriteMarkersKey,
+            ReaderDisplaySettings.showsPinnedVerseMarkerKey
+        ]
+        for key in markerKeys where stored[key] == nil {
+            defaults.set(false, forKey: key)
+        }
+    }
+
+    /// Existing default Home layouts keep the cards that were visible before this update.
+    /// A saved layout already contains its own visibility and is never changed here.
+    static func keepPreviousHomeVisibilityIfNeeded(in defaults: UserDefaults, domainName: String?) {
+        guard !defaults.bool(forKey: AppStorageKey.didKeepPreviousHomeVisibilityV1) else { return }
+        defaults.set(true, forKey: AppStorageKey.didKeepPreviousHomeVisibilityV1)
+        guard defaults.bool(forKey: AppStorageKey.didCleanupAppTimeKeys) else { return }
+
+        let stored = domainName.flatMap(defaults.persistentDomain(forName:)) ?? [:]
+        guard stored[AppStorageKey.homeCardHidden] == nil else { return }
+        var hidden: [HomeCardID] = [.savedVerses, .study, .streaks, .dailyFocus]
+        if UIDevice.current.userInterfaceIdiom != .pad {
+            hidden.append(.timer)
+        }
+        guard let data = try? JSONEncoder().encode(hidden.map(\.rawValue)),
+              let raw = String(data: data, encoding: .utf8) else { return }
+        defaults.set(raw, forKey: AppStorageKey.homeCardHidden)
+        defaults.set(true, forKey: "homeTodayVisibilityMigratedV1")
     }
 }

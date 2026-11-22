@@ -193,6 +193,9 @@ final class The_Bible__iOS_UITests: XCTestCase {
             UIDevice.current.userInterfaceIdiom == .pad,
             "This regression test exercises the iPad game scoreboard."
         )
+        // Book Order remembers the last Game Type, and the quick-round types have no
+        // scoreboard, so start in Classic for this launch only.
+        app.launchArguments.append(contentsOf: ["-bookOrderMode", "classic"])
         launchAtAccessibilityTextSize()
 
         tapFloatingTab(named: "Games")
@@ -203,7 +206,9 @@ final class The_Bible__iOS_UITests: XCTestCase {
         let setup = app.scrollViews["bookOrderSetupScrollView"]
         XCTAssertTrue(setup.waitForExistence(timeout: 8))
 
-        let startGame = app.buttons["Start Game"].firstMatch
+        // A puzzle left unfinished on this device shows Resume in place of Start Game; both
+        // open the same board.
+        let startGame = app.buttons.matching(NSPredicate(format: "label IN %@", ["Start Game", "Resume"])).firstMatch
         for _ in 0..<3 where !startGame.isHittable {
             setup.swipeUp()
         }

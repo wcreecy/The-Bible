@@ -4,8 +4,7 @@ import SwiftUI
 enum ReaderDisplaySettings {
     /// Master switch for the verse markers. On by default.
     static let showsVerseMarkersKey = AppStorageKey.showsVerseMarkers
-    /// Individual marker visibility preferences. Note and Scripture connection markers are on
-    /// by default; the others start off (see `AppSettingsDefaults`).
+    /// Individual marker visibility preferences. All start on (see `AppSettingsDefaults`).
     static let showsBookmarkMarkersKey = AppStorageKey.showsBookmarkMarkers
     static let showsPinnedVerseMarkerKey = AppStorageKey.showsPinnedVerseMarker
     static let showsFavoriteMarkersKey = AppStorageKey.showsFavoriteMarkers

@@ -14,9 +14,9 @@ struct ReadingChapterVerseList: View {
     @Query private var bookmarks: [Bookmark]
 
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
-    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = false
-    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker: Bool = false
-    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = false
+    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsPinnedVerseMarkerKey) private var showsPinnedVerseMarker: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers: Bool = true
     @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers: Bool = true
     @State private var pencilHoveredVerse: Int?

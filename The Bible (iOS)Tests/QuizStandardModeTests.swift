@@ -65,6 +65,8 @@ struct QuizStandardModeTests {
     /// Runs `body`, then puts back every default it added, changed or removed (settings,
     /// stats, streaks and question history).
     private func withRestoredDefaults(_ body: () async throws -> Void) async rethrows {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         let before = UserDefaults.standard.dictionaryRepresentation()
         defer {
             let defaults = UserDefaults.standard

@@ -370,6 +370,8 @@ struct GameStatsAccountingTests {
     /// Legacy Verses per-book history appears in Quiz with the same analytics.
     @Test
     func perBookAnalyticsAgreeAcrossQuizTriviaAndVerseMatch() async throws {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         _ = await BibleRepository.shared.loadAllBooks()
 
         let prefixes = ["quiz", "trivia", "versematch"]
@@ -552,6 +554,8 @@ struct GameStatsAccountingTests {
 
     @Test
     func quizHistoryAndTriviaContributeToBookMasteryWithoutDuplicatingOverallTotals() async throws {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         _ = await BibleRepository.shared.loadAllBooks()
         let stats = GameStats.shared
         let day = GameStats.localDayKey(for: Date())
@@ -684,6 +688,8 @@ struct DeveloperSampleGameStatsTests {
 
     @Test
     func generatedSampleDataIncludesCrosswordWithRealisticPlayCounts() async throws {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         let prefixes = ["quiz", "trivia", "hangman", "beatclock", "versematch", "bookorder",
                         "whoami", "wordsearch", "scramble", "crossword", "word", "wordle"]
         var keys = [

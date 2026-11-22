@@ -21,6 +21,8 @@ struct WhoAmIGameViewModelTests {
         missed: MissedGameQuestionStore? = nil,
         _ body: (WhoAmIGameViewModel, ManualSleeper) async throws -> Void
     ) async throws {
+        await StandardDefaultsLock.lock()
+        defer { StandardDefaultsLock.unlock() }
         let before = UserDefaults.standard.dictionaryRepresentation()
         defer {
             let defaults = UserDefaults.standard

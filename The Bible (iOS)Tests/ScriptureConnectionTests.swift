@@ -98,7 +98,10 @@ struct ScriptureConnectionTests {
         let configuration = ModelConfiguration(
             "ScriptureConnectionTests-\(UUID().uuidString)",
             schema: schema,
-            isStoredInMemoryOnly: true
+            isStoredInMemoryOnly: true,
+            // The test host has the iCloud entitlement, so the default (.automatic) would
+            // import the signed-in account's saved connections and notes into this store.
+            cloudKitDatabase: .none
         )
         let container = try ModelContainer(for: schema, configurations: [configuration])
         let context = ModelContext(container)

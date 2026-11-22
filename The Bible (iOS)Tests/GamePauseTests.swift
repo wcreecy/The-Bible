@@ -84,7 +84,7 @@ struct WordSearchPauseTests {
             saved.forEach { defaults.set($0.value, forKey: $0.key) }
         }
 
-        let container = try ModelContainer(for: Favorite.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let container = try ModelContainer(for: Favorite.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none))
         let vm = WordSearchViewModel(modelContext: ModelContext(container), favoritesFetch: { [] })
         vm.isTimedMode = timed
         vm.start()
