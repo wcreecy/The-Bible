@@ -21,6 +21,15 @@ struct GameKeyboardInputTests {
     }
 
     @Test
+    func everyLastBookStandingChoiceHasAKeyboardKey() {
+        for index in 0..<12 {
+            #expect(GameAnswerLetter.index(forKey: GameAnswerLetter.letter(for: index)) == index)
+        }
+        #expect(GameAnswerLetter.index(forKey: "9") == 8)
+        #expect(GameAnswerLetter.index(forKey: "0") == nil)
+    }
+
+    @Test
     func normalizesReturnAndForwardsDeletion() {
         let responder = GameKeyboardResponder()
         responder.isActive = true
@@ -66,7 +75,8 @@ struct GameKeyboardInputTests {
             $0.input == UIKeyCommand.inputUpArrow && $0.modifierFlags == .shift
         })
         #expect(commands.contains { $0.input == "\r" && $0.modifierFlags.isEmpty })
-        #expect(commands.allSatisfy(\.wantsPriorityOverSystemBehavior))
+        let allCommandsHavePriority = commands.allSatisfy { $0.wantsPriorityOverSystemBehavior }
+        #expect(allCommandsHavePriority)
         #expect(responder.inputView?.bounds.size == .zero)
     }
 }

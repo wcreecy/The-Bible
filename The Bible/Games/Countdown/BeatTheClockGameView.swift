@@ -35,6 +35,10 @@ struct BeatTheClockGameView: View {
             actions: { actions },
             timer: { largeTimer }
         )
+        .gameKeyboardInput(
+            isActive: vm.phase == .playing && !vm.isPaused && !isGiveUpConfirmationPresented && !showAnswers,
+            onKey: handleKeyPress
+        )
         .background(AppBackgroundView(tab: .games))
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -122,6 +126,28 @@ struct BeatTheClockGameView: View {
                 }
             }
         }
+    }
+
+    private func handleKeyPress(_ press: GameKeyboardPress) -> GameKeyboardPress.Result {
+        guard vm.phase == .playing, !vm.isPaused else { return .ignored }
+        if press.key == .return {
+            guard vm.selectionLocked, !vm.mode.usesGameClock else { return .ignored }
+            vm.nextRound()
+            return .handled
+        }
+        guard !vm.selectionLocked else { return .ignored }
+        let index = GameAnswerLetter.index(forKey: press.characters)
+        if vm.mode == .higherOrLower {
+            let choice = press.key == .leftArrow ? 0 : press.key == .rightArrow ? 1 : index
+            guard let choice, let first = vm.currentQuestion, let second = vm.rival,
+                  (0...1).contains(choice) else { return .ignored }
+            vm.choose(questionID: choice == 0 ? first.id : second.id)
+        } else {
+            guard let index, let choices = vm.choices,
+                  choices.books.indices.contains(index) else { return .ignored }
+            vm.submit(bookName: choices.books[index])
+        }
+        return .handled
     }
 
     @ViewBuilder

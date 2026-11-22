@@ -132,7 +132,7 @@ struct BeatTheClockChoiceGrid: View {
                 Button {
                     onChoose(book)
                 } label: {
-                    tile(book, state: state)
+                    tile("\(GameAnswerLetter.letter(for: books.firstIndex(of: book) ?? 0)). \(book)", state: state)
                 }
                 .buttonStyle(.plain)
                 // Not `.disabled`, which would fade the green and red the answer is shown in.

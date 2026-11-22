@@ -115,17 +115,17 @@ struct ReviewRoundModeTests {
     @Test func syncKeepsModesApartAndRetiresPerMode() {
         // Recent, so the history's 180-day limit keeps it.
         let missed = Date().addingTimeInterval(-3_600)
-        let phone = MissedGameQuestionStore(entries: [entry(.whoAmI, mode: "clueToName", "who-1", date: missed)])
-        let tablet = MissedGameQuestionStore(entries: [entry(.whoAmI, mode: "nameToClue", "who-1", date: missed)])
-        tablet.resolveReviewQuestion(game: .whoAmI, mode: "nameToClue", questionID: "who-1", date: missed.addingTimeInterval(60))
-        tablet.record(game: .whoAmI, mode: "nameToClue", bookNames: [], topic: "Test", questionID: "who-2", date: missed)
+        let phone = MissedGameQuestionStore(entries: [entry(.bookOrder, mode: "tapInOrder", "Ruth", date: missed)])
+        let tablet = MissedGameQuestionStore(entries: [entry(.bookOrder, mode: "beforeAfter", "Ruth", date: missed)])
+        tablet.resolveReviewQuestion(game: .bookOrder, mode: "beforeAfter", questionID: "Ruth", date: missed.addingTimeInterval(60))
+        tablet.record(game: .bookOrder, mode: "beforeAfter", bookNames: [], topic: "Test", questionID: "Jude", date: missed)
 
         phone.merge(tablet.cloudPayload(), now: missed.addingTimeInterval(120))
 
-        // The tablet's retirement in Name → Clue leaves the phone's Clue → Name miss alone.
-        #expect(phone.containsMiss(game: .whoAmI, mode: "clueToName", questionID: "who-1"))
-        #expect(!phone.containsMiss(game: .whoAmI, mode: "nameToClue", questionID: "who-1"))
-        #expect(phone.containsMiss(game: .whoAmI, mode: "nameToClue", questionID: "who-2"))
+        // The tablet's retirement in Before or After? leaves the phone's Tap in Order miss alone.
+        #expect(phone.containsMiss(game: .bookOrder, mode: "tapInOrder", questionID: "Ruth"))
+        #expect(!phone.containsMiss(game: .bookOrder, mode: "beforeAfter", questionID: "Ruth"))
+        #expect(phone.containsMiss(game: .bookOrder, mode: "beforeAfter", questionID: "Jude"))
     }
 
     @Test func historyFromBeforeModesStillLoads() throws {

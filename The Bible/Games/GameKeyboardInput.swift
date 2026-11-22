@@ -85,11 +85,11 @@ final class GameKeyboardResponder: UIView, UIKeyInput {
             }
             responder = current.next
         }
-        return window?.rootViewController?.presentedViewController != nil
+        return false
     }
 
     func insertText(_ text: String) {
-        guard isActive else { return }
+        guard isActive, !hasPresentedController else { return }
         for character in text {
             let key: KeyEquivalent = character == "\r" || character == "\n" ? .return : KeyEquivalent(character)
             _ = onKey(GameKeyboardPress(key: key, characters: String(character)))
@@ -97,7 +97,7 @@ final class GameKeyboardResponder: UIView, UIKeyInput {
     }
 
     func deleteBackward() {
-        guard isActive else { return }
+        guard isActive, !hasPresentedController else { return }
         _ = onKey(GameKeyboardPress(key: .delete, characters: "\u{8}"))
     }
 
@@ -118,7 +118,7 @@ final class GameKeyboardResponder: UIView, UIKeyInput {
     }
 
     @objc private func handleCommand(_ command: UIKeyCommand) {
-        guard isActive, let input = command.input else { return }
+        guard isActive, !hasPresentedController, let input = command.input else { return }
         let key: KeyEquivalent
         switch input {
         case UIKeyCommand.inputUpArrow: key = .upArrow

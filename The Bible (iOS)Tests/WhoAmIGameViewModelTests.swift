@@ -17,7 +17,6 @@ struct WhoAmIGameViewModelTests {
 
     private func withGame(
         difficulty: WhoAmIGameViewModel.Difficulty = .normal,
-        mode: WhoAmIGameViewModel.Mode = .clueToName,
         missed: MissedGameQuestionStore? = nil,
         _ body: (WhoAmIGameViewModel, ManualSleeper) async throws -> Void
     ) async throws {
@@ -43,7 +42,6 @@ struct WhoAmIGameViewModelTests {
             loadPassage: { _ in Self.passage }
         )
         game.difficulty = difficulty
-        game.mode = mode
         await game.loadData()
         try #require(game.isReady)
         try await body(game, clock)
@@ -130,32 +128,13 @@ struct WhoAmIGameViewModelTests {
         }
     }
 
-    @Test func theNameToClueHintShowsTheVerseAndKeepsEveryChoice() async throws {
-        try await withGame(mode: .nameToClue) { game, _ in
-            game.startGame()
-            await game.loadPassage()
-            #expect(game.hintVerse == nil)
-
-            game.use(.hint)
-            let verse = try #require(game.hintVerse)
-            #expect(verse.isClue)
-            #expect(game.hintText == nil)
-            #expect(game.removedChoices.isEmpty)
-
-            // The verse goes once the question is answered; the usual verse card takes over.
-            game.select(game.correctChoice)
-            #expect(game.hintVerse == nil)
-        }
-    }
-
     @Test func theHintAfterFiftyFiftyStillLeavesTwoChoices() async throws {
-        try await withGame(mode: .nameToClue) { game, _ in
+        try await withGame { game, _ in
             game.startGame()
-            await game.loadPassage()
             game.use(.fiftyFifty)
             game.use(.hint)
             #expect(game.removedChoices.count == 2)
-            #expect(game.hintVerse != nil)
+            #expect(game.hintText?.isEmpty == false)
             #expect(game.choices.count - game.removedChoices.count == 2)
         }
     }
@@ -281,16 +260,15 @@ struct WhoAmIGameViewModelTests {
         #expect(!review.isReady)
     }
 
-    @Test func anOlderMissSavedByPersonBringsBackBothQuestionsAndEitherClearsIt() async throws {
+    @Test func anOlderMissSavedByPersonBringsBackTheirQuestionAndClearsIt() async throws {
         let loader = WhoAmIGameViewModel(missedQuestions: MissedGameQuestionStore(entries: []))
         await loader.loadData()
-        let personIDs = Array(Set(loader.entries.map(\.id))).sorted().prefix(5).map { String($0) }
+        let personIDs = Array(Set(loader.entries.map(\.id))).sorted().prefix(10).map { String($0) }
 
         let missed = MissedGameQuestionStore(entries: [])
         for id in personIDs {
             missed.record(game: .whoAmI, bookNames: [], topic: "Bible people", questionID: id)
         }
-        // Five people saved the old way stand for both of their questions: ten in all.
         let review = await reviewGame(ids: Set(personIDs), missed: missed)
         #expect(review.isReady)
 
@@ -298,5 +276,34 @@ struct WhoAmIGameViewModelTests {
         let first = try #require(review.current)
         review.select(review.correctChoice)
         #expect(!missed.containsMiss(game: .whoAmI, questionID: String(first.id)))
+    }
+
+    /// Who? no longer asks Name → Clue. Those misses come back as the person's clue question,
+    /// and answering it clears both.
+    @Test func aRetiredNameToClueMissComesBackAsThePersonsClueQuestion() async throws {
+        let loader = WhoAmIGameViewModel(missedQuestions: MissedGameQuestionStore(entries: []))
+        await loader.loadData()
+        let retired = await GameDataLoaders.loadWhoQuestionsAsync().filter { $0.mode == .personToFact }
+        let people = Set(loader.entries.map(\.id))
+        let picks = Array(retired.filter { people.contains($0.sourcePersonID) }.prefix(10))
+        try #require(picks.count == 10)
+        #expect(loader.entries.allSatisfy { $0.questionMode == .factToPerson })
+
+        let missed = MissedGameQuestionStore(entries: [])
+        for question in picks {
+            missed.record(game: .whoAmI, mode: "nameToClue", bookNames: [], topic: "Bible people", questionID: question.id)
+        }
+        // Saved under the old mode, they count toward Clue → Name's review.
+        #expect(missed.reviewCount(for: .whoAmI, mode: WhoAmIGameViewModel.reviewModeName) == 10)
+
+        let review = await reviewGame(ids: Set(picks.map(\.id)), missed: missed)
+        #expect(review.isReady)
+        review.startGame()
+        let first = try #require(review.current)
+        #expect(first.questionMode == .factToPerson)
+        let retiredID = try #require(picks.first { $0.sourcePersonID == first.id }?.id)
+        review.select(review.correctChoice)
+        #expect(!missed.containsMiss(game: .whoAmI, mode: "nameToClue", questionID: retiredID))
+        #expect(missed.reviewCount(for: .whoAmI) == 9)
     }
 }

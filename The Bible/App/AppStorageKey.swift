@@ -118,7 +118,6 @@ enum AppStorageKey {
     static let beatTheClockDifficulty = "beatTheClockDifficulty"
     static let beatTheClockCategory = "beatTheClockCategory"
     static let beatTheClockMode = "beatTheClockMode"
-    static let whoAmIMode = "whoamiMode"
     static let whoAmIDifficulty = "whoamiDifficulty"
     static let hangmanTheme = "hangmanTheme"
     static let hangmanDifficulty = "hangmanDifficulty"

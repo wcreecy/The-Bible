@@ -8,6 +8,7 @@ struct WordSearchGameView: View {
     @State private var vm = WordSearchViewModel()
     @State private var didBindVM = false
     @State private var confirmReveal = false
+    @State private var keyboardCell: (row: Int, col: Int)?
     /// Width available to the phone layout, used to size the grid.
     @State private var phoneContentWidth: CGFloat = 0
 
@@ -73,6 +74,12 @@ struct WordSearchGameView: View {
                             )
                         }
 
+                        if keyboardCell != nil && !vm.roundOver {
+                            Text("Arrow keys move. Return selects the start and end of a word. Escape clears the selection.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
                         if isPad {
                             SideBySideGameArea(
                                 size: vm.size,
@@ -121,6 +128,11 @@ struct WordSearchGameView: View {
                 if !isOver { proxy.scrollTo(Self.scrollTopID, anchor: .top) }
             }
         }
+        .gameKeyboardInput(
+            isActive: vm.started && !vm.isPaused && !confirmReveal && vm.puzzleGenerationError == nil,
+            onKey: handleKeyPress
+        )
+        .onChange(of: vm.grid) { keyboardCell = nil }
         .tabBarContentClearance()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -188,6 +200,29 @@ struct WordSearchGameView: View {
                 didBindVM = true
             }
         }
+    }
+
+    private func handleKeyPress(_ press: GameKeyboardPress) -> GameKeyboardPress.Result {
+        guard vm.started, !vm.isPaused else { return .ignored }
+        if vm.roundOver {
+            guard press.key == .return else { return .ignored }
+            vm.newPuzzle()
+            return .handled
+        }
+        var cell = keyboardCell ?? (row: 0, col: 0)
+        switch press.key {
+        case .upArrow: cell.row = max(0, cell.row - 1)
+        case .downArrow: cell.row = min(vm.size - 1, cell.row + 1)
+        case .leftArrow: cell.col = max(0, cell.col - 1)
+        case .rightArrow: cell.col = min(vm.size - 1, cell.col + 1)
+        case .return, .space:
+            vm.handleTap(row: cell.row, col: cell.col)
+        case .escape, .delete:
+            vm.cancelSelection()
+        default: return .ignored
+        }
+        keyboardCell = cell
+        return .handled
     }
 
     // MARK: - Phone layout
@@ -350,6 +385,9 @@ struct WordSearchGameView: View {
     }
 
     private func backgroundColorForCell(row: Int, col: Int) -> Color {
+        if !vm.roundOver, let keyboardCell, keyboardCell.row == row, keyboardCell.col == col {
+            return Color.accentColor.opacity(0.65)
+        }
         let key = "\(row),\(col)"
         if vm.hintCellKeys.contains(key) {
             return Color.yellow.opacity(0.75)

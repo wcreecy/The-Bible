@@ -72,9 +72,7 @@ enum ReviewGame: String, CaseIterable, Identifiable {
                 ReviewGameMode(game: .beatTheClock, mode: $0.rawValue, title: $0.title, detail: $0.detail, icon: $0.systemImage)
             }
         case .whoAmI:
-            WhoAmIGameViewModel.Mode.allCases.map {
-                ReviewGameMode(game: .whoAmI, mode: $0.rawValue, title: $0.title, detail: $0.detail, icon: $0.icon)
-            }
+            [ReviewGameMode(game: .whoAmI, title: title, icon: systemImage)]
         case .hangman:
             [ReviewGameMode(game: .hangman, title: title, icon: systemImage)]
         case .scramble:
@@ -333,7 +331,7 @@ private struct ReviewRoundSession: View {
         case .countdown:
             BeatTheClockGameView(reviewQuestionIDs: questionIDs, reviewMode: BeatTheClockMode(rawValue: modeName) ?? .classic)
         case .whoAmI:
-            WhoAmIGameView(reviewQuestionIDs: questionIDs, reviewMode: WhoAmIGameViewModel.Mode(rawValue: modeName) ?? .clueToName)
+            WhoAmIGameView(reviewQuestionIDs: questionIDs)
         case .hangman:
             HangmanGameView(reviewQuestionIDs: questionIDs)
         case .scramble:

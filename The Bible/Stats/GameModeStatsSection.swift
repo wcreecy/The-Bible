@@ -120,10 +120,6 @@ enum GameModeStatsRows {
             return (.quiz, QuizMode.allCases.map { mode in
                 Descriptor(mode: mode.rawValue, title: mode.title, systemImage: mode.systemImage, scoring: .answers)
             })
-        case "Who?":
-            return (.whoami, WhoAmIGameViewModel.Mode.allCases.map { mode in
-                Descriptor(mode: mode.rawValue, title: mode.title, systemImage: mode.icon, scoring: .answers)
-            })
         default:
             return nil
         }

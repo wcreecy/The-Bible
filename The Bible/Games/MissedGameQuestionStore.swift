@@ -38,9 +38,13 @@ final class MissedGameQuestionStore {
             /// The mode a saved mode's misses are reviewed in. Countdown's Survival asks the
             /// same question as Classic, and so did Rapid Fire, which it replaced, so their
             /// misses join Classic's, including ones synced from a device still on Rapid Fire.
+            /// Who?'s retired Name → Clue misses are reviewed as the person's clue question.
             func reviewedMode(_ mode: String?) -> String? {
-                guard self == .beatTheClock, mode == "survival" || mode == "rapidFire" else { return mode }
-                return "classic"
+                switch (self, mode) {
+                case (.beatTheClock, "survival"), (.beatTheClock, "rapidFire"): "classic"
+                case (.whoAmI, "nameToClue"): "clueToName"
+                default: mode
+                }
             }
         }
 

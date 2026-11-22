@@ -13,7 +13,6 @@ struct DeveloperSettingsResetTests {
         (AppStorageKey.beatTheClockDifficulty, { BeatTheClockDifficulty(rawValue: $0) != nil }),
         (AppStorageKey.beatTheClockCategory, { BeatTheClockCategory(rawValue: $0) != nil }),
         (AppStorageKey.beatTheClockMode, { BeatTheClockMode(rawValue: $0) != nil }),
-        (AppStorageKey.whoAmIMode, { WhoAmIGameViewModel.Mode(rawValue: $0) != nil }),
         (AppStorageKey.bookOrderMode, { BookOrderMode(rawValue: $0) != nil }),
         (AppStorageKey.whoAmIDifficulty, { WhoAmIGameViewModel.Difficulty(rawValue: $0) != nil }),
         (AppStorageKey.hangmanDifficulty, { HangmanDifficulty(rawValue: $0) != nil }),
@@ -60,7 +59,6 @@ struct DeveloperSettingsResetTests {
             #expect(reset[AppStorageKey.beatTheClockCategory] as? String == countdown.category.rawValue)
             #expect(reset[AppStorageKey.beatTheClockMode] as? String == countdown.mode.rawValue)
             let who = WhoAmIGameViewModel()
-            #expect(reset[AppStorageKey.whoAmIMode] as? String == who.mode.rawValue)
             #expect(reset[AppStorageKey.whoAmIDifficulty] as? String == who.difficulty.rawValue)
             #expect(reset[AppStorageKey.bookOrderMode] as? String == BookOrderGameViewModel().mode.rawValue)
             #expect(reset[AppStorageKey.hangmanDifficulty] as? String == hangman.difficulty.rawValue)

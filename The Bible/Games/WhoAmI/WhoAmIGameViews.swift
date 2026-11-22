@@ -1,31 +1,5 @@
 import SwiftUI
 
-struct WhoAmISetupControls: View {
-    @Binding var mode: WhoAmIGameViewModel.Mode
-    /// A review picks its direction from the ones ready for review instead.
-    @Environment(\.reviewRoundContext) private var reviewRound
-
-    var body: some View {
-        if reviewRound == nil {
-            setting
-        }
-    }
-
-    private var setting: some View {
-        GameSettingsGroup {
-            GameChoiceSetting(
-                title: "How to play",
-                systemImage: "person.text.rectangle",
-                tint: .brown,
-                selection: $mode,
-                choices: WhoAmIGameViewModel.Mode.allCases.map {
-                    GameChoice(value: $0, title: $0.title, detail: $0.detail, icon: $0.icon)
-                }
-            )
-        }
-    }
-}
-
 /// Who the answer was, and where they appear in the Bible.
 struct WhoAmIRevealCard: View {
     let wasCorrect: Bool
@@ -292,7 +266,6 @@ struct WhoAmIChoiceGrid: View {
     let vm: WhoAmIGameViewModel
     let columnCount: Int
     /// iPad uses slightly larger text for clue answers.
-    let usesLargeText: Bool
 
     @Environment(\.preferredPencilSqueezeAction) private var preferredPencilSqueezeAction
     @Environment(\.showGamePencilMenu) private var showGamePencilMenu
@@ -304,7 +277,7 @@ struct WhoAmIChoiceGrid: View {
 
     var body: some View {
         let choices = vm.choices
-        // 50/50 and the Name → Clue hint take choices out, so the rest close up. Each keeps its
+        // 50/50 takes choices out, so the rest close up. Each keeps its
         // original letter (A–D), so the keyboard shortcuts still match.
         let remaining = Array(choices.enumerated()).filter { !vm.removedChoices.contains($0.element) }
         Grid(horizontalSpacing: 12, verticalSpacing: 12) {
@@ -344,7 +317,6 @@ struct WhoAmIChoiceGrid: View {
     }
 
     private func option(at index: Int, choice: String) -> some View {
-        let promptIsName = vm.currentPromptIsName
         let isRemoved = vm.removedChoices.contains(choice)
         let letter = GameAnswerLetter.letter(for: index)
 
@@ -359,14 +331,14 @@ struct WhoAmIChoiceGrid: View {
                     .background(Color.primary.opacity(0.08), in: Circle())
 
                 Text(choice)
-                    .font(promptIsName ? (usesLargeText ? .subheadline : .footnote) : .body.weight(.semibold))
+                    .font(.body.weight(.semibold))
                     .multilineTextAlignment(.leading)
                     .strikethrough(isRemoved)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(promptIsName ? 16 : 12)
-            .frame(maxWidth: .infinity, minHeight: promptIsName ? 88 : 44, maxHeight: .infinity, alignment: .leading)
+            .padding(12)
+            .frame(maxWidth: .infinity, minHeight: 44, maxHeight: .infinity, alignment: .leading)
             .foregroundStyle(.primary)
             .contentShape(Rectangle())
         }

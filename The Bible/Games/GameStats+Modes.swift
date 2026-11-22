@@ -9,6 +9,8 @@ enum GameModeStatsGame: String, CaseIterable {
     case quiz
     case beatclock
     case bookorder
+    /// Who? has one way to play now; its earlier Clue → Name and Name → Clue results stay
+    /// stored, so they still sync and are cleared with the rest of the game data.
     case whoami
 
     /// Answers (or puzzles) played in each mode, summed across devices.

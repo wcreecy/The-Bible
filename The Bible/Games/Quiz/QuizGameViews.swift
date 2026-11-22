@@ -204,7 +204,7 @@ struct QuizQuestionPanel: View {
             ForEach(current.options, id: \.self) { option in
                 let isGone = current.removedOptions.contains(option)
                 QuizBoardTile(
-                    title: option,
+                    title: "\(GameAnswerLetter.letter(for: current.options.firstIndex(of: option) ?? 0)). \(option)",
                     isAnswered: vm.isAnswered,
                     isCorrect: option == current.correctAnswer,
                     isSelected: option == current.selected

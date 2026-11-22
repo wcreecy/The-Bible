@@ -6,7 +6,7 @@ import Observation
 enum WhoLifeline: CaseIterable, Hashable {
     /// Removes two wrong choices.
     case fiftyFifty
-    /// Clue → Name: says where the person appears. Name → Clue: shows the person's verse.
+    /// Says where the person appears.
     case hint
     /// Adds ten seconds to the clock. Not on Easy, which has no timer.
     case extraTime
@@ -17,33 +17,9 @@ enum WhoLifeline: CaseIterable, Hashable {
 @MainActor
 @Observable
 final class WhoAmIGameViewModel {
-    enum Mode: String, CaseIterable, Identifiable {
-        case clueToName     // prompt: clue -> choices: names
-        case nameToClue     // prompt: name -> choices: clues
-
-        var id: String { rawValue }
-
-        var title: LocalizedStringResource {
-            switch self {
-            case .clueToName: "Clue → Name"
-            case .nameToClue: "Name → Clue"
-            }
-        }
-
-        var detail: LocalizedStringResource {
-            switch self {
-            case .clueToName: "Read a clue and pick the person it describes."
-            case .nameToClue: "See a name and pick the clue that describes them."
-            }
-        }
-
-        var icon: String {
-            switch self {
-            case .clueToName: "text.quote"
-            case .nameToClue: "person.fill"
-            }
-        }
-    }
+    /// The mode misses are saved under. Who? used to ask the other way round too (a name, then
+    /// pick the clue); those misses are now reviewed as the person's clue question.
+    static let reviewModeName = "clueToName"
 
     enum Difficulty: String, CaseIterable, Identifiable {
         case easy, normal, hard
@@ -83,7 +59,7 @@ final class WhoAmIGameViewModel {
     }
 
     struct Entry: Hashable {
-        /// The person's ID. Each person has one question in each direction.
+        /// The person's ID.
         let id: Int
         /// The question's own ID, e.g. "who-person-001", used for missed-question review.
         var questionID: String = ""
@@ -122,10 +98,8 @@ final class WhoAmIGameViewModel {
 
     /// The stores, clock and Bible text default to the real ones. They're resolved here rather
     /// than as default arguments, which would be evaluated outside the main actor.
-    /// A review plays the direction its questions were missed in, without changing the saved setting.
     init(
         reviewQuestionIDs: Set<String> = [],
-        reviewMode: Mode? = nil,
         missedQuestions: MissedGameQuestionStore? = nil,
         sleep: @escaping (Duration) async throws -> Void = { try await Task.sleep(for: $0) },
         now: @escaping () -> Date = Date.init,
@@ -136,19 +110,11 @@ final class WhoAmIGameViewModel {
         self.sleep = sleep
         self.now = now
         self.loadPassageForReference = loadPassage ?? { await GamePassage.load(for: $0) }
-        if let reviewMode { mode = reviewMode }
     }
 
     // Start screen state
     var started: Bool = false
     var isComplete: Bool = false
-    var mode: Mode = Mode(rawValue: UserDefaults.standard.string(forKey: AppStorageKey.whoAmIMode) ?? "") ?? .clueToName {
-        didSet {
-            // A review plays the direction it's reviewing without changing the saved setting.
-            guard reviewQuestionIDs.isEmpty else { return }
-            UserDefaults.standard.set(mode.rawValue, forKey: AppStorageKey.whoAmIMode)
-        }
-    }
     var difficulty: Difficulty = Difficulty(rawValue: UserDefaults.standard.string(forKey: AppStorageKey.whoAmIDifficulty) ?? "") ?? .normal {
         didSet {
             // A review plays at its own timer without changing the game's saved difficulty.
@@ -160,36 +126,35 @@ final class WhoAmIGameViewModel {
     }
 
     // Data
+    /// The clue questions, one per person: read the clue, pick the person.
     private(set) var entries: [Entry] = []
+    /// The catalog's name → clue question for each person, by person ID. Who? no longer asks
+    /// them, but misses saved under them are reviewed as the person's clue question.
+    private var retiredQuestionIDs: [Int: String] = [:]
     private var questionQueue: [Entry] = []
 
     private var eligibleEntries: [Entry] {
-        entries.filter {
-            $0.questionMode == questionMode && $0.matchesDifficulty(difficulty)
-        }
+        entries.filter { $0.matchesDifficulty(difficulty) }
     }
 
     /// A review needs a full game's worth of missed questions, like every game's Review Round.
+    /// It counts the misses it can replay, the way the Review Round does: a person missed both
+    /// ways is two misses but one question.
     var isReady: Bool {
-        reviewQuestionIDs.isEmpty ? eligibleEntries.count >= 4 : reviewEntries.count >= MissedGameQuestionStore.reviewRoundSize
+        guard !reviewQuestionIDs.isEmpty else { return eligibleEntries.count >= 4 }
+        let replayable = Set(reviewEntries.flatMap(reviewIDs(for:))).intersection(reviewQuestionIDs)
+        return replayable.count >= MissedGameQuestionStore.reviewRoundSize
     }
 
-    /// The missed questions in the direction being reviewed. Misses saved before questions had
-    /// their own IDs hold only the person's ID, so for those both of the person's questions
-    /// come back, each asked in its own direction.
+    /// Every ID a miss of this person's question may be saved under: the question's own, the
+    /// retired name → clue question's, and the person's ID, which older misses used.
+    private func reviewIDs(for entry: Entry) -> [String] {
+        [entry.questionID, Self.legacyReviewID(for: entry)] + (retiredQuestionIDs[entry.id].map { [$0] } ?? [])
+    }
+
+    /// The people whose questions were missed, each asked once.
     private var reviewEntries: [Entry] {
-        entries.filter {
-            (Self.mode(of: $0) == mode && reviewQuestionIDs.contains($0.questionID))
-                || reviewQuestionIDs.contains(Self.legacyReviewID(for: $0))
-        }
-    }
-
-    /// The direction a question asks in.
-    private static func mode(of entry: Entry) -> Mode {
-        switch entry.questionMode {
-        case .factToPerson: .clueToName
-        case .personToFact: .nameToClue
-        }
+        entries.filter { !reviewQuestionIDs.isDisjoint(with: reviewIDs(for: $0)) }
     }
 
     /// The ID misses were saved under before each question had its own: the person's ID.
@@ -206,25 +171,13 @@ final class WhoAmIGameViewModel {
     /// Wrong choices taken away by 50/50.
     private(set) var removedChoices: Set<String> = []
 
-    var promptTitle: String {
-        guard let current else { return "" }
-        return mode(for: current) == .clueToName ? current.clue : current.name
-    }
+    var promptTitle: String { current?.clue ?? "" }
 
     var choices: [String] {
         choiceEntries
     }
 
-    var correctChoice: String {
-        guard let current else { return "" }
-        return mode(for: current) == .clueToName ? current.name : current.clue
-    }
-
-    /// A review can contain misses from both directions, so it uses each entry's source mode.
-    var currentPromptIsName: Bool {
-        guard let current else { return mode == .nameToClue }
-        return mode(for: current) == .nameToClue
-    }
+    var correctChoice: String { current?.name ?? "" }
 
     var isLastQuestion: Bool { questionQueue.isEmpty }
 
@@ -278,8 +231,9 @@ final class WhoAmIGameViewModel {
         guard roundCountsTowardBest, session.bestGameScore > 0 else { return nil }
         return RoundBest(points: session.bestGameScore, isNew: session.isNewBestGame)
     }
-    /// Each mode and difficulty has its own pool, so each keeps its own pass through the questions.
-    private var recencyGameKey: String { "whoAmI.\(mode.rawValue).\(difficulty.rawValue)" }
+    /// Each difficulty has its own pool, so each keeps its own pass through the questions. The
+    /// key keeps its old mode name, so the pass in progress carries on.
+    private var recencyGameKey: String { "whoAmI.\(Self.reviewModeName).\(difficulty.rawValue)" }
 
     var isTimed: Bool { difficulty.timeLimit > 0 }
 
@@ -297,19 +251,16 @@ final class WhoAmIGameViewModel {
         let charactersByID = Dictionary(
             uniqueKeysWithValues: await characters.map { ($0.id, $0) }
         )
-        let loaded = await questions.compactMap { question -> Entry? in
-            guard let character = charactersByID[question.sourcePersonID] else { return nil }
+        let allQuestions = await questions
+        let retired = Dictionary(
+            allQuestions.filter { $0.mode == .personToFact }.map { ($0.sourcePersonID, $0.id) },
+            uniquingKeysWith: { first, _ in first }
+        )
+        let loaded = allQuestions.compactMap { question -> Entry? in
+            guard question.mode == .factToPerson, let character = charactersByID[question.sourcePersonID] else { return nil }
 
-            let nameAndClue: (name: String, clue: String)
-            switch question.mode {
-            case .factToPerson:
-                nameAndClue = (question.correctAnswer, question.question)
-            case .personToFact:
-                nameAndClue = (question.question, question.correctAnswer)
-            }
-
-            let parts = Self.split(nameAndClue.name)
-            let clue = nameAndClue.clue.trimmingCharacters(in: .whitespacesAndNewlines)
+            let parts = Self.split(question.correctAnswer)
+            let clue = question.question.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !parts.name.isEmpty, !clue.isEmpty, question.incorrectAnswers.count >= 3 else {
                 return nil
             }
@@ -328,22 +279,12 @@ final class WhoAmIGameViewModel {
             )
         }
         guard entries.isEmpty else { return }
+        retiredQuestionIDs = retired
         entries = loaded
     }
 
-    private var questionMode: WhoGameQuestion.Mode {
-        switch mode {
-        case .clueToName: .factToPerson
-        case .nameToClue: .personToFact
-        }
-    }
-
-    private func mode(for entry: Entry) -> Mode {
-        reviewQuestionIDs.isEmpty ? mode : Self.mode(of: entry)
-    }
-
     private func rankedDistractors(for target: Entry) -> [String] {
-        guard difficulty == .hard, mode(for: target) == .clueToName else {
+        guard difficulty == .hard else {
             return target.incorrectAnswers.shuffled()
         }
 
@@ -401,8 +342,7 @@ final class WhoAmIGameViewModel {
         let target = questionQueue.removeFirst()
         current = target
         RecentGameQuestionStore.shared.record(target, game: recencyGameKey, id: { String($0.id) })
-        let correct = mode(for: target) == .clueToName ? target.name : target.clue
-        choiceEntries = (Array(rankedDistractors(for: target).prefix(3)) + [correct]).shuffled()
+        choiceEntries = (Array(rankedDistractors(for: target).prefix(3)) + [target.name]).shuffled()
         questionNumber += 1
         selectedChoice = nil
         removedChoices = []
@@ -455,7 +395,6 @@ final class WhoAmIGameViewModel {
                     outcome: correct ? .correct : (wasTimedOut ? .timedOut : .wrong),
                     givenAnswer: wasTimedOut ? nil : selectedChoice,
                     correctAnswer: correctChoice,
-                    category: String(localized: mode(for: current).title),
                     reference: current.reference.isEmpty ? nil : current.reference,
                     hintCount: lifelinesThisQuestion.count,
                     relatedBookNames: current.books
@@ -473,19 +412,16 @@ final class WhoAmIGameViewModel {
             answered: 1,
             currentBestStreak: session.savedBestStreak
         )
-        GameStats.shared.recordModeAnswer(.whoami, mode: (current.map { mode(for: $0) } ?? mode).rawValue, correct: correct)
         if correct, !reviewQuestionIDs.isEmpty, let current {
-            missedQuestions.resolveReviewQuestion(game: .whoAmI, mode: Self.mode(of: current).rawValue, questionID: current.questionID)
-            // An older miss saved under the person's ID, with no direction, is cleared by
-            // either of their questions.
-            let legacyID = Self.legacyReviewID(for: current)
-            if reviewQuestionIDs.contains(legacyID) {
-                missedQuestions.resolveReviewQuestion(game: .whoAmI, questionID: legacyID)
+            // A right answer clears every miss it stood in for: the clue question, the retired
+            // name → clue question, and an older miss saved under the person's ID.
+            for id in reviewIDs(for: current) where reviewQuestionIDs.contains(id) {
+                missedQuestions.resolveReviewQuestion(game: .whoAmI, mode: Self.reviewModeName, questionID: id)
             }
         } else if !correct, let current {
             missedQuestions.record(
                 game: .whoAmI,
-                mode: Self.mode(of: current).rawValue,
+                mode: Self.reviewModeName,
                 bookNames: current.books,
                 topic: "Bible people",
                 questionID: current.questionID
@@ -567,14 +503,13 @@ final class WhoAmIGameViewModel {
         case .fiftyFifty:
             return choiceEntries.count - removedChoices.count > 2
         case .hint:
-            // Clue → Name says where the person appears; Name → Clue shows the verse, once loaded.
-            return currentPromptIsName ? passage != nil : hintDetail != nil
+            return hintDetail != nil
         case .extraTime:
             return !isTimerDisabled
         }
     }
 
-    /// Where the person appears, or their qualifier, for the Clue → Name hint.
+    /// Where the person appears, or their qualifier, for the hint.
     private var hintDetail: String? {
         guard let current else { return nil }
         if !current.books.isEmpty {
@@ -583,16 +518,9 @@ final class WhoAmIGameViewModel {
         return current.qualifier
     }
 
-    /// The Name → Clue hint: the person's verse, shown until the question is answered. It adds
-    /// something to read instead of taking choices away, so it works with 50/50.
-    var hintVerse: GameVerse? {
-        guard hintUsed, currentPromptIsName, !roundOver, let passage else { return nil }
-        return GameVerse(text: passage.text, reference: passage.title, isClue: true)
-    }
-
-    /// What the Clue → Name hint says, once used on this question.
+    /// What the hint says, once used on this question.
     var hintText: String? {
-        guard hintUsed, !currentPromptIsName else { return nil }
+        guard hintUsed else { return nil }
         return hintDetail
     }
 
@@ -605,7 +533,7 @@ final class WhoAmIGameViewModel {
             let wrong = choiceEntries.filter { $0 != correctChoice && !removedChoices.contains($0) }.shuffled()
             removedChoices.formUnion(wrong.prefix(2))
         case .hint:
-            // Its effect is `hintText` (Clue → Name) or `hintVerse` (Name → Clue).
+            // Its effect is `hintText`.
             break
         case .extraTime:
             bonusSeconds += WhoLifeline.extraSeconds

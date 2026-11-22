@@ -1,4 +1,5 @@
 import SwiftUI
+import GameController
 
 struct HangmanGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -17,8 +18,8 @@ struct HangmanGameView: View {
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
-    // Keyboard layout toggle: false = QWERTY, true = A-Z
     @State private var showsOnScreenKeyboard: Bool = true
+    @State private var hardwareKeyboardConnected = false
     @State private var showsHangmanCardFirst: Bool = false
 
     var body: some View {
@@ -90,6 +91,21 @@ struct HangmanGameView: View {
         )
         .task {
             await vm.loadData()
+        }
+        .task {
+            hardwareKeyboardConnected = GCKeyboard.coalesced != nil
+            if !hardwareKeyboardConnected { showsOnScreenKeyboard = true }
+        }
+        .task {
+            for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidConnect) {
+                hardwareKeyboardConnected = true
+            }
+        }
+        .task {
+            for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidDisconnect) {
+                hardwareKeyboardConnected = GCKeyboard.coalesced != nil
+                if !hardwareKeyboardConnected { showsOnScreenKeyboard = true }
+            }
         }
         // The verse is ready for the clue (or the Verses prompt), and for showing after the round.
         .task(id: vm.current?.answer) {
@@ -206,7 +222,7 @@ struct HangmanGameView: View {
             usesWideLayout: usesWideLayout,
             availableHeight: availableHeight,
             showsKeyboardCard: showsOnScreenKeyboard,
-            allowsKeyboardVisibilityToggle: !vm.roundOver,
+            allowsKeyboardVisibilityToggle: hardwareKeyboardConnected && !vm.roundOver,
             showsHangmanCardFirst: showsHangmanCardFirst,
             toggleKeyboardCard: { showsOnScreenKeyboard.toggle() },
             swapCards: { showsHangmanCardFirst.toggle() }

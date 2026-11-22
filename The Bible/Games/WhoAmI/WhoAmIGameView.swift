@@ -4,9 +4,9 @@ struct WhoAmIGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var vm: WhoAmIGameViewModel
-    init(reviewQuestionIDs: Set<String> = [], reviewMode: WhoAmIGameViewModel.Mode? = nil) {
+    init(reviewQuestionIDs: Set<String> = []) {
         isReviewRound = !reviewQuestionIDs.isEmpty
-        _vm = State(initialValue: WhoAmIGameViewModel(reviewQuestionIDs: reviewQuestionIDs, reviewMode: reviewMode))
+        _vm = State(initialValue: WhoAmIGameViewModel(reviewQuestionIDs: reviewQuestionIDs))
     }
     @State private var timerOnLeading = false
     @State private var usesMutedTimerStyle = false
@@ -15,7 +15,6 @@ struct WhoAmIGameView: View {
     // Global Auto‑Win debug toggle
     private var debugAutoWinEnabled: Bool { DebugOptions.autoWinEnabled }
 
-    private var promptIsName: Bool { vm.currentPromptIsName }
 
     private var experienceLevel: Binding<GameExperienceLevel> {
         Binding(
@@ -131,7 +130,7 @@ struct WhoAmIGameView: View {
     @ViewBuilder
     private var setupContent: some View {
         Spacer(minLength: 24)
-        Text("Name the Bible person from a clue, or the clue from a name.")
+        Text("Read the clue and name the Bible person it describes.")
             .gameStartDescriptionStyle(for: .whoAmI)
 
         GameSplashLaunchLayout(
@@ -150,7 +149,8 @@ struct WhoAmIGameView: View {
         ) {
             GameLobbyPreview(kind: .whoAmI)
         } configuration: {
-            WhoAmISetupControls(mode: $vm.mode)
+            // One way to play, so there's nothing to set beyond the level.
+            EmptyView()
         } facts: {
             GameSplashFacts(
                 first: ("number", "\(WhoAmIGameViewModel.questionsPerGame) questions", String(localized: "This session")),
@@ -231,7 +231,7 @@ struct WhoAmIGameView: View {
         GroupBox {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Label(promptIsName ? "NAME → CLUE" : "CLUE → NAME", systemImage: promptIsName ? "person.fill" : "text.quote")
+                    Label("CLUE", systemImage: "text.quote")
                     Spacer()
                     Text(progressText)
                         .monospacedDigit()
@@ -240,7 +240,7 @@ struct WhoAmIGameView: View {
                 .foregroundStyle(.secondary)
 
                 Text(vm.promptTitle)
-                    .font(promptIsName ? .title2.weight(.semibold) : .body)
+                    .font(.body)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -263,15 +263,14 @@ struct WhoAmIGameView: View {
         }
 
         VStack(alignment: .leading, spacing: 8) {
-            Text(promptIsName ? "Which clue describes them?" : "Who am I?")
+            Text("Who am I?")
                 .font(.headline)
 
             hintBanner
 
             WhoAmIChoiceGrid(
                 vm: vm,
-                columnCount: promptIsName || dynamicTypeSize.isAccessibilitySize ? 1 : 2,
-                usesLargeText: false
+                columnCount: dynamicTypeSize.isAccessibilitySize ? 1 : 2
             )
         }
 
@@ -313,7 +312,7 @@ struct WhoAmIGameView: View {
         VStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                Label(promptIsName ? "NAME → CLUE" : "CLUE → NAME", systemImage: promptIsName ? "person.fill" : "text.quote")
+                    Label("CLUE", systemImage: "text.quote")
                     Spacer()
                     Text(progressText)
                         .monospacedDigit()
@@ -322,7 +321,7 @@ struct WhoAmIGameView: View {
                 .foregroundStyle(.secondary)
 
                 Text(vm.promptTitle)
-                    .font(promptIsName ? .title.weight(.semibold) : .title3.weight(.medium))
+                    .font(.title3.weight(.medium))
                     .fixedSize(horizontal: false, vertical: true)
             }
 
@@ -330,8 +329,7 @@ struct WhoAmIGameView: View {
 
             WhoAmIChoiceGrid(
                 vm: vm,
-                columnCount: 2,
-                usesLargeText: true
+                columnCount: 2
             )
 
             lifelineRow
@@ -372,14 +370,10 @@ struct WhoAmIGameView: View {
         isTimedQuestion && !vm.isTimerDisabled
     }
 
-    /// What the Hint gave: where the person appears (Clue → Name) in an orange banner, or their
-    /// verse (Name → Clue), so it's easy to find.
+    /// What the Hint gave: where the person appears, in an orange banner so it's easy to find.
     @ViewBuilder
     private var hintBanner: some View {
-        if let verse = vm.hintVerse {
-            GameVerseCard(verse: verse)
-                .transition(.scale(scale: 0.9, anchor: .top).combined(with: .opacity))
-        } else if let hint = vm.hintText {
+        if let hint = vm.hintText {
             Label(hint, systemImage: "lightbulb.fill")
                 .font(.headline)
                 .foregroundStyle(.orange)

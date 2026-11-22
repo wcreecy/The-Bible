@@ -165,9 +165,14 @@ struct ScrambleGameView: View {
     private func handleKeyboardPress(_ keyPress: GameKeyboardPress) -> GameKeyboardPress.Result {
         guard vm.phase == .playing,
               !vm.isPaused,
-              !vm.isCurrentWordResolved,
               let currentWord = vm.currentWord else {
             return .ignored
+        }
+
+        if vm.isCurrentWordResolved {
+            guard keyPress.key == .return, showsNextWordButton else { return .ignored }
+            vm.loadNextWord()
+            return .handled
         }
 
         if keyPress.key == .delete || keyPress.characters == "\u{8}" {

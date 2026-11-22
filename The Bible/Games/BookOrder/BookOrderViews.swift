@@ -205,7 +205,7 @@ struct BookOrderQuickRoundView: View {
             .frame(maxWidth: .infinity)
             .padding()
         }
-        // A hardware keyboard answers with 1–8 or A–D (or ← → for Before or After?), and Return goes on.
+        // A hardware keyboard answers with the displayed letter or number (or ← → for Before or After?).
         .gameKeyboardInput(isActive: !round.isFinished, onKey: handleKeyPress)
     }
 

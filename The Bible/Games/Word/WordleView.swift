@@ -107,21 +107,21 @@ struct WordleView: View {
           if !vm.started {
             startScreen()
           } else {
-            #if canImport(UIKit)
-              if hardwareKeyboardConnected {
-              KeyCaptureRepresentable(
-                onKey: { ch in vm.tapLetter(ch) },
-                onBackspace: { vm.deleteLetter() },
-                onEnter: {
-                  if !vm.roundOver, vm.isCurrentRowFull() {
-                    vm.submitGuess()
-                  }
-                }
-              )
+            Color.clear
               .frame(width: 0, height: 0)
-              .accessibilityHidden(true)
+              .gameKeyboardInput(
+                isActive: !vm.roundOver && !confirmReveal && selectedPassage == nil && !showsVerseHint
+              ) { press in
+                switch press.key {
+                case .delete: vm.deleteLetter()
+                case .return:
+                  if vm.isCurrentRowFull() { vm.submitGuess() }
+                default:
+                  guard let letter = press.characters.first, letter.isLetter else { return .ignored }
+                  vm.tapLetter(letter)
+                }
+                return .handled
               }
-            #endif
 
             WordGameResponsiveLayout(
               usesWideLayout: usesWideLayout,
@@ -129,7 +129,8 @@ struct WordleView: View {
               // hidden key-capture view (12), and the tip banner with its gap when shown.
               availableHeight: geometry.size.height - 24 - 12
                 - (contextualTipsEnabled && tipHeight > 0 ? tipHeight + 12 : 0),
-              showsKeyboardCard: vm.roundOver || showsOnScreenKeyboard,
+              showsKeyboardCard: vm.roundOver || showsOnScreenKeyboard || !hardwareKeyboardConnected,
+              allowsKeyboardVisibilityToggle: hardwareKeyboardConnected,
               showsBoardCardSecond: showsBoardCardSecond,
               toggleKeyboardCard: {
                 showsOnScreenKeyboard.toggle()
