@@ -9,6 +9,12 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
 
     /// Seconds a clue costs on Normal and Hard.
     static let hintCost = 3
+    /// Seconds the Testament hint costs, on every level.
+    static let testamentHintCost = 1
+    /// Seconds a wrong book takes off Survival's clock.
+    static let survivalPenalty = 5
+    /// Seconds a wrong pick takes off Higher or Lower's clock.
+    static let higherOrLowerPenalty = 3
 
     var id: String { rawValue }
 
@@ -20,6 +26,7 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Seconds for each Classic question.
     var roundTime: Int {
         switch self {
         case .easy: 30
@@ -28,13 +35,29 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Seconds the Testament hint costs, on every level.
-    static let testamentHintCost = 1
-    /// Seconds a wrong book costs in Rapid Fire.
-    static let rapidFirePenalty = 3
+    /// Seconds for each First Appearance question, a little longer for weighing four books.
+    var firstAppearanceTime: Int { roundTime + 5 }
 
-    /// Seconds for each Rapid Fire subject, a little longer on Easy.
-    var rapidFireTime: Int {
+    /// The seconds Survival's clock starts with.
+    var survivalStartTime: Int {
+        switch self {
+        case .easy: 45
+        case .normal: 40
+        case .hard: 30
+        }
+    }
+
+    /// Seconds each right answer adds to Survival's clock.
+    var survivalTimeBonus: Int {
+        switch self {
+        case .easy: 5
+        case .normal: 4
+        case .hard: 3
+        }
+    }
+
+    /// The seconds for a whole game of Higher or Lower.
+    var higherOrLowerTime: Int {
         switch self {
         case .easy: 75
         case .normal: 60
@@ -42,19 +65,34 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Easy always shows each question's clue; the other levels charge time for it.
-    var showsClueAutomatically: Bool { self == .easy }
-
-    var detail: LocalizedStringResource {
+    /// How many more books the right pick in Higher or Lower is in, at least.
+    var higherOrLowerGap: Int {
         switch self {
-        case .easy:
-            "\(roundTime) seconds per question. Well-known names, with a clue shown for each one."
-        case .normal:
-            "\(roundTime) seconds per question. Adds less familiar names. A clue costs \(Self.hintCost) seconds."
-        case .hard:
-            "\(roundTime) seconds per question. Every name in the game. A clue costs \(Self.hintCost) seconds."
+        case .easy: 4
+        case .normal: 2
+        case .hard: 1
         }
     }
+
+    /// Easy draws wrong books from anywhere; Hard from the same part of the Bible.
+    var decoyScope: BeatTheClockChoiceBuilder.DecoyScope {
+        switch self {
+        case .easy: .anywhere
+        case .normal: .sameTestament
+        case .hard: .sameSection
+        }
+    }
+
+    var firstAppearanceSpread: BeatTheClockChoiceBuilder.Spread {
+        switch self {
+        case .easy: .far
+        case .normal: .random
+        case .hard: .near
+        }
+    }
+
+    /// Easy always shows each question's clue; the other levels charge time for it.
+    var showsClueAutomatically: Bool { self == .easy }
 
     var statsDifficulty: GameStats.Difficulty {
         switch self {
@@ -81,32 +119,75 @@ enum BeatTheClockDifficulty: String, CaseIterable, Identifiable {
     }
 }
 
-/// Classic asks for one book per name; Rapid Fire asks for as many as you can find.
+/// The ways to play Countdown. Each one comes with the clock that suits it: Classic and First
+/// Appearance time each question, while Survival and Higher or Lower race one clock for the game.
 enum BeatTheClockMode: String, CaseIterable, Identifiable {
-    // Raw values are stored in settings.
+    // Raw values are stored in settings, stats and missed questions.
+    case survival
     case classic
-    case rapidFire
+    case firstAppearance
+    case higherOrLower
+
+    /// The modes a review round can replay. Survival's misses are reviewed as Classic, which
+    /// asks the same question, and Higher or Lower's pairs aren't worth replaying.
+    static let reviewableCases: [BeatTheClockMode] = [.classic, .firstAppearance]
+
+    /// The saved setting. Rapid Fire, which Survival replaced, opens as Survival.
+    init(storedValue: String?) {
+        self = storedValue == "rapidFire" ? .survival : Self(rawValue: storedValue ?? "") ?? .survival
+    }
 
     var id: String { rawValue }
 
     var title: LocalizedStringResource {
         switch self {
+        case .survival: "Survival"
         case .classic: "Classic"
-        case .rapidFire: "Rapid Fire"
+        case .firstAppearance: "First Appearance"
+        case .higherOrLower: "Higher or Lower"
         }
     }
 
     var detail: LocalizedStringResource {
         switch self {
-        case .classic: "Name one book that mentions each person or place."
-        case .rapidFire: "Name as many books as you can for each of three names. A wrong book costs \(BeatTheClockDifficulty.rapidFirePenalty) seconds."
+        case .survival: "Pick a book that mentions each name. Right answers add time; wrong ones take it away."
+        case .classic: "Pick a book that mentions each name, with a fresh timer for each question."
+        case .firstAppearance: "Pick the book where each person or place first appears."
+        case .higherOrLower: "Pick which of two names is found in more books."
         }
     }
 
     var systemImage: String {
         switch self {
+        case .survival: "heart.fill"
         case .classic: "hourglass"
-        case .rapidFire: "flame.fill"
+        case .firstAppearance: "flag.fill"
+        case .higherOrLower: "arrow.up.arrow.down"
+        }
+    }
+
+    /// One clock for the whole game, rather than a fresh one for each question.
+    var usesGameClock: Bool { self == .survival || self == .higherOrLower }
+
+    /// Only a timer that restarts each question can reward a quick answer.
+    var awardsSpeedBonus: Bool { !usesGameClock }
+
+    /// The mode misses are saved and reviewed under, or nil when they aren't saved.
+    var reviewModeName: String? {
+        switch self {
+        case .survival, .classic: BeatTheClockMode.classic.rawValue
+        case .firstAppearance: rawValue
+        case .higherOrLower: nil
+        }
+    }
+
+    /// Each mode scores on its own scale, so each keeps its own best.
+    var bestScoreKind: GameBestScore.Kind {
+        switch self {
+        case .survival: .countdownSurvival
+        case .classic: .countdown
+        case .firstAppearance: .countdownFirstAppearance
+        case .higherOrLower: .countdownHigherOrLower
         }
     }
 }
@@ -168,6 +249,9 @@ struct BeatTheClockQuestion: Identifiable {
     let scriptureReference: String?
     /// Where the name appears in each book of the KJV text, for counts and links.
     var mentions: [String: BeatTheClockMention] = [:]
+    /// Books that are, or might be, about this name, so they're never offered as wrong: the
+    /// right answers, every book that has the name, and books with another spelling of it.
+    var unsafeDecoyBooks: Set<String> = []
 
     /// The accepted book that mentions the name most, when there's a clear one.
     var bestKnownBook: String? {
@@ -199,9 +283,10 @@ final class BeatTheClockGameViewModel {
     }
 
     static let questionsPerGame = 10
-    static let rapidFireSubjectsPerGame = 3
-    /// A Rapid Fire subject needs at least this many books to make a round of it.
-    private static let rapidFireMinimumBooks = 4
+    /// The most questions a game on one clock can ask before it runs out of fresh ones.
+    static let gameClockQuestionLimit = 40
+    /// Names drawn for a game of Higher or Lower, enough to pair up a full game.
+    private static let higherOrLowerCandidates = 80
 
     private static let difficultyKey = AppStorageKey.beatTheClockDifficulty
     private static let categoryKey = AppStorageKey.beatTheClockCategory
@@ -255,20 +340,15 @@ final class BeatTheClockGameViewModel {
         didSet { UserDefaults.standard.set(category.rawValue, forKey: Self.categoryKey) }
     }
 
-    var mode: BeatTheClockMode = BeatTheClockMode(
-        rawValue: UserDefaults.standard.string(forKey: BeatTheClockGameViewModel.modeKey) ?? ""
-    ) ?? .classic {
+    var mode = BeatTheClockMode(
+        storedValue: UserDefaults.standard.string(forKey: BeatTheClockGameViewModel.modeKey)
+    ) {
         didSet {
             // A review plays the mode it's reviewing without changing the saved setting.
             guard reviewQuestionIDs.isEmpty else { return }
             UserDefaults.standard.set(mode.rawValue, forKey: Self.modeKey)
         }
     }
-
-    var isRapidFire: Bool { mode == .rapidFire }
-
-    /// The mode being played, which misses are saved under.
-    private var playedMode: BeatTheClockMode { mode }
 
     var experienceLevel: GameExperienceLevel {
         get { difficulty.experienceLevel }
@@ -281,16 +361,28 @@ final class BeatTheClockGameViewModel {
     private var loadedPlaces: [BibleLocationChallenge] = []
     /// Where each person and place is mentioned in the KJV text, keyed by question ID. Nil until indexed.
     private var mentionIndex: [String: [String: BeatTheClockMention]]?
+    /// The books with another spelling of each name, keyed by question ID; see `BeatTheClockNameVariants`.
+    private var variantBookIndex: [String: Set<String>] = [:]
     private var questionDeck: [BeatTheClockQuestion] = []
+    private var pairDeck: [(BeatTheClockQuestion, BeatTheClockQuestion)] = []
+    /// Times the current question, or the whole game in a mode with one clock.
     @ObservationIgnored private var roundClock = GameActiveClock()
-    /// Seconds taken off the round: clues, the Testament hint, and wrong Rapid Fire books.
+    /// Seconds taken off the clock: clues, the Testament hint, and wrong answers on a game clock.
     private var penaltySeconds = 0
+    /// Seconds Survival's right answers have added to its clock.
+    private var bonusSeconds = 0
     @ObservationIgnored private var pulseTask: Task<Void, Never>?
+    /// Moves a game on one clock to its next question after a moment to see the answer.
+    @ObservationIgnored private var advanceTask: Task<Void, Never>?
 
     // MARK: - Game state
 
     private(set) var phase: Phase = .setup
     private(set) var currentQuestion: BeatTheClockQuestion?
+    /// The second name in Higher or Lower; nil in the other modes.
+    private(set) var rival: BeatTheClockQuestion?
+    /// The books on the board; nil in Higher or Lower, which shows two names instead.
+    private(set) var choices: BeatTheClockChoices?
     private(set) var questionNumber = 0
     private(set) var totalQuestions = 0
     /// Changes whenever a round starts, so the view can restart its timer task.
@@ -298,6 +390,10 @@ final class BeatTheClockGameViewModel {
     private(set) var remainingSeconds = 0
     private(set) var roundOutcome: BeatTheClockRoundOutcome?
     private(set) var submittedBook: String?
+    /// The name picked in Higher or Lower.
+    private(set) var chosenQuestionID: String?
+    /// What the last answer did to a game clock, e.g. +4 or −5, shown beside the answer.
+    private(set) var lastClockChange: Int?
     private(set) var hintRevealed = false
     private(set) var testamentHintRevealed = false
     private(set) var isPulsing = false
@@ -307,28 +403,16 @@ final class BeatTheClockGameViewModel {
     private(set) var isTimerDisabled = false
     /// The timer was off at some point this round, so it can't earn a speed bonus.
     private var wasTimerOffThisRound = false
+    /// A game on one clock has run out; it ends once the last answer has been seen.
+    private var isOutOfTime = false
     /// The verses the round cites, once loaded.
     private(set) var passage: GamePassage?
-    /// Books found so far for the Rapid Fire subject, in the order they were named.
-    private(set) var foundBooks: [String] = []
 
-    // Bonuses and points across the game.
     private(set) var earnedSpeedBonus = false
-    private(set) var earnedLessKnownBonus = false
     private(set) var speedBonusCount = 0
-    private(set) var lessKnownBonusCount = 0
-    private(set) var rapidFireBookCount = 0
 
     /// Score, streaks and best game; see `GameScore` for the rules.
     private(set) var session = GameScore()
-
-    // Answer entry
-    var searchText = "" {
-        didSet {
-            if searchText != oldValue { inputMessage = nil }
-        }
-    }
-    private(set) var inputMessage: String?
 
     // MARK: - Derived state
 
@@ -336,19 +420,15 @@ final class BeatTheClockGameViewModel {
         PersistentGameStreak(game: "beatclock", variant: difficulty.rawValue)
     }
 
-    /// Classic scores points and Rapid Fire scores books found, so each keeps its own best.
     private var bestGameScoreKey: String {
-        (isRapidFire ? GameBestScore.Kind.countdownRapidFire : .countdown).key(difficulty: difficulty.rawValue)
+        mode.bestScoreKind.key(difficulty: difficulty.rawValue)
     }
 
     /// A review of missed questions isn't comparable with a full game.
     private var roundCountsTowardBest: Bool { reviewQuestionIDs.isEmpty }
 
     /// The saved best for the chosen mode and difficulty, for the start screen.
-    var bestPoints: Int {
-        let kind = mode == .rapidFire ? GameBestScore.Kind.countdownRapidFire : .countdown
-        return GameBestScore.value(forKey: kind.key(difficulty: difficulty.rawValue))
-    }
+    var bestPoints: Int { GameBestScore.value(forKey: bestGameScoreKey) }
 
     /// How the round just played compares with the saved best, for the summary.
     var roundBest: RoundBest? {
@@ -359,46 +439,56 @@ final class BeatTheClockGameViewModel {
     /// Each difficulty, category and mode has its own pool, so each keeps its own pass through it.
     private var recencyGameKey: String {
         let base = "countdown.\(difficulty.rawValue).\(category.rawValue)"
-        return isRapidFire ? base + ".rapidFire" : base
+        return mode == .classic ? base : base + ".\(mode.rawValue)"
     }
 
-    /// The time a round starts with in this mode.
-    var roundTime: Int { isRapidFire ? difficulty.rapidFireTime : difficulty.roundTime }
+    /// The seconds on the clock when a question (or, on a game clock, the game) starts.
+    var roundTime: Int {
+        switch mode {
+        case .survival: difficulty.survivalStartTime
+        case .classic: difficulty.roundTime
+        case .firstAppearance: difficulty.firstAppearanceTime
+        case .higherOrLower: difficulty.higherOrLowerTime
+        }
+    }
 
     var selectionLocked: Bool { roundOutcome != nil }
 
-    /// Only a question with time running can be paused.
-    var canPause: Bool { phase == .playing && roundOutcome == nil && !isPaused && !isTimerDisabled }
+    /// Whether a tap on the board counts right now.
+    var canAnswer: Bool { phase == .playing && !selectionLocked && !isPaused }
+
+    /// A running question can be paused, and so can a game clock's pause between questions.
+    var canPause: Bool {
+        phase == .playing && !isPaused && !isTimerDisabled && (roundOutcome == nil || mode.usesGameClock)
+    }
+
+    /// A game clock is the whole game, so it can't be switched off.
+    var canToggleTimer: Bool { !mode.usesGameClock }
 
     var isLoadingData: Bool {
         loadedPeople.isEmpty || loadedPlaces.isEmpty || mentionIndex == nil
     }
 
-    var filteredBooks: [String] {
-        let suggestions = BibleBookNameMatcher.suggestions(for: searchText, in: BibleCanon.canonicalOrder())
-        // Rapid Fire doesn't suggest books already found.
-        return suggestions.filter { !foundBooks.contains($0) }
-    }
+    /// Higher or Lower compares two names, so a clue about one doesn't help.
+    var offersClue: Bool { mode != .higherOrLower }
 
-    var canSubmit: Bool {
-        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        return !selectionLocked && !isPaused && !trimmed.isEmpty
-    }
+    /// Every book on a First Appearance board mentions the name, so its Testament gives nothing away.
+    var offersTestamentHint: Bool { mode == .classic || mode == .survival }
 
     var showsClue: Bool {
-        difficulty.showsClueAutomatically || hintRevealed || selectionLocked
+        offersClue && (difficulty.showsClueAutomatically || hintRevealed || selectionLocked)
     }
 
     var canRequestHint: Bool {
-        !selectionLocked && !isPaused && !showsClue && remainingSeconds > BeatTheClockDifficulty.hintCost
+        offersClue && canAnswer && !showsClue && remainingSeconds > BeatTheClockDifficulty.hintCost
     }
 
     var canRequestTestamentHint: Bool {
-        !selectionLocked && !isPaused && !testamentHintRevealed
+        offersTestamentHint && canAnswer && !testamentHintRevealed
             && remainingSeconds > BeatTheClockDifficulty.testamentHintCost
     }
 
-    var showsTestamentHint: Bool { testamentHintRevealed || selectionLocked }
+    var showsTestamentHint: Bool { offersTestamentHint && (testamentHintRevealed || selectionLocked) }
 
     /// The accepted books in canonical order.
     var sortedAcceptableBooks: [String] {
@@ -427,11 +517,19 @@ final class BeatTheClockGameViewModel {
         return "\(book) \(mention.firstChapter):\(mention.firstVerse)"
     }
 
-    var isLastQuestion: Bool { questionDeck.isEmpty }
+    /// The name in more books, the right pick in Higher or Lower.
+    var higherOrLowerWinner: BeatTheClockQuestion? {
+        guard let first = currentQuestion, let second = rival else { return nil }
+        return first.acceptableBooks.count > second.acceptableBooks.count ? first : second
+    }
+
+    var isLastQuestion: Bool {
+        isOutOfTime || (mode == .higherOrLower ? pairDeck.isEmpty : questionDeck.isEmpty)
+    }
 
     var progressText: String {
-        isRapidFire
-            ? String(localized: "Name \(questionNumber) of \(totalQuestions)")
+        mode.usesGameClock
+            ? String(localized: "Question \(questionNumber)")
             : String(localized: "Question \(questionNumber) of \(totalQuestions)")
     }
 
@@ -439,7 +537,26 @@ final class BeatTheClockGameViewModel {
         currentQuestion?.subject == .place ? String(localized: "Place") : String(localized: "Person")
     }
 
-    /// Green, then yellow, then red as the round runs down, scaled to the round length.
+    /// What to do with the board, e.g. "Which of these books mentions this person?"
+    var instruction: String {
+        let isPlace = currentQuestion?.subject == .place
+        return switch mode {
+        case .survival, .classic:
+            isPlace
+                ? String(localized: "Which of these books mentions this place?")
+                : String(localized: "Which of these books mentions this person?")
+        case .firstAppearance:
+            isPlace
+                ? String(localized: "Where does this place first appear?")
+                : String(localized: "Where does this person first appear?")
+        case .higherOrLower:
+            isPlace
+                ? String(localized: "Which place is found in more books?")
+                : String(localized: "Who is found in more books?")
+        }
+    }
+
+    /// Green, then yellow, then red as the clock runs down, scaled to its starting time.
     var timerColor: Color {
         guard !isTimerDisabled else { return .secondary }
         let fraction = Double(remainingSeconds) / Double(max(1, roundTime))
@@ -448,18 +565,16 @@ final class BeatTheClockGameViewModel {
         return .green
     }
 
-    /// Correct answers plus bonuses in Classic; books found in Rapid Fire.
+    /// Right answers, plus speed bonuses in the modes that time each question.
     var points: Int {
-        isRapidFire ? rapidFireBookCount : session.score + speedBonusCount + lessKnownBonusCount
+        mode.awardsSpeedBonus ? session.score + speedBonusCount : session.score
     }
 
-    /// How the points add up, for the summary. Nil in Rapid Fire, which scores books found, and
-    /// when no bonus was earned.
-    var roundPoints: RoundPoints? {
-        guard !isRapidFire else { return nil }
-        return RoundPoints(
+    /// How the points add up, for the summary.
+    var roundPoints: RoundPoints {
+        RoundPoints(
             correct: session.score,
-            bonuses: [RoundPoints.speed(speedBonusCount), RoundPoints.lessKnown(lessKnownBonusCount)]
+            bonuses: mode.awardsSpeedBonus ? [RoundPoints.speed(speedBonusCount)] : []
         )
     }
 
@@ -479,6 +594,7 @@ final class BeatTheClockGameViewModel {
         if phase != .setup && session.answered > 0 {
             resetToSetup()
         }
+        advanceTask?.cancel()
         session.clearStreak()
     }
 
@@ -492,26 +608,37 @@ final class BeatTheClockGameViewModel {
         if mentionIndex == nil {
             let places = loadedPlaces.map { (id: $0.id, name: $0.locationName) }
             let people = loadedPeople.map { (id: $0.id, name: $0.name) }
+            let variantPlaces = BeatTheClockNameVariants.variantNames(for: places)
+            let variantPeople = BeatTheClockNameVariants.variantNames(for: people)
             // The catalog's names are the KJV's spellings ("Beersheba", "Bethel"), which other
             // translations write differently ("Beer-sheba", "Beth-el"). Matching against the
             // active translation would mark right answers wrong, so it always uses the KJV.
             let books = await BibleRepository.shared.loadBooksWithoutCaching(for: .kjv)
-            mentionIndex = await Task.detached(priority: .userInitiated) {
-                var index: [String: [String: BeatTheClockMention]] = [:]
-                for (id, mentions) in BeatTheClockAnswerIndex.mentions(of: places, in: books) {
-                    index["place-\(id)"] = mentions
+            let (mentions, variants) = await Task.detached(priority: .userInitiated) {
+                var mentions: [String: [String: BeatTheClockMention]] = [:]
+                for (id, found) in BeatTheClockAnswerIndex.mentions(of: places, in: books) {
+                    mentions["place-\(id)"] = found
                 }
-                for (id, mentions) in BeatTheClockAnswerIndex.mentions(of: people, in: books) {
-                    index["person-\(id)"] = mentions
+                for (id, found) in BeatTheClockAnswerIndex.mentions(of: people, in: books) {
+                    mentions["person-\(id)"] = found
                 }
-                return index
+                var variants: [String: Set<String>] = [:]
+                for (id, found) in BeatTheClockAnswerIndex.booksMentioning(variantPlaces, in: books) {
+                    variants["place-\(id)"] = found
+                }
+                for (id, found) in BeatTheClockAnswerIndex.booksMentioning(variantPeople, in: books) {
+                    variants["person-\(id)"] = found
+                }
+                return (mentions, variants)
             }.value
+            variantBookIndex = variants
+            mentionIndex = mentions
         }
     }
 
-    /// Updates the current round from active elapsed time. The short polling interval keeps
-    /// the display responsive while the clock itself is authoritative, so scheduling delays do
-    /// not add extra time to a round.
+    /// Updates the clock from active elapsed time. The short polling interval keeps the
+    /// display responsive while the clock itself is authoritative, so scheduling delays do
+    /// not add extra time.
     func runTimer() async {
         while !Task.isCancelled, phase == .playing, roundOutcome == nil, !isPaused, !isTimerDisabled, remainingSeconds > 0 {
             try? await sleep(.milliseconds(100))
@@ -520,16 +647,23 @@ final class BeatTheClockGameViewModel {
         }
     }
 
+    private var currentRemainingSeconds: Int {
+        max(0, roundTime + bonusSeconds - penaltySeconds - Int(roundClock.elapsed(at: now())))
+    }
+
     private func updateRemainingTime() {
-        let elapsedSeconds = Int(roundClock.elapsed(at: now()))
-        let updatedRemaining = max(0, roundTime - penaltySeconds - elapsedSeconds)
+        let updatedRemaining = currentRemainingSeconds
         guard updatedRemaining != remainingSeconds else { return }
 
         remainingSeconds = updatedRemaining
-        if remainingSeconds == 0 {
-            finishRound(isRapidFire && !foundBooks.isEmpty ? .correct : .timedOut)
-        } else {
+        if remainingSeconds > 0 {
             pulseTimer()
+        } else if mode.usesGameClock {
+            // The question on screen when the game clock runs out isn't counted as a miss.
+            Haptics.warning()
+            showResults()
+        } else {
+            finishRound(.timedOut)
         }
     }
 
@@ -553,19 +687,30 @@ final class BeatTheClockGameViewModel {
     /// app stops being active (a call, switching apps, locking the phone).
     func pause() {
         guard canPause else { return }
-        roundClock.pause(at: now())
+        if roundOutcome == nil {
+            roundClock.pause(at: now())
+        } else {
+            // Between questions on a game clock, the clock is already stopped; hold the
+            // next question until Resume.
+            advanceTask?.cancel()
+            advanceTask = nil
+        }
         isPaused = true
     }
 
     /// Restarts the clock without resetting the time already played.
     func resume() {
-        guard phase == .playing, roundOutcome == nil, isPaused else { return }
-        roundClock.resume(at: now())
+        guard phase == .playing, isPaused else { return }
         isPaused = false
+        if roundOutcome == nil {
+            roundClock.resume(at: now())
+        } else {
+            nextRound()
+        }
     }
 
     func toggleTimer() {
-        guard phase == .playing, roundOutcome == nil, !isPaused else { return }
+        guard canToggleTimer, phase == .playing, roundOutcome == nil, !isPaused else { return }
         isTimerDisabled.toggle()
         if isTimerDisabled {
             roundClock.pause(at: now())
@@ -603,14 +748,17 @@ final class BeatTheClockGameViewModel {
             : loadedPlaces
         let people = sourcePeople.map { entry in
             let id = "person-\(entry.id)"
+            let mentions = mentionIndex?[id] ?? [:]
+            let books = Set(entry.books)
             return BeatTheClockQuestion(
                 id: id,
                 subject: .person,
                 label: entry.name,
                 clue: entry.shortDescription,
-                acceptableBooks: Set(entry.books),
+                acceptableBooks: books,
                 scriptureReference: entry.scriptureReferences.flatMap { $0.isEmpty ? nil : $0 },
-                mentions: mentionIndex?[id] ?? [:]
+                mentions: mentions,
+                unsafeDecoyBooks: books.union(mentions.keys).union(variantBookIndex[id] ?? [])
             )
         }
         let places = sourcePlaces.map { entry in
@@ -624,25 +772,26 @@ final class BeatTheClockGameViewModel {
                 clue: entry.shortDescription,
                 acceptableBooks: books,
                 scriptureReference: entry.scriptureMentioned.isEmpty ? nil : entry.scriptureMentioned,
-                mentions: mentions
+                mentions: mentions,
+                unsafeDecoyBooks: books.union(variantBookIndex[id] ?? [])
             )
         }
 
         // A review round replays every missed question. The category can't be changed while
         // reviewing, so filtering by it would hide missed questions from the other category.
-        guard reviewQuestionIDs.isEmpty else {
-            return (people + places).shuffled()
+        let deck: [BeatTheClockQuestion] = if !reviewQuestionIDs.isEmpty {
+            people + places
+        } else {
+            switch category {
+            case .people: people
+            case .places: places
+            case .both: people + places
+            }
         }
-
-        let deck: [BeatTheClockQuestion] = switch category {
-        case .people: people
-        case .places: places
-        case .both: people + places
-        }
-        // Rapid Fire needs names found in several books.
-        return isRapidFire
-            ? deck.filter { $0.acceptableBooks.count >= Self.rapidFireMinimumBooks }.shuffled()
-            : deck.shuffled()
+        // First Appearance needs four books that mention the name to fill its board.
+        guard mode == .firstAppearance else { return deck.shuffled() }
+        let canon = Set(BibleCanon.canonicalOrder())
+        return deck.filter { $0.acceptableBooks.intersection(canon).count >= BeatTheClockChoiceBuilder.choiceCount }.shuffled()
     }
 
     static func acceptableBooks(
@@ -663,92 +812,179 @@ final class BeatTheClockGameViewModel {
         return parts.dropLast().joined(separator: " ")
     }
 
+    /// The board for one question, or nil when one can't be built for it.
+    private func makeChoices(for question: BeatTheClockQuestion) -> BeatTheClockChoices? {
+        var generator = SystemRandomNumberGenerator()
+        let canon = BibleCanon.canonicalOrder()
+        return switch mode {
+        case .firstAppearance:
+            BeatTheClockChoiceBuilder.firstAppearanceChoices(
+                for: question, spread: difficulty.firstAppearanceSpread, canon: canon, using: &generator
+            )
+        case .survival, .classic, .higherOrLower:
+            BeatTheClockChoiceBuilder.mentionChoices(
+                for: question,
+                scope: difficulty.decoyScope,
+                // Easy asks about the book a name is best known from.
+                prefersBestKnownBook: difficulty == .easy,
+                canon: canon,
+                using: &generator
+            )
+        }
+    }
+
     // MARK: - Game flow
 
     func startGame() {
         guard !isLoadingData else { return }
-        // A review replays every missed name it drew, in either mode.
-        let count = isRapidFire && reviewQuestionIDs.isEmpty ? Self.rapidFireSubjectsPerGame : Self.questionsPerGame
-        let availableQuestions = reviewQuestionIDs.isEmpty
-            ? RecentGameQuestionStore.shared.selectCycling(
+        advanceTask?.cancel()
+        let isReview = !reviewQuestionIDs.isEmpty
+
+        if mode == .higherOrLower {
+            var generator = SystemRandomNumberGenerator()
+            let candidates = RecentGameQuestionStore.shared.selectCycling(
                 from: makeQuestionDeck(),
                 game: recencyGameKey,
-                count: count,
+                count: Self.higherOrLowerCandidates,
                 id: \.id
             )
-            : makeQuestionDeck().filter { reviewQuestionIDs.contains($0.id) }
-        let deck = Array(availableQuestions.prefix(count))
-        guard !deck.isEmpty else { return }
-        questionDeck = deck
-        totalQuestions = deck.count
+            pairDeck = BeatTheClockChoiceBuilder.higherOrLowerPairs(
+                from: candidates,
+                minimumGap: difficulty.higherOrLowerGap,
+                limit: Self.gameClockQuestionLimit,
+                using: &generator
+            )
+            guard !pairDeck.isEmpty else { return }
+            questionDeck = []
+            totalQuestions = pairDeck.count
+        } else {
+            // A review replays every missed name it drew.
+            let count = mode.usesGameClock && !isReview ? Self.gameClockQuestionLimit : Self.questionsPerGame
+            let availableQuestions = isReview
+                ? makeQuestionDeck().filter { reviewQuestionIDs.contains($0.id) }
+                : RecentGameQuestionStore.shared.selectCycling(
+                    from: makeQuestionDeck(),
+                    game: recencyGameKey,
+                    count: count,
+                    id: \.id
+                )
+            let deck = Array(availableQuestions.prefix(count))
+            guard !deck.isEmpty else { return }
+            questionDeck = deck
+            pairDeck = []
+            totalQuestions = deck.count
+        }
+
         questionNumber = 0
         // Each game starts timed; turning the timer off lasts only for the game it's turned off in.
         isTimerDisabled = false
+        isOutOfTime = false
         speedBonusCount = 0
-        lessKnownBonusCount = 0
-        rapidFireBookCount = 0
+        penaltySeconds = 0
+        bonusSeconds = 0
+        if mode.usesGameClock {
+            // One clock for the game. It runs while a question is up, and waits between them.
+            roundClock.start(at: now())
+            roundClock.pause(at: now())
+            remainingSeconds = roundTime
+        }
         session.beginGame(savedStreak: persistentStreak)
         phase = .playing
         nextRound()
     }
 
     func nextRound() {
-        guard let question = questionDeck.popLast() else {
+        advanceTask?.cancel()
+        advanceTask = nil
+        guard !isOutOfTime, setUpNextQuestion() else {
             showResults()
             return
         }
 
-        currentQuestion = question
-        RecentGameQuestionStore.shared.record(question, game: recencyGameKey, id: \.id)
         questionNumber += 1
         roundOutcome = nil
         submittedBook = nil
+        chosenQuestionID = nil
+        lastClockChange = nil
         hintRevealed = false
         testamentHintRevealed = false
         earnedSpeedBonus = false
-        earnedLessKnownBonus = false
-        foundBooks = []
         passage = nil
-        searchText = ""
-        inputMessage = nil
-        remainingSeconds = roundTime
-        penaltySeconds = 0
-        roundClock.start(at: now())
-        // With the timer off, the clock waits too, so turning it back on doesn't count the
-        // time spent with it off.
-        wasTimerOffThisRound = isTimerDisabled
-        if isTimerDisabled {
-            roundClock.pause(at: now())
-        }
         isPulsing = false
         isPaused = false
+        if mode.usesGameClock {
+            roundClock.resume(at: now())
+            remainingSeconds = currentRemainingSeconds
+        } else {
+            remainingSeconds = roundTime
+            penaltySeconds = 0
+            roundClock.start(at: now())
+            // With the timer off, the clock waits too, so turning it back on doesn't count the
+            // time spent with it off.
+            wasTimerOffThisRound = isTimerDisabled
+            if isTimerDisabled {
+                roundClock.pause(at: now())
+            }
+        }
         roundID += 1
         session.startQuestion()
     }
 
+    /// Puts the next question (or pair) on screen. False when there are none left.
+    private func setUpNextQuestion() -> Bool {
+        if mode == .higherOrLower {
+            guard let pair = pairDeck.popLast() else { return false }
+            currentQuestion = pair.0
+            rival = pair.1
+            choices = nil
+            RecentGameQuestionStore.shared.record(pair.0, game: recencyGameKey, id: \.id)
+            RecentGameQuestionStore.shared.record(pair.1, game: recencyGameKey, id: \.id)
+            return true
+        }
+        // A name whose board can't be filled is skipped.
+        while let question = questionDeck.popLast() {
+            guard let board = makeChoices(for: question) else { continue }
+            currentQuestion = question
+            rival = nil
+            choices = board
+            RecentGameQuestionStore.shared.record(question, game: recencyGameKey, id: \.id)
+            return true
+        }
+        return false
+    }
+
     private func showResults() {
         roundClock.pause(at: now())
+        advanceTask?.cancel()
+        advanceTask = nil
+        pulseTask?.cancel()
+        isPulsing = false
         session.finishGame(bestScoreKey: bestGameScoreKey, points: points, savesBest: roundCountsTowardBest)
         // Review games use only missed questions, so their scores aren't comparable.
         if reviewQuestionIDs.isEmpty {
-            GameStats.shared.recordModeRound(.beatclock, mode: playedMode.rawValue, score: points)
+            GameStats.shared.recordModeRound(.beatclock, mode: mode.rawValue, score: points)
         }
         currentQuestion = nil
+        rival = nil
+        choices = nil
         phase = .results
     }
 
     func resetToSetup() {
         roundClock.pause(at: now())
+        advanceTask?.cancel()
+        advanceTask = nil
         phase = .setup
         isPaused = false
         isTimerDisabled = false
+        isOutOfTime = false
         roundOutcome = nil
         currentQuestion = nil
+        rival = nil
+        choices = nil
         remainingSeconds = 0
         questionDeck = []
-        foundBooks = []
-        searchText = ""
-        inputMessage = nil
+        pairDeck = []
         session.clearGame()
     }
 
@@ -773,77 +1009,47 @@ final class BeatTheClockGameViewModel {
 
     // MARK: - Answers
 
-    func clearInput() {
-        searchText = ""
-    }
-
-    func submitCurrentEntry() {
-        let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, !selectionLocked, !isPaused else { return }
-
-        // Accept an exact name (or common variant), or the only suggestion left.
-        let suggestions = filteredBooks
-        guard let bookName = BibleBookNameMatcher.canonicalName(for: text, in: BibleCanon.canonicalOrder())
-                ?? (suggestions.count == 1 ? suggestions.first : nil) else {
-            inputMessage = String(localized: "“\(text)” isn’t a book of the Bible.")
-            Haptics.warning()
-            return
-        }
-        submit(bookName: bookName)
-    }
-
+    /// A tapped book. In First Appearance only the earliest is right; otherwise any book
+    /// that mentions the name.
     func submit(bookName: String) {
-        guard !selectionLocked, !isPaused, let currentQuestion else { return }
-        if isRapidFire {
-            submitRapidFire(bookName: bookName, for: currentQuestion)
-            return
-        }
-        searchText = bookName
-        let correct = currentQuestion.acceptableBooks.contains(bookName)
-        if correct {
+        guard canAnswer, mode != .higherOrLower, let currentQuestion, let choices else { return }
+        let correct = mode == .firstAppearance
+            ? bookName == choices.answer
+            : currentQuestion.acceptableBooks.contains(bookName)
+        if correct, mode.awardsSpeedBonus {
             // A quick answer with the timer on the whole round earns a bonus point.
             earnedSpeedBonus = !wasTimerOffThisRound
-                && roundClock.elapsed(at: now()) <= Double(difficulty.roundTime) / 3
-            // So does a right book other than the one that mentions the name most.
-            if let bestKnown = currentQuestion.bestKnownBook, currentQuestion.acceptableBooks.count > 1 {
-                earnedLessKnownBonus = bookName != bestKnown
-            }
+                && roundClock.elapsed(at: now()) <= Double(roundTime) / 3
             if earnedSpeedBonus { speedBonusCount += 1 }
-            if earnedLessKnownBonus { lessKnownBonusCount += 1 }
         }
         finishRound(correct ? .correct : .incorrect, submittedBook: bookName)
     }
 
-    /// Rapid Fire: a right book is added and play goes on; a wrong one costs time.
-    private func submitRapidFire(bookName: String, for question: BeatTheClockQuestion) {
-        searchText = ""
-        if foundBooks.contains(bookName) {
-            inputMessage = String(localized: "You already named \(bookName).")
-            Haptics.selection()
-        } else if question.acceptableBooks.contains(bookName) {
-            foundBooks.append(bookName)
-            rapidFireBookCount += 1
-            Haptics.success()
-            if foundBooks.count == question.acceptableBooks.count {
-                finishRound(.correct)
-            }
+    /// A tapped name in Higher or Lower.
+    func choose(questionID: String) {
+        guard canAnswer, mode == .higherOrLower, let winner = higherOrLowerWinner,
+              [currentQuestion?.id, rival?.id].contains(questionID) else { return }
+        chosenQuestionID = questionID
+        finishRound(questionID == winner.id ? .correct : .incorrect)
+    }
+
+    /// On a game clock, ends the game now; otherwise ends the question as a miss.
+    func giveUp() {
+        guard !selectionLocked, currentQuestion != nil else { return }
+        if mode.usesGameClock {
+            showResults()
         } else {
-            inputMessage = String(localized: "\(bookName) doesn’t mention \(question.label) (−\(BeatTheClockDifficulty.rapidFirePenalty) sec).")
-            penaltySeconds += BeatTheClockDifficulty.rapidFirePenalty
-            Haptics.error()
-            updateRemainingTime()
+            finishRound(.incorrect)
         }
     }
 
-    /// Ends the round as a miss. In Rapid Fire, the books already found still count.
-    func giveUp() {
-        guard !selectionLocked, currentQuestion != nil else { return }
-        finishRound(isRapidFire && !foundBooks.isEmpty ? .correct : .incorrect)
-    }
-
-    /// Debug-only shortcut that counts the current round as correct.
+    /// Debug-only shortcut that answers the current question correctly.
     func debugWin() {
-        finishRound(.correct)
+        if mode == .higherOrLower {
+            if let winner = higherOrLowerWinner { choose(questionID: winner.id) }
+        } else if let answer = choices?.answer {
+            submit(bookName: answer)
+        }
     }
 
     /// Records the answer (or timeout) on the current question, so it can't be answered again.
@@ -856,23 +1062,24 @@ final class BeatTheClockGameViewModel {
         self.submittedBook = submittedBook
 
         let correct = outcome == .correct
-        let entryOutcome: GameRoundEntry.Outcome = switch outcome {
-        case .correct: .correct
-        case .incorrect: .wrong
-        case .timedOut: .timedOut
+        // A game clock moves with each answer.
+        switch mode {
+        case .survival:
+            let change = correct ? difficulty.survivalTimeBonus : -BeatTheClockDifficulty.survivalPenalty
+            if correct { bonusSeconds += change } else { penaltySeconds -= change }
+            lastClockChange = change
+        case .higherOrLower where !correct:
+            penaltySeconds += BeatTheClockDifficulty.higherOrLowerPenalty
+            lastClockChange = -BeatTheClockDifficulty.higherOrLowerPenalty
+        case .higherOrLower, .classic, .firstAppearance:
+            break
         }
-        session.record(
-            GameRoundEntry(
-                prompt: currentQuestion.label,
-                outcome: entryOutcome,
-                givenAnswer: isRapidFire ? foundBooks.formatted(.list(type: .and)) : submittedBook,
-                correctAnswer: sortedAcceptableBooks.formatted(.list(type: isRapidFire ? .and : .or)),
-                category: currentQuestion.subject == .person ? String(localized: "People") : String(localized: "Places"),
-                reference: currentQuestion.scriptureReference,
-                hintCount: hintsUsed
-            ),
-            savedStreak: persistentStreak
-        )
+        if mode.usesGameClock {
+            remainingSeconds = currentRemainingSeconds
+            isOutOfTime = remainingSeconds == 0
+        }
+
+        session.record(roundEntry(for: currentQuestion, outcome: outcome), savedStreak: persistentStreak)
 
         GameStats.shared.recordRound(
             game: .beatclock,
@@ -886,32 +1093,103 @@ final class BeatTheClockGameViewModel {
             answered: 1,
             correct: correct ? 1 : 0
         )
-        GameStats.shared.recordModeAnswer(.beatclock, mode: playedMode.rawValue, correct: correct)
-        if correct, !reviewQuestionIDs.isEmpty {
-            missedQuestions.resolveReviewQuestion(game: .beatTheClock, mode: playedMode.rawValue, questionID: currentQuestion.id)
-        } else if !correct {
-            // A place is tied to the book it's cited from; a person to every book they're in.
-            let scriptureReference = currentQuestion.subject == .place
-                ? currentQuestion.scriptureReference.flatMap { BibleReferenceLinker.parse($0) }
-                : nil
-            missedQuestions.record(
-                game: .beatTheClock,
-                mode: playedMode.rawValue,
-                bookNames: scriptureReference.map { [$0.bookName] } ?? Array(currentQuestion.acceptableBooks),
-                chapterNumber: scriptureReference?.chapter,
-                topic: currentQuestion.subject == .person ? "Bible people" : "Bible places",
-                questionID: currentQuestion.id
-            )
+        GameStats.shared.recordModeAnswer(.beatclock, mode: mode.rawValue, correct: correct)
+        if let reviewModeName = mode.reviewModeName {
+            if correct, !reviewQuestionIDs.isEmpty {
+                missedQuestions.resolveReviewQuestion(game: .beatTheClock, mode: reviewModeName, questionID: currentQuestion.id)
+            } else if !correct {
+                // A place is tied to the book it's cited from; a person to every book they're in.
+                let scriptureReference = currentQuestion.subject == .place
+                    ? currentQuestion.scriptureReference.flatMap { BibleReferenceLinker.parse($0) }
+                    : nil
+                missedQuestions.record(
+                    game: .beatTheClock,
+                    mode: reviewModeName,
+                    bookNames: scriptureReference.map { [$0.bookName] } ?? Array(currentQuestion.acceptableBooks),
+                    chapterNumber: scriptureReference?.chapter,
+                    topic: currentQuestion.subject == .person ? "Bible people" : "Bible places",
+                    questionID: currentQuestion.id
+                )
+            }
         }
 
         if correct { Haptics.success() } else { Haptics.error() }
+        if mode.usesGameClock { scheduleAdvance() }
+    }
+
+    /// The answer for the end-of-round review.
+    private func roundEntry(for question: BeatTheClockQuestion, outcome: BeatTheClockRoundOutcome) -> GameRoundEntry {
+        let entryOutcome: GameRoundEntry.Outcome = switch outcome {
+        case .correct: .correct
+        case .incorrect: .wrong
+        case .timedOut: .timedOut
+        }
+        let category = question.subject == .person ? String(localized: "People") : String(localized: "Places")
+
+        switch mode {
+        case .higherOrLower:
+            let rivalLabel = rival?.label ?? ""
+            let chosen = [question, rival].compactMap(\.self).first { $0.id == chosenQuestionID }
+            let winner = higherOrLowerWinner ?? question
+            return GameRoundEntry(
+                prompt: String(localized: "\(question.label) or \(rivalLabel)?"),
+                outcome: entryOutcome,
+                givenAnswer: chosen?.label,
+                correctAnswer: String(localized: "\(winner.label) (\(winner.acceptableBooks.count) books)"),
+                category: category
+            )
+        case .firstAppearance:
+            let answer = choices?.answer ?? ""
+            return GameRoundEntry(
+                prompt: String(localized: "Where does \(question.label) first appear?"),
+                outcome: entryOutcome,
+                givenAnswer: submittedBook,
+                correctAnswer: answer,
+                category: category,
+                reference: firstMention(in: answer) ?? question.scriptureReference,
+                hintCount: hintsUsed
+            )
+        case .survival, .classic:
+            return GameRoundEntry(
+                prompt: question.label,
+                outcome: entryOutcome,
+                givenAnswer: submittedBook,
+                correctAnswer: choices?.answer ?? sortedAcceptableBooks.formatted(.list(type: .or)),
+                category: category,
+                reference: question.scriptureReference,
+                hintCount: hintsUsed
+            )
+        }
+    }
+
+    /// On a game clock, the answer shows for a moment, then the next question comes up.
+    private func scheduleAdvance() {
+        advanceTask?.cancel()
+        let delay: Duration = mode == .higherOrLower ? .milliseconds(1400) : .milliseconds(900)
+        let sleep = self.sleep
+        advanceTask = Task { [weak self] in
+            do { try await sleep(delay) } catch { return }
+            guard !Task.isCancelled, let self, self.phase == .playing, self.roundOutcome != nil, !self.isPaused else { return }
+            self.nextRound()
+        }
     }
 
     // MARK: - Passages
 
-    /// Loads the verses the round cites, ready for showing when it ends.
+    /// The verse a round's answer comes from: the first mention for First Appearance, or the
+    /// verse the entry was written from.
+    private var passageReference: String? {
+        guard let question = currentQuestion else { return nil }
+        if mode == .firstAppearance, let answer = choices?.answer, let first = firstMention(in: answer) {
+            return first
+        }
+        return question.scriptureReference
+    }
+
+    /// Loads the verses the round cites, ready for showing when it ends. A game clock moves on
+    /// before there's time to read them, so it skips this.
     func loadPassage() async {
-        guard let question = currentQuestion, let reference = question.scriptureReference, passage == nil else { return }
+        guard !mode.usesGameClock, let question = currentQuestion, let reference = passageReference, passage == nil else { return }
         let loaded = await loadPassageForReference(reference)
         // The player may have moved on while the Bible loaded.
         guard currentQuestion?.id == question.id else { return }

@@ -59,6 +59,7 @@ struct BeatTheClockClueRow: View {
     let canRequestHint: Bool
     let onRequestHint: () -> Void
     let testamentHint: String
+    let offersTestamentHint: Bool
     let showsTestamentHint: Bool
     let canRequestTestamentHint: Bool
     let onRequestTestamentHint: () -> Void
@@ -82,52 +83,168 @@ struct BeatTheClockClueRow: View {
                 }
             }
 
-            if showsTestamentHint {
-                Label(testamentHint, systemImage: "books.vertical.fill")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            } else {
-                Button(
-                    "Which Testament? (−\(BeatTheClockDifficulty.testamentHintCost) sec)",
-                    systemImage: "books.vertical",
-                    action: onRequestTestamentHint
-                )
-                .buttonStyle(.gameHint(tint: .indigo))
-                .disabled(!canRequestTestamentHint)
+            if offersTestamentHint {
+                if showsTestamentHint {
+                    Label(testamentHint, systemImage: "books.vertical.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Button(
+                        "Which Testament? (−\(BeatTheClockDifficulty.testamentHintCost) sec)",
+                        systemImage: "books.vertical",
+                        action: onRequestTestamentHint
+                    )
+                    .buttonStyle(.gameHint(tint: .indigo))
+                    .disabled(!canRequestTestamentHint)
+                }
             }
         }
     }
 }
 
-/// Rapid Fire: the books found so far for the current name.
-struct BeatTheClockFoundBooks: View {
-    let foundBooks: [String]
-    let totalBooks: Int
+/// Four books to tap. Once answered, the right one turns green, a wrong pick red, and the
+/// rest fade.
+struct BeatTheClockChoiceGrid: View {
+    let books: [String]
+    let answer: String
+    let chosen: String?
+    let isLocked: Bool
+    let tint: Color
+    let onChoose: (String) -> Void
+
+    private enum TileState {
+        case open
+        case right
+        case wrong
+        case faded
+    }
+
+    private func state(for book: String) -> TileState {
+        guard isLocked else { return .open }
+        if book == answer { return .right }
+        return book == chosen ? .wrong : .faded
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label("\(foundBooks.count) of \(totalBooks) found", systemImage: "flame.fill")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.orange)
-                .contentTransition(.numericText())
-
-            if !foundBooks.isEmpty {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 6)], alignment: .leading, spacing: 6) {
-                    ForEach(foundBooks, id: \.self) { book in
-                        Label(book, systemImage: "checkmark")
-                            .font(.caption.weight(.semibold))
-                            .lineLimit(1)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.green.opacity(0.15), in: Capsule())
-                    }
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
+            ForEach(books, id: \.self) { book in
+                let state = state(for: book)
+                Button {
+                    onChoose(book)
+                } label: {
+                    tile(book, state: state)
                 }
+                .buttonStyle(.plain)
+                .disabled(isLocked)
+                .hoverEffect(.lift)
+                .accessibilityValue(accessibilityValue(for: state))
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .animation(.snappy, value: foundBooks)
-        .accessibilityElement(children: .combine)
+        .animation(.snappy, value: isLocked)
+    }
+
+    private func tile(_ book: String, state: TileState) -> some View {
+        let color: Color = switch state {
+        case .open, .faded: tint
+        case .right: .green
+        case .wrong: .red
+        }
+        return HStack(spacing: 8) {
+            Text(book)
+                .font(.headline)
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.leading)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+            Spacer(minLength: 0)
+            if state == .right {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            } else if state == .wrong {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundStyle(.red)
+            }
+        }
+        .padding(.horizontal, 14)
+        .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
+        .background(
+            color.opacity(state == .open || state == .faded ? 0.08 : 0.18),
+            in: RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
+                .strokeBorder(color.opacity(state == .faded ? 0.12 : 0.45), lineWidth: state == .open ? 1 : 2)
+        }
+        .opacity(state == .faded ? 0.5 : 1)
+        .contentShape(RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous))
+    }
+
+    private func accessibilityValue(for state: TileState) -> Text {
+        switch state {
+        case .open, .faded: Text("")
+        case .right: Text("Right answer")
+        case .wrong: Text("Your answer, wrong")
+        }
+    }
+}
+
+/// Higher or Lower's two names. Once one is picked, both show how many books they're in.
+struct BeatTheClockPairBoard: View {
+    let first: BeatTheClockQuestion
+    let second: BeatTheClockQuestion
+    let winnerID: String?
+    let chosenID: String?
+    let isLocked: Bool
+    let tint: Color
+    let onChoose: (String) -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            card(first)
+            card(second)
+        }
+        .animation(.snappy, value: isLocked)
+    }
+
+    private func card(_ question: BeatTheClockQuestion) -> some View {
+        let isWinner = question.id == winnerID
+        let color: Color = !isLocked ? tint : (isWinner ? .green : (question.id == chosenID ? .red : .secondary))
+        let count = question.acceptableBooks.count
+        return Button {
+            onChoose(question.id)
+        } label: {
+            VStack(spacing: 10) {
+                Image(systemName: question.subject == .place ? "mappin.and.ellipse" : "person.fill")
+                    .font(.title2)
+                    .foregroundStyle(color)
+                Text(question.label)
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.7)
+                if isLocked {
+                    Text(count == 1 ? "1 book" : "\(count) books")
+                        .font(.headline.monospacedDigit())
+                        .foregroundStyle(color)
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, minHeight: 150)
+            .background(
+                color.opacity(isLocked ? 0.16 : 0.08),
+                in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .strokeBorder(color.opacity(0.45), lineWidth: isLocked ? 2 : 1)
+            }
+            .contentShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .disabled(isLocked)
+        .hoverEffect(.lift)
+        .accessibilityValue(isLocked ? Text(count == 1 ? "1 book" : "\(count) books") : Text(""))
     }
 }
 
@@ -180,46 +297,51 @@ struct BeatTheClockRoundResultCard: View {
     /// The accepted books, most mentions first.
     let books: [(book: String, verses: Int)]
     let scriptureReference: String?
-    /// Rapid Fire's books found, or nil in Classic.
-    let foundBooks: [String]?
+    /// First Appearance's answer and its first verse, or nil in Classic.
+    let firstAppearance: (book: String, reference: String?)?
     let earnedSpeedBonus: Bool
-    let earnedLessKnownBonus: Bool
     let onShowAllAnswers: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Label(foundBooks == nil ? outcome.title : "Round Over", systemImage: foundBooks == nil ? outcome.systemImage : "flame.fill")
+                Label(outcome.title, systemImage: outcome.systemImage)
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(foundBooks == nil ? outcome.tint : .orange)
+                    .foregroundStyle(outcome.tint)
                 if earnedSpeedBonus {
                     Label("+1 speed bonus", systemImage: "bolt.fill")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(.orange)
                 }
-                if earnedLessKnownBonus {
-                    Label("+1 less-known book", systemImage: "sparkles")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.purple)
+            }
+
+            if let firstAppearance {
+                if outcome == .incorrect, let submittedBook {
+                    Text("\(submittedBook) mentions \(subjectName), but not first.")
+                        .font(.subheadline)
                 }
-            }
+                Text("\(subjectName) first appears in \(firstAppearance.book).")
+                    .font(.subheadline.weight(.semibold))
+                if let reference = firstAppearance.reference {
+                    Label("First mentioned in \(reference)", systemImage: "book.closed")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                if outcome == .incorrect, let submittedBook {
+                    Text("\(submittedBook) doesn’t mention \(subjectName).")
+                        .font(.subheadline)
+                }
 
-            if let foundBooks {
-                Text("You found \(foundBooks.count) of \(books.count) books that mention \(subjectName).")
+                answerSummary
                     .font(.subheadline)
-            } else if outcome == .incorrect, let submittedBook {
-                Text("\(submittedBook) doesn’t mention \(subjectName).")
-                    .font(.subheadline)
-            }
+                    .fixedSize(horizontal: false, vertical: true)
 
-            answerSummary
-                .font(.subheadline)
-                .fixedSize(horizontal: false, vertical: true)
-
-            if let scriptureReference {
-                Label("See \(scriptureReference)", systemImage: "book.closed")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                if let scriptureReference {
+                    Label("See \(scriptureReference)", systemImage: "book.closed")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             if books.count > 1 {
@@ -230,7 +352,7 @@ struct BeatTheClockRoundResultCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .background(
-            (foundBooks == nil ? outcome.tint : .orange).opacity(0.1),
+            outcome.tint.opacity(0.1),
             in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
         )
         .accessibilityElement(children: .contain)
@@ -260,10 +382,8 @@ struct BeatTheClockRoundResultCard: View {
 
 struct BeatTheClockActions: View {
     let isLocked: Bool
-    let canSubmit: Bool
     let isLastQuestion: Bool
     let showsDebugWin: Bool
-    let onSubmit: () -> Void
     let onNext: () -> Void
     let onDebugWin: () -> Void
 
@@ -277,13 +397,7 @@ struct BeatTheClockActions: View {
                     Button("Next Question", systemImage: "arrow.right", action: onNext)
                         .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
                 }
-            } else {
-                Button("Submit", systemImage: "paperplane.fill", action: onSubmit)
-                    .buttonStyle(GameProminentButtonStyle(tint: .green))
-                    .disabled(!canSubmit)
-            }
-
-            if showsDebugWin && !isLocked {
+            } else if showsDebugWin {
                 Button("Win this round", systemImage: "checkmark.seal.fill", action: onDebugWin)
                     .buttonStyle(.glass(.regular.tint(.red)))
             }
@@ -295,8 +409,10 @@ struct BeatTheClockDashboardPrompt: View {
     let targetType: String
     let isPlace: Bool
     let progressText: String
-    let targetLabel: String
-    let clueRow: BeatTheClockClueRow
+    let title: String
+    /// What to do with the board; nil when the title already asks it.
+    let instruction: String?
+    let clueRow: BeatTheClockClueRow?
     let tint: Color
     let isLocked: Bool
 
@@ -316,16 +432,20 @@ struct BeatTheClockDashboardPrompt: View {
                     .monospacedDigit()
             }
 
-            Text(targetLabel)
+            Text(title)
                 .font(.largeTitle.weight(.bold))
                 .fontDesign(.rounded)
                 .lineLimit(2)
 
-            Text("Name a Bible book that mentions this \(targetType.lowercased()).")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if let instruction {
+                Text(instruction)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-            clueRow
+            if let clueRow {
+                clueRow
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -338,81 +458,14 @@ struct BeatTheClockDashboardPrompt: View {
     }
 }
 
-struct BeatTheClockDashboardAnswer: View {
-    @Binding var searchText: String
-    let searchFieldFocused: FocusState<Bool>.Binding
-    let filteredBooks: [String]
-    let inputMessage: String?
-    let onClear: () -> Void
-    let onSubmit: () -> Void
-    let onSelectBook: (String) -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("Your Answer", systemImage: "square.and.pencil")
-                .font(.headline.weight(.bold))
-
-            HStack(spacing: 10) {
-                Image(systemName: "book.closed.fill")
-                    .foregroundStyle(.tint)
-
-                TextField("Type a Bible book…", text: $searchText)
-                    .font(.title3.weight(.medium))
-                    .textInputAutocapitalization(.words)
-                    .disableAutocorrection(true)
-                    .textFieldStyle(.plain)
-                    .focused(searchFieldFocused)
-                    .onSubmit(onSubmit)
-
-                if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Button("Clear answer", systemImage: "xmark.circle.fill", action: onClear)
-                        .labelStyle(.iconOnly)
-                        .buttonStyle(.plain)
-                        .foregroundStyle(Color.red)
-                }
-            }
-            .padding(.horizontal, 16)
-            .frame(minHeight: 58)
-            .glassEffect(.regular, in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
-
-            if let inputMessage {
-                Label(inputMessage, systemImage: "exclamationmark.circle.fill")
-                    .font(.footnote)
-                    .foregroundStyle(.orange)
-            }
-
-            if !filteredBooks.isEmpty {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                    ForEach(filteredBooks, id: \.self) { name in
-                        Button {
-                            onSelectBook(name)
-                        } label: {
-                            Text(name)
-                                .font(.subheadline.weight(.semibold))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 14)
-                                .frame(minHeight: 42)
-                                .contentShape(Rectangle())
-                                .background(
-                                    .primary.opacity(0.06),
-                                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .hoverEffect(.lift)
-                    }
-                }
-            }
-        }
-    }
-}
-
 struct BeatTheClockLargeTimerView: View {
     let remainingSeconds: Int
     let tint: Color
     let isPulsing: Bool
     let isTimerDisabled: Bool
     let outcome: BeatTheClockRoundOutcome?
+    /// False on a game clock, which can't be switched off.
+    let canToggleTimer: Bool
     @Binding var usesMutedStyle: Bool
     let onToggleTimer: () -> Void
     let onSwapSides: () -> Void
@@ -430,6 +483,8 @@ struct BeatTheClockLargeTimerView: View {
     private var vividTextColor: Color {
         isActive ? timerTextColor : .white
     }
+
+    private var canToggle: Bool { isActive && canToggleTimer }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -450,6 +505,7 @@ struct BeatTheClockLargeTimerView: View {
                         .fontDesign(.rounded)
                         .monospacedDigit()
                         .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
+                        .contentTransition(.numericText())
                 }
             }
             .scaleEffect(isPulsing ? 1.04 : 1.0)
@@ -459,13 +515,13 @@ struct BeatTheClockLargeTimerView: View {
             .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : "")
             .contentShape(Rectangle())
             .onTapGesture {
-                if isActive {
+                if canToggle {
                     onToggleTimer()
                 }
             }
-            .accessibilityAddTraits(isActive ? .isButton : [])
+            .accessibilityAddTraits(canToggle ? .isButton : [])
             .accessibilityHint(
-                isActive
+                canToggle
                     ? (isTimerDisabled ? "Tap to turn the timer on." : "Tap to turn the timer off.")
                     : ""
             )
@@ -473,7 +529,7 @@ struct BeatTheClockLargeTimerView: View {
             Spacer(minLength: 0)
 
             HStack(spacing: 12) {
-                if isActive {
+                if canToggle {
                     Button(
                         isTimerDisabled ? "Turn timer on" : "Turn timer off",
                         systemImage: isTimerDisabled ? "timer" : "timer.slash",
