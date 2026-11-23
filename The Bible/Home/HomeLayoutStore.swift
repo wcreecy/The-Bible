@@ -195,6 +195,11 @@ struct HomeLayoutStore {
     /// Saves the layout. On iPad the columns are saved too; callers editing columns should
     /// pass `columns.flatOrder` as the order so narrow widths read in a matching order.
     func save(order: [HomeCardID], hidden: Set<HomeCardID>, columns: HomeColumnLayout) {
+        let previous = load()
+        if order != previous.order || hidden != previous.hidden || columns.storageString != previous.columns.storageString {
+            ContextualTipView.complete("home.customization")
+            ContextualTipView.complete("home.layoutEditor")
+        }
         if Self.storesColumns {
             columnsRaw = columns.storageString
         }

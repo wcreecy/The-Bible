@@ -246,6 +246,12 @@ struct VerseNoteEditorView: View {
                 try modelContext.save()
             },
             onSuccess: {
+                if !NoteMentions.references(in: trimmedNote).isEmpty {
+                    ContextualTipView.complete("notes.scriptureLinks")
+                }
+                if !NoteCustomTags.tags(in: trimmedNote).isEmpty {
+                    ContextualTipView.complete("notes.customTags")
+                }
                 if addsHighlight {
                     TodayChallengeStore.shared.recordVerseHighlightSaved()
                 }

@@ -180,6 +180,7 @@ struct ReadingView: View {
             }
             .onChange(of: BibleStore.shared.translation) {
                 viewModel.translationChanged()
+                ContextualTipView.complete("reader.translations")
                 favoriteToastSymbol = "character.book.closed"
                 favoriteToastTint = .accentColor
                 favoriteToastText = "Now reading \(BibleStore.shared.translation.abbreviation)"
@@ -528,8 +529,14 @@ struct ReadingView: View {
                         showsReadProgress: showsReadProgress,
                         readerFontSize: readerFontSize,
                         showsFullReferences: showsFullReferences,
-                        onOpenNote: { verse in noteEditorVerse = verse },
-                        onOpenCrossReferences: { verse in crossReferenceVerse = verse },
+                        onOpenNote: { verse in
+                            ContextualTipView.complete("reader.statusIcons")
+                            noteEditorVerse = verse
+                        },
+                        onOpenCrossReferences: { verse in
+                            ContextualTipView.complete("reader.statusIcons")
+                            crossReferenceVerse = verse
+                        },
                         onShowChapterInsights: { chapterInsightsDismissal.isPresented = true },
                         onVerseActionFeedback: handleVerseActionFeedback,
                         planReadingEndVerse: ReadingPlanStore.shared.sessionContext(

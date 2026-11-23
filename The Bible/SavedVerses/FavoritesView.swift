@@ -150,7 +150,7 @@ struct FavoritesView: View {
                 ContentUnavailableView(
                     "No Favorites",
                     systemImage: "heart",
-                    description: Text("Touch and hold a verse and tap the heart to save it here.")
+                    description: Text("Tap a verse to select it, then tap it again and choose the heart to save it here.")
                 )
             } else if visibleFavoriteSections.isEmpty && isSearching {
                 ContentUnavailableView(
@@ -366,6 +366,7 @@ struct FavoritesView: View {
 
     // Switches to the Bible tab and opens the verse.
     private func openInBibleTab(_ fav: Favorite) {
+        ContextualTipView.complete("favorites.management")
         AppRouter.shared.openBibleReference(
             book: fav.bookName,
             chapter: fav.chapterNumber,

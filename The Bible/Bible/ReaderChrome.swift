@@ -133,6 +133,7 @@ struct ReaderChapterArrows: View {
 struct ReaderTips: View {
     /// Whether the translation control sits in the toolbar rather than the "…" menu.
     let usesFullToolbar: Bool
+    @State private var showsTranslationPicker = false
 
     private enum Tip: String, CaseIterable {
         case translations = "reader.translations"
@@ -183,13 +184,26 @@ struct ReaderTips: View {
                 message: usesFullToolbar
                     ? "Tap the translation button at the top left to read another version. Your saved verses keep the translation they were saved in."
                     : "Tap the ellipsis button at the top right, then Translation, to read another version. Your saved verses keep the translation they were saved in.",
-                systemImage: "character.book.closed"
+                systemImage: "character.book.closed",
+                actionTitle: "Choose Translation",
+                action: { showsTranslationPicker = true }
             )
+            .sheet(isPresented: $showsTranslationPicker) {
+                NavigationStack {
+                    Form { TranslationSettingsPicker() }
+                        .navigationTitle("Translation")
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done") { showsTranslationPicker = false }
+                            }
+                        }
+                }
+            }
         case .shortcuts:
             ContextualTipView(
                 id: tip.rawValue,
                 title: "Reader shortcuts",
-                message: "Tap a verse to keep your place. Tap it again for notes, highlights, favorites, and more. Swipe left or right to change chapters.",
+                message: "Tap a verse to select it, then tap it again for notes, highlights, favorites, and more. Swipe left or right to change chapters.",
                 systemImage: "hand.draw"
             )
         case .statusIcons:

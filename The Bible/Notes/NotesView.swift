@@ -130,7 +130,12 @@ struct NotesView: View {
             action: undoLastDeletion
         )
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
-        .onChange(of: filters) { _, _ in selectFirstVisibleNoteIfNeeded() }
+        .onChange(of: filters) { _, newFilters in
+            selectFirstVisibleNoteIfNeeded()
+            if newFilters.tag != nil || !newFilters.search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                ContextualTipView.complete("notes.quickActions")
+            }
+        }
         .onChange(of: library.tags.map(\.tag)) { _, newTags in
             // A renamed or removed tag can't stay selected.
             if let tag = filters.tag, !newTags.contains(tag) {
@@ -252,7 +257,9 @@ struct NotesView: View {
                 id: "notes.quickActions",
                 title: "Browse and manage notes",
                 message: "Use #Tags to organize notes. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
-                systemImage: "hand.point.up.left"
+                systemImage: "hand.point.up.left",
+                actionTitle: "Search Notes",
+                action: { isSearchPresented = true }
             )
         }
     }

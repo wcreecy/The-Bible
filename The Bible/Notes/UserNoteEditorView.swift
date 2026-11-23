@@ -325,6 +325,12 @@ struct UserNoteEditorView: View {
             },
             onSuccess: {
                 NoteDraftStore.clear(draftKey)
+                if !NoteMentions.references(in: trimmedNote).isEmpty {
+                    ContextualTipView.complete("notes.scriptureLinks")
+                }
+                if !NoteCustomTags.tags(in: trimmedNote).isEmpty {
+                    ContextualTipView.complete("notes.customTags")
+                }
                 Haptics.success()
                 dismiss()
             },

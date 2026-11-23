@@ -236,6 +236,7 @@ final class ReadingViewModel {
 
     func handleVerseLongPress(verseNumber: Int) {
         menuVerse = verseNumber
+        ContextualTipView.complete("reader.shortcuts")
         recordDirectEngagement(with: SeenVerseUpdate(
             bookName: currentBook.name,
             chapter: currentChapter.number,

@@ -216,6 +216,8 @@ struct SettingsPrayerTimerAccessSection: View {
             mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
             if mindfulMinutesStatus != .sharingAuthorized {
                 mindfulMinutesEnabled = false
+            } else {
+                ContextualTipView.complete("timer.mindfulMinutes")
             }
         }
     }

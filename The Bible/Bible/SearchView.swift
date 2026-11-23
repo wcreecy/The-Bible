@@ -28,7 +28,12 @@ struct SearchView: View {
                     id: "search.references",
                     title: "Search words, topics, or references",
                     message: "Search for words such as love or faith, named topics such as the Lord's Prayer, or a reference such as John 3:16. Use the scope controls to narrow the results.",
-                    systemImage: "magnifyingglass"
+                    systemImage: "magnifyingglass",
+                    actionTitle: "Try John 3:16",
+                    action: {
+                        model.query = "John 3:16"
+                        isSearchFieldFocused = false
+                    }
                 )
                 .padding(.horizontal)
                 .padding(.vertical, 12)
@@ -221,6 +226,7 @@ struct SearchView: View {
 
     // MARK: - Open in Bible Tab
     private func openInBibleTab(_ item: SearchResult) {
+        ContextualTipView.complete("search.references")
         isSearchFieldFocused = false
         Task { @MainActor in
             // Release the search field before replacing Home's navigation

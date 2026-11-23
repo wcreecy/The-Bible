@@ -530,7 +530,9 @@ struct HomeView: View {
                 message: isPad
                     ? "Tap Edit Home to arrange cards in any of the three columns, or choose them from Customize Home."
                     : "Choose which cards appear here and reorder them from Customize Home.",
-                systemImage: "sparkles"
+                systemImage: "sparkles",
+                actionTitle: "Customize Home",
+                action: { showsSetupLayoutEditor = true }
             )
         }
     }

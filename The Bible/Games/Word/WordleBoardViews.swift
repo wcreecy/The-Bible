@@ -98,6 +98,7 @@ extension WordleView {
                   let letter = letter(atRow: row, column: column).first else { return }
 
             onReuseCorrectLetter(letter, column)
+            ContextualTipView.complete("wordle.reuseLetter")
         }
 
         private func tile(

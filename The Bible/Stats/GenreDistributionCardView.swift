@@ -50,6 +50,7 @@ struct GenreDistributionCardView: View {
                         Button {
                             if let g = StatsSeriesBuilder.Genre(rawValue: item.genre) {
                                 selectedGenre = g
+                                ContextualTipView.complete("stats.genre")
                             }
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {

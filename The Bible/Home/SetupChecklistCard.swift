@@ -29,8 +29,8 @@ struct SetupChecklistCard: View {
         var detail: LocalizedStringResource {
             switch self {
             case .readVerse: "Open the Verse of the Day in the reader"
-            case .saveVerse: "Touch and hold a verse, then highlight or favorite it"
-            case .dailyGoal: "Choose how many minutes to read each day"
+            case .saveVerse: "Tap a verse to select it, then tap it again to highlight or favorite it"
+            case .dailyGoal: "Choose your daily minutes, then tap Confirm Goal"
             case .playGame: "Answer a quick quiz question"
             case .customizeHome: "Rearrange the cards on this page"
             }
@@ -62,7 +62,6 @@ struct SetupChecklistCard: View {
     private static let gameBaselineKey = "homeOnboardingGameBaselineV2"
     private static let homeOrderBaselineKey = "homeOnboardingHomeOrderBaselineV2"
     private static let completionBaselineCapturedKey = "homeOnboardingCompletionBaselineCapturedV1"
-    private static let gameNameKey = "homeOnboardingGameNameV1"
     private static let completedDayKey = "homeOnboardingCompletedDayV1"
     private static let didAutoHideKey = "homeOnboardingDidAutoHideV1"
 
@@ -81,7 +80,6 @@ struct SetupChecklistCard: View {
     @AppStorage(Self.gameBaselineKey) private var gameBaseline = 0
     @AppStorage(Self.homeOrderBaselineKey) private var homeOrderBaseline = ""
     @AppStorage(Self.completionBaselineCapturedKey) private var completionBaselineCaptured = false
-    @AppStorage(Self.gameNameKey) private var gameName = ""
     /// The day every step was first done (`yyyy-MM-dd`), or empty while steps remain.
     @AppStorage(Self.completedDayKey) private var completedDay = ""
     /// Set once the finished card has left Home on its own, so it only ever does that once.
@@ -169,7 +167,7 @@ struct SetupChecklistCard: View {
                             detail: step == .readVerse
                                 ? verseOfDayReference.map { String(localized: "Start with \($0)") }
                                 : step == .playGame
-                                    ? String(localized: "Finish a round to complete this.")
+                                    ? String(localized: "Answer one question to complete this.")
                                 : nil,
                             action: { open(step) },
                             skipAction: step.canSkip ? { skip(step) } : nil
@@ -186,17 +184,17 @@ struct SetupChecklistCard: View {
         }
         .onAppear {
             establishCompletionBaselineIfNeeded()
-            chooseGameIfNeeded()
         }
         .onChange(of: isAllComplete, initial: true) { _, isComplete in
             updateAutomaticDismissal(isComplete: isComplete)
         }
-        .sheet(isPresented: $isShowingDailyGoal, onDismiss: { dailyGoalReviewed = true }) {
+        .sheet(isPresented: $isShowingDailyGoal) {
             NavigationStack {
                 SettingsDailyGoalDetailView()
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("Done", systemImage: "checkmark", role: .confirm) {
+                            Button("Confirm Goal", systemImage: "checkmark", role: .confirm) {
+                                dailyGoalReviewed = true
                                 isShowingDailyGoal = false
                             }
                         }
@@ -222,9 +220,7 @@ struct SetupChecklistCard: View {
         }
     }
 
-    private var selectedGameName: String {
-        gameName.isEmpty ? "Quiz" : gameName
-    }
+    private let selectedGameName = "Quiz"
 
     private var footer: some View {
         HStack(alignment: .firstTextBaseline) {
@@ -313,11 +309,6 @@ struct SetupChecklistCard: View {
         highlightBaseline = highlightCount
         gameBaseline = gamesAnswered
         homeOrderBaseline = homeCardOrderRaw
-    }
-
-    private func chooseGameIfNeeded() {
-        guard gameName.isEmpty else { return }
-        gameName = TodayChallengeStore.shared.randomGameName()
     }
 
     private func skip(_ step: Step) {

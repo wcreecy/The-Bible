@@ -5,6 +5,7 @@ struct PrayerStudyTimerSetupView: View {
     let onStart: (Int) -> Void
 
     @State private var selectedMinutes: Int = 15
+    @State private var showsTimerSettings = false
     @AppStorage(AppStorageKey.contextualTipsEnabled) private var contextualTipsEnabled = false
     @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
     @AppStorage(PrayerTimerKind.preferenceKey) private var kindRaw = PrayerTimerKind.prayer.rawValue
@@ -27,7 +28,9 @@ struct PrayerStudyTimerSetupView: View {
                     id: "timer.mindfulMinutes",
                     title: "Track mindful minutes",
                     message: "Completed prayer and study timers can contribute Mindful Minutes to Apple Health when access is allowed in Settings.",
-                    systemImage: "heart.text.square"
+                    systemImage: "heart.text.square",
+                    actionTitle: "Timer Settings",
+                    action: { showsTimerSettings = true }
                 )
             }
 
@@ -66,6 +69,16 @@ struct PrayerStudyTimerSetupView: View {
             Spacer()
         }
         .padding()
+        .sheet(isPresented: $showsTimerSettings) {
+            NavigationStack {
+                SettingsTimerDetailView()
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { showsTimerSettings = false }
+                        }
+                    }
+            }
+        }
         .onAppear {
             // Start from the duration used last time.
             if (1...120).contains(lastMinutes) {
