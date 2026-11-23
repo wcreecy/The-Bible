@@ -221,6 +221,10 @@ struct WordleView: View {
         .padding(.top, 8)
         .padding(.bottom, usesCompactPhoneLayout ? 0 : 16)
       }
+      .defaultScrollAnchor(.top)
+      // The lobby can be scrolled to reach Start. Give the game a fresh scroll view
+      // so that offset doesn't hide its scoreboard or lift the keyboard off the tab bar.
+      .id(vm.started)
     }
     .tabBarContentClearance()
     .environment(\.wordColorBlindMode, vm.colorBlindModeEnabled)
